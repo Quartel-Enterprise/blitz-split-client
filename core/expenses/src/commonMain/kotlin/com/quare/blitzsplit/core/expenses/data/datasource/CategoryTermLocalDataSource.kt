@@ -10,6 +10,8 @@ interface CategoryTermLocalDataSource {
 
     suspend fun getAll(): List<CategoryTermEntity>
 
+    suspend fun getByKey(termKey: String): CategoryTermEntity?
+
     suspend fun getPending(userId: String): List<CategoryTermEntity>
 
     suspend fun upsert(entities: List<CategoryTermEntity>)

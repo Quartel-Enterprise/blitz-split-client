@@ -35,7 +35,7 @@ class CategoryTermRepositoryImpl(
     ): Result<Unit> = suspendRunCatching {
         val trimmed = term.trim()
         val key = CategoryMatcher.keyOf(trimmed)
-        val stored = local.getAll().firstOrNull { it.termKey == key }
+        val stored = local.getByKey(key)
         local.upsert(
             listOf(
                 stored?.copy(

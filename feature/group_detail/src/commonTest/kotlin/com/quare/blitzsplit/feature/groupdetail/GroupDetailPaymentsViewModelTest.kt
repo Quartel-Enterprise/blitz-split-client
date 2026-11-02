@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -1281,6 +1282,7 @@ class GroupDetailPaymentsViewModelTest {
                 observeOffer = { flowOf(null) },
                 consumeOffer = {},
                 observeMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                observeMapCategories = { flowOf(CategoryTree.appOnly) },
                 saveTerm = SaveCategoryTermUseCase(FakeCategoryTermRepository()) { 0L },
             ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository()),

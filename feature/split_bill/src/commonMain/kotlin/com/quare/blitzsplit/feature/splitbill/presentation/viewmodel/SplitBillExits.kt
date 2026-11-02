@@ -28,13 +28,27 @@ internal class SplitBillExits(
      */
     fun leaveToBillGroup(groupId: String) {
         if (!isOnTop()) return
-        val stack = navigator.backStack.value
-        val below = stack.getOrNull(stack.lastIndex - 1)
-        if (below != null && (tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId))) {
+        if (isBackOnGroupScreen(groupId)) {
             navigator.navigateBack()
         } else {
             navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
         }
+    }
+
+    // Why: whether leaveToBillGroup lands on the group's Despesas, the only screen that asks "Ensinar ao mapa?".
+    fun isLandingOnExpenses(groupId: String): Boolean {
+        if (!isOnTop()) return false
+        return !isBackOnGroupScreen(groupId) || belowOrNull() is Route.GroupDetail
+    }
+
+    private fun isBackOnGroupScreen(groupId: String): Boolean {
+        val below = belowOrNull() ?: return false
+        return tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId)
+    }
+
+    private fun belowOrNull(): Route? {
+        val stack = navigator.backStack.value
+        return stack.getOrNull(stack.lastIndex - 1)
     }
 
     // Why: back to Despesas do grupo past "Conta", which would show a bill that is gone.

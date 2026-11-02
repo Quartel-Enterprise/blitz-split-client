@@ -17,6 +17,10 @@ interface CategoryTermDao {
     @Query("SELECT * FROM category_term")
     suspend fun getAll(): List<CategoryTermEntity>
 
+    // Why: the one row of a word, which saving a term edits, without reading the whole map.
+    @Query("SELECT * FROM category_term WHERE termKey = :termKey")
+    suspend fun getByKey(termKey: String): CategoryTermEntity?
+
     // Why: what goes up for this user: their changes waiting, and those made before the account, which become theirs.
     @Query("SELECT * FROM category_term WHERE pendingSync = 1 AND (ownerUserId IS NULL OR ownerUserId = :userId)")
     suspend fun getPending(userId: String): List<CategoryTermEntity>

@@ -105,6 +105,48 @@ class CategoryTreeTest {
         assertFalse(tree.hasSubcategories("praia"))
     }
 
+    @Test
+    fun `GIVEN two groups with a main category each WHEN merging their trees THEN each keeps its group color`() {
+        // Given
+        val bar = praia.copy(
+            id = "bar",
+            groupId = "group-2",
+            name = "Bar",
+        )
+        val own = CategoryTree.of(listOf(bar))
+
+        // When
+        val tree = CategoryTree.ofGroups(listOf(praia, churrasco, bar))
+
+        // Then
+        assertEquals(listOf("praia", "bar", AppCategory.OTHER.key), tree.branches.map { it.category.id }.takeLast(3))
+        assertEquals(own.findOrNull("bar")?.color, tree.findOrNull("bar")?.color)
+        assertEquals(CategoryTree.of(listOf(praia)).findOrNull("praia")?.color, tree.findOrNull("praia")?.color)
+        assertEquals(
+            "churrasco",
+            tree
+                .branchOf(AppCategory.FOOD.key)
+                ?.subcategories
+                ?.last()
+                ?.id,
+        )
+    }
+
+    @Test
+    fun `GIVEN a deleted and an unknown category WHEN reading a map term THEN the parent and nothing`() {
+        // Given
+        val tree = CategoryTree.ofGroups(listOf(churrasco.copy(isDeleted = true)))
+
+        // When
+        val deleted = tree.readAsOrNull("churrasco")
+        val unknown = tree.readAsOrNull("of-a-group-gone")
+
+        // Then
+        assertEquals(AppCategory.FOOD.key, deleted?.id)
+        assertNull(unknown)
+        assertEquals(AppCategory.FOOD_MARKET.key, tree.readAsOrNull(AppCategory.FOOD_MARKET.key)?.id)
+    }
+
     private val churrasco = GroupCategory(
         id = "churrasco",
         groupId = "group-1",

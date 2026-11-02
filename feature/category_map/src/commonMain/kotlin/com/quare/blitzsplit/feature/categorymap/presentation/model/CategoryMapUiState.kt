@@ -27,6 +27,18 @@ data class CategoryMapUiState(
     // Why: with Google or Apple the map reaches the person's other devices; otherwise it stays on this one (9.1h).
     val isConnected: Boolean,
 ) {
+    /*
+     * Why: the terms as the map shows them: one whose group category was deleted reads as its parent, or Outros, as
+     * that category's bills do, so it stays there to edit or remove; one whose group left the device isn't shown, nor
+     * counted as a term, though its change waiting to go up still counts in the queue.
+     */
+    val terms: List<MapTerm> by lazy {
+        map.terms.mapNotNull { term ->
+            val category = categories.readAsOrNull(term.categoryId) ?: return@mapNotNull null
+            if (category.id == term.categoryId) term else term.copy(categoryId = category.id)
+        }
+    }
+
     // Why: once per state, since the list, selectedSection and each platform's layout all read it.
     val sections: List<MapSection> by lazy {
         categories.branches.mapNotNull { branch ->
@@ -37,7 +49,7 @@ data class CategoryMapUiState(
                         category = category,
                         isOnlyMain = isOnlyMain,
                         groupName = groupNameOf(category).takeIf { category.parentId != null && !isOnlyMain },
-                        terms = map.terms.filter { it.categoryId == category.id },
+                        terms = terms.filter { it.categoryId == category.id },
                     )
                 }.filter { it.terms.isNotEmpty() }
             MapSection(
@@ -62,7 +74,7 @@ data class CategoryMapUiState(
         if (folded.isEmpty()) {
             emptyList()
         } else {
-            map.terms.mapNotNull { term ->
+            terms.mapNotNull { term ->
                 val start = matchStartOrNull(term.key, folded) ?: return@mapNotNull null
                 val category = categories.findOrNull(term.categoryId) ?: return@mapNotNull null
                 val isMarked = TextFolding.toFolded(term.term) == term.key
@@ -81,7 +93,7 @@ data class CategoryMapUiState(
         get() = isSearching && searchResults.isEmpty()
 
     val isEmpty: Boolean
-        get() = isLoaded && map.isEmpty
+        get() = isLoaded && terms.isEmpty()
 
     val showsOfflineNotice: Boolean
         get() = !isOnline && map.pendingCount > 0
@@ -91,7 +103,7 @@ data class CategoryMapUiState(
 
     // Why: "O termo que você criou, “picanha”, continua." in "Restaurar o mapa padrão?" (9.1f).
     val ownTerms: List<MapTerm>
-        get() = map.terms.filterNot { it.isAppTerm }
+        get() = terms.filterNot { it.isAppTerm }
 
     val formCategory: Category?
         get() = termForm?.let { categories.findOrNull(it.categoryId) }
@@ -116,7 +128,7 @@ data class CategoryMapUiState(
         get() {
             val form = termForm ?: return null
             val key = CategoryMatcher.keyOf(form.text)
-            return map.findOrNull(key)?.takeIf { it.key != form.original?.key && it.categoryId != form.categoryId }
+            return findTermOrNull(key)?.takeIf { it.key != form.original?.key && it.categoryId != form.categoryId }
         }
 
     val duplicateCategory: Category?
@@ -134,6 +146,8 @@ data class CategoryMapUiState(
     // Why: every category a term may send titles to, in the picker's order, the groups' with their group's name.
     val categoryOptions: List<Category>
         get() = categories.all
+
+    fun findTermOrNull(key: String): MapTerm? = terms.firstOrNull { it.key == key }
 
     fun groupNameOf(category: Category): String? = categories.groupIdOf(category.id)?.let(groupNames::get)
 

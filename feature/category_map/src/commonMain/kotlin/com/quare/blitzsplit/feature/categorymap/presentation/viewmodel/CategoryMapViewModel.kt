@@ -195,7 +195,7 @@ class CategoryMapViewModel(
 
     private fun openTerm(key: String) {
         uiState.update { state ->
-            val term = state.map.findOrNull(key) ?: return@update state
+            val term = state.findTermOrNull(key) ?: return@update state
             state.copy(
                 termForm = TermForm(
                     original = term,
@@ -234,7 +234,10 @@ class CategoryMapViewModel(
 
     // Why: no confirmation; "Desfazer" brings it back where it was (9.1d).
     private fun removeTerm() {
-        val term = uiState.value.termForm?.original ?: return
+        val state = uiState.value
+        val shown = state.termForm?.original ?: return
+        // Why: Desfazer brings back the category stored, a deleted group category's included, not the one it reads as.
+        val term = state.map.findOrNull(shown.key) ?: shown
         uiState.update { it.copy(termForm = null) }
         viewModelScope.launch {
             removeCategoryTerm(term.term)

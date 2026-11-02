@@ -511,6 +511,24 @@ class BillCategoryViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill split from the group Saldos WHEN saving a category picked by hand THEN nothing asks to teach`() =
+        runTest {
+            // Given
+            prepareScenario(below = Route.Balances(GROUP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(Route.Balances(GROUP_ID), navigator.backStack.value.last())
+            assertNull(teach.observeOffer().first())
+        }
+
+    @Test
     fun `GIVEN the category the map picked WHEN saving THEN nothing asks to teach`() = runTest {
         // Given
         prepareScenario()
@@ -543,6 +561,7 @@ class BillCategoryViewModelTest {
         groupCategories: List<GroupCategory> = emptyList(),
         expenseId: String? = null,
         termChanges: List<CategoryTermChange> = emptyList(),
+        below: Route = Route.GroupDetail(GROUP_ID, joinedAs = null),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = stored)
@@ -555,7 +574,7 @@ class BillCategoryViewModelTest {
         terms = FakeCategoryTermRepository(initialChanges = termChanges)
         teach = InMemoryCategoryTeachRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+            it.navigate(below)
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()

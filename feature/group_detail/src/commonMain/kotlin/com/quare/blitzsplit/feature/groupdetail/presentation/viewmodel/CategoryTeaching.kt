@@ -16,8 +16,9 @@ import kotlinx.coroutines.launch
 
 /*
  * Why: "Ensinar ao mapa?" (9.3e) once a bill of this group whose category was picked by hand is saved. The offer is
- * consumed as it arrives, so it shows on this screen once, and teaching saves the word picked in the person's map;
- * the bills already saved don't change.
+ * consumed as it arrives, so it shows on this screen once, and teaching saves the word picked in the person's map,
+ * moving it from any other category, another group's included (one category per term); the bills already saved
+ * don't change.
  */
 internal class CategoryTeaching(
     private val groupId: String,
@@ -34,7 +35,12 @@ internal class CategoryTeaching(
             .onEach { offer ->
                 if (offer.groupId != groupId) return@onEach
                 useCases.consumeOffer(offer.expenseId)
-                teachOf(offer, trees.first(), useCases.observeMap().first())?.let(write)
+                teachOf(
+                    offer = offer,
+                    tree = trees.first(),
+                    map = useCases.observeMap().first(),
+                    mapTree = useCases.observeMapCategories().first(),
+                )?.let(write)
             }.launchIn(scope)
     }
 
@@ -77,6 +83,7 @@ internal class CategoryTeaching(
         offer: CategoryTeachOffer,
         tree: CategoryTree,
         map: CategoryMap,
+        mapTree: CategoryTree,
     ): CategoryTeach? {
         val category = tree.findOrNull(offer.categoryId) ?: return null
         val mapCategory = offer.mapCategoryId?.let { tree.findOrNull(it) }
@@ -87,7 +94,8 @@ internal class CategoryTeaching(
                 TeachWord(
                     term = word.lowercase(),
                     key = key,
-                    currentCategory = map.findOrNull(key)?.let { tree.findOrNull(it.categoryId) },
+                    // Why: the whole map's, as Mapa de categorias shows it, so a word of another group's category moves.
+                    currentCategory = map.findOrNull(key)?.let { mapTree.readAsOrNull(it.categoryId) },
                 )
             }.filter { word ->
                 (word.key.length >= MIN_WORD_LENGTH || word.currentCategory != null) &&

@@ -28,12 +28,30 @@ export function useCategoryTeachNotice(presenter: GroupDetailPresenter | null, t
   const text = teach && isOffered ? offerText(teach) : null
   useEffect(() => {
     if (!presenter || !text) return
+    // Why: sonner calls onDismiss for toast.dismiss(id) too, so only a swipe or close while it still asks says Agora não.
+    let isCurrent = true
     const id = toast(text, {
       duration: Infinity,
-      action: { label: t('groupDetail_teach'), onClick: () => presenter.teach() },
-      cancel: { label: t('groupDetail_teachNotNow'), onClick: () => presenter.dismissTeach() },
+      action: {
+        label: t('groupDetail_teach'),
+        onClick: () => {
+          isCurrent = false
+          presenter.teach()
+        },
+      },
+      cancel: {
+        label: t('groupDetail_teachNotNow'),
+        onClick: () => {
+          isCurrent = false
+          presenter.dismissTeach()
+        },
+      },
+      onDismiss: () => {
+        if (isCurrent) presenter.dismissTeach()
+      },
     })
     return () => {
+      isCurrent = false
       toast.dismiss(id)
     }
   }, [presenter, text])

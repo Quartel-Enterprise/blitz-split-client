@@ -210,6 +210,52 @@ class CategoryMapViewModelTest {
     }
 
     @Test
+    fun `GIVEN a term of a deleted group category WHEN the map opens THEN it reads as its parent and edits there`() =
+        runTest {
+            // Given
+            prepareScenario(
+                changes = listOf(changeOf("picanha", GROUP_CATEGORY_ID)),
+                isGroupCategoryDeleted = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+            viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("picanha"))
+
+            // Then
+            val food = state.sections.first { it.category.id == AppCategory.FOOD.key }
+            val onlyFood = food.rows.first { it.isOnlyMain }
+            assertTrue(onlyFood.terms.any { it.term == "picanha" })
+            val editing = viewModel.uiState.value
+            assertEquals(AppCategory.FOOD.key, editing.termForm?.categoryId)
+            assertEquals(AppCategory.FOOD.key, editing.formCategory?.id)
+        }
+
+    @Test
+    fun `GIVEN a term of a group no longer on the device WHEN the map opens THEN it is hidden but still queued`() =
+        runTest {
+            // Given
+            prepareScenario(changes = listOf(changeOf("picanha", "gone-category", isPending = true)))
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnQueryChanged("picanha"))
+            val searching = viewModel.uiState.value
+            viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.FOOD.key, "picanha"))
+
+            // Then
+            assertTrue(searching.showsNoResult)
+            val shownKeys = searching.sections
+                .flatMap { it.rows }
+                .flatMap { it.terms }
+                .map { it.key }
+            assertFalse("picanha" in shownKeys)
+            assertEquals(1, searching.map.pendingCount)
+            val adding = viewModel.uiState.value
+            assertNull(adding.duplicateTerm)
+            assertTrue(adding.canSaveTerm)
+        }
+
+    @Test
     fun `GIVEN offline with a change queued WHEN the map shows THEN the queue notice shows`() = runTest {
         // Given
         prepareScenario(changes = listOf(changeOf("pizzaria", AppCategory.FOOD_RESTAURANT.key, isPending = true)))
@@ -262,7 +308,10 @@ class CategoryMapViewModelTest {
         isPending = isPending,
     )
 
-    private fun prepareScenario(changes: List<CategoryTermChange> = emptyList()) {
+    private fun prepareScenario(
+        changes: List<CategoryTermChange> = emptyList(),
+        isGroupCategoryDeleted: Boolean = false,
+    ) {
         terms = FakeCategoryTermRepository(initialChanges = changes)
         val categories = FakeCategoryRepository(
             initialGroupCategories = listOf(
@@ -273,7 +322,7 @@ class CategoryMapViewModelTest {
                     parentId = AppCategory.FOOD.key,
                     icon = null,
                     createdByMemberId = null,
-                    isDeleted = false,
+                    isDeleted = isGroupCategoryDeleted,
                     isPending = false,
                 ),
             ),

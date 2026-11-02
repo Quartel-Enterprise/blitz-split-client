@@ -531,11 +531,7 @@ class SplitBillViewModel(
                     items = state.split.items,
                     categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
-                ).map { id ->
-                    // Why: "Ensinar ao mapa?" (9.3e), which the group's Despesas asks once it shows.
-                    state.teachOfferOrNull(id)?.let(offerCategoryTeach::invoke)
-                    Unit
-                }
+                ).map { id -> state.teachOfferOrNull(id) }
             } else {
                 updateExpense(
                     expenseId = expenseId,
@@ -548,10 +544,14 @@ class SplitBillViewModel(
                     items = state.split.items,
                     categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
-                )
+                ).map { null }
             }
             result
-                .onSuccess {
+                .onSuccess { teachOffer ->
+                    // Why: "Ensinar ao mapa?" (9.3e) only on the group's Despesas the bill lands on, never later.
+                    if (expenseId == null && exits.isLandingOnExpenses(state.groupId)) {
+                        teachOffer?.let(offerCategoryTeach::invoke)
+                    }
                     if (expenseId == null) exits.leaveToBillGroup(state.groupId) else exits.leave()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }

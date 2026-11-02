@@ -34,6 +34,12 @@ class CategoryTree private constructor(
         return other
     }
 
+    /*
+     * Why: what a map term's category reads as (9.1): resolve's, as a bill's, while the category is known on this
+     * device; null for one of a group no longer on it, whose categories went with the group.
+     */
+    fun readAsOrNull(id: String): Category? = if (id in live || id in groupCategories) resolve(id) else null
+
     // Why: the main category a category belongs to, itself for a main one.
     fun mainOf(category: Category): Category = category.parentId?.let(::resolve)?.takeIf { it.isMain } ?: category
 
@@ -92,6 +98,32 @@ class CategoryTree private constructor(
             val other = appBranches.last()
             return CategoryTree(
                 branches = appBranches.dropLast(1) + groupBranches + other,
+                groupCategories = groupCategories.associateBy { it.id },
+            )
+        }
+
+        /*
+         * Why: every group's categories on the device, for the person's map (9.1): each group's tree built on its
+         * own, so a category keeps the color it has in its group, then their branches merged, in the groups' order.
+         */
+        fun ofGroups(groupCategories: List<GroupCategory>): CategoryTree {
+            val trees = groupCategories.groupBy { it.groupId }.values.map(::of)
+            trees.singleOrNull()?.let { return it }
+            val appBranches = appOnly.branches.map { branch ->
+                CategoryBranch(
+                    category = branch.category,
+                    subcategories = branch.subcategories + trees.flatMap { tree ->
+                        tree
+                            .branchOf(branch.category.id)
+                            ?.subcategories
+                            .orEmpty()
+                            .filter { it.isGroupCategory }
+                    },
+                )
+            }
+            val groupBranches = trees.flatMap { tree -> tree.branches.filter { it.category.isGroupCategory } }
+            return CategoryTree(
+                branches = appBranches.dropLast(1) + groupBranches + appBranches.last(),
                 groupCategories = groupCategories.associateBy { it.id },
             )
         }

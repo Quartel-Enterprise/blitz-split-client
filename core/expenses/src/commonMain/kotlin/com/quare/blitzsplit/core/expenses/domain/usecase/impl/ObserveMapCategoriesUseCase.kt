@@ -11,5 +11,5 @@ class ObserveMapCategoriesUseCase(
 ) : ObserveMapCategories {
     override fun invoke(): Flow<CategoryTree> = repository
         .observeAllGroupCategories()
-        .map(CategoryTree::of)
+        .map(CategoryTree::ofGroups)
 }

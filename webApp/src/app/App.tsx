@@ -49,9 +49,23 @@ export function App() {
   useBrowserHistory(app, backStack)
 
   if (!isReady || !backStack) return null
-  // Why: "Mapa de categorias" from Categoria (9.0) covers Rachar conta, which stays mounted with what was typed.
-  const isMapOverBill = backStack[backStack.length - 1].name === 'category-map' && backStack[backStack.length - 2]?.name === 'split-bill'
-  const stack = isMapOverBill ? backStack.slice(0, -1) : backStack
+  return (
+    <>
+      <StackLayers backStack={backStack} />
+      <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
+    </>
+  )
+}
+
+/**
+ * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
+ * covers Rachar conta, and so does whatever the map opens (Abrir Perfil): those draw as a stack of their own over
+ * the bill, which stays mounted with what was typed while it is anywhere under them.
+ */
+function StackLayers({ backStack }: { backStack: JsRoute[] }) {
+  const mapIndex = backStack.findIndex((route, index) => route.name === 'category-map' && backStack[index - 1]?.name === 'split-bill')
+  const isMapOverBill = mapIndex > 0
+  const stack = isMapOverBill ? backStack.slice(0, mapIndex) : backStack
   const top = stack[stack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
@@ -95,7 +109,7 @@ export function App() {
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isMapOverBill} />}
       {isMapOverBill && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
-          <CategoryMapScreen />
+          <StackLayers backStack={backStack.slice(mapIndex)} />
         </div>
       )}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
@@ -104,7 +118,6 @@ export function App() {
       {isRegisterPayment && (
         <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
       )}
-      <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
 }

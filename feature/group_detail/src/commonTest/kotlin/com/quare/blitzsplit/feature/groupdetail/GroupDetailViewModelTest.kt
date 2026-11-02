@@ -7,12 +7,15 @@ import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachR
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
@@ -28,6 +31,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTea
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
@@ -190,6 +194,51 @@ class GroupDetailViewModelTest {
             assertEquals(null, viewModel.uiState.value.teach)
             val change = terms.changes.value.single()
             assertEquals("aluguel" to AppCategory.LEISURE_SPORTS.key, change.term to change.categoryId)
+        }
+
+    @Test
+    fun `GIVEN a word in another group category WHEN teaching it THEN says where it moves from and moves it`() =
+        runTest(testDispatcher) {
+            // Given
+            terms.changes.value = listOf(termChange("prancha", BEACH_CATEGORY_ID), termChange("da", BEACH_CATEGORY_ID))
+            prepareScenario(groupCategories = listOf(beachCategory))
+            teach.post(teachOffer)
+
+            // When
+            val asking = viewModel.uiState.value.teach
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("prancha"))
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertEquals(listOf("aluguel", "da", "prancha"), asking?.words?.map { it.term })
+            assertEquals(
+                BEACH_CATEGORY_ID,
+                asking
+                    ?.words
+                    ?.last()
+                    ?.currentCategory
+                    ?.id,
+            )
+            val change = terms.changes.value.first { it.key == "prancha" }
+            assertEquals(AppCategory.LEISURE_SPORTS.key, change.categoryId)
+        }
+
+    @Test
+    fun `GIVEN a word of a group no longer on the device WHEN asking to teach THEN it is new in the map`() =
+        runTest(testDispatcher) {
+            // Given
+            terms.changes.value = listOf(termChange("prancha", "gone-category"), termChange("da", "gone-category"))
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer)
+
+            // Then
+            val words = viewModel.uiState.value.teach
+                ?.words
+            assertEquals(listOf("aluguel", "prancha"), words?.map { it.term })
+            assertEquals(null, words?.last()?.currentCategory)
         }
 
     @Test
@@ -2196,6 +2245,28 @@ class GroupDetailViewModelTest {
             )
         }
 
+    private val beachCategory = GroupCategory(
+        id = BEACH_CATEGORY_ID,
+        groupId = "another-group",
+        parentId = null,
+        name = "Praia",
+        icon = CategoryIcon.SUN,
+        createdByMemberId = null,
+        isDeleted = false,
+        isPending = false,
+    )
+
+    private fun termChange(
+        term: String,
+        categoryId: String,
+    ): CategoryTermChange = CategoryTermChange(
+        key = term,
+        term = term,
+        categoryId = categoryId,
+        isRestored = false,
+        isPending = false,
+    )
+
     private val teachOffer = CategoryTeachOffer(
         expenseId = "bill-1",
         groupId = GROUP_ID,
@@ -2217,8 +2288,10 @@ class GroupDetailViewModelTest {
         routesBelow: List<Route> = listOf(Route.Groups),
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
+        groupCategories: List<GroupCategory> = emptyList(),
     ) {
         route = Route.GroupDetail(GROUP_ID, joinedAs = joinedAs)
+        val categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.exitOutcome = exitOutcome
@@ -2240,11 +2313,12 @@ class GroupDetailViewModelTest {
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             teachUseCases = CategoryTeachUseCases(
                 observeOffer = ObserveCategoryTeachOfferUseCase(teach),
                 consumeOffer = ConsumeCategoryTeachOfferUseCase(teach),
                 observeMap = ObserveCategoryMapUseCase(terms),
+                observeMapCategories = ObserveMapCategoriesUseCase(categories),
                 saveTerm = SaveCategoryTermUseCase(terms) { nowMillis },
             ),
             observeAccount = ObserveAccountUseCase(account),
@@ -2275,6 +2349,7 @@ class GroupDetailViewModelTest {
 
     private companion object {
         const val GROUP_ID = "group-1"
+        const val BEACH_CATEGORY_ID = "beach"
         const val ANA = "member-1"
         const val PIERRE = "member-2"
         const val BRUNO = "member-3"
