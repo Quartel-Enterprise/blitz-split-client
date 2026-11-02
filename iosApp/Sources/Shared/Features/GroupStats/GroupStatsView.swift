@@ -30,9 +30,9 @@ final class GroupStatsModel {
 /// "Statistics" (6.6): what the group spent in a period and who spent it, from the bills on the device, offline too.
 /// Pushed over the group with the system's Back and no "Split a bill"; an iPad lying down pushes it in the group's
 /// column beside the groups (decision 2). iPhone upright and iPad upright scroll one column (the total, By category,
-/// By person, Over time, Biggest expense); lying down, in the iPad's column and in a Mac window, the total and By
-/// category take the first column and By person, Over time and the biggest bill the second, as the boards draw them.
-/// The Mac keeps the period in a toolbar pull-down and the total in four panels.
+/// By person, Over time, Biggest expense); lying down and in the iPad's column the total and By category take the
+/// first column and By person, Over time and the biggest bill the second, as the iPad's board draws them. A Mac window
+/// keeps By person under By category, its period in a toolbar pull-down and the total in four panels.
 struct GroupStatsView: View {
     let route: RouteGroupStats
 
@@ -162,9 +162,14 @@ private struct StatsScroll: View {
                                 StatsHeroCard(state: state)
                                 #endif
                                 StatsCategoriesSection(state: state, pieSize: 112)
+                                #if os(macOS)
+                                StatsPeopleSection(model: model)
+                                #endif
                             }
                             VStack(alignment: .leading, spacing: 0) {
+                                #if os(iOS)
                                 StatsPeopleSection(model: model)
+                                #endif
                                 StatsOverTimeSection(model: model)
                                 StatsBiggestSection(model: model)
                             }

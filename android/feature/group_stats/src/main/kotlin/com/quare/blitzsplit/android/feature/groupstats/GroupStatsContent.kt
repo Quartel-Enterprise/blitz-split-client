@@ -42,6 +42,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -85,8 +86,12 @@ private fun rememberStatsLayout(): StatsLayout {
     val usesTwoColumns = rememberDeviceLayout().usesTwoColumns
     return when {
         fold.tabletopSplit != null -> StatsLayout.TABLETOP
+
         fold.bookSplit != null -> StatsLayout.BOOK
-        usesTwoColumns -> StatsLayout.COLUMNS
+
+        // Why: the pane lays a group's screen out as a tablet upright, but the canvas draws Estatísticas there in two.
+        usesTwoColumns || LocalInDetailPane.current -> StatsLayout.COLUMNS
+
         else -> StatsLayout.COLUMN
     }
 }
@@ -201,8 +206,8 @@ private fun GroupStatsScaffold(
                     )
                 }
             }
-            when {
-                !state.showsStats -> Column(
+            val empty = @Composable {
+                Column(
                     modifier = Modifier
                         .widthIn(max = singleColumnMaxWidth)
                         .fillMaxWidth()
@@ -217,6 +222,16 @@ private fun GroupStatsScaffold(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
+            }
+            when {
+                // Why: a book keeps the empty card off the hinge, in the half before it.
+                !state.showsStats && layout == StatsLayout.BOOK -> TwoHalvesLayout(
+                    start = { empty() },
+                    end = {},
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                !state.showsStats -> empty()
 
                 layout == StatsLayout.COLUMNS -> Row(
                     modifier = Modifier

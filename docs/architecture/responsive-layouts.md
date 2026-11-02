@@ -63,11 +63,12 @@ drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop
 dialogs in a book's right half).
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
-Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
+Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
 "Não estou na lista", the profile's dialogs and Excluir conta),
-`TopBottomHalvesLayout` (Convidar and Convite on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
+`TopBottomHalvesLayout` (Convidar, Convite and Estatísticas on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
 their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
 responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.
+Estatísticas in the group's pane on a tablet lying down has only run in builds too.
 `FoldDialog` and `FoldDialogSceneStrategy` already draw every dialog route.
 
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a
@@ -124,7 +125,7 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` doesn't cover (a top and bottom split upright, a custom overlay) |
 
 Not checked on a device yet: `TwoColumnsLayout` (Boas-vindas, Seu perfil, Recuperar, Novo grupo's sheet lying down,
-Perfil and Editar perfil lying down), `FoldDivision` / `.readingFoldDivision` (also the empty home and Perfil on an
+Perfil and Editar perfil lying down), Estatísticas in an iPad's group pane, `FoldDivision` / `.readingFoldDivision` (also the empty home and Perfil on an
 iPhone Duo open) and `billSheetSizing`, which no screen uses yet; the per-flow slices check them on the iPhone Duo
 simulator and an iPad. `formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets.
 
