@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.data
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
@@ -3500,6 +3501,8 @@ class GroupRepositoryImplTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(

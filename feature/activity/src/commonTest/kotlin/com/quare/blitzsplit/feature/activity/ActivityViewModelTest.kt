@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.activity
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
@@ -1576,6 +1577,8 @@ class ActivityViewModelTest {
             name = "Apê 302",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.SQUARE,
+            photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(
                 member(
@@ -1599,6 +1602,8 @@ class ActivityViewModelTest {
             name = "Viagem Floripa",
             type = GroupType.TRIP,
             color = AvatarColor.GREEN,
+            shape = GroupShape.SQUARE,
+            photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(
                 member(

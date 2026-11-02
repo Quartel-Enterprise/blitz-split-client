@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -88,6 +89,8 @@ class RenameMemberUseCaseTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(

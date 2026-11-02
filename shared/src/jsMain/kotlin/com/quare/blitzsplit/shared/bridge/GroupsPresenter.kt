@@ -27,6 +27,8 @@ class JsGroupRow(
     val name: String,
     val initials: String,
     val color: String,
+    // Why: drawn in place of the color and the initials, null for none.
+    val photoUrl: String?,
     // Why: up to three faces; the rest is "+N".
     val faces: Array<JsMemberFace>,
     val extraMemberCount: Int,
@@ -336,6 +338,7 @@ internal fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
     name = row.name,
     initials = row.initials,
     color = row.color.code,
+    photoUrl = row.photoUrl,
     faces = row.faces.map { JsMemberFace(it.initial, it.color.code, it.photoUrl) }.toTypedArray(),
     extraMemberCount = row.extraMemberCount,
     memberCount = row.memberCount,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -493,6 +494,8 @@ class PickGroupViewModelTest {
         name = name,
         type = GroupType.TRIP,
         color = color,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = false,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail
 
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
@@ -1064,6 +1065,8 @@ class BillDetailAttachmentsTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(ana, pierre, bruno),
         isPending = false,

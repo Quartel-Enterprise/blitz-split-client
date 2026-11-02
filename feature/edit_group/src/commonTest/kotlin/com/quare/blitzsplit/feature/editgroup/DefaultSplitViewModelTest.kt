@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
@@ -444,6 +445,8 @@ class DefaultSplitViewModelTest {
         name = "Apê 302",
         type = GroupType.HOME,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(PIERRE, "Pierre").copy(

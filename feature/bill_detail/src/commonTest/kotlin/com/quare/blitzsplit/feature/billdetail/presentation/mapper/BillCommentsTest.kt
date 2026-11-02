@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -339,6 +340,8 @@ class BillCommentsTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(ANA, "Ana Paula", AvatarColor.PEACH),

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.activity.presentation.mapper
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
@@ -1098,6 +1099,8 @@ class ActivityItemsTest {
         name = name,
         type = type,
         color = color,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members.toList(),
         isPending = false,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -614,6 +615,8 @@ class ShareBillViewModelTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.USD,
         members = listOf(
             member(ANA, "Ana", hasJoined = true),

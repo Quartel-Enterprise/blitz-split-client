@@ -14,6 +14,9 @@ enum class GroupShape(
     CIRCLE("circle"),
     ;
 
+    // Why: Android's "Novo grupo" steps through the shapes as it does the colors.
+    fun next(): GroupShape = entries[(ordinal + 1) % entries.size]
+
     companion object {
         // Why: the shape "Novo grupo" starts with, as the boards draw a new group.
         val default: GroupShape = COOKIE

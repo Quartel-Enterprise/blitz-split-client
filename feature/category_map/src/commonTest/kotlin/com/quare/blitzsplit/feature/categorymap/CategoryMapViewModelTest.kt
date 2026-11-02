@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.categorymap
 
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
@@ -286,6 +287,8 @@ class CategoryMapViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = emptyList(),
         isPending = false,

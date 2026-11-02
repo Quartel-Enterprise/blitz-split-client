@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -27,6 +29,8 @@ internal fun createInitialBillState(
         groupName = "",
         groupInitials = "",
         groupColor = AvatarColor.entries.first(),
+        groupShape = GroupShape.fallback,
+        groupPhotoUrl = null,
         groups = emptyList(),
         groupSelection = null,
         currency = currency,
@@ -82,6 +86,8 @@ internal fun toBillGroup(group: Group): BillGroup = BillGroup(
     name = group.name,
     initials = Initials.of(group.name),
     color = group.color,
+    shape = group.shape,
+    photoUrl = group.photo?.toImageUrl(),
     memberCount = group.members.size,
 )
 
@@ -156,6 +162,8 @@ internal fun SplitBillUiState.withGroupShown(
         groupName = group.name,
         groupInitials = Initials.of(group.name),
         groupColor = group.color,
+        groupShape = group.shape,
+        groupPhotoUrl = group.photo?.toImageUrl(),
         currency = group.currency,
         people = people,
         payerId = payerId,

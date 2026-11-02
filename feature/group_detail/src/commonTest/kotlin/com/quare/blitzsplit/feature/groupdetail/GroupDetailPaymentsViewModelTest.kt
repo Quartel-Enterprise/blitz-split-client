@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
@@ -1174,6 +1175,8 @@ class GroupDetailPaymentsViewModelTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.USD,
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,

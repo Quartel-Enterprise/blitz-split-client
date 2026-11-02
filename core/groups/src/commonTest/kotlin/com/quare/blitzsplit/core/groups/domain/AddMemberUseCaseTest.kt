@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -286,6 +287,8 @@ class AddMemberUseCaseTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = colors.mapIndexed { index, color ->
             GroupMember(

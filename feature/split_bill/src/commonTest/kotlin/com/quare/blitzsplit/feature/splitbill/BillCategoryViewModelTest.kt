@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
@@ -421,6 +422,8 @@ class BillCategoryViewModelTest {
         name = "Apê 302",
         type = GroupType.HOME,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(pierre, ana),
         isPending = false,

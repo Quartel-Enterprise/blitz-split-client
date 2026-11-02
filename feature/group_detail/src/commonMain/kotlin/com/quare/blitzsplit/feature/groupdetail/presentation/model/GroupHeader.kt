@@ -4,12 +4,17 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 
 // Why: the top of the group's screen, the same over Despesas and Saldos.
 data class GroupHeader(
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: only Android draws it.
+    val groupShape: GroupShape,
+    // Why: drawn in place of the color and the initials, null for none.
+    val groupPhotoUrl: String?,
     val currency: GroupCurrency,
     // Why: up to four faces; the rest is "+N" (extraMemberCount).
     val faces: List<GroupFace>,

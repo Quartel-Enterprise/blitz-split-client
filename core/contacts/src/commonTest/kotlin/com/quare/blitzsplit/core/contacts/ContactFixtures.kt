@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.contacts
 
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.contacts.domain.model.ContactGroup
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -64,6 +65,8 @@ internal fun group(
     name = name,
     type = GroupType.OTHER,
     color = color,
+    shape = GroupShape.SQUARE,
+    photo = null,
     currency = currency,
     members = members.toList(),
     isPending = false,

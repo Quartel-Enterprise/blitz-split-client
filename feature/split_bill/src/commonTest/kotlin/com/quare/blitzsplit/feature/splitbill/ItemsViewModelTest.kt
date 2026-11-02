@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -477,6 +478,8 @@ class ItemsViewModelTest {
         name = "Jantar",
         type = GroupType.EVENT,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(PIERRE, "Pierre", isMe = true),

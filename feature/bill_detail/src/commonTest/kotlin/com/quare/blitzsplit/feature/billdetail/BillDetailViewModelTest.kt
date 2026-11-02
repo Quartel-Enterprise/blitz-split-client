@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -2340,6 +2341,8 @@ class BillDetailViewModelTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.USD,
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,

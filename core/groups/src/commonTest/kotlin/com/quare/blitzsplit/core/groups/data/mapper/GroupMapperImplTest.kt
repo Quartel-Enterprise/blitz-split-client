@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.data.mapper
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
@@ -1221,6 +1222,8 @@ class GroupMapperImplTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.globalbalances
 
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
@@ -1294,6 +1295,8 @@ class GlobalBalancesViewModelTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members.toList(),
         isPending = false,

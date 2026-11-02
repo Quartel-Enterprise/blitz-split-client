@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
@@ -159,12 +160,24 @@ class ActivityMapperImpl : ActivityMapper {
     private fun changeOf(element: JsonElement): ActivityChange? {
         val change = element as? JsonObject ?: return null
         val field = change.findText("field")?.let(ActivityField::fromCodeOrNull) ?: return null
+        if (field == ActivityField.PHOTO) {
+            return ActivityChange(
+                field = field,
+                before = photoValueOf(change["before"], ActivityField.PHOTO_PREVIOUS),
+                after = photoValueOf(change["after"], ActivityField.PHOTO_NEW),
+            )
+        }
         return ActivityChange(
             field = field,
             before = valueOf(field, change["before"]),
             after = valueOf(field, change["after"]),
         )
     }
+
+    private fun photoValueOf(
+        element: JsonElement?,
+        code: String,
+    ): ActivityValue = ActivityValue.none.copy(code = code.takeIf { (element as? JsonPrimitive).textOrNull() != null })
 
     private fun valueOf(
         field: ActivityField,
@@ -177,6 +190,11 @@ class ActivityMapperImpl : ActivityMapper {
             ActivityField.SPENT_AT -> ActivityValue.none.copy(millis = primitive?.longOrNull)
 
             ActivityField.DESCRIPTION, ActivityField.NAME -> ActivityValue.none.copy(text = primitive.textOrNull())
+
+            ActivityField.SHAPE -> ActivityValue.none.copy(code = primitive.textOrNull() ?: GroupShape.fallback.code)
+
+            // Why: a photo's change is read by photoValueOf.
+            ActivityField.PHOTO -> ActivityValue.none
 
             ActivityField.TYPE,
             ActivityField.COLOR,

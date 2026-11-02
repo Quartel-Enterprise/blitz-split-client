@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
@@ -346,6 +347,8 @@ class SettledPairChangeTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(PIERRE, "Pierre", isMe = true),

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
@@ -102,6 +103,8 @@ class ObserveGroupsByActivityUseCaseTest {
         name = id,
         type = GroupType.TRIP,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = emptyList(),
         isPending = false,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.mapper
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -1249,6 +1250,8 @@ class BillHistoriesTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(ANA, "Ana", AvatarColor.PEACH),

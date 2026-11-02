@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.invite
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -971,6 +972,8 @@ class InviteViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(pierre, ana, bruno, carla),
         isPending = true,

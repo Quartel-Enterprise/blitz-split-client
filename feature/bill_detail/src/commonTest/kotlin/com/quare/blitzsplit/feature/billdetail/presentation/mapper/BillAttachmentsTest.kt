@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -258,6 +259,8 @@ class BillAttachmentsTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(ana, pierre),
         isPending = false,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
@@ -442,6 +443,8 @@ class PeopleBalancesTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members.toList(),
         isPending = false,
