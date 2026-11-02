@@ -58,12 +58,16 @@ Run the `androidApp` module from Android Studio, or build it from the terminal:
 ```
 
 A debug build is signed with your machine's `~/.android/debug.keystore`, so a group's invite link
-(`blitzsplit.com/g/<code>`) only opens it once that key's SHA-256 is in `assetlinks.json`: otherwise Android fails the
-App Links verification and the link opens in the browser. `adb shell pm get-app-links com.quare.blitzsplit` says
-`verified` once it works, `legacy_failure` while the key is missing. Add the fingerprint that
-`keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
-`webApp/public/.well-known/assetlinks.json` and to the same file in `blitz-split-site`, which serves blitzsplit.com,
-then run `adb shell pm verify-app-links --re-verify com.quare.blitzsplit`.
+(`blitzsplit.com/g/<code>`) only opens the app once that key's SHA-256 is in blitzsplit.com's `assetlinks.json`:
+otherwise Android fails the App Links verification and the link opens in the browser.
+`adb shell pm get-app-links com.quare.blitzsplit` says `verified` once it works, `legacy_failure` while the key is
+missing. Add the fingerprint that `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
+`webApp/public/.well-known/assetlinks.json` and to the same file in `blitz-split-site`, whose pushes to `main` deploy
+blitzsplit.com. Android reads the file through Google's Digital Asset Links API, which keeps the old one for up to an
+hour (the `maxAge` of
+`https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://blitzsplit.com&relation=delegate_permission/common.handle_all_urls`):
+until it lists your key, verification stays pending (a number such as `1024`). Then run
+`adb shell pm verify-app-links --re-verify com.quare.blitzsplit`.
 
 ## Build and run the Apple app
 
