@@ -532,6 +532,7 @@ class ActivityUiStateTest {
                 code = null,
                 names = emptyList(),
                 hasFormerMember = false,
+                category = null,
             )
             ActivityChangeRow(ActivityField.AMOUNT, value, value)
         },

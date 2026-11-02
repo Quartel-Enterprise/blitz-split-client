@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkAllActivityRead
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
@@ -62,6 +63,7 @@ class ActivityViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeActivityFeed: ObserveActivityFeed,
     observeGroups: ObserveGroups,
+    observeMapCategories: ObserveMapCategories,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
@@ -134,11 +136,11 @@ class ActivityViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        combine(observeActivityFeed(), observeGroups()) { feed, groups -> feed to groups }
-            .onEach { (newFeed, newGroups) ->
+        combine(observeActivityFeed(), observeGroups(), observeMapCategories(), ::Triple)
+            .onEach { (newFeed, newGroups, categories) ->
                 feed = newFeed
                 groups = newGroups
-                entries = entriesOf(newFeed, newGroups)
+                entries = entriesOf(newFeed, newGroups, categories)
                 show()
             }.launchIn(viewModelScope)
         combine(observeSyncState(), connectivityObserver.observe()) { syncState, isOnline ->

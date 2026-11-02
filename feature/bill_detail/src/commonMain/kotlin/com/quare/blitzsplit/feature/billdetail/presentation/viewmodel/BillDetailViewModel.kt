@@ -36,6 +36,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.historyOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.undoOf
@@ -53,7 +54,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -80,6 +80,7 @@ class BillDetailViewModel(
     observeBillComments: ObserveBillComments,
     observeBillHistory: ObserveBillHistory,
     connectivityObserver: NetworkConnectivityObserver,
+    minuteTicks: MinuteTicks,
 ) : ViewModel() {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
@@ -162,13 +163,20 @@ class BillDetailViewModel(
                 this.events = events
                 showHistory()
             }.launchIn(viewModelScope)
+        // Why: the server's history loads on its own, so going offline meanwhile shows the notice at once.
         connectivityObserver
             .observe()
             .distinctUntilChanged()
-            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
-            .filter { it }
-            .onEach { loadBillHistory(route.expenseId) }
-            .launchIn(viewModelScope)
+            .onEach { isOnline ->
+                uiState.update { it.copy(isOnline = isOnline) }
+                if (isOnline) viewModelScope.launch { loadBillHistory(route.expenseId) }
+            }.launchIn(viewModelScope)
+        // Why: "Hoje" becomes "Ontem" at midnight on a bill left open.
+        minuteTicks()
+            .onEach {
+                showThreads()
+                showHistory()
+            }.launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
             .launchIn(viewModelScope)
@@ -325,11 +333,16 @@ class BillDetailViewModel(
                 authorMemberId = me?.id,
                 authorName = me?.name,
             ).onFailure {
+                // Why: back in the field only while nothing new was typed there, which would be lost.
                 uiState.update {
-                    it.copy(
-                        commentDraft = state.commentDraft,
-                        replyTarget = replyTarget,
-                    )
+                    if (it.commentDraft.isEmpty() && it.replyTarget == null) {
+                        it.copy(
+                            commentDraft = state.commentDraft,
+                            replyTarget = replyTarget,
+                        )
+                    } else {
+                        it
+                    }
                 }
                 uiAction.emit(BillDetailUiAction.ShowCommentError)
             }
@@ -340,9 +353,10 @@ class BillDetailViewModel(
     private fun undo() {
         val state = uiState.value
         val expense = expense ?: return
+        val group = shownGroup ?: return
         val event = events.firstOrNull() ?: return
         if (state.isUndoing || !state.areActionsEnabled) return
-        val undo = undoOf(event, expense) ?: return
+        val undo = undoOf(event, expense, group) ?: return
         uiState.update { it.copy(isUndoing = true) }
         viewModelScope.launch {
             updateExpense(

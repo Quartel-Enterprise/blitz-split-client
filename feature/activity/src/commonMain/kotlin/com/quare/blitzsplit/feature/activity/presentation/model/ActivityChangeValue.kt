@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.activity.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
@@ -15,4 +16,6 @@ data class ActivityChangeValue(
     val names: List<String>,
     // Why: a member no longer in the group, whom each UI writes "Ex-membro".
     val hasFormerMember: Boolean,
+    // Why: a bill's category, resolved in every group's categories (Outros for none); null for any other field.
+    val category: Category?,
 )

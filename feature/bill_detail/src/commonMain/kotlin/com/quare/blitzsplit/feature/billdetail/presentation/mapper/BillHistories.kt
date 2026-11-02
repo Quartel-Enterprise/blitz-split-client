@@ -51,7 +51,7 @@ internal fun historyOf(
     nowMillis: Long,
     timeZone: TimeZone,
 ): List<BillHistoryDay> {
-    val undoId = events.firstOrNull()?.takeIf { undoOf(it, expense) != null }?.id
+    val undoId = events.firstOrNull()?.takeIf { undoOf(it, expense, group) != null }?.id
     val entries = listOfNotNull(pendingEntryOf(events, expense, group, nowMillis)) +
         buildAttachmentRuns(events).mapNotNull { (event, count) -> entryOf(event, count, group, expense, undoId) }
     return entries
@@ -67,15 +67,19 @@ internal fun historyOf(
 
 /*
  * Why: what "Desfazer" saves for the latest edit, or null when it can't: the bill moved on since (another edit, one
- * waiting to go up), it is split by its items, or the edit touched something it doesn't put back.
+ * waiting to go up), it is split by its items, the edit touched something it doesn't put back, or putting it back
+ * would bring in someone who left the group, whose balance Sair do grupo had settled.
  */
 internal fun undoOf(
     event: ActivityEvent,
     expense: Expense,
+    group: Group,
 ): BillUndo? {
     if (event.kind != ActivityKind.BILL_EDITED || event.changes.isEmpty()) return null
     if (expense.isPending || expense.items != null) return null
     if (event.changes.any { it.field !in undoableFields || !expense.matches(it) }) return null
+    val memberIds = group.members.mapTo(HashSet()) { it.id }
+    if (event.changes.any { change -> change.before.memberIds.any { it !in memberIds } }) return null
     val changes = event.changes.associateBy { it.field }
     val amountMinor = changes[ActivityField.AMOUNT]?.before?.minor ?: expense.amountMinor
     val payers = changes[ActivityField.PAYERS]
@@ -235,26 +239,32 @@ private fun changesOf(
     return event.changes.mapNotNull { change ->
         when (change.field) {
             ActivityField.AMOUNT -> BillHistoryChange.Amount(change.before.minor, change.after.minor)
-
             ActivityField.DESCRIPTION -> BillHistoryChange.Description(change.before.text, change.after.text)
-
             ActivityField.SPENT_AT -> BillHistoryChange.SpentAt(change.before.millis, change.after.millis)
-
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
-
-            // Why: the same payers paying a new total is the amount's change, already listed.
-            ActivityField.PAYERS ->
-                BillHistoryChange
-                    .Payers(
-                        before = namesOf(change.before, group),
-                        after = namesOf(change.after, group),
-                    ).takeIf { change.before.memberIds.toSet() != change.after.memberIds.toSet() }
-
+            ActivityField.PAYERS -> payersChangeOf(change, group)
             ActivityField.SPLIT -> splitChangeOf(change, byField, event, group, expense)
-
             else -> null
         }
     }
+}
+
+/*
+ * Why: other payers are named. The same payers paying other amounts list each amount that moved, except one payer,
+ * whose amount is the total's change, already listed.
+ */
+private fun payersChangeOf(
+    change: ActivityChange,
+    group: Group,
+): BillHistoryChange.Payers? {
+    val isSamePayers = change.before.memberIds.toSet() == change.after.memberIds.toSet()
+    val parts = if (isSamePayers) partsOf(change.before, change.after, group) else emptyList()
+    if (isSamePayers && (change.after.memberIds.size < 2 || parts.isEmpty())) return null
+    return BillHistoryChange.Payers(
+        before = namesOf(change.before, group),
+        after = namesOf(change.after, group),
+        parts = parts,
+    )
 }
 
 /*
@@ -282,9 +292,33 @@ private fun splitChangeOf(
         totalMinor = afterTotal,
         payerIds = payers?.after?.memberValues?.map { it.memberId } ?: currentPayerIds,
     )
+    val parts = movedPartsOf(before, after, group)
+    return BillHistoryChange.Split(
+        beforeMode = change.before.code?.let(SplitMode::fromCodeOrNull),
+        afterMode = change.after.code?.let(SplitMode::fromCodeOrNull),
+        parts = parts.takeIf { before.isNotEmpty() && after.isNotEmpty() }.orEmpty(),
+    )
+}
+
+private fun partsOf(
+    before: ActivityValue,
+    after: ActivityValue,
+    group: Group,
+): List<BillHistoryPart> = movedPartsOf(
+    before = before.memberValues.associate { it.memberId to it.value },
+    after = after.memberValues.associate { it.memberId to it.value },
+    group = group,
+)
+
+// Why: in the group's order, someone who left last; a side without someone is null there.
+private fun movedPartsOf(
+    before: Map<String, Long>,
+    after: Map<String, Long>,
+    group: Group,
+): List<BillHistoryPart> {
     val membersById = group.members.associateBy { it.id }
     val order = group.members.map { it.id }
-    val parts = (before.keys + after.keys)
+    return (before.keys + after.keys)
         .distinct()
         .sortedBy { id -> order.indexOf(id).takeIf { it >= 0 } ?: order.size }
         .filter { before[it] != after[it] }
@@ -297,11 +331,6 @@ private fun splitChangeOf(
                 afterMinor = after[id],
             )
         }
-    return BillHistoryChange.Split(
-        beforeMode = change.before.code?.let(SplitMode::fromCodeOrNull),
-        afterMode = change.after.code?.let(SplitMode::fromCodeOrNull),
-        parts = parts.takeIf { before.isNotEmpty() && after.isNotEmpty() }.orEmpty(),
-    )
 }
 
 private fun partsOf(

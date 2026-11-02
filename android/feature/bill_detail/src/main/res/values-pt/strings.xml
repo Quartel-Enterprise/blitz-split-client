@@ -76,7 +76,7 @@
     <string name="bill_detail_change_note">%1$s · %2$s</string>
     <string name="bill_detail_change_spoken">%1$s, mudou para %2$s</string>
     <plurals name="bill_detail_history_photos_added">
-        <item quantity="one">anexou uma foto</item>
+        <item quantity="one">anexou %d foto</item>
         <item quantity="other">anexou %d fotos</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">

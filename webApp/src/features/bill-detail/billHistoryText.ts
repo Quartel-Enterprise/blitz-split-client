@@ -107,6 +107,8 @@ function changeDiffs(change: JsBillHistoryChange, isFirst: boolean, money: Money
     case 'category':
       return [{ label, from: change.beforeCategory ? categoryName(change.beforeCategory) : '—', to: change.afterCategory ? categoryName(change.afterCategory) : '—' }]
     case 'payers':
+      // Why: the same payers paying other amounts say each amount that moved, as the split's parts do.
+      if (change.parts.length > 0) return change.parts.map((part) => partDiff(part, money))
       return [{ label, from: payersText(change.beforeNames), to: payersText(change.afterNames) }]
     case 'split': {
       // Why: "Igual → Partes" only when the mode changed, then one line per part that moved.

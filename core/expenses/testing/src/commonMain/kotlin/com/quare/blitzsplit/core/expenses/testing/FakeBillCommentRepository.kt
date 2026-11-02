@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.expenses.testing
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -15,6 +16,7 @@ class FakeBillCommentRepository(
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var addError: Throwable? = null
+    var addGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
@@ -27,6 +29,7 @@ class FakeBillCommentRepository(
         comments.map { list -> list.filter { it.isPending }.map { it.id } }
 
     override suspend fun addComment(comment: BillComment): Result<Unit> {
+        addGate?.await()
         addError?.let { return Result.failure(it) }
         comments.update { it + comment }
         return Result.success(Unit)

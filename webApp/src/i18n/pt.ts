@@ -1189,7 +1189,6 @@ export const pt: Record<MessageKey, string> = {
   activity_fieldCurrency: 'Moeda',
   activity_fieldDefaultSplit: 'Divisão padrão',
   activity_fieldCategory: 'Categoria',
-  activity_groupCategory: 'Uma categoria do grupo',
   activity_to: 'para',
   activity_showChanges: 'Ver mudanças',
   activity_hideChanges: 'Esconder mudanças',

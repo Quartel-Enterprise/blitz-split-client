@@ -202,10 +202,8 @@ enum ActivityCopy {
         case .type: value.code.flatMap { GroupType.companion.fromCodeOrNull(code: $0) }?.typeLabel
         case .color: value.code.flatMap { AvatarColor.companion.fromCodeOrNull(code: $0) }?.label
         case .currency: value.code
-        // A group's own category has no name here: only the app's are named
-        case .category: value.code.map { code in
-                AppCategory.companion.fromKeyOrNull(key: code).map { CategoryCopy.name($0) } ?? "—"
-            } ?? CategoryCopy.name(AppCategory.other)
+        // Resolved in every group's categories, so a group's own is named too; none is "Other"
+        case .category: value.category.map { CategoryCopy.name($0) }
         case .visibility: value.code.map { code in
                 code == BillLinkVisibility.anyone.code
                     ? String(localized: "Anyone with the link")

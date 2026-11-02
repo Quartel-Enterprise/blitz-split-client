@@ -3,10 +3,13 @@ package com.quare.blitzsplit.feature.activity.presentation.mapper
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
+import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -28,11 +31,12 @@ private val subjectMemberTypes = setOf(ActivityType.PEOPLE_AND_GROUPS, ActivityT
 /*
  * Why: the feed as rows: the changes queued on this device first (they go on top of Hoje), then the events, the most
  * recent first. Names, colors and the currency come from the group as it is now; once a group or a member is gone,
- * from what the server wrote down when it happened.
+ * from what the server wrote down when it happened. Categories are named from every group's (the map's tree).
  */
 internal fun entriesOf(
     feed: ActivityFeed,
     groups: List<Group>,
+    categories: CategoryTree,
 ): List<FeedEntry> {
     val groupsById = groups.associateBy { it.id }
     val deletions = DeletionIndex(feed, groupsById)
@@ -46,6 +50,7 @@ internal fun entriesOf(
             isUnread = feed.readState.isUnread(event, feed.myUserId),
             myUserId = feed.myUserId,
             deletions = deletions,
+            categories = categories,
         )
     }
     return queued + events
@@ -126,6 +131,7 @@ private fun eventEntryOf(
     isUnread: Boolean,
     myUserId: String?,
     deletions: DeletionIndex,
+    categories: CategoryTree,
 ): FeedEntry {
     val members = group?.members.orEmpty()
     val actorMember = event.actorMemberId?.let { id -> members.firstOrNull { it.id == id } }
@@ -157,7 +163,7 @@ private fun eventEntryOf(
         fromIsMe = from?.isMe == true,
         toName = to?.name,
         toIsMe = to?.isMe == true,
-        changes = event.changes.map { rowOf(it, group) },
+        changes = event.changes.map { rowOf(it, group, categories) },
         body = event.body,
         isPending = event.isPending,
         isUnread = isUnread,
@@ -222,15 +228,22 @@ private fun targetOf(kind: ActivityKind): ActivityTarget = when (kind) {
 private fun rowOf(
     change: ActivityChange,
     group: Group?,
-): ActivityChangeRow = ActivityChangeRow(
-    field = change.field,
-    before = valueOf(change.before, group),
-    after = valueOf(change.after, group),
-)
+    categories: CategoryTree,
+): ActivityChangeRow {
+    val categoryOf = { value: ActivityValue ->
+        categories.resolve(value.code).takeIf { change.field == ActivityField.CATEGORY }
+    }
+    return ActivityChangeRow(
+        field = change.field,
+        before = valueOf(change.before, group, categoryOf(change.before)),
+        after = valueOf(change.after, group, categoryOf(change.after)),
+    )
+}
 
 private fun valueOf(
     value: ActivityValue,
     group: Group?,
+    category: Category?,
 ): ActivityChangeValue {
     val names = value.memberIds.map { id -> group?.members?.firstOrNull { it.id == id }?.name }
     return ActivityChangeValue(
@@ -241,6 +254,7 @@ private fun valueOf(
         code = value.code,
         names = names.filterNotNull(),
         hasFormerMember = null in names,
+        category = category,
     )
 }
 

@@ -19,6 +19,8 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityFee
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
@@ -1850,6 +1852,7 @@ class ActivityViewModelTest {
             } else {
                 ObserveGroups { MutableSharedFlow() }
             },
+            observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository()),
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
             ),

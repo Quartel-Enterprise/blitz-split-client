@@ -47,6 +47,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
@@ -77,6 +78,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class BillDetailViewModelTest {
@@ -89,6 +91,7 @@ class BillDetailViewModelTest {
     private lateinit var comments: FakeBillCommentRepository
     private lateinit var activity: FakeActivityRepository
     private val isOnline = MutableStateFlow(true)
+    private val minutes = MutableSharedFlow<Unit>()
     private lateinit var viewModel: BillDetailViewModel
     private val actions = mutableListOf<BillDetailUiAction>()
 
@@ -1568,6 +1571,52 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a comment the device fails to keep WHEN another was typed meanwhile THEN keeps the new text`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                commentError = IllegalStateException("bill gone"),
+                commentGate = gate,
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei no Pix"))
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals("Eu levo", viewModel.uiState.value.commentDraft)
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentError), actions)
+        }
+
+    @Test
+    fun `GIVEN a comment of today WHEN midnight passes with the bill open THEN it reads as yesterday`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            assertEquals(
+                RelativeDay.TODAY,
+                viewModel.uiState.value.threads
+                    .single()
+                    .comment.postedDay,
+            )
+            nowMillis += 1.days.inWholeMilliseconds
+
+            // When
+            minutes.emit(Unit)
+
+            // Then
+            assertEquals(
+                RelativeDay.YESTERDAY,
+                viewModel.uiState.value.threads
+                    .single()
+                    .comment.postedDay,
+            )
+        }
+
+    @Test
     fun `GIVEN the device cannot keep the comment WHEN sending a reply THEN brings it back and says so`() =
         runTest(testDispatcher) {
             // Given
@@ -2171,7 +2220,7 @@ class BillDetailViewModelTest {
         tab = GroupTab.EXPENSES,
     )
 
-    private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
+    private var nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlierToday = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()
     private val laterToday = Instant.parse("2026-10-30T13:00:00Z").toEpochMilliseconds()
     private val yesterdayEvening = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
@@ -2425,6 +2474,7 @@ class BillDetailViewModelTest {
         serverHistory: List<ActivityEvent> = emptyList(),
         online: Boolean = true,
         commentError: Throwable? = null,
+        commentGate: CompletableDeferred<Unit>? = null,
         updateError: Throwable? = null,
         updateGate: CompletableDeferred<Unit>? = null,
     ) {
@@ -2442,7 +2492,10 @@ class BillDetailViewModelTest {
             it.navigate(route)
         }
         deletedBills = InMemoryDeletedBillRepository()
-        comments = FakeBillCommentRepository(initialComments = storedComments).also { it.addError = commentError }
+        comments = FakeBillCommentRepository(initialComments = storedComments).also {
+            it.addError = commentError
+            it.addGate = commentGate
+        }
         activity = FakeActivityRepository(initialEvents = storedEvents).also { it.historyPage = serverHistory }
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
@@ -2470,6 +2523,7 @@ class BillDetailViewModelTest {
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            minuteTicks = MinuteTicks { minutes },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

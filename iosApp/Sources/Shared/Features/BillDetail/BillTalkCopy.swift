@@ -175,6 +175,8 @@ extension BillCopy {
                 CategoryCopy.name(categories.resolve(id: category.afterId)),
             )
         case let payers as BillHistoryChangePayers:
+            // The same payers paying other amounts say each amount that moved, as the split's parts do
+            guard payers.parts.isEmpty else { return partDiffs(payers.parts, currency: currency) }
             return line(String(localized: "Who paid"), payerNames(payers.before), payerNames(payers.after))
         case let split as BillHistoryChangeSplit:
             return splitDiffs(split, isFirst: isFirst, currency: currency)
@@ -197,16 +199,19 @@ extension BillCopy {
         } else if !isFirst {
             lines.append(BillHistoryDiff(field: field, before: nil, after: nil))
         }
+        return lines + partDiffs(split.parts, currency: currency)
+    }
+
+    /// "Carla R$ 112.00 → R$ 98.00" for each part that moved, "out" on the side someone wasn't in.
+    private static func partDiffs(_ parts: [BillHistoryPart], currency: GroupCurrency) -> [BillHistoryDiff] {
         let out = String(localized: "out", comment: "Bill history: someone not in the split on that side")
-        for part in split.parts {
-            let name = part.isMe ? String(localized: "You") : part.name ?? formerMember
-            lines.append(BillHistoryDiff(
-                field: name,
+        return parts.map { part in
+            BillHistoryDiff(
+                field: part.isMe ? String(localized: "You") : part.name ?? formerMember,
                 before: part.beforeMinor.map { currency.format($0.int64Value) } ?? out,
                 after: part.afterMinor.map { currency.format($0.int64Value) } ?? out,
-            ))
+            )
         }
-        return lines
     }
 
     /// "Ana and Bruno"; Kotlin hands a list of nullable names over as NSNull for each null.

@@ -1188,7 +1188,6 @@ export const en = {
   activity_fieldCurrency: 'Currency',
   activity_fieldDefaultSplit: 'Default split',
   activity_fieldCategory: 'Category',
-  activity_groupCategory: 'A group category',
   activity_to: 'to',
   activity_showChanges: 'See changes',
   activity_hideChanges: 'Hide changes',

@@ -200,13 +200,18 @@ private fun diffsOf(
             ),
         )
 
-        is BillHistoryChange.Payers -> listOf(
-            HistoryDiff(
-                field = fieldOrNull(R.string.bill_detail_field_payers, showsField),
-                before = payerNamesOf(change.before) ?: none,
-                after = payerNamesOf(change.after) ?: none,
-            ),
-        )
+        // Why: the same payers paying other amounts say each amount that moved, as the split's parts do.
+        is BillHistoryChange.Payers -> if (change.parts.isEmpty()) {
+            listOf(
+                HistoryDiff(
+                    field = fieldOrNull(R.string.bill_detail_field_payers, showsField),
+                    before = payerNamesOf(change.before) ?: none,
+                    after = payerNamesOf(change.after) ?: none,
+                ),
+            )
+        } else {
+            change.parts.map { part -> partDiffOf(part, money) }
+        }
 
         is BillHistoryChange.Split -> splitDiffsOf(
             change = change,

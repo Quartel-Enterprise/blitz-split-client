@@ -247,7 +247,54 @@ class BillHistoriesTest {
         val entry = entriesOf(events).single()
 
         // Then
-        assertEquals(listOf(BillHistoryChange.Payers(listOf("Bruno"), listOf("Ana", null))), entry.changes)
+        assertEquals(listOf(BillHistoryChange.Payers(listOf("Bruno"), listOf("Ana", null), emptyList())), entry.changes)
+    }
+
+    @Test
+    fun `GIVEN the same payers paying other amounts WHEN building the history THEN lists each amount that moved`() {
+        // Given
+        val events = listOf(
+            event(
+                changes = listOf(
+                    change(
+                        ActivityField.PAYERS,
+                        payers(ANA to 30_000, BRUNO to 18_000),
+                        payers(
+                            ANA to 24_000,
+                            BRUNO to 24_000,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertEquals(
+            listOf(
+                BillHistoryChange.Payers(
+                    before = listOf("Ana", "Bruno"),
+                    after = listOf("Ana", "Bruno"),
+                    parts = listOf(
+                        BillHistoryPart(
+                            "Ana",
+                            isMe = false,
+                            beforeMinor = 30_000,
+                            afterMinor = 24_000,
+                        ),
+                        BillHistoryPart(
+                            "Bruno",
+                            isMe = false,
+                            beforeMinor = 18_000,
+                            afterMinor = 24_000,
+                        ),
+                    ),
+                ),
+            ),
+            entry.changes,
+        )
     }
 
     @Test
@@ -983,7 +1030,7 @@ class BillHistoriesTest {
         val bill = expense(categoryId = AppCategory.FOOD_MARKET.key)
 
         // When
-        val undo = undoOf(event, bill)
+        val undo = undoOf(event, bill, group)
 
         // Then
         assertEquals(
@@ -1007,7 +1054,7 @@ class BillHistoriesTest {
         val bill = expense(categoryId = AppCategory.FOOD_MARKET.key)
 
         // When
-        val undo = undoOf(event, bill)
+        val undo = undoOf(event, bill, group)
 
         // Then
         assertEquals(
@@ -1040,7 +1087,7 @@ class BillHistoriesTest {
         )
 
         // When
-        val undo = undoOf(event, sharesBill)
+        val undo = undoOf(event, sharesBill, group)
 
         // Then
         assertEquals(10_000, undo?.amountMinor)
@@ -1050,12 +1097,25 @@ class BillHistoriesTest {
     }
 
     @Test
+    fun `GIVEN an edit whose old payer left the group WHEN undoing THEN there is nothing to undo`() {
+        // Given
+        val event =
+            event(changes = listOf(change(ActivityField.PAYERS, payers(FORMER to 48_000), payers(ANA to 48_000))))
+
+        // When
+        val undo = undoOf(event, expense(), group)
+
+        // Then
+        assertNull(undo)
+    }
+
+    @Test
     fun `GIVEN the bill was created WHEN undoing THEN there is nothing to undo`() {
         // Given
         val event = event(kind = ActivityKind.BILL_CREATED)
 
         // When
-        val undo = undoOf(event, expense())
+        val undo = undoOf(event, expense(), group)
 
         // Then
         assertNull(undo)
@@ -1067,7 +1127,7 @@ class BillHistoriesTest {
         val event = event(changes = listOf(change(ActivityField.AMOUNT, minor(30_000), minor(48_000))))
 
         // When
-        val undo = undoOf(event, expense())
+        val undo = undoOf(event, expense(), group)
 
         // Then
         assertNull(undo)

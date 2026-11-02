@@ -35,6 +35,8 @@ class JsActivityValue(
     val names: Array<String>,
     // Why: someone no longer in the group, whom the page writes "Ex-membro".
     val hasFormerMember: Boolean,
+    // Why: a bill's category, resolved in every group's categories (Outros for none); null for any other field.
+    val category: JsCategory?,
 )
 
 class JsActivityChange(
@@ -377,6 +379,7 @@ private fun toJsActivityValue(value: ActivityChangeValue): JsActivityValue = JsA
     code = value.code,
     names = value.names.toTypedArray(),
     hasFormerMember = value.hasFormerMember,
+    category = value.category?.let(::toJsCategory),
 )
 
 private fun toJsActivityChange(change: ActivityChangeRow): JsActivityChange = JsActivityChange(

@@ -94,8 +94,8 @@ class JsBillHistoryPart(
 /*
  * Why: BillHistoryChange, flat. field is "amount" (beforeMinor, afterMinor), "description" (beforeText, afterText),
  * "spent-at" (beforeMillis, afterMillis), "category" (beforeCategory, afterCategory, already resolved, Outros for
- * none), "payers" (beforeNames, afterNames, a null name "Ex-membro") or "split" (beforeMode, afterMode as SplitMode
- * codes, and parts); what a field doesn't use is null or empty.
+ * none), "payers" (beforeNames, afterNames, a null name "Ex-membro", and parts when the same payers paid other
+ * amounts) or "split" (beforeMode, afterMode as SplitMode codes, and parts); what a field doesn't use is null or empty.
  */
 class JsBillHistoryChange(
     val field: String,
@@ -423,6 +423,7 @@ private fun toJsBillHistoryChange(
         field = "payers",
         beforeNames = change.before.toTypedArray(),
         afterNames = change.after.toTypedArray(),
+        parts = change.parts.map(::toJsBillHistoryPart).toTypedArray(),
     )
 
     is BillHistoryChange.Split -> buildHistoryChange(

@@ -26,10 +26,14 @@ sealed interface BillHistoryChange {
         val afterId: String?,
     ) : BillHistoryChange
 
-    // Why: "Bruno → Ana e Bruno"; null names are someone no longer in the group.
+    /*
+     * Why: "Bruno → Ana e Bruno"; null names are someone no longer in the group. When the same payers split what they
+     * paid another way, parts has each one whose amount moved and the names stay the same.
+     */
     data class Payers(
         val before: List<String?>,
         val after: List<String?>,
+        val parts: List<BillHistoryPart>,
     ) : BillHistoryChange
 
     // Why: "mudou a divisão": the mode, and each part that moved.

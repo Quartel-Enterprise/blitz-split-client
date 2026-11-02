@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
-import com.quare.blitzsplit.android.designsystem.format.appCategoryName
+import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
@@ -20,7 +20,6 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
-import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
@@ -274,12 +273,8 @@ internal fun changeValueTextOf(
             stringResource(it.labelRes)
         }
 
-        // Why: the feed has no group's categories, so only the app's are named ("—" for a group's); none is "Outros".
-        ActivityField.CATEGORY -> if (value.code == null) {
-            appCategoryName(AppCategory.OTHER)
-        } else {
-            AppCategory.fromKeyOrNull(value.code)?.let { appCategoryName(it) }
-        }
+        // Why: resolved in every group's categories, so a group's own is named too; none is "Outros".
+        ActivityField.CATEGORY -> value.category?.let { categoryName(it) }
 
         ActivityField.VISIBILITY -> stringResource(
             when (BillLinkVisibility.fromCodeOrNull(value.code)) {

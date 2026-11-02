@@ -2,8 +2,8 @@ import type { JsActivityChange, JsActivityDeletion, JsActivityItem, JsActivityVa
 import { paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
 import { locale, t, type MessageKey } from '@/i18n'
-import { en } from '@/i18n/en'
 import { avatarColorLabel } from '@/lib/avatar'
+import { categoryName } from '@/lib/categories'
 import { formatLongDay, formatShortDate, formatTime, relativeDayOf } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 
@@ -115,21 +115,12 @@ export function valueText(field: string, value: JsActivityValue): string {
   if (field === 'split' || field === 'default_split') return splitModeLabel(value.code) || '—'
   if (field === 'type' && value.code) return groupTypeLabel(value.code)
   if (field === 'color' && value.code) return avatarColorLabel(value.code)
-  if (field === 'category') return categoryValueText(value.code)
+  if (field === 'category') return value.category ? categoryName(value.category) : '—'
   if (field === 'payers') {
     const names = [...value.names, ...(value.hasFormerMember ? [t('balance_formerMember')] : [])]
     return names.length > 0 ? formatNames(names) : '—'
   }
   return value.text ?? value.code ?? '—'
-}
-
-/**
- * A bill's category by the code it stores: an app category's key ("food.market") in the page's language, "Outros"
- * for none. Why "Uma categoria do grupo": the feed doesn't keep the group's categories to name one by its id.
- */
-function categoryValueText(code: string | null | undefined): string {
-  const key = `category_${(code ?? 'other').replace('.', '_')}`
-  return key in en ? t(key as MessageKey) : t('activity_groupCategory')
 }
 
 export function fieldLabel(field: string): string {
