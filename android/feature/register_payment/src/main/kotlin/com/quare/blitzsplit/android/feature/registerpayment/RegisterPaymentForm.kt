@@ -204,6 +204,7 @@ internal fun PersonFaceBadge(
     AvatarBadge(
         initial = person.initials,
         color = person.avatarColor,
+        photoUrl = person.photoUrl,
         size = size,
     )
 }

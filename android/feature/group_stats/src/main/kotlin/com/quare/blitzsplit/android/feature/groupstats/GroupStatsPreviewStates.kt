@@ -68,6 +68,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
                 name = name,
                 initials = name.take(2).uppercase(),
                 avatarColor = color,
+                photoUrl = null,
                 isMe = name == "Pierre",
                 amountMinor = amount,
                 barFraction = amount.toDouble() / previewPeople.first().third,

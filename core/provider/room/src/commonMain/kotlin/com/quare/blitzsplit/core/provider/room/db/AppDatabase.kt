@@ -30,6 +30,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
@@ -54,8 +55,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupPinEntity::class,
         GroupCategoryEntity::class,
         CategoryTermEntity::class,
+        MemberPhotoEntity::class,
     ],
-    version = 24,
+    version = 25,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -149,6 +151,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 23,
             to = 24,
+        ),
+        AutoMigration(
+            from = 24,
+            to = 25,
         ),
     ],
 )

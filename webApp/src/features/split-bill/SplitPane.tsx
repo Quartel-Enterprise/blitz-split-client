@@ -268,7 +268,7 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLa
           className="size-4 shrink-0 accent-primary"
         />
       )}
-      <Avatar initial={person.initials} color={person.color} className={cn('size-7 text-[11px]', isDimmed && 'opacity-50')} />
+      <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-7 text-[11px]', isDimmed && 'opacity-50')} />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className={cn('truncate font-medium', isDimmed && 'text-muted-foreground')}>{name}</span>
         {subtitle && <span className={cn('truncate text-xs', isMissing ? 'text-destructive' : 'text-muted-foreground')}>{subtitle}</span>}

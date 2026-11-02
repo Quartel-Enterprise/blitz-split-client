@@ -223,6 +223,7 @@ class BillDetailViewModel(
             name = member?.name,
             initials = member?.let { Initials.ofMember(it.name, it.isMe) }.orEmpty(),
             avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
+            photoUrl = member?.photoUrl,
             isMe = member?.isMe == true,
         )
     }
@@ -241,6 +242,7 @@ class BillDetailViewModel(
                 name = member.name,
                 initials = Initials.ofMember(member.name, member.isMe),
                 avatarColor = member.avatarColor,
+                photoUrl = member.photoUrl,
                 isMe = member.isMe,
                 hasJoined = member.hasJoined,
                 paidMinor = paidById[member.id],
@@ -257,6 +259,7 @@ class BillDetailViewModel(
                 name = null,
                 initials = "",
                 avatarColor = AvatarColor.entries.first(),
+                photoUrl = null,
                 isMe = false,
                 hasJoined = true,
                 paidMinor = paidById[id],

@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteCodeParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.core.groups.data.dto.RotateInviteCodeParamsDto
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 
@@ -43,6 +45,12 @@ class SupabaseGroupRemoteDataSource(
     override suspend fun fetchGroups(): List<GroupDto> = fetchAll(GROUPS)
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
+
+    // Why: only the id and the photo, never the rest of someone else's profile.
+    override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> = fetchAll(
+        table = PROFILES,
+        columns = Columns.list("id", "avatar_url"),
+    )
 
     override suspend fun fetchInvite(code: String): InviteDto? = postgrest
         .rpc(
@@ -107,13 +115,16 @@ class SupabaseGroupRemoteDataSource(
      * short page proves nothing if max_rows is below the page asked for. A row missing from the answer would read as
      * removed on the server and leave the device.
      */
-    private suspend inline fun <reified T : Any> fetchAll(table: String): List<T> {
+    private suspend inline fun <reified T : Any> fetchAll(
+        table: String,
+        columns: Columns = Columns.ALL,
+    ): List<T> {
         val rows = mutableListOf<T>()
         do {
             val from = rows.size.toLong()
             val page = postgrest
                 .from(table)
-                .select {
+                .select(columns) {
                     order(
                         column = "id",
                         order = Order.ASCENDING,
@@ -131,6 +142,7 @@ class SupabaseGroupRemoteDataSource(
     private companion object {
         const val GROUPS = "groups"
         const val MEMBERS = "group_members"
+        const val PROFILES = "profiles"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
         const val ROTATE_INVITE_CODE = "rotate_invite_code"

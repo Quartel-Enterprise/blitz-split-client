@@ -24,6 +24,7 @@ class JsHomePerson(
     val name: String?,
     val initials: String,
     val color: String?,
+    val photoUrl: String?,
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
@@ -292,6 +293,7 @@ private fun toJsHomePerson(person: HomePerson): JsHomePerson = JsHomePerson(
     name = person.name,
     initials = person.initials,
     color = person.color?.code,
+    photoUrl = person.photoUrl,
     currency = person.currency.code,
     fractionDigits = person.currency.fractionDigits,
     netMinor = person.netMinor.toDouble(),

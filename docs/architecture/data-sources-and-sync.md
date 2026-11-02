@@ -192,6 +192,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     (`GroupDao.deleteRemovedMembers`). A newer server row in the meantime (someone joined as that member, or
     renamed it) brings the member back, as Last-Write-Wins says, and the other devices lose it through
     `deleteGoneFromServer`.
+  - **Member photos**: read only, outside Last-Write-Wins. Each group download also reads `id` and `avatar_url` of
+    every profile the server lets the user see (their own and their groups' members', by its row level security),
+    beside the groups and members, and the answer takes the place of the whole `member_photo` table, one row per
+    account with a photo (`GroupDao.replaceMemberPhotos`, which writes nothing when no photo changed), so a removed
+    photo or someone no longer in a group leaves too. A failed read keeps the photos the device had and lets the
+    sync go on. Each upload changes the photo's URL (`?v=`), so the image caches never show the old one. The faces
+    of this device's user take the local profile's photo instead (`GroupRepository.observeGroups`), one picked
+    offline included, and a member nobody joined as has none.
   - **Invite code**: the server makes each group's code (`invite_code`, the `blitzsplit.com/g/<code>` of "Convidar")
     when the group first goes up, and no client sends it. The push reads it back from the upsert's answer,
     since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both

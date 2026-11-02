@@ -272,7 +272,7 @@ function PersonRow({ presenter, state, row }: { presenter: DefaultSplitPresenter
           {row.isIncluded && <span className="text-[10px] leading-none">✓</span>}
         </span>
       )}
-      <Avatar initial={row.initials} color={row.color} className="size-8 text-xs" />
+      <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>
         <span className="text-[13px] text-muted-foreground tabular-nums">{line}</span>

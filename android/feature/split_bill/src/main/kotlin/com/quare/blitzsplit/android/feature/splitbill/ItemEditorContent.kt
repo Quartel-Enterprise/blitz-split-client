@@ -254,6 +254,7 @@ private fun ItemPersonRow(
             AvatarBadge(
                 initial = row.person.initials,
                 color = row.person.avatarColor,
+                photoUrl = row.person.photoUrl,
                 size = 36.dp,
                 modifier = Modifier.alpha(if (isIn) 1f else DIMMED_ALPHA),
             )

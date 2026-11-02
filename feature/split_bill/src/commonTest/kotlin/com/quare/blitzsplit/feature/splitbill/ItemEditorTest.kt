@@ -288,6 +288,7 @@ class ItemEditorTest {
         name = name,
         initials = name.take(2).uppercase(),
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = isMe,
         hasJoined = true,
     )

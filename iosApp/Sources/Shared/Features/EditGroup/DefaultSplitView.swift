@@ -266,7 +266,7 @@ private struct DefaultSplitPersonRow: View {
                     .foregroundStyle(person.isIncluded ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.tertiary))
                     .accessibilityHidden(true)
             }
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: name)
                 Text(verbatim: subtitle)

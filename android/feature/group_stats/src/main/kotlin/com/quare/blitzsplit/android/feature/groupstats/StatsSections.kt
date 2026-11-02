@@ -348,6 +348,7 @@ private fun StatsPersonRowItem(
         AvatarBadge(
             initial = person.initials,
             color = person.avatarColor,
+            photoUrl = person.photoUrl,
             size = 36.dp,
         )
         val hasAmount = person.amountMinor > 0

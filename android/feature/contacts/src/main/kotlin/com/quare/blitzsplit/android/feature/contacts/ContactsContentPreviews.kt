@@ -39,6 +39,7 @@ private fun createPreviewRow(
     name = name,
     initials = name.take(2).uppercase(),
     color = AvatarColor.LILAC,
+    photoUrl = null,
     net = ContactNet(
         currency = GroupCurrency.BRL,
         amountMinor = netMinor,

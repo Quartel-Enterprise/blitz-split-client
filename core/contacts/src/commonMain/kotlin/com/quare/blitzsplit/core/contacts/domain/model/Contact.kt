@@ -12,6 +12,8 @@ data class Contact(
     // Why: as the group most recently active names them.
     val name: String,
     val color: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     // Why: null for a guest, a name nobody joined as ("convidado sem app").
     val userId: String?,
     // Why: "Grupos em comum", the most recently active first, those with nothing open included.

@@ -200,6 +200,7 @@ internal fun PersonFaceBadge(
     AvatarBadge(
         initial = row.initials,
         color = color,
+        photoUrl = row.photoUrl,
         size = size,
     )
 }

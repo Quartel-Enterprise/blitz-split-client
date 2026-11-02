@@ -15,26 +15,42 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
+import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 class GroupRepositoryImpl(
     private val local: GroupLocalDataSource,
     private val remote: GroupRemoteDataSource,
     private val profileLocal: ProfileLocalDataSource,
+    private val profileMapper: ProfileMapper,
     private val mapper: GroupMapper,
     private val deletions: GroupDeletionRepository,
 ) : GroupRepository {
     override fun observeGroups(): Flow<List<Group>> = combine(
         local.observeGroups(),
         local.observeMembers(),
+        local.observeMemberPhotos(),
+        observeMyPhotoUrl(),
         mapper::toDomain,
     ).distinctUntilChanged()
+
+    /*
+     * Why: the photo as the profile shows it, so one picked offline and not uploaded yet shows in the faces too; the
+     * same photo once, so a profile write that keeps it doesn't encode a pending JPEG again.
+     */
+    private fun observeMyPhotoUrl(): Flow<String?> = profileLocal
+        .observe()
+        .map { entity -> entity?.let(profileMapper::toDomain)?.photo }
+        .distinctUntilChanged()
+        .map { it?.toImageUrl() }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
@@ -239,10 +255,12 @@ class GroupRepositoryImpl(
      * the account they belong to has them on the server. Groups made before any account are this user's.
      */
     override suspend fun downloadGroups(userId: String): Result<Unit> = suspendRunCatching {
-        val (remoteGroups, remoteMembers) = coroutineScope {
+        val (remoteGroups, remoteMembers, remotePhotos) = coroutineScope {
             val groups = async { remote.fetchGroups() }
             val members = async { remote.fetchMembers() }
-            groups.await() to members.await()
+            // Why: only a nicety, so a failed read keeps the photos the device had and lets the sync go on.
+            val photos = async { suspendRunCatching { remote.fetchMemberPhotos() }.getOrNull() }
+            Triple(groups.await(), members.await(), photos.await())
         }
         local.deleteOtherUsersGroups(userId)
         local.claimUnowned(userId)
@@ -261,6 +279,11 @@ class GroupRepositoryImpl(
             serverGroupIds = remoteGroupIds,
             serverMemberIds = remoteMembers.map { it.id }.toSet(),
         )
+        /*
+         * Why: with every group download, so a photo someone changed reaches the faces on the next sync; its URL
+         * changes with each upload, which keeps the image caches from showing the old one.
+         */
+        remotePhotos?.let { photos -> local.replaceMemberPhotos(photos.mapNotNull(mapper::toEntity)) }
     }
 
     /*

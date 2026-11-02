@@ -179,7 +179,7 @@ function searchItemsOf(presenter: GroupsPresenter, state: JsGroupsState, pick: (
     open: () => pick(() => presenter.openSearchedPerson(hit.groupId)),
     content: (
       <>
-        <Avatar initial={hit.initial} color={hit.color} className="size-6 shrink-0 text-[10px]" />
+        <Avatar initial={hit.initial} color={hit.color} photoUrl={hit.photoUrl} className="size-6 shrink-0 text-[10px]" />
         <span className="min-w-0 flex-1 truncate">
           <Marked text={hit.name} match={hit.nameMatch} />
           <span className="text-muted-foreground"> · {hit.groupName}</span>

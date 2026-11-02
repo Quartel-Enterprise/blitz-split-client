@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.groups.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import kotlinx.coroutines.flow.Flow
 
 interface GroupLocalDataSource {
@@ -10,6 +11,11 @@ interface GroupLocalDataSource {
     fun observeMembers(): Flow<List<GroupMemberEntity>>
 
     fun observeHasPending(): Flow<Boolean>
+
+    fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>>
+
+    // Why: the server's photos take the place of every one the device had, so a removed photo leaves too.
+    suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>)
 
     suspend fun getPendingGroups(ownerUserId: String): List<GroupEntity>
 

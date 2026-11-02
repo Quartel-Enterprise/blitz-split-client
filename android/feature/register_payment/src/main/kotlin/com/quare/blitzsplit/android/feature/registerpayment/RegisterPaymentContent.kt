@@ -405,6 +405,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
         name = "Ana",
         initials = "AN",
         avatarColor = AvatarColor.GREEN,
+        photoUrl = null,
         isMe = false,
     ),
     to = PaymentPerson(
@@ -412,6 +413,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
         name = "Pierre",
         initials = "PV",
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = true,
     ),
     debtMinor = 16_230L,
