@@ -315,25 +315,18 @@ struct MainTabView: View {
     }
 
     #if os(macOS)
-    /// "Open" shows over Groups and over a group's screens, whichever tab opened them.
+    /// "Open" shows while Groups or a group's screen is in front, whichever tab opened the group.
     private var showsOpenGroups: Bool {
-        path.first == .groups || path.contains { route in
-            switch route {
-            case .groupDetail, .groupStats: true
-            default: false
-            }
-        }
+        path.last == .groups || selectedGroupId != nil
     }
 
-    /// The group whose screens are in front, which "Open" marks.
+    /// The group whose screen is in front, which "Open" marks.
     private var selectedGroupId: String? {
-        path.reversed().lazy.compactMap { route -> String? in
-            switch route {
-            case let .groupDetail(route): route.groupId
-            case let .groupStats(route): route.groupId
-            default: nil
-            }
-        }.first
+        switch path.last {
+        case let .groupDetail(route): route.groupId
+        case let .groupStats(route): route.groupId
+        default: nil
+        }
     }
     #endif
 

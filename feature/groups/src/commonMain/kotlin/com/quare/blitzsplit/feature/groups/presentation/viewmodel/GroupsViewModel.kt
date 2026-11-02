@@ -16,18 +16,16 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
-import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
@@ -192,15 +190,15 @@ class GroupsViewModel(
             connectivityObserver.observe(),
         ) { profile, account, syncState, isOnline ->
             exit.setOnline(isOnline)
-            val displayName = profile?.displayName?.trim().orEmpty()
+            val badge = UserBadge.of(profile, account.status)
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
             val update: (GroupsUiState) -> GroupsUiState = { state ->
                 state.copy(
-                    displayName = displayName,
-                    avatarInitial = Initials.firstOf(displayName),
-                    avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                    photoUrl = profile?.photo?.toImageUrl(),
-                    accountProvider = (account.status as? AccountStatus.Connected)?.provider,
+                    displayName = badge.displayName,
+                    avatarInitial = badge.avatarInitial,
+                    avatarColor = badge.avatarColor,
+                    photoUrl = badge.photoUrl,
+                    accountProvider = badge.accountProvider,
                     syncBadge = SyncBadge.ofOrNull(
                         syncState = syncState,
                         isOnline = isOnline,
