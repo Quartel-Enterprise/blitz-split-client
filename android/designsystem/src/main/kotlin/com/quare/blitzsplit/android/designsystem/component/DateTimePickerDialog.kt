@@ -1,10 +1,18 @@
 package com.quare.blitzsplit.android.designsystem.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -17,15 +25,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+
+private val pickerWidth = 360.dp
 
 /*
  * Why: "Quando" of a bill or a payment picks a date and then a time (Pierre's call), in the device's time zone. The
@@ -43,6 +57,12 @@ fun DateTimePickerDialog(
     val zone = remember { ZoneId.systemDefault() }
     val pickedDateTime = remember(epochMillis, zone) { Instant.ofEpochMilli(epochMillis).atZone(zone) }
     var pickedDayUtcMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+    /*
+     * Why: a book draws it in the half the bill or the payment is in, off the hinge; a tabletop's half is too short
+     * for a calendar, so it stays centered there.
+     */
+    val fold = rememberFoldLayout()
+    val isInBookHalf = fold.bookSplit != null && fold.tabletopSplit == null
     val pickedDay = pickedDayUtcMillis
     if (pickedDay == null) {
         val lastDay = remember(latestMillis, zone) { Instant.ofEpochMilli(latestMillis).atZone(zone).toLocalDate() }
@@ -50,49 +70,129 @@ fun DateTimePickerDialog(
             initialSelectedDateMillis = pickedDateTime.toLocalDate().toUtcMillis(),
             selectableDates = remember(lastDay) { UpToDaySelectableDates(lastDay) },
         )
-        DatePickerDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = { pickedDayUtcMillis = dateState.selectedDateMillis },
-                    enabled = dateState.selectedDateMillis != null,
-                ) { Text(stringResource(R.string.designsystem_picker_next)) }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
-            },
-        ) {
-            DatePicker(state = dateState)
+        val confirm: @Composable () -> Unit = {
+            TextButton(
+                onClick = { pickedDayUtcMillis = dateState.selectedDateMillis },
+                enabled = dateState.selectedDateMillis != null,
+            ) { Text(stringResource(R.string.designsystem_picker_next)) }
+        }
+        val dismiss: @Composable () -> Unit = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
+        }
+        if (isInBookHalf) {
+            BookHalfPickerDialog(
+                onDismiss = onDismiss,
+                title = null,
+                confirmButton = confirm,
+                dismissButton = dismiss,
+            ) {
+                DatePicker(state = dateState)
+            }
+        } else {
+            DatePickerDialog(
+                onDismissRequest = onDismiss,
+                confirmButton = confirm,
+                dismissButton = dismiss,
+            ) {
+                DatePicker(state = dateState)
+            }
         }
     } else {
         val timeState = rememberTimePickerState(
             initialHour = pickedDateTime.hour,
             initialMinute = pickedDateTime.minute,
         )
-        TimePickerDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val day = Instant.ofEpochMilli(pickedDay).atZone(ZoneOffset.UTC).toLocalDate()
-                        val millis = day
-                            .atTime(LocalTime.of(timeState.hour, timeState.minute))
-                            .atZone(zone)
-                            .toInstant()
-                            .toEpochMilli()
-                        onPicked(millis)
-                    },
-                ) { Text(stringResource(R.string.designsystem_picker_done)) }
-            },
-            title = { Text(stringResource(R.string.designsystem_when)) },
-            dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
-            },
+        val confirm: @Composable () -> Unit = {
+            TextButton(
+                onClick = {
+                    val day = Instant.ofEpochMilli(pickedDay).atZone(ZoneOffset.UTC).toLocalDate()
+                    val millis = day
+                        .atTime(LocalTime.of(timeState.hour, timeState.minute))
+                        .atZone(zone)
+                        .toInstant()
+                        .toEpochMilli()
+                    onPicked(millis)
+                },
+            ) { Text(stringResource(R.string.designsystem_picker_done)) }
+        }
+        val dismiss: @Composable () -> Unit = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
+        }
+        if (isInBookHalf) {
+            BookHalfPickerDialog(
+                onDismiss = onDismiss,
+                title = stringResource(R.string.designsystem_when),
+                confirmButton = confirm,
+                dismissButton = dismiss,
+            ) {
+                TimePicker(
+                    state = timeState,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        } else {
+            TimePickerDialog(
+                onDismissRequest = onDismiss,
+                confirmButton = confirm,
+                title = { Text(stringResource(R.string.designsystem_when)) },
+                dismissButton = dismiss,
+            ) {
+                TimePicker(
+                    state = timeState,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        }
+    }
+}
+
+// Why: the Material picker dialog's surface and buttons, in a book's end half.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BookHalfPickerDialog(
+    onDismiss: () -> Unit,
+    title: String?,
+    confirmButton: @Composable () -> Unit,
+    dismissButton: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    FoldDialog(
+        onDismissRequest = onDismiss,
+        placement = DialogPlacement.EndHalf,
+    ) {
+        Surface(
+            modifier = Modifier.width(pickerWidth),
+            shape = DatePickerDefaults.shape,
+            color = DatePickerDefaults.colors().containerColor,
+            tonalElevation = DatePickerDefaults.TonalElevation,
         ) {
-            TimePicker(
-                state = timeState,
-                modifier = Modifier.padding(top = 8.dp),
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                title?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 24.dp,
+                                end = 24.dp,
+                                top = 24.dp,
+                            ),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+                content()
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(
+                            end = 6.dp,
+                            bottom = 8.dp,
+                        ),
+                ) {
+                    dismissButton()
+                    confirmButton()
+                }
+            }
         }
     }
 }

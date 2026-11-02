@@ -61,6 +61,12 @@ final class AppModel {
             closeSettingsEntries(from: buried, of: value)
             return
         }
+        // The inspector shows one bill: another bill clicked while it is open takes its place (decision 3)
+        if routes.count > 2, case .billDetail = routes[routes.count - 1], case .billDetail = routes[routes.count - 2],
+           let route = (value as? [Any])?.last as? any Route {
+            holder.viewModel.navigator.replaceAbove(size: Int32(routes.count - 2), route: route)
+            return
+        }
         #endif
         backStack = routes
     }
@@ -113,14 +119,14 @@ final class AppModel {
     /// The entries above the root, but the ones the sheets show. A native back gesture shortens it, and
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
-        get { Array(windowStack.dropFirst().dropLast(modalCount)) }
+        get { Array(windowStack.dropFirst().dropLast(modalCount + (billInspector == nil ? 0 : 1))) }
         set {
             guard newValue.count < path.count else { return }
             holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
         }
     }
 
-    /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room and on the Mac,
+    /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room, a key on the Mac,
     /// deleting the account): the top one, or the one under it while a second sheet stacks over it or a screen is
     /// pushed inside it.
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
@@ -176,8 +182,8 @@ final class AppModel {
         return pushed
     }
 
-    /// The entry that opens as a sheet over another sheet (editing a bill open as a sheet with an iPad's room and on
-    /// the Mac, an invite link's sheet over Edit group's on the Mac), with what is pushed inside it on top.
+    /// The entry that opens as a sheet over another sheet (editing a bill open as a sheet with an iPad's room, an
+    /// invite link's sheet over Edit group's on the Mac), with what is pushed inside it on top.
     var stackedSheet: AppRoute? {
         get { isSheetStacked ? windowStack[sheetBaseIndex] : nil }
         set {
@@ -235,6 +241,25 @@ final class AppModel {
         set {
             guard newValue == nil, invitePopover != nil else { return }
             holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1))
+        }
+    }
+
+    /// The Mac's bill over the screen that opened it (decision 3, F7Mac): the main window's inspector on the right
+    /// rather than a sheet, the top entry or the one right under what opens as a sheet over it (editing the bill), so
+    /// the screen behind it still takes clicks. Closing it pops it and whatever is over it. Nil off the Mac.
+    var billInspector: RouteBillDetail? {
+        get {
+            #if os(macOS)
+            let index = windowStack.count - 1 - modalCount
+            guard index >= 1, case let .billDetail(route) = windowStack[index] else { return nil }
+            return route
+            #else
+            return nil
+            #endif
+        }
+        set {
+            guard newValue == nil, billInspector != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1 - modalCount))
         }
     }
 

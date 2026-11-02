@@ -3,10 +3,10 @@ import SwiftUI
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack is replaced by
 /// Início, which brings the tabs (or the sidebar on iPad and Mac): every other tab is the entry right above it, and each
 /// tab pushes what it opens (the profile on iPhone and iPad, a group) inside its own stack. A route that opens as a
-/// sheet (a key, a bill or Edit profile with an iPad's room, a bill on the Mac, deleting the account, a new group, its
+/// sheet (a key, a bill or Edit profile with an iPad's room, deleting the account, a new group, its
 /// invite on an iPhone and the Mac, editing a group, a new or edited bill, recording a payment, Contacts' invite, the
 /// Mac's invite opened from its link) shows over the whole window, and a sheet opened from a sheet stacks over it; the
-/// Mac's invite from a group is a popover on the group's own button. The root measures the window, which every screen
+/// Mac's invite from a group is a popover on the group's own button, and the Mac's bill the window's inspector. The root measures the window, which every screen
 /// reads as `windowLayout`; only crossing an iPad's room changes what opens as a sheet and redraws the root. The Mac
 /// never draws the profile here: opening it opens Ajustes (⌘,), the app's Settings window (`SettingsView`), where its
 /// key and account deletion show as sheets; while one is open this window takes no clicks, since both draw the one
@@ -27,6 +27,15 @@ struct RootView: View {
                 Color.clear
             } else if app.root == .home {
                 MainTabView(path: $app.path)
+                    #if os(macOS)
+                    // Conta beside what opened it, which still takes clicks (decision 3)
+                    .inspector(isPresented: isBillInspectorPresented) {
+                        if let route = app.billInspector {
+                            BillDetailView(route: route)
+                                .id(route)
+                        }
+                    }
+                    #endif
             } else {
                 NavigationStack(path: $app.path) {
                     screen(for: app.root)
@@ -44,7 +53,7 @@ struct RootView: View {
                         screen(for: route)
                     }
             }
-            // A bill open as a sheet (iPad, Mac) is edited in a sheet over it
+            // A bill open as a sheet with an iPad's room is edited in a sheet over it
             .sheet(item: $app.stackedSheet) { route in
                 NavigationStack(path: $app.stackedSheetPath) {
                     screen(for: route)
@@ -77,6 +86,17 @@ struct RootView: View {
         // Outermost, so the sheets inherit the window the root measured
         .measuringWindow { app.windowMeasured($0) }
     }
+
+    #if os(macOS)
+    private var isBillInspectorPresented: Binding<Bool> {
+        Binding(
+            get: { app.billInspector != nil },
+            set: { isPresented in
+                if !isPresented { app.billInspector = nil }
+            },
+        )
+    }
+    #endif
 
     @ViewBuilder
     private func screen(for route: AppRoute) -> some View {

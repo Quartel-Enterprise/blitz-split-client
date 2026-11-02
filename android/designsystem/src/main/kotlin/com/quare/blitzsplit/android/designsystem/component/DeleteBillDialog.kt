@@ -5,6 +5,8 @@ import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.settledPairSentenceOf
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 
 /*
@@ -20,6 +22,8 @@ fun DeleteBillDialog(
     money: MoneyFormatter,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    // Why: from Conta and Editar conta alike, in the half the bill is drawn in on a fold.
+    placement: DialogPlacement = rememberDialogPlacement(),
 ) {
     val consequence = stringResource(R.string.designsystem_delete_bill_message, description)
     val myPart = when {
@@ -40,5 +44,6 @@ fun DeleteBillDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         isBusy = isDeleting,
+        placement = placement,
     )
 }

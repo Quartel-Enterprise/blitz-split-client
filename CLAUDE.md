@@ -282,8 +282,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
     with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
-    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
-    on a phone), all over the group.
+    history yet). A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
+    half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
+    main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
+    closing it, another bill taking its place), and the web as a side sheet (a drawer on a phone), all over the group.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
@@ -426,7 +428,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's
     user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
     parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
-    (`GroupBalances.findDebtsWithin`).
+    (`GroupBalances.findDebtsWithin`). On a fold (flow 7) Rachar conta, Dividir, Itens and Editar conta open in a
+    book's right half with the group under the scrim, "Quem pagou", "Várias pessoas pagaram", "Rachar em qual grupo?",
+    Quando's date (in the book only) and every confirmation in that half too; a tabletop splits a new bill in two
+    full screen (`TabletopForm`): the amount, Dividir's modes or the items on top, the rest and Salvar or Pronto
+    below, Item and Categoria opening above the hinge, while Editar conta and Conta open as the book's dialog. The
+    iPad's Rachar conta is a bill sheet (820×640 lying down, 620×860 upright).
   - "Itens da conta" (7.5, `SplitBillUiState.itemsEditor`) is Dividir's fifth mode, "Itens": it opens in Dividir's
     place (pushed on iOS, the sheet's next page on the Mac, a 920 px dialog on the web, 640 px on a tablet, a drawer on
     a phone), and a bill already split by its items opens Dividir straight on it. Each item has a name (1 to 60

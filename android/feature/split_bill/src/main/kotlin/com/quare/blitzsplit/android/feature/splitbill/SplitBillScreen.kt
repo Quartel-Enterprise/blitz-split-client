@@ -5,16 +5,20 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
@@ -22,6 +26,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -64,17 +69,23 @@ fun SplitBillScreen(
         )
     }
     /*
+     * Why: a new bill on a tabletop splits on the hinge, but Item, Categoria and Nova categoria have no tabletop board
+     * of their own: they open as the book draws them, a dialog in a half, over the bill or the items under them.
+     */
+    val opensPagesInHalf = rememberUsesTabletopHalves(isDialog)
+    val billPages = BillPages(
+        split = state.splitEditor,
+        items = state.itemsEditor,
+        item = state.itemEditor,
+        categoryPicker = state.categoryPicker,
+        categoryForm = state.categoryForm,
+    )
+    /*
      * Why: Dividir over the bill, "Itens da conta" in Dividir's place and "Item" over it, "Categoria" and its form in
      * the bill's place, each kept while it fades out.
      */
     AnimatedContent(
-        targetState = BillPages(
-            split = state.splitEditor,
-            items = state.itemsEditor,
-            item = state.itemEditor,
-            categoryPicker = state.categoryPicker,
-            categoryForm = state.categoryForm,
-        ),
+        targetState = if (opensPagesInHalf) billPages.toPagesUnderHalf() else billPages,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         contentKey = { pages ->
             when {
@@ -140,6 +151,30 @@ fun SplitBillScreen(
                 state = state,
                 editor = editor,
                 isDialog = isDialog,
+                snackbarHostState = snackbarHostState,
+                onEvent = viewModel::onEvent,
+            )
+        }
+    }
+    if (opensPagesInHalf && billPages.hasHalfPage) {
+        FoldDialog(
+            onDismissRequest = {
+                viewModel.onEvent(
+                    when {
+                        state.categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
+                        state.categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
+                        else -> SplitBillUiEvent.OnItemDismissed
+                    },
+                )
+            },
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
+            HalfPageContent(
+                state = state,
+                pages = billPages,
                 snackbarHostState = snackbarHostState,
                 onEvent = viewModel::onEvent,
             )
@@ -212,6 +247,43 @@ fun SplitBillScreen(
     }
 }
 
+// Why: Item, Categoria or Nova categoria in a tabletop's half, drawn as the dialog they are on a book.
+@Composable
+private fun HalfPageContent(
+    state: SplitBillUiState,
+    pages: BillPages,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    val item = pages.item
+    val categoryPicker = pages.categoryPicker
+    val categoryForm = pages.categoryForm
+    when {
+        categoryForm != null -> CategoryFormContent(
+            state = state,
+            form = categoryForm,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+
+        categoryPicker != null -> CategoryPickerContent(
+            state = state,
+            picker = categoryPicker,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+
+        item != null -> ItemEditorContent(
+            editor = item,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+    }
+}
+
 // Why: what covers the bill, from the deepest: the category's form, the picker, an item, the items, Dividir.
 private data class BillPages(
     val split: SplitEditor?,
@@ -219,4 +291,14 @@ private data class BillPages(
     val item: ItemEditor?,
     val categoryPicker: CategoryPicker?,
     val categoryForm: CategoryForm?,
-)
+) {
+    val hasHalfPage: Boolean
+        get() = item != null || categoryPicker != null || categoryForm != null
+
+    // Why: what stays under the half on a tabletop, the bill or the items.
+    fun toPagesUnderHalf(): BillPages = copy(
+        item = null,
+        categoryPicker = null,
+        categoryForm = null,
+    )
+}

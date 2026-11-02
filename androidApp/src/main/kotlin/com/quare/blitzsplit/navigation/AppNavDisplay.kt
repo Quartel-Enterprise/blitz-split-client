@@ -121,6 +121,20 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    /*
+     * Why: flow 7 draws Rachar conta and Conta as a dialog over the group anywhere wider than a phone: 560dp on a tablet
+     * and a foldable upright, 920dp on a tablet lying down, in a book's right half with the group under the scrim. A
+     * tabletop splits a new bill on its hinge, full screen, and draws Conta and Editar conta as the book does.
+     */
+    val opensBillOverGroup = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val billOverGroupMetadata = if (opensBillOverGroup) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
+    val splitsBillAsDialog = { route: Route.SplitBill ->
+        opensBillOverGroup && !(formFactor == FormFactor.Tabletop && route.expenseId == null)
+    }
     val contactInvitePresentation = rememberContactInvitePresentation()
     val contactInviteMetadata = when (contactInvitePresentation) {
         ContactInvitePresentation.BottomSheet -> BottomSheetSceneStrategy.bottomSheet
@@ -216,18 +230,20 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
-            // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
-            entry<Route.SplitBill>(metadata = billDialogMetadata) { route ->
+            // Why: the group stays behind the bill wider than a phone, but under a new bill on a tabletop's hinge.
+            entry<Route.SplitBill>(
+                metadata = { route -> if (splitsBillAsDialog(route)) billOverGroupMetadata else emptyMap() },
+            ) { route ->
                 SplitBillScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    isDialog = splitsBillAsDialog(route),
                 )
             }
-            // Why: like Rachar conta, a tablet and the upright foldable keep the group behind the bill.
-            entry<Route.BillDetail>(metadata = billDialogMetadata) { route ->
+            // Why: like Rachar conta, the group stays behind the bill wider than a phone, a tabletop included.
+            entry<Route.BillDetail>(metadata = billOverGroupMetadata) { route ->
                 BillDetailScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    isDialog = opensBillOverGroup,
                 )
             }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }

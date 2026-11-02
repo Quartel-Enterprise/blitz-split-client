@@ -36,6 +36,7 @@ import com.quare.blitzsplit.android.designsystem.component.DialogCard
 
 private val singleColumnMaxWidth = 592.dp
 private val columnSpacing = 20.dp
+private val tabletopHalvesGap = 48.dp
 
 // Why: what the top bar (or the dialog's header and actions) of Rachar conta, Dividir and Divisão padrão hold.
 class FormChrome(
@@ -62,9 +63,10 @@ class FormIconAction(
 )
 
 /*
- * Why: the canvas opens Rachar conta, Dividir and Divisão padrão full screen on a phone, lying down and on the
- * tabletop, in two columns when lying down; as a dialog (where the caller says so) they sit over the group, two
- * columns wide on a tablet lying down.
+ * Why: the canvas opens Rachar conta, Dividir and Divisão padrão full screen on a phone and lying down, in two columns
+ * when lying down; as a dialog (where the caller says so) they sit over the group, two columns wide on a tablet lying
+ * down and one column anywhere else, a book's half included. On a tabletop a form with a board of its own (`tabletop`)
+ * reads in the top half (`first`) and is filled in the bottom one (`second`); any other stays as lying down.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,9 +77,10 @@ fun ColumnsFormLayout(
     first: @Composable ColumnScope.() -> Unit,
     second: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
+    tabletop: TabletopForm? = null,
 ) {
-    val layout = rememberDeviceLayout()
-    val usesTwoColumns = if (isDialog) layout.isTablet && layout.isLandscape else layout.isLandscape
+    val usesTwoColumns = rememberUsesFormColumns(isDialog)
+    val tabletopForm = tabletop?.takeIf { rememberUsesTabletopHalves(isDialog) }
     if (isDialog) {
         DialogCard(
             isWide = usesTwoColumns,
@@ -115,47 +118,140 @@ fun ColumnsFormLayout(
                     },
                     actions = {
                         chrome.iconAction?.let { IconActionButton(it) }
-                        Button(
-                            onClick = chrome.onConfirm,
-                            enabled = chrome.isConfirmEnabled,
-                            modifier = Modifier.padding(end = 12.dp),
-                        ) { Text(chrome.confirmLabel) }
+                        if (tabletopForm != TabletopForm.ConfirmAtBottom) {
+                            Button(
+                                onClick = chrome.onConfirm,
+                                enabled = chrome.isConfirmEnabled,
+                                modifier = Modifier.padding(end = 12.dp),
+                            ) { Text(chrome.confirmLabel) }
+                        }
                     },
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .imePadding(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                FormColumnsLayout(
-                    usesTwoColumns = usesTwoColumns,
-                    contentPadding = if (usesTwoColumns) {
-                        PaddingValues(
-                            start = 56.dp,
-                            end = 24.dp,
-                            top = 4.dp,
-                            bottom = 16.dp,
-                        )
-                    } else {
-                        PaddingValues(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 8.dp,
-                            bottom = 24.dp,
-                        )
-                    },
+            if (tabletopForm != null) {
+                TabletopHalvesLayout(
+                    chrome = chrome,
+                    tabletop = tabletopForm,
                     first = first,
                     second = second,
-                    modifier = if (usesTwoColumns) Modifier else Modifier.widthIn(max = singleColumnMaxWidth),
+                    modifier = Modifier.padding(padding),
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .imePadding(),
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    FormColumnsLayout(
+                        usesTwoColumns = usesTwoColumns,
+                        contentPadding = if (usesTwoColumns) {
+                            PaddingValues(
+                                start = 56.dp,
+                                end = 24.dp,
+                                top = 4.dp,
+                                bottom = 16.dp,
+                            )
+                        } else {
+                            PaddingValues(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 8.dp,
+                                bottom = 24.dp,
+                            )
+                        },
+                        first = first,
+                        second = second,
+                        modifier = if (usesTwoColumns) Modifier else Modifier.widthIn(max = singleColumnMaxWidth),
+                    )
+                }
             }
         }
     }
+}
+
+/*
+ * Why: whether the form lays out two columns: lying down full screen, and as a dialog only where it is two columns wide,
+ * a tablet lying down, never in a book's or a tabletop's half.
+ */
+@Composable
+fun rememberUsesFormColumns(isDialog: Boolean): Boolean = if (isDialog) {
+    rememberFoldLayout().formFactor == FormFactor.TabletLandscape
+} else {
+    rememberDeviceLayout().isLandscape
+}
+
+// Why: a full screen form on a tabletop, which the forms with a tabletop board of their own split on its hinge.
+@Composable
+fun rememberUsesTabletopHalves(isDialog: Boolean): Boolean = !isDialog && rememberFoldLayout().tabletopSplit != null
+
+/*
+ * Why: the tabletop board: what was typed sits at the bottom of the top half, just above the hinge, and the controls
+ * start right under it. The keyboard covers the bottom half only, so the halves never shrink for it.
+ */
+@Composable
+private fun TabletopHalvesLayout(
+    chrome: FormChrome,
+    tabletop: TabletopForm,
+    first: @Composable ColumnScope.() -> Unit,
+    second: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TopBottomHalvesLayout(
+        top = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = singleColumnMaxWidth)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            horizontal = 24.dp,
+                            vertical = 12.dp,
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(columnSpacing),
+                    content = first,
+                )
+            }
+        },
+        bottom = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = singleColumnMaxWidth)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            start = 24.dp,
+                            end = 24.dp,
+                            top = 12.dp,
+                            bottom = 24.dp,
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    second()
+                    if (tabletop == TabletopForm.ConfirmAtBottom) {
+                        Button(
+                            onClick = chrome.onConfirm,
+                            enabled = chrome.isConfirmEnabled,
+                            modifier = Modifier.align(Alignment.End),
+                        ) { Text(chrome.confirmLabel) }
+                    }
+                }
+            }
+        },
+        modifier = modifier.fillMaxSize(),
+        gap = tabletopHalvesGap,
+    )
 }
 
 @Composable
