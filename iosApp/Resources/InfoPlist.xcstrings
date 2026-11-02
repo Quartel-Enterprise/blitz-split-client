@@ -72,6 +72,24 @@
           }
         }
       }
+    },
+    "NSPhotoLibraryAddUsageDescription" : {
+      "comment" : "Why the app asks to add to Photos: saving a bill's photo from its viewer (Download, then Save Image)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To save a bill's photos to your library."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para salvar as fotos das contas na sua galeria."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDa
 import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapper
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
-import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -58,33 +57,31 @@ class BillAttachmentRepositoryImpl(
      */
     override suspend fun uploadPending(userId: String): Result<Unit> = suspendRunCatching {
         // Why: one at a time, so an image the bucket refuses leaves the others going up and fails the sync after them.
-        val failures = local.getPendingAttachments(userId).mapNotNull { entity ->
-            suspendRunCatching { upload(entity, userId) }.exceptionOrNull()
+        val failures = local.getPendingAttachmentIds(userId).mapNotNull { id ->
+            suspendRunCatching { upload(id, userId) }.exceptionOrNull()
         }
         failures.firstOrNull()?.let { throw it }
     }
 
+    /*
+     * Why: read just before it goes up, so only one JPEG is in memory at a time. A photo removed while it goes up
+     * keeps its tombstone pending (`markSynced` matches only this version), which the next sync takes up.
+     */
     private suspend fun upload(
-        entity: BillAttachmentEntity,
+        id: String,
         userId: String,
     ) {
-        val path = "${entity.groupId}/${entity.expenseId}/${entity.id}.jpg"
+        val entity = local.getAttachment(id)?.takeIf { it.pendingSync } ?: return
+        val path = BillAttachment.createStoragePath(
+            groupId = entity.groupId,
+            expenseId = entity.expenseId,
+            id = entity.id,
+        )
         entity.pendingJpeg?.let { jpeg -> remote.uploadImage(path, jpeg) }
-        val dto = mapper.toDto(entity, userId)
-        remote.upsertAttachment(dto)
+        remote.upsertAttachment(mapper.toDto(entity, userId))
         local.markSynced(entity.id, entity.updatedAt)
-        // Why: a photo removed here while it first went up, which left the device as never synced, goes from the server too.
-        val isStillOnDevice = entity.isDeleted || local.isOnDevice(entity.id)
-        if (!isStillOnDevice && !entity.isDeleted) {
-            remote.upsertAttachment(
-                dto.copy(
-                    isDeleted = true,
-                    updatedAt = entity.updatedAt + 1,
-                ),
-            )
-        }
         // Why: best effort; an image left behind is never shown, since its row says it is gone.
-        if (entity.isDeleted || !isStillOnDevice) suspendRunCatching { remote.removeImage(path) }
+        if (entity.isDeleted) suspendRunCatching { remote.removeImage(path) }
     }
 
     override suspend fun download(userId: String): Result<Unit> = suspendRunCatching {

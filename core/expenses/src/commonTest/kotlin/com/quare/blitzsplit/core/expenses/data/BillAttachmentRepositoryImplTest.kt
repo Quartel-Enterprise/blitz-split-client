@@ -31,31 +31,65 @@ class BillAttachmentRepositoryImplTest {
     private var now = START
 
     @Test
-    fun `GIVEN a photo removed while it first goes up WHEN uploading THEN takes it off the server too`() = runTest {
-        // Given
-        prepareScenario(
-            stored = listOf(
-                entity(
-                    id = "photo-1",
-                    updatedAt = 5L,
-                    pendingJpeg = jpeg,
-                    pendingSync = true,
+    fun `GIVEN a photo removed while it first goes up WHEN the next sync uploads THEN takes it off the server too`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "photo-1",
+                        updatedAt = 5L,
+                        pendingJpeg = jpeg,
+                        pendingSync = true,
+                    ),
                 ),
-            ),
-        )
-        // Why: as BillAttachmentDao.remove does for a photo still pending with its JPEG.
-        remote.onUpsert = { local.entities.update { list -> list.filterNot { it.id == "photo-1" } } }
+            )
+            // Why: as BillAttachmentDao.remove does, even for a photo not synced yet.
+            remote.onUpsert = {
+                local.entities.update { list ->
+                    list.map {
+                        it.copy(
+                            updatedAt = 6L,
+                            isDeleted = true,
+                            pendingJpeg = null,
+                            pendingSync = true,
+                        )
+                    }
+                }
+            }
+            repository.uploadPending(USER_ID)
 
-        // When
-        val result = repository.uploadPending(USER_ID)
+            // When
+            val result = repository.uploadPending(USER_ID)
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf("upload:$PATH_1", "upsert:photo-1", "upsert:photo-1", "remove:$PATH_1"), remote.calls)
-        val tombstone = remote.upserted.last()
-        assertTrue(tombstone.isDeleted)
-        assertEquals(6L, tombstone.updatedAt)
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("upload:$PATH_1", "upsert:photo-1", "upsert:photo-1", "remove:$PATH_1"), remote.calls)
+            val tombstone = remote.upserted.last()
+            assertEquals(6L to true, tombstone.updatedAt to tombstone.isDeleted)
+        }
+
+    @Test
+    fun `GIVEN an attachment synced by an earlier sync meanwhile WHEN its turn comes THEN sends nothing for it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "photo-1",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+            local.syncBeforeRead = setOf("photo-1")
+
+            // When
+            val result = repository.uploadPending(USER_ID)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(remote.calls.isEmpty())
+        }
 
     @Test
     fun `GIVEN attachments of a kind this version does not know WHEN observing the bill THEN leaves them out`() =
@@ -837,10 +871,17 @@ private class FakeBillAttachmentLocalDataSource(
         list.filter { it.pendingSync }.map { "${it.id}:${it.updatedAt}" }
     }
 
-    override suspend fun getPendingAttachments(ownerUserId: String): List<BillAttachmentEntity> {
+    // Why: ids listed as pending that are synced by the time they are read, as a sync running alongside leaves them.
+    var syncBeforeRead = emptySet<String>()
+
+    override suspend fun getPendingAttachmentIds(ownerUserId: String): List<String> {
         pendingOwners += ownerUserId
-        return entities.value.filter { it.pendingSync && groupOwners[it.groupId] == ownerUserId }
+        val ids = entities.value.filter { it.pendingSync && groupOwners[it.groupId] == ownerUserId }.map { it.id }
+        entities.update { list -> list.map { if (it.id in syncBeforeRead) it.copy(pendingSync = false) else it } }
+        return ids
     }
+
+    override suspend fun getAttachment(id: String): BillAttachmentEntity? = entities.value.firstOrNull { it.id == id }
 
     override suspend fun insertWithinLimit(
         entity: BillAttachmentEntity,
@@ -873,8 +914,6 @@ private class FakeBillAttachmentLocalDataSource(
             list.map { if (it.id == id && it.updatedAt == updatedAt) it.copy(pendingSync = false) else it }
         }
     }
-
-    override suspend fun isOnDevice(id: String): Boolean = entities.value.any { it.id == id }
 
     override suspend fun applyRemote(entities: List<BillAttachmentEntity>) {
         applied += entities

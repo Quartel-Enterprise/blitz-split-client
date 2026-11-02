@@ -337,12 +337,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   device. Their pending flag joins `observeHasPendingChanges()` and their pending ids `syncWhenDue()`.
 - **Attachments** (`:core:expenses`): a bill's photos, and later the receipt it was read from (`bill_attachment`,
   `bill_attachments` and the `bill-attachments` bucket on the server, 7.3g), are added and removed, never edited.
-  `BillImageEncoder` (`:core:provider:image`) makes the picked file an upright JPEG of at most 1600 px under the
-  bucket's 2 MB, which waits in the row (`pendingJpeg`) with `pendingSync` until the sync puts it in the bucket, with
-  upsert, and then the row; the UIs draw it from a data URI meanwhile. A removal is a tombstone (`isDeleted`, a newer
-  `updatedAt`) whose image the sync deletes from the bucket after the row, best effort; a photo removed before it
-  went up just goes. They sync after the comments, down then up, one at a time so one the bucket refuses doesn't hold
-  the others; Last-Write-Wins per row, deleted staying deleted. The server drops a row past the bill's 5 photos (1
+  `BillImageEncoder` (`:core:provider:image`) makes the picked file an upright JPEG of at most 1600 px under 1.5 MB
+  (the bucket takes 2 MiB, and Android's Room reads a row through a 2 MiB window), which waits in the row
+  (`pendingJpeg`) with `pendingSync` until the sync puts it in the bucket, with upsert, and then the row; the UIs draw
+  it from a data URI meanwhile, until Conta closes. A removal is a tombstone (`isDeleted`, a newer `updatedAt`) whose
+  image the sync deletes from the bucket after the row, best effort, even for a photo that never synced, whose upload
+  may have reached the server with its answer lost. They sync after the comments, down then up, one row read and
+  sent at a time, so only one JPEG is in memory and one the bucket refuses doesn't hold the others; Last-Write-Wins
+  per row, deleted staying deleted. The server drops a row past the bill's 5 photos (1
   receipt) or whose bill is gone, which then leaves the device on the next download, and the device checks the same
   limit when adding (`insertWithinLimit`). The images in the bucket load through signed URLs of 2 hours, online only,
   kept in memory by the repository and signed again 30 minutes before they expire.

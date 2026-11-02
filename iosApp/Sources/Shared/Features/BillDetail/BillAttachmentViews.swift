@@ -145,7 +145,7 @@ struct BillAttachmentStrip: View {
                 model.send(BillDetailUiEventOnAttachmentClicked(id: attachment.id))
             }
         }
-        if state.photoCount < state.photoLimit {
+        if state.showsAddPhoto {
             BillAddPhotoTile(model: model, metrics: metrics)
         }
     }
@@ -185,7 +185,7 @@ private struct BillAttachmentTileView: View {
     }
 
     private var thumbnail: some View {
-        AttachmentImage(url: attachment.imageUrl, contentMode: .fill) {
+        AttachmentImage(id: attachment.id, url: attachment.imageUrl, contentMode: .fill) {
             Image(systemName: attachment.isReceipt ? "receipt" : "photo")
                 .font(.title3)
                 .foregroundStyle(.secondary)

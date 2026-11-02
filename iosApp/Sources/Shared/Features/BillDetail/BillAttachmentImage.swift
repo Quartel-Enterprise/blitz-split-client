@@ -33,17 +33,17 @@ nonisolated enum AttachmentSource {
     }
 }
 
-/// Why: a data URI is decoded once, not on every redraw of the strip or the viewer; the URI itself is the key, since
-/// the photo it holds never changes.
+/// Why: a data URI is decoded once, not on every redraw of the strip or the viewer. Keyed by the attachment's id,
+/// since the photo it holds never changes, and comparing the multi-megabyte URI on each lookup would cost as much.
 private enum DecodedAttachments {
     static let cache = NSCache<NSString, AttachmentPlatformImage>()
 
-    static func image(_ url: String) -> AttachmentPlatformImage? {
-        if let cached = cache.object(forKey: url as NSString) { return cached }
+    static func image(id: String, url: String) -> AttachmentPlatformImage? {
+        if let cached = cache.object(forKey: id as NSString) { return cached }
         guard let data = AttachmentSource.dataUriBytes(url), let image = AttachmentPlatformImage(data: data) else {
             return nil
         }
-        cache.setObject(image, forKey: url as NSString)
+        cache.setObject(image, forKey: id as NSString)
         return image
     }
 }
@@ -51,13 +51,14 @@ private enum DecodedAttachments {
 /// A bill's photo, cropped to fill a tile or fit in the viewer; `placeholder` while it loads, when it fails, and for
 /// a photo never loaded on this device while offline (a nil URL).
 struct AttachmentImage<Placeholder: View>: View {
+    let id: String
     let url: String?
     let contentMode: ContentMode
     @ViewBuilder let placeholder: () -> Placeholder
 
     var body: some View {
         if let url, url.hasPrefix("data:") {
-            if let image = DecodedAttachments.image(url) {
+            if let image = DecodedAttachments.image(id: id, url: url) {
                 drawn(image: platformImage(image))
             } else {
                 placeholder()

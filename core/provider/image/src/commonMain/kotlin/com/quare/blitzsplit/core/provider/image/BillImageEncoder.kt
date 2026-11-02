@@ -5,8 +5,8 @@ private val billJpegQualities = listOf(80, 65, 50)
 
 /*
  * Why: a bill's photo (Anexos, 7.3g) or the receipt it was read from (7.1e) as the `bill-attachments` bucket takes it:
- * upright, its longest side at most 1600 px, as a JPEG under the bucket's 2 MB, with its size for the UIs to lay it
- * out before it loads.
+ * upright, its longest side at most 1600 px, as a JPEG under 1.5 MB, with its size for the UIs to lay it out before
+ * it loads.
  */
 fun interface BillImageEncoder {
     suspend operator fun invoke(source: ByteArray): BillImage
@@ -20,8 +20,12 @@ class BillImage(
 
 const val BILL_IMAGE_MAX_SIDE_PX = 1600
 
-// Why: under the bucket's 2 MiB, which a 1600 px photo only reaches when it is all fine detail.
-const val BILL_IMAGE_MAX_BYTES = 2_000_000
+/*
+ * Why: under the bucket's 2 MiB, and under the 2 MiB Android's Room reads a row through (CursorWindow) with room for
+ * the rest of the row, since the photo waits there until it goes up. A 1600 px photo only reaches it when it is all
+ * fine detail.
+ */
+const val BILL_IMAGE_MAX_BYTES = 1_500_000
 
 internal class ScaledSize(
     val width: Int,

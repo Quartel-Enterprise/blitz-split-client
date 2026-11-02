@@ -330,7 +330,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     as "Foto 2" with who added it and when, since the server keeps no caption, then "Adicionar foto" while there is
     room. The viewer pages through them full screen ("Foto 1 de 2", "Ana anexou ontem às 22:40") with Baixar (the
     gallery on Android, the share sheet on iOS, a file on the Mac and the web). Each photo is an upright JPEG of at most
-    1600 px under 2 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
+    1600 px under 1.5 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
     photo added on another device shows only online. Histórico says who added or removed them; the feed doesn't.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills

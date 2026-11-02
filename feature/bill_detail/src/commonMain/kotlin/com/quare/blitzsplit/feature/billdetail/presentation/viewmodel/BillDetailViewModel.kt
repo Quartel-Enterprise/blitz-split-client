@@ -138,6 +138,12 @@ class BillDetailViewModel(
     private var attachments: List<BillAttachment> = emptyList()
     private var imageUrls: Map<String, String> = emptyMap()
 
+    /*
+     * Why: the JPEG of each photo added here, encoded once, and kept once it is up: the screen draws it until it
+     * closes, with no blink nor second download while its signed URL comes.
+     */
+    private var localImages: Map<String, String> = emptyMap()
+
     // Why: one read of the bill's group, shared by the bill and by what deleting it unsettles.
     private val group: SharedFlow<Group?> = observeGroup(route.groupId)
         .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
@@ -181,16 +187,24 @@ class BillDetailViewModel(
         val attachments = observeBillAttachments(route.expenseId)
             .onEach { attachments ->
                 this.attachments = attachments
+                localImages = localImages + attachments
+                    .filter { it.id !in localImages }
+                    .mapNotNull { attachment -> attachment.pendingImage?.let { attachment.id to it.dataUri } }
                 showAttachments()
             }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-        // Why: the photos already up load through signed URLs, so they wait for the internet; the ones added here don't.
+        /*
+         * Why: the photos already up load through signed URLs, so they wait for the internet; the ones added here
+         * don't. Asked again each minute, which the repository answers from its cache until a URL is about to expire,
+         * so a bill left open keeps loading them, and one that failed is tried again.
+         */
         viewModelScope.launch {
-            combine(attachments, connectivityObserver.observe(), ::Pair).collectLatest { (attachments, isOnline) ->
-                if (isOnline && attachments.any { it.pendingImage == null && it.id !in imageUrls }) {
-                    loadBillAttachmentUrls(attachments).onSuccess { urls ->
-                        imageUrls = imageUrls + urls
-                        showAttachments()
-                    }
+            combine(attachments, connectivityObserver.observe(), minuteTicks()) { attachments, isOnline, _ ->
+                attachments.filter { it.pendingImage == null && it.id !in localImages }.takeIf { isOnline }
+            }.collectLatest { remoteAttachments ->
+                if (remoteAttachments.isNullOrEmpty()) return@collectLatest
+                loadBillAttachmentUrls(remoteAttachments).onSuccess { urls ->
+                    imageUrls = imageUrls + urls
+                    showAttachments()
                 }
             }
         }
@@ -331,7 +345,15 @@ class BillDetailViewModel(
     private fun showAttachments() {
         val group = shownGroup ?: return
         uiState.update {
-            it.copy(attachments = tilesOf(attachments, imageUrls, group, currentTimeMillis(), currentTimeZone()))
+            it.copy(
+                attachments = tilesOf(
+                    attachments,
+                    imageUrls + localImages,
+                    group,
+                    currentTimeMillis(),
+                    currentTimeZone(),
+                ),
+            )
         }
     }
 

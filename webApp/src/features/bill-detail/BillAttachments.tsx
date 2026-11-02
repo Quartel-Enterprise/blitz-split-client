@@ -48,7 +48,7 @@ export function BillAttachments({ presenter, state }: { presenter: BillDetailPre
             <AttachmentTile attachment={attachment} onClick={() => presenter.openAttachment(attachment.id)} />
           </li>
         ))}
-        {state.photoCount < state.photoLimit && (
+        {state.showsAddPhoto && (
           <li>
             <button
               type="button"

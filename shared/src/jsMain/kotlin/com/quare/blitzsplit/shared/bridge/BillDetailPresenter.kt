@@ -211,6 +211,7 @@ class JsBillDetailState(
     val attachments: Array<JsBillAttachment>,
     val photoCount: Int,
     val photoLimit: Int,
+    val showsAddPhoto: Boolean,
     val canAddPhoto: Boolean,
     val isAddingPhoto: Boolean,
     // Why: the viewer's page while it is open, else null.
@@ -271,6 +272,7 @@ class BillDetailPresenter(
                 attachments = state.attachments.map(::toJsBillAttachment).toTypedArray(),
                 photoCount = state.photoCount,
                 photoLimit = state.photoLimit,
+                showsAddPhoto = state.showsAddPhoto,
                 canAddPhoto = state.canAddPhoto,
                 isAddingPhoto = state.isAddingPhoto,
                 viewedAttachmentIndex = state.viewedAttachmentIndex,

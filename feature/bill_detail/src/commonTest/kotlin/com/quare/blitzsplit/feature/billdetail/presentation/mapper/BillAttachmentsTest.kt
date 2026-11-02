@@ -79,42 +79,21 @@ class BillAttachmentsTest {
     @Test
     fun `GIVEN a photo added here not up yet WHEN making the tiles THEN draws its JPEG and says it is pending`() {
         // Given
-        val jpeg = PendingJpeg(byteArrayOf(1, 2, 3))
         val attachments = listOf(
             attachment(
                 id = "photo-a",
                 isPending = true,
-                pendingImage = jpeg,
+                pendingImage = PendingJpeg(byteArrayOf(1, 2, 3)),
             ),
         )
-
-        // When
-        val tile = tilesOf(attachments, emptyMap(), group, now, TimeZone.UTC).single()
-
-        // Then
-        assertEquals(jpeg.dataUri, tile.imageUrl)
-        assertTrue(tile.imageUrl.orEmpty().startsWith("data:image/jpeg;base64,"))
-        assertTrue(tile.isPending)
-    }
-
-    @Test
-    fun `GIVEN a photo added here with a signed URL too WHEN making the tiles THEN still draws its JPEG`() {
-        // Given
-        val jpeg = PendingJpeg(byteArrayOf(4, 5, 6))
-        val attachments = listOf(
-            attachment(
-                id = "photo-a",
-                isPending = true,
-                pendingImage = jpeg,
-            ),
-        )
-        val imageUrls = mapOf("photo-a" to "https://bucket/photo-a.jpg")
+        val imageUrls = mapOf("photo-a" to "data:image/jpeg;base64,AQID")
 
         // When
         val tile = tilesOf(attachments, imageUrls, group, now, TimeZone.UTC).single()
 
         // Then
-        assertEquals(jpeg.dataUri, tile.imageUrl)
+        assertEquals("data:image/jpeg;base64,AQID", tile.imageUrl)
+        assertTrue(tile.isPending)
     }
 
     @Test

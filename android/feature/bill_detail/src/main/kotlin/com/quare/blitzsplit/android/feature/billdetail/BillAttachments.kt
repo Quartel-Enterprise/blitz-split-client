@@ -107,7 +107,7 @@ internal fun BillAttachmentsSection(
                 onClick = { onEvent(BillDetailUiEvent.OnAttachmentClicked(attachment.id)) },
             )
         }
-        if (state.photoCount < state.photoLimit) {
+        if (state.showsAddPhoto) {
             AddPhotoTile(
                 isEnabled = state.canAddPhoto,
                 isAdding = state.isAddingPhoto,

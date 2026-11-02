@@ -26,11 +26,12 @@ interface BillAttachmentDao {
     @Query("SELECT id || ':' || updatedAt FROM bill_attachment WHERE pendingSync = 1 ORDER BY addedAt, id")
     fun observePendingVersions(): Flow<List<String>>
 
+    // Why: only the ids, since each row may hold its JPEG; the sync reads them one at a time.
     @Query(
-        "SELECT * FROM bill_attachment WHERE pendingSync = 1 AND groupId IN " +
+        "SELECT id FROM bill_attachment WHERE pendingSync = 1 AND groupId IN " +
             "(SELECT id FROM split_group WHERE ownerUserId = :ownerUserId) ORDER BY addedAt, id",
     )
-    suspend fun getPendingAttachments(ownerUserId: String): List<BillAttachmentEntity>
+    suspend fun getPendingAttachmentIds(ownerUserId: String): List<String>
 
     @Query(
         "SELECT id FROM bill_attachment WHERE pendingSync = 0 AND groupId IN " +
@@ -72,8 +73,8 @@ interface BillAttachmentDao {
     suspend fun deleteAttachments(ids: List<String>)
 
     /*
-     * Why: one never up is only dropped; one the server has stays as a tombstone until that goes up. Its image, if it
-     * had not gone up yet, is no longer needed.
+     * Why: a tombstone until it goes up, even for one added here and not synced yet: its upload may have reached the
+     * server with the answer lost, and a row simply dropped would leave the photo there. Its image is no longer needed.
      */
     @Transaction
     suspend fun remove(
@@ -81,20 +82,16 @@ interface BillAttachmentDao {
         updatedAt: Long,
     ) {
         val attachment = getAttachment(id) ?: return
-        if (attachment.pendingSync && attachment.pendingJpeg != null) {
-            deleteAttachments(listOf(id))
-        } else {
-            upsertAttachments(
-                listOf(
-                    attachment.copy(
-                        isDeleted = true,
-                        updatedAt = maxOf(updatedAt, attachment.updatedAt + 1),
-                        pendingJpeg = null,
-                        pendingSync = true,
-                    ),
+        upsertAttachments(
+            listOf(
+                attachment.copy(
+                    isDeleted = true,
+                    updatedAt = maxOf(updatedAt, attachment.updatedAt + 1),
+                    pendingJpeg = null,
+                    pendingSync = true,
                 ),
-            )
-        }
+            ),
+        )
     }
 
     /*

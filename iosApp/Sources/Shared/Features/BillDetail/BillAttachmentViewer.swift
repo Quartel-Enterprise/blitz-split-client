@@ -137,7 +137,7 @@ struct BillAttachmentViewer: View {
     }
 
     private func page(_ attachment: BillAttachmentTile) -> some View {
-        AttachmentImage(url: attachment.imageUrl, contentMode: .fit) {
+        AttachmentImage(id: attachment.id, url: attachment.imageUrl, contentMode: .fit) {
             if attachment.imageUrl == nil {
                 VStack(spacing: 10) {
                     Image(systemName: "icloud.slash")

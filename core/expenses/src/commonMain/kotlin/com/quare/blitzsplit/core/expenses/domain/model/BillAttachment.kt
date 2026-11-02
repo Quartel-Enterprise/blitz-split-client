@@ -19,5 +19,13 @@ data class BillAttachment(
 ) {
     // Why: where the image lives in the `bill-attachments` bucket.
     val storagePath: String
-        get() = "$groupId/$expenseId/$id.jpg"
+        get() = createStoragePath(groupId, expenseId, id)
+
+    companion object {
+        fun createStoragePath(
+            groupId: String,
+            expenseId: String,
+            id: String,
+        ): String = "$groupId/$expenseId/$id.jpg"
+    }
 }

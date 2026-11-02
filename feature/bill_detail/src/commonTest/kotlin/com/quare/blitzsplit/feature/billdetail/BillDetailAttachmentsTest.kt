@@ -52,6 +52,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -313,21 +314,67 @@ class BillDetailAttachmentsTest {
         }
 
     @Test
-    fun `GIVEN every photo already drawn WHEN the internet goes and comes back THEN asks no URL again`() =
+    fun `GIVEN photos drawn WHEN a minute passes and the repository signs them again THEN draws the new URLs`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 storedAttachments = listOf(photoA),
                 imageUrls = mapOf(PHOTO_A to URL_A),
             )
-            isOnline.value = false
+            attachments.imageUrls = mapOf(PHOTO_A to "https://signed/a-again")
 
             // When
-            isOnline.value = true
+            minutes.emit(Unit)
 
             // Then
-            assertEquals(1, attachments.urlRequests.size)
+            assertEquals(2, attachments.urlRequests.size)
+            assertEquals(
+                "https://signed/a-again",
+                viewModel.uiState.value.attachments
+                    .single()
+                    .imageUrl,
+            )
         }
+
+    @Test
+    fun `GIVEN the signed URLs failed WHEN a minute passes THEN tries again and draws them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsError = IllegalStateException("bucket unreachable"),
+            )
+            attachments.urlsError = null
+
+            // When
+            minutes.emit(Unit)
+
+            // Then
+            assertEquals(2, attachments.urlRequests.size)
+            assertEquals(
+                URL_A,
+                viewModel.uiState.value.attachments
+                    .single()
+                    .imageUrl,
+            )
+        }
+
+    @Test
+    fun `GIVEN photos offline WHEN a minute passes THEN asks no URL`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedAttachments = listOf(photoA),
+            imageUrls = mapOf(PHOTO_A to URL_A),
+            online = false,
+        )
+
+        // When
+        minutes.emit(Unit)
+
+        // Then
+        assertTrue(attachments.urlRequests.isEmpty())
+    }
 
     @Test
     fun `GIVEN a photo drawn WHEN a sync brings another synced photo THEN asks again and draws the new one`() =
@@ -351,13 +398,14 @@ class BillDetailAttachmentsTest {
         }
 
     @Test
-    fun `GIVEN a photo added here WHEN the sync takes it up THEN draws its signed URL and it is no longer pending`() =
+    fun `GIVEN a photo added here WHEN the sync takes it up THEN keeps drawing its JPEG without asking its URL`() =
         runTest(testDispatcher) {
             // Given
+            val jpeg = PendingJpeg(byteArrayOf(1, 2, 3))
             val pending = attachment(
                 id = PHOTO_A,
                 isPending = true,
-                pendingImage = PendingJpeg(byteArrayOf(1, 2, 3)),
+                pendingImage = jpeg,
             )
             prepareScenario(
                 storedAttachments = listOf(pending),
@@ -373,10 +421,12 @@ class BillDetailAttachmentsTest {
             )
 
             // Then
+            // Why: no placeholder blinks while a signed URL comes, nor a second download of the same photo.
             val tile = viewModel.uiState.value.attachments
                 .single()
-            assertEquals(URL_A, tile.imageUrl)
+            assertEquals(jpeg.dataUri, tile.imageUrl)
             assertFalse(tile.isPending)
+            assertTrue(attachments.urlRequests.isEmpty())
         }
 
     @Test
@@ -411,6 +461,7 @@ class BillDetailAttachmentsTest {
             // Then
             assertEquals(2, state.photoCount)
             assertEquals(5, state.photoLimit)
+            assertTrue(state.showsAddPhoto)
             assertTrue(state.canAddPhoto)
         }
 
@@ -440,6 +491,7 @@ class BillDetailAttachmentsTest {
             // Then
             assertEquals(5, state.photoCount)
             assertFalse(state.canAddPhoto)
+            assertFalse(state.showsAddPhoto)
         }
 
     @Test
@@ -468,6 +520,7 @@ class BillDetailAttachmentsTest {
         val state = viewModel.uiState.value
 
         // Then
+        assertTrue(state.showsAddPhoto)
         assertFalse(state.canAddPhoto)
     }
 
@@ -1171,7 +1224,8 @@ class BillDetailAttachmentsTest {
             loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
             observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
-            minuteTicks = MinuteTicks { minutes },
+            // Why: at once, then on each minute, as SystemMinuteTicks.
+            minuteTicks = MinuteTicks { minutes.onStart { emit(Unit) } },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

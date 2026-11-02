@@ -14,8 +14,10 @@ class RoomBillAttachmentLocalDataSource(
 
     override fun observePendingVersions(): Flow<List<String>> = dao.observePendingVersions()
 
-    override suspend fun getPendingAttachments(ownerUserId: String): List<BillAttachmentEntity> =
-        dao.getPendingAttachments(ownerUserId)
+    override suspend fun getPendingAttachmentIds(ownerUserId: String): List<String> =
+        dao.getPendingAttachmentIds(ownerUserId)
+
+    override suspend fun getAttachment(id: String): BillAttachmentEntity? = dao.getAttachment(id)
 
     override suspend fun insertWithinLimit(
         entity: BillAttachmentEntity,
@@ -35,8 +37,6 @@ class RoomBillAttachmentLocalDataSource(
     ) {
         dao.markSynced(id, updatedAt)
     }
-
-    override suspend fun isOnDevice(id: String): Boolean = dao.getAttachment(id) != null
 
     override suspend fun applyRemote(entities: List<BillAttachmentEntity>) {
         dao.applyRemote(entities)

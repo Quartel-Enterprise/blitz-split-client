@@ -41,6 +41,8 @@ settings:
     INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
     INFOPLIST_KEY_NSCameraUsageDescription: To scan the QR code of an invite or from your old device, and to take your profile photo and photos of bills.
+    # A bill's viewer saves its photo through the share sheet's Save Image
+    INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: To save a bill's photos to your library.
     # Invite from contacts reads the agenda only on the device: no number leaves it
     INFOPLIST_KEY_NSContactsUsageDescription: To invite people from your contacts with a group's link. Their numbers stay on this device.
     INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO

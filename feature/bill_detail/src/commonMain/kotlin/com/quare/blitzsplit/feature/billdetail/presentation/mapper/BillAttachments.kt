@@ -7,7 +7,10 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import kotlinx.datetime.TimeZone
 
-// Why: "Anexos" (7.3g) as Room orders them, the receipt first, the photos numbered in the order they were added.
+/*
+ * Why: "Anexos" (7.3g) as Room orders them, the receipt first, the photos numbered in the order they were added. Each
+ * draws from `imageUrls`, its JPEG as a data URI or its signed URL, or a placeholder without either.
+ */
 internal fun tilesOf(
     attachments: List<BillAttachment>,
     imageUrls: Map<String, String>,
@@ -22,7 +25,7 @@ internal fun tilesOf(
         BillAttachmentTile(
             id = attachment.id,
             isReceipt = isReceipt,
-            imageUrl = attachment.pendingImage?.dataUri ?: imageUrls[attachment.id],
+            imageUrl = imageUrls[attachment.id],
             width = attachment.width,
             height = attachment.height,
             photoNumber = if (isReceipt) null else ++photoNumber,

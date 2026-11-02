@@ -222,27 +222,30 @@ class RoomBillAttachmentLocalDataSourceTest {
     }
 
     @Test
-    fun `GIVEN a photo added offline and not up yet WHEN removing it THEN it is gone and nothing waits to go up`() =
-        runTest {
-            // Given
-            prepareScenario(
-                stored = listOf(
-                    attachment(
-                        id = "photo-1",
-                        pendingJpeg = jpeg,
-                        pendingSync = true,
-                    ),
+    fun `GIVEN a photo added offline and not up yet WHEN removing it THEN leaves a pending tombstone`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                attachment(
+                    id = "photo-1",
+                    updatedAt = 5L,
+                    pendingJpeg = jpeg,
+                    pendingSync = true,
                 ),
-            )
+            ),
+        )
 
-            // When
-            dataSource.remove("photo-1", updatedAt = 9_000L)
+        // When
+        dataSource.remove("photo-1", updatedAt = 9_000L)
 
-            // Then
-            assertNull(database.billAttachmentDao().getAttachment("photo-1"))
-            assertTrue(dataSource.getPendingAttachments(USER_ID).isEmpty())
-            assertFalse(dataSource.observeHasPending().first())
-        }
+        // Then
+        // Why: its upload may have reached the server with the answer lost, so the removal must go up too.
+        assertTrue(dataSource.observeAttachments(MY_BILL).first().isEmpty())
+        val tombstone = getPending().single()
+        assertEquals("photo-1" to 9_000L, tombstone.id to tombstone.updatedAt)
+        assertTrue(tombstone.isDeleted)
+        assertNull(tombstone.pendingJpeg)
+    }
 
     @Test
     fun `GIVEN a synced photo WHEN removing it THEN it leaves the bill as a pending tombstone at that time`() =
@@ -255,7 +258,7 @@ class RoomBillAttachmentLocalDataSourceTest {
 
             // Then
             assertTrue(dataSource.observeAttachments(MY_BILL).first().isEmpty())
-            val tombstone = dataSource.getPendingAttachments(USER_ID).single()
+            val tombstone = getPending().single()
             assertEquals("photo-1", tombstone.id)
             assertTrue(tombstone.isDeleted)
             assertEquals(9_000L, tombstone.updatedAt)
@@ -280,10 +283,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         // Then
         assertEquals(
             10_001L,
-            dataSource
-                .getPendingAttachments(USER_ID)
-                .single()
-                .updatedAt,
+            getPending().single().updatedAt,
         )
     }
 
@@ -341,7 +341,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         dataSource.markSynced("photo-1", updatedAt = 5L)
 
         // Then
-        val stored = dataSource.getPendingAttachments(USER_ID).single()
+        val stored = getPending().single()
         assertEquals("photo-1" to 8L, stored.id to stored.updatedAt)
         assertTrue(stored.isDeleted)
     }
@@ -443,7 +443,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         dataSource.applyRemote(listOf(serverPhoto))
 
         // Then
-        val stored = dataSource.getPendingAttachments(USER_ID).single()
+        val stored = getPending().single()
         assertEquals(8L to true, stored.updatedAt to stored.isDeleted)
     }
 
@@ -641,10 +641,10 @@ class RoomBillAttachmentLocalDataSourceTest {
             )
 
             // When
-            val pending = dataSource.getPendingAttachments(ownerUserId = USER_ID)
+            val pending = dataSource.getPendingAttachmentIds(ownerUserId = USER_ID)
 
             // Then
-            assertEquals(listOf("mine-early", "mine-late"), pending.map { it.id })
+            assertEquals(listOf("mine-early", "mine-late"), pending)
         }
 
     @Test
@@ -759,6 +759,9 @@ class RoomBillAttachmentLocalDataSourceTest {
         pendingJpeg = pendingJpeg,
         pendingSync = pendingSync,
     )
+
+    private suspend fun getPending(): List<BillAttachmentEntity> =
+        dataSource.getPendingAttachmentIds(USER_ID).mapNotNull { dataSource.getAttachment(it) }
 
     private suspend fun prepareScenario(stored: List<BillAttachmentEntity> = emptyList()) {
         database = Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver()).build()

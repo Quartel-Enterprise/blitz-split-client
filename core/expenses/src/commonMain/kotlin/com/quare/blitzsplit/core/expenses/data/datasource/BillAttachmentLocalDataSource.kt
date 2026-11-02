@@ -10,7 +10,9 @@ interface BillAttachmentLocalDataSource {
 
     fun observePendingVersions(): Flow<List<String>>
 
-    suspend fun getPendingAttachments(ownerUserId: String): List<BillAttachmentEntity>
+    suspend fun getPendingAttachmentIds(ownerUserId: String): List<String>
+
+    suspend fun getAttachment(id: String): BillAttachmentEntity?
 
     suspend fun insertWithinLimit(
         entity: BillAttachmentEntity,
@@ -26,8 +28,6 @@ interface BillAttachmentLocalDataSource {
         id: String,
         updatedAt: Long,
     )
-
-    suspend fun isOnDevice(id: String): Boolean
 
     suspend fun applyRemote(entities: List<BillAttachmentEntity>)
 

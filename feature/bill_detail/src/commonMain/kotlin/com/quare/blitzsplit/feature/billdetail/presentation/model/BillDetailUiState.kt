@@ -63,9 +63,13 @@ data class BillDetailUiState(
     val photoLimit: Int
         get() = BillAttachmentKind.PHOTO.limit
 
+    // Why: the "Adicionar foto" tile, there while the bill has room for one more photo.
+    val showsAddPhoto: Boolean
+        get() = photoCount < photoLimit
+
     // Why: "Adicionar foto" while the bill has room, offline too.
     val canAddPhoto: Boolean
-        get() = areActionsEnabled && !isAddingPhoto && photoCount < photoLimit
+        get() = areActionsEnabled && !isAddingPhoto && showsAddPhoto
 
     // Why: the viewer's page, gone with the attachment (removed on another device meanwhile).
     val viewedAttachmentIndex: Int?
