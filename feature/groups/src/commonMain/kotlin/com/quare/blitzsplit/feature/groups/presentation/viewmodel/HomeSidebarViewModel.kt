@@ -6,12 +6,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
-import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
@@ -59,14 +57,14 @@ class HomeSidebarViewModel(
     init {
         combine(observeProfile(), observeAccount(), ::Pair)
             .onEach { (profile, account) ->
-                val displayName = profile?.displayName?.trim().orEmpty()
+                val badge = UserBadge.of(profile, account.status)
                 uiState.update {
                     it.copy(
-                        displayName = displayName,
-                        avatarInitial = Initials.firstOf(displayName),
-                        avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                        photoUrl = profile?.photo?.toImageUrl(),
-                        accountProvider = (account.status as? AccountStatus.Connected)?.provider,
+                        displayName = badge.displayName,
+                        avatarInitial = badge.avatarInitial,
+                        avatarColor = badge.avatarColor,
+                        photoUrl = badge.photoUrl,
+                        accountProvider = badge.accountProvider,
                     )
                 }
             }.launchIn(viewModelScope)
