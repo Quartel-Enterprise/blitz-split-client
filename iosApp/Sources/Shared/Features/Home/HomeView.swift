@@ -5,7 +5,6 @@ import SwiftUI
 @Observable
 final class HomeModel {
     private(set) var state: HomeUiState
-    private(set) var comingSoonCount = 0
     private(set) var changeErrorCount = 0
     let deletedGroup = DeletedGroupToast()
 
@@ -26,7 +25,6 @@ final class HomeModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
-            case is HomeUiActionShowComingSoon: self?.comingSoonCount += 1
             case is HomeUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }

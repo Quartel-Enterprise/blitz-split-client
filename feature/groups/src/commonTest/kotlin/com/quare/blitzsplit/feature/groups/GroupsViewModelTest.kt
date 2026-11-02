@@ -2280,6 +2280,7 @@ class GroupsViewModelTest {
                 groupId = trio().id,
                 expenseId = null,
                 picksGroupFirst = false,
+                scansReceipt = false,
             )
             navigator.navigate(splitBill)
 
@@ -2328,6 +2329,7 @@ class GroupsViewModelTest {
                         groupId = "recent",
                         expenseId = null,
                         picksGroupFirst = true,
+                        scansReceipt = false,
                     ),
                 ),
                 navigator.backStack.value,

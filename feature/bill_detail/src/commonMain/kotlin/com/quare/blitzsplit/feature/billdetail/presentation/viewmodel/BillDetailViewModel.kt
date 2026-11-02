@@ -514,6 +514,7 @@ class BillDetailViewModel(
                 groupId = route.groupId,
                 expenseId = route.expenseId,
                 picksGroupFirst = false,
+                scansReceipt = false,
             ),
         )
     }

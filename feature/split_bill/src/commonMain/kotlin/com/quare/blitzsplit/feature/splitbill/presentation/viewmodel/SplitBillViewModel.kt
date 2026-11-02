@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
+import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
@@ -21,10 +22,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
+import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -63,6 +64,8 @@ class SplitBillViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
     private val offerCategoryTeach: OfferCategoryTeach,
+    readReceipt: ReadReceipt,
+    addBillAttachment: AddBillAttachment,
     navigator: Navigator,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
@@ -123,6 +126,7 @@ class SplitBillViewModel(
     private val items = ItemsEditing(
         uiState = uiState,
         separator = { separator },
+        receiptItems = { receipt.items },
         onItemsDone = {
             hasPickedSplit = true
             amountAnchor = null
@@ -143,6 +147,20 @@ class SplitBillViewModel(
         deleteGroupCategory = deleteGroupCategory,
         emit = { uiAction.emit(it) },
         onCategoryChanged = ::showCategorySplit,
+    )
+
+    // Why: "Ler cupom fiscal" (7.1e): what it reads fills the bill, and the category follows it unless the map's words say.
+    private val receipt = ReceiptScanning(
+        uiState = uiState,
+        scope = viewModelScope,
+        readReceipt = readReceipt,
+        addBillAttachment = addBillAttachment,
+        onRead = { reading ->
+            categoryEditing.rematch {
+                it.withReceiptRead(reading, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
+            }
+        },
+        onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
     )
 
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
@@ -220,7 +238,7 @@ class SplitBillViewModel(
                 it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
             }
 
-            is SplitBillUiEvent.OnPayerPicked -> pickPayer(event.memberId)
+            is SplitBillUiEvent.OnPayerPicked -> uiState.update { it.withPayerPicked(event.memberId) }
 
             SplitBillUiEvent.OnPayerDone -> uiState.update { it.withPayerConfirmed() }
 
@@ -228,7 +246,12 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSeveralPayersClicked -> uiState.update { it.withSeveralPayersOpened(separator) }
 
-            is SplitBillUiEvent.OnPayerAmountChanged -> changePayerAmount(event.memberId, event.text)
+            is SplitBillUiEvent.OnPayerAmountChanged -> uiState.update {
+                it.withPayerAmount(
+                    event.memberId,
+                    event.text,
+                )
+            }
 
             // Why: only once the amounts add up.
             SplitBillUiEvent.OnSeveralPayersDone -> uiState.update { it.withSeveralPayersConfirmed() }
@@ -265,9 +288,9 @@ class SplitBillViewModel(
                 editor.withRows { row -> if (row.person.id == event.memberId) row.copy(valueText = text) else row }
             }
 
-            is SplitBillUiEvent.OnPartsIncreased -> changeParts(event.memberId, +1)
+            is SplitBillUiEvent.OnPartsIncreased -> editSplit { it.withPartsChanged(event.memberId, +1) }
 
-            is SplitBillUiEvent.OnPartsDecreased -> changeParts(event.memberId, -1)
+            is SplitBillUiEvent.OnPartsDecreased -> editSplit { it.withPartsChanged(event.memberId, -1) }
 
             SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
 
@@ -281,6 +304,8 @@ class SplitBillViewModel(
             is SplitBillUiEvent.Items -> items.onEvent(event)
 
             is SplitBillUiEvent.Categories -> categoryEditing.onEvent(event)
+
+            is SplitBillUiEvent.Receipt -> receipt.onEvent(event)
 
             SplitBillUiEvent.OnCategoryMapClicked -> exits.openCategoryMap()
 
@@ -457,35 +482,9 @@ class SplitBillViewModel(
         )
     }
 
-    private fun pickPayer(memberId: String) {
-        if (uiState.value.people.none { it.id == memberId }) return
-        uiState.update { it.copy(payerSelection = PayerSelection(memberId = memberId)) }
-    }
-
-    private fun changePayerAmount(
-        memberId: String,
-        text: String,
-    ) {
-        val amountText = TypedText.toAmountText(text)
-        uiState.update { state ->
-            state.copy(payerAmounts = state.payerAmounts?.withAmountText(memberId, amountText))
-        }
-    }
-
     private fun editSplit(change: (SplitEditor) -> SplitEditor) {
         uiState.update { state ->
             state.copy(splitEditor = state.splitEditor?.let(change)?.withShares())
-        }
-    }
-
-    private fun changeParts(
-        memberId: String,
-        delta: Int,
-    ) {
-        editSplit { editor ->
-            editor.withRows { row ->
-                if (row.person.id == memberId) row.copy(parts = (row.parts + delta).coerceIn(0L, MAX_PARTS)) else row
-            }
         }
     }
 
@@ -531,7 +530,10 @@ class SplitBillViewModel(
                     items = state.split.items,
                     categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
-                ).map { id -> state.teachOfferOrNull(id) }
+                ).map { id ->
+                    receipt.attachTo(id, state)
+                    state.teachOfferOrNull(id)
+                }
             } else {
                 updateExpense(
                     expenseId = expenseId,
@@ -592,9 +594,4 @@ class SplitBillViewModel(
 
     private val separator: Char
         get() = TypedText.amountSeparatorOf(decimalSeparator())
-
-    private companion object {
-        // Why: the same cap as the group's "Divisão padrão", which a new bill opens with.
-        const val MAX_PARTS = GroupDefaultSplit.MAX_WEIGHT
-    }
 }

@@ -181,7 +181,7 @@ fun QrCameraDisplay(
 }
 
 // Why: a camera whose details can't be read counts as missing, so the reader tries the next one or offers the paste.
-private fun ProcessCameraProvider.hasCameraOrFalse(selector: CameraSelector): Boolean = try {
+internal fun ProcessCameraProvider.hasCameraOrFalse(selector: CameraSelector): Boolean = try {
     hasCamera(selector)
 } catch (_: CameraInfoUnavailableException) {
     false

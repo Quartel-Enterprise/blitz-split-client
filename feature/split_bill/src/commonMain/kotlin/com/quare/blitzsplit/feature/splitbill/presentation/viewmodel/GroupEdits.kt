@@ -57,6 +57,10 @@ internal fun createInitialBillState(
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
+        receipt = null,
+        receiptCategoryId = null,
+        // Why: Início's "Ler cupom fiscal" opens Rachar conta straight on the camera, after "Rachar em qual grupo?".
+        isReceiptCameraRequested = route.scansReceipt && route.expenseId == null,
         conflict = null,
         settledPair = null,
         deletion = null,

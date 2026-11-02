@@ -3,12 +3,14 @@ package com.quare.blitzsplit.feature.splitbill
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -576,6 +578,7 @@ class BillCategoryViewModelTest {
             GROUP_ID,
             expenseId = expenseId,
             picksGroupFirst = false,
+            scansReceipt = false,
         )
         terms = FakeCategoryTermRepository(initialChanges = termChanges)
         teach = InMemoryCategoryTeachRepository()
@@ -602,6 +605,13 @@ class BillCategoryViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             offerCategoryTeach = OfferCategoryTeachUseCase(teach),
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            addBillAttachment = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

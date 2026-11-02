@@ -1,7 +1,6 @@
 import { Banknote, Camera, KeyRound, Plus, SquarePlus, Users, X } from 'lucide-react'
 import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
@@ -33,7 +32,7 @@ export function HomeScreen() {
   useActions(
     presenter,
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
-    (action) => (action === 'coming-soon' ? toast(t('groups_comingSoon')) : toastGroupAction(action)),
+    toastGroupAction,
   )
   // Why: Registrar pagamento, which "Quem pagou a quem?" or a face opened over Início, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)

@@ -513,6 +513,7 @@ class GroupsViewModel(
                     groupId = recent.id,
                     expenseId = null,
                     picksGroupFirst = true,
+                    scansReceipt = false,
                 ),
             )
         }

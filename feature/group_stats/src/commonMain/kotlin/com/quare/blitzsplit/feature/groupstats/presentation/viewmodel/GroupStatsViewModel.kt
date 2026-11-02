@@ -162,6 +162,7 @@ class GroupStatsViewModel(
                     groupId = route.groupId,
                     expenseId = null,
                     picksGroupFirst = false,
+                    scansReceipt = false,
                 ),
             )
 

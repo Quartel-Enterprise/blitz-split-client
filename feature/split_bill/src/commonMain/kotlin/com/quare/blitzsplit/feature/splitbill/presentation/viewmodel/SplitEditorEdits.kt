@@ -333,3 +333,17 @@ internal fun SplitBillUiState.withSplitEditorReset(): SplitBillUiState {
             ).withShares(),
     )
 }
+
+// Why: Partes' stepper, from 0 up to the same cap as the group's "Divisão padrão", which a new bill opens with.
+internal fun SplitEditor.withPartsChanged(
+    memberId: String,
+    delta: Int,
+): SplitEditor = withRows { row ->
+    if (row.person.id ==
+        memberId
+    ) {
+        row.copy(parts = (row.parts + delta).coerceIn(0L, GroupDefaultSplit.MAX_WEIGHT))
+    } else {
+        row
+    }
+}

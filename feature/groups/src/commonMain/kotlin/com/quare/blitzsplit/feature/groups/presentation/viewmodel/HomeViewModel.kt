@@ -284,9 +284,9 @@ class HomeViewModel(
 
             HomeUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) openToPay()
 
-            HomeUiEvent.OnSplitBillClicked -> openSplitBill()
+            HomeUiEvent.OnSplitBillClicked -> openSplitBill(scansReceipt = false)
 
-            HomeUiEvent.OnScanReceiptClicked -> if (uiState.value.canScanReceipt) showComingSoon()
+            HomeUiEvent.OnScanReceiptClicked -> if (uiState.value.canScanReceipt) openSplitBill(scansReceipt = true)
 
             HomeUiEvent.OnRecordPaymentClicked -> open(Route.PickPayment)
 
@@ -397,8 +397,9 @@ class HomeViewModel(
     /*
      * Why: "Rachar conta" asks which group first (7.1i), the most recently used one marked: the first row, since
      * the rows go by their last activity. With no group yet there is no button; a late tap makes one first.
+     * "Ler cupom fiscal" opens it the same way, then the camera (7.1e).
      */
-    private fun openSplitBill() {
+    private fun openSplitBill(scansReceipt: Boolean) {
         if (!uiState.value.isLoaded) return
         val recent = rows.firstOrNull()
         if (recent == null) {
@@ -409,6 +410,7 @@ class HomeViewModel(
                     groupId = recent.id,
                     expenseId = null,
                     picksGroupFirst = true,
+                    scansReceipt = scansReceipt,
                 ),
             )
         }
@@ -424,10 +426,6 @@ class HomeViewModel(
             syncNow()
             uiState.update { it.copy(isRefreshing = false) }
         }
-    }
-
-    private fun showComingSoon() {
-        viewModelScope.launch { uiAction.emit(HomeUiAction.ShowComingSoon) }
     }
 
     private fun undoRecordedPayment() {

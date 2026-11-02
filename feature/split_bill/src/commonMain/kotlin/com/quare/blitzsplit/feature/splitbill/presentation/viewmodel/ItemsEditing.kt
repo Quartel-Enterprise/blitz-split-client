@@ -23,6 +23,8 @@ import kotlin.uuid.Uuid
 internal class ItemsEditing(
     private val uiState: MutableStateFlow<SplitBillUiState>,
     private val separator: () -> Char,
+    // Why: a receipt read's items (7.1e), which Itens opens with until the bill has items of its own.
+    private val receiptItems: () -> BillItems?,
     private val onItemsDone: () -> Unit,
 ) {
     // Why: the items as "Voltar" left them, until another mode's "Pronto" or Dividir closing forgets them.
@@ -36,6 +38,7 @@ internal class ItemsEditing(
             val split = draft
                 ?: editor.items
                 ?: state.split.items
+                ?: receiptItems()
                 ?: emptyItemsOf(people)
             state.copy(
                 itemsEditor = ItemsEditor(

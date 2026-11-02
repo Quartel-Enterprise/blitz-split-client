@@ -66,6 +66,7 @@ data class HomeUiState(
     val showsSplitBillButton: Boolean
         get() = isLoaded && groupCount > 0
 
+    // Why: reading a receipt needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
     val canScanReceipt: Boolean
         get() = isOnline
 
