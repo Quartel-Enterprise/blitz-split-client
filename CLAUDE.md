@@ -71,9 +71,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and the Mac's sidebar, under its tabs, while Grupos or a group's screen is in front, the group in front marked
     (the tab it sits in stays selected). A group
     picked there opens over Grupos as its row does, in the place of what Grupos opened (the one already open goes
-    back to it, keeping its tab). A Mac window under 800 pt (the boards' narrow window is 768 pt) moves the segments
-    the toolbar held below it, into the content (Grupos' Em aberto / Quitados, a group's Despesas / Saldos /
-    Membros), and drops a column: Grupos' "Última atividade" and Despesas' "Quem pagou" (`isNarrowWindow`, measured
+    back to it, keeping its tab, and the one in front stays as it is). A Mac window under 800 pt (the boards' narrow window is 768 pt) moves the segments
+    the toolbar held below it, into the content (Grupos' Em aberto / Quitados, which a search's results hide at
+    every width, a group's Despesas / Saldos / Membros), and drops a column: Grupos' "Última atividade" and Despesas' "Quem pagou" (`isNarrowWindow`, measured
     per tab by `measuringNarrowWindow()`).
   - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
     with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,

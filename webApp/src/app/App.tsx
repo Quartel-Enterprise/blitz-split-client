@@ -50,13 +50,16 @@ export function App() {
   if (!isReady || !backStack) return null
   return (
     <>
-      <HomeSidebarProvider>
+      <HomeSidebarProvider isActive={backStack.some((route) => SHELL_PAGES.has(route.name))}>
         <StackLayers backStack={backStack} />
       </HomeSidebarProvider>
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
 }
+
+// Why: the pages that draw inside the home's frame (`PageShell`), which read the sidebar.
+const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'profile', 'edit-profile'])
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)

@@ -5,7 +5,7 @@ import { Avatar, BrandMark } from '@/components/common'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t, type MessageKey } from '@/i18n'
-import { formatPlainMoney } from '@/lib/money'
+import { formatSignedPlainMoney } from '@/lib/money'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
@@ -232,16 +232,10 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
           >
             <GroupAvatar initials={group.initials} color={group.color} className="size-[22px] rounded-md text-[9px]" />
             <span className="min-w-0 flex-1 truncate">{group.name}</span>
-            <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{shortNet(group.netMinor, group.fractionDigits)}</span>
+            <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{formatSignedPlainMoney(group.netMinor, group.fractionDigits)}</span>
           </button>
         ))}
       </nav>
     </div>
   )
-}
-
-/** "+214,90", "−98,00" or "0,00": the currency is the group's, so the sidebar's narrow column leaves out the symbol. */
-function shortNet(netMinor: number, fractionDigits: number): string {
-  const amount = formatPlainMoney(Math.abs(netMinor), fractionDigits)
-  return netMinor > 0 ? `+${amount}` : netMinor < 0 ? `−${amount}` : amount
 }

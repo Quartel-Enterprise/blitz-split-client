@@ -524,15 +524,27 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
-    fun `GIVEN the same group opened from Inicio WHEN tapping it THEN opens its Despesas over Grupos`() =
+    fun `GIVEN the same group opened from Inicio WHEN tapping it THEN stays on it`() = runTest(testDispatcher) {
+        // Given
+        val members = Route.GroupDetail(
+            "trio",
+            joinedAs = null,
+            tab = GroupTab.MEMBERS,
+        )
+        prepareScenario(stack = listOf(Route.Home, members))
+
+        // When
+        viewModel.onEvent(HomeSidebarUiEvent.OnGroupClicked("trio"))
+
+        // Then
+        assertEquals(listOf(Route.Home, members), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN another group opened from Inicio WHEN tapping a group THEN opens it over Grupos`() =
         runTest(testDispatcher) {
             // Given
-            val members = Route.GroupDetail(
-                "trio",
-                joinedAs = null,
-                tab = GroupTab.MEMBERS,
-            )
-            prepareScenario(stack = listOf(Route.Home, members))
+            prepareScenario(stack = listOf(Route.Home, expensesOf("flat")))
 
             // When
             viewModel.onEvent(HomeSidebarUiEvent.OnGroupClicked("trio"))

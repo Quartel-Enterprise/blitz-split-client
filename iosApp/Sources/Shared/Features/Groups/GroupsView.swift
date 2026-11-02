@@ -164,8 +164,9 @@ struct GroupsView: View {
         .toolbarSearch(macSearchBinding, isShown: !state.groups.isEmpty)
         .toolbar {
             if !state.groups.isEmpty {
-                // A narrow window draws them above the table instead
-                if !isNarrowWindow {
+                // A narrow window draws them above the table instead, and the search's results, which hold both,
+                // take the table's place at every width
+                if !isNarrowWindow, !(state.isSearching && state.search.hasQuery) {
                     ToolbarItem(placement: .principal) {
                         GroupsStatusPicker(model: model)
                     }

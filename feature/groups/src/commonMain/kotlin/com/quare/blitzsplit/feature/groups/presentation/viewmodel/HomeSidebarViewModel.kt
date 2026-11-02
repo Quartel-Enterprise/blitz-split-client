@@ -55,33 +55,30 @@ class HomeSidebarViewModel(
     val stateWatcher: FlowWatcher<HomeSidebarUiState> = FlowWatcher(uiState)
 
     init {
-        combine(observeProfile(), observeAccount(), ::Pair)
-            .onEach { (profile, account) ->
-                val badge = UserBadge.of(profile, account.status)
-                uiState.update {
-                    it.copy(
-                        displayName = badge.displayName,
-                        avatarInitial = badge.avatarInitial,
-                        avatarColor = badge.avatarColor,
-                        photoUrl = badge.photoUrl,
-                        accountProvider = badge.accountProvider,
-                    )
-                }
-            }.launchIn(viewModelScope)
-        // Why: the sidebar shows no age, so the rows need no minute ticks.
-        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
-            .onEach { items ->
-                val clock = ActivityClock(
-                    nowMillis = currentTimeMillis(),
-                    timeZone = currentTimeZone(),
+        // Why: one flow, so the sidebar is loaded only once both who the user is and the groups were read.
+        combine(
+            observeProfile(),
+            observeAccount(),
+            combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf),
+        ) { profile, account, items ->
+            // Why: the sidebar shows no age, so the rows need no minute ticks.
+            val clock = ActivityClock(
+                nowMillis = currentTimeMillis(),
+                timeZone = currentTimeZone(),
+            )
+            val badge = UserBadge.of(profile, account.status)
+            uiState.update {
+                it.copy(
+                    displayName = badge.displayName,
+                    avatarInitial = badge.avatarInitial,
+                    avatarColor = badge.avatarColor,
+                    photoUrl = badge.photoUrl,
+                    accountProvider = badge.accountProvider,
+                    openGroups = rowsOf(items, clock).filterNot { row -> row.isSettled },
+                    isLoaded = true,
                 )
-                uiState.update { state ->
-                    state.copy(
-                        openGroups = rowsOf(items, clock).filterNot { it.isSettled },
-                        isLoaded = true,
-                    )
-                }
-            }.launchIn(viewModelScope)
+            }
+        }.launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -97,7 +94,8 @@ class HomeSidebarViewModel(
 
     /*
      * Why: "Em aberto" is Grupos' list, so a group opens over Grupos as its row does, whichever tab was in front, in
-     * the place of whatever Grupos opened; the group already right above Grupos goes back to it, keeping its tab.
+     * the place of whatever Grupos opened; the group already right above Grupos goes back to it, keeping its tab, and
+     * the group in front stays as it is.
      */
     private fun openGroup(groupId: String) {
         val stack = navigator.backStack.value
@@ -109,15 +107,14 @@ class HomeSidebarViewModel(
             tab = GroupTab.EXPENSES,
         )
         when {
+            (stack.lastOrNull() as? Route.GroupDetail)?.groupId == groupId -> Unit
+
             groupsIndex >= 0 && (stack.getOrNull(groupsIndex + 1) as? Route.GroupDetail)?.groupId == groupId ->
                 navigator.popTo(groupsIndex + 2)
 
             groupsIndex >= 0 -> navigator.replaceAbove(groupsIndex + 1, group)
 
-            homeIndex >= 0 -> {
-                navigator.replaceAbove(homeIndex + 1, Route.Groups)
-                navigator.navigate(group)
-            }
+            homeIndex >= 0 -> navigator.replaceAbove(homeIndex + 1, listOf(Route.Groups, group))
         }
     }
 }

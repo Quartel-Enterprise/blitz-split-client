@@ -1,5 +1,5 @@
 import { HomeSidebarPresenter, type JsHomeSidebarState } from 'blitzsplit-shared'
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
 
@@ -11,14 +11,29 @@ interface HomeSidebar {
 const HomeSidebarContext = createContext<HomeSidebar | null>(null)
 
 /**
- * The sidebar of the pages outside the home's tabs (the group's pages, Estatísticas and Perfil): one presenter for
- * the whole visit, so going from a group to another keeps the sidebar as it was instead of reading it again.
+ * The sidebar of the pages outside the home's tabs (the group's pages, Estatísticas and Perfil): one presenter while
+ * any of them is in the back stack, so going from a group to another keeps the sidebar as it was instead of reading it
+ * again, and none while only the home's tabs are, which never draw it.
  */
-export function HomeSidebarProvider({ children }: { children: ReactNode }) {
+export function HomeSidebarProvider({ isActive, children }: { isActive: boolean; children: ReactNode }) {
+  const [sidebar, setSidebar] = useState<HomeSidebar | null>(null)
+  return (
+    <HomeSidebarContext.Provider value={isActive ? sidebar : null}>
+      {/* Why: a sibling, so starting and stopping the presenter never remounts the pages. */}
+      {isActive && <HomeSidebarSource onChange={setSidebar} />}
+      {children}
+    </HomeSidebarContext.Provider>
+  )
+}
+
+function HomeSidebarSource({ onChange }: { onChange: (sidebar: HomeSidebar | null) => void }) {
   const presenter = usePresenter(() => new HomeSidebarPresenter())
-  const state = useWatch(presenter, (p, onChange: (state: JsHomeSidebarState) => void) => p.observeState(onChange))
-  const sidebar = presenter && state ? { presenter, state } : null
-  return <HomeSidebarContext.Provider value={sidebar}>{children}</HomeSidebarContext.Provider>
+  const state = useWatch(presenter, (p, onState: (state: JsHomeSidebarState) => void) => p.observeState(onState))
+  useEffect(() => {
+    onChange(presenter && state ? { presenter, state } : null)
+  }, [presenter, state])
+  useEffect(() => () => onChange(null), [])
+  return null
 }
 
 /** Opens a home tab from a page outside the tabs (its breadcrumb's first crumb), as the sidebar's tab does. */

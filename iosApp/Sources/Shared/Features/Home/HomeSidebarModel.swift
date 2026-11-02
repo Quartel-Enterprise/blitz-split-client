@@ -44,9 +44,16 @@ struct SidebarOpenGroups: View {
                     .padding(.horizontal, 8)
                     .padding(.bottom, 4)
                     .accessibilityAddTraits(.isHeader)
-                ForEach(groups, id: \.id) { group in
-                    row(group)
+                // Many open groups scroll, so the footer never squeezes the tabs out of a short window
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Self.rowSpacing) {
+                        ForEach(groups, id: \.id) { group in
+                            row(group)
+                        }
+                    }
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .frame(height: min(CGFloat(groups.count) * (Self.rowHeight + Self.rowSpacing), Self.maxListHeight))
             }
             .padding(.top, 12)
         }
@@ -69,13 +76,18 @@ struct SidebarOpenGroups: View {
                     .foregroundStyle(Palette.balance(group.netMinor))
             }
             .padding(.horizontal, 8)
-            .frame(height: 28)
+            .frame(height: Self.rowHeight)
             .contentShape(.rect)
             .background(isSelected ? AnyShapeStyle(.fill.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 8))
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
+
+    private static let rowHeight: CGFloat = 28
+    private static let rowSpacing: CGFloat = 2
+    /// About eight rows, then the list scrolls.
+    private static let maxListHeight: CGFloat = 240
 
     /// "+214.90", "−98.00" or "0.00": the sidebar's narrow column leaves out the group's currency symbol.
     private static func net(_ group: GroupRow) -> String {
