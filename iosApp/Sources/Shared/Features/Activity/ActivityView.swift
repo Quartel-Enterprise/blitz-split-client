@@ -132,10 +132,12 @@ struct ActivityView: View {
             ToolbarItem(placement: .primaryAction) {
                 profileButton
             }
+            .prefersVerticalBar()
         }
         .sheet(isPresented: model?.isFilterOpen ?? .constant(false)) {
             if let model {
                 ActivityFilterSheet(model: model)
+                    .foldSheetPlacement()
             }
         }
         #else
@@ -227,8 +229,7 @@ private struct ActivityColumns<ListContent: View, Detail: View>: View {
     #endif
 
     private var verticalFold: CGRect? {
-        guard let division, division.isVertical else { return nil }
-        return division.frame
+        division?.verticalFrame
     }
 
     var body: some View {
