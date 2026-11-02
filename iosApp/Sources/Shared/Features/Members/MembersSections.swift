@@ -11,7 +11,7 @@ final class MembersModel {
     @ObservationIgnored private let holder: ViewModelHolder<MembersViewModel>
     @ObservationIgnored private let watches = WatchBag()
 
-    init(route: RouteMembers) {
+    init(route: RouteGroupDetail) {
         holder = BlitzSplitApple.shared.createMembersViewModel(route: route)
         let viewModel = holder.viewModel
         state = viewModel.uiState.value as! MembersUiState
@@ -39,113 +39,115 @@ final class MembersModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// Members is this screen: Expenses and Balances take its place.
-    func select(_ tab: GroupTab) {
-        switch tab {
-        case .expenses: send(MembersUiEventOnExpensesTabClicked.shared)
-        case .balances: send(MembersUiEventOnBalancesTabClicked.shared)
-        case .members: break
-        }
-    }
-
     isolated deinit {
         holder.clear()
     }
 }
 
-/// "Members": who is in the group and who joined, the group's tab next to Expenses, with the same tabs on top (in
-/// the toolbar on the Mac). A tap on a person opens their options: rename, a personal invite, which joins straight
-/// in as someone nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing
-/// allows. The group's creator may also release the name of someone who joined, online only. "Your balance in this
-/// group" heads the list and each person shows theirs.
-struct MembersView: View {
-    let route: RouteMembers
+/// "Members", the group's tab under its header: the group's link and who is in it and who joined. A tap on a person
+/// opens their options: rename, a personal invite, which joins straight in as someone nobody joined as yet, and
+/// removal, which only someone who hasn't joined and owes or is owed nothing allows. The group's creator may also
+/// release the name of someone who joined, online only. Each person shows their balance. Nothing until Room is read.
+struct MembersSections: View {
+    let model: MembersModel
+    /// The group's screen in the shared back stack, whose Share anchors the Mac's invite popover on this tab.
+    let host: AppRoute
 
-    /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
-    @State private var model: MembersModel?
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-
-    var body: some View {
-        Group {
-            if let model, model.state.isLoaded {
-                MembersList(model: model, host: .members(route))
-            } else {
-                Palette.groupedBackground.ignoresSafeArea()
-            }
-        }
-        .navigationTitle("Members")
-        .navigationSubtitle(subtitle)
-        #if os(iOS)
-        // On iPhone the group's tabs replace the app's, as on the group's expenses
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
-        #endif
-        .toolbar {
-            #if os(macOS)
-            ToolbarItem(placement: .principal) {
-                GroupTabsPicker(selected: .members) { model?.select($0) }
-                    .disabled(model?.state.isLoaded != true)
-            }
-            #endif
-            ToolbarItem(placement: .primaryAction) {
-                Button("Add person", systemImage: "person.badge.plus") {
-                    model?.send(MembersUiEventOnAddClicked.shared)
-                }
-                .disabled(model?.state.isLoaded != true)
-            }
-        }
-        .sheet(isPresented: editorShown) {
-            if let model {
-                MemberNameSheet(model: model)
-            }
-        }
-        .sheet(isPresented: personalInviteShown) {
-            if let model {
-                PersonalInviteSheet(model: model)
-            }
-        }
-        .alert(removeTitle, isPresented: removalShown, presenting: model?.state.memberToRemove) { member in
-            Button("Remove", role: .destructive) {
-                model?.send(MembersUiEventOnRemoveConfirmed.shared)
-            }
-            Button("Cancel", role: .cancel) {
-                model?.send(MembersUiEventOnRemoveDismissed.shared)
-            }
-        } message: { member in
-            Text("\(member.name) hasn't joined yet. You can add them again later.")
-        }
-        .alert(releaseTitle, isPresented: releaseShown, presenting: model?.state.memberToRelease) { member in
-            Button("Release", role: .destructive) {
-                model?.send(MembersUiEventOnReleaseConfirmed.shared)
-            }
-            Button("Cancel", role: .cancel) {
-                model?.send(MembersUiEventOnReleaseDismissed.shared)
-            }
-        } message: { member in
-            Text("Whoever joined as \(member.name) leaves the group. \(member.name)'s name, color and bills stay, and \(member.name) can be picked again through the group's link.")
-        }
-        // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
-        .glassToast(
-            "Couldn't release the name. Check your connection and try again.",
-            trigger: model?.releaseErrorCount ?? 0,
-        )
-        .recordedPaymentNotice(
-            model?.state.recordedPayment,
-            onUndo: { model?.send(MembersUiEventOnUndoPaymentClicked.shared) },
-            onShown: { model?.send(MembersUiEventOnRecordedPaymentNoticeShown.shared) },
-        )
-        .onAppear {
-            if model == nil { model = MembersModel(route: route) }
-        }
+    private var state: MembersUiState {
+        model.state
     }
 
-    /// "Viagem Floripa · 2 of 4 joined".
-    private var subtitle: Text {
-        guard let state = model?.state, state.isLoaded else { return Text(verbatim: "") }
-        let joined = Text("\(Int(state.joinedCount)) of \(Int(state.memberCount)) joined")
-        return Text("\(Text(verbatim: state.groupName)) · \(joined)")
+    var body: some View {
+        if state.isLoaded {
+            Section {
+                HStack(spacing: 12) {
+                    Image(systemName: "link")
+                        .foregroundStyle(Palette.accent)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Invite link")
+                        Group {
+                            if let displayLink = state.displayLink {
+                                Text(verbatim: displayLink)
+                            } else {
+                                Text("Not created yet")
+                            }
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    }
+                    Spacer()
+                    Button("Share") {
+                        model.send(MembersUiEventOnShareClicked.shared)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonBorderShape(.capsule)
+                    .invitePopover(host: host)
+                }
+            }
+            Section("People") {
+                ForEach(state.members, id: \.id) { member in
+                    MemberRow(
+                        member: member,
+                        currency: state.currency,
+                        isReleasing: state.isReleasing && state.memberToRelease?.id == member.id,
+                    ) { model.send($0) }
+                }
+            }
+        }
+    }
+}
+
+extension View {
+    /// What Members opens over the group: the name editor and the personal invite as sheets, the removal and release
+    /// confirmations, and its toasts.
+    func membersOverlays(_ model: MembersModel?) -> some View {
+        modifier(MembersOverlays(model: model))
+    }
+}
+
+private struct MembersOverlays: ViewModifier {
+    let model: MembersModel?
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: editorShown) {
+                if let model {
+                    MemberNameSheet(model: model)
+                }
+            }
+            .sheet(isPresented: personalInviteShown) {
+                if let model {
+                    PersonalInviteSheet(model: model)
+                }
+            }
+            .alert(removeTitle, isPresented: removalShown, presenting: model?.state.memberToRemove) { member in
+                Button("Remove", role: .destructive) {
+                    model?.send(MembersUiEventOnRemoveConfirmed.shared)
+                }
+                Button("Cancel", role: .cancel) {
+                    model?.send(MembersUiEventOnRemoveDismissed.shared)
+                }
+            } message: { member in
+                Text("\(member.name) hasn't joined yet. You can add them again later.")
+            }
+            .alert(releaseTitle, isPresented: releaseShown, presenting: model?.state.memberToRelease) { member in
+                Button("Release", role: .destructive) {
+                    model?.send(MembersUiEventOnReleaseConfirmed.shared)
+                }
+                Button("Cancel", role: .cancel) {
+                    model?.send(MembersUiEventOnReleaseDismissed.shared)
+                }
+            } message: { member in
+                Text("Whoever joined as \(member.name) leaves the group. \(member.name)'s name, color and bills stay, and \(member.name) can be picked again through the group's link.")
+            }
+            // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
+            .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
+            .glassToast(
+                "Couldn't release the name. Check your connection and try again.",
+                trigger: model?.releaseErrorCount ?? 0,
+            )
     }
 
     /// Dismissing the sheet (a swipe down, Esc) closes the editor in the ViewModel too.
@@ -196,79 +198,6 @@ struct MembersView: View {
                 if !shown { model?.send(MembersUiEventOnReleaseDismissed.shared) }
             },
         )
-    }
-}
-
-private struct MembersList: View {
-    let model: MembersModel
-    /// This screen in the shared back stack, whose Share anchors the Mac's invite popover.
-    let host: AppRoute
-
-    private var state: MembersUiState {
-        model.state
-    }
-
-    var body: some View {
-        List {
-            if let balance = state.myBalance {
-                Section {
-                    BalanceCard(
-                        balance: balance,
-                        currency: state.currency,
-                        isEveryoneSettled: state.isEveryoneSettled,
-                    ) {
-                        model.send(MembersUiEventOnSettleClicked.shared)
-                    }
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
-            }
-            #if os(iOS)
-            GroupTabsSection(selected: .members) { model.select($0) }
-            #endif
-            Section {
-                HStack(spacing: 12) {
-                    Image(systemName: "link")
-                        .foregroundStyle(Palette.accent)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Invite link")
-                        Group {
-                            if let displayLink = state.displayLink {
-                                Text(verbatim: displayLink)
-                            } else {
-                                Text("Not created yet")
-                            }
-                        }
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                    }
-                    Spacer()
-                    Button("Share") {
-                        model.send(MembersUiEventOnShareClicked.shared)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .buttonBorderShape(.capsule)
-                    .invitePopover(host: host)
-                }
-            }
-            Section("People") {
-                ForEach(state.members, id: \.id) { member in
-                    MemberRow(
-                        member: member,
-                        currency: state.currency,
-                        isReleasing: state.isReleasing && state.memberToRelease?.id == member.id,
-                    ) { model.send($0) }
-                }
-            }
-        }
-        #if os(iOS)
-        .listStyle(.insetGrouped)
-        #endif
-        .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
-        .frame(maxWidth: .infinity)
-        .background(Palette.groupedBackground)
     }
 }
 

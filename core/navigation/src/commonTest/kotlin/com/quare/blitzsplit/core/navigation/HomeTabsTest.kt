@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,7 +16,11 @@ class HomeTabsTest {
         prepareScenario(
             Route.Home,
             Route.Groups,
-            Route.GroupDetail(GROUP_ID, joinedAs = null),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
             Route.BillDetail(GROUP_ID, EXPENSE_ID),
         )
         val tab = Route.Groups
@@ -43,7 +48,15 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group opened from Grupos WHEN opening Saldos THEN Saldos takes the place of Grupos and the group`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
         val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
         // When
@@ -192,8 +205,12 @@ class HomeTabsTest {
         prepareScenario(
             Route.Home,
             Route.Groups,
-            Route.GroupDetail(GROUP_ID, joinedAs = null),
-            Route.Balances(GROUP_ID),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES),
         )
 
         // When
@@ -242,7 +259,15 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over the groups WHEN its rail opens Grupos THEN goes back to the groups`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null))
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         navigator.openHomeTab(HomeTab.GROUPS)
@@ -254,7 +279,16 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over the groups WHEN its rail opens Saldos THEN Saldos takes the groups place`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null), Route.Members("trip"))
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS),
+        )
 
         // When
         navigator.openHomeTab(HomeTab.BALANCES)
@@ -270,7 +304,15 @@ class HomeTabsTest {
     fun `GIVEN a group over Saldos filtered WHEN its rail opens Saldos THEN goes back to that Saldos`() {
         // Given
         val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
-        prepareScenario(Route.Home, balances, Route.GroupDetail("trip", joinedAs = null))
+        prepareScenario(
+            Route.Home,
+            balances,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         navigator.openHomeTab(HomeTab.BALANCES)
@@ -294,7 +336,15 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over the groups WHEN its rail opens Atividade THEN Atividade takes the groups place`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null))
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         navigator.openHomeTab(HomeTab.ACTIVITY)
@@ -306,7 +356,14 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group Inicio opened WHEN its rail opens Inicio THEN goes back to Inicio`() {
         // Given
-        prepareScenario(Route.Home, Route.GroupDetail("trip", joinedAs = null))
+        prepareScenario(
+            Route.Home,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         navigator.openHomeTab(HomeTab.HOME)
@@ -318,8 +375,18 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over the groups WHEN asking its home tab THEN is Grupos`() {
         // Given
-        val route = Route.Members("trip")
-        val stack = listOf(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null), route)
+        val route = Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.Groups,
+                Route.GroupDetail(
+                    "trip",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+            )
 
         // When
         val tab = stack.findHomeTabUnder(route)
@@ -331,7 +398,11 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group Inicio opened WHEN asking its home tab THEN is Inicio`() {
         // Given
-        val route = Route.GroupDetail("trip", joinedAs = null)
+        val route = Route.GroupDetail(
+            "trip",
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        )
 
         // When
         val tab = listOf(Route.Home, route).findHomeTabUnder(route)
@@ -343,7 +414,11 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over a contact WHEN asking its home tab THEN is Contatos`() {
         // Given
-        val route = Route.GroupDetail("trip", joinedAs = null)
+        val route = Route.GroupDetail(
+            "trip",
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        )
         val stack = listOf(Route.Home, Route.Contacts, Route.ContactsAgenda, route)
 
         // When
@@ -368,7 +443,11 @@ class HomeTabsTest {
     @Test
     fun `GIVEN no home in the back stack WHEN asking a screen home tab THEN is Inicio`() {
         // Given
-        val route = Route.GroupDetail("trip", joinedAs = null)
+        val route = Route.GroupDetail(
+            "trip",
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        )
 
         // When
         val tab = listOf(Route.Welcome, route).findHomeTabUnder(route)

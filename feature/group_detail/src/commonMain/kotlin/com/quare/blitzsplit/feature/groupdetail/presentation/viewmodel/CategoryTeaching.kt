@@ -16,14 +16,15 @@ import kotlinx.coroutines.launch
 
 /*
  * Why: "Ensinar ao mapa?" (9.3e) once a bill of this group whose category was picked by hand is saved. The offer is
- * consumed as it arrives, so it shows on this screen once, and teaching saves the word picked in the person's map,
- * moving it from any other category, another group's included (one category per term); the bills already saved
- * don't change.
+ * consumed as it arrives, so it shows on Despesas once, and never while another tab is picked, and teaching saves
+ * the word picked in the person's map, moving it from any other category, another group's included (one category
+ * per term); the bills already saved don't change.
  */
 internal class CategoryTeaching(
     private val groupId: String,
     private val useCases: CategoryTeachUseCases,
     private val scope: CoroutineScope,
+    private val isOnExpenses: () -> Boolean,
     private val read: () -> CategoryTeach?,
     private val write: (CategoryTeach?) -> Unit,
     private val showError: suspend () -> Unit,
@@ -35,6 +36,7 @@ internal class CategoryTeaching(
             .onEach { offer ->
                 if (offer.groupId != groupId) return@onEach
                 useCases.consumeOffer(offer.expenseId)
+                if (!isOnExpenses()) return@onEach
                 teachOf(
                     offer = offer,
                     tree = trees.first(),

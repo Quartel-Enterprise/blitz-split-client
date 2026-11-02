@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="members_back">Voltar</string>
-    <plurals name="members_count">
-        <item quantity="one">%d membro</item>
-        <item quantity="other">%d membros</item>
-    </plurals>
-    <plurals name="members_joined_count">
-        <item quantity="one">%d já entrou</item>
-        <item quantity="other">%d já entraram</item>
-    </plurals>
-    <string name="members_summary">%1$s · %2$s</string>
-    <string name="members_tabs">Seções do grupo</string>
-    <string name="members_tab_expenses">Despesas</string>
-    <string name="members_tab_balances">Saldos</string>
-    <string name="members_tab_members">Membros</string>
     <string name="members_link_title">Link de convite</string>
     <string name="members_link_pending">Ainda não foi criado</string>
     <string name="members_share">Compartilhar</string>

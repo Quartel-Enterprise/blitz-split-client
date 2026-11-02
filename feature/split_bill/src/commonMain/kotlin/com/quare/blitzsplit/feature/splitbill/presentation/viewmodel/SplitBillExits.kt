@@ -1,8 +1,9 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
+import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 
 // Why: where "Rachar conta" and "Editar conta" go once closed, saved or deleted, only while still on top.
 internal class SplitBillExits(
@@ -31,19 +32,28 @@ internal class SplitBillExits(
         if (isBackOnGroupScreen(groupId)) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
+            navigator.replaceTop(
+                Route.GroupDetail(
+                    groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
         }
     }
 
-    // Why: whether leaveToBillGroup lands on the group's Despesas, the only screen that asks "Ensinar ao mapa?".
-    fun isLandingOnExpenses(groupId: String): Boolean {
+    /*
+     * Why: whether leaveToBillGroup lands on the group's screen, not on its Estatísticas: only its Despesas asks
+     * "Ensinar ao mapa?", and the group's ViewModel knows which tab is picked.
+     */
+    fun isLandingOnGroup(groupId: String): Boolean {
         if (!isOnTop()) return false
         return !isBackOnGroupScreen(groupId) || belowOrNull() is Route.GroupDetail
     }
 
     private fun isBackOnGroupScreen(groupId: String): Boolean {
         val below = belowOrNull() ?: return false
-        return tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId)
+        return groupScreenIdOrNull(below) == groupId || below == Route.GroupStats(groupId)
     }
 
     private fun belowOrNull(): Route? {

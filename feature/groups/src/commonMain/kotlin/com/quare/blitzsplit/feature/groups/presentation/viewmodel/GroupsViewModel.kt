@@ -24,13 +24,13 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
-import com.quare.blitzsplit.core.navigation.openBesideGroups
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -171,8 +171,8 @@ class GroupsViewModel(
                 ),
             )
         },
-        // Why: a group's Saldos is a tab of the group, which takes the place of the group beside the list.
-        openBalances = { groupId -> if (isListShown()) navigator.openBesideGroups(Route.Balances(groupId)) },
+        // Why: the group on its Saldos, which takes the place of the group beside the list.
+        openBalances = { groupId -> if (isListShown()) detailPane.openGroup(groupId, GroupTab.BALANCES) },
         // Why: the group left the device, so the pane beside the list no longer shows it.
         onExited = {
             if (navigator.backStack.value.groupBesideGroupsOrNull() == uiState.value.exitGroupId) {
@@ -310,7 +310,7 @@ class GroupsViewModel(
              * first's; beside the list, the group tapped takes the place of the one shown.
              */
             is GroupsUiEvent.OnGroupClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.GroupDetail(event.groupId, joinedAs = null))
+                detailPane.openGroup(event.groupId, GroupTab.EXPENSES)
             }
 
             GroupsUiEvent.OnJoinWithLinkClicked -> if (isListShown()) {
@@ -379,9 +379,9 @@ class GroupsViewModel(
                 detailPane.preview(uiState.value.search)
             }
 
-            // Why: Membros is a tab of the group, which takes the place of the group beside the list.
+            // Why: the group on its Membros, which takes the place of the group beside the list.
             is GroupsUiEvent.OnSearchPersonClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.Members(event.groupId))
+                detailPane.openGroup(event.groupId, GroupTab.MEMBERS)
             }
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
@@ -446,7 +446,7 @@ class GroupsViewModel(
         expenseId: String,
     ) {
         if (!isListShown()) return
-        navigator.openBesideGroups(Route.GroupDetail(groupId, joinedAs = null))
+        detailPane.openGroup(groupId, GroupTab.EXPENSES)
         navigator.navigate(Route.BillDetail(groupId, expenseId))
     }
 

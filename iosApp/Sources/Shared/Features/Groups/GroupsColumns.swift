@@ -26,7 +26,7 @@ struct GroupsColumns<ListContent: View>: View {
     /// The column beside the list: lying down with an iPad's room (`showsListDetail`), with only the group's tabs
     /// above the groups (sheets aside, which the path leaves out).
     private var showsDetail: Bool {
-        layout.showsListDetail && path.allSatisfy(\.isGroupTab) && !showsEmptyHomeAlone
+        layout.showsListDetail && path.allSatisfy(\.isGroupScreen) && !showsEmptyHomeAlone
     }
 
     /// No group yet and no fold down the window: the empty home takes the whole tab, as the iPad's board draws it.
@@ -67,9 +67,9 @@ struct GroupsColumns<ListContent: View>: View {
         }
     }
 
-    /// The group's tab right above the groups (`AppRoute.isGroupTab`), which roots the column beside the list.
+    /// The group's screen right above the groups (`AppRoute.isGroupScreen`), which roots the column beside the list.
     private var paneRoute: AppRoute? {
-        path.first.flatMap { $0.isGroupTab ? $0 : nil }
+        path.first.flatMap { $0.isGroupScreen ? $0 : nil }
     }
 
     /// Beside the detail the list pushes nothing; on its own it pushes the whole path, as before.

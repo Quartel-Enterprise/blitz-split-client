@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -1420,7 +1421,11 @@ class BillDetailViewModelTest {
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
     )
-    private val groupRoute = Route.GroupDetail(GROUP_ID, joinedAs = null)
+    private val groupRoute = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlierToday = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()

@@ -49,21 +49,16 @@ final class GroupDetailModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// Expenses is this screen: Balances and Members take its place.
-    func select(_ tab: GroupTab) {
-        switch tab {
-        case .balances: send(GroupDetailUiEventOnBalancesTabClicked.shared)
-        case .members: send(GroupDetailUiEventOnMembersClicked.shared)
-        case .expenses: break
-        }
+    /// The tab picked, which the ViewModel keeps: the back stack never moves with it.
+    var tab: GroupTab {
+        GroupTab(state.tab)
     }
 
     var actions: GroupScreenActions {
         GroupScreenActions(
-            select: { [weak self] in self?.select($0) },
+            select: { [weak self] in self?.send(GroupDetailUiEventOnTabSelected(tab: $0.shared)) },
             invite: { [weak self] in self?.send(GroupDetailUiEventOnInviteClicked.shared) },
             stats: { [weak self] in self?.send(GroupDetailUiEventOnStatsClicked.shared) },
-            members: { [weak self] in self?.send(GroupDetailUiEventOnMembersClicked.shared) },
             editGroup: { [weak self] in self?.send(GroupDetailUiEventOnEditGroupClicked.shared) },
             togglePin: { [weak self] in self?.send(GroupDetailUiEventOnPinToggled.shared) },
             leaveGroup: { [weak self] in self?.send(GroupDetailUiEventOnLeaveGroupClicked.shared) },
@@ -94,34 +89,46 @@ final class GroupDetailModel {
     }
 }
 
-/// "Expenses" of a group, pushed over the groups: the group's header, its balance card, its tabs and the bills and
-/// payments by day. On the Mac the bills are in a table, with the tabs in the toolbar.
+/// A group, pushed over the groups: its header, its balance card and its tabs drawn once, over the tab picked:
+/// Expenses (the bills and payments by day), Balances (who owes whom) or Members. Picking a tab only swaps the
+/// sections under the tabs. On the Mac the tabs are in the toolbar and the bills in a table.
 struct GroupDetailView: View {
     let route: RouteGroupDetail
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: GroupDetailModel?
+    /// Members' own ViewModel, made with the group's, so the people are already read when the tab is picked.
+    @State private var members: MembersModel?
     @State private var showsInlineTitle = false
 
     #if os(iOS)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     #endif
 
+    private var host: AppRoute {
+        .groupDetail(route)
+    }
+
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
                 #if os(macOS)
-                MacGroupExpenses(model: model)
+                MacGroupScreen(model: model, members: members, host: host)
                 #else
                 PhoneGroupScaffold(
                     header: model.state.header,
-                    hasExpenses: !model.state.isEmpty,
-                    tab: .expenses,
+                    hasExpenses: model.state.hasBills,
+                    tab: model.tab,
                     usesTwoColumns: verticalSizeClass == .compact,
                     showsInlineTitle: $showsInlineTitle,
                     actions: model.actions,
                 ) {
-                    PhoneExpenseSections(model: model)
+                    switch model.tab {
+                    case .expenses: PhoneExpenseSections(model: model)
+                    case .balances: BalancesSections(model: model)
+                    case .members:
+                        if let members { MembersSections(model: members, host: host) }
+                    }
                 }
                 #endif
             } else {
@@ -129,15 +136,17 @@ struct GroupDetailView: View {
             }
         }
         .groupScreenBars(
-            tab: .expenses,
-            host: .groupDetail(route),
+            tab: model?.tab ?? GroupTab(route.tab),
+            host: host,
             header: model?.state.isLoaded == true ? model?.state.header : nil,
-            hasExpenses: model?.state.isEmpty != true,
+            hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
+            addPerson: addPerson,
             showsInlineTitle: showsInlineTitle,
             exit: model?.state.exit,
             actions: model?.actions ?? .disabled,
         )
+        .membersOverlays(members)
         .alert("Delete this payment?", isPresented: paymentDeletionShown) {
             Button(role: .destructive) {
                 model?.send(GroupDetailUiEventOnPaymentDeleteConfirmed.shared)
@@ -164,7 +173,8 @@ struct GroupDetailView: View {
         )
         .glassToast("Couldn't teach the map. Try again.", trigger: model?.teachErrorCount ?? 0)
         .safeAreaInset(edge: .bottom) {
-            if let model, let teach = model.state.teach, !teach.isPickingWord {
+            // "Teach the map?" belongs to Expenses, the tab the bill landed on
+            if let model, model.tab == .expenses, let teach = model.state.teach, !teach.isPickingWord {
                 CategoryTeachBanner(teach: teach, model: model)
             }
         }
@@ -176,7 +186,14 @@ struct GroupDetailView: View {
         }
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
+            if members == nil { members = MembersModel(route: route) }
         }
+    }
+
+    /// Members' "Add person", once its people are read.
+    private var addPerson: (() -> Void)? {
+        guard model?.tab == .members, let members, members.state.isLoaded else { return nil }
+        return { members.send(MembersUiEventOnAddClicked.shared) }
     }
 
     /// "Teach the map" (9.3f) while the person picks the word; closing it any way is "Not now".
@@ -473,7 +490,36 @@ private struct DayEntryItem: Identifiable {
     }
 }
 
-/// The Mac window: the group's strip and its balance card over a table of the bills and payments by day.
+/// The Mac window: the group's strip and its balance card, drawn once, over the tab picked.
+private struct MacGroupScreen: View {
+    let model: GroupDetailModel
+    let members: MembersModel?
+    let host: AppRoute
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            MacGroupTop(header: model.state.header, actions: model.actions)
+            switch model.tab {
+            case .expenses: MacGroupExpenses(model: model)
+            case .balances:
+                List {
+                    BalancesSections(model: model)
+                }
+                .scrollContentBackground(.hidden)
+            case .members:
+                List {
+                    if let members { MembersSections(model: members, host: host) }
+                }
+                .scrollContentBackground(.hidden)
+                .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .background(Palette.groupedBackground)
+    }
+}
+
+/// Expenses in a Mac window: a table of the bills and payments by day.
 private struct MacGroupExpenses: View {
     let model: GroupDetailModel
 
@@ -485,7 +531,6 @@ private struct MacGroupExpenses: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            MacGroupTop(header: state.header, actions: model.actions)
             if let joinedAs = state.joinedAs {
                 VStack(alignment: .leading, spacing: 10) {
                     JoinedNotice(name: joinedAs, showsProtectAccess: state.showsProtectAccess) {
@@ -505,7 +550,6 @@ private struct MacGroupExpenses: View {
                 table
             }
         }
-        .background(Palette.groupedBackground)
     }
 
     private var currency: GroupCurrency {

@@ -18,7 +18,6 @@ import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSpli
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
@@ -110,14 +109,12 @@ object BlitzSplitApple : KoinComponent {
     fun createInviteViewModel(route: Route.Invite): ViewModelHolder<InviteViewModel> =
         ViewModelHolder(InviteViewModel::class) { get { parametersOf(route) } }
 
-    fun createMembersViewModel(route: Route.Members): ViewModelHolder<MembersViewModel> =
+    // Why: Membros' content under the group's header, opened with the group's route.
+    fun createMembersViewModel(route: Route.GroupDetail): ViewModelHolder<MembersViewModel> =
         ViewModelHolder(MembersViewModel::class) { get { parametersOf(route) } }
 
     fun createGroupDetailViewModel(route: Route.GroupDetail): ViewModelHolder<GroupDetailViewModel> =
         ViewModelHolder(GroupDetailViewModel::class) { get { parametersOf(route) } }
-
-    fun createBalancesViewModel(route: Route.Balances): ViewModelHolder<BalancesViewModel> =
-        ViewModelHolder(BalancesViewModel::class) { get { parametersOf(route) } }
 
     fun createRegisterPaymentViewModel(route: Route.RegisterPayment): ViewModelHolder<RegisterPaymentViewModel> =
         ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }

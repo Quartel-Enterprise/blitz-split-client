@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.UiEvent
 
@@ -15,11 +16,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Estatísticas" in the top bar, next to "Convidar pessoas".
     data object OnStatsClicked : GroupDetailUiEvent
 
-    // Why: the "Membros" tab and the faces under the name.
-    data object OnMembersClicked : GroupDetailUiEvent
-
-    // Why: the "Saldos" tab.
-    data object OnBalancesTabClicked : GroupDetailUiEvent
+    // Why: Despesas, Saldos or Membros under the header, and the faces under the name (Membros).
+    data class OnTabSelected(
+        val tab: GroupTab,
+    ) : GroupDetailUiEvent
 
     // Why: a tab of the home's rail, which Android keeps beside the group when it is drawn alone.
     data class OnRailTabClicked(
@@ -57,6 +57,12 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Acertar" on the balance card, which opens Registrar pagamento with whoever this person owes the most.
     data object OnSettleClicked : GroupDetailUiEvent
+
+    // Why: "Acertar", "Recebi" or "Já pagou" on a pair of Saldos, which opens Registrar pagamento for it.
+    data class OnDebtClicked(
+        val fromMemberId: String,
+        val toMemberId: String,
+    ) : GroupDetailUiEvent
 
     // Why: a payment on the list, which asks "Apagar este acerto?".
     data class OnPaymentClicked(

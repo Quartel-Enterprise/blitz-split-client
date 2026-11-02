@@ -11,8 +11,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -60,8 +60,12 @@ internal val previewGroupExit = GroupExitState(
 
 internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailUiState = GroupDetailUiState(
     header = createPreviewHeader(hasBills = days.isNotEmpty()),
+    tab = GroupTab.EXPENSES,
     days = days,
     paymentToDelete = null,
+    myDebts = emptyList(),
+    otherDebts = emptyList(),
+    hasBills = days.isNotEmpty(),
     recordedPayment = null,
     showsBillDeletedNotice = false,
     exit = previewGroupExit,
@@ -148,8 +152,10 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
     ),
 )
 
-internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
-    header = createPreviewHeader(),
+internal fun createPreviewBalancesState(): GroupDetailUiState = createPreviewGroupDetailState(
+    days = createPreviewDays(),
+).copy(
+    tab = GroupTab.BALANCES,
     myDebts = listOf(
         DebtRow(
             fromMemberId = "me",
@@ -184,10 +190,4 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
             kind = DebtKind.BETWEEN_OTHERS,
         ),
     ),
-    hasBills = true,
-    recordedPayment = null,
-    exit = previewGroupExit,
-    isLoaded = true,
-    homeTab = HomeTab.GROUPS,
-    activityUnreadCount = 0,
 )

@@ -1,143 +1,13 @@
-import Observation
 import Shared
 import SwiftUI
 
-@Observable
-final class BalancesModel {
-    private(set) var state: BalancesUiState
-    private(set) var leaveErrorCount = 0
-    private(set) var deleteErrorCount = 0
-    private(set) var changeErrorCount = 0
-
-    @ObservationIgnored private let holder: ViewModelHolder<BalancesViewModel>
-    @ObservationIgnored private let watches = WatchBag()
-
-    init(route: RouteBalances) {
-        holder = BlitzSplitApple.shared.createBalancesViewModel(route: route)
-        let viewModel = holder.viewModel
-        state = viewModel.uiState.value as! BalancesUiState
-        watches.add(viewModel.stateWatcher.observe { [weak self] state in
-            self?.state = state
-        })
-        watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            switch action {
-            case is BalancesUiActionShowLeaveError: self?.leaveErrorCount += 1
-            case is BalancesUiActionShowDeleteError: self?.deleteErrorCount += 1
-            case is BalancesUiActionShowChangeError: self?.changeErrorCount += 1
-            default: break
-            }
-        })
-    }
-
-    func send(_ event: any BalancesUiEvent) {
-        holder.viewModel.onEvent(event: event)
-    }
-
-    /// Balances is this screen: Expenses and Members take its place.
-    func select(_ tab: GroupTab) {
-        switch tab {
-        case .expenses: send(BalancesUiEventOnExpensesTabClicked.shared)
-        case .members: send(BalancesUiEventOnMembersClicked.shared)
-        case .balances: break
-        }
-    }
-
-    var actions: GroupScreenActions {
-        GroupScreenActions(
-            select: { [weak self] in self?.select($0) },
-            invite: { [weak self] in self?.send(BalancesUiEventOnInviteClicked.shared) },
-            stats: { [weak self] in self?.send(BalancesUiEventOnStatsClicked.shared) },
-            members: { [weak self] in self?.send(BalancesUiEventOnMembersClicked.shared) },
-            editGroup: { [weak self] in self?.send(BalancesUiEventOnEditGroupClicked.shared) },
-            togglePin: { [weak self] in self?.send(BalancesUiEventOnPinToggled.shared) },
-            leaveGroup: { [weak self] in self?.send(BalancesUiEventOnLeaveGroupClicked.shared) },
-            deleteGroup: { [weak self] in self?.send(BalancesUiEventOnDeleteGroupClicked.shared) },
-            splitBill: { [weak self] in self?.send(BalancesUiEventOnSplitBillClicked.shared) },
-            settle: { [weak self] in self?.send(BalancesUiEventOnSettleClicked.shared) },
-            confirmExit: { [weak self] in self?.send(BalancesUiEventOnGroupExitConfirmed.shared) },
-            dismissExit: { [weak self] in self?.send(BalancesUiEventOnGroupExitDismissed.shared) },
-            backToGroups: { [weak self] in self?.send(BalancesUiEventOnBackToGroupsClicked.shared) },
-        )
-    }
-
-    isolated deinit {
-        holder.clear()
-    }
-}
-
-/// "Balances": the group's tab with who owes whom, each pair once and already netted, under the same header, balance
-/// card, tabs and bars as Expenses. A pair opens "Record payment" over the group.
-struct BalancesView: View {
-    let route: RouteBalances
-
-    /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
-    @State private var model: BalancesModel?
-    @State private var showsInlineTitle = false
-
-    #if os(iOS)
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-    #endif
-
-    var body: some View {
-        Group {
-            if let model, model.state.isLoaded {
-                #if os(macOS)
-                VStack(alignment: .leading, spacing: 0) {
-                    MacGroupTop(header: model.state.header, actions: model.actions)
-                    List {
-                        BalancesSections(model: model)
-                    }
-                    .scrollContentBackground(.hidden)
-                }
-                .background(Palette.groupedBackground)
-                #else
-                PhoneGroupScaffold(
-                    header: model.state.header,
-                    hasExpenses: model.state.hasBills,
-                    tab: .balances,
-                    usesTwoColumns: verticalSizeClass == .compact,
-                    showsInlineTitle: $showsInlineTitle,
-                    actions: model.actions,
-                ) {
-                    BalancesSections(model: model)
-                }
-                #endif
-            } else {
-                Palette.groupedBackground.ignoresSafeArea()
-            }
-        }
-        .groupScreenBars(
-            tab: .balances,
-            host: .balances(route),
-            header: model?.state.isLoaded == true ? model?.state.header : nil,
-            hasExpenses: model?.state.hasBills == true,
-            showsSplitBill: model?.state.showsSplitBillButton == true,
-            showsInlineTitle: showsInlineTitle,
-            exit: model?.state.exit,
-            actions: model?.actions ?? .disabled,
-        )
-        .glassToast(GroupExitCopy.errorToasts(
-            leave: model?.leaveErrorCount ?? 0,
-            delete: model?.deleteErrorCount ?? 0,
-            change: model?.changeErrorCount ?? 0,
-        ))
-        .recordedPaymentNotice(
-            model?.state.recordedPayment,
-            onUndo: { model?.send(BalancesUiEventOnUndoPaymentClicked.shared) },
-            onShown: { model?.send(BalancesUiEventOnRecordedPaymentNoticeShown.shared) },
-        )
-        .onAppear {
-            if model == nil { model = BalancesModel(route: route) }
-        }
-    }
-}
-
+/// "Balances", the group's tab with who owes whom, each pair once and already netted, under the group's header:
 /// "Nobody owes anything yet" before the first bill, "Everyone's settled up" once nobody owes, then "With you" and
-/// "Between the others", and the note on how the pairs are netted.
-private struct BalancesSections: View {
-    let model: BalancesModel
+/// "Between the others", and the note on how the pairs are netted. A pair opens "Record payment" over the group.
+struct BalancesSections: View {
+    let model: GroupDetailModel
 
-    private var state: BalancesUiState {
+    private var state: GroupDetailUiState {
         model.state
     }
 
@@ -146,7 +16,7 @@ private struct BalancesSections: View {
     }
 
     var body: some View {
-        if state.isEmpty {
+        if state.isBalancesEmpty {
             Section {
                 ContentUnavailableView(
                     "Nobody owes anything yet",
@@ -158,7 +28,7 @@ private struct BalancesSections: View {
         } else if state.header.isEveryoneSettled {
             Section {
                 EveryoneSettled(canDelete: state.exit.canLeaveOrDelete) {
-                    model.send(BalancesUiEventOnDeleteGroupClicked.shared)
+                    model.send(GroupDetailUiEventOnDeleteGroupClicked.shared)
                 }
             }
         }
@@ -202,7 +72,7 @@ private struct BalancesSections: View {
     private func debtRows(_ rows: [DebtRow]) -> some View {
         ForEach(rows, id: \.self) { row in
             DebtRowView(row: row, currency: currency) {
-                model.send(BalancesUiEventOnDebtClicked(fromMemberId: row.fromMemberId, toMemberId: row.toMemberId))
+                model.send(GroupDetailUiEventOnDebtClicked(fromMemberId: row.fromMemberId, toMemberId: row.toMemberId))
             }
         }
     }

@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -327,7 +328,15 @@ class EditBillViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), billDetail),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                billDetail,
+            ),
             navigator.backStack.value,
         )
         assertTrue(actions.isEmpty())
@@ -512,7 +521,15 @@ class EditBillViewModelTest {
                     .description,
             )
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), billDetail),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    billDetail,
+                ),
                 navigator.backStack.value,
             )
         }
@@ -652,7 +669,17 @@ class EditBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
             assertTrue(actions.isEmpty())
         }
 
@@ -674,14 +701,33 @@ class EditBillViewModelTest {
     fun `GIVEN Editar conta opened without Conta under it WHEN the delete finishes THEN goes back once`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(underneath = listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)))
+            prepareScenario(
+                underneath = listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+            )
             viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
 
             // When
             viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
             assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
@@ -690,7 +736,17 @@ class EditBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             val otherBill = Route.BillDetail(GROUP_ID, expenseId = "expense-2")
-            prepareScenario(underneath = listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), otherBill))
+            prepareScenario(
+                underneath = listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    otherBill,
+                ),
+            )
             viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
 
             // When
@@ -698,7 +754,15 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), otherBill),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    otherBill,
+                ),
                 navigator.backStack.value,
             )
         }
@@ -795,7 +859,17 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(listOf(EXPENSE_ID), expenses.deletedIds)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
             assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
@@ -814,7 +888,15 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), billDetail),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    billDetail,
+                ),
                 navigator.backStack.value,
             )
             assertNull(deletedBills.observeNoticeGroupId().first())
@@ -852,7 +934,17 @@ class EditBillViewModelTest {
 
             // Then
             assertTrue(actions.isEmpty())
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
             assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
         }
 
@@ -882,21 +974,50 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
     fun `GIVEN Editar conta opened without Conta under it WHEN the bill is deleted elsewhere THEN goes back once`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(underneath = listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)))
+            prepareScenario(
+                underneath = listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+            )
 
             // When
             expenses.expenses.value = emptyList()
 
             // Then
             assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -904,7 +1025,7 @@ class EditBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val members = Route.Members(GROUP_ID)
+            val members = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)
             navigator.navigate(members)
 
             // When
@@ -919,7 +1040,7 @@ class EditBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val members = Route.Members(GROUP_ID)
+            val members = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)
             navigator.navigate(members)
             expenses.expenses.value = emptyList()
 
@@ -927,7 +1048,17 @@ class EditBillViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -1007,7 +1138,17 @@ class EditBillViewModelTest {
 
     private val billDetail = Route.BillDetail(GROUP_ID, EXPENSE_ID)
 
-    private val fullStack = listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), billDetail, route)
+    private val fullStack =
+        listOf(
+            Route.Groups,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            billDetail,
+            route,
+        )
 
     private val yesterdayMillis = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
 
@@ -1092,7 +1233,16 @@ class EditBillViewModelTest {
     private fun TestScope.prepareScenario(
         storedExpense: Expense? = savedBill,
         screen: Route.SplitBill = route,
-        underneath: List<Route> = listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), billDetail),
+        underneath: List<Route> =
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                billDetail,
+            ),
         decimalSeparator: Char = ',',
         updateError: Throwable? = null,
         deleteError: Throwable? = null,

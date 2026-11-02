@@ -5565,10 +5565,6 @@
         }
       }
     },
-    "%@ · %@" : {
-      "comment" : "The group's name and how many of its members joined, in the Members subtitle",
-      "shouldTranslate" : false
-    },
     "Release" : {
       "comment" : "Confirms releasing the name of a member someone joined as",
       "localizations" : {
@@ -5957,45 +5953,6 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld membros"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "%lld of %lld joined" : {
-      "comment" : "Under Members: how many of the group's members joined",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld of %2$lld joined"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%#@joined@"
-          },
-          "substitutions" : {
-            "joined" : {
-              "argNum" : 1,
-              "formatSpecifier" : "lld",
-              "variations" : {
-                "plural" : {
-                  "one" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%arg de %2$lld já entrou"
-                    }
-                  },
-                  "other" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%arg de %2$lld já entraram"
-                    }
-                  }
                 }
               }
             }

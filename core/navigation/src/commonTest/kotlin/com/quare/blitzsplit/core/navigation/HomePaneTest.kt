@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.GroupTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -16,22 +17,54 @@ class HomePaneTest {
         prepareScenario(Route.Groups)
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("trip", joinedAs = null))
+        navigator.openBesideGroups(
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("trip", joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    "trip",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
     fun `GIVEN a tab of a group beside the groups WHEN opening another group THEN takes its place`() {
         // Given
-        prepareScenario(Route.Groups, Route.Members("trip"))
+        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS))
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("flat", joinedAs = null))
+        navigator.openBesideGroups(
+            Route.GroupDetail(
+                "flat",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("flat", joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    "flat",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -40,16 +73,36 @@ class HomePaneTest {
         prepareScenario(Route.Welcome)
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("trip", joinedAs = null))
+        navigator.openBesideGroups(
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // Then
-        assertEquals(listOf(Route.Welcome, Route.GroupDetail("trip", joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Welcome,
+                Route.GroupDetail(
+                    "trip",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
     fun `GIVEN the Saldos of a group right above the groups WHEN reading the group beside them THEN is that group`() {
         // Given
-        prepareScenario(Route.Groups, Route.Balances("trip"), Route.GroupStats("trip"))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail("trip", joinedAs = null, GroupTab.BALANCES),
+            Route.GroupStats("trip"),
+        )
 
         // When
         val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
@@ -73,7 +126,14 @@ class HomePaneTest {
     @Test
     fun `GIVEN only a tab of a group above the groups WHEN asking whether only the pane is above THEN it is`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
@@ -85,7 +145,15 @@ class HomePaneTest {
     @Test
     fun `GIVEN a bill over the group beside the groups WHEN asking whether only the pane is above THEN it is not`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null), Route.BillDetail("trip", "dinner"))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.BillDetail("trip", "dinner"),
+        )
 
         // When
         val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
@@ -111,8 +179,16 @@ class HomePaneTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail("trip", joinedAs = null),
-            Route.GroupDetail("flat", joinedAs = null),
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.GroupDetail(
+                "flat",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
         )
 
         // When

@@ -10,9 +10,12 @@ import {
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import type { GroupTab } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
+import { BalancesTab } from '@/features/balances/BalancesTab'
+import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -27,12 +30,14 @@ import { GroupPage } from './GroupPage'
 const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
 
 /**
- * "Despesas do grupo": the group's bills and the payments that settled its debts by day, newest first, under the
- * group's page (header, balance card, tabs). A bill opens "Conta" over it; a payment asks "Apagar este acerto?". A bill
- * someone else deleted while it was open, and a payment just recorded, say so here.
+ * The group's page (header, balance card, tabs), drawn once over the tab picked, which only swaps what is under the
+ * tabs: "Despesas do grupo" (the bills and the payments that settled its debts by day, newest first), Saldos or
+ * Membros. A bill opens "Conta" over it; a payment asks "Apagar este acerto?". A bill someone else deleted while it was
+ * open, and a payment just recorded, say so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
+  const members = useMembers(route)
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
@@ -46,19 +51,42 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   useCategoryTeachNotice(presenter, state?.teach)
   if (!presenter || !state?.isLoaded) return null
 
+  const tab = state.tab as GroupTab
+  const membersPresenter = members.presenter
+  const membersState = members.state?.isLoaded ? members.state : null
   return (
     <GroupPage
       header={state.header}
-      tab="expenses"
-      hasExpenses={!state.isEmpty}
+      tab={tab}
+      hasExpenses={state.hasBills}
       showsSplitBillButton={state.showsSplitBillButton}
+      onAddPerson={tab === 'members' && membersPresenter && membersState ? () => membersPresenter.add() : undefined}
       exit={state.exit}
       events={presenter}
-      onSelectTab={(tab) => {
-        if (tab === 'balances') presenter.balances()
-        else if (tab === 'members') presenter.members()
-      }}
+      onSelectTab={(picked) => presenter.selectTab(picked)}
     >
+      {tab === 'expenses' && <ExpensesTab presenter={presenter} state={state} />}
+      {tab === 'balances' && <BalancesTab presenter={presenter} state={state} />}
+      {tab === 'members' && membersPresenter && membersState && <MembersTab presenter={membersPresenter} state={membersState} />}
+      {state.paymentToDelete && (
+        <ConfirmDialog
+          title={t('payment_deleteTitle')}
+          description={t('payment_deleteBody')}
+          confirmLabel={t('payment_deleteConfirm')}
+          onConfirm={() => presenter.confirmPaymentDelete()}
+          onDismiss={() => presenter.dismissPaymentDelete()}
+        />
+      )}
+      {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
+      {membersPresenter && membersState && <MembersDialogs presenter={membersPresenter} state={membersState} />}
+    </GroupPage>
+  )
+}
+
+/** Despesas: "Você entrou como" right after joining, then the empty state or the bills and payments by day. */
+function ExpensesTab({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
+  return (
+    <>
       {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
       {state.isEmpty ? (
         <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
@@ -77,17 +105,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       ) : (
         <ExpensesTable presenter={presenter} state={state} />
       )}
-      {state.paymentToDelete && (
-        <ConfirmDialog
-          title={t('payment_deleteTitle')}
-          description={t('payment_deleteBody')}
-          confirmLabel={t('payment_deleteConfirm')}
-          onConfirm={() => presenter.confirmPaymentDelete()}
-          onDismiss={() => presenter.dismissPaymentDelete()}
-        />
-      )}
-      {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
-    </GroupPage>
+    </>
   )
 }
 

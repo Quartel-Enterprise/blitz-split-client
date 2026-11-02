@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -220,7 +221,15 @@ class JoinPickViewModelTest {
             assertEquals(listOf(JoinChoice.AsMember(BRUNO_ID)), invites.joins.map { it.choice })
             assertEquals(listOf(CODE), invites.joins.map { it.code })
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -240,7 +249,15 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -257,7 +274,15 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -274,7 +299,15 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -602,7 +635,15 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Daniel")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Daniel",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }

@@ -218,15 +218,15 @@ final class AppModel {
         }
     }
 
-    /// The Mac's invite over the group's tab that opened it (F2Mac): a popover on that tab's "Invite people" rather
-    /// than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
+    /// The Mac's invite over the group that opened it (F2Mac): a popover on the group's "Invite people" (Members'
+    /// Share) rather than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
     var invitePopover: InvitePopover? {
         get {
             #if os(macOS)
             let stack = windowStack
             guard stack.count > 2, case let .invite(route) = stack[stack.count - 1] else { return nil }
             let host = stack[stack.count - 2]
-            guard host.isGroupTab else { return nil }
+            guard host.isGroupScreen else { return nil }
             return InvitePopover(host: host, route: route)
             #else
             return nil

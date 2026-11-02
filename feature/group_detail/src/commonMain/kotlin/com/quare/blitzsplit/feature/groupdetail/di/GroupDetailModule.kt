@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupdetail.di
 
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
@@ -13,5 +12,4 @@ val groupDetailModule = module {
     factoryOf(::GroupScreenUseCases)
     factoryOf(::CategoryTeachUseCases)
     viewModelOf(::GroupDetailViewModel)
-    viewModelOf(::BalancesViewModel)
 }

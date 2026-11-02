@@ -28,10 +28,30 @@ struct SplitBillButton: View {
     let action: () -> Void
 
     var body: some View {
+        ProminentBarButton(title: "Split a bill", systemImage: "plus", action: action)
+    }
+}
+
+/// Members' "Add person", in the place the group's other tabs give "Split a bill".
+struct AddPersonButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        ProminentBarButton(title: "Add person", systemImage: "person.badge.plus", action: action)
+    }
+}
+
+/// A toolbar's main button spelled out with its icon.
+private struct ProminentBarButton: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+    let action: () -> Void
+
+    var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
-                Image(systemName: "plus")
-                Text("Split a bill")
+                Image(systemName: systemImage)
+                Text(title)
             }
             .fontWeight(.semibold)
         }

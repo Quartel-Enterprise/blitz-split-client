@@ -40,6 +40,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
@@ -1019,7 +1020,17 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
 
         // Then
-        assertEquals(listOf(Route.Home, Route.GroupDetail("trio", joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Home,
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1087,7 +1098,15 @@ class HomeViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GroupDetail("trio", joinedAs = null), Route.BillDetail("trio", "dinner")),
+            listOf(
+                Route.Home,
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                Route.BillDetail("trio", "dinner"),
+            ),
             navigator.backStack.value,
         )
     }
@@ -1662,7 +1681,13 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             navigator.navigate(registerPayment)
             recordedPayments.post(
                 RecordedPayment.InGroup(

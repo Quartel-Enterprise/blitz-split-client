@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -193,7 +194,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
@@ -248,7 +255,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
@@ -306,7 +319,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
@@ -1320,7 +1339,15 @@ class GroupsViewModelTest {
         // Then
         assertTrue(actions.isEmpty())
         assertEquals(
-            listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+            listOf(
+                Route.Home,
+                Route.Groups,
+                Route.GroupDetail(
+                    "floripa",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -1337,7 +1364,15 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "floripa",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }

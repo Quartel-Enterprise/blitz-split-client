@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -511,10 +512,10 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill split from the group Saldos WHEN saving a category picked by hand THEN nothing asks to teach`() =
+    fun `GIVEN a bill split from the group stats WHEN saving a hand-picked category THEN nothing asks to teach`() =
         runTest {
             // Given
-            prepareScenario(below = Route.Balances(GROUP_ID))
+            prepareScenario(below = Route.GroupStats(GROUP_ID))
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
             viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
             viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
@@ -524,7 +525,7 @@ class BillCategoryViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
 
             // Then
-            assertEquals(Route.Balances(GROUP_ID), navigator.backStack.value.last())
+            assertEquals(Route.GroupStats(GROUP_ID), navigator.backStack.value.last())
             assertNull(teach.observeOffer().first())
         }
 
@@ -561,7 +562,11 @@ class BillCategoryViewModelTest {
         groupCategories: List<GroupCategory> = emptyList(),
         expenseId: String? = null,
         termChanges: List<CategoryTermChange> = emptyList(),
-        below: Route = Route.GroupDetail(GROUP_ID, joinedAs = null),
+        below: Route = Route.GroupDetail(
+            GROUP_ID,
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        ),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = stored)

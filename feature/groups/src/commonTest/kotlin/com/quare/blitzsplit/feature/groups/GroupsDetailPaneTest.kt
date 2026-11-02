@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
@@ -90,7 +91,17 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("ape"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "ape",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
             assertEquals("ape", viewModel.uiState.value.selectedGroupId)
         }
 
@@ -106,7 +117,14 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("churrasco", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -118,7 +136,7 @@ class GroupsDetailPaneTest {
             prepareScenario()
 
             // When
-            navigator.navigate(Route.Members("ape"))
+            navigator.navigate(Route.GroupDetail("ape", joinedAs = null, GroupTab.MEMBERS))
 
             // Then
             assertEquals("ape", viewModel.uiState.value.selectedGroupId)
@@ -154,7 +172,11 @@ class GroupsDetailPaneTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("churrasco", joinedAs = null),
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
                     Route.BillDetail("churrasco", "carne"),
                 ),
                 navigator.backStack.value,
@@ -198,7 +220,11 @@ class GroupsDetailPaneTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("ape", joinedAs = null),
+                    Route.GroupDetail(
+                        "ape",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
                     Route.Invite("churrasco", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -234,7 +260,17 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "ape",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -250,7 +286,14 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("churrasco", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
             assertTrue(viewModel.uiState.value.search.isOpen)
@@ -268,7 +311,10 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("carla"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("aniversario")), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("aniversario", joinedAs = null, GroupTab.MEMBERS)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -283,7 +329,17 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("mercado"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "ape",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -301,7 +357,14 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("aniversario", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "aniversario",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -322,7 +385,14 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("aniversario", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "aniversario",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -334,7 +404,13 @@ class GroupsDetailPaneTest {
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
-            navigator.navigate(Route.GroupDetail("ape", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "ape",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             val selectedBefore = viewModel.uiState.value.selectedGroupId
@@ -343,7 +419,14 @@ class GroupsDetailPaneTest {
             // Then
             assertEquals("ape", selectedBefore)
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("aniversario", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "aniversario",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -374,7 +457,14 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("churrasco", joinedAs = null)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -392,7 +482,17 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "ape",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     private val churrasco = group(

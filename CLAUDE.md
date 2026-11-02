@@ -171,7 +171,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     tapped since with the same first result.
   - The home's list and detail (5.1): an Android tablet lying down, an unfolded book (the tabletop alike) and an iPad
     lying down draw the list (with the rail on Android) and, beside it, the group tapped, its Despesas, Saldos and
-    Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
+    Membros switching in place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
     tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
     closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
@@ -273,8 +273,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     web (a drawer on a phone).
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
-    web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
-    the group never stacks over itself. Convidar's "Ir para o grupo" opens it too.
+    web). Its tabs Despesas / Saldos / Membros are one screen (`Route.GroupDetail.tab` only says which it opens on):
+    the header, "Seu saldo neste grupo" and the tabs stay, only what is under them changes, with no transition nor
+    check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
+    group. Convidar's "Ir para o grupo" and "Ver quem já entrou" open it in Convidar's place (`openGroup`), so the
+    group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
     with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
     history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
@@ -325,16 +328,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     digit of the amount (`SettledPairChange.announcementKey`). Salvar saves at once, with no extra question. "Apagar
     esta conta?" ends with the same sentence, from Conta too (`BillDeletion.settledPair`). A payment dated before the
     bill, or one whose pair the change doesn't move, says nothing.
-  - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
-    rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
-    someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
-    pessoal" answers "Em breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open
-    balance can't be removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's
-    creator sees "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances
-    included: after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla
-    leaves the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
+  - "Membros" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Convidar's "Ver quem já
+    entrou". Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
+    but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined),
+    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" answers "Em
+    breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open balance can't be
+    removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's creator sees
+    "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
+    after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
+    the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
     link. The released person gets no notice: the group just leaves their devices on the next sync.
-  - "Saldos" (`Route.Balances`) is the group's tab: each pair once, already netted (no simplifying debts across the
+  - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
@@ -393,9 +397,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`ConfirmLeave.deletesGroup`). Any member may delete the group
     once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
-    even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
-    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
-    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and Grupos or Início, whichever is
+    even with a change not pushed yet (the server's `removed_groups`): the group open on it, whatever the tab, says
+    "Grupo apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again
+    if a bill covered it; any other screen of the group (Convidar) just closes, and Grupos or Início, whichever is
     on top first, says "Carla apagou o grupo X." (`GroupsUiState.deletedGroupNotice`, `HomeUiState.deletedGroupNotice`,
     one shared queue); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",
@@ -493,12 +497,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Ensinar ao mapa?" (9.3e, 9.3f): once a new bill is saved in a category picked by hand that the map wouldn't
     pick (never Outros), the group's Despesas asks "Conta salva em Lazer › Esportes, e não em Casa › Aluguel, que o
     mapa sugeriu. Ensinar ao mapa?" once (`CategoryTeachOffer`, only while the app runs), only when saving lands on
-    that group's Despesas: a bill saved back on Saldos, Membros or Estatísticas asks nothing, then or later. A
-    snackbar on Android, a glass banner on Apple, a toast on the web (swiping it away is Agora não), with Ensinar and
-    Agora não. Ensinar asks which word of the title ("Nova no mapa…", "Sai de Casa › Aluguel…"; words under 3 letters
-    only when the map has them) and saves it in the map; where a word goes now is the whole map's, every group's
-    categories as Mapa de categorias reads them, so a word of another group's category says "Sai de Praia" and
-    teaching moves it (one category per term). The bills already saved don't change.
+    that group's Despesas: a bill saved back on Saldos, Membros or Estatísticas asks nothing, then or later (the
+    group's ViewModel drops the offer while another tab is picked). A snackbar on Android, a glass banner on Apple,
+    a toast on the web (swiping it away is Agora não), with Ensinar and Agora não. Ensinar asks which word of the
+    title ("Nova no mapa…", "Sai de Casa › Aluguel…"; words under 3 letters only when the map has them) and saves it
+    in the map; where a word goes now is the whole map's, every group's categories as Mapa de categorias reads them,
+    so a word of another group's category says "Sai de Praia" and teaching moves it (one category per term). The
+    bills already saved don't change.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones

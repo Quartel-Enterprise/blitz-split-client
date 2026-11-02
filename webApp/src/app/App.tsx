@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
-import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
 import { ContactsScreen } from '@/features/contacts/ContactsScreen'
@@ -20,7 +19,6 @@ import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
-import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { CategoryMapScreen } from '@/features/category-map/CategoryMapScreen'
@@ -132,14 +130,11 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <HomeScreen />
     case 'groups':
       return <GroupsScreen />
-    case 'members':
-      return route ? <MembersScreen key={route.groupId} route={route} /> : null
+    // Why: a route opening the same group on another tab (Convidar's "Ver quem já entrou") is a new page.
     case 'group-detail':
-      return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
+      return route ? <GroupDetailScreen key={`${route.groupId}/${route.groupTab}`} route={route} /> : null
     case 'group-stats':
       return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
-    case 'balances':
-      return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
     case 'activity':

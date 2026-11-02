@@ -1,11 +1,28 @@
+import Shared
 import SwiftUI
 
-/// The sections of a group: Expenses, Balances and Members. Each is its own route, so picking one only tells the
-/// ViewModel, which replaces the screen; the picker never moves by itself.
+/// The sections of a group: Expenses, Balances and Members, under the group's header. The pick is the group screen's
+/// state, so picking one only tells the ViewModel, which swaps what is under the tabs; the picker never moves by itself.
 enum GroupTab: Hashable, CaseIterable {
     case expenses
     case balances
     case members
+
+    init(_ tab: Shared.GroupTab) {
+        switch tab {
+        case .balances: self = .balances
+        case .members: self = .members
+        default: self = .expenses
+        }
+    }
+
+    var shared: Shared.GroupTab {
+        switch self {
+        case .expenses: .expenses
+        case .balances: .balances
+        case .members: .members
+        }
+    }
 
     var title: LocalizedStringKey {
         switch self {

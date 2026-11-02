@@ -1,35 +1,37 @@
 package com.quare.blitzsplit.core.navigation
 
+import com.quare.blitzsplit.core.model.GroupTab
+
 /*
- * Why: Despesas, Saldos and Membros are tabs of one group screen. Opening one from the other, or from a screen over either
- * ("Convidar"), lands on the tab in that screen's place, so the group never stacks over itself and back goes to
- * whatever was under it. Only while from is still on top: a native back may have closed it.
+ * Why: a screen over the group's ("Convidar") opens the group on one of its tabs. It lands in that screen's place, so
+ * the group never stacks over itself and back goes to whatever was under it: the group right below takes it as a new
+ * entry on that tab, unless it already opened there. Only while from is still on top: a native back may have closed it.
  */
-fun Navigator.openGroupTab(
+fun Navigator.openGroup(
     from: Route,
-    tab: Route,
+    groupId: String,
+    tab: GroupTab,
 ) {
     val stack = backStack.value
     if (stack.lastOrNull() != from) return
     val below = stack.getOrNull(stack.lastIndex - 1)
-    val belowGroupId = below?.let(::tabGroupIdOrNull)
+    val group = Route.GroupDetail(
+        groupId,
+        joinedAs = null,
+        tab = tab,
+    )
     when {
-        belowGroupId == null || belowGroupId != tabGroupIdOrNull(tab) -> replaceTop(tab)
+        below == null || groupScreenIdOrNull(below) != groupId -> replaceTop(group)
 
-        // Why: by the group alone, since the expenses just joined ("Você entrou como Bruno") are the same tab.
-        below != null && below::class == tab::class -> navigateBack()
+        // Why: by the group and tab alone, since the expenses just joined ("Você entrou como Bruno") are the same screen.
+        below is Route.GroupDetail && below.tab == tab -> navigateBack()
 
         else -> {
             navigateBack()
-            replaceTop(tab)
+            replaceTop(group)
         }
     }
 }
 
-// Why: the group whose tab (Despesas, Saldos or Membros) the route is, null for any other screen.
-fun tabGroupIdOrNull(route: Route): String? = when (route) {
-    is Route.GroupDetail -> route.groupId
-    is Route.Balances -> route.groupId
-    is Route.Members -> route.groupId
-    else -> null
-}
+// Why: the group whose screen the route is, null for any other screen.
+fun groupScreenIdOrNull(route: Route): String? = (route as? Route.GroupDetail)?.groupId

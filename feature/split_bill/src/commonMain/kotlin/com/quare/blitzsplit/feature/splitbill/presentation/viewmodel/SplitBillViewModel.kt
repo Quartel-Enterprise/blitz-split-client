@@ -548,8 +548,8 @@ class SplitBillViewModel(
             }
             result
                 .onSuccess { teachOffer ->
-                    // Why: "Ensinar ao mapa?" (9.3e) only on the group's Despesas the bill lands on, never later.
-                    if (expenseId == null && exits.isLandingOnExpenses(state.groupId)) {
+                    // Why: "Ensinar ao mapa?" (9.3e) only on the group the bill lands on, never later.
+                    if (expenseId == null && exits.isLandingOnGroup(state.groupId)) {
                         teachOffer?.let(offerCategoryTeach::invoke)
                     }
                     if (expenseId == null) exits.leaveToBillGroup(state.groupId) else exits.leave()
