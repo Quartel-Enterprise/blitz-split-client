@@ -373,7 +373,7 @@ struct ContactRowLabel: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: row.initials, color: row.color, photoUrl: nil, size: 40)
+            AvatarPhoto(initial: row.initials, color: row.color, photoUrl: row.photoUrl, size: 40)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(ContactsCopy.marked(row.name, row.match))

@@ -101,7 +101,7 @@ function personName(person: JsPaymentPerson | null | undefined): string {
 /** A member's face, blank for someone no longer in the group, as Saldos draws them; also "Quem pagou a quem?"'s. */
 export function PersonFace({ person, className = 'size-10 text-sm' }: { person: JsPaymentPerson | null | undefined; className?: string }) {
   if (!person) return <span className={cn('rounded-full bg-muted', className)} />
-  return <Avatar initial={person.initials} color={person.color} className={className} />
+  return <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={className} />
 }
 
 /** Whoever paid → whoever received, at the top. */

@@ -255,9 +255,9 @@ internal fun buildPreviewRow(
     initials = name.take(2).uppercase(),
     color = color,
     faces = listOf(
-        MemberFace("P", AvatarColor.BLUE),
-        MemberFace("A", AvatarColor.GREEN),
-        MemberFace("B", AvatarColor.PEACH),
+        MemberFace("P", AvatarColor.BLUE, photoUrl = null),
+        MemberFace("A", AvatarColor.GREEN, photoUrl = null),
+        MemberFace("B", AvatarColor.PEACH, photoUrl = null),
     ),
     extraMemberCount = 3,
     memberCount = 6,

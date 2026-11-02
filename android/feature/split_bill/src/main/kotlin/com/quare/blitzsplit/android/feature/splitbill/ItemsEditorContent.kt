@@ -280,6 +280,7 @@ private fun PersonTotalChip(
             AvatarBadge(
                 initial = row.person.initials,
                 color = row.person.avatarColor,
+                photoUrl = row.person.photoUrl,
                 size = 32.dp,
             )
             Column {
@@ -325,6 +326,7 @@ private fun PeopleTotalsList(
                     AvatarBadge(
                         initial = row.person.initials,
                         color = row.person.avatarColor,
+                        photoUrl = row.person.photoUrl,
                         size = 36.dp,
                     )
                     Column(modifier = Modifier.weight(1f)) {

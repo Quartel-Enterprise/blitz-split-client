@@ -363,6 +363,7 @@ private fun HiddenContactRow(
             AvatarBadge(
                 initial = row.initials,
                 color = row.color,
+                photoUrl = row.photoUrl,
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(

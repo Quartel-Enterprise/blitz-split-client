@@ -1204,6 +1204,7 @@ class GroupDetailPaymentsViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun share(

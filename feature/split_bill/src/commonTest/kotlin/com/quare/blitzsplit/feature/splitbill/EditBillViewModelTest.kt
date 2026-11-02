@@ -1228,6 +1228,7 @@ class EditBillViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun TestScope.prepareScenario(

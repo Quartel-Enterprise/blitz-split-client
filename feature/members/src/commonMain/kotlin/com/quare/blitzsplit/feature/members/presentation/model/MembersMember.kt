@@ -9,6 +9,8 @@ data class MembersMember(
     // Why: "AN" for Ana; this device's user shows the single initial of the home's avatar.
     val initials: String,
     val avatarColor: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     // Why: "(você)" and "Este aparelho"; this device's user can only be renamed.
     val isMe: Boolean,
     // Why: "Entrou" or "Ainda não entrou". Someone who joined can't be removed: "Ana já entrou no grupo".

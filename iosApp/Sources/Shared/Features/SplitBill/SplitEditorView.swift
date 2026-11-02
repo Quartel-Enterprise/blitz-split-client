@@ -161,7 +161,7 @@ private struct SplitPersonRow: View {
                     .foregroundStyle(checkboxStyle)
                     .accessibilityHidden(true)
             }
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                 .opacity(isOut ? 0.5 : 1)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: SplitBillCopy.name(person))

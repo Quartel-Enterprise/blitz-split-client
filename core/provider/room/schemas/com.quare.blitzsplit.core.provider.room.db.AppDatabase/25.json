@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 25,
-    "identityHash": "b4c4de1559f237e1a483faeb48cfd88b",
+    "identityHash": "81c73f0a60340ccf74b9a2eb4fc6ffe8",
     "entities": [
       {
         "tableName": "profile",
@@ -1166,112 +1166,33 @@
         }
       },
       {
-        "tableName": "bill_comment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `expenseId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `authorUserId` TEXT, `authorMemberId` TEXT, `authorName` TEXT, `threadId` TEXT, `replyToName` TEXT, `body` TEXT NOT NULL, `viaLink` INTEGER NOT NULL, `postedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`expenseId`) REFERENCES `expense`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "member_photo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `photoUrl` TEXT NOT NULL, PRIMARY KEY(`userId`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "userId",
+            "columnName": "userId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "expenseId",
-            "columnName": "expenseId",
+            "fieldPath": "photoUrl",
+            "columnName": "photoUrl",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "authorUserId",
-            "columnName": "authorUserId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "authorMemberId",
-            "columnName": "authorMemberId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "authorName",
-            "columnName": "authorName",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "threadId",
-            "columnName": "threadId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "replyToName",
-            "columnName": "replyToName",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "body",
-            "columnName": "body",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "viaLink",
-            "columnName": "viaLink",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "postedAt",
-            "columnName": "postedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
-            "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "userId"
           ]
-        },
-        "indices": [
-          {
-            "name": "index_bill_comment_expenseId",
-            "unique": false,
-            "columnNames": [
-              "expenseId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_bill_comment_expenseId` ON `${TABLE_NAME}` (`expenseId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "expense",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "expenseId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b4c4de1559f237e1a483faeb48cfd88b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '81c73f0a60340ccf74b9a2eb4fc6ffe8')"
     ]
   }
 }

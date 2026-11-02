@@ -516,6 +516,7 @@ class SplitBillUiStateTest {
         name = id,
         initials = "",
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = isMe,
         hasJoined = true,
     )

@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,7 +20,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
@@ -27,11 +30,9 @@ import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
-import com.quare.blitzsplit.android.feature.contacts.ContactInvitePresentation
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactProfileScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactsScreen
-import com.quare.blitzsplit.android.feature.contacts.rememberContactInvitePresentation
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
@@ -59,6 +60,7 @@ import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentScree
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.shared.app.AppUiState
@@ -145,18 +147,22 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
-    val contactInvitePresentation = rememberContactInvitePresentation()
-    val contactInviteMetadata = when (contactInvitePresentation) {
-        ContactInvitePresentation.BottomSheet -> BottomSheetSceneStrategy.bottomSheet
-
-        ContactInvitePresentation.Dialog -> FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
-
-        ContactInvitePresentation.TabletopHalves -> emptyMap()
+    /*
+     * Why: Registrar pagamento and Convidar of Contatos open the same way: a sheet on a phone, a dialog wider (a book's
+     * right half) and full screen on a tabletop, their content split on its hinge.
+     */
+    val formPresentation = rememberFormPresentation()
+    val formPresentationMetadata = when (formPresentation) {
+        FormPresentation.BottomSheet -> BottomSheetSceneStrategy.bottomSheet
+        FormPresentation.Dialog -> FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+        FormPresentation.TabletopHalves -> emptyMap()
+    }
+    // Why: a dialog wherever Registrar pagamento isn't a sheet, a tabletop's in its half, as short as it is.
+    val usesPickPaymentDialog = formPresentation != FormPresentation.BottomSheet
+    val pickPaymentMetadata = if (usesPickPaymentDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        BottomSheetSceneStrategy.bottomSheet
     }
     /*
      * Why: the home says whether it has no group at all, which only the book draws beside an empty detail. It can't
@@ -164,8 +170,20 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      */
     var isGroupsScreenEmpty by rememberSaveable { mutableStateOf(false) }
     val isHomeEmpty = isGroupsScreenEmpty && backStack.none { groupScreenIdOrNull(it) != null }
+    /*
+     * Why: a tabletop lying down draws the group's Saldos alone, full screen, its balance above the hinge and the pairs
+     * under it (6.2); its other tabs stay beside the list, as on a book. Only the group on top counts.
+     */
+    var openGroupTab by remember { mutableStateOf<Pair<Route.GroupDetail, GroupTab>?>(null) }
+    val topGroupRoute = backStack.lastOrNull { it is Route.GroupDetail }
+    // Why: a group closed forgets its tab, so opening it again never starts as the Saldos it was left on.
+    LaunchedEffect(topGroupRoute) {
+        if (openGroupTab?.first != topGroupRoute) openGroupTab = null
+    }
+    val showsBalancesAlone = formFactor == FormFactor.Tabletop &&
+        openGroupTab?.let { (route, tab) -> tab == GroupTab.BALANCES && topGroupRoute == route } == true
     val listDetail = homeListDetailOf(
-        listDetail = rememberListDetailLayout(),
+        listDetail = rememberListDetailLayout().takeUnless { showsBalancesAlone },
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
@@ -224,6 +242,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     GroupDetailScreen(
                         route = route,
                         membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
+                        onTabChanged = { tab -> openGroupTab = route to tab },
                     )
                 }
             }
@@ -262,32 +281,33 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.GroupStats>(metadata = groupStatsMetadata) { route ->
                 InGroupPane { GroupStatsScreen(route) }
             }
-            // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
-            entry<Route.RegisterPayment>(
-                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
-            ) { route ->
+            // Why: a sheet over the group on a phone, a dialog wider (a book's right half), full screen on a tabletop.
+            entry<Route.RegisterPayment>(metadata = formPresentationMetadata) { route ->
+                /*
+                 * Why: an open scene keeps the way it opened when the fold changes under it (a book's dialog stays a
+                 * dialog on a tabletop), so its content keeps that way too.
+                 */
+                val presentation = remember { formPresentation }
                 RegisterPaymentScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    presentation = presentation,
                 )
             }
             // Why: "Quem pagou a quem?" from Início, opened the way Registrar pagamento opens, whose place it gives.
-            entry<Route.PickPayment>(
-                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
-            ) {
-                PickPaymentScreen(isDialog = usesBillDialog)
+            entry<Route.PickPayment>(metadata = pickPaymentMetadata) {
+                val isDialog = remember { usesPickPaymentDialog }
+                PickPaymentScreen(isDialog = isDialog)
             }
             // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
             // Why: the home's Atividade tab, over the groups like Saldos.
             entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
-            entry<Route.SettleUp>(
-                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
-            ) { route ->
+            entry<Route.SettleUp>(metadata = formPresentationMetadata) { route ->
+                val presentation = remember { formPresentation }
                 RegisterPaymentScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    presentation = presentation,
                 )
             }
             // Why: the home's Contatos tab, over the groups; a wide window draws the profile or the agenda beside it.
@@ -295,10 +315,11 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ContactProfile> { route -> ContactProfileScreen(route) }
             entry<Route.ContactsAgenda> { AgendaScreen() }
             // Why: a sheet on a phone, a dialog elsewhere, and the code above the hinge on a tabletop.
-            entry<Route.ContactInvite>(metadata = contactInviteMetadata) { route ->
+            entry<Route.ContactInvite>(metadata = formPresentationMetadata) { route ->
+                val presentation = remember { formPresentation }
                 ContactInviteScreen(
                     route = route,
-                    presentation = contactInvitePresentation,
+                    presentation = presentation,
                 )
             }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }

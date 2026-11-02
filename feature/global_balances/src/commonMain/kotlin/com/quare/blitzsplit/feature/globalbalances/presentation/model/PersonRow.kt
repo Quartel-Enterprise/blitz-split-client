@@ -14,6 +14,8 @@ data class PersonRow(
     val name: String?,
     val initials: String,
     val color: AvatarColor?,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val currency: GroupCurrency,
     // Why: positive when they owe you, negative when you owe them.
     val netMinor: Long,

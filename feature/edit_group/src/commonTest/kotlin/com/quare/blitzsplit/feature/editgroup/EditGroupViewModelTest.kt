@@ -1219,6 +1219,7 @@ class EditGroupViewModelTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = ANA,
@@ -1228,6 +1229,7 @@ class EditGroupViewModelTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

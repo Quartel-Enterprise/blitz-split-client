@@ -136,6 +136,7 @@ private fun PayerColumn(
                     AvatarBadge(
                         initial = person.initials,
                         color = person.avatarColor,
+                        photoUrl = person.photoUrl,
                         size = 36.dp,
                     )
                 }
@@ -297,6 +298,7 @@ private fun PayerAmountRowItem(
             AvatarBadge(
                 initial = person.initials,
                 color = person.avatarColor,
+                photoUrl = person.photoUrl,
                 size = 36.dp,
             )
         }

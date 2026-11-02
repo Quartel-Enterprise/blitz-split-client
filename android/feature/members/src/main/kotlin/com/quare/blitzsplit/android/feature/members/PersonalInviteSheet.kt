@@ -119,6 +119,7 @@ private fun PersonalInviteColumn(
             AvatarBadge(
                 initial = invite.member.initials,
                 color = invite.member.avatarColor,
+                photoUrl = invite.member.photoUrl,
                 size = 48.dp,
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -234,6 +235,7 @@ private fun createPreviewInvite(isLinkCopied: Boolean): PersonalInvite = Persona
         name = "Carla",
         initials = "CA",
         avatarColor = AvatarColor.LILAC,
+        photoUrl = null,
         isMe = false,
         hasJoined = false,
         personalLink = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",

@@ -271,6 +271,7 @@ class SettleUpViewModelTest {
                 hasJoined = true,
                 userId = "pierre",
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 carlaId,
@@ -280,6 +281,7 @@ class SettleUpViewModelTest {
                 hasJoined = true,
                 userId = "carla",
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

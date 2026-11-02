@@ -1742,6 +1742,7 @@ class ActivityViewModelTest {
         hasJoined = userId != null,
         userId = userId,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun event(

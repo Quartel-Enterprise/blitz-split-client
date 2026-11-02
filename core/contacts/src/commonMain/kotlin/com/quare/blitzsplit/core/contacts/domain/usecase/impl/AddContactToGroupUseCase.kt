@@ -60,6 +60,7 @@ class AddContactToGroupUseCase(
                 hasJoined = true,
                 userId = userId,
                 inviteCode = null,
+                photoUrl = null,
             ),
             addedAt = currentTimeMillis(),
         )

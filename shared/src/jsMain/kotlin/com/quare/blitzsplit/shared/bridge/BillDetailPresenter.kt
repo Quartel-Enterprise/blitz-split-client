@@ -28,6 +28,7 @@ class JsBillPayer(
     val name: String?,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val isMe: Boolean,
 )
 
@@ -37,6 +38,7 @@ class JsBillShareRow(
     val name: String?,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val isMe: Boolean,
     val hasJoined: Boolean,
     val paidMinor: Double?,
@@ -209,6 +211,7 @@ class BillDetailPresenter(
                             name = it.name,
                             initials = it.initials,
                             color = it.avatarColor.code,
+                            photoUrl = it.photoUrl,
                             isMe = it.isMe,
                         )
                     }.toTypedArray(),
@@ -303,6 +306,7 @@ private fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRow
     name = row.name,
     initials = row.initials,
     color = row.avatarColor.code,
+    photoUrl = row.photoUrl,
     isMe = row.isMe,
     hasJoined = row.hasJoined,
     paidMinor = row.paidMinor?.toDouble(),

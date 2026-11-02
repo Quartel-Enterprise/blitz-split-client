@@ -245,6 +245,7 @@ private fun ProfileHeader(
         AvatarBadge(
             initial = state.initials,
             color = contact.color,
+            photoUrl = contact.photoUrl,
             size = avatarSize,
         )
         Text(
