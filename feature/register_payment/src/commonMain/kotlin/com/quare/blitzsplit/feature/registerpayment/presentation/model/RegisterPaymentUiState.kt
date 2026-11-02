@@ -47,6 +47,11 @@ data class RegisterPaymentUiState(
     // Why: Início's "Quem pagou a quem?" only records a payment; every Acertar offers the receiver's keys.
     val offersReceiverKeys: Boolean,
     /*
+     * Why: the form stays once shown: "Paguei outro valor ou de outro jeito" picked it (a part of the debt, cash, a
+     * past day), or it opened with no key, so a sync bringing the first one never swaps it mid-typing.
+     */
+    val prefersForm: Boolean,
+    /*
      * Why: "Pix copia e cola" and its QR code, the default Pix key with the whole debt already in it; null off Pix,
      * and in any currency but reais, the one Pix moves.
      */
@@ -58,7 +63,7 @@ data class RegisterPaymentUiState(
      * or the wallet, and "Marcar como pago" records the whole debt.
      */
     val showsReceiverKeys: Boolean
-        get() = offersReceiverKeys && kind == PaymentKind.PAID && receiverKeys.isNotEmpty()
+        get() = offersReceiverKeys && !prefersForm && kind == PaymentKind.PAID && receiverKeys.isNotEmpty()
 
     // Why: the methods the receiver has a key of, Pix first; "Forma de pagamento" only shows with both.
     val keyMethods: List<PaymentMethod>
@@ -70,12 +75,12 @@ data class RegisterPaymentUiState(
     val shownKeyMethod: PaymentMethod
         get() = keyMethod.takeIf { it in keyMethods } ?: keyMethods.firstOrNull() ?: keyMethod
 
-    // Why: "Chave padrão da Ana", the one the payer sees first.
+    // Why: "Chave padrão de Ana", the one the payer sees first.
     val defaultKey: ReceiverKey?
         get() = receiverKeys.firstOrNull { it.type.method == shownKeyMethod && it.isDefault }
             ?: receiverKeys.firstOrNull { it.type.method == shownKeyMethod }
 
-    // Why: "Outras chaves da Ana", in the order she added them.
+    // Why: "Outras chaves de Ana", in the order she added them.
     val otherKeys: List<ReceiverKey>
         get() = receiverKeys.filter { it.type.method == shownKeyMethod && it.id != defaultKey?.id }
 

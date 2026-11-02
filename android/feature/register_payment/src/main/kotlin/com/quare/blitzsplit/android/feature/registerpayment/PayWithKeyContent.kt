@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.registerpayment
 
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,7 +63,8 @@ internal enum class PayWithKeyLayout {
 /*
  * Why: "Pagar Ana" (4.5), what Registrar pagamento shows while this device's user pays someone with a key: the key
  * to copy, the Pix code with the amount in it, and "Marcar como pago" once paid in the bank or the wallet. The app
- * moves no money. Android itself confirms what was copied.
+ * moves no money. Android 13 and later confirm what was copied themselves; before that, onCopied says so. One column
+ * leaves the buttons to the sheet or dialog around it (PayButtonRow), which keeps them in sight.
  */
 @Composable
 internal fun PayWithKeyContent(
@@ -70,10 +72,18 @@ internal fun PayWithKeyContent(
     layout: PayWithKeyLayout,
     money: MoneyFormatter,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
+    onCopied: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val onCopy: (String) -> Unit = { text -> context.copyText(text) }
+    // Why: a CPF is a document, so the clipboard keeps every key out of its preview and the keyboard's suggestions.
+    val onCopy: (String) -> Unit = { text ->
+        context.copyText(
+            text = text,
+            isSensitive = true,
+        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) onCopied()
+    }
     val who: @Composable ColumnScope.() -> Unit = {
         PayHeader(
             state = state,
@@ -109,7 +119,10 @@ internal fun PayWithKeyContent(
                 onCopy = onCopy,
             )
         }
-        PayNoteSection(state)
+        PayNoteSection(
+            state = state,
+            onEvent = onEvent,
+        )
     }
     val spacing = Arrangement.spacedBy(16.dp)
     when (layout) {
@@ -119,10 +132,6 @@ internal fun PayWithKeyContent(
         ) {
             who()
             rest()
-            PayButtonRow(
-                state = state,
-                onEvent = onEvent,
-            )
         }
 
         PayWithKeyLayout.TwoColumns -> Row(
@@ -397,7 +406,10 @@ private fun OtherKeysList(
 
 // Why: the app moves no money, so it says where to pay and to check the name the bank shows; offline, that it waits.
 @Composable
-private fun PayNoteSection(state: RegisterPaymentUiState) {
+private fun PayNoteSection(
+    state: RegisterPaymentUiState,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
+) {
     Text(
         text = if (state.shownKeyMethod == PaymentMethod.PIX) {
             stringResource(R.string.register_payment_pay_note_pix, nameOf(state.to))
@@ -414,15 +426,24 @@ private fun PayNoteSection(state: RegisterPaymentUiState) {
             isCompact = true,
         )
     }
+    // Why: a part of the debt, cash or a past day go through the form, which takes this screen's place.
+    TextButton(
+        onClick = { onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked) },
+        enabled = !state.isSaving,
+    ) { Text(stringResource(R.string.register_payment_pay_otherwise)) }
 }
 
 // Why: "Depois" closes; "Marcar como pago" records the whole debt.
 @Composable
-private fun PayButtonRow(
+internal fun PayButtonRow(
     state: RegisterPaymentUiState,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         TextButton(
             onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
             modifier = Modifier

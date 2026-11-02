@@ -48,6 +48,21 @@ extension RegisterPaymentModel {
     func markAsPaid() {
         send(RegisterPaymentUiEventOnMarkAsPaidClicked.shared)
     }
+
+    /// A part of the debt, cash or a past day go through the form, which takes this screen's place.
+    func payOtherwise() {
+        send(RegisterPaymentUiEventOnPayOtherwiseClicked.shared)
+    }
+}
+
+/// "I paid another amount or another way", which opens the form.
+private struct PayOtherwiseButton: View {
+    let model: RegisterPaymentModel
+
+    var body: some View {
+        Button("I paid another amount or another way", action: model.payOtherwise)
+            .disabled(model.state.isSaving)
+    }
 }
 
 /// "Payment method": Pix or Bitcoin, only while the receiver has keys of both.
@@ -287,6 +302,8 @@ struct PhonePayWithKey: View {
         }
         OtherKeysList(state: state, onCopy: copy)
         PayNotes(state: state)
+        PayOtherwiseButton(model: model)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func copy(_ text: String) {
@@ -329,6 +346,8 @@ struct MacPayWithKey: View {
                     }
                     OtherKeysList(state: state, onCopy: copy)
                     PayNotes(state: state)
+                    PayOtherwiseButton(model: model)
+                        .buttonStyle(.link)
                 }
             }
             .frame(maxHeight: 400)

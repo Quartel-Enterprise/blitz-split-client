@@ -41,13 +41,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -110,8 +113,14 @@ class RegisterPaymentViewModel(
      * either person or the whole group, which leaves nothing to pay.
      */
     init {
-        observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
-            .flatMapLatest { target -> keysOf(target).map { keys -> target to keys } }
+        val targets = observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
+            .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+        // Why: the receiver's keys are read again only when the receiver's account changes, not on every new balance.
+        val keys = targets
+            .map { it?.toUserId }
+            .distinctUntilChanged()
+            .flatMapLatest(::keysOf)
+        combine(targets, keys) { target, receiverKeys -> target to receiverKeys }
             .onEach { (target, keys) ->
                 hasRead = true
                 receiverKeys = keys
@@ -161,6 +170,8 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnMarkAsPaidClicked -> markAsPaid()
 
+            RegisterPaymentUiEvent.OnPayOtherwiseClicked -> uiState.update { it.copy(prefersForm = true) }
+
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
         }
@@ -187,14 +198,15 @@ class RegisterPaymentViewModel(
             groupName = null,
             keyMethod = PaymentMethod.PIX,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
+            prefersForm = false,
             pixCode = null,
             pixQrCode = null,
         )
     }
 
     // Why: someone with no account (a guest, someone gone) has no key; offline, the copy the last sync left.
-    private fun keysOf(target: PaymentTarget?): Flow<List<ReceiverKey>> {
-        val userId = target?.toUserId ?: return flowOf(emptyList())
+    private fun keysOf(userId: String?): Flow<List<ReceiverKey>> {
+        if (userId == null) return flowOf(emptyList())
         return observeMemberPaymentKeys(userId).map { keys ->
             keys.map { key ->
                 ReceiverKey(
@@ -296,6 +308,8 @@ class RegisterPaymentViewModel(
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
                 receiverKeys = receiverKeys,
+                // Why: a form that opened with no key stays one, so a sync bringing the first never swaps it mid-typing.
+                prefersForm = it.prefersForm || (!it.isLoaded && receiverKeys.isEmpty()),
                 groupName = target.groupName,
                 // Why: until something is typed, the field follows the whole debt as a sync changes it.
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {

@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,6 +44,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPe
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
+import kotlinx.coroutines.launch
 
 private const val PREVIEW_NOW_MILLIS = 1_761_652_200_000L
 
@@ -171,6 +173,9 @@ private fun PayWithKeyPane(
     modifier: Modifier = Modifier,
 ) {
     val money = rememberMoneyFormatter(state.currency)
+    val scope = rememberCoroutineScope()
+    val copied = stringResource(R.string.register_payment_pay_copied)
+    val onCopied: () -> Unit = { scope.launch { snackbarHostState.showSnackbar(copied) } }
     if (isDialog) {
         DialogCard(
             isWide = false,
@@ -183,21 +188,22 @@ private fun PayWithKeyPane(
                 layout = PayWithKeyLayout.OneColumn,
                 money = money,
                 onEvent = onEvent,
+                onCopied = onCopied,
                 modifier = Modifier
                     .weight(
                         weight = 1f,
                         fill = false,
                     ).verticalScroll(rememberScrollState()),
             )
+            PayButtonRow(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     } else {
         val isLyingDown = rememberFoldLayout().formFactor == FormFactor.PhoneLandscape
         Box(modifier = modifier) {
-            PayWithKeyContent(
-                state = state,
-                layout = if (isLyingDown) PayWithKeyLayout.TwoColumns else PayWithKeyLayout.OneColumn,
-                money = money,
-                onEvent = onEvent,
+            Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
@@ -206,7 +212,22 @@ private fun PayWithKeyPane(
                         end = 24.dp,
                         bottom = 24.dp,
                     ),
-            )
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                PayWithKeyContent(
+                    state = state,
+                    layout = if (isLyingDown) PayWithKeyLayout.TwoColumns else PayWithKeyLayout.OneColumn,
+                    money = money,
+                    onEvent = onEvent,
+                    onCopied = onCopied,
+                )
+                if (!isLyingDown) {
+                    PayButtonRow(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
+            }
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter),
@@ -259,6 +280,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     groupName = "Apê 302",
     keyMethod = PaymentMethod.PIX,
     offersReceiverKeys = true,
+    prefersForm = false,
     pixCode = null,
     pixQrCode = null,
 )

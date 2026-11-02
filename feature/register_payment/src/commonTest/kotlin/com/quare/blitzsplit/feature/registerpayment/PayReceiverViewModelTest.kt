@@ -219,6 +219,36 @@ class PayReceiverViewModelTest {
     }
 
     @Test
+    fun `GIVEN the form opened without keys WHEN a sync brings the first key of Bruno THEN keeps the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(brunoKeys = emptyList())
+
+            // When
+            paymentKeys.memberKeys.value = mapOf(BRUNO_USER to listOf(phoneKey))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(1, state.receiverKeys.size)
+            assertFalse(state.showsReceiverKeys)
+        }
+
+    @Test
+    fun `GIVEN the keys shown WHEN tapping Paguei outro valor THEN shows the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertFalse(state.showsReceiverKeys)
+        assertFalse(state.canMarkAsPaid)
+        assertTrue(state.canConfirm)
+    }
+
+    @Test
     fun `GIVEN the keys shown WHEN Bruno leaves the group THEN shows the form for a former member`() =
         runTest(testDispatcher) {
             // Given

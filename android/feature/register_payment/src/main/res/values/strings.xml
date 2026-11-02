@@ -54,4 +54,6 @@
     <string name="register_payment_pay_type_random">Random key</string>
     <string name="register_payment_pay_type_lightning">Lightning</string>
     <string name="register_payment_pay_type_onchain">On-chain</string>
+    <string name="register_payment_pay_otherwise">I paid another amount or another way</string>
+    <string name="register_payment_pay_copied">Copied</string>
 </resources>

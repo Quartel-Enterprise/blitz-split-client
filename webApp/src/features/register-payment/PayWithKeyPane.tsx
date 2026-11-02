@@ -1,13 +1,13 @@
 import { Copy, Loader2 } from 'lucide-react'
 import type { JsReceiverKey, JsRegisterPaymentState, RegisterPaymentPresenter } from 'blitzsplit-shared'
 import { toast } from 'sonner'
+import { Avatar } from '@/components/common'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { QrCode } from '@/features/invite/InviteDialog'
 import { t, type MessageKey } from '@/i18n'
-import { PersonFace } from './RegisterPaymentDialog'
 
 /**
  * "Pagar Ana" (4.5), what Registrar pagamento shows while this person pays someone with a key: the key to copy, the
@@ -20,7 +20,7 @@ export function payWithKeyPane(
 ): PaneParts {
   const name = nameOrFormer(state.to?.name)
   return {
-    leading: <PersonFace person={state.to} className="mb-1 size-12 text-base" />,
+    leading: state.to && <Avatar initial={state.to.initials} color={state.to.color} className="mb-1 size-12 text-base" />,
     title: t('payWithKey_title', { name, amount: money(state.debtMinor) }),
     description: state.groupName
       ? t('payWithKey_group', { group: state.groupName })
@@ -47,7 +47,9 @@ function copy(text: string) {
     .catch(() => toast(t('payWithKey_copyFailed')))
 }
 
+// Why: the Pix key types as the native apps name them here ("Random key" rather than the form's "Random").
 function typeLabel(key: JsReceiverKey): string {
+  if (key.type === 'RANDOM') return t('payWithKey_typeRandom')
   return t(`paymentKey_type${key.type}` as MessageKey)
 }
 
@@ -137,6 +139,9 @@ function PayWithKeyBody({
           {t('registerPayment_offline')}
         </p>
       )}
+      <Button variant="link" className="self-start px-0" disabled={state.isSaving} onClick={() => presenter.payOtherwise()}>
+        {t('payWithKey_payOtherwise')}
+      </Button>
     </div>
   )
 }

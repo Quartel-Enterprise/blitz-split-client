@@ -36,5 +36,8 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
     // Why: "Marcar como pago" of "Pagar Ana", which records the whole debt, paid now.
     data object OnMarkAsPaidClicked : RegisterPaymentUiEvent
 
+    // Why: "Paguei outro valor ou de outro jeito" of "Pagar Ana", which opens the form in its place.
+    data object OnPayOtherwiseClicked : RegisterPaymentUiEvent
+
     data object OnCloseClicked : RegisterPaymentUiEvent
 }

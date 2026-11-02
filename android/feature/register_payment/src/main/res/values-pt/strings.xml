@@ -51,7 +51,9 @@
     <string name="register_payment_pay_type_cpf">CPF</string>
     <string name="register_payment_pay_type_phone">Celular</string>
     <string name="register_payment_pay_type_email">E-mail</string>
-    <string name="register_payment_pay_type_random">Aleatória</string>
+    <string name="register_payment_pay_type_random">Chave aleatória</string>
     <string name="register_payment_pay_type_lightning">Lightning</string>
     <string name="register_payment_pay_type_onchain">On-chain</string>
+    <string name="register_payment_pay_otherwise">Paguei outro valor ou de outro jeito</string>
+    <string name="register_payment_pay_copied">Copiado</string>
 </resources>

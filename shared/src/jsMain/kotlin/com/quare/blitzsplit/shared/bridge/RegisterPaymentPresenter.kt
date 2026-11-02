@@ -191,6 +191,11 @@ class RegisterPaymentPresenter(
         viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
     }
 
+    // Why: "Paguei outro valor ou de outro jeito", which opens the form in place of "Pagar Ana".
+    fun payOtherwise() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked)
+    }
+
     fun close() {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
     }

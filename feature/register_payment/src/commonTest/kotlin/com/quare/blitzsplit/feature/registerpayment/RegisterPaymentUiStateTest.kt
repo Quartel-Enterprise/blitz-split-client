@@ -583,6 +583,7 @@ class RegisterPaymentUiStateTest {
         groupName = null,
         keyMethod = keyMethod,
         offersReceiverKeys = offersReceiverKeys,
+        prefersForm = false,
         pixCode = null,
         pixQrCode = null,
     )

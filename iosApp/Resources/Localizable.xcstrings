@@ -170,6 +170,17 @@
         }
       }
     },
+    "I paid another amount or another way" : {
+      "comment" : "Pay with a key (4.5): opens the form for a part of the debt, cash or a past day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paguei outro valor ou de outro jeito"
+          }
+        }
+      }
+    },
     "%@ is the most used in %@." : {
       "comment" : "Category picker",
       "localizations" : {

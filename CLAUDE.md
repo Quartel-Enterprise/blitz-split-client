@@ -372,8 +372,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     ASCII letters) and its QR code, with "Copiar código"; "Outras chaves de Ana" with a copy button each; "Pague no
     app do seu banco e volte para marcar como pago. Confira se o banco mostra o nome de Ana." (the wallet for
     Bitcoin), and "Depois" (closes) and "Marcar como pago", which records the whole debt now as Pix, or Outro for
-    Bitcoin (one payment per group across groups), offline too. No bank app opens by itself: Pix has no standard
-    link for it. Android shows the system's copy confirmation, Apple and the web a "Copiado" toast. A phone's sheet
+    Bitcoin (one payment per group across groups), offline too; "Paguei outro valor ou de outro jeito" opens the
+    form in its place for a part of the debt, another method or a past day (`RegisterPaymentUiState.prefersForm`),
+    and a form that opened with no key stays one when a sync brings the first. No bank app opens by itself: Pix has
+    no standard link for it. Android 13 and later show the system's copy confirmation (a "Copiado" snackbar before), Apple and the web a
+    "Copiado" toast; Android keeps the copied key out of the clipboard's preview. A phone's sheet
     is one column, two lying down (who, how and the default key, then the code, the other keys and the buttons);
     the tablet's dialog and the iPad's form sheet one column; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).

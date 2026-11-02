@@ -872,6 +872,8 @@ export const en = {
   payWithKey_copyFailed: "Couldn't copy. Select it and copy by hand.",
   payWithKey_later: 'Later',
   payWithKey_markAsPaid: 'Mark as paid',
+  payWithKey_typeRandom: 'Random key',
+  payWithKey_payOtherwise: 'I paid another amount or another way',
   globalBalances_title: 'Balances',
   globalBalances_offline: "Offline · this browser's balances",
   globalBalances_filter: 'Show',

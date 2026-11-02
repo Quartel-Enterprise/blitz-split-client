@@ -873,6 +873,8 @@ export const pt: Record<MessageKey, string> = {
   payWithKey_copyFailed: 'Não deu para copiar. Selecione e copie à mão.',
   payWithKey_later: 'Depois',
   payWithKey_markAsPaid: 'Marcar como pago',
+  payWithKey_typeRandom: 'Chave aleatória',
+  payWithKey_payOtherwise: 'Paguei outro valor ou de outro jeito',
   globalBalances_title: 'Saldos',
   globalBalances_offline: 'Offline · saldos deste navegador',
   globalBalances_filter: 'Mostrar',
