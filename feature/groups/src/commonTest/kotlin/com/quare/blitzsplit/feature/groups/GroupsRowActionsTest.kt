@@ -271,7 +271,10 @@ class GroupsRowActionsTest {
             // Then
             assertNull(viewModel.uiState.value.exit.dialog)
             assertEquals(
-                listOf(Route.Groups, Route.RegisterPayment("trio", "member-Pierre", "member-Ana")),
+                listOf(
+                    Route.Groups,
+                    Route.RegisterPayment("trio", "member-Pierre", "member-Ana", offersReceiverKeys = true),
+                ),
                 navigator.backStack.value,
             )
         }

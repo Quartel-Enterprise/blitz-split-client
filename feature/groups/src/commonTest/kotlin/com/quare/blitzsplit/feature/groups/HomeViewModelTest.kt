@@ -1837,6 +1837,7 @@ class HomeViewModelTest {
         groupId = "trio",
         fromMemberId = "member-Ana",
         toMemberId = "member-Pierre",
+        offersReceiverKeys = true,
     )
 
     private fun hoursAgo(hours: Int): Long = now - hours.hours.inWholeMilliseconds

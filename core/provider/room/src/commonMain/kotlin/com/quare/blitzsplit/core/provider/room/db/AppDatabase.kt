@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
+import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
@@ -30,6 +31,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
@@ -56,8 +58,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupCategoryEntity::class,
         CategoryTermEntity::class,
         MemberPhotoEntity::class,
+        MemberPaymentKeyEntity::class,
     ],
-    version = 25,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -156,6 +159,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 24,
             to = 25,
         ),
+        AutoMigration(
+            from = 25,
+            to = 26,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -185,4 +192,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun groupCategoryDao(): GroupCategoryDao
 
     abstract fun categoryTermDao(): CategoryTermDao
+
+    abstract fun memberPaymentKeyDao(): MemberPaymentKeyDao
 }

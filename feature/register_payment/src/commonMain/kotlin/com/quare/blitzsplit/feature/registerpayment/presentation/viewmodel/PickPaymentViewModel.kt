@@ -63,6 +63,7 @@ class PickPaymentViewModel(
                         groupId = event.groupId,
                         fromMemberId = event.fromMemberId,
                         toMemberId = event.toMemberId,
+                        offersReceiverKeys = false,
                     ),
                 )
             }

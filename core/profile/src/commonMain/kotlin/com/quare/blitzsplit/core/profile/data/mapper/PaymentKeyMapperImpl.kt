@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.profile.data.dto.PaymentKeyDto
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyRules
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 
 class PaymentKeyMapperImpl : PaymentKeyMapper {
@@ -78,6 +79,36 @@ class PaymentKeyMapperImpl : PaymentKeyMapper {
         updatedAt = dto.updatedAt,
         pendingSync = false,
         ownerUserId = ownerUserId,
+    )
+
+    override fun toDomainOfMember(entities: List<MemberPaymentKeyEntity>): List<PaymentKey> = toDomain(
+        entities.map { entity ->
+            PaymentKeyEntity(
+                id = entity.id,
+                type = entity.type,
+                value = entity.value,
+                isDefault = entity.isDefault,
+                isDeleted = false,
+                addedAt = entity.addedAt,
+                updatedAt = entity.updatedAt,
+                pendingSync = false,
+                ownerUserId = entity.userId,
+            )
+        },
+    )
+
+    override fun toMemberEntity(
+        dto: PaymentKeyDto,
+        viewerUserId: String,
+    ): MemberPaymentKeyEntity = MemberPaymentKeyEntity(
+        id = dto.id,
+        userId = dto.userId,
+        viewerUserId = viewerUserId,
+        type = dto.type,
+        value = dto.value,
+        isDefault = dto.isDefault,
+        addedAt = dto.addedAt,
+        updatedAt = dto.updatedAt,
     )
 
     private fun toDomain(

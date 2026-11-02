@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.di
 
+import com.quare.blitzsplit.core.profile.data.datasource.MemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyLocalDataSource
@@ -7,6 +8,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyRemoteDataSou
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.RoomMemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomNotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomProfileLocalDataSource
@@ -30,6 +32,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.DetectPaymentKeyType
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKeyInput
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificationPreferenceChanges
@@ -46,6 +49,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.DeletePaymentKeyUse
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.DetectPaymentKeyTypeUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyInputUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingNotificationPreferenceChangesUseCase
@@ -75,10 +79,12 @@ val profileModule = module {
     factoryOf(::PrepareProfilePhotoUseCase).bind<PrepareProfilePhoto>()
     factoryOf(::ValidateDisplayNameUseCase).bind<ValidateDisplayName>()
     singleOf(::RoomPaymentKeyLocalDataSource).bind<PaymentKeyLocalDataSource>()
+    singleOf(::RoomMemberPaymentKeyLocalDataSource).bind<MemberPaymentKeyLocalDataSource>()
     singleOf(::SupabasePaymentKeyRemoteDataSource).bind<PaymentKeyRemoteDataSource>()
     singleOf(::PaymentKeyMapperImpl).bind<PaymentKeyMapper>()
     singleOf(::PaymentKeyRepositoryImpl).bind<PaymentKeyRepository>()
     factoryOf(::ObservePaymentKeysUseCase).bind<ObservePaymentKeys>()
+    factoryOf(::ObserveMemberPaymentKeysUseCase).bind<ObserveMemberPaymentKeys>()
     factoryOf(::ObservePendingPaymentKeyChangesUseCase).bind<ObservePendingPaymentKeyChanges>()
     factoryOf(::SavePaymentKeyUseCase).bind<SavePaymentKey>()
     factoryOf(::DeletePaymentKeyUseCase).bind<DeletePaymentKey>()
