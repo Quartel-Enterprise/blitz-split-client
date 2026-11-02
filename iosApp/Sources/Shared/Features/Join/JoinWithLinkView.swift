@@ -105,11 +105,13 @@ private struct JoinWithLinkContent: View {
                 pastePanel
                     .frame(width: 380)
                     .frame(maxHeight: .infinity)
-                    .background(Palette.groupedBackground, in: UnevenRoundedRectangle(
-                        topLeadingRadius: 38,
-                        bottomLeadingRadius: 38,
-                    ))
-                    .ignoresSafeArea(edges: .vertical)
+                    // Why: the panel's color reaches under the keyboard too, while the keyboard pushes its field above it.
+                    .background {
+                        UnevenRoundedRectangle(topLeadingRadius: 38, bottomLeadingRadius: 38)
+                            .fill(Palette.groupedBackground)
+                            .ignoresSafeArea(edges: .vertical)
+                    }
+                    .ignoresSafeArea(.container, edges: .vertical)
             }
             .background(Color.black.ignoresSafeArea())
         } else {
@@ -118,11 +120,13 @@ private struct JoinWithLinkContent: View {
                 pastePanel
                     .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
                     .frame(maxWidth: .infinity)
-                    .background(Palette.groupedBackground, in: UnevenRoundedRectangle(
-                        topLeadingRadius: 38,
-                        topTrailingRadius: 38,
-                    ))
-                    .ignoresSafeArea(edges: .bottom)
+                    // Why: the panel's color reaches under the keyboard too, while the keyboard pushes its field above it.
+                    .background {
+                        UnevenRoundedRectangle(topLeadingRadius: 38, topTrailingRadius: 38)
+                            .fill(Palette.groupedBackground)
+                            .ignoresSafeArea(edges: .bottom)
+                    }
+                    .ignoresSafeArea(.container, edges: .bottom)
             }
             .background(Color.black.ignoresSafeArea())
         }
