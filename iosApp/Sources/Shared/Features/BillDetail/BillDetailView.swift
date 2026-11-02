@@ -309,12 +309,13 @@ private struct PhoneBillDetail: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                // The row clips to its rounded corner, which would cut the payer's face at its edge
                 .padding(.horizontal, 4)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 4, trailing: 20))
+        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 4, trailing: 0))
         if state.showsMyPart {
             Section {
                 MyPartContent(state: state)
