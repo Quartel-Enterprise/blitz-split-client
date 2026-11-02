@@ -54,6 +54,8 @@ private struct ScannerRepresentable: UIViewControllerRepresentable {
             qualityLevel: .fast,
             recognizesMultipleItems: false,
             isHighFrameRateTrackingEnabled: false,
+            // Why: the screen draws its own hint under the viewfinder; VisionKit's would sit under the title.
+            isGuidanceEnabled: false,
             isHighlightingEnabled: false,
         )
         scanner.delegate = context.coordinator
