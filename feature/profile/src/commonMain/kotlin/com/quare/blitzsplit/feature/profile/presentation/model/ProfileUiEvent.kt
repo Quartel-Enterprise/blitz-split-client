@@ -63,6 +63,9 @@ sealed interface ProfileUiEvent : UiEvent {
     // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.
     data object OnNotificationsClicked : ProfileUiEvent
 
+    // Why: Preferências › "Mapa de categorias" (flow 9); the Mac opens it in its Ajustes instead.
+    data object OnCategoryMapClicked : ProfileUiEvent
+
     data object OnPrivacyPolicyClicked : ProfileUiEvent
 
     data object OnTermsClicked : ProfileUiEvent

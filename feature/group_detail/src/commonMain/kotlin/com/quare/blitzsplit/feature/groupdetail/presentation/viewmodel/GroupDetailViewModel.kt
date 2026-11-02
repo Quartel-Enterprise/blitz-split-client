@@ -3,18 +3,23 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
@@ -35,12 +40,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+/*
+ * Why: the group's screen: its header, read once, over Despesas, Saldos and Membros, whose pick is this screen's own
+ * state rather than the back stack, so only what is under the tabs changes. Despesas and Saldos come from the same bills
+ * and payments; Membros has its own ViewModel (MembersViewModel), which owns nothing of the header.
+ */
 class GroupDetailViewModel(
     private val route: Route.GroupDetail,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
+    observeCategoryTree: ObserveCategoryTree,
+    teachUseCases: CategoryTeachUseCases,
     observeAccount: ObserveAccount,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
@@ -48,14 +60,22 @@ class GroupDetailViewModel(
         field = MutableStateFlow(
             GroupDetailUiState(
                 header = emptyGroupHeader,
+                tab = route.tab,
                 days = emptyList(),
                 paymentToDelete = null,
+                myDebts = emptyList(),
+                otherDebts = emptyList(),
+                hasBills = false,
                 recordedPayment = null,
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                teach = null,
+                homeTab = useCases.navigator.backStack.value
+                    .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -73,9 +93,33 @@ class GroupDetailViewModel(
         showExitError = { isDelete ->
             uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
         },
+        showBalances = { selectTab(GroupTab.BALANCES) },
+    )
+
+    /*
+     * Why: the group's categories the rows' icons read from, and the last rows shown, redrawn when they change; never
+     * once the group is gone, whose categories its deletion takes along.
+     */
+    private var categoryTree = CategoryTree.appOnly
+    private var showAgain: (() -> Unit)? = null
+
+    private val teaching = CategoryTeaching(
+        groupId = route.groupId,
+        useCases = teachUseCases,
+        scope = viewModelScope,
+        isOnExpenses = { uiState.value.tab == GroupTab.EXPENSES },
+        read = { uiState.value.teach },
+        write = { teach -> uiState.update { it.copy(teach = teach) } },
+        showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
     )
 
     init {
+        observeCategoryTree(route.groupId)
+            .onEach { tree ->
+                categoryTree = tree
+                if (!screen.isGroupGone) showAgain?.invoke()
+            }.launchIn(viewModelScope)
+        teaching.watch(observeCategoryTree(route.groupId))
         screen.watch(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
@@ -87,6 +131,10 @@ class GroupDetailViewModel(
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
+            .launchIn(viewModelScope)
+        useCases
+            .observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()
@@ -113,9 +161,9 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
-            GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
+            is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)
 
-            GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
+            is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
@@ -135,6 +183,11 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnSettleClicked -> screen.openSettle()
 
+            is GroupDetailUiEvent.OnDebtClicked -> screen.openRegisterPayment(
+                fromMemberId = event.fromMemberId,
+                toMemberId = event.toMemberId,
+            )
+
             is GroupDetailUiEvent.OnPaymentClicked -> askToDeletePayment(event.paymentId)
 
             GroupDetailUiEvent.OnPaymentDeleteConfirmed -> deletePayment()
@@ -144,6 +197,14 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             GroupDetailUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
+            GroupDetailUiEvent.OnTeachClicked -> teaching.open()
+
+            GroupDetailUiEvent.OnTeachDismissed -> teaching.dismiss()
+
+            is GroupDetailUiEvent.OnTeachWordPicked -> teaching.pick(event.key)
+
+            GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
         }
@@ -155,10 +216,12 @@ class GroupDetailViewModel(
         settlements: List<Settlement>,
         balances: GroupBalances,
     ) {
+        showAgain = { show(group, expenses, settlements, balances) }
         val timeZone = currentTimeZone()
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
         val meId = group.members.firstOrNull { it.isMe }?.id
+        val (mine, others) = balances.debts.partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
         val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
             settlements.map { it.paidAt to toRow(it, namesById, meId) }
@@ -183,6 +246,12 @@ class GroupDetailViewModel(
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
+                // Why: what this person owes comes first, then what they're owed.
+                myDebts = mine
+                    .sortedBy { debt -> debt.fromMemberId != meId }
+                    .map { debt -> debtRowOf(debt, group, meId) },
+                otherDebts = others.map { debt -> debtRowOf(debt, group, meId) },
+                hasBills = balances.hasBills,
                 isLoaded = true,
             )
         }
@@ -207,6 +276,7 @@ class GroupDetailViewModel(
             payers = payers,
             totalMinor = expense.amountMinor,
             myBalanceMinor = meId?.let(expense::balanceOf),
+            category = categoryTree.resolve(expense.categoryId),
             isPending = expense.isPending,
         )
     }
@@ -226,6 +296,10 @@ class GroupDetailViewModel(
         method = settlement.method,
         isPending = settlement.isPending,
     )
+
+    private fun selectTab(tab: GroupTab) {
+        uiState.update { it.copy(tab = tab) }
+    }
 
     private fun askToDeletePayment(paymentId: String) {
         val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return

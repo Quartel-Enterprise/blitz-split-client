@@ -69,7 +69,7 @@ struct ContactInviteView: View {
         #if os(iOS)
         .formSheetSizing()
         #else
-        .frame(minWidth: 460, idealWidth: 520, minHeight: 560, idealHeight: 640)
+        .frame(minWidth: 460, idealWidth: 520, minHeight: 400, idealHeight: 560)
         #endif
         .onAppear {
             if model == nil { model = ContactInviteModel(route: route) }

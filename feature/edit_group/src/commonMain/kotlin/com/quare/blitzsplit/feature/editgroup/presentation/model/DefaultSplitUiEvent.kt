@@ -35,4 +35,45 @@ sealed interface DefaultSplitUiEvent : UiEvent {
     ) : DefaultSplitUiEvent
 
     data object OnSaveClicked : DefaultSplitUiEvent
+
+    // Why: "Adicionar exceção" (6.7f).
+    data object OnAddExceptionClicked : DefaultSplitUiEvent
+
+    // Why: an exception of the list, which opens it to change or remove.
+    data class OnExceptionClicked(
+        val categoryId: String,
+    ) : DefaultSplitUiEvent
+
+    // Why: a main category shows its subcategories too; a subcategory is picked as it is.
+    data class OnExceptionCategoryPicked(
+        val categoryId: String,
+    ) : DefaultSplitUiEvent
+
+    data class OnExceptionModeSelected(
+        val mode: DefaultSplitMode,
+    ) : DefaultSplitUiEvent
+
+    data class OnExceptionPersonToggled(
+        val memberId: String,
+    ) : DefaultSplitUiEvent
+
+    data class OnExceptionPartsIncreased(
+        val memberId: String,
+    ) : DefaultSplitUiEvent
+
+    data class OnExceptionPartsDecreased(
+        val memberId: String,
+    ) : DefaultSplitUiEvent
+
+    data class OnExceptionPercentChanged(
+        val memberId: String,
+        val text: String,
+    ) : DefaultSplitUiEvent
+
+    // Why: "Salvar exceção", which changes the list; the default is saved on its own Salvar.
+    data object OnExceptionSaveClicked : DefaultSplitUiEvent
+
+    data object OnExceptionRemoveClicked : DefaultSplitUiEvent
+
+    data object OnExceptionDismissed : DefaultSplitUiEvent
 }

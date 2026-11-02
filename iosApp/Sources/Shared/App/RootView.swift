@@ -2,14 +2,22 @@ import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack is replaced by
 /// Início, which brings the tabs (or the sidebar on iPad and Mac): every other tab is the entry right above it, and each
-/// tab pushes what it opens (the profile, a group) inside its own stack. A route that opens as a sheet (a key or a bill
-/// with an iPad's room and on the Mac, deleting the account, a new group, its invite on an iPhone and the Mac, editing
-/// a group, a new or edited bill, recording a payment, Contacts' invite, the Mac's invite opened from its link) shows
-/// over the whole window, and a sheet opened from a sheet stacks over it; the Mac's invite from a group is a popover on
-/// the group's own button. The root measures the window, which every screen reads as `windowLayout`; only crossing an
-/// iPad's room changes what opens as a sheet and redraws the root.
+/// tab pushes what it opens (the profile on iPhone and iPad, a group) inside its own stack. A route that opens as a
+/// sheet (a key, a bill or Edit profile with an iPad's room, a bill on the Mac, deleting the account, a new group, its
+/// invite on an iPhone and the Mac, editing a group, a new or edited bill, recording a payment, Contacts' invite, the
+/// Mac's invite opened from its link) shows over the whole window, and a sheet opened from a sheet stacks over it; the
+/// Mac's invite from a group is a popover on the group's own button. The root measures the window, which every screen
+/// reads as `windowLayout`; only crossing an iPad's room changes what opens as a sheet and redraws the root. The Mac
+/// never draws the profile here: opening it opens Ajustes (⌘,), the app's Settings window (`SettingsView`), where its
+/// key and account deletion show as sheets; while one is open this window takes no clicks, since both draw the one
+/// back stack.
 struct RootView: View {
-    @State private var app = AppModel()
+    /// Owned by the app, which the Mac's Settings window shares.
+    @Bindable var app: AppModel
+
+    #if os(macOS)
+    @Environment(\.openSettings) private var openSettings
+    #endif
 
     var body: some View {
         Group {
@@ -44,7 +52,10 @@ struct RootView: View {
                             screen(for: route)
                         }
                 }
+                .foldSheetPlacement(isForm: route.usesFormSheet)
             }
+            // The front half of an iPhone Duo open, with what it opened over in the other one
+            .foldSheetPlacement(isForm: route.usesFormSheet)
         }
         #if os(iOS)
         .fullScreenCover(item: $app.cover) { route in
@@ -59,6 +70,11 @@ struct RootView: View {
             WindowAppearance.apply(theme)
         }
         #if os(macOS)
+        .onChange(of: app.settingsRequestCount) {
+            openSettings()
+        }
+        // Ajustes' key or Excluir conta sits on top of the back stack this window also draws
+        .disabled(app.settingsSheet != nil)
         .frame(minWidth: 520, minHeight: 560)
         #endif
         // Outermost, so the sheets inherit the window the root measured
@@ -75,9 +91,7 @@ struct RootView: View {
         case .home, .groups: MainTabView(path: $app.path)
         case .createGroup: CreateGroupView()
         case let .invite(route): InviteView(route: route)
-        case let .members(route): MembersView(route: route)
         case let .groupDetail(route): GroupDetailView(route: route)
-        case let .balances(route): BalancesView(route: route)
         case let .registerPayment(route): RegisterPaymentView(route: route)
         case let .globalBalances(route): GlobalBalancesView(route: route)
         case let .activity(route): ActivityView(route: route)
@@ -96,10 +110,17 @@ struct RootView: View {
         case let .contactProfile(route): ContactProfileView(route: route)
         case .contactsAgenda: AgendaView()
         case let .contactInvite(route): ContactInviteView(route: route)
-        case .profile: ProfileView()
+        case .profile:
+            #if os(macOS)
+            // The Mac's profile is Ajustes (⌘,), never pushed
+            EmptyView()
+            #else
+            ProfileView()
+            #endif
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()
         case .notificationSettings: NotificationSettingsView()
+        case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
     }

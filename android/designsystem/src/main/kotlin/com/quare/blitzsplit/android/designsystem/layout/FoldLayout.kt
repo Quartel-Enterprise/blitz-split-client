@@ -33,6 +33,9 @@ internal val TabletSmallestWidth: Dp = 600.dp
 // Why: a foldable's inner screen is under 960dp on its longest side, a tablet's is not.
 internal val TabletLongestSide: Dp = 960.dp
 
+// Why: a Flip's cover screen (the canvas' 360×374, a Razr's about 410) is smaller than any phone's whole screen.
+private val coverScreenLongestSide: Dp = 480.dp
+
 /*
  * Why: the size the canvas draws a screen at, and where its halves meet, from the app's window and the fold the device
  * reports in it (decision 8: the hinge, not the window alone). A window that reports no fold falls back on its size:
@@ -43,6 +46,11 @@ data class FoldLayout(
     // Why: on screen, as the hinge, so a dialog's own window can line up with both.
     val windowBounds: DpRect,
     val hinge: FoldHinge?,
+    /*
+     * Why: the app runs on a Flip's cover screen, where Início (flow 10) and Grupos (5.1) only draw their cover: the
+     * whole display is that small, not the window alone, so a phone's split screen half never counts as one.
+     */
+    val isOnCoverScreen: Boolean,
 ) {
     val formFactor: FormFactor = formFactorOf(
         width = windowBounds.width,
@@ -92,6 +100,21 @@ fun FoldLayoutRoot(content: @Composable () -> Unit) {
 @Composable
 fun rememberFoldLayout(): FoldLayout = LocalFoldLayout.current ?: rememberWindowFoldLayout()
 
+// Why: a cover screen preview (the canvas' Flip, 360×374), since a preview's display is its window.
+fun coverFoldLayoutOf(
+    width: Dp,
+    height: Dp,
+): FoldLayout = FoldLayout(
+    windowBounds = DpRect(
+        left = 0.dp,
+        top = 0.dp,
+        right = width,
+        bottom = height,
+    ),
+    hinge = null,
+    isOnCoverScreen = true,
+)
+
 // Why: a tabletop preview, since a preview's window reports no fold: the hinge across the middle, half opened.
 fun tabletopFoldLayoutOf(
     width: Dp,
@@ -114,6 +137,7 @@ fun tabletopFoldLayoutOf(
         isFlat = false,
         isSeparating = true,
     ),
+    isOnCoverScreen = false,
 )
 
 /*
@@ -129,14 +153,26 @@ private fun rememberWindowFoldLayout(): FoldLayout {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val origin = remember(context, configuration, containerSize, foldingFeatures) { windowOriginOf(context) }
-    return remember(foldingFeatures, containerSize, density, origin) {
+    // Why: the whole display, which moving between a Flip's cover and its inner screen changes with the configuration.
+    val displaySize = remember(context, configuration, containerSize) { displaySizeOf(context) ?: containerSize }
+    return remember(foldingFeatures, containerSize, density, origin, displaySize) {
         density.foldLayoutOf(
             origin = origin,
             size = containerSize,
             feature = foldingFeatures.firstOrNull(),
+            isOnCoverScreen = density.isCoverScreen(displaySize),
         )
     }
 }
+
+// Why: the largest window the display allows, its whole size; null where it can't be read (a preview).
+private fun displaySizeOf(context: Context): IntSize? = runCatching {
+    val bounds = WindowMetricsCalculator.getOrCreate().computeMaximumWindowMetrics(context).bounds
+    IntSize(bounds.width(), bounds.height())
+}.getOrNull()?.takeIf { it.width > 0 && it.height > 0 }
+
+private fun Density.isCoverScreen(displaySize: IntSize): Boolean =
+    maxOf(displaySize.width, displaySize.height).toDp() < coverScreenLongestSide
 
 // Why: a preview has no window to measure; it starts at the screen's corner, as a full screen app does.
 private fun windowOriginOf(context: Context): IntOffset = runCatching {
@@ -148,6 +184,7 @@ private fun Density.foldLayoutOf(
     origin: IntOffset,
     size: IntSize,
     feature: FoldingFeature?,
+    isOnCoverScreen: Boolean,
 ): FoldLayout = FoldLayout(
     windowBounds = DpRect(
         left = origin.x.toDp(),
@@ -168,6 +205,7 @@ private fun Density.foldLayoutOf(
             isSeparating = it.isSeparating,
         )
     },
+    isOnCoverScreen = isOnCoverScreen,
 )
 
 /*
@@ -217,21 +255,4 @@ private fun bandOf(
         bandStart = center - halfBand,
         bandEnd = center + halfBand,
     )
-}
-
-/*
- * Why: the longest side of the screen the app is on, not of its window: a Flip's cover screen is small as a whole,
- * while a phone's split screen window is small on a large screen. A preview has no screen to measure: the window.
- */
-@Composable
-fun rememberScreenLongestSide(): Dp {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    return remember(context, configuration, density) {
-        runCatching {
-            val bounds = WindowMetricsCalculator.getOrCreate().computeMaximumWindowMetrics(context).bounds
-            with(density) { maxOf(bounds.width(), bounds.height()).toDp() }
-        }.getOrDefault(maxOf(configuration.screenWidthDp, configuration.screenHeightDp).dp)
-    }
 }

@@ -618,6 +618,7 @@ class PickPaymentViewModelTest {
         updatedAt = updatedAt,
         updatedByMemberId = null,
         items = null,
+        categoryId = null,
     )
 
     private fun settlement(

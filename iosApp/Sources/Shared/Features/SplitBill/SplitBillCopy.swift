@@ -107,7 +107,14 @@ enum SplitBillCopy {
         let split = state.split
         let count = Int(split.includedCount)
         guard count > 0 else { return String(localized: "Nobody is in yet") }
-        let facts = state.splitSummary.map { text($0, currency: split.currency) }
+        let exception = state.defaultSplitException.map { CategoryCopy.name($0) }
+        let facts = state.splitSummary.map { (fact: any SplitFact) -> String in
+            // "Group exception for Groceries" in place of "Group default" (7.1k).
+            if fact is SplitFactGroupDefault, let exception {
+                return String(localized: "Group exception for \(exception)")
+            }
+            return text(fact, currency: split.currency)
+        }
         return ([String(localized: "Among \(count)")] + facts).joined(separator: " · ")
     }
 

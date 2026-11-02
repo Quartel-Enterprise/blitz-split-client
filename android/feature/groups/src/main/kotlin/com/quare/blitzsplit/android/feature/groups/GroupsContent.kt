@@ -31,14 +31,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
-import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -63,7 +60,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -71,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -80,6 +77,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 /*
  * Why: the home. No visible title, since the selected Groups tab already names it: the top bar only holds the QR
  * reader and the profile, and takes a color once the list scrolls under it, while "Rachar conta" shrinks to its icon.
+ * A phone lying down splits in two (5.1): the actions, the sync status and "Saldo geral" stay still in a 320 dp column
+ * on the left and the list scrolls on the right; Buscar puts its field and scopes there and the results beside them
+ * (5.2). A Flip's cover screen only draws the home's cover (GroupsCoverContent).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +96,17 @@ fun GroupsContent(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     // Why: the group open beside the list in a list and detail, whose row or card shows it.
     val listDetail = rememberListDetailLayout()
+    if (rememberFoldLayout().isOnCoverScreen && state.groups.isNotEmpty()) {
+        GroupsCoverContent(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            modifier = modifier.semantics { paneTitle = title },
+        )
+        return
+    }
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
+        // Why: with no group yet the empty home keeps its top bar and its one card.
+        val usesSideColumn = layout == DeviceLayout.PhoneLandscape && state.groups.isNotEmpty()
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
          * the rail already takes.
@@ -113,13 +123,13 @@ fun GroupsContent(
                     .weight(1f)
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    if (state.isSearching) {
+                    if (state.isSearching && !usesSideColumn) {
                         GroupsSearchBar(
                             search = state.search,
                             onEvent = onEvent,
                             layout = layout,
                         )
-                    } else {
+                    } else if (!usesSideColumn) {
                         GroupsTopBar(
                             state = state,
                             onEvent = onEvent,
@@ -153,6 +163,19 @@ fun GroupsContent(
                     WindowInsets.safeDrawing
                 },
             ) { padding ->
+                if (usesSideColumn) {
+                    GroupsSideColumnLayout(
+                        state = state,
+                        onEvent = onEvent,
+                        layout = layout,
+                        listState = listState,
+                        onLongPress = { actionsGroupId = it.id },
+                        modifier = Modifier
+                            .padding(padding)
+                            .consumeWindowInsets(padding),
+                    )
+                    return@Scaffold
+                }
                 if (state.isSearching) {
                     GroupsSearchPane(
                         search = state.search,
@@ -220,26 +243,9 @@ private fun GroupsTopBar(
     TopAppBar(
         title = {},
         actions = {
-            IconButton(onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) }) {
-                Icon(
-                    imageVector = Icons.Outlined.QrCode2,
-                    contentDescription = stringResource(R.string.groups_join_with_link),
-                )
-            }
-            // Why: only once there is a group to look in.
-            if (state.canSearch) {
-                IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchOpened) }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(R.string.groups_search),
-                    )
-                }
-            }
-            ProfileAvatarButton(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                photoUrl = state.photoUrl,
-                onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
+            GroupsTopActionsComponent(
+                state = state,
+                onEvent = onEvent,
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -248,6 +254,12 @@ private fun GroupsTopBar(
         ),
         scrollBehavior = scrollBehavior,
     )
+}
+
+internal fun gridCellsOf(state: GroupsUiState): GridCells = if (state.showsGrid) {
+    GridCells.Adaptive(minCardWidthOf(state.layout.gridSize))
+} else {
+    GridCells.Fixed(1)
 }
 
 /*
@@ -268,13 +280,7 @@ private fun GroupsListPane(
         contentAlignment = Alignment.TopCenter,
     ) {
         LazyVerticalGrid(
-            columns = if (state.showsGrid) {
-                GridCells.Adaptive(
-                    minCardWidthOf(state.layout.gridSize),
-                )
-            } else {
-                GridCells.Fixed(1)
-            },
+            columns = gridCellsOf(state),
             state = listState,
             // Why: the cap comes before fillMaxSize, which would otherwise fix the width to the whole pane.
             modifier = Modifier

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -35,12 +34,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -52,7 +53,8 @@ private val chargeWidth = 560.dp
 
 /*
  * Why: "Cobrar" moves no money and sends nothing by itself: a message to edit, Enviar for the system's share sheet and
- * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog on a tablet.
+ * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog elsewhere, with the people under
+ * the scrim: a book's right half, a tabletop's top half, its right half above the hinge lying down (FoldDialog).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,28 +64,16 @@ internal fun ChargeSheet(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     val onDismiss = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) }
-    if (rememberUsesGroupDialog()) {
-        Dialog(onDismissRequest = onDismiss) {
-            Surface(
-                modifier = Modifier.widthIn(max = chargeWidth),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                ChargeColumn(
-                    charge = charge,
-                    pixKey = pixKey,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
-        }
-    } else {
+    val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
+    val formFactor = rememberFoldLayout().formFactor
+    if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetMaxWidth = chargeWidth,
         ) {
             ChargeColumn(
                 charge = charge,
+                name = name,
                 pixKey = pixKey,
                 onEvent = onEvent,
                 modifier = Modifier.padding(
@@ -93,17 +83,36 @@ internal fun ChargeSheet(
                 ),
             )
         }
+    } else {
+        val title = stringResource(R.string.global_balances_charge_title, name)
+        FoldDialog(onDismissRequest = onDismiss) {
+            Surface(
+                modifier = Modifier
+                    .alertDialogPane(title)
+                    .fillMaxWidth(),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                ChargeColumn(
+                    charge = charge,
+                    name = name,
+                    pixKey = pixKey,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(24.dp),
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun ChargeColumn(
     charge: ChargeDraft,
+    name: String,
     pixKey: PaymentKey?,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
     val message = chargeMessageOf(charge, name, pixKey)
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),

@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -32,6 +33,8 @@ class JsExpenseRow(
     val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
     val myBalanceMinor: Double?,
+    // Why: the row's icon, the category the bill reads as.
+    val category: JsCategory,
     val isPending: Boolean,
 )
 
@@ -64,17 +67,47 @@ class JsExpenseDay(
     val entries: Array<JsDayEntry>,
 )
 
+// Why: a word of the bill's title "Ensinar ao mapa" offers; currentCategory null for one new in the map.
+class JsTeachWord(
+    val term: String,
+    val key: String,
+    val currentCategory: JsCategory?,
+)
+
+// Why: "Ensinar ao mapa?" (9.3e) and, while isPickingWord, "Ensinar ao mapa" (9.3f).
+class JsCategoryTeach(
+    val title: String,
+    val category: JsCategory,
+    val categoryParent: JsCategory?,
+    val mapCategory: JsCategory?,
+    val mapCategoryParent: JsCategory?,
+    val words: Array<JsTeachWord>,
+    val selectedKey: String?,
+    val isPickingWord: Boolean,
+    val isSaving: Boolean,
+)
+
+// Why: the group's screen, its header over whichever tab is picked.
 class JsGroupDetailState(
     val header: JsGroupHeader,
+    // Why: "expenses", "balances" or "members": the tab picked, which only swaps what is under the header.
+    val tab: String,
     val days: Array<JsExpenseDay>,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
+    // Why: Saldos' "Com você" and "Entre os outros", each hidden when empty.
+    val myDebts: Array<JsDebtRow>,
+    val otherDebts: Array<JsDebtRow>,
+    val hasBills: Boolean,
     val recordedPayment: JsPaymentNotice?,
     val exit: JsGroupExit,
     val isEmpty: Boolean,
+    val isBalancesEmpty: Boolean,
+    val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
+    val teach: JsCategoryTeach?,
     // Why: "Você entrou como Bruno", right after joining, and "Proteja seu acesso" under it.
     val joinedAs: String?,
     val showsProtectAccess: Boolean,
@@ -93,14 +126,35 @@ class GroupDetailPresenter(
         val states = viewModel.uiState.map { state ->
             JsGroupDetailState(
                 header = toJsGroupHeader(state.header),
+                tab = toJsGroupTab(state.tab),
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
+                myDebts = state.myDebts.map(::toJsDebtRow).toTypedArray(),
+                otherDebts = state.otherDebts.map(::toJsDebtRow).toTypedArray(),
+                hasBills = state.hasBills,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
                 exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
+                isBalancesEmpty = state.isBalancesEmpty,
+                showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
+                teach = state.teach?.let { teach ->
+                    JsCategoryTeach(
+                        title = teach.title,
+                        category = toJsCategory(teach.category),
+                        categoryParent = teach.categoryParent?.let(::toJsCategory),
+                        mapCategory = teach.mapCategory?.let(::toJsCategory),
+                        mapCategoryParent = teach.mapCategoryParent?.let(::toJsCategory),
+                        words = teach.words
+                            .map { JsTeachWord(it.term, it.key, it.currentCategory?.let(::toJsCategory)) }
+                            .toTypedArray(),
+                        selectedKey = teach.selectedKey,
+                        isPickingWord = teach.isPickingWord,
+                        isSaving = teach.isSaving,
+                    )
+                },
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
             )
@@ -116,6 +170,7 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
+                GroupDetailUiAction.ShowTeachError -> "teach-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -142,12 +197,9 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
     }
 
-    fun members() {
-        viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
-    }
-
-    fun balances() {
-        viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+    // Why: "expenses", "balances" or "members", the tabs under the header (Membros also from the faces).
+    fun selectTab(tab: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(groupTabOf(tab)))
     }
 
     // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
@@ -194,6 +246,14 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
     }
 
+    // Why: "Acertar", "Recebi" or "Já pagou" on a pair of Saldos.
+    fun openDebt(
+        fromMemberId: String,
+        toMemberId: String,
+    ) {
+        viewModel.onEvent(GroupDetailUiEvent.OnDebtClicked(fromMemberId, toMemberId))
+    }
+
     fun openPayment(paymentId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked(paymentId))
     }
@@ -212,6 +272,22 @@ class GroupDetailPresenter(
 
     fun recordedPaymentNoticeShown() {
         viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown)
+    }
+
+    fun teach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+    }
+
+    fun dismissTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+    }
+
+    fun pickTeachWord(key: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked(key))
+    }
+
+    fun confirmTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
     }
 
     fun dispose() {
@@ -244,6 +320,7 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
         }.toTypedArray(),
     totalMinor = row.totalMinor.toDouble(),
     myBalanceMinor = row.myBalanceMinor?.toDouble(),
+    category = toJsCategory(row.category),
     isPending = row.isPending,
 )
 
@@ -258,6 +335,14 @@ private fun toJsPaymentRow(row: PaymentRow): JsPaymentRow = JsPaymentRow(
     method = row.method.code,
     isPending = row.isPending,
 )
+
+internal fun toJsGroupTab(tab: GroupTab): String = when (tab) {
+    GroupTab.EXPENSES -> "expenses"
+    GroupTab.BALANCES -> "balances"
+    GroupTab.MEMBERS -> "members"
+}
+
+private fun groupTabOf(tab: String): GroupTab = GroupTab.entries.first { toJsGroupTab(it) == tab }
 
 internal fun toJsRelativeDay(day: RelativeDay): String = when (day) {
     RelativeDay.TODAY -> "today"

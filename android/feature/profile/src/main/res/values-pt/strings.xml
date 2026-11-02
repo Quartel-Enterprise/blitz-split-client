@@ -92,4 +92,6 @@
     <string name="profile_unlink_offline">Precisa de internet.</string>
     <string name="profile_unlink_failed">Não deu para desconectar. Tente de novo.</string>
     <string name="profile_unlink_confirm">Desconectar</string>
+    <string name="profile_category_map">Mapa de categorias</string>
+    <string name="profile_category_map_detail">As palavras que escolhem a categoria da conta</string>
 </resources>

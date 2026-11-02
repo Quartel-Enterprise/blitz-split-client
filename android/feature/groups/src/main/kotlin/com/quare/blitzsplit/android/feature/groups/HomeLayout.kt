@@ -2,15 +2,10 @@ package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.FoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
-import com.quare.blitzsplit.android.designsystem.layout.rememberScreenLongestSide
-
-// Why: a Flip's cover screen (360×374) is under this on both sides; any phone's screen is taller or wider.
-private val coverScreenLongestSide = 480.dp
 
 /*
  * Why: how the canvas draws Início at each size (F10AndroidHome and F10AndroidHomeWide): one column on a phone, one
@@ -37,16 +32,12 @@ internal enum class HomeLayout(
 @Composable
 internal fun rememberHomeLayout(): HomeLayout {
     val fold = rememberFoldLayout()
-    val screenLongestSide = rememberScreenLongestSide()
-    return remember(fold, screenLongestSide) { homeLayoutOf(fold, screenLongestSide) }
+    return remember(fold) { homeLayoutOf(fold) }
 }
 
-// Why: the screen, not the window, tells the cover screen, so a phone's split screen window keeps the phone's layout.
-private fun homeLayoutOf(
-    fold: FoldLayout,
-    screenLongestSide: Dp,
-): HomeLayout {
-    if (screenLongestSide < coverScreenLongestSide) return HomeLayout.COVER
+// Why: the screen, not the window, tells the cover screen (FoldLayout), so a phone's split screen keeps the phone's.
+private fun homeLayoutOf(fold: FoldLayout): HomeLayout {
+    if (fold.isOnCoverScreen) return HomeLayout.COVER
     return when (fold.formFactor) {
         FormFactor.Phone -> HomeLayout.PHONE
 

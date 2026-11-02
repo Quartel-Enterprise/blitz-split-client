@@ -15,8 +15,10 @@ interface ProviderConnector {
 
     fun expand()
 
+    // Why: a browser link coming back after a relaunch reopens the profile only when it left from there.
     suspend fun connect(
         provider: AccountProvider,
+        isFromProfile: Boolean,
         launchNativeSignIn: suspend (AccountProvider) -> Unit,
     )
 

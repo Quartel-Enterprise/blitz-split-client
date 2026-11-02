@@ -1,13 +1,12 @@
 import Shared
 import SwiftUI
 
-/// What the group's tabs Expenses and Balances share, each sent to its own ViewModel: the bars, the group's header,
-/// its faces, "Your balance in this group" and the tabs.
+/// What the group's screen draws once over its tabs, sent to the group's ViewModel: the bars, the group's header, its
+/// faces (which pick Members), "Your balance in this group" and the tabs.
 struct GroupScreenActions {
     let select: (GroupTab) -> Void
     let invite: () -> Void
     let stats: () -> Void
-    let members: () -> Void
     let editGroup: () -> Void
     /// "Pin to Home" or "Unpin from Home", as the header says the group is.
     let togglePin: () -> Void
@@ -25,7 +24,6 @@ struct GroupScreenActions {
         select: { _ in },
         invite: {},
         stats: {},
-        members: {},
         editGroup: {},
         togglePin: {},
         leaveGroup: {},
@@ -39,16 +37,18 @@ struct GroupScreenActions {
 }
 
 extension View {
-    /// The bars of a group's tab: its name, "Statistics", "Invite people", the "⋯" menu and "Split a bill" (the bottom toolbar's
-    /// prominent glass item on iPhone, iOS has no FAB; the window toolbar's primary button on the Mac, with the tabs
-    /// in the toolbar). `header` is nil until the screen is loaded, which disables the buttons. Offline, the menu's
-    /// Leave and Delete need the internet; the dialogs they open come with the bars.
+    /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and the tab's main
+    /// button, "Split a bill" or Members' "Add person" (the bottom toolbar's prominent glass item on iPhone, iOS has no
+    /// FAB; the window toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the
+    /// screen is loaded, which disables the buttons. Offline, the menu's Leave and Delete need the internet; the
+    /// dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
         host: AppRoute,
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
+        addPerson: (() -> Void)?,
         showsInlineTitle: Bool,
         exit: GroupExitState?,
         actions: GroupScreenActions,
@@ -60,6 +60,7 @@ extension View {
                 header: header,
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
+                addPerson: addPerson,
                 showsInlineTitle: showsInlineTitle,
                 isOnline: exit?.isOnline ?? true,
                 actions: actions,
@@ -71,11 +72,14 @@ extension View {
 
 private struct GroupScreenBars: ViewModifier {
     let tab: GroupTab
-    /// This tab in the shared back stack, whose "Invite people" anchors the Mac's invite popover.
+    /// The group's screen in the shared back stack, whose "Invite people" anchors the Mac's invite popover, except on
+    /// Members, whose Share does.
     let host: AppRoute
     let header: GroupHeader?
     let hasExpenses: Bool
     let showsSplitBill: Bool
+    /// Members' "Add person", nil on the other tabs.
+    let addPerson: (() -> Void)?
     let showsInlineTitle: Bool
     let isOnline: Bool
     let actions: GroupScreenActions
@@ -84,6 +88,8 @@ private struct GroupScreenBars: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     #endif
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
+    @State private var hasVerticalBar = false
 
     private var isLoaded: Bool {
         header != nil
@@ -91,6 +97,7 @@ private struct GroupScreenBars: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .readingVerticalBar($hasVerticalBar)
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
@@ -126,21 +133,29 @@ private struct GroupScreenBars: ViewModifier {
         ToolbarItem(placement: .primaryAction) {
             Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
                 .disabled(!isLoaded)
-                .invitePopover(host: host)
+                .invitePopover(host: host, isAnchor: tab != .members)
         }
         ToolbarItem(placement: .primaryAction) { groupMenu }
         if showsSplitBill {
-            #if os(iOS)
-            if usesBottomBar {
-                ToolbarSpacer(.flexible, placement: .bottomBar)
-                ToolbarItem(placement: .bottomBar) { splitBillButton }
-            } else {
-                ToolbarItem(placement: .primaryAction) { splitBillButton }
-            }
-            #else
-            ToolbarItem(placement: .primaryAction) { splitBillButton }
-            #endif
+            mainButton { splitBillButton }
+        } else if let addPerson {
+            mainButton { AddPersonButton(showsTitle: !hasVerticalBar, action: addPerson) }
         }
+    }
+
+    @ToolbarContentBuilder
+    private func mainButton(@ViewBuilder _ button: () -> some View) -> some ToolbarContent {
+        #if os(iOS)
+        if usesBottomBar {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            ToolbarItem(placement: .bottomBar) { button() }
+        } else {
+            ToolbarItem(placement: .primaryAction) { button() }
+                .prefersVerticalBar()
+        }
+        #else
+        ToolbarItem(placement: .primaryAction) { button() }
+        #endif
     }
 
     /// "⋯": only what changes the group itself (6.1i), Pin to Home first, which works offline; offline, Leave and
@@ -203,13 +218,14 @@ private struct GroupScreenBars: ViewModifier {
     }
 
     private var splitBillButton: some View {
-        SplitBillButton(action: actions.splitBill)
+        SplitBillButton(showsTitle: !hasVerticalBar, action: actions.splitBill)
     }
 
     #if os(iOS)
-    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb.
+    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb, except into an iPhone Duo's
+    /// vertical bar, right under Back, as the boards draw it.
     private var usesBottomBar: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular
+        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
     }
     #endif
 }
@@ -354,9 +370,10 @@ struct BalanceCard: View {
 }
 
 #if os(iOS)
-/// A group's tab on iPhone upright and iPad: one column (640 wide at most on iPad) with the header, the balance card
-/// and the tabs over the tab's sections. iPhone lying down: the header and the card on the left, the tabs and the
-/// sections on the right.
+/// The group's screen on iPhone upright and iPad: one column (640 wide at most on iPad) with the header, the balance
+/// card and the tabs over the picked tab's sections. iPhone lying down: the header and the card on the left, the tabs
+/// and the sections on the right. An iPhone Duo open upright: the header and the card above the fold, the tabs and the
+/// sections below it (3.3, 6.2), on every tab so the header never moves. Only the sections change with the tab.
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     let hasExpenses: Bool
@@ -370,24 +387,41 @@ struct PhoneGroupScaffold<Sections: View>: View {
         Group {
             if usesTwoColumns {
                 HStack(alignment: .top, spacing: 8) {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            top
-                            balanceCard
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                    }
-                    .frame(width: 328)
+                    summary
+                        .frame(width: 328)
                     list(withHeader: false)
                 }
             } else {
-                list(withHeader: true)
-                    .frame(maxWidth: 640)
-                    .frame(maxWidth: .infinity)
+                // An iPhone Duo open upright: the header and the card above the fold, the tabs below it
+                FoldHalves(scrollsHalves: false) {
+                    summary
+                        .scrollBounceBehavior(.basedOnSize)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } bottom: {
+                    list(withHeader: false)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } single: {
+                    list(withHeader: true)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .background(Palette.groupedBackground)
+    }
+
+    /// The header and the card beside or above the tabs.
+    private var summary: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                top
+                balanceCard
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+        }
     }
 
     private var top: some View {
@@ -404,7 +438,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            GroupFaces(header: header, size: 28, action: actions.members)
+            GroupFaces(header: header, size: 28) { actions.select(.members) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -429,14 +463,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
                     balanceCard
                 }
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
+                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 .listRowSeparator(.hidden)
             }
-            Section {
-                GroupTabsPicker(selected: tab, onSelect: actions.select)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            GroupTabsSection(selected: tab, onSelect: actions.select)
             sections
         }
         .listStyle(.insetGrouped)
@@ -452,7 +482,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
 #endif
 
 #if os(macOS)
-/// The top of a group's tab in a Mac window: the group's strip (icon, faces, who hasn't joined) and the balance card.
+/// The top of the group's screen in a Mac window, over every tab: the group's strip (icon, faces, who hasn't joined) and the balance card.
 struct MacGroupTop: View {
     let header: GroupHeader
     let actions: GroupScreenActions
@@ -462,7 +492,7 @@ struct MacGroupTop: View {
             HStack(spacing: 12) {
                 GroupAvatar(initials: header.groupInitials, color: header.groupColor, size: 36)
                     .accessibilityHidden(true)
-                GroupFaces(header: header, size: 24, action: actions.members)
+                GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }
             if let balance = header.myBalance {

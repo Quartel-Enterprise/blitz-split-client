@@ -1251,6 +1251,21 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile off the back stack WHEN choosing Google in the browser THEN it leaves from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            // The Mac's Ajustes, a window of its own
+            navigator.popTo(size = 1)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(listOf(true), account.browserConnectionsFromProfile)
+        }
+
+    @Test
     fun `GIVEN no internet WHEN choosing a provider THEN does nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -3344,6 +3359,18 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile WHEN tapping the category map THEN opens it over the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.CategoryMap), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN only notification preferences not uploaded WHEN the profile opens THEN lists them as pending`() =
         runTest(testDispatcher) {
             // Given
@@ -3658,7 +3685,7 @@ class ProfileViewModelTest {
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),
-                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                connectWithBrowser = ConnectWithBrowserUseCase(account),
                 completeSignIn = {
                     completedSignIns++
                     Result.success(SignInOutcome.PROFILE_RESTORED)

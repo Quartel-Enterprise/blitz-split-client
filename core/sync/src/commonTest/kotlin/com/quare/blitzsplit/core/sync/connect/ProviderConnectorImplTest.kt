@@ -17,15 +17,16 @@ class ProviderConnectorImplTest {
     private lateinit var connector: ProviderConnectorImpl
     private val nativeLaunches = mutableListOf<AccountProvider>()
     private val browserLinks = mutableListOf<AccountProvider>()
+    private val browserLinksFromProfile = mutableListOf<Boolean>()
 
     @Test
     fun `GIVEN a browser link under way WHEN connecting again THEN starts no second link`() = runTest {
         // Given
         prepareScenario()
-        connector.connect(AccountProvider.GOOGLE, nativeLaunches::add)
+        connector.connect(AccountProvider.GOOGLE, isFromProfile = false, nativeLaunches::add)
 
         // When
-        connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+        connector.connect(AccountProvider.APPLE, isFromProfile = false, nativeLaunches::add)
 
         // Then
         assertEquals(listOf(AccountProvider.GOOGLE), browserLinks)
@@ -33,13 +34,27 @@ class ProviderConnectorImplTest {
     }
 
     @Test
+    fun `GIVEN the profile WHEN connecting Google in the browser THEN says the link leaves from the profile`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            connector.connect(AccountProvider.GOOGLE, isFromProfile = true, nativeLaunches::add)
+
+            // Then
+            assertEquals(listOf(AccountProvider.GOOGLE), browserLinks)
+            assertEquals(listOf(true), browserLinksFromProfile)
+        }
+
+    @Test
     fun `GIVEN a native sheet open WHEN connecting again THEN opens no second sheet`() = runTest {
         // Given
         prepareScenario(native = setOf(AccountProvider.APPLE))
-        connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+        connector.connect(AccountProvider.APPLE, isFromProfile = false, nativeLaunches::add)
 
         // When
-        connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+        connector.connect(AccountProvider.APPLE, isFromProfile = false, nativeLaunches::add)
 
         // Then
         assertEquals(listOf(AccountProvider.APPLE), nativeLaunches)
@@ -50,7 +65,7 @@ class ProviderConnectorImplTest {
         runTest {
             // Given
             prepareScenario(native = setOf(AccountProvider.APPLE))
-            connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+            connector.connect(AccountProvider.APPLE, isFromProfile = false, nativeLaunches::add)
 
             // When
             connector.onIdTokenReceived(
@@ -71,7 +86,7 @@ class ProviderConnectorImplTest {
         runTest {
             // Given
             prepareScenario(native = setOf(AccountProvider.GOOGLE))
-            connector.connect(AccountProvider.GOOGLE, nativeLaunches::add)
+            connector.connect(AccountProvider.GOOGLE, isFromProfile = false, nativeLaunches::add)
 
             // When
             connector.onIdTokenReceived(
@@ -91,8 +106,9 @@ class ProviderConnectorImplTest {
         connector = ProviderConnectorImpl(
             nativeSignIn = NativeSignIn(native),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = { provider ->
+            connectWithBrowser = { provider, isFromProfile ->
                 browserLinks += provider
+                browserLinksFromProfile += isFromProfile
                 Result.success(Unit)
             },
             completeSignIn = { Result.success(SignInOutcome.PROFILE_RESTORED) },

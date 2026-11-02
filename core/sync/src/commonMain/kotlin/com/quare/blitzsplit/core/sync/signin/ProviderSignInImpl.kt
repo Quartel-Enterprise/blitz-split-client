@@ -40,7 +40,7 @@ class ProviderSignInImpl(
         provider: AccountProvider,
         launchNativeSignIn: suspend (AccountProvider) -> Unit,
     ): Result<Unit> {
-        if (provider !in nativeSignIn.providers) return connectWithBrowser(provider)
+        if (provider !in nativeSignIn.providers) return connectWithBrowser(provider, isFromProfile = false)
         launchNativeSignIn(provider)
         return Result.success(Unit)
     }

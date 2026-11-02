@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.join.presentation.viewmodel
 
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 
@@ -18,6 +19,7 @@ internal fun Navigator.openJoinedGroup(
         Route.GroupDetail(
             groupId = groupId,
             joinedAs = joinedAs,
+            tab = GroupTab.EXPENSES,
         ),
     )
 }

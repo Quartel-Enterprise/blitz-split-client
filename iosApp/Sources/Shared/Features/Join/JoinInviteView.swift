@@ -78,7 +78,8 @@ struct JoinInviteView: View {
 
 /// One column on an iPhone upright and with an iPad's room upright; lying down (an iPhone, an iPad, an iPhone Duo
 /// open) the title and what to expect on the left (290 pt, 360 pt with an iPad's room) and the group and its buttons
-/// on the right, in a 900 pt container (3.1). The Mac's sheet keeps one column.
+/// on the right, in a 900 pt container (3.1); an iPhone Duo open upright the group above the fold and the buttons
+/// below it. The Mac's sheet keeps one column.
 private struct JoinInviteContent: View {
     let model: JoinInviteModel
 
@@ -110,17 +111,43 @@ private struct JoinInviteContent: View {
                     .defaultScrollAnchor(.center, for: .alignment)
                 }
                 .padding(.horizontal, layout.isLarge ? 64 : 20)
-            } else {
-                ScrollView {
-                    column(state)
-                        .padding(20)
-                        .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
-                        .frame(maxWidth: .infinity)
+            } else if state.status == .ready {
+                // An iPhone Duo open upright: the group above the fold, who joins and the buttons below it
+                FoldHalves(centersTop: true) {
+                    VStack(alignment: .leading, spacing: 20) {
+                        heading(state)
+                        group(state)
+                    }
+                    .padding(20)
+                    .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                    .frame(maxWidth: .infinity)
+                } bottom: {
+                    VStack(alignment: .leading, spacing: 20) {
+                        personalRow(state)
+                        hint(state)
+                        buttons(state)
+                    }
+                    .padding(20)
+                    .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                    .frame(maxWidth: .infinity)
+                } single: {
+                    singleColumn(state)
                 }
+            } else {
+                singleColumn(state)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .measuringScreenLayout($layout)
+    }
+
+    private func singleColumn(_ state: JoinInviteUiState) -> some View {
+        ScrollView {
+            column(state)
+                .padding(20)
+                .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                .frame(maxWidth: .infinity)
+        }
     }
 
     @ViewBuilder

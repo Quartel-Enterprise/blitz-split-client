@@ -70,4 +70,9 @@
         <item quantity="one">%1$d expense, %2$d queued</item>
         <item quantity="other">%1$d expenses, %2$d queued</item>
     </plurals>
+    <string name="group_stats_by_category">By category</string>
+    <string name="group_stats_category_share">%1$s: %2$d%% of the total</string>
+    <string name="group_stats_category_percent">%d%%</string>
+    <string name="group_stats_category_pie">Split by category: %s</string>
+    <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
 </resources>

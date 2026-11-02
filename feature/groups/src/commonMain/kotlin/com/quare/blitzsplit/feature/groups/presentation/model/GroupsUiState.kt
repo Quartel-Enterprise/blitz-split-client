@@ -60,6 +60,8 @@ data class GroupsUiState(
      * an unfolded book) draws it beside the list and highlights its row or card; a phone never sees the list then.
      */
     val selectedGroupId: String?,
+    // Why: "Última atividade" on the Flip's cover screen; null with no bill on the device.
+    val latestBill: LatestBill?,
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
 ) {

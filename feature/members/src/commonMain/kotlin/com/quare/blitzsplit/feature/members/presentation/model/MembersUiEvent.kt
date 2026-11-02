@@ -3,16 +3,8 @@ package com.quare.blitzsplit.feature.members.presentation.model
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface MembersUiEvent : UiEvent {
-    data object OnBackClicked : MembersUiEvent
-
     // Why: "Compartilhar" on the link card opens "Convidar", with the QR code.
     data object OnShareClicked : MembersUiEvent
-
-    // Why: the "Despesas" tab, the group's own screen.
-    data object OnExpensesTabClicked : MembersUiEvent
-
-    // Why: the "Saldos" tab.
-    data object OnBalancesTabClicked : MembersUiEvent
 
     data object OnAddClicked : MembersUiEvent
 
@@ -62,12 +54,4 @@ sealed interface MembersUiEvent : UiEvent {
     data object OnSaveClicked : MembersUiEvent
 
     data object OnEditorDismissed : MembersUiEvent
-
-    // Why: "Acertar" on "Seu saldo neste grupo", which pays whoever this person owes the most.
-    data object OnSettleClicked : MembersUiEvent
-
-    // Why: "Desfazer" on the notice of a payment just recorded.
-    data object OnUndoPaymentClicked : MembersUiEvent
-
-    data object OnRecordedPaymentNoticeShown : MembersUiEvent
 }

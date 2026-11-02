@@ -123,6 +123,7 @@ class BillDeletionTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 1L,

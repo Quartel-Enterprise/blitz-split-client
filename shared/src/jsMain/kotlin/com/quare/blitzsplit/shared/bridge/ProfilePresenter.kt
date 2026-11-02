@@ -202,6 +202,10 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnThemeSelected(theme))
     }
 
+    fun categoryMap() {
+        viewModel.onEvent(ProfileUiEvent.OnCategoryMapClicked)
+    }
+
     fun privacyPolicy() {
         viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
     }

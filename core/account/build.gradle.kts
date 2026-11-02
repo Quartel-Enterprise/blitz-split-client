@@ -8,7 +8,6 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             implementation(projects.core.utils)
-            implementation(projects.core.navigation)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(libs.kotlinx.serialization.json)

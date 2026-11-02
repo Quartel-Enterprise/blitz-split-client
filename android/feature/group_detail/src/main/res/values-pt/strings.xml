@@ -57,6 +57,17 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
+    <string name="group_detail_category_path">%1$s › %2$s</string>
+    <string name="group_detail_teach_offer">Conta salva em %1$s, e não em %2$s, que o mapa sugeriu. Ensinar ao mapa?</string>
+    <string name="group_detail_teach_offer_no_map">Conta salva em %1$s. Ensinar ao mapa?</string>
+    <string name="group_detail_teach">Ensinar</string>
+    <string name="group_detail_teach_title">Ensinar ao mapa</string>
+    <string name="group_detail_teach_question">Qual palavra de “%1$s” deve escolher %2$s nas próximas contas?</string>
+    <string name="group_detail_teach_word_new">Nova no mapa. Títulos com “%1$s” vão para %2$s.</string>
+    <string name="group_detail_teach_word_moves">Sai de %1$s: títulos com “%2$s” vão para %3$s.</string>
+    <string name="group_detail_teach_footer">As contas já salvas não mudam. Dá para desfazer no Mapa de categorias.</string>
+    <string name="group_detail_teach_cancel">Cancelar</string>
+    <string name="group_detail_teach_error">Não deu para ensinar o mapa. Tente de novo.</string>
     <string name="group_detail_joined_title">Você entrou como %s</string>
     <string name="group_detail_joined_message">Tudo que for lançado para você aparece aqui.</string>
     <string name="group_detail_protect_title">Proteja seu acesso</string>

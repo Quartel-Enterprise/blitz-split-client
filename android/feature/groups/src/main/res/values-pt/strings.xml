@@ -94,6 +94,23 @@
     <string name="groups_search_hint">Procura em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados, sem precisar de internet.</string>
     <string name="groups_search_none_title">Nada com “%s”</string>
     <string name="groups_search_none_body">Procuramos em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados.</string>
+    <!-- The home on a Flip's cover screen -->
+    <string name="groups_cover_brand">Bora Rachar</string>
+    <string name="groups_cover_offline">Offline</string>
+    <plurals name="groups_cover_to_receive">
+        <item quantity="one">a receber em %d grupo</item>
+        <item quantity="other">a receber em %d grupos</item>
+    </plurals>
+    <plurals name="groups_cover_to_pay">
+        <item quantity="one">a pagar em %d grupo</item>
+        <item quantity="other">a pagar em %d grupos</item>
+    </plurals>
+    <string name="groups_cover_last_activity">Última atividade</string>
+    <string name="groups_cover_latest_by">%1$s lançou %2$s, %3$s, em %4$s</string>
+    <string name="groups_cover_latest_by_me">Você lançou %1$s, %2$s, em %3$s</string>
+    <string name="groups_cover_latest">%1$s, %2$s, em %3$s</string>
+    <string name="groups_cover_open_phone">Abrir no celular</string>
+    <string name="groups_cover_open_phone_hint">Abra o celular para continuar</string>
     <string name="groups_home_title">Início</string>
     <string name="groups_home_people_title">Saldos com pessoas</string>
     <string name="groups_home_people_title_count">Saldos com pessoas · %d</string>

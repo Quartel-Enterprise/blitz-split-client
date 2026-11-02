@@ -94,6 +94,23 @@
     <string name="groups_search_hint">Searches the groups, people and expenses on this device, settled groups included, even without internet.</string>
     <string name="groups_search_none_title">Nothing for “%s”</string>
     <string name="groups_search_none_body">We searched the groups, people and expenses on this device, settled groups included.</string>
+    <!-- The home on a Flip's cover screen -->
+    <string name="groups_cover_brand">Blitz Split</string>
+    <string name="groups_cover_offline">Offline</string>
+    <plurals name="groups_cover_to_receive">
+        <item quantity="one">to get back in %d group</item>
+        <item quantity="other">to get back in %d groups</item>
+    </plurals>
+    <plurals name="groups_cover_to_pay">
+        <item quantity="one">to pay in %d group</item>
+        <item quantity="other">to pay in %d groups</item>
+    </plurals>
+    <string name="groups_cover_last_activity">Latest activity</string>
+    <string name="groups_cover_latest_by">%1$s added %2$s, %3$s, in %4$s</string>
+    <string name="groups_cover_latest_by_me">You added %1$s, %2$s, in %3$s</string>
+    <string name="groups_cover_latest">%1$s, %2$s, in %3$s</string>
+    <string name="groups_cover_open_phone">Open on the phone</string>
+    <string name="groups_cover_open_phone_hint">Open your phone to continue</string>
     <string name="groups_home_title">Home</string>
     <string name="groups_home_people_title">Balances with people</string>
     <string name="groups_home_people_title_count">Balances with people · %d</string>

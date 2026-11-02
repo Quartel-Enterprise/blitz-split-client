@@ -199,7 +199,7 @@ private fun PersonValueComponent(
 }
 
 @Composable
-private fun PartsStepperRow(
+internal fun PartsStepperRow(
     parts: Long,
     label: String,
     onDecrease: () -> Unit,
@@ -240,7 +240,7 @@ private fun PartsStepperRow(
 }
 
 @Composable
-private fun NumberField(
+internal fun NumberField(
     value: String,
     description: String,
     isError: Boolean,
@@ -302,7 +302,7 @@ private fun personSubtitleOf(
 }
 
 @Composable
-private fun personNameOf(person: DefaultSplitPerson): String =
+internal fun personNameOf(person: DefaultSplitPerson): String =
     if (person.isMe) stringResource(R.string.default_split_me, person.name) else person.name
 
 private val DefaultSplitMode.listLabelRes: Int

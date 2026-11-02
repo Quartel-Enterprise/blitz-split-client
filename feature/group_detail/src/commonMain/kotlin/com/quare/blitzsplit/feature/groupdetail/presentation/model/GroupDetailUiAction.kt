@@ -9,4 +9,7 @@ sealed interface GroupDetailUiAction {
 
     // Why: the device couldn't delete the payment, which is rare enough to just say so; it still counts.
     data object ShowChangeError : GroupDetailUiAction
+
+    // Why: the word couldn't go into the map; the bill is saved anyway.
+    data object ShowTeachError : GroupDetailUiAction
 }

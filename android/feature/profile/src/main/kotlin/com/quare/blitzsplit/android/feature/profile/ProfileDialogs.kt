@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.WifiOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,30 +31,44 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.labelRes
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 
+/*
+ * Why: on a book (and a tabletop lying down) every dialog of the profile opens in the right half, never over the
+ * hinge, "Quem vê seu nome e foto" and the sign out confirmations alike (4.1, 4.6).
+ */
 @Composable
 internal fun ProfileDialogsOverlay(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     val onDismiss = { onEvent(ProfileUiEvent.OnDialogDismissed) }
+    val placement = rememberDialogPlacement()
     when (state.dialog) {
-        ProfileDialog.VISIBILITY_INFO -> AlertDialog(
+        ProfileDialog.VISIBILITY_INFO -> FoldAlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text(stringResource(R.string.profile_visibility)) },
-            text = { Text(stringResource(R.string.profile_visibility_body)) },
+            title = stringResource(R.string.profile_visibility),
+            text = {
+                Text(
+                    text = stringResource(R.string.profile_visibility_body),
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                )
+            },
             confirmButton = {
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_visibility_ok)) }
             },
+            placement = placement,
         )
 
-        ProfileDialog.SIGN_OUT -> AlertDialog(
+        ProfileDialog.SIGN_OUT -> FoldAlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text(stringResource(R.string.profile_sign_out_title)) },
+            title = stringResource(R.string.profile_sign_out_title),
             text = {
                 val provider = state.accountProvider?.let { stringResource(it.labelRes) }.orEmpty()
                 DialogBodyColumn(
@@ -73,19 +86,16 @@ internal fun ProfileDialogsOverlay(
             dismissButton = {
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) }
             },
+            placement = placement,
         )
 
-        ProfileDialog.SIGN_OUT_PENDING -> AlertDialog(
+        ProfileDialog.SIGN_OUT_PENDING -> FoldAlertDialog(
             onDismissRequest = onDismiss,
-            title = {
-                Text(
-                    pluralStringResource(
-                        R.plurals.profile_sign_out_pending_title,
-                        state.pendingChangeCount,
-                        state.pendingChangeCount,
-                    ),
-                )
-            },
+            title = pluralStringResource(
+                R.plurals.profile_sign_out_pending_title,
+                state.pendingChangeCount,
+                state.pendingChangeCount,
+            ),
             text = {
                 val bodyRes = if (state.isOnline) {
                     R.string.profile_sign_out_pending_body
@@ -114,18 +124,21 @@ internal fun ProfileDialogsOverlay(
             dismissButton = {
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) }
             },
+            placement = placement,
         )
 
         ProfileDialog.ERASE_PROFILE -> EraseProfileDialog(
             state = state,
             onEvent = onEvent,
             onDismiss = onDismiss,
+            placement = placement,
         )
 
         ProfileDialog.UNLINK_ACCOUNT -> UnlinkAccountDialog(
             state = state,
             onEvent = onEvent,
             onDismiss = onDismiss,
+            placement = placement,
         )
 
         null -> Unit
@@ -141,9 +154,10 @@ private fun UnlinkAccountDialog(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
     onDismiss: () -> Unit,
+    placement: DialogPlacement,
 ) {
     val provider = state.accountProvider?.let { stringResource(it.labelRes) }.orEmpty()
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = onDismiss,
         icon = {
             Icon(
@@ -151,9 +165,12 @@ private fun UnlinkAccountDialog(
                 contentDescription = null,
             )
         },
-        title = { Text(stringResource(R.string.profile_unlink_title, provider)) },
+        title = stringResource(R.string.profile_unlink_title, provider),
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Text(stringResource(R.string.profile_unlink_body))
                 if (state.showsOfflineNotice) {
                     Row(
@@ -202,6 +219,7 @@ private fun UnlinkAccountDialog(
                 enabled = !state.isUnlinking,
             ) { Text(stringResource(R.string.profile_cancel)) }
         },
+        placement = placement,
     )
 }
 
@@ -214,12 +232,13 @@ private fun EraseProfileDialog(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
     onDismiss: () -> Unit,
+    placement: DialogPlacement,
 ) {
     val code = state.formattedRecoveryCode
     val bodyRes = if (state.hasRecoveryCode) R.string.profile_erase_body else R.string.profile_erase_body_no_code
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.profile_erase_title)) },
+        title = stringResource(R.string.profile_erase_title),
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -285,6 +304,7 @@ private fun EraseProfileDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) }
         },
+        placement = placement,
     )
 }
 
@@ -293,7 +313,10 @@ private fun DialogBodyColumn(
     text: String,
     state: ProfileUiState,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         Text(text)
         if (state.hasSignOutFailed) SignOutFailedText()
     }

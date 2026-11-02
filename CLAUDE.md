@@ -52,7 +52,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
-    right above it, taking each other's place (`Navigator.openHomeTab`).
+    right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
+    lying down and a tabletop, and stays, without "Rachar conta", beside a group's Despesas, Saldos, Membros and
+    Estatísticas drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
+    Estatísticas over a whole book; never on a tabletop, nor beside the home's list, which has its own), the
+    tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
+    to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
+    `OnRailTabClicked`).
   - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
     with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
     the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net (`Route.SettleUp`),
@@ -112,7 +118,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
-    progress (5.1d) yet: the sync can't tell how many groups are still to come.
+    progress (5.1d) yet: the sync can't tell how many groups are still to come. A phone lying down (Android and
+    iPhone) splits in two: the sync status and "Saldo geral" (its buttons side by side under the amount) stay still on
+    the left, 320 dp / 300 pt (Android's QR, Buscar and profile at its top, iOS's stay in the bar), and the list
+    scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
+    480 dp, the same test as Início's cover) Grupos with a group only draws "Saldo geral" ("a receber em 4 grupos"), "Última atividade" (the bill
+    saved last on the device, "Ana lançou Uber aeroporto, R$ 87,60, em Viagem Floripa", `GroupsUiState.latestBill`)
+    and "Abrir no celular", which says "Abra o celular para continuar", since no app can open the phone; no list,
+    search, form nor the recovery code's prompt.
   - The home's group actions (5.3, 5.4): every row of Grupos and Quitados ends in a ⋮ (⋯ on iOS, macOS and the web)
     with "Convidar pessoas", "Sair do grupo" and "Apagar grupo", the same as its long press (a bottom sheet with the
     group and your balance on Android, the context menu on iOS) and its right click (the Mac's and the web's table);
@@ -124,6 +137,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98,00 antes" (what
     you owe, else what you're owed, `GroupRow.settleBeforeLeavingMinor`) and "Só quando todos tiverem acertado"
     (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
+    On Android their dialogs (`GroupExitAlertDialog`, the group's too) take a book's right half and a tabletop's top
+    half.
   - The home's "Lista ou grade" (5.5, 5.6): the open groups show as a list (the default) or a grid of cards, at
     Compacto, Padrão or Grande, kept per device and never synced (`GroupsLayout` in `device_settings`, so it outlives
     a sign out; the grid keeps its size while the list is picked). Quitados and what a filter or the search finds stay
@@ -141,30 +156,50 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
     (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
     found. It only shows once there is a group: Android's magnifier in the top bar, whose search bar takes the bar's
-    place (back closes it), iOS's search tab (in the iPad's sidebar), "Buscar… ⌘K" in the web's sidebar (the phone's
+    place (back closes it), iOS's search tab with an iPad's room (both size classes regular, in its sidebar),
+    and on an iPhone, lying down too, a magnifier in Grupos' bar that opens it in place, with ✕ (five tabs leave no
+    room for a sixth), "Buscar… ⌘K" in the web's sidebar (the phone's
     magnifier), opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field, whose results take the
     groups' place once something is typed. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Quitado · despesa “Churros”", as the design draws it), and "Despesas"
     lists it too. A group opens the group, a person the Membros of the group they were found in, a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
-    looks, nothing found says "Nada com “pizza”". Closing forgets the text; leaving iOS's search tab also goes back
+    looks, nothing found says "Nada com “pizza”". A phone lying down (Android and iPhone) puts the field and the
+    scopes on the left (under a "Buscar" title on the iPhone, whose bar hides) and the results on the right. Closing
+    forgets the text; leaving iOS's search tab also goes back
     to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. Where the home
     draws its list and detail, the first result opens beside the results as it is typed: a group or a bill's group
     as its Despesas, a person as the Membros they were found in (a bill's Conta waits for a tap), never over a result
     tapped since with the same first result.
   - The home's list and detail (5.1): an Android tablet lying down, an unfolded book (the tabletop alike) and an iPad
     lying down draw the list (with the rail on Android) and, beside it, the group tapped, its Despesas, Saldos and
-    Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
+    Membros switching in place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
     tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
     closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
     (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
     exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
-    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
-    (Estatísticas, the profile, a joined invite, Convidar on an Android tablet and an iPad) covers the whole window,
+    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane, and the Estatísticas they open on a
+    tablet lying down and an iPad lying down (decision 2: with its back arrow, the list still tappable beside it; a
+    book and an iPhone Duo open draw it across the fold): anything else above the groups (the profile, a joined
+    invite, Convidar on an Android tablet and an iPad) covers the whole window,
     and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
+  - "Perfil" (4.1, `Route.Profile`) opens from the avatar of each home tab (Início, Grupos…). It is one column on a
+    phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
+    your account and "Privacidade e sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
+    glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
+    and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
+    gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
+    Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
+    Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
+    name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Salvar (✓). The Mac's profile is
+    Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Proteja seu
+    acesso", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
+    scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
+    on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
+    once no profile is left. The web's is a page.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
@@ -206,14 +241,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
     chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
     `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
-    560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all
+    560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
+    down) with the people under the scrim, a
+    sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
+    a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone). It all
     works offline on the device's data, and has no "Rachar conta". An Android tablet lying down, an unfolded book, an
     iPad lying down, the web's desktop (from 1024 px) and a Mac window wide enough for the inspector list the people
     beside the one picked (`GlobalBalancesUiState.selectedPerson`, the first listed until a row is picked or once the
     filter hides the pick): their groups by name, "Carla te deve R$ 32,90" with the actions, "Por grupo" (a table on
     the web) and "O líquido já compensa os grupos: Cobrar e Recebi usam R$ 32,90. O app anota um pagamento em cada
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
-    column with "Por grupo" in the row, the filter beside the list on a phone lying down.
+    column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
+    and the filter stay still in a 300 pt column on the left while the people scroll on the right).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's
@@ -242,11 +281,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     web (a drawer on a phone).
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
-    web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
-    the group never stacks over itself. Convidar's "Ir para o grupo" opens it too.
+    web). Its tabs Despesas / Saldos / Membros are one screen (`Route.GroupDetail.tab` only says which it opens on):
+    the header, "Seu saldo neste grupo" and the tabs stay, only what is under them changes, with no transition nor
+    check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
+    group. Convidar's "Ir para o grupo" and "Ver quem já entrou" open it in Convidar's place (`openGroup`), so the
+    group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
-    with Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor history yet). A phone opens it
-    full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
+    with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
+    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
     on a phone), all over the group.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
@@ -262,10 +304,19 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
     doesn't fit opens on Dia (up to 3 months) or Mês, the disabled ones say why under the chart (`StatsGrainNote`).
     Then the most expensive one, and "Maior despesa", which opens its Conta. A group without bills says "Nada para
-    mostrar ainda" with "Rachar conta"; a period without bills offers "Ver toda a viagem". Categories (the pie and
-    "Por categoria") wait for bills to have one (7.7), and there is no first-download progress ("Total gasto até
-    agora", 5.1d) yet. A phone scrolls one column; a tablet lying down, the web from the tablet up and the Mac put "Ao
-    longo do tempo" and "Maior despesa" in a second column, the web and the Mac with four summary cards.
+    mostrar ainda" with "Rachar conta"; a period without bills offers "Ver toda a viagem". "Por categoria" draws the
+    period's spending as a ring in each main category's fixed color, the largest in its center, then each main
+    category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
+    to 100), a bill without a category counted in Outros and one of a deleted category in its parent or Outros.
+    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone, a tablet and a foldable upright
+    scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
+    categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
+    tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
+    first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
+    a small bar with the period, the total and "Ao longo do tempo" side by side in the top half, against the hinge,
+    and "Por categoria" and "Por pessoa" side by side in the bottom half, scrolling, without the grains' note nor
+    "Maior despesa". The web from the tablet
+    up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
@@ -292,16 +343,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     digit of the amount (`SettledPairChange.announcementKey`). Salvar saves at once, with no extra question. "Apagar
     esta conta?" ends with the same sentence, from Conta too (`BillDeletion.settledPair`). A payment dated before the
     bill, or one whose pair the change doesn't move, says nothing.
-  - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
-    rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
-    someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
-    pessoal" answers "Em breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open
-    balance can't be removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's
-    creator sees "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances
-    included: after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla
-    leaves the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
+  - "Membros" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Convidar's "Ver quem já
+    entrou". Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
+    but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined),
+    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" answers "Em
+    breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open balance can't be
+    removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's creator sees
+    "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
+    after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
+    the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
     link. The released person gets no notice: the group just leaves their devices on the next sync.
-  - "Saldos" (`Route.Balances`) is the group's tab: each pair once, already netted (no simplifying debts across the
+  - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
@@ -339,11 +391,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     bill everyone gets the same of, R$ 120,00 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
-    writes only `mode` and `weights` over the stored object); Igual with everyone in saves no default. Someone who joined
-    after it was saved starts in, with 1 part or at 0% ("Carla entrou no grupo. Começa com 1 parte; ajuste se
+    writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
+    saves no default. Someone who joined after it was saved starts in, with 1 part or at 0% ("Carla entrou no grupo. Começa com 1 parte; ajuste se
     precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
-    the Mac's sheet, an iPad lying down and the web from 1024 px. There are no exceptions by category yet: bills have
-    no category (7.7).
+    the Mac's sheet, an iPad lying down and the web from 1024 px. "Exceções por categoria" (6.7f) lists the categories
+    that split their own way ("Nenhuma. Todas as categorias seguem a divisão acima."): "Adicionar exceção" opens
+    "Exceção por categoria" (a bottom sheet on Android, a sheet on iOS and macOS, in the dialog's place on the web),
+    one main category or subcategory (each at most once) split by Igual (who is in it), Partes or Porcentagem (whole
+    numbers adding up to 100), with its own example, saved with the rest of the default by Salvar
+    (`GroupDefaultSplit.exceptions`, `ExceptionEditor`). A new bill of that category, or of a subcategory of it
+    without its own, starts from the exception instead of the default (7.1k, `GroupDefaultSplit.exceptionFor`):
+    "Divisão" says "Exceção do grupo para Mercado" and Dividir's notice "Exceção do grupo para Mercado: Igual" (7.2g),
+    and changing the category moves the bill to the other way while Dividir was never changed by hand.
   - "Sair do grupo" and "Apagar grupo" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
     them disabled with "Precisa de internet", since only the server knows every device's bills and payments. The
     device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
@@ -353,9 +412,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`ConfirmLeave.deletesGroup`). Any member may delete the group
     once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
-    even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
-    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
-    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and Grupos or Início, whichever is
+    even with a change not pushed yet (the server's `removed_groups`): the group open on it, whatever the tab, says
+    "Grupo apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again
+    if a bill covered it; any other screen of the group (Convidar) just closes, and Grupos or Início, whichever is
     on top first, says "Carla apagou o grupo X." (`GroupsUiState.deletedGroupNotice`, `HomeUiState.deletedGroupNotice`,
     one shared queue); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",
@@ -363,7 +422,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     312,00 de R$ 312,00. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
     (`SplitBillUiState.severalPayers`, `payerAmounts`). A new total keeps what each one paid, and Salvar waits until
     someone makes it add up again; one person holding the whole total is one payer again. "Quando"
-    picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
+    picks date and time, never after now. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
     Valores, % (whole numbers adding up to 100), Partes or Itens, and only changes the bill on "Pronto". A new bill starts
@@ -401,6 +460,65 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
     lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
     receipt read (7.1e) come later.
+  - "Categoria" (7.7): every bill has one, the icon beside "Descrição" (a menu with a submenu per main category on
+    the Mac). Until it is picked by hand, the description's words choose it (the 60 default terms of flow 9, whole
+    words ignoring case and accents, the longest term winning, ties to the first in the text, `CategoryMatcher`), else
+    Outros, and the line under the description says why ("Alimentação › Mercado pela palavra “mercado”…", "3
+    palavras do mapa casaram…", "Nenhuma palavra…", "Você escolheu… Ao salvar, perguntamos se o mapa aprende."). The
+    words are the person's map (flow 9) once it has changes, and a card "Mapa de categorias" between Sugeridas and
+    Todas as categorias names the word that chose and opens the map over the bill (a menu item opening Ajustes on the
+    Mac). The picker (pushed on iOS, in the form's
+    place on Android and the web) has "Buscar categoria" (by name, accents ignored, "Criar “Pet”" when nothing is
+    found), up to four "Sugeridas" (the description's, the group's most used, the group's own) and every main
+    category opening its subcategories ("Só Alimentação" keeps the main one; beside the list lying down and on
+    tablets); Outros is picked at once. A bill saved as Outros without a pick stores no category. The app's
+    categories (10 main ones and their subcategories, `AppCategory`) are named by each platform; Despesas' rows and
+    Conta show the category's badge in its main category's color, Conta also "Alimentação › Mercado".
+  - "Nova categoria" (7.8, `GroupCategory`, the group's `group_categories`): anyone in the group may create, rename,
+    move and delete the group's own categories, offline too (the change waits in the queue, Last-Write-Wins per
+    row). A name has 1 to 30 letters and can't repeat inside the same main category, the app's names included; a
+    main category picks one of 18 icons, a subcategory takes its parent's; one with subcategories stays a main one.
+    Editing (a long press or a right click on the group's category, "Editar “X”…" on the Mac) says how many bills
+    use it; deleting asks "Apagar “X”?" saying where its bills go: they move to its parent, or Outros, at read time,
+    since a deleted category stays as a tombstone (`CategoryTree.resolve`), its subcategories going with it. A new
+    category is picked for the bill at once.
+  - "Mapa de categorias" (flow 9, `Route.CategoryMap`, `:feature:category_map`): each person's map of words to
+    categories, valid in every group, on the device and offline first (`category_term`, the server's
+    `category_terms`), synced to the person's other devices under their account and cleared on sign out; while the
+    account has no Google or Apple it says "Seu mapa fica só neste aparelho" with "Abrir Perfil". It starts as the
+    app's 60 terms (`DefaultCategoryTerms`) and stores only the person's changes over them (`CategoryMap`): a term
+    added or moved (one category per term, so a word another category has turns Salvar into "Mover para X"), a
+    term removed (no confirmation, "“café” saiu do mapa" with Desfazer), and "Restaurar padrão" (⋮/⋯), which brings
+    the 60 back as they came and keeps the person's own terms. A term may send titles to a group's category, which
+    counts only in that group's bills ("só no Viagem Floripa"); the map's categories are each group's tree merged
+    (`CategoryTree.ofGroups`), so a group's category has the color it has in its group. A term of a deleted group
+    category reads as that category's parent, or Outros, as its bills do (`CategoryTree.resolve`), and shows, edits
+    and removes there; a term of a category of a group no longer on the device isn't shown, nor counted for the empty
+    map or "Mover para X" (`CategoryMapUiState.terms`), though its change waiting to go up still counts in the queue.
+    Terms have 2 to 30 letters, digits and spaces.
+    "Buscar termo" finds words starting with what is typed, accents ignored ("2 termos com “uber”"), else offers
+    "Adicionar “pizzaria”"; an empty map offers Adicionar termo and Restaurar padrão; offline with changes queued it
+    says "Offline · 2 alterações na fila" and each queued term has the orange dot. It opens from Perfil ›
+    Preferências › Mapa de categorias (Ajustes › Categorias on the Mac, ⌘,) and from Categoria (9.0). A phone shows
+    one card per main category with its terms by subcategory; lying down, a tablet lying down (in 920 dp), a book
+    (split on the hinge), an iPad lying down, an iPhone Duo open and the web from 768 px list the categories beside
+    the picked one's terms; a tablet or a foldable upright one 560 dp column. "Novo termo" and "Editar termo" (9.2)
+    are a bottom sheet on an Android phone (640 dp lying down), a 560 dp dialog on its tablets and the book's right
+    half, a sheet on iOS (a form sheet with an iPad's room) and the Mac, a Dialog on the web (a Drawer on a phone).
+    On the Mac the map is Categorias, the last section of Ajustes' sidebar (the profile's Settings window, never a
+    second one), drawn in the form's place: the categories, a table of terms with + and −, and the search; whatever
+    opens the map there (Perfil's row, the bill's "Mapa de categorias…") opens Ajustes on Categorias, and whatever
+    opens the profile on the profile.
+  - "Ensinar ao mapa?" (9.3e, 9.3f): once a new bill is saved in a category picked by hand that the map wouldn't
+    pick (never Outros), the group's Despesas asks "Conta salva em Lazer › Esportes, e não em Casa › Aluguel, que o
+    mapa sugeriu. Ensinar ao mapa?" once (`CategoryTeachOffer`, only while the app runs), only when saving lands on
+    that group's Despesas: a bill saved back on Saldos, Membros or Estatísticas asks nothing, then or later (the
+    group's ViewModel drops the offer while another tab is picked). A snackbar on Android, a glass banner on Apple,
+    a toast on the web (swiping it away is Agora não), with Ensinar and Agora não. Ensinar asks which word of the
+    title ("Nova no mapa…", "Sai de Casa › Aluguel…"; words under 3 letters only when the map has them) and saves it
+    in the map; where a word goes now is the whole map's, every group's categories as Mapa de categorias reads them,
+    so a word of another group's category says "Sai de Praia" and teaching moves it (one category per term). The
+    bills already saved don't change.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
@@ -452,6 +570,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     detail and
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+  - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
+    buttons, the avatar and "Rachar conta" (only its +, the group's Adicionar pessoa too) over the tabs
+    (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.
+    Open lying down, every two-column screen
+    splits on the fold with nothing in its band (Grupos' and Contatos' lists end at it, Saldos, Estatísticas with
+    the total and categories before it and Por pessoa after it), and a form sheet opens in the leading half
+    (`foldSheetPlacement()`). Open upright, as a notebook, Convidar (QR and link on top), Convite (the group on top),
+    the group (the header and "Seu saldo" on top, the tabs and what they hold below, on every tab), Registrar
+    pagamento (who and how much on top, how and when below), Estatísticas (the total and Ao longo do tempo on top),
+    Rachar conta (valor and descrição on top) and Dividir (the summary and modes on top, the people below) split on
+    the fold (`FoldHalves`); everything else is an iPad's upright. Pix and Bitcoin keys stay a sheet in the leading
+    half lying down, not the boards' two columns.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared

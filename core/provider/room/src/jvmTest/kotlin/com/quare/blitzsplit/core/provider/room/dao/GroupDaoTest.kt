@@ -913,6 +913,7 @@ class GroupDaoTest {
         payersJson = "[]",
         sharesJson = "[]",
         itemsJson = null,
+        categoryId = null,
         spentAt = 1_000L,
         isDeleted = false,
         addedAt = 1L,

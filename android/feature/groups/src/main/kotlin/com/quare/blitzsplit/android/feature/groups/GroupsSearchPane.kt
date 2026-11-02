@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
@@ -64,6 +65,8 @@ internal fun GroupsSearchPane(
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
     modifier: Modifier = Modifier,
+    // Why: none beside a phone lying down's column, whose own padding already keeps the results off the edge.
+    horizontalPadding: Dp = 16.dp,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -84,8 +87,8 @@ internal fun GroupsSearchPane(
             else -> LazyColumn(
                 modifier = listModifier,
                 contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
+                    start = horizontalPadding,
+                    end = horizontalPadding,
                     bottom = 24.dp,
                 ),
                 verticalArrangement = Arrangement.spacedBy(2.dp),

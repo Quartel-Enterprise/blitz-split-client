@@ -2,10 +2,13 @@ package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -16,6 +19,8 @@ import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
@@ -31,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /*
@@ -47,6 +53,8 @@ class GroupStatsViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
+    observeCategoryTree: ObserveCategoryTree,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GroupStatsUiState>
         field = MutableStateFlow(
@@ -79,7 +87,10 @@ class GroupStatsViewModel(
                 bars = emptyList(),
                 grainNotes = emptyList(),
                 biggestExpense = null,
+                categories = emptyList(),
                 isLoaded = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -87,6 +98,7 @@ class GroupStatsViewModel(
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
+    private var categoryTree = CategoryTree.appOnly
     private var chart = StatsChartPreferences.initial
 
     // Why: the last pick not stored yet; older echoes of the database never undo it while it is saving.
@@ -111,14 +123,24 @@ class GroupStatsViewModel(
             isGone = group == null
             if (group == null) leave() else render()
         }.launchIn(viewModelScope)
+        observeCategoryTree(route.groupId)
+            .onEach { tree ->
+                categoryTree = tree
+                render()
+            }.launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
+            .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupStatsUiEvent) {
         when (event) {
             GroupStatsUiEvent.OnBackClicked -> leave()
+
+            is GroupStatsUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
 
@@ -199,6 +221,7 @@ class GroupStatsViewModel(
             expenses = expenses,
             today = SpentDay.dateOf(currentTimeMillis(), timeZone),
             timeZone = timeZone,
+            categories = categoryTree,
         )
     }
 
@@ -254,7 +277,10 @@ class GroupStatsViewModel(
             bars = calculator.createBars(spending, span, grain),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
+            categories = calculator.createCategories(spending),
             isLoaded = true,
+            homeTab = uiState.value.homeTab,
+            activityUnreadCount = uiState.value.activityUnreadCount,
         )
     }
 

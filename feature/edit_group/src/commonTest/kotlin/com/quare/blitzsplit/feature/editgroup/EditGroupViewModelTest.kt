@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -1197,7 +1198,11 @@ class EditGroupViewModelTest {
 
     private val editGroup = Route.EditGroup(GROUP_ID)
 
-    private val groupDetail = Route.GroupDetail(GROUP_ID, joinedAs = null)
+    private val groupDetail = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
 
     private val trip = Group(
         id = GROUP_ID,
@@ -1237,6 +1242,7 @@ class EditGroupViewModelTest {
     private val threeToOne = GroupDefaultSplit(
         mode = DefaultSplitMode.SHARES,
         weights = mapOf(PIERRE to 3L, ANA to 1L),
+        exceptions = emptyList(),
     )
 
     private val dinner = Expense(
@@ -1259,6 +1265,7 @@ class EditGroupViewModelTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

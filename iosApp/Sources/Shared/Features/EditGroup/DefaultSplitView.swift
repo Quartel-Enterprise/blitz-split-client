@@ -63,13 +63,17 @@ struct DefaultSplitView: View {
                 if layout.usesTwoColumns {
                     HStack(alignment: .top, spacing: 0) {
                         Form { DefaultSplitOverview(model: model) }
-                        Form { DefaultSplitPeople(model: model) }
+                        Form {
+                            DefaultSplitPeople(model: model)
+                            DefaultSplitExceptions(model: model)
+                        }
                     }
                     .formStyle(.grouped)
                 } else {
                     Form {
                         DefaultSplitOverview(model: model)
                         DefaultSplitPeople(model: model)
+                        DefaultSplitExceptions(model: model)
                     }
                     .formStyle(.grouped)
                 }
@@ -106,11 +110,26 @@ struct DefaultSplitView: View {
             }
         }
         #if os(macOS)
-        .frame(minWidth: 640, idealWidth: 760, minHeight: 520, idealHeight: 640)
+        .frame(minWidth: 460, idealWidth: 760, minHeight: 400, idealHeight: 560)
         #endif
+        .sheet(isPresented: exceptionShown) {
+            if let model {
+                ExceptionSheet(model: model)
+                    .foldSheetPlacement()
+            }
+        }
         .onAppear {
             if model == nil { model = DefaultSplitModel(route: route) }
         }
+    }
+
+    private var exceptionShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.exceptionEditor != nil },
+            set: { shown in
+                if !shown, model?.current.exceptionEditor != nil { model?.send(DefaultSplitUiEventOnExceptionDismissed.shared) }
+            },
+        )
     }
 }
 
@@ -125,10 +144,6 @@ private struct DefaultSplitOverview: View {
     var body: some View {
         Section {
             VStack(alignment: .leading, spacing: 2) {
-                #if os(macOS)
-                // A Mac sheet has no title bar, so the title heads the form
-                Text("Default split").font(.title2.bold())
-                #endif
                 Text("\(state.groupName) · for new expenses")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -333,7 +348,8 @@ private struct DefaultSplitPersonRow: View {
         @ViewBuilder label: () -> Text,
     ) -> some View {
         let isError = model.state.showsPercentError && mode == .percent
-        return TextField(text: text, prompt: Text(verbatim: prompt), label: label)
+        let title = label()
+        return KeptTextField(text: text, prompt: Text(verbatim: prompt)) { title }
             #if os(iOS)
             .keyboardType(mode == .income ? .decimalPad : .numberPad)
             #endif

@@ -17,14 +17,16 @@ extension EnvironmentValues {
 }
 
 extension View {
-    /// The Mac's invite popover on this button, while the invite on top was opened from `host`. Elsewhere nothing.
-    func invitePopover(host: AppRoute) -> some View {
-        modifier(InvitePopoverAnchor(host: host))
+    /// The Mac's invite popover on this button, while the invite on top was opened from `host` and this button is the
+    /// one it anchors to (`isAnchor`: the group's Members anchors it on Share). Elsewhere nothing.
+    func invitePopover(host: AppRoute, isAnchor: Bool = true) -> some View {
+        modifier(InvitePopoverAnchor(host: host, isAnchor: isAnchor))
     }
 }
 
 private struct InvitePopoverAnchor: ViewModifier {
     let host: AppRoute
+    let isAnchor: Bool
 
     @Environment(\.invitePopover) private var popover
     @Environment(\.dismissInvitePopover) private var dismiss
@@ -32,7 +34,7 @@ private struct InvitePopoverAnchor: ViewModifier {
     func body(content: Content) -> some View {
         #if os(macOS)
         content.popover(isPresented: isShown, arrowEdge: .bottom) {
-            if let popover, popover.host == host {
+            if isAnchor, let popover, popover.host == host {
                 InviteView(route: popover.route, isPopover: true)
             }
         }
@@ -43,7 +45,7 @@ private struct InvitePopoverAnchor: ViewModifier {
 
     private var isShown: Binding<Bool> {
         Binding(
-            get: { popover?.host == host },
+            get: { isAnchor && popover?.host == host },
             set: { shown in
                 if !shown { dismiss() }
             },

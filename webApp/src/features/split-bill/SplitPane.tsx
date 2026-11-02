@@ -6,6 +6,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
+import { categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { defaultSplitText, personName, splitStatus, type Money } from './splitText'
@@ -159,6 +160,8 @@ function DefaultSplitNotice({ presenter, state, editor }: { presenter: SplitBill
   const split = state.defaultSplit
   if (!split) return null
   const description = defaultSplitText(split)
+  // Why: "Exceção do grupo para Mercado: Igual" when the bill's category has its own way (7.2g).
+  const exception = state.categories.defaultSplitException
   const isOff = state.isSplitEditorOffDefault
   const body = isOff
     ? [t('split_defaultOffBody', { group: state.groupName, split: description }), editor.mode === split.editorMode ? null : t(nowKeys[editor.mode] ?? 'split_defaultNowEqual')]
@@ -172,7 +175,13 @@ function DefaultSplitNotice({ presenter, state, editor }: { presenter: SplitBill
     >
       <ChartPie aria-hidden className="size-5 shrink-0 text-primary" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <strong className="text-sm font-semibold">{isOff ? t('split_defaultOffTitle') : t('split_defaultTitle', { group: state.groupName, split: description })}</strong>
+        <strong className="text-sm font-semibold">
+          {isOff
+            ? t('split_defaultOffTitle')
+            : exception
+              ? t('splitBill_defaultExceptionTitle', { name: categoryName(exception), description })
+              : t('split_defaultTitle', { group: state.groupName, split: description })}
+        </strong>
         <span className="text-[13px] text-muted-foreground">{body}</span>
       </span>
       {isOff && (

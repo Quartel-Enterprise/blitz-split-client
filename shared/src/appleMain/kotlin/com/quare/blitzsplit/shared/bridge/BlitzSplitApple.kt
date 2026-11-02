@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
@@ -17,7 +18,6 @@ import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSpli
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
@@ -102,18 +102,19 @@ object BlitzSplitApple : KoinComponent {
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }
 
+    fun createCategoryMapViewModel(): ViewModelHolder<CategoryMapViewModel> =
+        ViewModelHolder(CategoryMapViewModel::class) { get() }
+
     // Why: each group opens its own ViewModel, which reads the group from its route.
     fun createInviteViewModel(route: Route.Invite): ViewModelHolder<InviteViewModel> =
         ViewModelHolder(InviteViewModel::class) { get { parametersOf(route) } }
 
-    fun createMembersViewModel(route: Route.Members): ViewModelHolder<MembersViewModel> =
+    // Why: Membros' content under the group's header, opened with the group's route.
+    fun createMembersViewModel(route: Route.GroupDetail): ViewModelHolder<MembersViewModel> =
         ViewModelHolder(MembersViewModel::class) { get { parametersOf(route) } }
 
     fun createGroupDetailViewModel(route: Route.GroupDetail): ViewModelHolder<GroupDetailViewModel> =
         ViewModelHolder(GroupDetailViewModel::class) { get { parametersOf(route) } }
-
-    fun createBalancesViewModel(route: Route.Balances): ViewModelHolder<BalancesViewModel> =
-        ViewModelHolder(BalancesViewModel::class) { get { parametersOf(route) } }
 
     fun createRegisterPaymentViewModel(route: Route.RegisterPayment): ViewModelHolder<RegisterPaymentViewModel> =
         ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }

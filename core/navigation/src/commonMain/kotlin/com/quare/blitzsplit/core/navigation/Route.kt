@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.PaymentMethod
 
 /*
@@ -38,6 +39,12 @@ sealed interface Route {
     // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
     data object NotificationSettings : Route
 
+    /*
+     * Why: "Mapa de categorias" (flow 9), from Perfil › Preferências and from "Categoria" (9.0); the Mac keeps it in
+     * its Ajustes.
+     */
+    data object CategoryMap : Route
+
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(
         val groupId: String,
@@ -46,12 +53,14 @@ sealed interface Route {
     ) : Route
 
     /*
-     * Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens. joinedAs is the name
-     * someone just joined the group as, for "Você entrou como Bruno" (3.3): joining lands here.
+     * Why: the group's own screen, where a group tapped on the home opens: its header over Despesas, Saldos and Membros,
+     * which take each other's place inside it, never on the back stack. tab is the one it opens on. joinedAs is the
+     * name someone just joined the group as, for "Você entrou como Bruno" (3.3): joining lands here.
      */
     data class GroupDetail(
         val groupId: String,
         val joinedAs: String?,
+        val tab: GroupTab,
     ) : Route
 
     /*
@@ -87,11 +96,6 @@ sealed interface Route {
     data class BillDetail(
         val groupId: String,
         val expenseId: String,
-    ) : Route
-
-    // Why: "Saldos", who owes whom in the group: the group's tab next to Despesas and Membros, which takes its place.
-    data class Balances(
-        val groupId: String,
     ) : Route
 
     /*
@@ -163,11 +167,6 @@ sealed interface Route {
     data class SettleUp(
         val personKey: String,
         val currency: GroupCurrency,
-    ) : Route
-
-    // Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
-    data class Members(
-        val groupId: String,
     ) : Route
 
     /*

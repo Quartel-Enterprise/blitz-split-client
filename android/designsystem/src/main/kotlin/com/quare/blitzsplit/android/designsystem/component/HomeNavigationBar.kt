@@ -32,23 +32,28 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.core.model.HomeTab
 
 private const val MAX_BADGE_COUNT = 99
 
-/*
- * Why: the five tabs of the home, Início first, which Início, Grupos, Saldos, Contatos and Atividade draw with their own
- * tab selected.
- */
-enum class HomeTab(
-    @StringRes val label: Int,
-    val icon: ImageVector,
-) {
-    HOME(R.string.designsystem_tab_home, Icons.Outlined.Home),
-    GROUPS(R.string.designsystem_tab_groups, Icons.Outlined.Groups),
-    BALANCES(R.string.designsystem_tab_balances, Icons.Outlined.AccountBalanceWallet),
-    CONTACTS(R.string.designsystem_tab_contacts, Icons.Outlined.Person),
-    ACTIVITY(R.string.designsystem_tab_activity, Icons.AutoMirrored.Outlined.ReceiptLong),
-}
+// Why: the words and icons of the home's five tabs, Início first, which each tab draws with its own tab selected.
+private val HomeTab.label: Int
+    @StringRes get() = when (this) {
+        HomeTab.HOME -> R.string.designsystem_tab_home
+        HomeTab.GROUPS -> R.string.designsystem_tab_groups
+        HomeTab.BALANCES -> R.string.designsystem_tab_balances
+        HomeTab.CONTACTS -> R.string.designsystem_tab_contacts
+        HomeTab.ACTIVITY -> R.string.designsystem_tab_activity
+    }
+
+private val HomeTab.icon: ImageVector
+    get() = when (this) {
+        HomeTab.HOME -> Icons.Outlined.Home
+        HomeTab.GROUPS -> Icons.Outlined.Groups
+        HomeTab.BALANCES -> Icons.Outlined.AccountBalanceWallet
+        HomeTab.CONTACTS -> Icons.Outlined.Person
+        HomeTab.ACTIVITY -> Icons.AutoMirrored.Outlined.ReceiptLong
+    }
 
 @Composable
 fun HomeNavigationBar(
@@ -84,6 +89,8 @@ fun HomeNavigationRail(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
     activityBadgeCount: Int = 0,
+    // Why: beside a screen the selected tab opened (a group's), that tab goes back to it.
+    reselects: Boolean = false,
     header: @Composable () -> Unit = {},
 ) {
     val formFactor = rememberFoldLayout().formFactor
@@ -105,7 +112,7 @@ fun HomeNavigationRail(
                 val label = stringResource(tab.label)
                 NavigationRailItem(
                     selected = tab == selected,
-                    onClick = { if (tab != selected) onTabClick(tab) },
+                    onClick = { if (reselects || tab != selected) onTabClick(tab) },
                     icon = {
                         TabIcon(
                             tab = tab,

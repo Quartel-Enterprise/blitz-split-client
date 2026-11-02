@@ -279,8 +279,12 @@ private struct PhoneBillDetail: View {
         Section {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 12) {
-                    ExpenseIcon(size: 52)
+                    CategoryBadge(category: state.category, size: 52)
                     VStack(alignment: .leading, spacing: 2) {
+                        // The bill's category over its title, "Food › Groceries" (7.3)
+                        Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         Text(verbatim: state.description_)
                             .font(.title.bold())
                             .lineLimit(3)
@@ -305,12 +309,13 @@ private struct PhoneBillDetail: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                // The row clips to its rounded corner, which would cut the payer's face at its edge
                 .padding(.horizontal, 4)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 4, trailing: 20))
+        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 4, trailing: 0))
         if state.showsMyPart {
             Section {
                 MyPartContent(state: state)
@@ -368,8 +373,11 @@ private struct MacBillDetail: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 12) {
-            ExpenseIcon(size: 40)
+            CategoryBadge(category: state.category, size: 40)
             VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 Text(verbatim: state.description_)
                     .font(.title2.bold())
                     .lineLimit(2)

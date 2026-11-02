@@ -1,0 +1,347 @@
+import { Check, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, Trash2 } from 'lucide-react'
+import {
+  MembersPresenter,
+  type JsMemberBalance,
+  type JsMemberNameEditor,
+  type JsMembersAction,
+  type JsMembersMember,
+  type JsMembersState,
+  type JsPersonalInvite,
+  type JsRoute,
+} from 'blitzsplit-shared'
+import { toast } from 'sonner'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { Avatar } from '@/components/common'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { balanceTone } from '@/features/balances/BalanceCard'
+import { useDraft } from '@/hooks/useDraft'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { t } from '@/i18n'
+import { formatSignedMoney } from '@/lib/money'
+import { cn } from '@/lib/utils'
+
+const nameId = 'member-name'
+const personalLinkId = 'personal-link'
+
+/**
+ * Membros' own ViewModel, made with the group's page whatever tab it opens on, so the people are already read when
+ * the tab is picked, and its actions (copying the link, sharing a personal one, the errors).
+ */
+export function useMembers(route: JsRoute): { presenter: MembersPresenter | null; state: JsMembersState | null } {
+  const presenter = usePresenter(() => new MembersPresenter(route))
+  const state = useWatch(presenter, (p, onChange: (state: JsMembersState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onAction: (action: JsMembersAction) => void) => p.observeActions(onAction), (action) => {
+    if (action.type === 'copy' && action.link) {
+      navigator.clipboard.writeText(action.link).catch(() => toast(t('members_copyFailed')))
+    } else if (action.type === 'share-personal' && action.link) {
+      sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
+    } else if (action.type === 'change-error') {
+      toast(t('members_changeError'))
+    } else if (action.type === 'release-error') {
+      toast(t('members_releaseError'))
+    }
+  })
+  return { presenter, state }
+}
+
+/**
+ * "Membros", the group's tab beside Despesas and Saldos, under the group's page: the invite link, who is in it and who
+ * joined, and each person's options (rename, a personal invite link, removing someone who hasn't joined, and, for the
+ * group's creator, releasing the name of someone who joined).
+ */
+export function MembersTab({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
+  return (
+    <>
+      <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
+        <Link2 className="size-5 shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
+          <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
+        </div>
+        <Button variant="secondary" onClick={() => presenter.share()}>
+          {t('members_share')}
+        </Button>
+      </section>
+      <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
+        {state.members.map((member) => (
+          <MemberRow key={member.id} presenter={presenter} member={member} money={(minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)} />
+        ))}
+      </ul>
+    </>
+  )
+}
+
+/** What Membros opens over the group's page, whatever tab is picked: the name editor, the confirmations and the personal invite. */
+export function MembersDialogs({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
+  return (
+    <>
+      {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
+      {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
+      {state.memberToReleaseName != null && <ReleaseMemberDialog presenter={presenter} name={state.memberToReleaseName} isReleasing={state.isReleasing} />}
+      {state.personalInvite && <PersonalInviteDialog presenter={presenter} invite={state.personalInvite} groupName={state.groupName} />}
+    </>
+  )
+}
+
+/** "+R$ 223,50 a receber", "−R$ 118,00 deve", "R$ 0,00" while what they get and owe cancel out, or "Quitado". */
+function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money: (minor: number) => string }) {
+  const net = balance.netMinor
+  const text = balance.isSettled
+    ? t('members_balanceSettled')
+    : net > 0
+      ? t('members_balanceGetBack', { amount: money(net) })
+      : net < 0
+        ? t('members_balanceOwes', { amount: money(net) })
+        : money(0)
+  const tone = balance.isSettled ? 'text-muted-foreground' : net === 0 ? 'text-foreground' : balanceTone(net)
+  return <span className={cn('text-sm font-medium whitespace-nowrap tabular-nums', tone)}>{text}</span>
+}
+
+function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
+  return (
+    <li className="flex items-center gap-3 py-2.5 pr-2 pl-4">
+      <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">
+          {member.name}
+          {member.isMe && <span className="text-muted-foreground"> · {t('members_me')}</span>}
+        </p>
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span aria-hidden className={cn('size-2 rounded-full', member.hasJoined ? 'bg-primary' : 'border-[1.5px] border-muted-foreground')} />
+          {member.isMe ? t('members_statusThisBrowser') : member.hasJoined ? t('members_statusJoined') : t('members_statusNotJoined')}
+        </p>
+      </div>
+      {member.balance && <MemberBalanceText balance={member.balance} money={money} />}
+      {member.hasJoined && <Check aria-hidden className="size-4 text-primary" />}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label={t('members_options', { name: member.name })}>
+            <EllipsisVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64">
+          <DropdownMenuItem onSelect={() => presenter.rename(member.id)}>
+            <Pencil />
+            {t('members_rename')}
+          </DropdownMenuItem>
+          {member.canBeInvited && (
+            <DropdownMenuItem disabled={!member.isPersonalInviteReady} onSelect={() => presenter.personalInvite(member.id)}>
+              <Link2 />
+              {t('members_personalInvite', { name: member.name })}
+            </DropdownMenuItem>
+          )}
+          {!member.isMe && (
+            <>
+              <DropdownMenuSeparator />
+              {member.canBeReleased && (
+                <DropdownMenuItem onSelect={() => presenter.release(member.id)}>
+                  <LockOpen />
+                  {t('members_release')}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem variant="destructive" disabled={!member.canBeRemoved} onSelect={() => presenter.remove(member.id)} className="items-start">
+                <Trash2 className="mt-0.5" />
+                <span className="flex flex-col">
+                  {t('members_remove')}
+                  {member.hasJoined ? (
+                    <span className="text-xs text-muted-foreground">{t('members_removeJoined', { name: member.name })}</span>
+                  ) : (
+                    member.hasOpenBalance && <span className="text-xs text-muted-foreground">{t('members_removeOpenBalance', { name: member.name })}</span>
+                  )}
+                </span>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </li>
+  )
+}
+
+/**
+ * "Convite pessoal para Carla": a link that joins straight in as that member, a dialog on desktop and tablet and a
+ * drawer on the phone, like "Convidar". Closing it any way is the ViewModel's dismissal.
+ */
+function PersonalInviteDialog({ presenter, invite, groupName }: { presenter: MembersPresenter; invite: JsPersonalInvite; groupName: string }) {
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const onOpenChange = (open: boolean) => {
+    if (!open) presenter.dismissPersonalInvite()
+  }
+  const title = t('members_personalInvite', { name: invite.memberName })
+  const description = t('members_personalMessage', { name: invite.memberName })
+  const heading = (
+    <div className="flex items-center gap-3 text-left">
+      <Avatar initial={invite.memberInitials} color={invite.memberColor} className="size-10 shrink-0 text-sm" />
+      <div className="min-w-0">
+        {isDesktop ? <DialogTitle className="truncate">{title}</DialogTitle> : <DrawerTitle className="truncate">{title}</DrawerTitle>}
+        <p className="truncate text-sm text-muted-foreground">{groupName}</p>
+      </div>
+    </div>
+  )
+  const body = (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={personalLinkId}>{t('members_personalLinkLabel')}</Label>
+      <div className="flex gap-2">
+        <Input id={personalLinkId} readOnly value={invite.displayLink} onFocus={(event) => event.currentTarget.select()} className="font-mono" />
+        <Button variant="secondary" onClick={() => presenter.copyPersonalLink()} aria-live="polite" className="shrink-0">
+          {invite.isLinkCopied ? <Check /> : <Copy />}
+          {invite.isLinkCopied ? t('members_copied') : t('members_copy')}
+        </Button>
+      </div>
+    </div>
+  )
+  const close = (
+    <Button variant="ghost" onClick={() => presenter.dismissPersonalInvite()} className={cn(!isDesktop && 'h-11')}>
+      {t('members_close')}
+    </Button>
+  )
+  const share = (
+    <Button onClick={() => presenter.sharePersonalLink()} className={cn(!isDesktop && 'h-11')}>
+      <Share2 />
+      {t('members_personalShare', { name: invite.memberName })}
+    </Button>
+  )
+
+  return isDesktop ? (
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader className="gap-4">
+          {heading}
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {body}
+        <DialogFooter>
+          {close}
+          {share}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ) : (
+    <Drawer open onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader className="gap-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          {heading}
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4">{body}</div>
+        <DrawerFooter>
+          {share}
+          {close}
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+/** "Remover do grupo" asks first, since a removal reaches every device on the next sync. */
+function RemoveMemberDialog({ presenter, name }: { presenter: MembersPresenter; name: string }) {
+  return (
+    <ConfirmDialog
+      title={t('members_removeTitle', { name })}
+      description={t('members_removeMessage', { name })}
+      confirmLabel={t('members_removeConfirm')}
+      onConfirm={() => presenter.confirmRemove()}
+      onDismiss={() => presenter.dismissRemove()}
+    />
+  )
+}
+
+/** "Liberar nome" waits for the server with the dialog open, since it only works online. */
+function ReleaseMemberDialog({ presenter, name, isReleasing }: { presenter: MembersPresenter; name: string; isReleasing: boolean }) {
+  return (
+    <ConfirmDialog
+      title={t('members_releaseTitle', { name })}
+      description={t('members_releaseMessage', { name })}
+      confirmLabel={t('members_releaseConfirm')}
+      isBusy={isReleasing}
+      onConfirm={() => presenter.confirmRelease()}
+      onDismiss={() => presenter.dismissRelease()}
+    />
+  )
+}
+
+/** "Adicionar pessoa" and "Renomear" ask the same thing: a name free in the group, with nicknames when it isn't. */
+function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; editor: JsMemberNameEditor }) {
+  // Why: the ViewModel caps the draft as it handles it, so the field reads the capped text back.
+  const [draft, setDraft] = useDraft(editor.draft, (value) => {
+    presenter.changeDraft(value)
+    return presenter.getDraft()
+  })
+  const title = editor.isAdding ? t('members_add') : t('members_rename')
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) presenter.dismissEditor()
+      }}
+    >
+      <DialogContent className="sm:max-w-[420px]">
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(event) => {
+            event.preventDefault()
+            presenter.save()
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription className="sr-only">{title}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor={nameId}>{t('members_nameLabel')}</Label>
+            <Input
+              id={nameId}
+              autoFocus
+              autoComplete="off"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              aria-invalid={editor.takenName != null}
+              aria-describedby={editor.takenName != null ? `${nameId}-taken` : undefined}
+            />
+            {editor.takenName != null && (
+              <>
+                <p id={`${nameId}-taken`} className="text-sm text-destructive">
+                  {t('members_nameTaken', { name: editor.takenName })}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {editor.nicknameSuggestions.map((suggestion) => (
+                    <Button key={suggestion} type="button" variant="outline" size="sm" onClick={() => presenter.useSuggestion(suggestion)}>
+                      {t('members_useNickname', { name: suggestion })}
+                    </Button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => presenter.dismissEditor()}>
+              {t('members_cancel')}
+            </Button>
+            <Button type="submit" disabled={!editor.canSave}>
+              {editor.isAdding ? t('members_add') : t('members_save')}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Why: the browser's share sheet where there is one (phones, Safari), otherwise the link goes to the clipboard, as in "Convidar".
+function sharePersonalLink(link: string, memberName: string, groupName: string) {
+  const text = t('members_personalShareMessage', { group: groupName, name: memberName, link })
+  if (typeof navigator.share === 'function') {
+    navigator.share({ text }).catch(() => {})
+    return
+  }
+  navigator.clipboard
+    .writeText(link)
+    .then(() => toast(t('members_linkCopied')))
+    .catch(() => toast(t('members_copyFailed')))
+}

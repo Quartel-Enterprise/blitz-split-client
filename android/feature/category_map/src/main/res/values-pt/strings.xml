@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nenhum termo</string>
+    <string name="category_map_title">Mapa de categorias</string>
+    <string name="category_map_search">Buscar termo</string>
+    <string name="category_map_add">Adicionar termo</string>
+    <string name="category_map_more">Mais opções</string>
+    <string name="category_map_restore">Restaurar padrão</string>
+    <string name="category_map_back">Voltar</string>
+    <string name="category_map_intro">Quando o título da conta tem uma destas palavras, a categoria vem sozinha. “Uber para casa” vira Transporte.</string>
+    <string name="category_map_intro_offline">O mapa funciona sem internet: as mudanças valem na hora neste aparelho e vão para os outros quando reconectar.</string>
+    <string name="category_map_device_only">Seu mapa fica só neste aparelho. Para levar a outros aparelhos, entre com Google ou Apple no Perfil.</string>
+    <string name="category_map_open_profile">Abrir Perfil</string>
+    <string name="category_map_longest_wins">Quando duas palavras casam num título, o termo mais longo ganha.</string>
+    <string name="category_map_no_result">Nenhum termo com “%1$s”</string>
+    <string name="category_map_no_result_body">Adicione e as contas com essa palavra no título já chegam com a categoria certa.</string>
+    <string name="category_map_add_query">Adicionar “%1$s”</string>
+    <string name="category_map_empty_title">Seu mapa está vazio</string>
+    <string name="category_map_empty_body">Sem termos, a categoria não vem pelo título: você escolhe em cada conta.</string>
+    <string name="category_map_group_category"> · categoria do %1$s</string>
+    <string name="category_map_only_main">Só %1$s</string>
+    <string name="category_map_only_in_group">só no %1$s</string>
+    <string name="category_map_no_terms_yet">Nenhum termo ainda.</string>
+    <string name="category_map_add_in">Adicionar termo em %1$s</string>
+    <string name="category_map_tip">Toque num termo para mudar a categoria ou remover. Casa com a palavra inteira, sem ligar para acento ou maiúscula.</string>
+    <string name="category_map_queued">na fila</string>
+    <string name="category_map_term_action">%1$s, %2$s. Editar</string>
+    <string name="category_map_new_term">Novo termo</string>
+    <string name="category_map_edit_term">Editar termo</string>
+    <string name="category_map_term_label">Palavra ou frase</string>
+    <string name="category_map_term_help">Casa com a palavra inteira, sem ligar para acento ou maiúscula.</string>
+    <string name="category_map_term_help_app">Termo do app. Restaurar padrão traz de volta como veio.</string>
+    <string name="category_map_term_duplicate">“%1$s” já escolhe %2$s. Cada termo tem uma categoria só.</string>
+    <string name="category_map_term_too_short">Use pelo menos 2 letras.</string>
+    <string name="category_map_term_too_long">Use no máximo 30 letras.</string>
+    <string name="category_map_term_invalid">Use só letras, números e espaço.</string>
+    <string name="category_map_category">Categoria</string>
+    <string name="category_map_category_help">Pode ser a categoria ou uma subcategoria.</string>
+    <string name="category_map_category_help_edit">Trocar aqui move o termo para outra categoria.</string>
+    <string name="category_map_category_help_move">Mover tira o termo de %1$s.</string>
+    <string name="category_map_example">Exemplo</string>
+    <string name="category_map_example_move">Se mover</string>
+    <string name="category_map_remove">Remover</string>
+    <string name="category_map_cancel">Cancelar</string>
+    <string name="category_map_save">Salvar</string>
+    <string name="category_map_move_to">Mover para %1$s</string>
+    <string name="category_map_removed">“%1$s” saiu do mapa</string>
+    <string name="category_map_undo">Desfazer</string>
+    <string name="category_map_restore_title">Restaurar o mapa padrão?</string>
+    <string name="category_map_restore_body">Os 60 termos do app voltam como vieram, inclusive os que você removeu ou mudou de categoria.</string>
+    <string name="category_map_restore_own_one">O termo que você criou, “%1$s”, continua.</string>
+    <string name="category_map_restore_confirm">Restaurar</string>
+    <string name="category_map_save_error">Não deu para salvar o mapa. Tente de novo.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termo</item>
+        <item quantity="other">%d termos</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subcategoria</item>
+        <item quantity="other">%d subcategorias</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termo com “%2$s”</item>
+        <item quantity="other">%1$d termos com “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d alteração na fila</item>
+        <item quantity="other">Offline · %d alterações na fila</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Os %d termos que você criou continuam.</item>
+        <item quantity="other">Os %d termos que você criou continuam.</item>
+    </plurals>
+</resources>

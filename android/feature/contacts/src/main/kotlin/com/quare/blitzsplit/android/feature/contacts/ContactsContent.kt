@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
-import com.quare.blitzsplit.android.designsystem.component.HomeTab
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
 

@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +44,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.PaymentKeyError
 import com.quare.blitzsplit.core.model.PaymentKeyFormat
@@ -52,6 +57,8 @@ import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEv
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+// Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
+private val bookGap = 72.dp
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
 private val phoneLandscapeStartColumnWidth = 300.dp
@@ -110,15 +117,15 @@ private fun PaymentKeyFullScreenScaffold(
             )
         },
     ) { padding ->
+        val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
             when {
                 // Why: a saved key fills the form once read, so the form doesn't flash empty first.
                 !body.state.isLoaded -> Unit
 
-                layout.usesTwoColumns -> PaymentKeyTwoColumnLayout(
-                    body = body,
-                    isBookPosture = layout.isTablet,
-                )
+                isBook -> PaymentKeyBookLayout(body = body)
+
+                layout.usesTwoColumns -> PaymentKeyTwoColumnLayout(body = body)
 
                 else -> Box(
                     modifier = Modifier.fillMaxSize(),
@@ -257,86 +264,139 @@ private fun ColumnScope.PaymentKeyFormColumn(body: PaymentKeyBody) {
     )
 }
 
-/*
- * Why: lying down, the kind of key goes left and the field right. On an unfolded foldable as a book the two
- * columns are equal, so the 72dp gap (the 24dp hinge plus 24dp on each side) sits on the hinge.
- */
+// Why: lying down, the kind of key goes left and the field right.
 @Composable
-private fun PaymentKeyTwoColumnLayout(
-    body: PaymentKeyBody,
-    isBookPosture: Boolean,
-) {
-    val state = body.state
-    val isPix = state.method == PaymentMethod.PIX
+private fun PaymentKeyTwoColumnLayout(body: PaymentKeyBody) {
     Row(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-            .padding(horizontal = if (isBookPosture) 32.dp else 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(if (isBookPosture) 72.dp else 40.dp),
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
     ) {
-        Column(
+        PaymentKeyTypeColumn(
+            body = body,
+            isBook = false,
             modifier = Modifier
-                .then(if (isBookPosture) Modifier.weight(1f) else Modifier.width(phoneLandscapeStartColumnWidth))
+                .width(phoneLandscapeStartColumnWidth)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = if (isBookPosture) 24.dp else 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            val headingStyle = if (isBookPosture) {
-                MaterialTheme.typography.headlineLarge
-            } else {
-                MaterialTheme.typography.headlineSmall
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(
-                    text = stringResource(
-                        if (isPix) R.string.payment_key_pix_question else R.string.payment_key_bitcoin_intro,
-                    ),
-                    style = headingStyle,
-                    fontWeight = FontWeight.Bold,
-                )
-                if (isPix) {
-                    Text(
-                        text = stringResource(R.string.payment_key_pix_explanation),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-            PaymentKeyTypeGrid(
-                state = state,
-                columns = if (isPix) 2 else 1,
-                isCompact = !isBookPosture,
-                onEvent = body.onEvent,
-            )
-            if (!isPix) AcceptedFormatsCard(type = state.type)
-        }
-        Column(
+                .padding(vertical = 8.dp),
+        )
+        PaymentKeyFieldColumn(
+            body = body,
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = if (isBookPosture) 24.dp else 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            PaymentKeyFieldSection(
-                state = state,
-                field = body.field,
-                onFieldChange = body.onFieldChange,
-                onPasteClick = body.onPasteClick,
-                onEvent = body.onEvent,
-                modifier = Modifier.padding(top = 8.dp),
+                .padding(vertical = 8.dp),
+        )
+    }
+}
+
+/*
+ * Why: a book (and a tabletop lying down) splits on the hinge: the kind of key in the half before it, the field after
+ * it, the 72dp gap (the 24dp band plus 24dp on each side) centered on the hinge.
+ */
+@Composable
+private fun PaymentKeyBookLayout(body: PaymentKeyBody) {
+    TwoHalvesLayout(
+        start = {
+            PaymentKeyTypeColumn(
+                body = body,
+                isBook = true,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 32.dp,
+                        top = 24.dp,
+                        bottom = 24.dp,
+                    ),
             )
-            if (state.showsCpfNotice) CpfNoticeCard()
-            DefaultKeySwitchRow(
-                state = state,
-                onEvent = body.onEvent,
+        },
+        end = {
+            PaymentKeyFieldColumn(
+                body = body,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        end = 32.dp,
+                        top = 24.dp,
+                        bottom = 24.dp,
+                    ),
             )
-            if (state.isEditing) DeleteKeyButton(onEvent = body.onEvent)
-            PaymentKeyFooter(
-                method = state.method,
-                modifier = Modifier.padding(bottom = 16.dp),
+        },
+        modifier = Modifier.fillMaxSize(),
+        gap = bookGap,
+    )
+}
+
+@Composable
+private fun PaymentKeyTypeColumn(
+    body: PaymentKeyBody,
+    isBook: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val state = body.state
+    val isPix = state.method == PaymentMethod.PIX
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                text = stringResource(
+                    if (isPix) R.string.payment_key_pix_question else R.string.payment_key_bitcoin_intro,
+                ),
+                style = if (isBook) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
             )
+            if (isPix) {
+                Text(
+                    text = stringResource(R.string.payment_key_pix_explanation),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
+        PaymentKeyTypeGrid(
+            state = state,
+            columns = if (isPix) 2 else 1,
+            isCompact = !isBook,
+            onEvent = body.onEvent,
+        )
+        if (!isPix) AcceptedFormatsCard(type = state.type)
+    }
+}
+
+@Composable
+private fun PaymentKeyFieldColumn(
+    body: PaymentKeyBody,
+    modifier: Modifier = Modifier,
+) {
+    val state = body.state
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        PaymentKeyFieldSection(
+            state = state,
+            field = body.field,
+            onFieldChange = body.onFieldChange,
+            onPasteClick = body.onPasteClick,
+            onEvent = body.onEvent,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        if (state.showsCpfNotice) CpfNoticeCard()
+        DefaultKeySwitchRow(
+            state = state,
+            onEvent = body.onEvent,
+        )
+        if (state.isEditing) DeleteKeyButton(onEvent = body.onEvent)
+        PaymentKeyFooter(
+            method = state.method,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
     }
 }
 
@@ -436,6 +496,28 @@ private fun PaymentKeyDialogPreview() {
                     error = null,
                 ),
                 isDialog = true,
+            )
+        }
+    }
+}
+
+// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun PaymentKeyTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            PaymentKeyPreviewContent(
+                state = createPreviewState(
+                    method = PaymentMethod.PIX,
+                    type = PaymentKeyType.CPF,
+                    input = "123.456.789-09",
+                    format = PaymentKeyFormat.CPF,
+                    error = null,
+                ),
             )
         }
     }

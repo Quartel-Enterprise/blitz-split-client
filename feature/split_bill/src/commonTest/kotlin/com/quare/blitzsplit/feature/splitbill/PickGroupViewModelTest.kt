@@ -5,9 +5,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -15,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -312,7 +317,17 @@ class PickGroupViewModelTest {
         groups.groups.value = listOf(soccer)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    TRIP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -345,7 +360,17 @@ class PickGroupViewModelTest {
 
             // Then
             assertEquals(TRIP_ID, expenses.createdExpenses.single().groupId)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        TRIP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -364,7 +389,17 @@ class PickGroupViewModelTest {
             val saved = expenses.createdExpenses.single()
             assertEquals(HOME_ID, saved.groupId)
             assertEquals(listOf(PIERRE_HOME), saved.payers.map { it.memberId })
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(HOME_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        HOME_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -384,8 +419,16 @@ class PickGroupViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail(TRIP_ID, joinedAs = null),
-                    Route.GroupDetail(HOME_ID, joinedAs = null),
+                    Route.GroupDetail(
+                        TRIP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    Route.GroupDetail(
+                        HOME_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -481,7 +524,15 @@ class PickGroupViewModelTest {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            if (!screen.picksGroupFirst) it.navigate(Route.GroupDetail(screen.groupId, joinedAs = null))
+            if (!screen.picksGroupFirst) {
+                it.navigate(
+                    Route.GroupDetail(
+                        screen.groupId,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                )
+            }
             it.navigate(screen)
         }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -500,6 +551,11 @@ class PickGroupViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            offerCategoryTeach = {},
+            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

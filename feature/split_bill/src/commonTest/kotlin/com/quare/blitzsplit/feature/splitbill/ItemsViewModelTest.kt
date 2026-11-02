@@ -12,9 +12,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -22,6 +26,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -460,6 +465,7 @@ class ItemsViewModelTest {
             extraMinor = 0L,
             isFromReceipt = false,
         ),
+        categoryId = null,
         spentAt = NOW_MILLIS,
         isPending = false,
         updatedAt = NOW_MILLIS,
@@ -514,7 +520,13 @@ class ItemsViewModelTest {
         groups = FakeGroupRepository(initialGroups = listOf(dinner))
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense))
         val navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+            it.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -533,6 +545,11 @@ class ItemsViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            offerCategoryTeach = {},
+            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
         if (route.expenseId == null) {

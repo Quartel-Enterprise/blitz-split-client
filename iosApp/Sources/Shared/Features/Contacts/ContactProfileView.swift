@@ -131,11 +131,13 @@ struct ContactProfileView: View {
         .sheet(isPresented: model?.isAddingToGroup ?? .constant(false)) {
             if let model, let draft = model.state.addToGroup, let contact = model.state.contact {
                 AddToGroupSheet(model: model, draft: draft, contact: contact)
+                    .foldSheetPlacement()
             }
         }
         .sheet(isPresented: model?.isMerging ?? .constant(false)) {
             if let model, let merge = model.state.merge, let contact = model.state.contact {
                 MergeGuestSheet(model: model, sheet: merge, contact: contact)
+                    .foldSheetPlacement()
             }
         }
         // The counts only grow on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.

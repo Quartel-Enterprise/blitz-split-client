@@ -57,6 +57,23 @@ Run the `androidApp` module from Android Studio, or build it from the terminal:
 ./gradlew :androidApp:assembleDebug
 ```
 
+A group's invite link (`blitzsplit.com/g/<code>`) opens the app once Android verifies it against blitzsplit.com's
+`assetlinks.json`, which lists only the store's signing keys. A debug build is signed with your machine's
+`~/.android/debug.keystore`, so its verification fails and the link opens in the browser. Don't add your debug key to
+the file: a debug keystore is unencrypted with a well-known password, and whoever copied it could sign an app that
+receives the invites. On Android 12 or later, approve the domain for your build instead, again after each fresh
+install:
+
+```shell
+adb shell pm set-app-links-user-selection --user cur --package com.quare.blitzsplit true blitzsplit.com
+```
+
+`adb shell pm get-app-links --user cur com.quare.blitzsplit` then lists blitzsplit.com under "Enabled" (the domain's
+own state stays `none` or a failure such as `legacy_failure`). Android 8 to 11 asks which app opens the link instead.
+To trust a new store signing key, edit `public/.well-known/assetlinks.json` in `blitz-split-site`, whose pushes to
+`main` deploy blitzsplit.com and which is the copy Android reads, and keep `webApp/public/.well-known` the same.
+Android reads it through Google's Digital Asset Links API, which caches it for up to an hour.
+
 ## Build and run the Apple app
 
 The Xcode project is generated, not versioned. Generate it, then open it:
@@ -74,6 +91,13 @@ changing `iosApp/project.yml` or `version.properties`.
 
 The project signs automatically with the team in `project.yml`; Sign in with Apple and the `webcredentials`
 associated domain need a team that holds those capabilities for `com.quare.blitzsplit`.
+
+A group's invite link opens the app through the `applinks` associated domain, once the system has downloaded
+blitzsplit.com's `apple-app-site-association` after the install: a link opened in the first seconds still goes to
+Safari. The system reads that file through Apple's CDN, which can take hours to pick up a change pushed to the site,
+and the file only lists the app id of the team in `project.yml`, so a build signed by another team never opens the
+links. Test it with `xcrun simctl openurl <udid> https://blitzsplit.com/g/<code>`, or by tapping the link in Notes
+or Messages; a link typed into Safari's address bar always stays in Safari.
 
 ## Build and run the web app
 

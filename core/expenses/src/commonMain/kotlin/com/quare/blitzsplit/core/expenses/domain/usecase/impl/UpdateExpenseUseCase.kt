@@ -26,6 +26,7 @@ class UpdateExpenseUseCase(
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
         items: BillItems?,
+        categoryId: String?,
         spentAt: Long,
     ): Result<Unit> {
         if (!ExpenseRules.isSplitValid(amountMinor, splitMode, payers, shares, items)) {
@@ -42,6 +43,7 @@ class UpdateExpenseUseCase(
                 splitMode = splitMode,
                 shares = shares,
                 items = items,
+                categoryId = categoryId,
                 spentAt = spentAt,
                 now = now,
             ),

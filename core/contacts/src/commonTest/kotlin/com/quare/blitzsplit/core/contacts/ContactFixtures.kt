@@ -90,6 +90,7 @@ internal fun bill(
     payers = payers,
     shares = shares,
     items = null,
+    categoryId = null,
     spentAt = spentAt,
     isPending = false,
     updatedAt = updatedAt,

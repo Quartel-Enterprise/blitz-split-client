@@ -8,8 +8,9 @@ kotlin {
             api(projects.core.presentation)
             api(projects.core.model)
             api(projects.core.navigation)
-            implementation(projects.core.groups)
-            implementation(projects.core.expenses)
+            // Why: Divisão padrão's exceptions name categories (core:expenses) and keep CategorySplit (core:groups).
+            api(projects.core.groups)
+            api(projects.core.expenses)
             implementation(projects.core.utils)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))

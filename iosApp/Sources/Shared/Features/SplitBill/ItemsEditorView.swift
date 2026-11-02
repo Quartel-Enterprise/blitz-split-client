@@ -58,12 +58,16 @@ private struct ItemsStatusView: View {
         let status = items.status
         let isError = !items.addsUp
         VStack(alignment: .leading, spacing: 8) {
-            Text(verbatim: ItemsCopy.statusTitle(status, currency: items.currency))
-                .font(.headline)
-                .monospacedDigit()
-            Text(verbatim: ItemsCopy.statusDetail(status, currency: items.currency))
-                .font(.subheadline)
-                .fixedSize(horizontal: false, vertical: true)
+            // Only on the words: on the card, it would paint the prominent buttons' labels the color they fill with
+            Group {
+                Text(verbatim: ItemsCopy.statusTitle(status, currency: items.currency))
+                    .font(.headline)
+                    .monospacedDigit()
+                Text(verbatim: ItemsCopy.statusDetail(status, currency: items.currency))
+                    .font(.subheadline)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(isError ? AnyShapeStyle(Palette.onErrorContainer) : AnyShapeStyle(.primary))
             if status is ItemsStatusAmountLeft || status is ItemsStatusAmountOver {
                 HStack(spacing: 8) {
                     if items.canAddDifferenceItem {
@@ -83,7 +87,6 @@ private struct ItemsStatusView: View {
                 #endif
             }
         }
-        .foregroundStyle(isError ? AnyShapeStyle(Palette.onErrorContainer) : AnyShapeStyle(.primary))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .contain)
         .accessibilityAddTraits(.updatesFrequently)
@@ -407,7 +410,7 @@ private struct ItemPersonRowView: View {
     }
 
     private func field(prompt: String, width: CGFloat, label: Text) -> some View {
-        TextField(text: model.itemValue(of: person.id), prompt: Text(verbatim: prompt)) {
+        KeptTextField(text: model.itemValue(of: person.id), prompt: Text(verbatim: prompt)) {
             label
         }
         #if os(iOS)
@@ -676,7 +679,7 @@ struct PhoneItemEditor: View {
                 Spacer()
                 Text(verbatim: editor.currency.symbol)
                     .foregroundStyle(.secondary)
-                TextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
+                KeptTextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
                     Text("Price of each")
                 }
                 .keyboardType(.decimalPad)
@@ -861,12 +864,12 @@ struct MacItemEditor: View {
                     GridRow {
                         Text("Quantity:")
                         HStack(spacing: 8) {
-                            TextField("Quantity", text: model.itemQuantity)
+                            KeptTextField("Quantity", text: model.itemQuantity)
                                 .labelsHidden()
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
                             Text("Price of each:")
-                            TextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
+                            KeptTextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
                                 Text("Price of each")
                             }
                             .labelsHidden()

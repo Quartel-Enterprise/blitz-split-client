@@ -13,6 +13,8 @@ data class Expense(
     val shares: List<ExpenseShare>,
     // Why: "Itens da conta" the shares come from, null for any other split.
     val items: BillItems?,
+    // Why: "Categoria" (7.7), an app category's key or a group category's id (CategoryTree resolves it); null: Outros.
+    val categoryId: String?,
     // Why: "Quando", in epoch millis.
     val spentAt: Long,
     // Why: created or changed on this device and not up on the server yet ("na fila").

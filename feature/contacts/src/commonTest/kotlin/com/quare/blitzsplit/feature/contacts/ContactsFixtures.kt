@@ -159,6 +159,7 @@ internal fun owes(
         ),
     ),
     items = null,
+    categoryId = null,
     spentAt = spentAt,
     isPending = false,
     updatedAt = updatedAt,

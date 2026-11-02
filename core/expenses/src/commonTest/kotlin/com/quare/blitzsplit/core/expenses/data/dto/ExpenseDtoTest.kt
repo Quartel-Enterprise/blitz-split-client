@@ -53,6 +53,6 @@ class ExpenseDtoTest {
 
     private fun rowWith(items: String): String =
         """{"id":"bill","group_id":"g","created_by":null,"description":"Pizza","amount_minor":1000,""" +
-            """"split_mode":"amount","payers":[],"shares":[],"items":$items,"spent_at":1,"is_deleted":false,""" +
-            """"added_at":1,"updated_at":5,"updated_by":null}"""
+            """"split_mode":"amount","payers":[],"shares":[],"items":$items,"category_id":null,"spent_at":1,""" +
+            """"is_deleted":false,"added_at":1,"updated_at":5,"updated_by":null}"""
 }

@@ -60,6 +60,9 @@ class JsBillDetailState(
     // Why: this device's user first, then the group's order, then whoever left it.
     val payers: Array<JsBillPayer>,
     val isPending: Boolean,
+    // Why: "Alimentação › Mercado" over the title.
+    val category: JsCategory,
+    val categoryParent: JsCategory?,
     val myBalanceMinor: Double?,
     val myPartNote: JsMyPartNote?,
     val showsMyPart: Boolean,
@@ -103,6 +106,8 @@ class BillDetailPresenter(
                         )
                     }.toTypedArray(),
                 isPending = state.isPending,
+                category = toJsCategory(state.category),
+                categoryParent = state.categoryParent?.let(::toJsCategory),
                 myBalanceMinor = state.myBalanceMinor?.toDouble(),
                 myPartNote = state.myPartNote?.let(::toJsMyPartNote),
                 showsMyPart = state.showsMyPart,

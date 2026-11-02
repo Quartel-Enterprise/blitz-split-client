@@ -61,7 +61,7 @@ class ProviderSignInImplTest {
         signIn = ProviderSignInImpl(
             nativeSignIn = NativeSignIn(setOf(AccountProvider.APPLE, AccountProvider.GOOGLE)),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = { Result.success(Unit) },
+            connectWithBrowser = { _, _ -> Result.success(Unit) },
             completeSignIn = { Result.success(SignInOutcome.PROFILE_RESTORED) },
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),

@@ -1,8 +1,9 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
+import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 
 // Why: where "Rachar conta" and "Editar conta" go once closed, saved or deleted, only while still on top.
 internal class SplitBillExits(
@@ -10,6 +11,11 @@ internal class SplitBillExits(
     private val route: Route.SplitBill,
 ) {
     fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+
+    // Why: "Mapa de categorias" from "Categoria" (9.0), over Rachar conta, which keeps what was typed.
+    fun openCategoryMap() {
+        if (isOnTop()) navigator.navigate(Route.CategoryMap)
+    }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     fun leave() {
@@ -23,13 +29,36 @@ internal class SplitBillExits(
      */
     fun leaveToBillGroup(groupId: String) {
         if (!isOnTop()) return
-        val stack = navigator.backStack.value
-        val below = stack.getOrNull(stack.lastIndex - 1)
-        if (below != null && (tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId))) {
+        if (isBackOnGroupScreen(groupId)) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
+            navigator.replaceTop(
+                Route.GroupDetail(
+                    groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
         }
+    }
+
+    /*
+     * Why: whether leaveToBillGroup lands on the group's screen, not on its Estatísticas: only its Despesas asks
+     * "Ensinar ao mapa?", and the group's ViewModel knows which tab is picked.
+     */
+    fun isLandingOnGroup(groupId: String): Boolean {
+        if (!isOnTop()) return false
+        return !isBackOnGroupScreen(groupId) || belowOrNull() is Route.GroupDetail
+    }
+
+    private fun isBackOnGroupScreen(groupId: String): Boolean {
+        val below = belowOrNull() ?: return false
+        return groupScreenIdOrNull(below) == groupId || below == Route.GroupStats(groupId)
+    }
+
+    private fun belowOrNull(): Route? {
+        val stack = navigator.backStack.value
+        return stack.getOrNull(stack.lastIndex - 1)
     }
 
     // Why: back to Despesas do grupo past "Conta", which would show a bill that is gone.

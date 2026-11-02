@@ -72,7 +72,7 @@ struct CreateGroupView: View {
         .formSheetSizing()
         #endif
         #if os(macOS)
-        .frame(minWidth: 460, idealWidth: 500, minHeight: 560, idealHeight: 680)
+        .frame(minWidth: 460, idealWidth: 500, minHeight: 400, idealHeight: 540)
         #endif
         .onAppear {
             if model == nil { model = CreateGroupModel() }
@@ -124,16 +124,9 @@ private struct CreateGroupForm: View {
         .measuringScreenLayout($layout)
     }
 
-    /// The title on the Mac, the error, the avatar and the name, type and currency.
+    /// The error, the avatar and the name, type and currency.
     @ViewBuilder
     private var groupSections: some View {
-        #if os(macOS)
-        // A Mac sheet has no title bar, so the title heads the form
-        Section {
-            Text("New group").font(.title2.bold())
-        }
-        .listRowBackground(Color.clear)
-        #endif
         if state.showsCreateError {
             Section {
                 Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
@@ -189,9 +182,11 @@ private struct CreateGroupForm: View {
 }
 
 /// "Who's in": the creator first ("you", not removable), then each name added. The draft row adds on
-/// Return, and a repeated name swaps the hint below for the nicknames to pick from.
+/// Return, keeping the keyboard up for the next name, and a repeated name swaps the hint below for the nicknames
+/// to pick from.
 private struct MembersSection: View {
     let model: CreateGroupModel
+    @FocusState private var isDraftFocused: Bool
 
     private var state: CreateGroupUiState {
         model.state
@@ -213,8 +208,15 @@ private struct MembersSection: View {
                     #if os(iOS)
                     .textInputAutocapitalization(.words)
                     #endif
-                    .submitLabel(.done)
-                    .onSubmit { model.send(CreateGroupUiEventOnAddMemberClicked.shared) }
+                    .focused($isDraftFocused)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        // The ViewModel's state now: the watcher may not have brought the last keystroke yet
+                        let adds = model.current.canAddMember
+                        model.send(CreateGroupUiEventOnAddMemberClicked.shared)
+                        // Only after a name went in: Return on an empty draft lets the keyboard go
+                        if adds { isDraftFocused = true }
+                    }
                 if state.canAddMember {
                     Button("Add") { model.send(CreateGroupUiEventOnAddMemberClicked.shared) }
                         .buttonStyle(.borderless)

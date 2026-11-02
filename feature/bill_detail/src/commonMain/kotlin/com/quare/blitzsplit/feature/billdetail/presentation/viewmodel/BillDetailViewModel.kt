@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -13,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
@@ -57,6 +59,7 @@ class BillDetailViewModel(
     observeExpense: ObserveExpense,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
+    observeCategoryTree: ObserveCategoryTree,
 ) : ViewModel() {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
@@ -68,6 +71,8 @@ class BillDetailViewModel(
                 spentAt = 0L,
                 spentDay = RelativeDay.OTHER,
                 payers = emptyList(),
+                categoryId = null,
+                categories = CategoryTree.appOnly,
                 isPending = false,
                 myBalanceMinor = null,
                 myPartNote = null,
@@ -109,6 +114,9 @@ class BillDetailViewModel(
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
+        observeCategoryTree(route.groupId)
+            .onEach { tree -> uiState.update { it.copy(categories = tree) } }
+            .launchIn(viewModelScope)
         combine(group, observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }
             .launchIn(viewModelScope)
@@ -191,6 +199,7 @@ class BillDetailViewModel(
                 spentAt = expense.spentAt,
                 spentDay = relativeDayOf(expense.spentAt),
                 payers = payersOf(group, expense, membersById),
+                categoryId = expense.categoryId,
                 isPending = expense.isPending,
                 myBalanceMinor = me?.id?.let(expense::balanceOf),
                 myPartNote = me?.let { myPartNoteOf(expense, it, membersById) },

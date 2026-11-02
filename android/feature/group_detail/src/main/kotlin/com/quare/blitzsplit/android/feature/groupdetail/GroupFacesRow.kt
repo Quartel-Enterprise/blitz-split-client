@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
 private const val EXPENSES_TAB_INDEX = 0
@@ -123,6 +124,7 @@ internal fun GroupTabsRow(
         selectedIndex = when (selectedTab) {
             GroupTab.EXPENSES -> EXPENSES_TAB_INDEX
             GroupTab.BALANCES -> BALANCES_TAB_INDEX
+            GroupTab.MEMBERS -> MEMBERS_TAB_INDEX
         },
         groupLabel = stringResource(R.string.group_detail_tabs),
         onClick = { index ->
@@ -132,6 +134,7 @@ internal fun GroupTabsRow(
                 MEMBERS_TAB_INDEX -> onAction(GroupAction.MEMBERS)
             }
         },
+        showsCheck = false,
         modifier = modifier,
     )
 }

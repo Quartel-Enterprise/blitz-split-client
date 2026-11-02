@@ -65,7 +65,9 @@ final class GlobalBalancesModel {
 /// The home's Balances tab: each person once, netted across every group. The overall balance and the filter on top,
 /// then whom you owe and who owes you. On iPhone, on iPad upright and in a narrow Mac window "By group" opens in the
 /// row; on iPad lying down and in a wide Mac window the person picked fills a column beside the list (the Mac's
-/// inspector), with their groups and actions. No "Split a bill": the actions are on each person.
+/// inspector), with their groups and actions. An iPhone lying down (8.1) keeps the overall balance and the filter
+/// still in a 300 pt column on the left, the people scrolling on the right. No "Split a bill": the actions are on each
+/// person.
 struct GlobalBalancesView: View {
     let route: RouteGlobalBalances
 
@@ -73,6 +75,13 @@ struct GlobalBalancesView: View {
     @State private var model: GlobalBalancesModel?
     /// The whole screen, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
+    /// The iPhone Duo's fold, which the list ends at and the person picked starts after (iOS 27.1).
+    @State private var division: FoldDivision?
+
+    /// The fold down the window, which the list ends at.
+    private var fold: CGRect? {
+        division?.verticalFrame
+    }
 
     /// The canvas' list and detail: lying down with an iPad's room (an iPad, an iPhone Duo open), a Mac window wide
     /// enough for the inspector.
@@ -84,23 +93,43 @@ struct GlobalBalancesView: View {
         #endif
     }
 
+    /// Lying down short of an iPad's room, the list alone: an iPhone lying down.
+    private var usesSideColumn: Bool {
+        #if os(macOS)
+        false
+        #else
+        layout.usesTwoColumns && !layout.isLarge
+        #endif
+    }
+
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                HStack(spacing: 0) {
-                    GlobalBalancesList(model: model, showsDetail: showsDetail)
+                // One list whatever the fold, so opening the iPhone Duo keeps its scroll
+                HStack(alignment: .top, spacing: 0) {
+                    #if os(iOS)
+                    if usesSideColumn {
+                        BalancesSideColumn(model: model)
+                            .frame(width: BalancesSideColumn.width)
+                            .padding(.trailing, BalancesSideColumn.spacing)
+                    }
+                    #endif
+                    GlobalBalancesList(model: model, showsDetail: showsDetail, showsSummary: !usesSideColumn)
+                        .frame(width: showsDetail ? fold?.minX : nil)
                     if showsDetail {
-                        Divider()
-                            .ignoresSafeArea()
+                        // An iPhone Duo open: the people before the fold, the person picked after it
+                        ListDetailSeparator(fold: fold)
                         PersonInspector(model: model)
-                            .frame(width: PersonInspector.width)
+                            .frame(width: fold == nil ? PersonInspector.width : nil)
                     }
                 }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
             }
         }
         .measuringScreenLayout($layout)
+        .readingFoldDivision($division)
         .navigationTitle("Balances")
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
@@ -129,6 +158,7 @@ struct GlobalBalancesView: View {
                 }
                 .accessibilityLabel("Profile")
             }
+            .prefersVerticalBar()
         }
         .glassToast([
             GlassToastMessage(text: "Coming soon", trigger: model?.comingSoonCount ?? 0),
@@ -166,17 +196,88 @@ private struct FilterPicker: View {
     }
 }
 
-private struct GlobalBalancesList: View {
+#if os(iOS)
+
+/// "Offline · this iPhone's balances", over the overall balance.
+private struct OfflineNotice: View {
+    var body: some View {
+        Label("Offline · this \(DeviceName.current)'s balances", systemImage: "wifi.slash")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+    }
+}
+
+/// "Overall balance" in each currency, whether it is already offset, and the filter under it.
+private struct BalancesSummary: View {
     let model: GlobalBalancesModel
-    /// The person picked shows beside the list, so a row picks them instead of opening "By group" in place.
-    let showsDetail: Bool
+    let amountSize: CGFloat
 
     private var state: GlobalBalancesUiState {
         model.state
     }
 
-    private var heroHint: LocalizedStringKey {
+    private var hint: LocalizedStringKey {
         state.emptyState == nil ? "already offset across groups" : "adding up every group"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Overall balance")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.secondary)
+                ForEach(state.totals, id: \.currency) { total in
+                    Text(verbatim: total.currency.formatSigned(total.netMinor))
+                        .font(.system(size: amountSize, weight: .bold))
+                        .monospacedDigit()
+                        .foregroundStyle(total.netMinor == 0 ? Color.secondary : Palette.accent)
+                }
+                Text(hint)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            FilterPicker(model: model)
+        }
+    }
+}
+
+/// An iPhone lying down: the offline notice and the overall balance with the filter, in a card that stays still on
+/// the left while the people scroll.
+private struct BalancesSideColumn: View {
+    let model: GlobalBalancesModel
+
+    static let width: CGFloat = 300
+    static let spacing: CGFloat = 28
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 8) {
+                if model.state.showsOfflineNotice {
+                    OfflineNotice()
+                }
+                BalancesSummary(model: model, amountSize: 30)
+                    .padding(.vertical, 14)
+                    .padding(.horizontal, 16)
+                    .background(Palette.card, in: .rect(cornerRadius: 26))
+            }
+            .padding(.leading, 20)
+            .padding(.vertical, 12)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+    }
+}
+
+#endif
+
+private struct GlobalBalancesList: View {
+    let model: GlobalBalancesModel
+    /// The person picked shows beside the list, so a row picks them instead of opening "By group" in place.
+    let showsDetail: Bool
+    /// The overall balance and the filter heading the list, unless they stay still beside it (an iPhone lying down).
+    let showsSummary: Bool
+
+    private var state: GlobalBalancesUiState {
+        model.state
     }
 
     private func sectionTitle(_ section: PeopleSection) -> LocalizedStringKey {
@@ -186,30 +287,16 @@ private struct GlobalBalancesList: View {
     var body: some View {
         List {
             #if os(iOS)
-            Section {
-                VStack(alignment: .leading, spacing: 12) {
-                    if state.showsOfflineNotice {
-                        Label("Offline · this \(DeviceName.current)'s balances", systemImage: "wifi.slash")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Overall balance")
-                            .font(.footnote.weight(.medium))
-                            .foregroundStyle(.secondary)
-                        ForEach(state.totals, id: \.currency) { total in
-                            Text(verbatim: total.currency.formatSigned(total.netMinor))
-                                .font(.system(size: 36, weight: .bold))
-                                .monospacedDigit()
-                                .foregroundStyle(total.netMinor == 0 ? Color.secondary : Palette.accent)
+            if showsSummary {
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if state.showsOfflineNotice {
+                            OfflineNotice()
                         }
-                        Text(heroHint)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                        BalancesSummary(model: model, amountSize: 36)
                     }
-                    FilterPicker(model: model)
+                    .padding(.vertical, 4)
                 }
-                .padding(.vertical, 4)
             }
             #else
             if state.showsOfflineNotice {
@@ -601,10 +688,15 @@ enum GlobalBalancesCopy {
 }
 
 /// Request: a message for whoever owes you, which moves no money and sends nothing by itself. Send opens the share
-/// sheet (the Share menu on the Mac) and Copy puts the text on the pasteboard. A sheet over Balances.
+/// sheet (the Share menu on the Mac) and Copy puts the text on the pasteboard. A sheet over Balances: about 540 pt in
+/// the middle with an iPad's room, the whole screen on an iPhone lying down (8.2), split in two there: whom and the
+/// message on the left, the Pix key and the buttons on the right.
 private struct ChargeSheet: View {
     let model: GlobalBalancesModel
     let charge: ChargeDraft
+
+    @Environment(\.windowLayout) private var window
+    @State private var layout = ScreenLayout()
 
     private var name: String {
         PaymentCopy.name(charge.name)
@@ -628,65 +720,54 @@ private struct ChargeSheet: View {
         )
     }
 
+    /// The sheet's own size: the whole screen on an iPhone lying down splits in two; a form sheet keeps one column.
+    /// Until the sheet has measured itself, the window it opens over decides, so it never opens in one column first.
+    private var usesTwoColumns: Bool {
+        #if os(iOS)
+        let sheet = layout.size == .zero ? window : layout
+        return sheet.usesTwoColumns && !sheet.isLarge
+        #else
+        false
+        #endif
+    }
+
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    HStack(spacing: 12) {
-                        AvatarPhoto(initial: charge.initials, color: charge.color ?? .blue, photoUrl: charge.photoUrl, size: 36)
-                            .accessibilityHidden(true)
-                        Text("\(name) owes you \(Text(verbatim: charge.currency.format(charge.amountMinor)).foregroundStyle(Palette.accent).bold()) · \(GlobalBalancesCopy.groupsText(names: charge.groupNames))")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    if charge.isGuest {
-                        Label {
-                            Text("\(name) is a guest without the app. They only learn about it from this message, so it already says what went into the bill.")
-                                .fixedSize(horizontal: false, vertical: true)
-                        } icon: {
-                            Image(systemName: "info.circle")
+            Group {
+                if usesTwoColumns {
+                    TwoColumnsLayout(spacing: 0) {
+                        Form {
+                            whomSection
+                            messageSection(includesPixKey: false)
                         }
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    }
-                }
-                Section {
-                    TextField("Message", text: messageBinding, axis: .vertical)
-                        .lineLimit(3...8)
-                    if let pixKey = model.state.pixKey {
-                        Toggle(isOn: pixBinding) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Include my Pix key")
-                                Text(verbatim: GlobalBalancesCopy.pixKey(pixKey))
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
+                    } second: {
+                        Form {
+                            if let pixKey = model.state.pixKey {
+                                Section {
+                                    pixToggle(pixKey)
+                                }
+                            }
+                            Section {
+                                buttons
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowBackground(Color.clear)
                             }
                         }
-                        .disabled(!charge.canTogglePixKey)
+                    }
+                } else {
+                    Form {
+                        whomSection
+                        messageSection(includesPixKey: true)
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        buttons
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 8)
                     }
                 }
             }
+            .measuringScreenLayout($layout)
             .formStyle(.grouped)
-            .safeAreaInset(edge: .bottom) {
-                HStack(spacing: 10) {
-                    Button {
-                        model.send(GlobalBalancesUiEventOnChargeCopyClicked(message: message))
-                    } label: {
-                        Text("Copy message")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    ShareLink(item: message) {
-                        Label("Send", systemImage: "square.and.arrow.up")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .controlSize(.large)
-                .buttonBorderShape(.capsule)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 8)
-            }
             .navigationTitle(Text("Request from \(name)"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -700,9 +781,79 @@ private struct ChargeSheet: View {
             }
         }
         #if os(iOS)
-        .presentationDetents([.medium, .large])
+        // An iPad's room centres a 540 pt form sheet, which a medium detent would pin to the bottom; an iPhone lying
+        // down has a compact height, where the sheet takes the whole screen whatever the detents
+        .presentationDetents(window.isLarge ? [.large] : [.medium, .large])
+        .formSheetSizing()
         #else
         .frame(width: 480, height: 460)
         #endif
+    }
+
+    /// Whom: the face and what they owe from which groups, with why a guest's message says more.
+    private var whomSection: some View {
+        Section {
+            HStack(spacing: 12) {
+                AvatarPhoto(initial: charge.initials, color: charge.color ?? .blue, photoUrl: charge.photoUrl, size: 36)
+                    .accessibilityHidden(true)
+                Text("\(name) owes you \(Text(verbatim: charge.currency.format(charge.amountMinor)).foregroundStyle(Palette.accent).bold()) · \(GlobalBalancesCopy.groupsText(names: charge.groupNames))")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            if charge.isGuest {
+                Label {
+                    Text("\(name) is a guest without the app. They only learn about it from this message, so it already says what went into the bill.")
+                        .fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: "info.circle")
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// The message, with the Pix key under it in one column, as before; two columns move the key beside it.
+    private func messageSection(includesPixKey: Bool) -> some View {
+        Section {
+            TextField("Message", text: messageBinding, axis: .vertical)
+                .lineLimit(3...8)
+            if includesPixKey, let pixKey = model.state.pixKey {
+                pixToggle(pixKey)
+            }
+        }
+    }
+
+    private func pixToggle(_ pixKey: PaymentKey) -> some View {
+        Toggle(isOn: pixBinding) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Include my Pix key")
+                Text(verbatim: GlobalBalancesCopy.pixKey(pixKey))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .disabled(!charge.canTogglePixKey)
+    }
+
+    private var buttons: some View {
+        HStack(spacing: 10) {
+            Button {
+                model.send(GlobalBalancesUiEventOnChargeCopyClicked(message: message))
+            } label: {
+                Text("Copy message")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            ShareLink(item: message) {
+                // A list row would drop the icon
+                Label("Send", systemImage: "square.and.arrow.up")
+                    .labelStyle(.titleAndIcon)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
     }
 }

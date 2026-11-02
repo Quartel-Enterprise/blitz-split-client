@@ -210,6 +210,7 @@ class ExpenseDaoTest {
             payersJson = "[]",
             sharesJson = "[]",
             itemsJson = null,
+            categoryId = null,
             spentAt = 1_000L,
             now = 9L,
         )
@@ -232,6 +233,7 @@ class ExpenseDaoTest {
                 payersJson = "[]",
                 sharesJson = "[]",
                 itemsJson = "{\"items\":[]}",
+                categoryId = null,
                 spentAt = 1_000L,
                 now = 9L,
             )
@@ -347,6 +349,7 @@ class ExpenseDaoTest {
         payersJson = "[]",
         sharesJson = "[]",
         itemsJson = null,
+        categoryId = null,
         spentAt = spentAt,
         isDeleted = isDeleted,
         addedAt = 1L,

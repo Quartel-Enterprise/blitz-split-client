@@ -164,6 +164,7 @@ class ObserveGroupsMoneyUseCaseTest {
         payers = emptyList(),
         shares = emptyList(),
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = spentAt,

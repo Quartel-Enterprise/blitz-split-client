@@ -1,10 +1,15 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -12,7 +17,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
@@ -43,11 +50,13 @@ import kotlin.time.Instant
 
 class GroupStatsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var chart: MutableStateFlow<StatsChartPreferences>
     private lateinit var keptCharts: MutableList<StatsChartPreferences>
+    private lateinit var categories: FakeCategoryRepository
     private lateinit var viewModel: GroupStatsViewModel
 
     @BeforeTest
@@ -477,7 +486,11 @@ class GroupStatsViewModelTest {
         assertEquals(
             listOf(
                 Route.Groups,
-                Route.GroupDetail(GROUP_ID, joinedAs = null),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
                 route,
                 Route.BillDetail(GROUP_ID, "boat"),
             ),
@@ -528,8 +541,56 @@ class GroupStatsViewModelTest {
         viewModel.onEvent(GroupStatsUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
+
+    @Test
+    fun `GIVEN the statistics WHEN the rail opens Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnRailTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the statistics over the groups WHEN drawn THEN the rail selects Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.GROUPS, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN unread activity counted WHEN another period redraws the statistics THEN the rail keeps counting it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            activityUnread.value = 3
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {
@@ -540,7 +601,17 @@ class GroupStatsViewModelTest {
         groups.groups.value = emptyList()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -555,7 +626,17 @@ class GroupStatsViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     private val route = Route.GroupStats(GROUP_ID)
@@ -643,6 +724,77 @@ class GroupStatsViewModelTest {
         weight = 1,
     )
 
+    @Test
+    fun `GIVEN bills in categories WHEN the statistics open THEN Por categoria sums mains and subs`() =
+        runTest(testDispatcher) {
+            // Given
+            val at = millisOf("2026-10-28T12:00:00Z")
+            prepareScenario(
+                stored = listOf(
+                    expense("rent", 7_000, at, categoryId = AppCategory.HOME_RENT.key),
+                    expense("condo", 1_000, at, categoryId = AppCategory.HOME_CONDO.key),
+                    expense("market", 1_500, at, categoryId = AppCategory.FOOD_MARKET.key),
+                    expense("bbq", 300, at, categoryId = "bbq"),
+                    expense("raffle", 200, at),
+                ),
+                groupCategories = listOf(
+                    GroupCategory(
+                        "bbq",
+                        GROUP_ID,
+                        AppCategory.FOOD.key,
+                        "Churrasco",
+                        null,
+                        ANA,
+                        isDeleted = true,
+                        isPending = false,
+                    ),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.categories
+
+            // Then
+            assertEquals(
+                listOf(AppCategory.HOME.key to 8_000L, AppCategory.FOOD.key to 1_800L, AppCategory.OTHER.key to 200L),
+                rows.map { it.category.id to it.amountMinor },
+            )
+            assertEquals(listOf(80, 18, 2), rows.map { it.percent })
+            assertEquals(
+                listOf(AppCategory.HOME_RENT.key, AppCategory.HOME_CONDO.key),
+                rows.first().subcategories.map { it.category.id },
+            )
+            assertEquals(listOf(AppCategory.FOOD_MARKET.key), rows[1].subcategories.map { it.category.id })
+            assertEquals(
+                AppCategory.HOME.key,
+                viewModel.uiState.value.topCategory
+                    ?.category
+                    ?.id,
+            )
+            assertEquals(1.0, rows.first().barFraction)
+        }
+
+    @Test
+    fun `GIVEN three equal categories WHEN rounding THEN the percentages still add up to 100`() =
+        runTest(testDispatcher) {
+            // Given
+            val at = millisOf("2026-10-28T12:00:00Z")
+            prepareScenario(
+                stored = listOf(
+                    expense("a", 100, at, categoryId = AppCategory.HOME.key),
+                    expense("b", 100, at, categoryId = AppCategory.FOOD.key),
+                    expense("c", 100, at, categoryId = AppCategory.LEISURE.key),
+                ),
+            )
+
+            // When
+            val percents = viewModel.uiState.value.categories
+                .map { it.percent }
+
+            // Then
+            assertEquals(100, percents.sum())
+        }
+
     private fun paid(
         memberId: String,
         amountMinor: Long,
@@ -658,6 +810,7 @@ class GroupStatsViewModelTest {
         payers: List<ExpensePayer> = listOf(paid(PIERRE, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(PIERRE, amountMinor)),
         isPending: Boolean = false,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
@@ -667,6 +820,7 @@ class GroupStatsViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = categoryId,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
@@ -677,11 +831,19 @@ class GroupStatsViewModelTest {
         group: Group = trip,
         stored: List<Expense> = tripBills,
         keptChart: StatsChartPreferences = StatsChartPreferences.initial,
+        groupCategories: List<GroupCategory> = emptyList(),
     ) {
+        categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+            it.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             it.navigate(route)
         }
         chart = MutableStateFlow(keptChart)
@@ -698,6 +860,8 @@ class GroupStatsViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeStatsChartPreferences = { chart },
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 

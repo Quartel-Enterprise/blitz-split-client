@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -24,4 +25,12 @@ fun DefaultSplitScreen(
         isDialog = isDialog,
         onEvent = viewModel::onEvent,
     )
+    state.exceptionEditor?.let { editor ->
+        ExceptionSheet(
+            state = state,
+            editor = editor,
+            money = rememberMoneyFormatter(state.currency),
+            onEvent = viewModel::onEvent,
+        )
+    }
 }

@@ -25,6 +25,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
+import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInvitePresentation
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
@@ -37,7 +38,6 @@ import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
-import com.quare.blitzsplit.android.feature.groupdetail.BalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
@@ -46,7 +46,7 @@ import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinPickScreen
 import com.quare.blitzsplit.android.feature.join.JoinWithLinkScreen
-import com.quare.blitzsplit.android.feature.members.MembersScreen
+import com.quare.blitzsplit.android.feature.members.rememberMembersTab
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
@@ -58,7 +58,7 @@ import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
+import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -105,6 +105,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    /*
+     * Why: like a payment key, a tablet keeps the profile behind Excluir conta; a book and a tabletop, which open the
+     * profile's confirmations in one half (4.6, 4.9), open it in the right half too; elsewhere it is full screen.
+     */
+    val usesDeleteAccountDialog = usesFormDialog || formFactor == FormFactor.Book || formFactor == FormFactor.Tabletop
+    val deleteAccountMetadata = if (usesDeleteAccountDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
@@ -129,12 +139,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      * say so while a route covers it, so a group's tab on the stack (one just joined) counts as a group already.
      */
     var isGroupsScreenEmpty by rememberSaveable { mutableStateOf(false) }
-    val isHomeEmpty = isGroupsScreenEmpty && backStack.none { tabGroupIdOrNull(it) != null }
+    val isHomeEmpty = isGroupsScreenEmpty && backStack.none { groupScreenIdOrNull(it) != null }
     val listDetail = homeListDetailOf(
         listDetail = rememberListDetailLayout(),
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     val groupsMetadata = remember(listDetail, isHomeEmpty) {
         homeListPaneMetadataOf(
             listDetail = listDetail,
@@ -166,6 +177,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
+            entry<Route.CategoryMap> { CategoryMapScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(
@@ -173,9 +185,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
-            // Why: like a payment key, a tablet keeps the profile behind it; elsewhere it opens full screen.
-            entry<Route.DeleteAccount>(metadata = formDialogMetadata) {
-                DeleteAccountScreen(isDialog = usesFormDialog)
+            entry<Route.DeleteAccount>(metadata = deleteAccountMetadata) {
+                DeleteAccountScreen(isDialog = usesDeleteAccountDialog)
             }
             // Why: a dialog over the home wider than a phone; a phone opens it full screen, in two columns lying down.
             entry<Route.CreateGroup>(metadata = createGroupMetadata) {
@@ -183,9 +194,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: it takes the new group's place, full screen at every size (decision 1), laid out per size inside.
             entry<Route.Invite> { route -> InviteScreen(route) }
-            // Why: the group's tabs go in the pane beside the groups, where the window has room for it.
+            // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane { GroupDetailScreen(route) }
+                InGroupPane {
+                    GroupDetailScreen(
+                        route = route,
+                        membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
+                    )
+                }
             }
             // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
@@ -215,11 +231,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDialog,
                 )
             }
-            // Why: a tab of the group, which takes Despesas' or Membros' place, beside the groups too.
-            entry<Route.Balances>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane { BalancesScreen(route) }
+            /*
+             * Why: a tablet lying down draws it in the group's pane beside the groups, with its back arrow (decision 2);
+             * a book and everywhere else cover the window, the book split on its hinge.
+             */
+            entry<Route.GroupStats>(metadata = groupStatsMetadata) { route ->
+                InGroupPane { GroupStatsScreen(route) }
             }
-            entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
@@ -258,9 +276,6 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     route = route,
                     presentation = contactInvitePresentation,
                 )
-            }
-            entry<Route.Members>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane { MembersScreen(route) }
             }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }
             entry<Route.JoinPick> { route -> JoinPickScreen(route) }

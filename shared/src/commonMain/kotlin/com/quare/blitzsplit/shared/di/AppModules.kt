@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.activity.di.activityFeatureModule
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
+import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.contacts.di.contactsModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
@@ -81,6 +82,7 @@ val sharedModules: List<Module> = listOf(
     paymentKeyModule,
     deleteAccountModule,
     notificationSettingsModule,
+    categoryMapModule,
     createGroupModule,
     inviteModule,
     membersModule,

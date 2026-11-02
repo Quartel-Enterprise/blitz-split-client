@@ -8,9 +8,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -20,6 +24,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -218,7 +223,11 @@ class DefaultSplitBillViewModelTest {
         // Given
         prepareScenario(
             storedGroup = home.copy(
-                defaultSplit = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L)),
+                defaultSplit = GroupDefaultSplit(
+                    DefaultSplitMode.INCOME,
+                    mapOf(PIERRE to 75L, ANA to 25L),
+                    emptyList(),
+                ),
             ),
         )
 
@@ -235,7 +244,8 @@ class DefaultSplitBillViewModelTest {
     fun `GIVEN percentages that lost someone who left WHEN a new bill opens THEN it splits equally among everyone`() =
         runTest(testDispatcher) {
             // Given
-            val percent = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 50L, ANA to 25L, CARLA to 25L))
+            val percent =
+                GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 50L, ANA to 25L, CARLA to 25L), emptyList())
             prepareScenario(storedGroup = home.copy(defaultSplit = percent))
 
             // When
@@ -252,7 +262,11 @@ class DefaultSplitBillViewModelTest {
             // Given
             prepareScenario(
                 storedGroup = home.copy(
-                    defaultSplit = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L)),
+                    defaultSplit = GroupDefaultSplit(
+                        DefaultSplitMode.EQUAL,
+                        mapOf(PIERRE to 1L, ANA to 0L),
+                        emptyList(),
+                    ),
                 ),
             )
 
@@ -308,6 +322,7 @@ class DefaultSplitBillViewModelTest {
     private val threeToOne = GroupDefaultSplit(
         mode = DefaultSplitMode.SHARES,
         weights = mapOf(PIERRE to 3L, ANA to 1L),
+        exceptions = emptyList(),
     )
 
     private val home = Group(
@@ -344,6 +359,7 @@ class DefaultSplitBillViewModelTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,
@@ -362,7 +378,13 @@ class DefaultSplitBillViewModelTest {
             picksGroupFirst = false,
         )
         val navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+            it.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -381,6 +403,11 @@ class DefaultSplitBillViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            offerCategoryTeach = {},
+            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

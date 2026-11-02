@@ -4,7 +4,7 @@ import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewMo
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-// Why: the route comes in as a parameter (parametersOf(route)), so each group opens its own ViewModel.
+// Why: the group screen's route comes in as a parameter (parametersOf(route)), so each group has its own ViewModel.
 val membersModule = module {
     viewModelOf(::MembersViewModel)
 }

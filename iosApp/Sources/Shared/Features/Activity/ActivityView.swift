@@ -132,10 +132,12 @@ struct ActivityView: View {
             ToolbarItem(placement: .primaryAction) {
                 profileButton
             }
+            .prefersVerticalBar()
         }
         .sheet(isPresented: model?.isFilterOpen ?? .constant(false)) {
             if let model {
                 ActivityFilterSheet(model: model)
+                    .foldSheetPlacement()
             }
         }
         #else
@@ -184,13 +186,15 @@ struct ActivityView: View {
             .background(Palette.groupedBackground)
         } else {
             ActivityFeed(model: model, showsDetail: false, showsContext: true)
-                // An iPad upright keeps the canvas' 520 pt column, the scroll still the whole width
-                .contentMargins(
-                    .horizontal,
-                    max(0, (layout.size.width - ScreenLayout.singleColumnMaxWidth) / 2),
-                    for: .scrollContent,
-                )
+                // An iPad upright keeps the canvas' 520 pt column, the scroll still the whole width. Narrower, nil
+                // keeps the inset list's own margins, which 0 would take away
+                .contentMargins(.horizontal, centeringMargin, for: .scrollContent)
         }
+    }
+
+    private var centeringMargin: CGFloat? {
+        let margin = (layout.size.width - ScreenLayout.singleColumnMaxWidth) / 2
+        return margin > 0 ? margin : nil
     }
 
     private var profileButton: some View {
@@ -225,8 +229,7 @@ private struct ActivityColumns<ListContent: View, Detail: View>: View {
     #endif
 
     private var verticalFold: CGRect? {
-        guard let division, division.isVertical else { return nil }
-        return division.frame
+        division?.verticalFrame
     }
 
     var body: some View {

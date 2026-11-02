@@ -45,11 +45,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.HomeTab
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 

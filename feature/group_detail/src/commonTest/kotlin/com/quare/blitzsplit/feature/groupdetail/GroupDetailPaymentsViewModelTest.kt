@@ -2,8 +2,10 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -16,11 +18,16 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -36,6 +43,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -44,6 +52,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +60,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -71,6 +81,7 @@ import kotlin.time.Instant
 // Why: the payments, balance card and payment notice of Despesas; the bills are in GroupDetailViewModelTest.
 class GroupDetailPaymentsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -835,7 +846,7 @@ class GroupDetailPaymentsViewModelTest {
             navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
             // When
-            viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
 
             // Then
             assertEquals(
@@ -1123,7 +1134,11 @@ class GroupDetailPaymentsViewModelTest {
         paidAt = thisAfternoon,
     ).getOrThrow()
 
-    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null)
+    private val route = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
 
     private val pins = FakeGroupPinRepository()
 
@@ -1217,6 +1232,7 @@ class GroupDetailPaymentsViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = spentAt,
@@ -1267,6 +1283,14 @@ class GroupDetailPaymentsViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            teachUseCases = CategoryTeachUseCases(
+                observeOffer = { flowOf(null) },
+                consumeOffer = {},
+                observeMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                observeMapCategories = { flowOf(CategoryTree.appOnly) },
+                saveTerm = SaveCategoryTermUseCase(FakeCategoryTermRepository()) { 0L },
+            ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
@@ -1285,6 +1309,7 @@ class GroupDetailPaymentsViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
     }

@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
@@ -361,7 +362,10 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked("ape"))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members("ape")), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null, GroupTab.MEMBERS)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -377,7 +381,11 @@ class GroupsSearchTest {
         assertEquals(
             listOf(
                 Route.Groups,
-                Route.GroupDetail("churrasco", joinedAs = null),
+                Route.GroupDetail(
+                    "churrasco",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
                 Route.BillDetail("churrasco", "carne"),
             ),
             navigator.backStack.value,
@@ -531,6 +539,7 @@ class GroupsSearchTest {
         payers = listOf(ExpensePayer("$groupId-$paidBy", 600L)),
         shares = splitOver.map { ExpenseShare("$groupId-$it", 600L / splitOver.size, 1L) },
         items = null,
+        categoryId = null,
         spentAt = updatedAt,
         isPending = false,
         updatedAt = updatedAt,

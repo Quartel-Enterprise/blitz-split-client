@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
@@ -379,7 +380,16 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null), Route.BillDetail(APE, BILL_JANTAR)),
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                Route.BillDetail(APE, BILL_JANTAR),
+            ),
             navigator.backStack.value,
         )
     }
@@ -393,7 +403,18 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
 
         // Then
-        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -414,7 +435,18 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked("group-edited"))
 
         // Then
-        assertEquals(listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    FLORIPA,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -427,7 +459,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, route, Route.Members(FLORIPA)),
+            listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.MEMBERS)),
             navigator.backStack.value,
         )
     }
@@ -441,7 +473,10 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(CHARGE_CARLA))
 
         // Then
-        assertEquals(listOf(Route.Home, route, Route.Balances(APE)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.BALANCES)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -606,7 +641,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null), Route.BillDetail(APE, BILL_MERCADO)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    Route.BillDetail(APE, BILL_MERCADO),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -680,7 +724,18 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
 
         // Then
-        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     // endregion
@@ -1467,13 +1522,30 @@ class ActivityViewModelTest {
     fun `GIVEN a group opened over Atividade WHEN tapping the profile THEN opens nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(APE, joinedAs = null))
+        navigator.navigate(
+            Route.GroupDetail(
+                APE,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
         viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     // endregion

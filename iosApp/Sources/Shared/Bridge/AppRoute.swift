@@ -12,12 +12,9 @@ enum AppRoute: Hashable, Identifiable {
     case createGroup
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case invite(RouteInvite)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
-    case members(RouteMembers)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    /// The group's screen, Expenses, Balances and Members under its header; holds the Kotlin route itself, which its
+    /// ViewModel reads the group and the tab it opens on from.
     case groupDetail(RouteGroupDetail)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
-    case balances(RouteBalances)
     /// Holds the Kotlin route itself, which its ViewModel reads the group and the pair from.
     case registerPayment(RouteRegisterPayment)
     /// Início's "Who paid whom?", before Record payment takes its place.
@@ -58,6 +55,7 @@ enum AppRoute: Hashable, Identifiable {
     case editProfile
     case deleteAccount
     case notificationSettings
+    case categoryMap
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
 
@@ -69,9 +67,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteGroups: self = .groups
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
-        case let members as RouteMembers: self = .members(members)
         case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
-        case let balances as RouteBalances: self = .balances(balances)
         case let registerPayment as RouteRegisterPayment: self = .registerPayment(registerPayment)
         case is RoutePickPayment: self = .pickPayment
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
@@ -93,6 +89,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteNotificationSettings: self = .notificationSettings
+        case is RouteCategoryMap: self = .categoryMap
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }
@@ -100,8 +97,9 @@ enum AppRoute: Hashable, Identifiable {
 
     var id: Self { self }
 
-    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
-    /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
+    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key,
+    /// a bill and Edit profile open as a form sheet and on the Mac as a sheet (a key on Ajustes' window,
+    /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile), as the canvas draws them; an iPhone,
     /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
     /// recording a payment (settling up across groups and Início's "Who paid whom?" included) and Contacts' invite are
     /// sheets everywhere. The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
@@ -125,7 +123,7 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        case .paymentKey, .billDetail:
+        case .paymentKey, .billDetail, .editProfile:
             #if os(macOS)
             return true
             #else
@@ -136,11 +134,12 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, and
-    /// on the Mac "Who are you" inside the invite's.
+    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, the
+    /// category map inside Split a bill's (9.0), and on the Mac "Who are you" inside the invite's. From the profile the
+    /// map is pushed as any screen; the Mac never pushes it, since it lives in Ajustes (`AppModel`).
     var pushesInSheet: Bool {
         switch self {
-        case .defaultSplit:
+        case .defaultSplit, .categoryMap:
             return true
         case .joinPick:
             #if os(macOS)
@@ -153,13 +152,33 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// A group's Expenses, Balances or Members: the only screens the column beside the list draws, and the tabs whose
-    /// "Invite people" anchors the Mac's invite popover.
-    var isGroupTab: Bool {
+    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key and deleting the account show as
+    /// sheets on the Settings window there (`AppModel.settingsSheet`). Never off the Mac.
+    var opensInSettings: Bool {
+        #if os(macOS)
         switch self {
-        case .groupDetail, .balances, .members: true
+        case .paymentKey, .deleteAccount: true
         default: false
         }
+        #else
+        false
+        #endif
+    }
+
+    /// A screen drawn as a form sheet (`formSheetSizing()`), which the root's sheet keeps at the form's size, the
+    /// iPhone Duo's fold included (`foldSheetPlacement(isForm:)`).
+    var usesFormSheet: Bool {
+        switch self {
+        case .createGroup, .contactInvite, .editProfile: true
+        default: false
+        }
+    }
+
+    /// A group's screen, whatever tab it shows: the screen that roots the column beside the list, and the one whose
+    /// "Invite people" (Members' Share) anchors the Mac's invite popover.
+    var isGroupScreen: Bool {
+        if case .groupDetail = self { return true }
+        return false
     }
 
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.

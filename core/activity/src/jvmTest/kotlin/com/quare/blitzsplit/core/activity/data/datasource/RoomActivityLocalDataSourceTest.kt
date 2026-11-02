@@ -694,6 +694,7 @@ class RoomActivityLocalDataSourceTest {
         payersJson = "[]",
         sharesJson = "[]",
         itemsJson = null,
+        categoryId = null,
         spentAt = 1L,
         isDeleted = isDeleted,
         addedAt = 1L,

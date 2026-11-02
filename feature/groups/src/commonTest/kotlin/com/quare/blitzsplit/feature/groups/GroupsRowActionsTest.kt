@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
@@ -286,7 +287,10 @@ class GroupsRowActionsTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Balances("trio")), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("trio", joinedAs = null, GroupTab.BALANCES)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -492,6 +496,7 @@ class GroupsRowActionsTest {
         payers = listOf(ExpensePayer("member-Ana", 30000L)),
         shares = listOf("Pierre", "Ana", "Bruno").map { ExpenseShare("member-$it", 10000L, 1L) },
         items = null,
+        categoryId = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = 0L,

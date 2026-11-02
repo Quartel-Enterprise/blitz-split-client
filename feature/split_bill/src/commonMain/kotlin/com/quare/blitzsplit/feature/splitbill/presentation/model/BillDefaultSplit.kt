@@ -14,6 +14,11 @@ data class BillDefaultSplit(
     val values: List<Long>,
     // Why: "Igual, sem Diego": who an "Igual" default leaves out.
     val excluded: List<BillPerson>,
+    /*
+     * Why: the category whose exception it is ("Exceção do grupo: Mercado divide igual", 7.1k, 7.2g); null for the
+     * group's own default.
+     */
+    val exceptionCategoryId: String?,
 ) {
     // Why: the same way to split with the same weights, whatever the total.
     fun isFollowedBy(split: SplitEditor): Boolean = split.mode == editor.mode &&

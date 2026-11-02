@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -60,6 +61,8 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
+import com.quare.blitzsplit.feature.groups.presentation.model.LatestBill
+import com.quare.blitzsplit.feature.groups.presentation.model.LatestBillAuthor
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -191,7 +194,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
@@ -246,7 +255,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
@@ -304,7 +319,13 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
@@ -1325,7 +1346,15 @@ class GroupsViewModelTest {
         // Then
         assertTrue(actions.isEmpty())
         assertEquals(
-            listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+            listOf(
+                Route.Home,
+                Route.Groups,
+                Route.GroupDetail(
+                    "floripa",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -1342,7 +1371,15 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "floripa",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -1661,6 +1698,142 @@ class GroupsViewModelTest {
         // Then
         assertEquals(listOf("trio", "renamed"), ids)
     }
+
+    @Test
+    fun `GIVEN bills in two groups WHEN the groups open THEN the latest saved is the cover last activity`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(),
+                    trio(
+                        id = "trip",
+                        name = "Viagem Floripa",
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "old",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        updatedAt = daysAgo(2),
+                    ),
+                    bill(
+                        "uber",
+                        groupId = "trip",
+                        paidBy = "Ana",
+                        amountMinor = 8760L,
+                        splitOver = everyone,
+                        updatedAt = daysAgo(0),
+                        description = "Uber aeroporto",
+                        savedBy = "Ana",
+                    ),
+                ),
+            )
+
+            // When
+            val latest = viewModel.uiState.value.latestBill
+
+            // Then
+            assertEquals(
+                LatestBill(
+                    description = "Uber aeroporto",
+                    amountMinor = 8760L,
+                    currency = GroupCurrency.BRL,
+                    groupName = "Viagem Floripa",
+                    savedBy = LatestBillAuthor.Member("Ana"),
+                ),
+                latest,
+            )
+        }
+
+    @Test
+    fun `GIVEN the latest bill only saved here WHEN the groups open THEN this device user saved it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        isPending = true,
+                    ),
+                ),
+            )
+
+            // When
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
+
+            // Then
+            assertEquals(LatestBillAuthor.Me, author)
+        }
+
+    @Test
+    fun `GIVEN the latest bill synced with no editor in the group WHEN the groups open THEN nobody is named`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
+
+            // Then
+            assertEquals(LatestBillAuthor.Unknown, author)
+        }
+
+    @Test
+    fun `GIVEN the latest bill saved by someone who left WHEN the groups open THEN nobody is named`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        savedBy = "Carla",
+                    ),
+                ),
+            )
+
+            // When
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
+
+            // Then
+            assertEquals(LatestBillAuthor.Unknown, author)
+        }
+
+    @Test
+    fun `GIVEN groups without bills WHEN the groups open THEN the cover has no last activity`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val latest = viewModel.uiState.value.latestBill
+
+            // Then
+            assertNull(latest)
+        }
 
     @Test
     fun `GIVEN a payment newer than every bill WHEN the groups open THEN the payment is the last activity`() =
@@ -2557,6 +2730,7 @@ class GroupsViewModelTest {
         updatedAt: Long = 0L,
         isPending: Boolean = false,
         description: String = "Mercado",
+        savedBy: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -2566,10 +2740,11 @@ class GroupsViewModelTest {
         payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
         shares = splitOver.map { ExpenseShare("member-$it", amountMinor / splitOver.size, 1L) },
         items = null,
+        categoryId = null,
         spentAt = updatedAt,
         isPending = isPending,
         updatedAt = updatedAt,
-        updatedByMemberId = null,
+        updatedByMemberId = savedBy?.let { "member-$it" },
     )
 
     private fun payment(

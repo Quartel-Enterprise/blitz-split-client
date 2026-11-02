@@ -12,6 +12,7 @@ import { avatarStyle } from '@/lib/avatar'
 import { uiTag } from '@/lib/currency'
 import { amountPlaceholder, currencySymbol, formatMoney, formatNames, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { ExceptionBody, ExceptionsSection } from './ExceptionsSection'
 
 const modes: Record<string, { label: MessageKey; hint: MessageKey; list: MessageKey }> = {
   equal: { label: 'defaultSplit_modeEqual', hint: 'defaultSplit_hintEqual', list: 'defaultSplit_listEqual' },
@@ -32,8 +33,11 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
   const isWide = useMediaQuery('(min-width: 1024px)')
   if (!presenter || !state?.isLoaded) return null
 
+  const editor = state.exceptionEditor
   const onOpenChange = (open: boolean) => {
-    if (!open) presenter.back()
+    if (open) return
+    if (editor) presenter.dismissException()
+    else presenter.back()
   }
   const subtitle = t('defaultSplit_subtitle', { group: state.groupName })
   const back = (
@@ -61,10 +65,53 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
       <div className="flex flex-col gap-4">
         <People presenter={presenter} state={state} />
         <Example state={state} />
+        <ExceptionsSection presenter={presenter} state={state} />
         <p className="text-[13px] text-muted-foreground">{t(state.showsOfflineNotice ? 'defaultSplit_offlineNote' : 'defaultSplit_note')}</p>
       </div>
     </div>
   )
+  // Why: "Exceção por categoria" takes the dialog's place, as Dividir takes Rachar conta's.
+  if (editor) {
+    const exceptionBody = <ExceptionBody presenter={presenter} state={state} editor={editor} />
+    const exceptionFooter = (
+      <>
+        {editor.editedCategoryId && (
+          <Button type="button" variant="ghost" className="text-destructive sm:mr-auto" onClick={() => presenter.removeException()}>
+            {t('defaultSplit_exceptionRemove')}
+          </Button>
+        )}
+        <Button type="button" variant="outline" onClick={() => presenter.dismissException()} className={cn(!isDesktop && 'h-11')}>
+          {t('common_back')}
+        </Button>
+        <Button type="button" disabled={!state.canSaveException} onClick={() => presenter.saveException()} className={cn(!isDesktop && 'h-11')}>
+          {t('defaultSplit_exceptionSave')}
+        </Button>
+      </>
+    )
+    return isDesktop ? (
+      <Dialog open onOpenChange={onOpenChange}>
+        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[560px]">
+          <DialogHeader className="pr-8 text-left">
+            <DialogTitle>{t('defaultSplit_exceptionTitle')}</DialogTitle>
+            <DialogDescription>{t('defaultSplit_exceptionLead')}</DialogDescription>
+          </DialogHeader>
+          {exceptionBody}
+          <DialogFooter>{exceptionFooter}</DialogFooter>
+        </DialogContent>
+      </Dialog>
+    ) : (
+      <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
+        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
+          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+            <DrawerTitle>{t('defaultSplit_exceptionTitle')}</DrawerTitle>
+            <DrawerDescription>{t('defaultSplit_exceptionLead')}</DrawerDescription>
+          </DrawerHeader>
+          <div className="overflow-y-auto px-4">{exceptionBody}</div>
+          <DrawerFooter className="flex-col-reverse">{exceptionFooter}</DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
 
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>

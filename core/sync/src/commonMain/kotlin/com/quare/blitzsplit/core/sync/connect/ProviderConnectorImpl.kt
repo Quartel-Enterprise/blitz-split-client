@@ -45,6 +45,7 @@ class ProviderConnectorImpl(
     // Why: the screens' guards read a copy of this state, so a second tap before it lands mustn't start another link.
     override suspend fun connect(
         provider: AccountProvider,
+        isFromProfile: Boolean,
         launchNativeSignIn: suspend (AccountProvider) -> Unit,
     ) {
         if (connection.value.connectingProvider != null) return
@@ -57,7 +58,7 @@ class ProviderConnectorImpl(
         if (provider in nativeSignIn.providers) {
             launchNativeSignIn(provider)
         } else {
-            connectWithBrowser(provider).onFailure { finishConnecting(hasFailed = true) }
+            connectWithBrowser(provider, isFromProfile).onFailure { finishConnecting(hasFailed = true) }
         }
     }
 

@@ -107,8 +107,8 @@ struct InviteView: View {
         .frame(
             minWidth: isPopover ? 340 : 420,
             idealWidth: isPopover ? 340 : 460,
-            minHeight: isPopover ? nil : 600,
-            idealHeight: isPopover ? nil : 680,
+            minHeight: isPopover ? nil : 400,
+            idealHeight: isPopover ? nil : 560,
         )
         #endif
         .onAppear {
@@ -148,7 +148,8 @@ struct InviteView: View {
 
 /// One column on an iPhone upright, the QR card under the title; lying down the text and buttons on the left and the
 /// QR card on the right (330 pt on an iPhone, 400 pt in a 920 pt container with an iPad's room); upright with an
-/// iPad's room one 520 pt column with the QR card first, the text centered under it.
+/// iPad's room one 520 pt column with the QR card first, the text centered under it, split on the fold of an iPhone
+/// Duo open upright.
 private struct InviteContent: View {
     let model: InviteModel
 
@@ -184,14 +185,27 @@ private struct InviteContent: View {
                 .padding(.horizontal, layout.isLarge ? 64 : 20)
                 .frame(maxHeight: .infinity)
             } else if layout.isLarge {
-                ScrollView {
-                    VStack(spacing: 28) {
-                        card(qrMaxWidth: 240)
-                        InviteText(model: model, isCentered: true, isLarge: true)
+                // An iPhone Duo open upright: the QR and link above the fold, the title and buttons below it
+                FoldHalves(centersTop: true) {
+                    card(qrMaxWidth: 240)
+                        .padding(24)
+                        .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                        .frame(maxWidth: .infinity)
+                } bottom: {
+                    InviteText(model: model, isCentered: true, isLarge: true)
+                        .padding(24)
+                        .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                        .frame(maxWidth: .infinity)
+                } single: {
+                    ScrollView {
+                        VStack(spacing: 28) {
+                            card(qrMaxWidth: 240)
+                            InviteText(model: model, isCentered: true, isLarge: true)
+                        }
+                        .padding(24)
+                        .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
+                        .frame(maxWidth: .infinity)
                     }
-                    .padding(24)
-                    .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
-                    .frame(maxWidth: .infinity)
                 }
             } else {
                 ScrollView {

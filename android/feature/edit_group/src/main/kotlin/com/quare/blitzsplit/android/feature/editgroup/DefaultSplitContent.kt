@@ -40,6 +40,9 @@ import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -101,6 +104,10 @@ fun DefaultSplitContent(
                 ExampleCard(
                     state = state,
                     money = money,
+                )
+                ExceptionsSection(
+                    state = state,
+                    onEvent = onEvent,
                 )
                 Text(
                     text = stringResource(findNoteRes(state.showsOfflineNotice)),
@@ -344,6 +351,15 @@ private fun createPreviewState(
         incomeFallback = emptyMap(),
         currency = GroupCurrency.BRL,
     ),
+    exceptions = listOf(
+        CategorySplit(
+            categoryId = AppCategory.FOOD_MARKET.key,
+            mode = DefaultSplitMode.EQUAL,
+            weights = people.associate { it.id to 1L },
+        ),
+    ),
+    categories = CategoryTree.appOnly,
+    exceptionEditor = null,
 )
 
 private fun createPreviewPerson(

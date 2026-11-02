@@ -11,8 +11,8 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
@@ -46,10 +46,10 @@ internal val emptyGroupHeader = GroupHeader(
 )
 
 /*
- * Why: what Despesas and Saldos share, the two tabs of the group's screen this module draws: the group's bills and
- * payments as they change, where the buttons over both go, the notice of a payment just recorded, "Sair do grupo"
- * and "Apagar grupo", and leaving only while still on top, since a native back (a swipe, the browser's) may have
- * closed it. showExitError says the server couldn't be asked, for leaving or deleting.
+ * Why: what the group's screen does around its tabs: the group's bills and payments as they change, where the buttons
+ * of its header go, the notice of a payment just recorded, "Sair do grupo" and "Apagar grupo", and leaving only while
+ * still on top, since a native back (a swipe, the browser's) may have closed it. showExitError says the server
+ * couldn't be asked, for leaving or deleting; showBalances picks the Saldos tab ("Ver saldos").
  */
 internal class GroupScreen(
     private val route: Route,
@@ -57,6 +57,7 @@ internal class GroupScreen(
     private val useCases: GroupScreenUseCases,
     private val scope: CoroutineScope,
     showExitError: suspend (isDelete: Boolean) -> Unit,
+    showBalances: () -> Unit,
 ) {
     private val notices = RecordedPaymentNotices(useCases.consumeRecordedPayment, useCases.deleteSettlement)
 
@@ -66,7 +67,7 @@ internal class GroupScreen(
         deleteGroup = useCases.deleteGroup,
         scope = scope,
         openRegisterPayment = { _, fromMemberId, toMemberId -> openRegisterPayment(fromMemberId, toMemberId) },
-        openBalances = { openBalances() },
+        openBalances = { showBalances() },
         onExited = ::backToGroups,
         showError = showExitError,
     )
@@ -78,7 +79,8 @@ internal class GroupScreen(
     )
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
-    private var isGroupGone = false
+    var isGroupGone = false
+        private set
 
     // Why: "Fixar na Início" or "Desafixar da Início", as the header last showed it.
     var isPinned = false
@@ -170,11 +172,9 @@ internal class GroupScreen(
         if (isOnTop()) useCases.navigator.navigate(next)
     }
 
-    fun openTab(tab: Route) {
-        useCases.navigator.openGroupTab(
-            from = route,
-            tab = tab,
-        )
+    // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.
+    fun openHomeTab(tab: HomeTab) {
+        if (isOnTop()) useCases.navigator.openHomeTab(tab)
     }
 
     fun openSplitBill() {
@@ -224,11 +224,6 @@ internal class GroupScreen(
     }
 
     private fun meIdOrNull(): String? = group?.members?.firstOrNull { it.isMe }?.id
-
-    // Why: Saldos itself has nowhere to go; the dialog only closes over it.
-    private fun openBalances() {
-        if (route !is Route.Balances) openTab(Route.Balances(groupId))
-    }
 
     /*
      * Why: the group left the device. While this device leaves or deletes it, the screens go back to Grupos; one

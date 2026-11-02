@@ -1,7 +1,12 @@
 package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.coverFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -18,6 +23,8 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResult
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
+import com.quare.blitzsplit.feature.groups.presentation.model.LatestBill
+import com.quare.blitzsplit.feature.groups.presentation.model.LatestBillAuthor
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
@@ -53,6 +60,7 @@ private fun GroupsOfflinePreview() {
                 recordedPayment = null,
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
+                latestBill = null,
                 activityUnreadCount = 3,
             ),
             onEvent = {},
@@ -141,6 +149,31 @@ private fun GroupsSearchPreview() {
     }
 }
 
+// Why: a Flip's cover screen (360×374), which a preview only knows through its fold layout.
+@Preview(
+    name = "Flip cover",
+    device = "spec:width=360dp,height=374dp",
+)
+@Composable
+private fun GroupsCoverPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides coverFoldLayoutOf(360.dp, 374.dp)) {
+        BlitzSplitTheme {
+            GroupsContent(
+                state = buildPreviewState(GroupsLayout.initial).copy(
+                    latestBill = LatestBill(
+                        description = "Uber aeroporto",
+                        amountMinor = 8760L,
+                        currency = GroupCurrency.BRL,
+                        groupName = "Viagem Floripa",
+                        savedBy = LatestBillAuthor.Member("Ana"),
+                    ),
+                ),
+                onEvent = {},
+            )
+        }
+    }
+}
+
 private fun buildPreviewState(
     layout: GroupsLayout,
     search: GroupsSearch = GroupsSearch.closed,
@@ -204,6 +237,7 @@ private fun buildPreviewState(
         recordedPayment = null,
         search = search,
         selectedGroupId = null,
+        latestBill = null,
         activityUnreadCount = 3,
     )
 }

@@ -19,6 +19,7 @@ fun interface UpdateExpense {
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
         items: BillItems?,
+        categoryId: String?,
         spentAt: Long,
     ): Result<Unit>
 }

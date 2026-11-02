@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw, Tag } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -74,6 +74,17 @@ export function ProfileScreen() {
             <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
             <AppearanceCard presenter={presenter} state={state} className="order-4" />
             <NotificationSettingsCard className="order-5" />
+            <Card className="order-5">
+              <CardHeader>
+                <CardTitle>{t('profile_categoryMap')}</CardTitle>
+                <CardDescription>{t('profile_categoryMapDetail')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" onClick={() => presenter.categoryMap()}>
+                  <Tag /> {t('profile_categoryMapOpen')}
+                </Button>
+              </CardContent>
+            </Card>
             <AboutCard presenter={presenter} className="order-6" />
             <Button
               variant="outline"

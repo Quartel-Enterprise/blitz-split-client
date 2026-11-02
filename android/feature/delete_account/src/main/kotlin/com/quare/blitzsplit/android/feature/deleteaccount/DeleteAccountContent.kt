@@ -67,7 +67,7 @@ private const val DISABLED_ALPHA = 0.38f
 @Composable
 fun DeleteAccountContent(
     state: DeleteAccountUiState,
-    // Why: a tablet draws it as a 560dp dialog over the profile, so its layout is always one column.
+    // Why: a tablet draws it as a 560dp dialog over the profile, a book in its right half: always one column.
     isDialog: Boolean,
     onEvent: (DeleteAccountUiEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -107,7 +107,6 @@ private fun DeleteAccountFullScreenScaffold(
                 DeleteAccountTwoColumnLayout(
                     state = state,
                     onEvent = onEvent,
-                    isBookPosture = layout.isTablet,
                 )
             } else {
                 DeleteAccountSingleColumn(
@@ -169,27 +168,26 @@ private fun DeleteAccountSingleColumn(
 }
 
 /*
- * Why: lying down there is little height, so what gets deleted goes left and the confirmation right. On an
- * unfolded foldable as a book the two columns are equal, so the 72dp gap sits on the hinge.
+ * Why: lying down there is little height, so what gets deleted goes left and the confirmation right. A book and a
+ * tabletop open it as a dialog in one half instead, never over the hinge.
  */
 @Composable
 private fun DeleteAccountTwoColumnLayout(
     state: DeleteAccountUiState,
     onEvent: (DeleteAccountUiEvent) -> Unit,
-    isBookPosture: Boolean,
 ) {
     Row(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-            .padding(horizontal = if (isBookPosture) 32.dp else 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(if (isBookPosture) 72.dp else 40.dp),
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = if (isBookPosture) 24.dp else 8.dp),
+                .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             DeleteAccountDetailsSection(
@@ -199,9 +197,9 @@ private fun DeleteAccountTwoColumnLayout(
         }
         Column(
             modifier = Modifier
-                .then(if (isBookPosture) Modifier.weight(1f) else Modifier.widthIn(max = phoneLandscapeEndColumnWidth))
+                .widthIn(max = phoneLandscapeEndColumnWidth)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = if (isBookPosture) 24.dp else 8.dp),
+                .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             DeleteAccountActionsSection(

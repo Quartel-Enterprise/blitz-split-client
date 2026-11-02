@@ -34,6 +34,8 @@ internal fun SplitBillUiState.toFilledWith(
             decimalSeparator = decimalSeparator,
         ),
         description = expense.description,
+        categoryId = expense.categoryId,
+        isCategoryPicked = true,
         payerId = payerId,
         severalPayers = severalPayers,
         spentAt = expense.spentAt,

@@ -15,7 +15,7 @@ struct AmountField: View {
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
-            TextField(text: $text, prompt: Text(verbatim: currency.zeroPlaceholder)) {
+            KeptTextField(text: $text, prompt: Text(verbatim: currency.zeroPlaceholder)) {
                 Text(label)
             }
             .font(.system(size: 34, weight: .bold))
@@ -26,9 +26,11 @@ struct AmountField: View {
         HStack(spacing: 6) {
             Text(verbatim: currency.symbol)
                 .foregroundStyle(.secondary)
-            TextField(text: $text, prompt: Text(verbatim: currency.zeroPlaceholder)) {
+            KeptTextField(text: $text, prompt: Text(verbatim: currency.zeroPlaceholder)) {
                 Text(label)
             }
+            // The form's row already names it; the label stays for VoiceOver
+            .labelsHidden()
             .monospacedDigit()
             .frame(width: 160)
         }

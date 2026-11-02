@@ -63,7 +63,9 @@ private struct DefaultSplitNotice: View {
     private var title: String {
         state.isSplitEditorOffDefault
             ? String(localized: "Different from the group's default")
-            : String(localized: "\(state.groupName) default: \(summary)")
+            : state.defaultSplitException.map {
+                String(localized: "Group exception for \(CategoryCopy.name($0)): \(summary)")
+            } ?? String(localized: "\(state.groupName) default: \(summary)")
     }
 
     private var detail: String {
@@ -220,7 +222,7 @@ private struct SplitPersonRow: View {
 
     private func valueField(prompt: String, width: CGFloat) -> some View {
         let isError = editor.mode == .amount && !editor.addsUp && editor.withoutValue.contains { $0.id == person.id }
-        return TextField(text: model.value(of: person.id), prompt: Text(verbatim: prompt)) {
+        return KeptTextField(text: model.value(of: person.id), prompt: Text(verbatim: prompt)) {
             if editor.mode == .amount {
                 Text("Part of \(person.name)")
             } else {
@@ -285,7 +287,7 @@ struct SplitLeadHeader: View {
 
 #if os(iOS)
 /// Pushed inside the bill's sheet. Lying down and on iPad: the summary, the modes and the status on the left, the
-/// people on the right.
+/// people on the right; above and below the fold of an iPhone Duo open upright.
 struct PhoneSplitEditor: View {
     let model: SplitBillModel
 
@@ -300,9 +302,17 @@ struct PhoneSplitEditor: View {
                         Form { people(editor) }
                     }
                 } else {
-                    Form {
-                        overview(editor)
-                        people(editor)
+                    // An iPhone Duo open upright: the summary, the modes and the status above the fold, the people
+                    // below it (7.2)
+                    FoldHalves(scrollsHalves: false) {
+                        Form { overview(editor) }
+                    } bottom: {
+                        Form { people(editor) }
+                    } single: {
+                        Form {
+                            overview(editor)
+                            people(editor)
+                        }
                     }
                 }
             }

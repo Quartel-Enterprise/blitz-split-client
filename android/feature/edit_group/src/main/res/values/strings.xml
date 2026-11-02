@@ -71,4 +71,30 @@
     <string name="default_split_row_income">Income per month · %d%% of each bill</string>
     <string name="default_split_row_new">%s · just joined</string>
     <string name="default_split_me">%s (you)</string>
+    <string name="default_split_exceptions">Exceptions by category</string>
+    <string name="default_split_exceptions_none">None. Every category follows the split above.</string>
+    <string name="default_split_exception_add">Add exception</string>
+    <string name="default_split_exception_title">Exception by category</string>
+    <string name="default_split_exception_lead">Bills of this category split another way.</string>
+    <string name="default_split_exception_category">Category</string>
+    <string name="default_split_exception_how">How to split</string>
+    <string name="default_split_exception_equal_all">Equally among everyone</string>
+    <string name="default_split_exception_shares">Shares, %s</string>
+    <string name="default_split_exception_percent">Percentage, %s</string>
+    <string name="default_split_exception_example">On a %1$s bill in %2$s: %3$s</string>
+    <string name="default_split_exception_pick">Pick a category for the exception.</string>
+    <string name="default_split_exception_taken">%s already has an exception.</string>
+    <string name="default_split_exception_save">Save exception</string>
+    <string name="default_split_exception_remove">Remove exception</string>
+    <string name="default_split_exception_percent_error">It adds up to %1$d%%. %2$d%% missing.</string>
+    <string name="default_split_exception_percent_over">It adds up to %1$d%%. %2$d%% too much.</string>
+    <string name="default_split_exception_mode_equal">Equal</string>
+    <string name="default_split_exception_mode_shares">Shares</string>
+    <string name="default_split_exception_mode_percent">Percentage</string>
+    <plurals name="default_split_exception_equal_among">
+        <item quantity="one">Equally among %d</item>
+        <item quantity="other">Equally among %d</item>
+    </plurals>
+    <string name="default_split_exception_shares_two">%1$d to %2$d</string>
+    <string name="default_split_exception_percent_value">%d%%</string>
 </resources>

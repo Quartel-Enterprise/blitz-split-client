@@ -488,6 +488,7 @@ class PeopleBalancesTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = 0L,
