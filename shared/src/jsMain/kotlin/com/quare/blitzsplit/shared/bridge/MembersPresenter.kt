@@ -41,6 +41,9 @@ class JsPersonalInvite(
     val memberColor: String,
     val displayLink: String,
     val isLinkCopied: Boolean,
+    // Why: "e já vê a parte de R$ 300,00 na despesa lançada", left out while 0.
+    val billCount: Int,
+    val billShareMinor: Double,
 )
 
 // Why: "change-error" and "release-error", toasts in the page's words; "copy" and "share-personal" with the link.
@@ -229,6 +232,8 @@ private fun toJsPersonalInvite(invite: PersonalInvite): JsPersonalInvite = JsPer
     memberColor = invite.member.avatarColor.code,
     displayLink = invite.displayLink,
     isLinkCopied = invite.isLinkCopied,
+    billCount = invite.billCount,
+    billShareMinor = invite.billShareMinor.toDouble(),
 )
 
 private fun toJsMemberNameEditor(editor: MemberNameEditor): JsMemberNameEditor = JsMemberNameEditor(

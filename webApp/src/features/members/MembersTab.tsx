@@ -23,7 +23,7 @@ import { balanceTone } from '@/features/balances/BalanceCard'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
-import { formatSignedMoney } from '@/lib/money'
+import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
 const nameId = 'member-name'
@@ -84,7 +84,14 @@ export function MembersDialogs({ presenter, state }: { presenter: MembersPresent
       {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
       {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
       {state.memberToReleaseName != null && <ReleaseMemberDialog presenter={presenter} name={state.memberToReleaseName} isReleasing={state.isReleasing} />}
-      {state.personalInvite && <PersonalInviteDialog presenter={presenter} invite={state.personalInvite} groupName={state.groupName} />}
+      {state.personalInvite && (
+        <PersonalInviteDialog
+          presenter={presenter}
+          invite={state.personalInvite}
+          groupName={state.groupName}
+          money={(minor) => formatMoney(minor, state.currency, state.fractionDigits)}
+        />
+      )}
     </>
   )
 }
@@ -168,13 +175,31 @@ function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; 
  * "Convite pessoal para Carla": a link that joins straight in as that member, a dialog on desktop and tablet and a
  * drawer on the phone, like "Convidar". Closing it any way is the ViewModel's dismissal.
  */
-function PersonalInviteDialog({ presenter, invite, groupName }: { presenter: MembersPresenter; invite: JsPersonalInvite; groupName: string }) {
+function PersonalInviteDialog({
+  presenter,
+  invite,
+  groupName,
+  money,
+}: {
+  presenter: MembersPresenter
+  invite: JsPersonalInvite
+  groupName: string
+  money: (minor: number) => string
+}) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.dismissPersonalInvite()
   }
   const title = t('members_personalInvite', { name: invite.memberName })
-  const description = t('members_personalMessage', { name: invite.memberName })
+  // The bills that already give the member a part, which whoever joins finds in their name.
+  const description =
+    invite.billCount === 0
+      ? t('members_personalMessage', { name: invite.memberName })
+      : t(invite.billCount === 1 ? 'members_personalMessageBillOne' : 'members_personalMessageBillOther', {
+          name: invite.memberName,
+          amount: money(invite.billShareMinor),
+          count: invite.billCount,
+        })
   const heading = (
     <div className="flex items-center gap-3 text-left">
       <Avatar initial={invite.memberInitials} color={invite.memberColor} className="size-10 shrink-0 text-sm" />
