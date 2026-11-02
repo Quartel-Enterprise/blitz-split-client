@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -460,7 +461,13 @@ class DefaultSplitViewModelTest {
             if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+            it.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             it.navigate(editGroup)
             it.navigate(defaultSplit)
         }

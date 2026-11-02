@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -21,9 +22,15 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+/*
+ * Why: one entry of the back stack for the whole group: picking Despesas, Saldos or Membros changes this screen's state,
+ * so back from any of them leaves the group. Membros comes from another module, asked for on every tab so it is read
+ * by the time it is picked.
+ */
 @Composable
 fun GroupDetailScreen(
     route: Route.GroupDetail,
+    membersTab: @Composable (SnackbarHostState) -> GroupTabBody,
     viewModel: GroupDetailViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,6 +67,7 @@ fun GroupDetailScreen(
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
+        membersTab = membersTab(snackbarHostState),
         onEvent = viewModel::onEvent,
     )
     if (state.paymentToDelete != null) {

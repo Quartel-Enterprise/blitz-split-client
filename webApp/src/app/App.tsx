@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
-import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
 import { ContactsScreen } from '@/features/contacts/ContactsScreen'
@@ -13,7 +12,6 @@ import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
-import { noteBackStack } from '@/features/group-detail/groupHeaderMemory'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { HomeScreen } from '@/features/home/HomeScreen'
@@ -21,7 +19,6 @@ import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
-import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
@@ -40,12 +37,7 @@ import { applyTheme } from '@/lib/theme'
 export function App() {
   const app = usePresenter(() => new AppPresenter())
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
-  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) =>
-    presenter.observeBackStack((routes) => {
-      noteBackStack(routes)
-      onChange(routes)
-    }),
-  )
+  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {
@@ -116,14 +108,11 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <HomeScreen />
     case 'groups':
       return <GroupsScreen />
-    case 'members':
-      return route ? <MembersScreen key={route.groupId} route={route} /> : null
+    // Why: a route opening the same group on another tab (Convidar's "Ver quem já entrou") is a new page.
     case 'group-detail':
-      return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
+      return route ? <GroupDetailScreen key={`${route.groupId}/${route.groupTab}`} route={route} /> : null
     case 'group-stats':
       return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
-    case 'balances':
-      return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
     case 'activity':

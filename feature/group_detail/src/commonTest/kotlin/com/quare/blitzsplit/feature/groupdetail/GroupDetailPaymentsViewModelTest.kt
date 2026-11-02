@@ -37,6 +37,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -837,7 +838,7 @@ class GroupDetailPaymentsViewModelTest {
             navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
             // When
-            viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
 
             // Then
             assertEquals(
@@ -1125,7 +1126,11 @@ class GroupDetailPaymentsViewModelTest {
         paidAt = thisAfternoon,
     ).getOrThrow()
 
-    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null)
+    private val route = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
 
     private val pins = FakeGroupPinRepository()
 

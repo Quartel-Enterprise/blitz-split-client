@@ -12,12 +12,9 @@ enum AppRoute: Hashable, Identifiable {
     case createGroup
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case invite(RouteInvite)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
-    case members(RouteMembers)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    /// The group's screen, Expenses, Balances and Members under its header; holds the Kotlin route itself, which its
+    /// ViewModel reads the group and the tab it opens on from.
     case groupDetail(RouteGroupDetail)
-    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
-    case balances(RouteBalances)
     /// Holds the Kotlin route itself, which its ViewModel reads the group and the pair from.
     case registerPayment(RouteRegisterPayment)
     /// Início's "Who paid whom?", before Record payment takes its place.
@@ -69,9 +66,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteGroups: self = .groups
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
-        case let members as RouteMembers: self = .members(members)
         case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
-        case let balances as RouteBalances: self = .balances(balances)
         case let registerPayment as RouteRegisterPayment: self = .registerPayment(registerPayment)
         case is RoutePickPayment: self = .pickPayment
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
@@ -167,33 +162,11 @@ enum AppRoute: Hashable, Identifiable {
         #endif
     }
 
-    /// A group's Expenses, Balances or Members: the only screens the column beside the list draws, and the tabs whose
-    /// "Invite people" anchors the Mac's invite popover.
-    var isGroupTab: Bool {
-        switch self {
-        case .groupDetail, .balances, .members: true
-        default: false
-        }
-    }
-
-    /// Whether moving from this entry to `other` only swaps a group's tab, which draws in place rather than as a push.
-    func isGroupTabSwitch(to other: AppRoute) -> Bool {
-        guard let from = groupTabRoute, let to = other.groupTabRoute else { return false }
-        return GroupTabsKt.isGroupTabSwitch(from: from, to: to)
-    }
-
-    /// The group whose tab this entry is, nil for any other screen.
-    var tabGroupId: String? {
-        groupTabRoute.flatMap { GroupTabsKt.tabGroupIdOrNull(route: $0) }
-    }
-
-    private var groupTabRoute: (any Route)? {
-        switch self {
-        case let .groupDetail(route): route
-        case let .balances(route): route
-        case let .members(route): route
-        default: nil
-        }
+    /// A group's screen, whatever tab it shows: the only screen the column beside the list draws, and the one whose
+    /// "Invite people" (Members' Share) anchors the Mac's invite popover.
+    var isGroupScreen: Bool {
+        if case .groupDetail = self { return true }
+        return false
     }
 
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.

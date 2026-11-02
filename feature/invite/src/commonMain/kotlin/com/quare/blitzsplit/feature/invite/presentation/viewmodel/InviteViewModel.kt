@@ -8,10 +8,11 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.openGroupTab
+import com.quare.blitzsplit.core.navigation.openGroup
 import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
@@ -101,14 +102,16 @@ class InviteViewModel(
 
             InviteUiEvent.OnRetryClicked -> if (uiState.value.isLinkFailed) retrySync()
 
-            InviteUiEvent.OnSeeWhoJoinedClicked -> navigator.openGroupTab(
+            InviteUiEvent.OnSeeWhoJoinedClicked -> navigator.openGroup(
                 from = route,
-                tab = Route.Members(route.groupId),
+                groupId = route.groupId,
+                tab = GroupTab.MEMBERS,
             )
 
-            InviteUiEvent.OnGoToGroupClicked -> navigator.openGroupTab(
+            InviteUiEvent.OnGoToGroupClicked -> navigator.openGroup(
                 from = route,
-                tab = Route.GroupDetail(route.groupId, joinedAs = null),
+                groupId = route.groupId,
+                tab = GroupTab.EXPENSES,
             )
 
             InviteUiEvent.OnChangeLinkClicked -> askToChangeLink()

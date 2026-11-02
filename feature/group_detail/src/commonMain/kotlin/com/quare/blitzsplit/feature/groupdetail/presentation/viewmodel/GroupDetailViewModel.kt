@@ -9,11 +9,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -36,6 +38,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+/*
+ * Why: the group's screen: its header, read once, over Despesas, Saldos and Membros, whose pick is this screen's own
+ * state rather than the back stack, so only what is under the tabs changes. Despesas and Saldos come from the same bills
+ * and payments; Membros has its own ViewModel (MembersViewModel), which owns nothing of the header.
+ */
 class GroupDetailViewModel(
     private val route: Route.GroupDetail,
     private val currentTimeMillis: CurrentTimeMillis,
@@ -49,8 +56,12 @@ class GroupDetailViewModel(
         field = MutableStateFlow(
             GroupDetailUiState(
                 header = emptyGroupHeader,
+                tab = route.tab,
                 days = emptyList(),
                 paymentToDelete = null,
+                myDebts = emptyList(),
+                otherDebts = emptyList(),
+                hasBills = false,
                 recordedPayment = null,
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
@@ -77,6 +88,7 @@ class GroupDetailViewModel(
         showExitError = { isDelete ->
             uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
         },
+        showBalances = { selectTab(GroupTab.BALANCES) },
     )
 
     init {
@@ -121,9 +133,7 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
-            GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
-
-            GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
+            is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)
 
             is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
@@ -144,6 +154,11 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
 
             GroupDetailUiEvent.OnSettleClicked -> screen.openSettle()
+
+            is GroupDetailUiEvent.OnDebtClicked -> screen.openRegisterPayment(
+                fromMemberId = event.fromMemberId,
+                toMemberId = event.toMemberId,
+            )
 
             is GroupDetailUiEvent.OnPaymentClicked -> askToDeletePayment(event.paymentId)
 
@@ -169,6 +184,7 @@ class GroupDetailViewModel(
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
         val meId = group.members.firstOrNull { it.isMe }?.id
+        val (mine, others) = balances.debts.partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
         val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
             settlements.map { it.paidAt to toRow(it, namesById, meId) }
@@ -193,6 +209,12 @@ class GroupDetailViewModel(
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
+                // Why: what this person owes comes first, then what they're owed.
+                myDebts = mine
+                    .sortedBy { debt -> debt.fromMemberId != meId }
+                    .map { debt -> debtRowOf(debt, group, meId) },
+                otherDebts = others.map { debt -> debtRowOf(debt, group, meId) },
+                hasBills = balances.hasBills,
                 isLoaded = true,
             )
         }
@@ -236,6 +258,10 @@ class GroupDetailViewModel(
         method = settlement.method,
         isPending = settlement.isPending,
     )
+
+    private fun selectTab(tab: GroupTab) {
+        uiState.update { it.copy(tab = tab) }
+    }
 
     private fun askToDeletePayment(paymentId: String) {
         val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return

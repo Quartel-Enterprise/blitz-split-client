@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -169,7 +170,13 @@ class JoinInviteViewModel(
         if (observeGroup(groupId).first() == null) {
             uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) }
         } else if (isOnTop()) {
-            navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
+            navigator.replaceTop(
+                Route.GroupDetail(
+                    groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
         }
     }
 

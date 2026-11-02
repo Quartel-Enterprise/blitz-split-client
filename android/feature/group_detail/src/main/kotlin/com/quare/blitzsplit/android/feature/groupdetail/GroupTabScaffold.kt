@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -30,17 +28,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
-import com.quare.blitzsplit.android.designsystem.layout.blocksTapsWhileLoading
-import com.quare.blitzsplit.android.designsystem.layout.groupTabContainerColorOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
@@ -50,21 +46,20 @@ private val phoneSideColumnWidth = 320.dp
 private val tabletSideColumnWidth = 380.dp
 private val fabClearance = 96.dp
 
-// Why: what Despesas and Saldos draw alike around their own list.
+// Why: the group's header, the same over every tab.
 internal class GroupTabFrame(
     val header: GroupHeader,
     val selectedTab: GroupTab,
     // Why: "nenhuma despesa ainda" in the bar before the first bill.
     val hasBills: Boolean,
     val isLoaded: Boolean,
-    val showsSplitBillButton: Boolean,
     // Why: "Sair do grupo" and "Apagar grupo" need the internet, which the ⋮ menu says.
     val isOnline: Boolean,
     val money: MoneyFormatter,
 )
 
 /*
- * Why: a phone upright stacks the faces, the balance card, the tabs and the list under the bar, with "Rachar conta"
+ * Why: a phone upright stacks the faces, the balance card, the tabs and the tab's rows under the bar, with its button
  * floating; lying down, and on a tablet lying down, the faces, the card and the tabs take a column next to the list.
  * A tablet upright centers one column. Drawn alone anywhere wider than a phone upright, the home's rail stays beside
  * it, as the canvas draws it (6.1).
@@ -78,8 +73,9 @@ internal fun GroupTabScaffold(
     homeTab: HomeTab,
     activityBadgeCount: Int,
     onHomeTabClick: (HomeTab) -> Unit,
+    // Why: the picked tab's rows and button; only these change when another tab is picked.
+    body: GroupTabBody,
     modifier: Modifier = Modifier,
-    listContent: LazyListScope.() -> Unit,
 ) {
     WithGroupNavigationRail(
         selected = homeTab,
@@ -92,7 +88,7 @@ internal fun GroupTabScaffold(
             snackbarHostState = snackbarHostState,
             onAction = onAction,
             showsRail = showsRail,
-            listContent = listContent,
+            body = body,
         )
     }
 }
@@ -104,7 +100,7 @@ private fun GroupTabScaffoldContent(
     snackbarHostState: SnackbarHostState,
     onAction: (GroupAction) -> Unit,
     showsRail: Boolean,
-    listContent: LazyListScope.() -> Unit,
+    body: GroupTabBody,
 ) {
     val layout = rememberDeviceLayout()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -112,9 +108,7 @@ private fun GroupTabScaffoldContent(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .blocksTapsWhileLoading(frame.isLoaded)
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = groupTabContainerColorOf(frame.isLoaded),
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
         topBar = {
             if (frame.isLoaded) {
@@ -130,16 +124,16 @@ private fun GroupTabScaffoldContent(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            // Why: beside the home's list, the rail's "Rachar conta" already marks this group.
-            if (frame.showsSplitBillButton && !LocalInDetailPane.current) {
+            body.floatingButton?.let { button ->
                 ExtendedFloatingActionButton(
-                    onClick = { onAction(GroupAction.SPLIT_BILL) },
-                    icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
-                    text = { Text(stringResource(R.string.group_detail_split_bill)) },
+                    onClick = button.onClick,
+                    icon = { Icon(button.icon, contentDescription = null) },
+                    text = { Text(button.label) },
                     expanded = !listState.canScrollBackward,
                 )
             }
         },
+        floatingActionButtonPosition = body.floatingButton?.position ?: FabPosition.End,
     ) { padding ->
         Box(
             modifier = Modifier
@@ -174,7 +168,7 @@ private fun GroupTabScaffoldContent(
                         modifier = Modifier.weight(1f),
                         state = listState,
                         contentPadding = PaddingValues(bottom = fabClearance),
-                        content = listContent,
+                        content = body.listContent,
                     )
                 }
             } else {
@@ -193,7 +187,7 @@ private fun GroupTabScaffoldContent(
                             modifier = Modifier.padding(horizontal = 12.dp),
                         )
                     }
-                    listContent()
+                    body.listContent(this)
                 }
             }
         }

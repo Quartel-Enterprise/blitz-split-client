@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -64,14 +65,23 @@ class JsExpenseDay(
     val entries: Array<JsDayEntry>,
 )
 
+// Why: the group's screen, its header over whichever tab is picked.
 class JsGroupDetailState(
     val header: JsGroupHeader,
+    // Why: "expenses", "balances" or "members": the tab picked, which only swaps what is under the header.
+    val tab: String,
     val days: Array<JsExpenseDay>,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
+    // Why: Saldos' "Com você" and "Entre os outros", each hidden when empty.
+    val myDebts: Array<JsDebtRow>,
+    val otherDebts: Array<JsDebtRow>,
+    val hasBills: Boolean,
     val recordedPayment: JsPaymentNotice?,
     val exit: JsGroupExit,
     val isEmpty: Boolean,
+    val isBalancesEmpty: Boolean,
+    val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
@@ -93,11 +103,17 @@ class GroupDetailPresenter(
         val states = viewModel.uiState.map { state ->
             JsGroupDetailState(
                 header = toJsGroupHeader(state.header),
+                tab = toJsGroupTab(state.tab),
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
+                myDebts = state.myDebts.map(::toJsDebtRow).toTypedArray(),
+                otherDebts = state.otherDebts.map(::toJsDebtRow).toTypedArray(),
+                hasBills = state.hasBills,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
                 exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
+                isBalancesEmpty = state.isBalancesEmpty,
+                showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
@@ -142,12 +158,9 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
     }
 
-    fun members() {
-        viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
-    }
-
-    fun balances() {
-        viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+    // Why: "expenses", "balances" or "members", the tabs under the header (Membros also from the faces).
+    fun selectTab(tab: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(groupTabOf(tab)))
     }
 
     // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
@@ -192,6 +205,14 @@ class GroupDetailPresenter(
     // Why: "Acertar" on "Seu saldo neste grupo".
     fun settle() {
         viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
+    }
+
+    // Why: "Acertar", "Recebi" or "Já pagou" on a pair of Saldos.
+    fun openDebt(
+        fromMemberId: String,
+        toMemberId: String,
+    ) {
+        viewModel.onEvent(GroupDetailUiEvent.OnDebtClicked(fromMemberId, toMemberId))
     }
 
     fun openPayment(paymentId: String) {
@@ -258,6 +279,14 @@ private fun toJsPaymentRow(row: PaymentRow): JsPaymentRow = JsPaymentRow(
     method = row.method.code,
     isPending = row.isPending,
 )
+
+internal fun toJsGroupTab(tab: GroupTab): String = when (tab) {
+    GroupTab.EXPENSES -> "expenses"
+    GroupTab.BALANCES -> "balances"
+    GroupTab.MEMBERS -> "members"
+}
+
+private fun groupTabOf(tab: String): GroupTab = GroupTab.entries.first { toJsGroupTab(it) == tab }
 
 internal fun toJsRelativeDay(day: RelativeDay): String = when (day) {
     RelativeDay.TODAY -> "today"

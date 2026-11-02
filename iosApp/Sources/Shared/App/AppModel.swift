@@ -56,16 +56,6 @@ final class AppModel {
             return
         }
         #endif
-        // A group's tabs take each other's place on the stack, but only what is under the picker changes: no push,
-        // and the header the tab left drew stays while the next one reads the group.
-        let isTabSwitch = backStack.last.flatMap { from in routes.last.map { from.isGroupTabSwitch(to: $0) } } ?? false
-        GroupHeaderMemory.backStackMoved(from: backStack.last, to: routes)
-        if isTabSwitch {
-            var transaction = Transaction()
-            transaction.disablesAnimations = true
-            withTransaction(transaction) { backStack = routes }
-            return
-        }
         backStack = routes
     }
 
@@ -222,15 +212,15 @@ final class AppModel {
         }
     }
 
-    /// The Mac's invite over the group's tab that opened it (F2Mac): a popover on that tab's "Invite people" rather
-    /// than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
+    /// The Mac's invite over the group that opened it (F2Mac): a popover on the group's "Invite people" (Members'
+    /// Share) rather than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
     var invitePopover: InvitePopover? {
         get {
             #if os(macOS)
             let stack = windowStack
             guard stack.count > 2, case let .invite(route) = stack[stack.count - 1] else { return nil }
             let host = stack[stack.count - 2]
-            guard host.isGroupTab else { return nil }
+            guard host.isGroupScreen else { return nil }
             return InvitePopover(host: host, route: route)
             #else
             return nil

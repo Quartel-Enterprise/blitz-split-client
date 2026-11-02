@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
@@ -9,12 +12,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
-import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
@@ -32,23 +36,22 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupId
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
-import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -56,6 +59,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -66,7 +70,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
-class BalancesViewModelTest {
+class GroupDetailBalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
@@ -75,11 +79,12 @@ class BalancesViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var recordSettlement: RecordSettlementUseCase
-    private lateinit var viewModel: BalancesViewModel
-    private val actions = mutableListOf<BalancesUiAction>()
+    private lateinit var viewModel: GroupDetailViewModel
+    private val actions = mutableListOf<GroupDetailUiAction>()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
     private val isRoomRead = MutableStateFlow(true)
     private val deletions = InMemoryGroupDeletionRepository()
+    private val deletedBills = InMemoryDeletedBillRepository()
 
     @BeforeTest
     fun setUp() {
@@ -101,7 +106,7 @@ class BalancesViewModelTest {
 
         // Then
         assertFalse(state.isLoaded)
-        assertFalse(state.isEmpty)
+        assertFalse(state.isBalancesEmpty)
         assertFalse(state.showsSplitBillButton)
         assertFalse(state.showsDebtNote)
     }
@@ -116,7 +121,7 @@ class BalancesViewModelTest {
 
         // Then
         assertTrue(state.isLoaded)
-        assertTrue(state.isEmpty)
+        assertTrue(state.isBalancesEmpty)
         assertFalse(state.hasBills)
         assertTrue(state.myDebts.isEmpty())
         assertTrue(state.otherDebts.isEmpty())
@@ -125,53 +130,6 @@ class BalancesViewModelTest {
         assertNull(state.header.myBalance)
         assertFalse(state.header.isEveryoneSettled)
     }
-
-    @Test
-    fun `GIVEN a group with a bill WHEN Saldos opens THEN shows the same header as Despesas`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroup = trip.copy(members = trip.members + diego),
-                storedExpenses = listOf(
-                    bill(
-                        "dinner",
-                        paidBy = ANA,
-                        amountMinor = 12_000,
-                        PIERRE,
-                    ),
-                ),
-                storedSettlements = listOf(
-                    settlement(
-                        id = "pay-1",
-                        from = PIERRE,
-                        to = ANA,
-                        amountMinor = 1_000,
-                    ),
-                ),
-            )
-
-            // When
-            val header = viewModel.uiState.value.header
-
-            // Then
-            assertEquals("Viagem de Floripa", header.groupName)
-            assertEquals("VF", header.groupInitials)
-            assertEquals(AvatarColor.LILAC, header.groupColor)
-            assertEquals(GroupCurrency.USD, header.currency)
-            assertEquals(listOf("A", "P", "B", "C"), header.faces.map { it.initials })
-            assertEquals(5, header.memberCount)
-            assertEquals(1, header.extraMemberCount)
-            assertEquals(3, header.notJoinedCount)
-            assertEquals(12_000L, header.totalSpentMinor)
-            assertEquals(
-                MemberBalance(
-                    receivesMinor = 0,
-                    owesMinor = 5_000,
-                ),
-                header.myBalance,
-            )
-            assertFalse(header.isEveryoneSettled)
-        }
 
     @Test
     fun `GIVEN this device user owes Bruno WHEN Saldos opens THEN shows the pair with you owe`() =
@@ -209,7 +167,7 @@ class BalancesViewModelTest {
             )
             assertTrue(state.otherDebts.isEmpty())
             assertTrue(state.showsDebtNote)
-            assertFalse(state.isEmpty)
+            assertFalse(state.isBalancesEmpty)
         }
 
     @Test
@@ -507,7 +465,7 @@ class BalancesViewModelTest {
 
             // Then
             assertTrue(state.hasBills)
-            assertFalse(state.isEmpty)
+            assertFalse(state.isBalancesEmpty)
             assertTrue(state.myDebts.isEmpty())
             assertTrue(state.otherDebts.isEmpty())
             assertFalse(state.showsDebtNote)
@@ -541,7 +499,7 @@ class BalancesViewModelTest {
 
             // Then
             assertFalse(state.hasBills)
-            assertFalse(state.isEmpty)
+            assertFalse(state.isBalancesEmpty)
             assertEquals(listOf(ANA to PIERRE), state.myDebts.map { it.fromMemberId to it.toMemberId })
             assertEquals(
                 MemberBalance(
@@ -636,7 +594,7 @@ class BalancesViewModelTest {
                 ),
             ),
         )
-        val event = BalancesUiEvent.OnDebtClicked(
+        val event = GroupDetailUiEvent.OnDebtClicked(
             fromMemberId = CARLA,
             toMemberId = ANA,
         )
@@ -668,7 +626,7 @@ class BalancesViewModelTest {
 
         // When
         viewModel.onEvent(
-            BalancesUiEvent.OnDebtClicked(
+            GroupDetailUiEvent.OnDebtClicked(
                 fromMemberId = CARLA,
                 toMemberId = ANA,
             ),
@@ -701,7 +659,7 @@ class BalancesViewModelTest {
                     ),
                 ),
             )
-            val event = BalancesUiEvent.OnSettleClicked
+            val event = GroupDetailUiEvent.OnSettleClicked
 
             // When
             viewModel.onEvent(event)
@@ -727,7 +685,7 @@ class BalancesViewModelTest {
                     ),
                 ),
             )
-            val event = BalancesUiEvent.OnSettleClicked
+            val event = GroupDetailUiEvent.OnSettleClicked
 
             // When
             viewModel.onEvent(event)
@@ -751,196 +709,13 @@ class BalancesViewModelTest {
                     ),
                 ),
             )
-            val event = BalancesUiEvent.OnSettleClicked
+            val event = GroupDetailUiEvent.OnSettleClicked
 
             // When
             viewModel.onEvent(event)
 
             // Then
             assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping the expenses tab THEN Despesas takes its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnExpensesTabClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(
-            listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN Saldos drawn alone WHEN its rail opens Saldos THEN the home Saldos takes the groups place`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val event = BalancesUiEvent.OnRailTabClicked(HomeTab.BALANCES)
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
-    fun `GIVEN Saldos drawn alone WHEN its rail opens Inicio THEN goes back to Inicio`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnRailTabClicked(HomeTab.HOME)
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
-        assertTrue(actions.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Saldos over the groups WHEN drawn THEN its rail selects Grupos`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertEquals(HomeTab.GROUPS, state.homeTab)
-    }
-
-    @Test
-    fun `GIVEN Saldos drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            activityUnread.value = 3
-
-            // Then
-            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
-        }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping Membros THEN the members tab takes its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnMembersClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN another screen on top WHEN tapping the expenses tab THEN the back stack stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            navigator.navigate(Route.EditGroup(GROUP_ID))
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnExpensesTabClicked)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping Convidar THEN opens the invite over it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnInviteClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(
-            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping Estatisticas THEN opens the statistics over it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnStatsClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping Editar grupo THEN opens the edit over it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnEditGroupClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping Rachar conta THEN opens it for the group`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnSplitBillClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(
-            listOf(
-                Route.Home,
-                Route.Groups,
-                route,
-                Route.SplitBill(
-                    GROUP_ID,
-                    expenseId = null,
-                    picksGroupFirst = false,
-                ),
-            ),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN Convidar already opened WHEN tapping Rachar conta THEN the back stack stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(BalancesUiEvent.OnInviteClicked)
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnSplitBillClicked)
-
-            // Then
-            assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
-                navigator.backStack.value,
-            )
         }
 
     @Test
@@ -957,478 +732,15 @@ class BalancesViewModelTest {
                     ),
                 ),
             )
-            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
 
             // When
-            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
             assertNull(viewModel.uiState.value.exit.dialog)
             assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
             assertTrue(groups.deletedGroupIds.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN everyone settled on Saldos WHEN confirming Apagar grupo THEN deletes it and goes back to Grupos`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
-
-            // Then
-            assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
-            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN the server unreachable WHEN confirming Sair on Saldos THEN says so`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(exitError = IllegalStateException("offline"))
-        viewModel.onEvent(BalancesUiEvent.OnLeaveGroupClicked)
-
-        // When
-        viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
-
-        // Then
-        assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowLeaveError), actions)
-        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN tapping back THEN returns to the groups`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnBackClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN another screen on top WHEN tapping back THEN the back stack stays`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
-
-        // When
-        viewModel.onEvent(BalancesUiEvent.OnBackClicked)
-
-        // Then
-        assertEquals(
-            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN the group disappears THEN goes back`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val noGroups = emptyList<Group>()
-
-        // When
-        groups.groups.value = noGroups
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Registrar pagamento on top WHEN the group disappears THEN leaves it in place`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, ANA))
-            val noGroups = emptyList<Group>()
-
-            // When
-            groups.groups.value = noGroups
-
-            // Then
-            assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
-    fun `GIVEN the group gone while covered WHEN the cover closes THEN goes back`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, ANA))
-        groups.groups.value = emptyList()
-
-        // When
-        navigator.navigateBack()
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Registrar pagamento over Saldos WHEN it closes after recording THEN shows the notice once`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE))
-            val settlementId = record(
-                from = ANA,
-                to = PIERRE,
-            )
-
-            // When
-            navigator.navigateBack()
-
-            // Then
-            assertEquals(
-                PaymentNotice(
-                    settlementIds = listOf(settlementId),
-                    fromName = "Ana",
-                    fromIsMe = false,
-                    toName = "Pierre",
-                ),
-                viewModel.uiState.value.recordedPayment,
-            )
-            assertNull(recordedPayments.observeRecorded().first())
-        }
-
-    @Test
-    fun `GIVEN this device user paid Bruno WHEN Registrar pagamento closes THEN the notice is from me`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO))
-            record(
-                from = PIERRE,
-                to = BRUNO,
-            )
-
-            // When
-            navigator.navigateBack()
-
-            // Then
-            val notice = viewModel.uiState.value.recordedPayment
-            assertEquals("Pierre", notice?.fromName)
-            assertEquals(true, notice?.fromIsMe)
-            assertEquals("Bruno", notice?.toName)
-        }
-
-    @Test
-    fun `GIVEN Registrar pagamento still on top WHEN a payment is recorded THEN the notice waits`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE))
-
-            // When
-            val settlementId = record(
-                from = ANA,
-                to = PIERRE,
-            )
-
-            // Then
-            assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(
-                settlementId,
-                recordedPayments
-                    .observeRecorded()
-                    .first()
-                    ?.settlementIds
-                    ?.single(),
-            )
-        }
-
-    @Test
-    fun `GIVEN a payment recorded before Room was read WHEN the group loads THEN shows the notice`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(isRoomReadAtStart = false)
-            val settlementId = record(
-                from = ANA,
-                to = PIERRE,
-            )
-
-            // When
-            isRoomRead.value = true
-
-            // Then
-            assertEquals(
-                settlementId,
-                viewModel.uiState.value.recordedPayment
-                    ?.settlementId,
-            )
-            assertEquals(
-                "Ana",
-                viewModel.uiState.value.recordedPayment
-                    ?.fromName,
-            )
-            assertNull(recordedPayments.observeRecorded().first())
-        }
-
-    @Test
-    fun `GIVEN Saldos on top WHEN another group records a payment THEN shows no notice and leaves it waiting`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            val settlementId = record(
-                from = ANA,
-                to = PIERRE,
-                groupId = "group-2",
-            )
-
-            // Then
-            assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(
-                settlementId,
-                recordedPayments
-                    .observeRecorded()
-                    .first()
-                    ?.settlementIds
-                    ?.single(),
-            )
-        }
-
-    @Test
-    fun `GIVEN the payment notice on Saldos WHEN it was shown THEN it hides without deleting the payment`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            record(
-                from = ANA,
-                to = PIERRE,
-            )
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnRecordedPaymentNoticeShown)
-
-            // Then
-            assertNull(viewModel.uiState.value.recordedPayment)
-            assertTrue(settlements.deletedIds.isEmpty())
-            assertEquals(1, settlements.settlements.value.size)
-        }
-
-    @Test
-    fun `GIVEN the device fails to delete WHEN tapping Desfazer on Saldos THEN says so and the payment still counts`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedExpenses = listOf(
-                    bill(
-                        "hotel",
-                        paidBy = BRUNO,
-                        amountMinor = 6_000,
-                        PIERRE,
-                    ),
-                ),
-            )
-            record(
-                from = PIERRE,
-                to = BRUNO,
-                amountMinor = 3_000,
-            )
-            settlements.deleteError = IllegalStateException("disk full")
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnUndoPaymentClicked)
-
-            // Then
-            assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowChangeError), actions)
-            assertTrue(
-                viewModel.uiState.value.myDebts
-                    .isEmpty(),
-            )
-        }
-
-    @Test
-    fun `GIVEN the payment notice on Saldos WHEN tapping Desfazer THEN deletes that payment and the debt is back`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedExpenses = listOf(
-                    bill(
-                        "hotel",
-                        paidBy = BRUNO,
-                        amountMinor = 6_000,
-                        PIERRE,
-                    ),
-                ),
-            )
-            val settlementId = record(
-                from = PIERRE,
-                to = BRUNO,
-                amountMinor = 3_000,
-            )
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnUndoPaymentClicked)
-
-            // Then
-            assertEquals(listOf(settlementId), settlements.deletedIds)
-            assertEquals(listOf(nowMillis), settlements.deletedAts)
-            assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(
-                listOf(PIERRE to BRUNO),
-                viewModel.uiState.value.myDebts
-                    .map { it.fromMemberId to it.toMemberId },
-            )
-        }
-
-    @Test
-    fun `GIVEN no payment notice on Saldos WHEN tapping Desfazer THEN deletes nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedSettlements = listOf(
-                settlement(
-                    id = "pay-1",
-                    from = PIERRE,
-                    to = ANA,
-                ),
-            ),
-        )
-        val event = BalancesUiEvent.OnUndoPaymentClicked
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertTrue(settlements.deletedIds.isEmpty())
-        assertEquals(listOf("pay-1"), settlements.settlements.value.map { it.id })
-    }
-
-    @Test
-    fun `GIVEN a group nobody pinned WHEN Saldos opens THEN the header is not pinned`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val header = viewModel.uiState.value.header
-
-        // Then
-        assertFalse(header.isPinned)
-    }
-
-    @Test
-    fun `GIVEN the group pinned to Inicio WHEN Saldos opens THEN the header is pinned`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
-
-        // When
-        val header = viewModel.uiState.value.header
-
-        // Then
-        assertTrue(header.isPinned)
-    }
-
-    @Test
-    fun `GIVEN Saldos open WHEN a sync brings a pin made on another device THEN the header is pinned`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val pinnedElsewhere = setOf(GROUP_ID)
-
-            // When
-            pins.pinnedGroupIds.value = pinnedElsewhere
-
-            // Then
-            assertTrue(viewModel.uiState.value.header.isPinned)
-        }
-
-    @Test
-    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio on Saldos THEN pins it now and stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val event = BalancesUiEvent.OnPinToggled
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(listOf(Triple(GROUP_ID, true, nowMillis)), pins.pinUpdates)
-            assertTrue(viewModel.uiState.value.header.isPinned)
-            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio on Saldos THEN unpins it now`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
-            val event = BalancesUiEvent.OnPinToggled
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(listOf(Triple(GROUP_ID, false, nowMillis)), pins.pinUpdates)
-            assertFalse(viewModel.uiState.value.header.isPinned)
-        }
-
-    @Test
-    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio on Saldos THEN nothing is pinned`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(isRoomReadAtStart = false)
-            val event = BalancesUiEvent.OnPinToggled
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertTrue(pins.pinUpdates.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio on Saldos THEN nothing is pinned`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(BalancesUiEvent.OnInviteClicked)
-            groups.groups.value = emptyList()
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnPinToggled)
-
-            // Then
-            assertTrue(pins.pinUpdates.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN a settled balance on Saldos WHEN confirming Sair THEN leaves and goes back to Grupos`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(BalancesUiEvent.OnLeaveGroupClicked)
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
-
-            // Then
-            assertEquals(listOf(GROUP_ID), groups.leftGroupIds)
-            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN Saldos right above Inicio WHEN confirming Apagar grupo THEN goes back to Grupos`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(routesBelow = emptyList())
-            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
-
-            // When
-            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
-
-            // Then
-            assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
-            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         }
 
     private suspend fun record(
@@ -1445,7 +757,7 @@ class BalancesViewModelTest {
         paidAt = paidAt,
     ).getOrThrow()
 
-    private val route = Route.Balances(GROUP_ID)
+    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val paidAt = Instant.parse("2026-10-30T13:00:00Z").toEpochMilliseconds()
@@ -1561,8 +873,13 @@ class BalancesViewModelTest {
         isRoomRead.value = isRoomReadAtStart
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         val observeStoredGroup = ObserveGroupUseCase(groups)
-        viewModel = BalancesViewModel(
+        viewModel = GroupDetailViewModel(
             route = route,
+            currentTimeMillis = { nowMillis },
+            currentTimeZone = { TimeZone.UTC },
+            consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
+            observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeAccount = ObserveAccountUseCase(FakeAccountRepository(initialStatus = AccountStatus.LocalOnly)),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

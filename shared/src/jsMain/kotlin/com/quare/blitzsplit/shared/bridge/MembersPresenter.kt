@@ -65,8 +65,6 @@ class JsMembersState(
     val fractionDigits: Int,
     val displayLink: String?,
     val members: Array<JsMembersMember>,
-    val memberCount: Int,
-    val joinedCount: Int,
     val editor: JsMemberNameEditor?,
     // Why: the name in "Remover Carla do grupo?", null while nobody is about to be removed.
     val memberToRemoveName: String?,
@@ -77,16 +75,13 @@ class JsMembersState(
     // Why: the "Convite pessoal" sheet, null while closed.
     val personalInvite: JsPersonalInvite?,
     val isLoaded: Boolean,
-    // Why: "Seu saldo neste grupo" over the tabs, null while the group has no bill.
-    val myBalance: JsMemberBalance?,
-    val isEveryoneSettled: Boolean,
-    val recordedPayment: JsPaymentNotice?,
 )
 
+// Why: Membros' content, drawn under the group's header, which GroupDetailPresenter keeps.
 class MembersPresenter(
     route: JsRoute,
 ) {
-    private val membersRoute = route.route as Route.Members
+    private val membersRoute = route.route as Route.GroupDetail
     private val holder = ViewModelHolder(MembersViewModel::class) {
         KoinPlatform.getKoin().get { parametersOf(membersRoute) }
     }
@@ -100,17 +95,12 @@ class MembersPresenter(
                 fractionDigits = state.currency.fractionDigits,
                 displayLink = state.displayLink,
                 members = state.members.map(::toJsMembersMember).toTypedArray(),
-                memberCount = state.memberCount,
-                joinedCount = state.joinedCount,
                 editor = state.editor?.let(::toJsMemberNameEditor),
                 memberToRemoveName = state.memberToRemove?.name,
                 memberToReleaseName = state.memberToRelease?.name,
                 isReleasing = state.isReleasing,
                 personalInvite = state.personalInvite?.let(::toJsPersonalInvite),
                 isLoaded = state.isLoaded,
-                myBalance = state.myBalance?.let(::toJsMemberBalance),
-                isEveryoneSettled = state.isEveryoneSettled,
-                recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -136,10 +126,6 @@ class MembersPresenter(
         }
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
-    }
-
-    fun back() {
-        viewModel.onEvent(MembersUiEvent.OnBackClicked)
     }
 
     fun share() {
@@ -213,28 +199,6 @@ class MembersPresenter(
 
     fun dismissEditor() {
         viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
-    }
-
-    // Why: the group's tabs, "Despesas" and "Saldos", beside "Membros".
-    fun expensesTab() {
-        viewModel.onEvent(MembersUiEvent.OnExpensesTabClicked)
-    }
-
-    fun balancesTab() {
-        viewModel.onEvent(MembersUiEvent.OnBalancesTabClicked)
-    }
-
-    // Why: "Acertar" on "Seu saldo neste grupo".
-    fun settle() {
-        viewModel.onEvent(MembersUiEvent.OnSettleClicked)
-    }
-
-    fun undoPayment() {
-        viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
-    }
-
-    fun recordedPaymentNoticeShown() {
-        viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown)
     }
 
     fun dispose() {

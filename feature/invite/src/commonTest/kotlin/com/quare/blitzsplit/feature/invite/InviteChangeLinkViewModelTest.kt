@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.SyncState
@@ -507,7 +508,13 @@ class InviteChangeLinkViewModelTest {
                 it.navigate(Route.CreateGroup)
                 it.replaceTop(route)
             } else {
-                it.navigate(Route.GroupDetail("group-1", joinedAs = null))
+                it.navigate(
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                )
                 it.navigate(route)
             }
         }

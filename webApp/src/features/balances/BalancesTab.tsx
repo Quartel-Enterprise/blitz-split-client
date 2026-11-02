@@ -1,14 +1,11 @@
 import { ArrowRight, CircleCheck, Scale } from 'lucide-react'
-import { BalancesPresenter, type JsBalancesState, type JsDebtRow, type JsGroupFace, type JsRoute } from 'blitzsplit-shared'
-import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import type { GroupDetailPresenter, JsDebtRow, JsGroupDetailState, JsGroupFace } from 'blitzsplit-shared'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
-import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
-import { GroupPage, GroupPageLoading, useRememberGroupPage } from '@/features/group-detail/GroupPage'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
-import { balanceTone, debtSentence, useRecordedPaymentNotice } from './BalanceCard'
+import { balanceTone, debtSentence } from './BalanceCard'
 
 type Money = (minor: number) => string
 
@@ -26,41 +23,18 @@ const debtButtons: Record<string, MessageKey> = {
 }
 
 /**
- * "Saldos", the group's tab beside Despesas and Membros: who owes whom, each pair once and already netted, "Com você"
- * first and "Entre os outros" under it. Each pair opens Registrar pagamento over it.
+ * "Saldos", the group's tab beside Despesas and Membros, under the group's page: who owes whom, each pair once and
+ * already netted, "Com você" first and "Entre os outros" under it. Each pair opens Registrar pagamento over it.
  */
-export function BalancesScreen({ route }: { route: JsRoute }) {
-  const presenter = usePresenter(() => new BalancesPresenter(route))
-  const state = useWatch(presenter, (p, onChange: (state: JsBalancesState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
-  useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  useRememberGroupPage(
-    route.groupId ?? '',
-    state?.isLoaded
-      ? { header: state.header, hasExpenses: state.hasBills, showsSplitBillButton: state.showsSplitBillButton, exit: state.exit }
-      : null,
-  )
-  if (!presenter || !state?.isLoaded) return <GroupPageLoading groupId={route.groupId ?? ''} tab="balances" />
-
+export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
   const { header } = state
   const formats: Formats = {
     money: (minor) => formatMoney(minor, header.currency, header.fractionDigits),
     signed: (minor) => formatSignedMoney(minor, header.currency, header.fractionDigits),
   }
   return (
-    <GroupPage
-      header={header}
-      tab="balances"
-      hasExpenses={state.hasBills}
-      showsSplitBillButton={state.showsSplitBillButton}
-      exit={state.exit}
-      events={presenter}
-      onSelectTab={(tab) => {
-        if (tab === 'expenses') presenter.expensesTab()
-        else if (tab === 'members') presenter.members()
-      }}
-    >
-      {state.isEmpty ? (
+    <>
+      {state.isBalancesEmpty ? (
         <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
           <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Scale className="size-5" />
@@ -103,12 +77,12 @@ export function BalancesScreen({ route }: { route: JsRoute }) {
           {state.showsDebtNote && <p className="text-[13px] leading-[18px] text-muted-foreground">{t('balances_note')}</p>}
         </>
       )}
-    </GroupPage>
+    </>
   )
 }
 
 /** "recebe R$ 332,90 · deve R$ 118,00", without the part that is zero. */
-function myHint(state: JsBalancesState, money: Money): string | null {
+function myHint(state: JsGroupDetailState, money: Money): string | null {
   const balance = state.header.myBalance
   if (!balance) return null
   const parts: string[] = []
@@ -129,7 +103,7 @@ function DebtSection({
   title: string
   hint: string | null
   debts: JsDebtRow[]
-  presenter: BalancesPresenter
+  presenter: GroupDetailPresenter
   formats: Formats
 }) {
   return (
@@ -157,7 +131,7 @@ function debtAmount(debt: JsDebtRow, formats: Formats): { text: string; tone: st
 }
 
 /** A pair: whoever owes → whoever gets it, the sentence, the amount and the button; the whole row opens the payment. */
-function DebtRowItem({ debt, presenter, formats }: { debt: JsDebtRow; presenter: BalancesPresenter; formats: Formats }) {
+function DebtRowItem({ debt, presenter, formats }: { debt: JsDebtRow; presenter: GroupDetailPresenter; formats: Formats }) {
   const open = () => presenter.openDebt(debt.fromMemberId, debt.toMemberId)
   const sentence = debtSentence(debt)
   const amount = debtAmount(debt, formats)

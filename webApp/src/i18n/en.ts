@@ -230,11 +230,8 @@ export const en = {
   invite_changeLinkMessage:
     'The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group.',
   invite_changeLinkFailed: "Couldn't change the link. Try again.",
-  members_title: 'Members',
   members_countOne: '{count} member',
   members_countOther: '{count} members',
-  members_joinedOne: '{count} joined',
-  members_joinedOther: '{count} joined',
   members_linkTitle: 'Invite link',
   members_linkPending: 'Not created yet',
   members_share: 'Share',

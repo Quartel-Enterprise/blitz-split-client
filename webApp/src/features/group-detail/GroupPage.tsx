@@ -1,6 +1,6 @@
 import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Plus, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
-import { useEffect, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,14 +16,12 @@ import { t } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
-import { rememberGroupPage, rememberedGroupPage, type RememberedGroupPage } from './groupHeaderMemory'
 
-/** What the group's page asks of its ViewModel, the same on Despesas and Saldos. */
+/** What the group's page asks of its ViewModel, whatever tab is picked. */
 export interface GroupPageEvents extends GroupExitEvents {
   back(): void
   invite(): void
   stats(): void
-  members(): void
   togglePin(): void
   editGroup(): void
   leaveGroup(): void
@@ -32,39 +30,17 @@ export interface GroupPageEvents extends GroupExitEvents {
   settle(): void
 }
 
-// Why: the page drawn while a tab reads the group takes no clicks, its ViewModel may not even exist yet.
-const ignoredEvents = new Proxy({}, { get: () => () => {} }) as GroupPageEvents
-
 /**
- * What Despesas and Saldos draw until they have read the group: the page the tab they replaced drew, with this tab
- * picked and nothing under it, or nothing when they were opened any other way (`noteBackStack`).
- */
-export function GroupPageLoading({ groupId, tab }: { groupId: string; tab: GroupTab }) {
-  const page = rememberedGroupPage(groupId)
-  if (!page) return null
-  return (
-    <GroupPage {...page} tab={tab} events={ignoredEvents} onSelectTab={() => {}}>
-      {null}
-    </GroupPage>
-  )
-}
-
-/** Keeps what this tab's page draws, once it has read the group, for the next tab of the group to draw at once. */
-export function useRememberGroupPage(groupId: string, page: RememberedGroupPage | null) {
-  useEffect(() => {
-    if (page) rememberGroupPage(groupId, page)
-  })
-}
-
-/**
- * The group's page around a tab, Despesas or Saldos: the top bar with the ⋯ menu, the group's name, total and faces,
- * "Estatísticas", "Convidar" and "Rachar conta" beside them (at the bottom on the phone), "Seu saldo neste grupo" and the tabs.
+ * The group's page around the tab picked: the top bar with the ⋯ menu, the group's name, total and faces (which pick
+ * Membros), "Estatísticas", "Convidar" and the tab's main button beside them (at the bottom on the phone), "Rachar
+ * conta" or Membros' "Adicionar pessoa", "Seu saldo neste grupo" and the tabs.
  */
 export function GroupPage({
   header,
   tab,
   hasExpenses,
   showsSplitBillButton,
+  onAddPerson,
   exit,
   events,
   onSelectTab,
@@ -74,6 +50,8 @@ export function GroupPage({
   tab: GroupTab
   hasExpenses: boolean
   showsSplitBillButton: boolean
+  // Why: Membros' "Adicionar pessoa", in the place the other tabs give "Rachar conta"; undefined on them.
+  onAddPerson?: () => void
   // Why: "Sair do grupo" and "Apagar grupo", which need the internet, their dialogs and "Grupo apagado".
   exit: JsGroupExit
   events: GroupPageEvents
@@ -87,6 +65,11 @@ export function GroupPage({
   const notJoined =
     header.notJoinedCount > 0
       ? t(header.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: header.notJoinedCount })
+      : null
+  const mainButton = showsSplitBillButton
+    ? { icon: <Plus />, label: t('groupDetail_splitBill'), onClick: () => events.splitBill() }
+    : onAddPerson
+      ? { icon: <UserPlus />, label: t('members_add'), onClick: onAddPerson }
       : null
 
   return (
@@ -123,7 +106,7 @@ export function GroupPage({
             <span className="text-sm text-muted-foreground">{meta}</span>
             <button
               type="button"
-              onClick={() => events.members()}
+              onClick={() => onSelectTab('members')}
               aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
               className="flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
             >
@@ -149,10 +132,10 @@ export function GroupPage({
               <UserPlus />
               {t('groupDetail_invite')}
             </Button>
-            {showsSplitBillButton && (
-              <Button onClick={() => events.splitBill()}>
-                <Plus />
-                {t('groupDetail_splitBill')}
+            {mainButton && (
+              <Button onClick={mainButton.onClick}>
+                {mainButton.icon}
+                {mainButton.label}
               </Button>
             )}
           </div>
@@ -173,11 +156,11 @@ export function GroupPage({
         {children}
       </main>
 
-      {showsSplitBillButton && (
+      {mainButton && (
         <div className="sticky bottom-0 border-t bg-card px-4 py-3 md:hidden">
-          <Button onClick={() => events.splitBill()} className="h-11 w-full text-[15px]">
-            <Plus />
-            {t('groupDetail_splitBill')}
+          <Button onClick={mainButton.onClick} className="h-11 w-full text-[15px]">
+            {mainButton.icon}
+            {mainButton.label}
           </Button>
         </div>
       )}

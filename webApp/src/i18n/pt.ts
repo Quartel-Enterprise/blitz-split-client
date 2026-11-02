@@ -231,11 +231,8 @@ export const pt: Record<MessageKey, string> = {
   invite_changeLinkMessage:
     'O link e o QR code atuais deixam de funcionar, inclusive os convites pessoais ainda não usados. Quem já entrou continua no grupo.',
   invite_changeLinkFailed: 'Não deu para trocar o link. Tente de novo.',
-  members_title: 'Membros',
   members_countOne: '{count} membro',
   members_countOther: '{count} membros',
-  members_joinedOne: '{count} já entrou',
-  members_joinedOther: '{count} já entraram',
   members_linkTitle: 'Link de convite',
   members_linkPending: 'Ainda não foi criado',
   members_share: 'Compartilhar',

@@ -1,9 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
-/*
- * Why: Despesas and Saldos draw the same header, tabs, balance card and "Rachar conta"; each screen turns what was
- * tapped there into its own UiEvent.
- */
+// Why: what was tapped on the group's header, its tabs and "Rachar conta", turned into the screen's UiEvent.
 internal enum class GroupAction {
     BACK,
     INVITE,

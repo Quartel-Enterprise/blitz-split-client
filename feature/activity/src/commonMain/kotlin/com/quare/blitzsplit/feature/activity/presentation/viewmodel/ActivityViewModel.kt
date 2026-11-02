@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -272,15 +273,31 @@ class ActivityViewModel(
         when (item.target) {
             ActivityTarget.BILL -> {
                 val billId = item.targetId ?: return
-                navigator.navigate(Route.GroupDetail(item.groupId, joinedAs = null))
+                navigator.navigate(
+                    Route.GroupDetail(
+                        item.groupId,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                )
                 navigator.navigate(Route.BillDetail(item.groupId, billId))
             }
 
-            ActivityTarget.GROUP -> navigator.navigate(Route.GroupDetail(item.groupId, joinedAs = null))
+            ActivityTarget.GROUP -> navigator.navigate(
+                Route.GroupDetail(
+                    item.groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
-            ActivityTarget.MEMBERS -> navigator.navigate(Route.Members(item.groupId))
+            ActivityTarget.MEMBERS -> navigator.navigate(
+                Route.GroupDetail(item.groupId, joinedAs = null, GroupTab.MEMBERS),
+            )
 
-            ActivityTarget.BALANCES -> navigator.navigate(Route.Balances(item.groupId))
+            ActivityTarget.BALANCES -> navigator.navigate(
+                Route.GroupDetail(item.groupId, joinedAs = null, GroupTab.BALANCES),
+            )
         }
     }
 

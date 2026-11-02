@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
@@ -65,10 +66,27 @@ internal class GroupsDetailPane(
         navigator.openBesideGroups(route)
     }
 
+    // Why: the group on one of its tabs, which takes the place of the group beside the list.
+    fun openGroup(
+        groupId: String,
+        tab: GroupTab,
+    ) {
+        navigator.openBesideGroups(groupRouteOf(groupId, tab))
+    }
+
     // Why: the sections show Grupos, then Pessoas, then Despesas.
     private fun firstResultRouteOf(results: GroupsSearchResults): Route? {
-        results.groups.firstOrNull()?.let { return Route.GroupDetail(it.group.id, joinedAs = null) }
-        results.people.firstOrNull()?.let { return Route.Members(it.groupId) }
-        return results.bills.firstOrNull()?.let { Route.GroupDetail(it.groupId, joinedAs = null) }
+        results.groups.firstOrNull()?.let { return groupRouteOf(it.group.id, GroupTab.EXPENSES) }
+        results.people.firstOrNull()?.let { return groupRouteOf(it.groupId, GroupTab.MEMBERS) }
+        return results.bills.firstOrNull()?.let { groupRouteOf(it.groupId, GroupTab.EXPENSES) }
     }
+
+    private fun groupRouteOf(
+        groupId: String,
+        tab: GroupTab,
+    ): Route = Route.GroupDetail(
+        groupId,
+        joinedAs = null,
+        tab = tab,
+    )
 }

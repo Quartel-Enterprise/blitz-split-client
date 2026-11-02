@@ -2,13 +2,8 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
-import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
@@ -24,9 +19,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.findHomeTabUnder
-import com.quare.blitzsplit.core.navigation.openGroupTab
-import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -43,25 +35,25 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/*
+ * Why: Membros, the content under the group's header when its Membros tab is picked: who is in the group and who
+ * joined, and what can be done to them. The header, the tabs and leaving the group are the group's screen's
+ * (GroupDetailViewModel); route is that screen's, which this one opens Convidar over.
+ */
 class MembersViewModel(
-    private val route: Route.Members,
+    private val route: Route.GroupDetail,
     private val navigator: Navigator,
     private val checkMemberName: CheckMemberName,
     private val addMember: AddMember,
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
     private val releaseMember: ReleaseMember,
-    consumeRecordedPayment: ConsumeRecordedPayment,
-    deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
-    observeRecordedPayment: ObserveRecordedPayment,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -75,12 +67,7 @@ class MembersViewModel(
                 memberToRelease = null,
                 isReleasing = false,
                 personalInvite = null,
-                myBalance = null,
-                isEveryoneSettled = false,
-                recordedPayment = null,
                 isLoaded = false,
-                homeTab = navigator.backStack.value.findHomeTabUnder(route),
-                activityUnreadCount = 0,
             ),
         )
 
@@ -90,70 +77,32 @@ class MembersViewModel(
     val stateWatcher: FlowWatcher<MembersUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<MembersUiAction> = FlowWatcher(uiAction)
 
-    // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
-    private var isGroupGone = false
-
     private var copiedReset: Job? = null
 
-    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
-
-    private var group: Group? = null
     private var balances = GroupBalances(
         debts = emptyList(),
         hasBills = false,
     )
 
     /*
-     * Why: a sync may bring other members' changes, bills and payments while the screen is open, a removal of the
-     * whole group included.
+     * Why: a sync may bring other members' changes, bills and payments while the screen is open. A group that goes is
+     * the group's screen's to close.
      */
     init {
         combine(observeGroup(route.groupId), observeGroupBalances(route.groupId), ::Pair)
             .onEach { (group, balances) ->
-                this.group = group
                 this.balances = balances
-                isGroupGone = group == null
-                if (group == null) leave() else show(group)
+                if (group != null) show(group)
             }.launchIn(viewModelScope)
-        notices.watch(
-            scope = viewModelScope,
-            recorded = observeRecordedPayment(route.groupId),
-            backStack = navigator.backStack,
-            isLoaded = uiState.map { it.isLoaded },
-            isOnTop = ::isOnTop,
-            meId = { group?.members?.firstOrNull { it.isMe }?.id },
-            nameOf = { id -> group?.members?.firstOrNull { it.id == id }?.name },
-            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
-        )
-        navigator.backStack
-            .onEach { if (isGroupGone) leave() }
-            .launchIn(viewModelScope)
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: MembersUiEvent) {
         when (event) {
-            MembersUiEvent.OnBackClicked -> leave()
-
             MembersUiEvent.OnShareClicked -> if (isOnTop()) {
                 navigator.navigate(
                     Route.Invite(route.groupId, isNewGroup = false),
                 )
             }
-
-            MembersUiEvent.OnExpensesTabClicked -> navigator.openGroupTab(
-                from = route,
-                tab = Route.GroupDetail(route.groupId, joinedAs = null),
-            )
-
-            MembersUiEvent.OnBalancesTabClicked -> navigator.openGroupTab(
-                from = route,
-                tab = Route.Balances(route.groupId),
-            )
-
-            is MembersUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,
@@ -189,25 +138,16 @@ class MembersViewModel(
             MembersUiEvent.OnSaveClicked -> save()
 
             MembersUiEvent.OnEditorDismissed -> uiState.update { it.copy(editor = null) }
-
-            MembersUiEvent.OnSettleClicked -> openSettle()
-
-            MembersUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
-
-            MembersUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
         }
     }
 
     private fun show(group: Group) {
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
         val members = group.members.map { toMembersMember(it, group, inviterCode) }
-        val meId = group.members.firstOrNull { it.isMe }?.id
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
                 currency = group.currency,
-                myBalance = balances.balanceOrNull(meId),
-                isEveryoneSettled = balances.isEveryoneSettled,
                 displayLink = group.inviteCode?.let(InviteLink::of)?.let(InviteLink::displayOf),
                 members = members,
                 // Why: the member about to be removed may be gone, or have joined, by now.
@@ -259,19 +199,6 @@ class MembersViewModel(
         balance = balances.balanceOrNull(member.id),
         canBeReleased = group.isCreatedByMe && member.hasJoined && !member.isMe,
     )
-
-    // Why: "Acertar" on the balance card: this person pays whoever they owe the most.
-    private fun openSettle() {
-        val meId = group?.members?.firstOrNull { it.isMe }?.id ?: return
-        val creditorId = balances.findLargestCreditorOrNull(meId) ?: return
-        if (isOnTop()) navigator.navigate(Route.RegisterPayment(route.groupId, meId, creditorId))
-    }
-
-    private fun undoRecordedPayment() {
-        val notice = uiState.value.recordedPayment ?: return
-        uiState.update { it.copy(recordedPayment = null) }
-        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(MembersUiAction.ShowChangeError) }
-    }
 
     private fun personalInviteOf(
         member: MembersMember,
@@ -468,9 +395,4 @@ class MembersViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
-
-    // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
-    private fun leave() {
-        if (isOnTop()) navigator.navigateBack()
-    }
 }

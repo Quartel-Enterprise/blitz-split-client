@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupdetail.di
 
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import org.koin.core.module.dsl.factoryOf
@@ -11,5 +10,4 @@ import org.koin.dsl.module
 val groupDetailModule = module {
     factoryOf(::GroupScreenUseCases)
     viewModelOf(::GroupDetailViewModel)
-    viewModelOf(::BalancesViewModel)
 }

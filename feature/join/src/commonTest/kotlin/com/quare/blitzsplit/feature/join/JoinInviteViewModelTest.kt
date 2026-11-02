@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -256,7 +257,17 @@ class JoinInviteViewModelTest {
             val backStack = navigator.backStack.value
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GroupDetail(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                backStack,
+            )
             assertEquals(0, syncCount)
         }
 
@@ -275,7 +286,17 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(1, syncCount)
-            assertEquals(listOf(Route.Home, Route.GroupDetail(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                backStack,
+            )
         }
 
     @Test
@@ -786,7 +807,17 @@ class JoinInviteViewModelTest {
             val backStack = navigator.backStack.value
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GroupDetail(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                backStack,
+            )
         }
 
     @Test
@@ -891,7 +922,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Carla")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Carla",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
             assertFalse(viewModel.uiState.value.isJoining)
@@ -913,7 +952,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Carla")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Carla",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -933,7 +980,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -953,7 +1008,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -973,7 +1036,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }

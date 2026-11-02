@@ -1,10 +1,8 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
-import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.HomeTab
 
+// Why: Membros, under the group's header.
 data class MembersUiState(
     val groupName: String,
     val currency: GroupCurrency,
@@ -21,23 +19,6 @@ data class MembersUiState(
     val isReleasing: Boolean,
     // Why: the "Convite pessoal" sheet, open while not null; always someone nobody joined as, with a link.
     val personalInvite: PersonalInvite?,
-    // Why: "Seu saldo neste grupo" over the tabs, null while there is no bill to owe anything for.
-    val myBalance: MemberBalance?,
-    // Why: "Ninguém deve nada a ninguém aqui." rather than "Outros ainda acertam entre si." on a settled card.
-    val isEveryoneSettled: Boolean,
-    // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento closed over this screen.
-    val recordedPayment: PaymentNotice?,
-    // Why: nothing is drawn until Room is read.
+    // Why: nothing is drawn under the group's header until Room is read.
     val isLoaded: Boolean,
-    // Why: the home tab the screen was opened from, which Android's rail beside it selects.
-    val homeTab: HomeTab,
-    // Why: Atividade's unread badge on Android's rail beside the screen.
-    val activityUnreadCount: Int,
-) {
-    // Why: "4 membros · 2 já entraram".
-    val memberCount: Int
-        get() = members.size
-
-    val joinedCount: Int
-        get() = members.count { it.hasJoined }
-}
+)

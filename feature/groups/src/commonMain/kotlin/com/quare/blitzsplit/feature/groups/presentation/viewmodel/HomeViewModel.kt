@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -299,7 +300,13 @@ class HomeViewModel(
                 ),
             )
 
-            is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail(event.groupId, joinedAs = null))
+            is HomeUiEvent.OnGroupClicked -> open(
+                Route.GroupDetail(
+                    event.groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
 
             HomeUiEvent.OnSeeAllGroupsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Groups)
 
@@ -308,7 +315,13 @@ class HomeViewModel(
 
             // Why: over its group, so back goes to the group's bills, as from Despesas.
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail(event.groupId, joinedAs = null))
+                navigator.navigate(
+                    Route.GroupDetail(
+                        event.groupId,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                )
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId))
             }
 

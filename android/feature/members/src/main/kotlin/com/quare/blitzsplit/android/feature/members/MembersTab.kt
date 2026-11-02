@@ -1,17 +1,22 @@
 package com.quare.blitzsplit.android.feature.members
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
+import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
+import com.quare.blitzsplit.android.designsystem.component.GroupTabFloatingButton
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
@@ -21,13 +26,19 @@ import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewMo
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+/*
+ * Why: "Membros", the group's tab drawn under its header: the screen asks for it whatever tab is picked, so the members
+ * are already read when the tab is tapped, and draws the rows only while it is. A phone upright floats "Adicionar
+ * pessoa" over the list; anywhere else the button closes the list. Its dialogs and sheet open over the group.
+ */
 @Composable
-fun MembersScreen(
-    route: Route.Members,
-    viewModel: MembersViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
-) {
+fun rememberMembersTab(
+    route: Route.GroupDetail,
+    snackbarHostState: SnackbarHostState,
+    // Why: its own key, since the group's ViewModel already takes the route's.
+    viewModel: MembersViewModel = koinViewModel(key = "members:$route") { parametersOf(route) },
+): GroupTabBody {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val resources = LocalResources.current
     val changeError = stringResource(R.string.members_change_error)
@@ -52,18 +63,37 @@ fun MembersScreen(
             }
         }
     }
-    RecordedPaymentNoticeEffect(
-        notice = state.recordedPayment,
-        snackbarHostState = snackbarHostState,
-        onUndo = { viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked) },
-        onShown = { viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown) },
+    MembersOverlay(
+        viewModel = viewModel,
     )
-    BackHandler { viewModel.onEvent(MembersUiEvent.OnBackClicked) }
-    MembersContent(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onEvent = viewModel::onEvent,
+    val usesFab = rememberDeviceLayout() == DeviceLayout.PhonePortrait
+    val money = rememberMoneyFormatter(state.currency)
+    val addLabel = stringResource(R.string.members_add)
+    return GroupTabBody(
+        listContent = {
+            memberItems(
+                state = state,
+                money = money,
+                showsAddButton = !usesFab,
+                onEvent = viewModel::onEvent,
+            )
+        },
+        floatingButton = if (usesFab && state.isLoaded) {
+            GroupTabFloatingButton(
+                icon = Icons.Outlined.PersonAdd,
+                label = addLabel,
+                position = FabPosition.Start,
+                onClick = { viewModel.onEvent(MembersUiEvent.OnAddClicked) },
+            )
+        } else {
+            null
+        },
     )
+}
+
+@Composable
+private fun MembersOverlay(viewModel: MembersViewModel) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     state.editor?.let { editor ->
         MemberNameDialog(
             editor = editor,

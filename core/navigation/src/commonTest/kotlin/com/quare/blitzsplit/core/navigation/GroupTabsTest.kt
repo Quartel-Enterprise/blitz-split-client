@@ -1,79 +1,64 @@
 package com.quare.blitzsplit.core.navigation
 
+import com.quare.blitzsplit.core.model.GroupTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
 class GroupTabsTest {
     private lateinit var navigator: BackStackNavigator
 
     @Test
-    fun `GIVEN a tab over the home WHEN opening the other tab THEN takes its place`() {
+    fun `GIVEN Convidar over the home WHEN opening the group on Membros THEN the group takes its place`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
+        prepareScenario(Route.Groups, Route.Invite(GROUP_ID, isNewGroup = true))
 
         // When
-        navigator.openGroupTab(
-            from = Route.GroupDetail(GROUP_ID, joinedAs = null),
-            tab = Route.Members(GROUP_ID),
+        navigator.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = true),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN Convidar over Despesas WHEN opening Membros THEN puts Membros in place of the group`() {
+    fun `GIVEN Convidar over Despesas WHEN opening Despesas THEN goes back to it`() {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail(GROUP_ID, joinedAs = null),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
-        navigator.openGroupTab(
+        navigator.openGroup(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID),
+            groupId = GROUP_ID,
+            tab = GroupTab.EXPENSES,
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Convidar over Membros WHEN opening Despesas THEN puts Despesas in place of the group`() {
-        // Given
-        prepareScenario(
-            Route.Groups,
-            Route.Members(GROUP_ID),
-            Route.Invite(GROUP_ID, isNewGroup = false),
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
         )
-
-        // When
-        navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
-        )
-
-        // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Convidar over Saldos WHEN opening Membros THEN puts Membros in place of the group`() {
-        // Given
-        prepareScenario(Route.Groups, Route.Balances(GROUP_ID), Route.Invite(GROUP_ID, isNewGroup = false))
-
-        // When
-        navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID),
-        )
-
-        // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -81,329 +66,179 @@ class GroupTabsTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = "Bruno",
+                tab = GroupTab.EXPENSES,
+            ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
-        navigator.openGroupTab(
+        navigator.openGroup(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
+            groupId = GROUP_ID,
+            tab = GroupTab.EXPENSES,
         )
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = "Bruno",
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
 
     @Test
-    fun `GIVEN Membros over Despesas WHEN opening Despesas THEN goes back to it`() {
-        // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), Route.Members(GROUP_ID))
-
-        // When
-        navigator.openGroupTab(
-            from = Route.Members(GROUP_ID),
-            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
-        )
-
-        // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Convidar over a tab of another group WHEN opening Despesas THEN takes the place of Convidar`() {
+    fun `GIVEN Convidar over Despesas WHEN opening Membros THEN puts the group on Membros in its place`() {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.Members(OTHER_GROUP_ID),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
-        navigator.openGroupTab(
+        navigator.openGroup(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
         )
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members(OTHER_GROUP_ID), Route.GroupDetail(GROUP_ID, joinedAs = null)),
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
             navigator.backStack.value,
         )
     }
 
     @Test
-    fun `GIVEN the screen no longer on top WHEN opening a tab THEN keeps the back stack`() {
+    fun `GIVEN Convidar over the group opened on Membros WHEN opening Membros THEN goes back to it`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
-        navigator.openGroupTab(
+        navigator.openGroup(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN Despesas WHEN moving to Saldos of the same group THEN is a tab switch`() {
+    fun `GIVEN Convidar over another group WHEN opening the group THEN takes the place of Convidar`() {
         // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = null)
-        val to = Route.Balances(GROUP_ID)
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                OTHER_GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
+        navigator.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
+            groupId = GROUP_ID,
+            tab = GroupTab.EXPENSES,
         )
 
         // Then
-        assertTrue(isSwitch)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    OTHER_GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN Saldos WHEN moving to Membros of the same group THEN is a tab switch`() {
+    fun `GIVEN the screen no longer on top WHEN opening the group THEN keeps the back stack`() {
         // Given
-        val from = Route.Balances(GROUP_ID)
-        val to = Route.Members(GROUP_ID)
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
 
         // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
+        navigator.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
         )
 
         // Then
-        assertTrue(isSwitch)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN Membros WHEN moving to Despesas of the same group THEN is a tab switch`() {
+    fun `GIVEN the group screen WHEN reading its group THEN is the group`() {
         // Given
-        val from = Route.Members(GROUP_ID)
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
+        val route = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES)
 
         // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
+        val groupId = groupScreenIdOrNull(route)
 
         // Then
-        assertTrue(isSwitch)
+        assertEquals(GROUP_ID, groupId)
     }
 
     @Test
-    fun `GIVEN Saldos WHEN moving to Despesas of the same group THEN is a tab switch`() {
+    fun `GIVEN another screen of the group WHEN reading its group THEN is null`() {
         // Given
-        val from = Route.Balances(GROUP_ID)
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
+        val route = Route.Invite(GROUP_ID, isNewGroup = false)
 
         // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
+        val groupId = groupScreenIdOrNull(route)
 
         // Then
-        assertTrue(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Despesas just joined WHEN moving to Despesas of the same group THEN is a tab switch`() {
-        // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertTrue(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Despesas WHEN moving to Despesas of another group THEN is not a tab switch`() {
-        // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = null)
-        val to = Route.GroupDetail(OTHER_GROUP_ID, joinedAs = null)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Saldos WHEN moving to Membros of another group THEN is not a tab switch`() {
-        // Given
-        val from = Route.Balances(GROUP_ID)
-        val to = Route.Members(OTHER_GROUP_ID)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Despesas WHEN opening Convidar of the same group THEN is not a tab switch`() {
-        // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = null)
-        val to = Route.Invite(GROUP_ID, isNewGroup = false)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Convidar WHEN moving to Membros of the same group THEN is not a tab switch`() {
-        // Given
-        val from = Route.Invite(GROUP_ID, isNewGroup = false)
-        val to = Route.Members(GROUP_ID)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Grupos WHEN opening Despesas THEN is not a tab switch`() {
-        // Given
-        val from = Route.Groups
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Saldos WHEN going back to Grupos THEN is not a tab switch`() {
-        // Given
-        val from = Route.Balances(GROUP_ID)
-        val to = Route.Groups
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Despesas WHEN opening a bill of the same group THEN is not a tab switch`() {
-        // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = null)
-        val to = Route.BillDetail(GROUP_ID, expenseId = "bill-1")
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN a bill WHEN going back to Despesas of the same group THEN is not a tab switch`() {
-        // Given
-        val from = Route.BillDetail(GROUP_ID, expenseId = "bill-1")
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Membros WHEN the top stays Membros of the same group THEN is not a tab switch`() {
-        // Given
-        val from = Route.Members(GROUP_ID)
-        val to = Route.Members(GROUP_ID)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN Despesas WHEN the top stays the same Despesas THEN is not a tab switch`() {
-        // Given
-        val from = Route.GroupDetail(GROUP_ID, joinedAs = null)
-        val to = Route.GroupDetail(GROUP_ID, joinedAs = null)
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
-    }
-
-    @Test
-    fun `GIVEN two screens that are not tabs WHEN moving between them THEN is not a tab switch`() {
-        // Given
-        val from = Route.Groups
-        val to = Route.Home
-
-        // When
-        val isSwitch = isGroupTabSwitch(
-            from = from,
-            to = to,
-        )
-
-        // Then
-        assertFalse(isSwitch)
+        assertNull(groupId)
     }
 
     private fun prepareScenario(vararg routes: Route) {

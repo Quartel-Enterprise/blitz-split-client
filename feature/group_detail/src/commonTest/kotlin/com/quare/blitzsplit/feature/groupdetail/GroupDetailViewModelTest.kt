@@ -41,6 +41,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -966,59 +967,72 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the screen on top WHEN tapping Membros THEN the members tab takes its place`() =
+    fun `GIVEN the group opened on Despesas WHEN it opens THEN Despesas is picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(GroupTab.EXPENSES, state.tab)
+    }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Membros THEN picks Membros and the back stack stays`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val event = GroupDetailUiEvent.OnMembersClicked
 
             // When
-            viewModel.onEvent(event)
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.MEMBERS))
 
             // Then
-            assertEquals(
-                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID)),
-                navigator.backStack.value,
-            )
+            assertEquals(GroupTab.MEMBERS, viewModel.uiState.value.tab)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN Rachar conta already opened WHEN tapping Membros THEN the back stack stays`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN tapping the balances tab THEN picks Saldos and the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
+
+            // Then
+            assertEquals(GroupTab.BALANCES, viewModel.uiState.value.tab)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Saldos picked WHEN tapping back THEN leaves the group`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+        viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
 
         // When
-        viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
+        viewModel.onEvent(GroupDetailUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(
-            listOf(
-                Route.Home,
-                Route.Groups,
-                route,
-                Route.SplitBill(
-                    GROUP_ID,
-                    expenseId = null,
-                    picksGroupFirst = false,
-                ),
-            ),
-            navigator.backStack.value,
-        )
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping the balances tab THEN Saldos takes its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = GroupDetailUiEvent.OnBalancesTabClicked
+    fun `GIVEN Saldos picked WHEN a sync renames the group THEN the header follows on that tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
 
-        // When
-        viewModel.onEvent(event)
+            // When
+            groups.groups.value = listOf(trip.copy(name = "Floripa 2026"))
 
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
-    }
+            // Then
+            assertEquals("Floripa 2026", viewModel.uiState.value.header.groupName)
+            assertEquals(GroupTab.BALANCES, viewModel.uiState.value.tab)
+        }
 
     @Test
     fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN Contatos takes the groups place`() =
@@ -1467,26 +1481,26 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the open balances dialog WHEN tapping Ver saldos THEN opens the Saldos tab in its place`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedExpenses = listOf(
-                    expense(
-                        id = "bill-1",
-                        spentAt = thisMorning,
-                    ),
+    fun `GIVEN the open balances dialog WHEN tapping Ver saldos THEN picks the Saldos tab`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    id = "bill-1",
+                    spentAt = thisMorning,
                 ),
-            )
-            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+            ),
+        )
+        viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
 
-            // When
-            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
-            // Then
-            assertEquals(listOf(Route.Home, Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
-            assertTrue(groups.deletedGroupIds.isEmpty())
-        }
+        // Then
+        assertEquals(GroupTab.BALANCES, viewModel.uiState.value.tab)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        assertTrue(groups.deletedGroupIds.isEmpty())
+    }
 
     @Test
     fun `GIVEN everyone settled WHEN tapping Apagar grupo THEN asks first counting bills and members`() =
@@ -1844,7 +1858,11 @@ class GroupDetailViewModelTest {
 
     private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
-    private var route = Route.GroupDetail(GROUP_ID, joinedAs = null)
+    private var route = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val thisMorning = Instant.parse("2026-10-30T09:00:00Z").toEpochMilliseconds()
@@ -2060,7 +2078,16 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"), Route.Profile),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    Route.Profile,
+                ),
                 navigator.backStack.value,
             )
         }
@@ -2080,7 +2107,11 @@ class GroupDetailViewModelTest {
                 listOf(
                     Route.Home,
                     Route.Groups,
-                    Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Bruno",
+                        tab = GroupTab.EXPENSES,
+                    ),
                     Route.Invite(GROUP_ID, isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -2101,7 +2132,11 @@ class GroupDetailViewModelTest {
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
     ) {
-        route = Route.GroupDetail(GROUP_ID, joinedAs = joinedAs)
+        route = Route.GroupDetail(
+            GROUP_ID,
+            joinedAs = joinedAs,
+            tab = GroupTab.EXPENSES,
+        )
         account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.exitOutcome = exitOutcome

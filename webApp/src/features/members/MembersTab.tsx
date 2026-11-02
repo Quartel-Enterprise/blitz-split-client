@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, Trash2, UserPlus } from 'lucide-react'
+import { Check, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, Trash2 } from 'lucide-react'
 import {
   MembersPresenter,
   type JsMemberBalance,
@@ -11,7 +11,7 @@ import {
 } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, GroupTabs } from '@/components/common'
+import { Avatar } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,7 +19,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { BalanceCard, balanceTone, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
+import { balanceTone } from '@/features/balances/BalanceCard'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -30,11 +30,10 @@ const nameId = 'member-name'
 const personalLinkId = 'personal-link'
 
 /**
- * "Membros", the group's tab beside Despesas and Saldos: who is in it and who joined, the invite link, and each
- * person's options (rename, a personal invite link, removing someone who hasn't joined, and, for the group's creator,
- * releasing the name of someone who joined).
+ * Membros' own ViewModel, made with the group's page whatever tab it opens on, so the people are already read when
+ * the tab is picked, and its actions (copying the link, sharing a personal one, the errors).
  */
-export function MembersScreen({ route }: { route: JsRoute }) {
+export function useMembers(route: JsRoute): { presenter: MembersPresenter | null; state: JsMembersState | null } {
   const presenter = usePresenter(() => new MembersPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsMembersState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: JsMembersAction) => void) => p.observeActions(onAction), (action) => {
@@ -48,67 +47,45 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       toast(t('members_releaseError'))
     }
   })
-  useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  if (!presenter || !state?.isLoaded) return null
+  return { presenter, state }
+}
 
-  const count = t(state.memberCount === 1 ? 'members_countOne' : 'members_countOther', { count: state.memberCount })
-  const joined = t(state.joinedCount === 1 ? 'members_joinedOne' : 'members_joinedOther', { count: state.joinedCount })
+/**
+ * "Membros", the group's tab beside Despesas and Saldos, under the group's page: the invite link, who is in it and who
+ * joined, and each person's options (rename, a personal invite link, removing someone who hasn't joined, and, for the
+ * group's creator, releasing the name of someone who joined).
+ */
+export function MembersTab({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
   return (
-    <div className="min-h-dvh bg-muted/40">
-      <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
-          <ArrowLeft />
-        </Button>
-        <h1 className="mr-auto truncate text-lg font-semibold">{t('members_title')}</h1>
-        <Button onClick={() => presenter.add()}>
-          <UserPlus />
-          {t('members_add')}
-        </Button>
-      </header>
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 sm:p-8">
-        <div>
-          <h2 className="text-2xl font-bold">{state.groupName}</h2>
-          <p className="text-sm text-muted-foreground">
-            {count} · {joined}
-          </p>
+    <>
+      <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
+        <Link2 className="size-5 shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
+          <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
         </div>
-        {state.myBalance && (
-          <BalanceCard
-            balance={state.myBalance}
-            isEveryoneSettled={state.isEveryoneSettled}
-            currency={state.currency}
-            fractionDigits={state.fractionDigits}
-            onSettle={() => presenter.settle()}
-          />
-        )}
-        <GroupTabs
-          selected="members"
-          onSelect={(tab) => {
-            if (tab === 'expenses') presenter.expensesTab()
-            else if (tab === 'balances') presenter.balancesTab()
-          }}
-        />
-        <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
-          <Link2 className="size-5 shrink-0 text-muted-foreground" />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
-            <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
-          </div>
-          <Button variant="secondary" onClick={() => presenter.share()}>
-            {t('members_share')}
-          </Button>
-        </section>
-        <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
-          {state.members.map((member) => (
-            <MemberRow key={member.id} presenter={presenter} member={member} money={(minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)} />
-          ))}
-        </ul>
-      </main>
+        <Button variant="secondary" onClick={() => presenter.share()}>
+          {t('members_share')}
+        </Button>
+      </section>
+      <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
+        {state.members.map((member) => (
+          <MemberRow key={member.id} presenter={presenter} member={member} money={(minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)} />
+        ))}
+      </ul>
+    </>
+  )
+}
+
+/** What Membros opens over the group's page, whatever tab is picked: the name editor, the confirmations and the personal invite. */
+export function MembersDialogs({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
+  return (
+    <>
       {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
       {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
       {state.memberToReleaseName != null && <ReleaseMemberDialog presenter={presenter} name={state.memberToReleaseName} isReleasing={state.isReleasing} />}
       {state.personalInvite && <PersonalInviteDialog presenter={presenter} invite={state.personalInvite} groupName={state.groupName} />}
-    </div>
+    </>
   )
 }
 
