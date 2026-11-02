@@ -30,7 +30,8 @@ final class GroupStatsModel {
 /// "Statistics" (6.6): what the group spent in a period and who spent it, from the bills on the device, offline too.
 /// Pushed over the group with the system's Back and no "Split a bill". iPhone upright and iPad upright scroll one
 /// column (the total, By person, Over time, Biggest expense), split on the fold of an iPhone Duo open upright; lying
-/// down, iPad and a Mac window put Over time and the biggest bill in a second column. The Mac keeps the period in a toolbar pull-down and the total in four panels.
+/// down, iPad and a Mac window put Over time and the biggest bill in a second column, By person too after an iPhone
+/// Duo's fold. The Mac keeps the period in a toolbar pull-down and the total in four panels.
 struct GroupStatsView: View {
     let route: RouteGroupStats
 

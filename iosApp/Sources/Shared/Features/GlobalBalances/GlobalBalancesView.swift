@@ -76,6 +76,11 @@ struct GlobalBalancesView: View {
     /// The iPhone Duo's fold, which the list ends at and the person picked starts after (iOS 27.1).
     @State private var division: FoldDivision?
 
+    /// The fold down the window, which the list ends at.
+    private var fold: CGRect? {
+        division?.verticalFrame
+    }
+
     /// The canvas' list and detail: lying down with an iPad's room (an iPad, an iPhone Duo open), a Mac window wide
     /// enough for the inspector.
     private var showsDetail: Bool {
@@ -89,22 +94,21 @@ struct GlobalBalancesView: View {
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
+                // One list whatever the fold, so opening the iPhone Duo keeps its scroll
                 HStack(spacing: 0) {
-                    if showsDetail, let fold = division?.verticalFrame {
-                        // An iPhone Duo open: the people before the fold, the person picked after it
-                        GlobalBalancesList(model: model, showsDetail: showsDetail)
-                            .frame(width: fold.minX)
-                        Color.clear
-                            .frame(width: fold.width)
-                        PersonInspector(model: model)
-                    } else {
-                        GlobalBalancesList(model: model, showsDetail: showsDetail)
-                        if showsDetail {
+                    GlobalBalancesList(model: model, showsDetail: showsDetail)
+                        .frame(width: showsDetail ? fold?.minX : nil)
+                    if showsDetail {
+                        if let fold {
+                            // An iPhone Duo open: the people before the fold, the person picked after it
+                            Color.clear
+                                .frame(width: fold.width)
+                        } else {
                             Divider()
                                 .ignoresSafeArea()
-                            PersonInspector(model: model)
-                                .frame(width: PersonInspector.width)
                         }
+                        PersonInspector(model: model)
+                            .frame(width: fold == nil ? PersonInspector.width : nil)
                     }
                 }
             } else {

@@ -1,10 +1,10 @@
 import SwiftUI
 
 /// One screen on an iPhone Duo open upright, as a notebook (iOS 27.1), where the boards draw their own version (2.2,
-/// 3.1, 6.2, 6.5, 6.6, 7.1, 7.2): `top` above the fold and `bottom` below it, each scrolling on its own, the gap
-/// covering the fold whole (a Form or a List in each half scrolls itself: `scrollsHalves` false). Everywhere else, the
-/// Duo lying down or closed included, the screen's own `single` column. What was typed lives in the ViewModel, so
-/// folding the device never loses it.
+/// 3.1, 6.5, 6.6, 7.1, 7.2; the group's 6.2 is `PhoneGroupScaffold`'s): `top` above the fold and `bottom` below it,
+/// each scrolling on its own, the gap covering the fold whole (a Form or a List in each half scrolls itself:
+/// `scrollsHalves` false). Everywhere else, the Duo lying down or closed included, the screen's own `single` column.
+/// What was typed lives in the ViewModel, so folding the device never loses it.
 struct FoldHalves<Top: View, Bottom: View, Single: View>: View {
     /// The top half's content centered in its half while it fits (Convidar's QR card); else from the top.
     private let centersTop: Bool

@@ -66,23 +66,38 @@ extension EnvironmentValues {
 
 extension View {
     /// A sheet the boards draw in the front half of an iPhone Duo open lying down or as a book: the leading half,
-    /// with what it opened over in the other one (iOS 27's `presentationPlacement`). Everywhere else, the iPhone Duo
-    /// upright and closed included, the system places it. Put it on the sheet's content, as a detent.
+    /// with what it opened over in the other one (iOS 27's `presentationPlacement`), no wider than that half.
+    /// Everywhere else, the iPhone Duo upright and closed included, the system places and sizes it as before. Put it
+    /// on the sheet's content, as a detent.
     func foldSheetPlacement() -> some View {
-        modifier(FoldSheetPlacement())
+        modifier(FoldSheetPlacement(isForm: false))
+    }
+
+    /// `foldSheetPlacement()` for a form sheet (`formSheetSizing()`), which keeps the form's size away from the fold.
+    func foldFormSheetPlacement() -> some View {
+        modifier(FoldSheetPlacement(isForm: true))
     }
 }
 
 private struct FoldSheetPlacement: ViewModifier {
+    /// The form sheet's size where the half allows it, else the system's own (`.automatic`).
+    let isForm: Bool
+
     @Environment(\.windowFold) private var fold
+    /// A form sheet's content under this one, whose size this one keeps (`IsFormSheet`).
+    @State private var contentIsForm = false
 
     func body(content: Content) -> some View {
         #if os(iOS)
         if #available(iOS 27.0, *) {
             // One view whatever the fold, so opening or folding the device never rebuilds the sheet's content
             content
+                .onPreferenceChange(IsFormSheet.self) { contentIsForm = $0 }
                 .presentationPlacement(fold?.verticalFrame != nil ? .leading : .automatic)
-                .presentationSizing(FoldHalfSizing(foldStart: fold?.verticalFrame?.minX))
+                .presentationSizing(
+                    FoldHalfSizing(isForm: isForm || contentIsForm, foldStart: fold?.verticalFrame?.minX),
+                )
+                .preference(key: IsFormSheet.self, value: isForm || contentIsForm)
         } else {
             content
         }
@@ -92,9 +107,20 @@ private struct FoldSheetPlacement: ViewModifier {
     }
 }
 
-/// A form sheet no wider than the half before the fold, its margins included, so it never runs over it; the form's
-/// own size anywhere else.
+/// The sheet's content asked for a form sheet. Which of a sheet's nested `presentationSizing` wins isn't documented,
+/// so the root's `foldSheetPlacement()` over every routed screen reads it and asks for the form's size too.
+private struct IsFormSheet: PreferenceKey {
+    static let defaultValue = false
+
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = value || nextValue()
+    }
+}
+
+/// A sheet no wider than the half before the fold, its margins included, so it never runs over it; its own size
+/// (the form's, or the system's) anywhere else.
 private struct FoldHalfSizing: PresentationSizing {
+    let isForm: Bool
     /// Where the fold starts, nil without one down the window.
     let foldStart: CGFloat?
 
@@ -102,9 +128,11 @@ private struct FoldHalfSizing: PresentationSizing {
     private static let margin: CGFloat = 10
 
     func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
-        let form = FormPresentationSizing.form.proposedSize(for: root, context: context)
-        guard let foldStart else { return form }
+        let own = isForm
+            ? FormPresentationSizing.form.proposedSize(for: root, context: context)
+            : AutomaticPresentationSizing.automatic.proposedSize(for: root, context: context)
+        guard let foldStart else { return own }
         let half = foldStart - Self.margin * 2
-        return ProposedViewSize(width: min(form.width ?? half, half), height: form.height)
+        return ProposedViewSize(width: min(own.width ?? half, half), height: own.height)
     }
 }
