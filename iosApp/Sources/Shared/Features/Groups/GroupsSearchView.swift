@@ -1,9 +1,9 @@
 import Shared
 import SwiftUI
 
-/// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. The
-/// iPhone and the iPad show it in the search tab, under a large title with the field and All / Groups / People /
-/// Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
+/// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
+/// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
+/// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
 /// the members of the group they were found in, an expense its bill over the group. Always a list, even with the grid.
 struct GroupsSearchResultsList: View {
     let model: GroupsModel
@@ -82,12 +82,19 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab: a large "Search" title, the field under it, and All / Groups / People / Expenses as segments. An
-/// iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results on
-/// the right.
+/// The search tab, or Groups' place on an iPhone: a large "Search" title, the field under it, and All / Groups
+/// / People / Expenses as segments. An iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt
+/// column on the left and the results on the right.
 struct GroupsSearchView: View {
     let model: GroupsModel
     @State private var layout = ScreenLayout()
+    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
+    @FocusState private var isFieldFocused: Bool
+
+    /// In the groups' place, where the tab bar is compact and has no search tab: ✕ closes it, as Android's back does.
+    private var isInGroups: Bool {
+        !hasSearchTabRoom
+    }
 
     /// Lying down short of an iPad's room: an iPhone lying down.
     private var usesSideColumn: Bool {
@@ -99,9 +106,16 @@ struct GroupsSearchView: View {
             if usesSideColumn {
                 HStack(alignment: .top, spacing: 28) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Search")
-                            .font(.title.bold())
-                            .accessibilityAddTraits(.isHeader)
+                        HStack {
+                            Text("Search")
+                                .font(.title.bold())
+                                .accessibilityAddTraits(.isHeader)
+                            Spacer()
+                            if isInGroups {
+                                closeButton
+                                    .buttonStyle(.glass)
+                            }
+                        }
                         GroupsSearchField(model: model)
                         scopePicker
                     }
@@ -123,12 +137,30 @@ struct GroupsSearchView: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: Text("Groups, people and expenses"),
                 )
+                .searchFocused($isFieldFocused)
+                .toolbar {
+                    if isInGroups {
+                        ToolbarItem(placement: .topBarLeading) {
+                            closeButton
+                        }
+                    }
+                }
+                // Opened from the magnifier, the keyboard comes up as a search tab's does; coming back from a
+                // result keeps it down over what was found
+                .onAppear { if isInGroups, model.current.search.query.isEmpty { isFieldFocused = true } }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Search")
         .measuringScreenLayout($layout)
+    }
+
+    private var closeButton: some View {
+        Button("Close", systemImage: "xmark") {
+            model.send(GroupsUiEventOnSearchClosed.shared)
+        }
+        .labelStyle(.iconOnly)
     }
 
     private var scopePicker: some View {

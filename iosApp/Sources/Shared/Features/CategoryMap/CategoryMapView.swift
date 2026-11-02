@@ -58,6 +58,9 @@ struct CategoryMapView: View {
 
 struct CategoryMapScreen: View {
     let model: CategoryMapModel
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
 
     @State private var layout = ScreenLayout()
 
@@ -82,6 +85,8 @@ struct CategoryMapScreen: View {
         .navigationTitle("Category map")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        // On iPhone the map takes the whole screen, without the app's tabs
+        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
         #endif
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -457,9 +462,12 @@ struct TermFormView: View {
         Form {
             if let form = state.termForm {
                 Section {
-                    TextField("Word or phrase", text: text)
+                    TextField("Word or phrase", text: text, prompt: Text("Word or phrase"))
                     #if os(iOS)
                         .textInputAutocapitalization(.never)
+                    #else
+                        // The header already says it: a Mac form would repeat it as the row's label
+                        .labelsHidden()
                     #endif
                         .autocorrectionDisabled()
                 } header: {

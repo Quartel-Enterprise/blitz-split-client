@@ -222,7 +222,7 @@ private struct SplitPersonRow: View {
 
     private func valueField(prompt: String, width: CGFloat) -> some View {
         let isError = editor.mode == .amount && !editor.addsUp && editor.withoutValue.contains { $0.id == person.id }
-        return TextField(text: model.value(of: person.id), prompt: Text(verbatim: prompt)) {
+        return KeptTextField(text: model.value(of: person.id), prompt: Text(verbatim: prompt)) {
             if editor.mode == .amount {
                 Text("Part of \(person.name)")
             } else {

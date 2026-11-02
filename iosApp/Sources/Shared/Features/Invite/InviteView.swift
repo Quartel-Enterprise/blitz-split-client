@@ -107,8 +107,8 @@ struct InviteView: View {
         .frame(
             minWidth: isPopover ? 340 : 420,
             idealWidth: isPopover ? 340 : 460,
-            minHeight: isPopover ? nil : 600,
-            idealHeight: isPopover ? nil : 680,
+            minHeight: isPopover ? nil : 400,
+            idealHeight: isPopover ? nil : 560,
         )
         #endif
         .onAppear {

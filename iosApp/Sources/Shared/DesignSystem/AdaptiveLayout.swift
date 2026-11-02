@@ -40,9 +40,17 @@ extension View {
     /// and rebuilds the focused field.
     func measuringScreenLayout(_ layout: Binding<ScreenLayout>) -> some View {
         background {
+            // Why: the insets left added back, since `.ignoresSafeArea()` doesn't reach past a pushed screen's bars
+            // nor the keyboard, which would take an upright iPad's height under its width
             Color.clear
                 .ignoresSafeArea()
-                .onGeometryChange(for: CGSize.self, of: \.size) { size in
+                .onGeometryChange(for: CGSize.self) { proxy in
+                    let insets = proxy.safeAreaInsets
+                    return CGSize(
+                        width: proxy.size.width + insets.leading + insets.trailing,
+                        height: proxy.size.height + insets.top + insets.bottom,
+                    )
+                } action: { size in
                     layout.wrappedValue = ScreenLayout(size: size)
                 }
         }

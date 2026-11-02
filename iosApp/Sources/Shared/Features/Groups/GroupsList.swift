@@ -257,21 +257,32 @@ private struct GroupListRow: View {
                 .foregroundStyle(.secondary)
             }
             Spacer(minLength: 8)
-            if group.isSettled {
-                Label("Settled up", systemImage: "checkmark")
+            // Why: first to take its width, on one line, so the balance never wraps and the name and its line take
+            // what is left
+            Group {
+                if group.isSettled {
+                    // Not a Label: a list row gives a Label's icon the wide column of a settings row
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark")
+                            .accessibilityHidden(true)
+                        Text("Settled up")
+                    }
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
-            } else {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(verbatim: group.currency.formatSigned(group.netMinor))
-                        .font(.body.bold())
-                        .monospacedDigit()
-                        .foregroundStyle(Palette.balance(group.netMinor))
-                    Text(verbatim: GroupsCopy.balanceLabel(group.balanceKind))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                } else {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(verbatim: group.currency.formatSigned(group.netMinor))
+                            .font(.body.bold())
+                            .monospacedDigit()
+                            .foregroundStyle(Palette.balance(group.netMinor))
+                        Text(verbatim: GroupsCopy.balanceLabel(group.balanceKind))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
+            .lineLimit(1)
+            .layoutPriority(1)
         }
         .contentShape(.rect)
     }

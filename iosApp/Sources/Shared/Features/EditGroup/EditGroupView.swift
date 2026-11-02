@@ -70,7 +70,7 @@ struct EditGroupView: View {
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)
         #if os(macOS)
-        .frame(minWidth: 460, idealWidth: 500, minHeight: 520, idealHeight: 600)
+        .frame(minWidth: 460, idealWidth: 500, minHeight: 400, idealHeight: 560)
         #endif
         .onAppear {
             if model == nil { model = EditGroupModel(route: route) }
@@ -87,13 +87,6 @@ private struct EditGroupForm: View {
 
     var body: some View {
         Form {
-            #if os(macOS)
-            // A Mac sheet has no title bar, so the title heads the form
-            Section {
-                Text("Edit group").font(.title2.bold())
-            }
-            .listRowBackground(Color.clear)
-            #endif
             if state.showsSaveError {
                 Section {
                     Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")

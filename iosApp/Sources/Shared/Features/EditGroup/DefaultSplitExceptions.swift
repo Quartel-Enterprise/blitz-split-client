@@ -205,7 +205,7 @@ struct ExceptionSheet: View {
                 }
                 .labelsHidden()
             case .percent:
-                TextField(text: percent(of: person.id), prompt: Text(verbatim: "0")) {
+                KeptTextField(text: percent(of: person.id), prompt: Text(verbatim: "0")) {
                     Text("Percentage of \(person.name)")
                 }
                 #if os(iOS)

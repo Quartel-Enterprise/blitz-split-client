@@ -156,7 +156,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
     (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
     found. It only shows once there is a group: Android's magnifier in the top bar, whose search bar takes the bar's
-    place (back closes it), iOS's search tab (in the iPad's sidebar), "Buscar… ⌘K" in the web's sidebar (the phone's
+    place (back closes it), iOS's search tab with an iPad's room (both size classes regular, in its sidebar),
+    and on an iPhone, lying down too, a magnifier in Grupos' bar that opens it in place, with ✕ (five tabs leave no
+    room for a sixth), "Buscar… ⌘K" in the web's sidebar (the phone's
     magnifier), opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field, whose results take the
     groups' place once something is typed. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
