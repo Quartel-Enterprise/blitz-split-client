@@ -64,6 +64,7 @@ val groupsModule = module {
             observeGroupDeletions = get(),
             connectivityObserver = get(),
             observeActivityUnreadCount = get(),
+            observeMapCategories = get(),
         )
     }
     viewModelOf(::HomeSidebarViewModel)

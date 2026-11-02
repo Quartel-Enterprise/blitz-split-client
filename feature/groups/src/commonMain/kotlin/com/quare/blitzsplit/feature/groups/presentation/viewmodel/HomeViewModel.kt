@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -43,9 +44,10 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.HomeData
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.billDaysOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeGroupsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homePeopleOf
-import com.quare.blitzsplit.feature.groups.presentation.mapper.latestBillsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.latestExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
@@ -96,6 +98,7 @@ class HomeViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeMapCategories: ObserveMapCategories,
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState>
         field = MutableStateFlow(
@@ -189,13 +192,18 @@ class HomeViewModel(
                 HomeData(
                     groups = items.map { it.group },
                     rows = rowsOf(items, activityClock()),
-                    latestBills = latestBillsOf(items),
+                    latestExpenses = latestExpensesOf(items),
                     pendingChangeCount = pendingChangeCountOf(items),
                 )
+            }
+            // Why: a category renamed or moved reads only the five bills again, never every group's row.
+            .combine(observeMapCategories()) { data, categories ->
+                data to homeBillsOf(data.latestExpenses, categories)
             }.combine(observePinnedGroupIds(), ::Pair)
             // Why: the ages and the days again each minute, not the balances, so Início says "ontem" after midnight.
             .combine(minuteTicks()) { dataAndPins, _ -> dataAndPins }
-            .onEach { (data, pinnedIds) ->
+            .onEach { (dataAndBills, pinnedIds) ->
+                val (data, latestBills) = dataAndBills
                 val clock = activityClock()
                 groups = data.groups
                 rows = agedRowsOf(data.rows, clock)
@@ -204,7 +212,7 @@ class HomeViewModel(
                         isLoaded = true,
                         groupCount = rows.size,
                         groups = homeGroupsOf(rows, pinnedIds),
-                        billDays = billDaysOf(data.latestBills, clock),
+                        billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,
                         isFirstDownload = isFirstDownload(),
                     )

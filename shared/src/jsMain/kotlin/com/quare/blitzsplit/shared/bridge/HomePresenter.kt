@@ -73,6 +73,8 @@ class JsHomeBill(
     val fractionDigits: Int,
     val payers: Array<JsSearchBillPayer>,
     val myBalanceMinor: Double,
+    // Why: the row's badge, as Despesas draws it.
+    val category: JsCategory,
     val isPending: Boolean,
 )
 
@@ -340,5 +342,6 @@ private fun toJsHomeBill(bill: HomeBill): JsHomeBill = JsHomeBill(
     fractionDigits = bill.currency.fractionDigits,
     payers = bill.payers.map { JsSearchBillPayer(it.name, it.isMe) }.toTypedArray(),
     myBalanceMinor = bill.myBalanceMinor.toDouble(),
+    category = toJsCategory(bill.category),
     isPending = bill.isPending,
 )
