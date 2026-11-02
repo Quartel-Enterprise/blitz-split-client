@@ -13,6 +13,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PaymentKey
+import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
@@ -59,9 +61,16 @@ private val previewCharge = ChargeDraft(
     isGuest = false,
     guestBills = emptyList(),
     guestPaidMinor = null,
-    hasPixKey = false,
+    hasPixKey = true,
     pixKeyChoice = null,
     editedMessage = null,
+)
+private val previewPixKey = PaymentKey(
+    id = "pix",
+    type = PaymentKeyType.EMAIL,
+    value = "pierre@email.com",
+    isDefault = true,
+    addedAt = 0L,
 )
 
 private fun createPreviewPart(
@@ -173,14 +182,33 @@ private fun GlobalBalancesTabletopPreview() {
 @Composable
 private fun ChargeSheetPreview() {
     BlitzSplitTheme {
-        GlobalBalancesContent(
-            state = createPreviewState(previewPeople),
-            onEvent = {},
-        )
-        ChargeSheet(
-            charge = previewCharge,
-            pixKey = null,
-            onEvent = {},
-        )
+        ChargeOverBalancesContent()
     }
+}
+
+// Why: a tabletop lying down leaves Cobrar the quarter above the hinge, the tightest pane it gets, Pix key included.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun ChargeSheetTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            ChargeOverBalancesContent()
+        }
+    }
+}
+
+@Composable
+private fun ChargeOverBalancesContent() {
+    GlobalBalancesContent(
+        state = createPreviewState(previewPeople),
+        onEvent = {},
+    )
+    ChargeSheet(
+        charge = previewCharge,
+        pixKey = previewPixKey,
+        onEvent = {},
+    )
 }

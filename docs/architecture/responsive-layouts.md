@@ -64,7 +64,7 @@ dialogs in a book's right half).
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
-"Não estou na lista", the profile's dialogs and Excluir conta),
+"Não estou na lista", the profile's dialogs, Excluir conta and Cobrar),
 `TopBottomHalvesLayout` (Convidar and Convite on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
 their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
 responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.

@@ -685,6 +685,7 @@ private struct ChargeSheet: View {
     let charge: ChargeDraft
 
     @Environment(\.windowLayout) private var window
+    @State private var layout = ScreenLayout()
 
     private var name: String {
         PaymentCopy.name(charge.name)
@@ -708,10 +709,10 @@ private struct ChargeSheet: View {
         )
     }
 
-    /// An iPhone lying down, as the window it opened over measures: an iPad's room keeps one column.
+    /// The sheet's own size: the whole screen on an iPhone lying down splits in two; a form sheet keeps one column.
     private var usesTwoColumns: Bool {
         #if os(iOS)
-        window.usesTwoColumns && !window.isLarge
+        layout.usesTwoColumns
         #else
         false
         #endif
@@ -721,11 +722,12 @@ private struct ChargeSheet: View {
         NavigationStack {
             Group {
                 if usesTwoColumns {
-                    HStack(alignment: .top, spacing: 0) {
+                    TwoColumnsLayout(spacing: 0) {
                         Form {
                             whomSection
-                            messageSection
+                            messageSection(includesPixKey: false)
                         }
+                    } second: {
                         Form {
                             if let pixKey = model.state.pixKey {
                                 Section {
@@ -742,12 +744,7 @@ private struct ChargeSheet: View {
                 } else {
                     Form {
                         whomSection
-                        messageSection
-                        if let pixKey = model.state.pixKey {
-                            Section {
-                                pixToggle(pixKey)
-                            }
-                        }
+                        messageSection(includesPixKey: true)
                     }
                     .safeAreaInset(edge: .bottom) {
                         buttons
@@ -756,6 +753,7 @@ private struct ChargeSheet: View {
                     }
                 }
             }
+            .measuringScreenLayout($layout)
             .formStyle(.grouped)
             .navigationTitle(Text("Request from \(name)"))
             #if os(iOS)
@@ -772,7 +770,7 @@ private struct ChargeSheet: View {
         #if os(iOS)
         // An iPhone lying down takes the whole screen; an iPad's room centres a 540 pt form sheet, which a medium
         // detent would pin to the bottom
-        .presentationDetents(usesTwoColumns || window.isLarge ? [.large] : [.medium, .large])
+        .presentationDetents(window.usesTwoColumns || window.isLarge ? [.large] : [.medium, .large])
         .formSheetSizing()
         #else
         .frame(width: 480, height: 460)
@@ -802,10 +800,14 @@ private struct ChargeSheet: View {
         }
     }
 
-    private var messageSection: some View {
+    /// The message, with the Pix key under it in one column, as before; two columns move the key beside it.
+    private func messageSection(includesPixKey: Bool) -> some View {
         Section {
             TextField("Message", text: messageBinding, axis: .vertical)
                 .lineLimit(3...8)
+            if includesPixKey, let pixKey = model.state.pixKey {
+                pixToggle(pixKey)
+            }
         }
     }
 
