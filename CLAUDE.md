@@ -638,11 +638,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
     a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…" and
     Salvar waits. Once read it fills the total, the description (the place) and Quando (the day printed, with its
-    time or the form's, never after now), shows "Lido do cupom" and "14 itens" under the description, and its items
+    time or the form's, never after now), each only while nobody typed in it during the read, shows "Lido do cupom" and "14 itens" under the description, and its items
     wait for Dividir's Itens; the split stays the group's default until Itens or another mode is picked. Its category
     counts only while the description's words choose none and none was picked: "Alimentação › Restaurante pelo cupom
     fiscal", and "Pelo cupom" in the picker's Sugeridas. A receipt that can't be read (no receipt in it, no total, a
-    server error, the reader not set up) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
+    server error, the reader not set up, a photo the camera failed to take) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
     na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were and keeping no photo (it may
     be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
     items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Conta's

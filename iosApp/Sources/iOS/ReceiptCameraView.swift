@@ -152,7 +152,8 @@ struct ReceiptCameraView: View {
             isTaking = true
             capture.takePhoto { data in
                 isTaking = false
-                if let data { onPhoto(data) }
+                // A failed capture reads as a photo that couldn't be read, which offers "Tirar outra foto".
+                onPhoto(data ?? Data())
             }
         } label: {
             Circle()

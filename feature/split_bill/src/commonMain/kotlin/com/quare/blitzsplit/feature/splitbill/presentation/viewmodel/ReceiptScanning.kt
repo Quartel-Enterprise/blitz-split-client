@@ -30,7 +30,7 @@ internal class ReceiptScanning(
     private val scope: CoroutineScope,
     private val readReceipt: ReadReceipt,
     private val attachBillImage: AttachBillImage,
-    private val onRead: (ReceiptReading) -> Unit,
+    private val onRead: (reading: ReceiptReading, beforeRead: SplitBillUiState) -> Unit,
     private val onRemoved: () -> Unit,
 ) {
     // Why: the photo of a receipt read, which the bill attaches as it was read; held here, never in the state.
@@ -49,7 +49,7 @@ internal class ReceiptScanning(
     private var itemsCurrency: GroupCurrency? = null
 
     // Why: none once the bill moved to a group of another currency, whose minor unit would misread the prices.
-    fun itemsIn(currency: GroupCurrency): BillItems? = items?.takeIf { itemsCurrency == currency }
+    fun findItemsIn(currency: GroupCurrency): BillItems? = items?.takeIf { itemsCurrency == currency }
 
     fun onEvent(event: SplitBillUiEvent.Receipt) {
         when (event) {
@@ -128,7 +128,7 @@ internal class ReceiptScanning(
                     ),
                 )
             }
-            onRead(read)
+            onRead(read, state)
         }
     }
 

@@ -10,7 +10,11 @@ import kotlinx.serialization.json.Json
 class SupabaseReceiptRemoteDataSource(
     private val functions: Functions,
 ) : ReceiptRemoteDataSource {
-    private val json = Json { ignoreUnknownKeys = true }
+    // Why: a key the server leaves out reads as null, so it never fails the whole reading.
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
 
     override suspend fun readReceipt(request: ReadReceiptRequestDto): ReadReceiptResponseDto? {
         val response = try {

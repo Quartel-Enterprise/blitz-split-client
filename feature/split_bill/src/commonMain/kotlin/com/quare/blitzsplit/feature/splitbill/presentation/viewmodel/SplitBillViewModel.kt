@@ -126,7 +126,7 @@ class SplitBillViewModel(
     private val items = ItemsEditing(
         uiState = uiState,
         separator = { separator },
-        receiptItems = { currency -> receipt.itemsIn(currency) },
+        receiptItems = { currency -> receipt.findItemsIn(currency) },
         onItemsDone = {
             hasPickedSplit = true
             amountAnchor = null
@@ -155,9 +155,9 @@ class SplitBillViewModel(
         scope = viewModelScope,
         readReceipt = readReceipt,
         attachBillImage = attachBillImage,
-        onRead = { reading ->
+        onRead = { read, before ->
             categoryEditing.rematch {
-                it.withReceiptRead(reading, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
+                it.withReceiptRead(read, before, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
             }
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },

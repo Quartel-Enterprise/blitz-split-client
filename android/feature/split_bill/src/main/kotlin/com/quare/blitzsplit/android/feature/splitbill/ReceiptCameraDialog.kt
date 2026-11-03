@@ -132,7 +132,8 @@ private fun ReceiptCameraContent(
             isTaking = true
             camera.takePhoto(context) { photo ->
                 isTaking = false
-                if (photo != null) onPhoto(photo)
+                // Why: a failed capture reads as a photo that couldn't be read, which offers "Tirar outra foto".
+                onPhoto(photo ?: ByteArray(0))
             }
         }
     }
