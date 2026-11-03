@@ -17,8 +17,5 @@ class GuestMergeRepositoryImpl(
         remote.fetchPending(memberIds).firstOrNull()?.let(HiddenContactMapper::toDomain)
     }
 
-    override suspend fun cancel(mergeId: String): Result<Unit> = suspendRunCatching {
-        remote.cancel(mergeId)
-        Unit
-    }
+    override suspend fun cancel(mergeId: String): Result<Unit> = suspendRunCatching { remote.cancel(mergeId) }.map { }
 }

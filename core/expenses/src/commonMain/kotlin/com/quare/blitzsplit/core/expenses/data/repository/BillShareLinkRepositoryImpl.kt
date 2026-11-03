@@ -32,8 +32,7 @@ class BillShareLinkRepositoryImpl(
 
     override suspend fun disableLink(expenseId: String): Result<Unit> = suspendRunCatching {
         remote.disableLink(expenseId)
-        Unit
-    }
+    }.map { }
 
     // Why: the images are a nicety, so a bucket that can't sign them leaves the bill without them, not unread.
     override suspend fun fetchSharedBill(code: String): Result<SharedBill> = suspendRunCatching {

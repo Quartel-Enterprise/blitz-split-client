@@ -25,8 +25,6 @@ import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -55,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
+import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -458,7 +457,7 @@ private fun PhotoMenuItem(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        ListItem(
+        FlatListItem(
             headlineContent = { Text(label) },
             leadingContent = {
                 Icon(
@@ -466,7 +465,7 @@ private fun PhotoMenuItem(
                     contentDescription = null,
                 )
             },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         )
     }
 }

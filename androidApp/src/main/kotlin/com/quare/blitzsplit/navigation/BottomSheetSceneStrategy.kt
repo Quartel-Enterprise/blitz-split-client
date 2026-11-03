@@ -3,7 +3,6 @@ package com.quare.blitzsplit.navigation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +16,7 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import com.quare.blitzsplit.android.designsystem.layout.LocalSheetDismissLock
+import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 
 /*
  * Why: Registrar pagamento opens as a bottom sheet over the group on a phone, which stays drawn under it. Dismissing
@@ -37,8 +37,7 @@ private class BottomSheetScene<T : Any>(
         val lock = remember { mutableStateOf(false) }
         ModalBottomSheet(
             onDismissRequest = onBack,
-            sheetState = rememberModalBottomSheetState(
-                skipPartiallyExpanded = true,
+            sheetState = rememberFullSheetState(
                 confirmValueChange = { value -> value != SheetValue.Hidden || !lock.value },
             ),
         ) {

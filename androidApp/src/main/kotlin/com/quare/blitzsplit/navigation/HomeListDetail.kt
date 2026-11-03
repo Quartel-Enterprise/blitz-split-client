@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.navigation
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
@@ -35,7 +35,7 @@ import com.quare.blitzsplit.core.navigation.Route
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun rememberHomeListDetailStrategy(listDetail: ListDetailLayout?): SceneStrategy<Route> {
-    val windowDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
+    val windowDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2())
     val directive = remember(windowDirective, listDetail) { homeDirectiveOf(windowDirective, listDetail) }
     val listDetailStrategy = rememberListDetailSceneStrategy<Route>(directive = directive)
     return remember(listDetailStrategy) { BesideGroupsSceneStrategy(listDetailStrategy) }
@@ -63,7 +63,8 @@ private object HomeDetailPaneKey : NavMetadataKey<Boolean>
 
 /*
  * Why: two panes side by side only where the canvas draws them, never three on the widest tablet nor stacked on a
- * tabletop; the hinge stays out of both, as the window's own directive says.
+ * tabletop; the hinge stays out of both, as the window's own directive says. The V2 window info also reports Large and
+ * Extra-large widths, whose directive widens the panes (1600 dp up); the canvas keeps Material's 360 dp pane width at any size.
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 private fun homeDirectiveOf(
@@ -74,6 +75,7 @@ private fun homeDirectiveOf(
     horizontalPartitionSpacerSize = listDetail?.paneSpacing ?: 0.dp,
     maxVerticalPartitions = 1,
     verticalPartitionSpacerSize = 0.dp,
+    defaultPanePreferredWidth = 360.dp,
 )
 
 /*

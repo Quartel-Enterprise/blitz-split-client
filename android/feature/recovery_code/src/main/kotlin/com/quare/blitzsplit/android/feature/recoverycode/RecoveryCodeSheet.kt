@@ -9,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +24,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
@@ -79,7 +79,7 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
     } else {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = rememberFullSheetState(),
             sheetMaxWidth = landscapeSheetMaxWidth,
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {

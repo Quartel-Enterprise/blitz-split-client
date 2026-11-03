@@ -29,7 +29,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +51,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
@@ -336,7 +336,7 @@ internal fun ProfileSheet(
     if (isPhone) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = rememberFullSheetState(),
             sheetMaxWidth = sheetMaxWidth,
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {

@@ -39,7 +39,10 @@ object PushSetup {
                 .build()
             FirebaseApp.initializeApp(context, options)
         }
-        FirebaseMessaging.getInstance().token.addOnSuccessListener { token -> handOver(setPushDevice, token) }
+        // Why: see BlitzSplitMessagingService.onNewToken; the token stays until push moves to registration ids.
+        @Suppress("DEPRECATION")
+        val token = FirebaseMessaging.getInstance().token
+        token.addOnSuccessListener { value -> handOver(setPushDevice, value) }
     }
 
     // Why: the one place an FCM token becomes this device's PushDevice, at launch and when FCM renews it.

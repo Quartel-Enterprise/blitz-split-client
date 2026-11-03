@@ -21,8 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -40,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
+import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.labelRes
@@ -235,7 +234,7 @@ private fun PhotoItem(
     label: String,
     onClick: () -> Unit,
 ) {
-    ListItem(
+    FlatListItem(
         headlineContent = { Text(label) },
         modifier = Modifier.clickable(
             role = Role.Button,
@@ -247,6 +246,6 @@ private fun PhotoItem(
                 contentDescription = null,
             )
         },
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     )
 }
