@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -33,7 +34,7 @@ private val previewFaces = listOf(
 
 internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupHeader(
     groupName = "Viagem Floripa",
-    groupInitials = "VF",
+    groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.PEACH,
     groupShape = GroupShape.COOKIE,
     groupPhotoUrl = null,

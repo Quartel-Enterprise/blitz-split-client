@@ -35,12 +35,12 @@ internal fun createPreviewBillDetailState(
 ): BillDetailUiState {
     val payerId = if (isMePayer) "me" else "bruno"
     val people = listOf(
-        createPreviewRow("me", "Pierre", "P", AvatarColor.PEACH, isMe = true),
-        createPreviewRow("bruno", "Bruno", "B", AvatarColor.GREEN),
-        createPreviewRow("ana", "Ana", "A", AvatarColor.BLUE),
-        createPreviewRow("carla", "Carla", "C", AvatarColor.LILAC),
-        createPreviewRow("diego", "Diego", "D", AvatarColor.SAND, hasJoined = false),
-        createPreviewRow("elisa", "Elisa", "E", AvatarColor.BLUE),
+        createPreviewRow("me", "Pierre", previewInitialsOf("Pierre"), AvatarColor.PEACH, isMe = true),
+        createPreviewRow("bruno", "Bruno", previewInitialsOf("Bruno"), AvatarColor.GREEN),
+        createPreviewRow("ana", "Ana", previewInitialsOf("Ana"), AvatarColor.BLUE),
+        createPreviewRow("carla", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC),
+        createPreviewRow("diego", "Diego", previewInitialsOf("Diego"), AvatarColor.SAND, hasJoined = false),
+        createPreviewRow("elisa", "Elisa", previewInitialsOf("Elisa"), AvatarColor.BLUE),
     ).map { row ->
         row.copy(
             paidMinor = PREVIEW_TOTAL_MINOR.takeIf { row.memberId == payerId },
@@ -160,7 +160,7 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
         comment = createPreviewComment(
             "c1",
             "Carla",
-            "C",
+            previewInitialsOf("Carla"),
             AvatarColor.LILAC,
             "A cerveja que ficou comigo foi do Bruno, eu só tomei água.",
         ),
@@ -168,18 +168,25 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
             createPreviewComment(
                 "c2",
                 "Bruno",
-                "B",
+                previewInitialsOf("Bruno"),
                 AvatarColor.GREEN,
                 "Verdade, passei para mim. Sua parte ficou R$ 98,00.",
             ),
-            createPreviewComment("c3", "Carla", "C", AvatarColor.LILAC, "Valeu, Bruno!", replyToName = "Bruno"),
+            createPreviewComment(
+                "c3",
+                "Carla",
+                previewInitialsOf("Carla"),
+                AvatarColor.LILAC,
+                "Valeu, Bruno!",
+                replyToName = "Bruno",
+            ),
         ),
     ),
     BillCommentThread(
         comment = createPreviewComment(
             "c4",
             "Diego",
-            "D",
+            previewInitialsOf("Diego"),
             AvatarColor.SAND,
             "Pago a minha parte amanhã, Bruno.",
             viaLink = true,
@@ -189,7 +196,7 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
                 createPreviewComment(
                     "c5",
                     "Pierre",
-                    "P",
+                    previewInitialsOf("Pierre"),
                     AvatarColor.PEACH,
                     "Pode ser no Pix.",
                     isMe = true,

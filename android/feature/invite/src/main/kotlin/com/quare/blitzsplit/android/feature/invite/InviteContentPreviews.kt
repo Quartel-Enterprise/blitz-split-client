@@ -7,6 +7,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -18,7 +19,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "1",
         name = "Pierre",
-        initials = "P",
+        initials = previewInitialsOf("Pierre"),
         avatarColor = AvatarColor.BLUE,
         isMe = true,
         hasJoined = true,
@@ -26,7 +27,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "2",
         name = "Ana",
-        initials = "A",
+        initials = previewInitialsOf("Ana"),
         avatarColor = AvatarColor.PEACH,
         isMe = false,
         hasJoined = false,
@@ -34,7 +35,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "3",
         name = "Bruno",
-        initials = "B",
+        initials = previewInitialsOf("Bruno"),
         avatarColor = AvatarColor.GREEN,
         isMe = false,
         hasJoined = false,
@@ -42,7 +43,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "4",
         name = "Carla",
-        initials = "C",
+        initials = previewInitialsOf("Carla"),
         avatarColor = AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,

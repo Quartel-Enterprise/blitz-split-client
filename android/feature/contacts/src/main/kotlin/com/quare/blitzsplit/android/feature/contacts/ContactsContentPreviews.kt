@@ -149,7 +149,7 @@ private fun ContactInvitePreview() {
                 name = "Helena",
                 isPersonal = false,
                 groups = listOf(
-                    InviteGroupOption("trip", "Viagem Floripa", "VF", AvatarColor.PEACH),
+                    InviteGroupOption("trip", "Viagem Floripa", previewInitialsOf("Viagem Floripa"), AvatarColor.PEACH),
                     InviteGroupOption("home", "Apê 302", "A3", AvatarColor.GREEN),
                 ),
                 selectedGroupId = "trip",

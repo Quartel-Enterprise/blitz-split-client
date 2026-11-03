@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -436,16 +437,16 @@ private fun buildPreviewState(
     takenName: String?,
 ): CreateGroupUiState = CreateGroupUiState(
     name = "Viagem Floripa",
-    initials = "VF",
+    initials = previewInitialsOf("Viagem Floripa"),
     color = AvatarColor.PEACH,
     shape = GroupShape.COOKIE,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     members = listOf(
-        CreateGroupMember("1", "Pierre", "P", AvatarColor.BLUE, isMe = true),
-        CreateGroupMember("2", "Ana", "A", AvatarColor.GREEN, isMe = false),
-        CreateGroupMember("3", "Bruno", "B", AvatarColor.PEACH, isMe = false),
-        CreateGroupMember("4", "Carla", "C", AvatarColor.LILAC, isMe = false),
+        CreateGroupMember("1", "Pierre", previewInitialsOf("Pierre"), AvatarColor.BLUE, isMe = true),
+        CreateGroupMember("2", "Ana", previewInitialsOf("Ana"), AvatarColor.GREEN, isMe = false),
+        CreateGroupMember("3", "Bruno", previewInitialsOf("Bruno"), AvatarColor.PEACH, isMe = false),
+        CreateGroupMember("4", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC, isMe = false),
     ),
     draft = draft,
     takenName = takenName,

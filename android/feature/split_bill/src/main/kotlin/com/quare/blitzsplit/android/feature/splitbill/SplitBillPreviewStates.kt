@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
@@ -39,7 +40,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_ME_ID,
         "Pierre",
-        "PV",
+        previewInitialsOf("Pierre"),
         AvatarColor.BLUE,
         null,
         isMe = true,
@@ -48,7 +49,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_ANA_ID,
         "Ana",
-        "A",
+        previewInitialsOf("Ana"),
         AvatarColor.GREEN,
         null,
         isMe = false,
@@ -57,7 +58,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_BRUNO_ID,
         "Bruno",
-        "B",
+        previewInitialsOf("Bruno"),
         AvatarColor.PEACH,
         null,
         isMe = false,
@@ -66,7 +67,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         "ca",
         "Carla",
-        "C",
+        previewInitialsOf("Carla"),
         AvatarColor.LILAC,
         null,
         isMe = false,
@@ -75,7 +76,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         "el",
         "Elisa",
-        "E",
+        previewInitialsOf("Elisa"),
         AvatarColor.SAND,
         null,
         isMe = false,
@@ -84,7 +85,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_DIEGO_ID,
         "Diego",
-        "D",
+        previewInitialsOf("Diego"),
         AvatarColor.GREEN,
         null,
         isMe = false,
@@ -95,7 +96,7 @@ private val previewGroups = listOf(
     BillGroup(
         PREVIEW_TRIP_ID,
         "Viagem Floripa",
-        "VF",
+        previewInitialsOf("Viagem Floripa"),
         AvatarColor.PEACH,
         GroupShape.COOKIE,
         photoUrl = null,
@@ -104,7 +105,7 @@ private val previewGroups = listOf(
     BillGroup(
         "preview-home",
         "Apê 302",
-        "AP",
+        previewInitialsOf("Apê 302"),
         AvatarColor.BLUE,
         GroupShape.COOKIE,
         photoUrl = null,
@@ -113,7 +114,7 @@ private val previewGroups = listOf(
     BillGroup(
         "preview-soccer",
         "Futebol de quinta",
-        "FQ",
+        previewInitialsOf("Futebol de quinta"),
         AvatarColor.GREEN,
         GroupShape.COOKIE,
         photoUrl = null,
@@ -122,7 +123,7 @@ private val previewGroups = listOf(
     BillGroup(
         "preview-barbecue",
         "Churrasco de sábado",
-        "CS",
+        previewInitialsOf("Churrasco de sábado"),
         AvatarColor.SAND,
         GroupShape.COOKIE,
         photoUrl = null,
@@ -144,7 +145,7 @@ internal fun createPreviewBillState(
     isEditing = isEditing,
     groupId = PREVIEW_TRIP_ID,
     groupName = "Viagem Floripa",
-    groupInitials = "VF",
+    groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.PEACH,
     groupShape = GroupShape.COOKIE,
     groupPhotoUrl = null,

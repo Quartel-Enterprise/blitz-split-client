@@ -362,7 +362,7 @@ private fun PickPaymentContentPreview() {
                     PickPaymentGroup(
                         groupId = "1",
                         name = "Viagem Floripa",
-                        initials = "VF",
+                        initials = previewInitialsOf("Viagem Floripa"),
                         color = AvatarColor.PEACH,
                         currency = GroupCurrency.BRL,
                         pairs = listOf(

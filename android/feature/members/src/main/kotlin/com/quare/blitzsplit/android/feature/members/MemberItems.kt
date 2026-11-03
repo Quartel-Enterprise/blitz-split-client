@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -151,7 +152,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "1",
             name = "Pierre",
-            initials = "P",
+            initials = previewInitialsOf("Pierre"),
             avatarColor = AvatarColor.BLUE,
             photoUrl = null,
             isMe = true,
@@ -166,7 +167,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "2",
             name = "Ana",
-            initials = "A",
+            initials = previewInitialsOf("Ana"),
             avatarColor = AvatarColor.GREEN,
             photoUrl = null,
             isMe = false,
@@ -181,7 +182,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "3",
             name = "Bruno",
-            initials = "B",
+            initials = previewInitialsOf("Bruno"),
             avatarColor = AvatarColor.PEACH,
             photoUrl = null,
             isMe = false,
@@ -196,7 +197,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "4",
             name = "Carla",
-            initials = "C",
+            initials = previewInitialsOf("Carla"),
             avatarColor = AvatarColor.LILAC,
             photoUrl = null,
             isMe = false,
