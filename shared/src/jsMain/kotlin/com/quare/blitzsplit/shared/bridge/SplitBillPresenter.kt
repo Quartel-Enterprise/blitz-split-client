@@ -95,6 +95,7 @@ class JsBillGroup(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val memberCount: Int,
 )
 
@@ -121,6 +122,7 @@ class JsSplitBillState(
     val groupName: String,
     val groupInitials: String,
     val groupColor: String,
+    val groupPhotoUrl: String?,
     val groups: Array<JsBillGroup>,
     val canChangeGroup: Boolean,
     // Why: the group "Rachar em qual grupo?" marks while it is open, null while it is closed.
@@ -209,6 +211,7 @@ class SplitBillPresenter(
                 groupName = state.groupName,
                 groupInitials = state.groupInitials,
                 groupColor = state.groupColor.code,
+                groupPhotoUrl = state.groupPhotoUrl,
                 groups = state.groups
                     .map {
                         JsBillGroup(
@@ -216,6 +219,7 @@ class SplitBillPresenter(
                             name = it.name,
                             initials = it.initials,
                             color = it.color.code,
+                            photoUrl = it.photoUrl,
                             memberCount = it.memberCount,
                         )
                     }.toTypedArray(),

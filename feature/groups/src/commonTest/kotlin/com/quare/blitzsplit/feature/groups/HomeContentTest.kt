@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
@@ -621,6 +622,8 @@ class HomeContentTest {
         name = id,
         initials = "G",
         color = AvatarColor.BLUE,
+        shape = GroupShape.COOKIE,
+        photoUrl = null,
         faces = emptyList(),
         extraMemberCount = 0,
         memberCount = 3,
@@ -655,6 +658,8 @@ class HomeContentTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = false,

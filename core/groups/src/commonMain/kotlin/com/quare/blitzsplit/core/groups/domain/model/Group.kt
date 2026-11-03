@@ -2,13 +2,19 @@ package com.quare.blitzsplit.core.groups.domain.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 
 data class Group(
     val id: String,
     val name: String,
     val type: GroupType,
     val color: AvatarColor,
+    // Why: "Ícone do grupo" (6.4d); only Android draws it.
+    val shape: GroupShape,
+    // Why: drawn in place of the color and the initials; a 512x512 JPEG like a profile's photo, null for none.
+    val photo: ProfilePhoto?,
     val currency: GroupCurrency,
     // Why: in the order they were added, so the creator comes first.
     val members: List<GroupMember>,

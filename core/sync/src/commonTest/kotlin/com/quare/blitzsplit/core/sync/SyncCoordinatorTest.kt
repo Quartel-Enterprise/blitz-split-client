@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -6157,6 +6158,8 @@ class SyncCoordinatorTest {
         name = name,
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(

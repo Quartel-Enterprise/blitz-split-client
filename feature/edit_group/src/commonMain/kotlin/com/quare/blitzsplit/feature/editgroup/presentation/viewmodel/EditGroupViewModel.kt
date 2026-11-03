@@ -11,12 +11,17 @@ import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
+import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
+import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -35,6 +40,7 @@ class EditGroupViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     connectivityObserver: NetworkConnectivityObserver,
+    prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<EditGroupUiState>
         field = MutableStateFlow(
@@ -42,6 +48,11 @@ class EditGroupViewModel(
                 name = "",
                 initials = "",
                 color = AvatarColor.default,
+                shape = GroupShape.fallback,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+                iconEditor = null,
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
                 isCurrencyLocked = false,
@@ -64,6 +75,14 @@ class EditGroupViewModel(
 
     // Why: the group as Room has it now, a sync from another member included.
     private var latest: Group? = null
+
+    // Why: the group's photo is the same 512x512 JPEG as a profile's.
+    private val photoPicker = ProfilePhotoPicker(
+        prepareProfilePhoto = prepareProfilePhoto,
+        scope = viewModelScope,
+        showStatus = ::showPhotoStatus,
+        onPrepared = ::showPhoto,
+    )
 
     /*
      * Why: the form is filled from the group once, so a sync landing while someone types changes nothing here. Its
@@ -96,7 +115,31 @@ class EditGroupViewModel(
 
             is EditGroupUiEvent.OnNameChanged -> changeName(event.name)
 
-            EditGroupUiEvent.OnColorClicked -> updateForm { it.copy(color = it.color.toNextColor()) }
+            EditGroupUiEvent.OnIconClicked -> openIconEditor()
+
+            EditGroupUiEvent.OnIconDismissed -> uiState.update { it.copy(iconEditor = null) }
+
+            is EditGroupUiEvent.OnIconColorPicked -> uiState.update {
+                it.copy(iconEditor = it.iconEditor?.copy(color = event.color))
+            }
+
+            is EditGroupUiEvent.OnIconShapePicked -> uiState.update {
+                it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape))
+            }
+
+            EditGroupUiEvent.OnIconConfirmed -> confirmIcon()
+
+            is EditGroupUiEvent.OnColorSelected -> useIcon(
+                color = event.color,
+                shape = uiState.value.shape,
+            )
+
+            is EditGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+
+            EditGroupUiEvent.OnPhotoUnreadable -> {
+                uiState.update { it.copy(iconEditor = null) }
+                photoPicker.fail()
+            }
 
             is EditGroupUiEvent.OnTypeSelected -> updateForm { it.copy(type = event.type) }
 
@@ -126,6 +169,8 @@ class EditGroupViewModel(
                     name = group.name,
                     initials = Initials.of(group.name),
                     color = group.color,
+                    shape = group.shape,
+                    photo = group.photo,
                     type = group.type,
                     currency = group.currency,
                     isLoaded = true,
@@ -135,6 +180,75 @@ class EditGroupViewModel(
                 isCurrencyLocked = hasExpenses,
                 defaultSplitMode = group.defaultSplit?.mode ?: DefaultSplitMode.EQUAL,
                 currency = if (hasExpenses) group.currency else filled.currency,
+            )
+        }
+    }
+
+    private fun openIconEditor() {
+        val state = uiState.value
+        if (!state.isLoaded || state.isSaving) return
+        uiState.update {
+            it.copy(
+                iconEditor = GroupIconEditor(
+                    color = it.color,
+                    shape = it.shape,
+                ),
+            )
+        }
+    }
+
+    private fun confirmIcon() {
+        val editor = uiState.value.iconEditor ?: return
+        useIcon(
+            color = editor.color,
+            shape = editor.shape,
+        )
+    }
+
+    // Why: the icon stands in place of the photo, so picking one takes the photo off, and a pick still prepared too.
+    private fun useIcon(
+        color: AvatarColor,
+        shape: GroupShape,
+    ) {
+        if (uiState.value.isSaving) return
+        photoPicker.cancel()
+        updateForm {
+            it.copy(
+                color = color,
+                shape = shape,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+                iconEditor = null,
+            )
+        }
+    }
+
+    // Why: Salvar sends the photo shown, so a pick while saving is ignored.
+    private fun preparePhoto(source: ByteArray) {
+        uiState.update { it.copy(iconEditor = null) }
+        if (uiState.value.isSaving) return
+        photoPicker.prepare(source)
+    }
+
+    private fun showPhotoStatus(
+        isPreparing: Boolean,
+        hasFailed: Boolean,
+    ) {
+        updateForm {
+            it.copy(
+                isPreparingPhoto = isPreparing,
+                showsPhotoError = hasFailed,
+            )
+        }
+    }
+
+    private fun showPhoto(photo: ProfilePhoto) {
+        updateForm {
+            it.copy(
+                photo = photo,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
             )
         }
     }
@@ -171,6 +285,9 @@ class EditGroupViewModel(
         val name = if (state.name.trim() != original.name) state.name else latest.name
         val type = if (state.type != original.type) state.type else latest.type
         val color = if (state.color != original.color) state.color else latest.color
+        // Why: null keeps what Room has, which the domain may only read as the fallback (none, or a newer app's).
+        val shape = state.shape.takeIf { it != original.shape }
+        val photo = if (state.photo != original.photo) state.photo else latest.photo
         val currency = if (!state.isCurrencyLocked && state.currency != original.currency) {
             state.currency
         } else {
@@ -182,6 +299,8 @@ class EditGroupViewModel(
                 name = name,
                 type = type,
                 color = color,
+                shape = shape,
+                photo = photo,
                 currency = currency,
             ).onSuccess {
                 // Why: the form may not be on top to leave, so it stops saving and starts from what it just saved.
@@ -189,6 +308,8 @@ class EditGroupViewModel(
                     name = name.trim(),
                     type = type,
                     color = color,
+                    shape = shape ?: latest.shape,
+                    photo = photo,
                     currency = currency,
                 )
                 updateForm { it.copy(isSaving = false) }
@@ -217,10 +338,10 @@ class EditGroupViewModel(
             name.trim() != group.name ||
                 type != group.type ||
                 color != group.color ||
+                shape != group.shape ||
+                photo != group.photo ||
                 (!isCurrencyLocked && currency != group.currency)
         )
-
-    private fun AvatarColor.toNextColor(): AvatarColor = AvatarColor.entries[(ordinal + 1) % AvatarColor.entries.size]
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {

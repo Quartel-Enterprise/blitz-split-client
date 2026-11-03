@@ -14,6 +14,12 @@ sealed interface CreateGroupUiEvent : UiEvent {
     // Why: the group's avatar takes the next color of the palette.
     data object OnColorClicked : CreateGroupUiEvent
 
+    /*
+     * Why: Android's "Trocar forma e cor do grupo" takes the next color and the next shape at once; five colors over
+     * four shapes go through all twenty before they repeat.
+     */
+    data object OnShapeAndColorClicked : CreateGroupUiEvent
+
     data class OnTypeSelected(
         val type: GroupType,
     ) : CreateGroupUiEvent

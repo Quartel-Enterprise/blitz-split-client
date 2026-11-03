@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
@@ -256,6 +257,8 @@ internal fun buildPreviewRow(
     name = name,
     initials = name.take(2).uppercase(),
     color = color,
+    shape = GroupShape.COOKIE,
+    photoUrl = null,
     faces = listOf(
         MemberFace("P", AvatarColor.BLUE, photoUrl = null),
         MemberFace("A", AvatarColor.GREEN, photoUrl = null),

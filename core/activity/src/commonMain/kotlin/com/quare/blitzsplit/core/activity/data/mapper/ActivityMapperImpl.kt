@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
@@ -161,14 +162,19 @@ class ActivityMapperImpl : ActivityMapper {
         val field = change.findText("field")?.let(ActivityField::fromCodeOrNull) ?: return null
         return ActivityChange(
             field = field,
-            before = valueOf(field, change["before"]),
-            after = valueOf(field, change["after"]),
+            before = valueOf(field, change["before"], photoCode = ActivityField.PHOTO_PREVIOUS),
+            after = valueOf(field, change["after"], photoCode = ActivityField.PHOTO_NEW),
         )
     }
 
+    /*
+     * Why: a photo's URL means nothing to read, so the value only says whether there was one, as the photo before
+     * or the new one (photoCode).
+     */
     private fun valueOf(
         field: ActivityField,
         element: JsonElement?,
+        photoCode: String,
     ): ActivityValue {
         val primitive = element as? JsonPrimitive
         return when (field) {
@@ -177,6 +183,10 @@ class ActivityMapperImpl : ActivityMapper {
             ActivityField.SPENT_AT -> ActivityValue.none.copy(millis = primitive?.longOrNull)
 
             ActivityField.DESCRIPTION, ActivityField.NAME -> ActivityValue.none.copy(text = primitive.textOrNull())
+
+            ActivityField.SHAPE -> ActivityValue.none.copy(code = primitive.textOrNull() ?: GroupShape.fallback.code)
+
+            ActivityField.PHOTO -> ActivityValue.none.copy(code = photoCode.takeIf { primitive.textOrNull() != null })
 
             ActivityField.TYPE,
             ActivityField.COLOR,

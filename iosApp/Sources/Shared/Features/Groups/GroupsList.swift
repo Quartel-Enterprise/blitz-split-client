@@ -256,7 +256,7 @@ private struct GroupListRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            GroupAvatar(initials: group.initials, color: group.color, size: 44)
+            GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: 44)
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: group.name)
                     .font(.body.weight(.semibold))

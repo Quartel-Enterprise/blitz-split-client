@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
@@ -1031,6 +1032,8 @@ class GroupsViewModelTest {
                 name = "Viagem Floripa",
                 initials = "VF",
                 color = AvatarColor.LILAC,
+                shape = GroupShape.COOKIE,
+                photoUrl = null,
                 faces = listOf(
                     MemberFace(
                         initial = "P",
@@ -2857,6 +2860,8 @@ class GroupsViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.COOKIE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(
@@ -2891,6 +2896,8 @@ class GroupsViewModelTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = isPending,

@@ -377,6 +377,9 @@ class CategoryRepositoryImplTest {
                     inviteCode = null,
                     defaultSplit = null,
                     splitIncomes = null,
+                    shape = null,
+                    photoUrl = null,
+                    pendingPhoto = null,
                 ),
             )
         }

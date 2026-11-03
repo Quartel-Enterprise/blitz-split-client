@@ -336,7 +336,7 @@ function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProp
             >
               <td className="px-3">
                 <span className="flex min-w-0 items-center gap-2.5">
-                  <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
+                  <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-8 text-xs" />
                   <button
                     onClick={(event) => {
                       event.stopPropagation()
@@ -379,7 +379,7 @@ function GroupsCardList({ presenter, groups, menuOf }: GroupRowsProps) {
             onClick={() => presenter.openGroup(group.id)}
             className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
           >
-            <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
+            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-8 text-xs" />
             <span className="flex min-w-0 flex-1 flex-col">
               <span className={cn('font-medium', group.usesTwoNameLines ? 'line-clamp-2' : 'truncate')}>{group.name}</span>
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground">

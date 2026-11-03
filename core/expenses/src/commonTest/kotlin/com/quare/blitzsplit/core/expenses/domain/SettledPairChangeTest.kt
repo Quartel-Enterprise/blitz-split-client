@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -346,6 +347,8 @@ class SettledPairChangeTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(PIERRE, "Pierre", isMe = true),

@@ -82,6 +82,8 @@ interface GroupDao {
             color = entity.color,
             currency = entity.currency,
             defaultSplit = entity.defaultSplit,
+            shape = entity.shape,
+            photoUrl = entity.photoUrl,
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
@@ -153,10 +155,12 @@ interface GroupDao {
     /*
      * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
      * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
-     * Last-Write-Wins would drop it on the next sync.
+     * Last-Write-Wins would drop it on the next sync. A null shape keeps the stored code, so an edit that leaves the
+     * shape alone never turns a group made before shapes, or a newer app's shape, into a square.
      */
     @Query(
-        "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
+        "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
+            "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateGroup(
@@ -164,6 +168,9 @@ interface GroupDao {
         name: String,
         type: String,
         color: String,
+        shape: String?,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     )
@@ -201,6 +208,24 @@ interface GroupDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMemberIfAbsent(entity: GroupMemberEntity)
+
+    /*
+     * Why: the photo is up, so its URL takes the place of the JPEG that waited, whatever else changed in the group
+     * meanwhile: the photo is the same, so its URL stays the one the server got. A newer photo keeps waiting.
+     */
+    @Query("UPDATE split_group SET photoUrl = :photoUrl, pendingPhoto = NULL WHERE id = :id AND pendingPhoto = :jpeg")
+    suspend fun markGroupPhotoUploaded(
+        id: String,
+        jpeg: ByteArray,
+        photoUrl: String,
+    )
+
+    // Why: the server refused this photo for good, so the group goes up without it; a newer photo keeps waiting.
+    @Query("UPDATE split_group SET pendingPhoto = NULL WHERE id = :id AND pendingPhoto = :jpeg")
+    suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    )
 
     // Why: a change made while the push was in flight keeps the group pending.
     @Query("UPDATE split_group SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
@@ -262,12 +287,12 @@ interface GroupDao {
     /*
      * Why: Last-Write-Wins as the server keeps it. Other members edit the same group, so a newer server row wins
      * even over a change made offline, which the server would refuse as older anyway; for a member, that includes a
-     * removal made here, which then comes back.
+     * removal made here, which then comes back. A photo picked here and not up yet goes with the change it was in.
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
-            "defaultSplit = :defaultSplit, createdBy = :createdBy, addedAt = :addedAt, " +
-            "updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "defaultSplit = :defaultSplit, shape = :shape, photoUrl = :photoUrl, pendingPhoto = NULL, " +
+            "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateGroupFromRemote(
@@ -277,6 +302,8 @@ interface GroupDao {
         color: String,
         currency: String,
         defaultSplit: String?,
+        shape: String?,
+        photoUrl: String?,
         createdBy: String?,
         addedAt: Long,
         remoteUpdatedAt: Long,

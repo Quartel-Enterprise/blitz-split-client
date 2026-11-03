@@ -47,9 +47,19 @@ const fieldLabels: Record<string, MessageKey> = {
   name: 'activity_fieldName',
   type: 'activity_fieldType',
   color: 'activity_fieldColor',
+  shape: 'activity_fieldShape',
+  photo_url: 'activity_fieldPhoto',
   currency: 'activity_fieldCurrency',
   default_split: 'activity_fieldDefaultSplit',
   category: 'activity_fieldCategory',
+}
+
+// Why: the group icon's GroupShape, by its code; only Android draws it, but every feed names it.
+const groupShapes: Record<string, MessageKey> = {
+  cookie: 'activity_shapeCookie',
+  petal: 'activity_shapePetal',
+  square: 'activity_shapeSquare',
+  circle: 'activity_shapeCircle',
 }
 
 // Why: a bill's SplitMode and a group's DefaultSplitMode, by their codes.
@@ -115,6 +125,9 @@ export function valueText(field: string, value: JsActivityValue): string {
   if (field === 'split' || field === 'default_split') return splitModeLabel(value.code) || '—'
   if (field === 'type' && value.code) return groupTypeLabel(value.code)
   if (field === 'color' && value.code) return avatarColorLabel(value.code)
+  if (field === 'shape' && value.code && groupShapes[value.code]) return t(groupShapes[value.code])
+  // Why: the shared code says "previous" and "new" for a photo, never its URL, and nothing for none.
+  if (field === 'photo_url') return t(value.code === 'previous' ? 'activity_photoPrevious' : value.code === 'new' ? 'activity_photoNew' : 'activity_photoNone')
   if (field === 'category') return value.category ? categoryName(value.category) : '—'
   if (field === 'payers') {
     const names = [...value.names, ...(value.hasFormerMember ? [t('balance_formerMember')] : [])]

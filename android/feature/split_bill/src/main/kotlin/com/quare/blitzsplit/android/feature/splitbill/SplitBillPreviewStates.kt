@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -91,10 +92,42 @@ private val previewPeople: List<BillPerson> = listOf(
     ),
 )
 private val previewGroups = listOf(
-    BillGroup(PREVIEW_TRIP_ID, "Viagem Floripa", "VF", AvatarColor.PEACH, memberCount = 6),
-    BillGroup("preview-home", "Apê 302", "AP", AvatarColor.BLUE, memberCount = 2),
-    BillGroup("preview-soccer", "Futebol de quinta", "FQ", AvatarColor.GREEN, memberCount = 10),
-    BillGroup("preview-barbecue", "Churrasco de sábado", "CS", AvatarColor.SAND, memberCount = 8),
+    BillGroup(
+        PREVIEW_TRIP_ID,
+        "Viagem Floripa",
+        "VF",
+        AvatarColor.PEACH,
+        GroupShape.COOKIE,
+        photoUrl = null,
+        memberCount = 6,
+    ),
+    BillGroup(
+        "preview-home",
+        "Apê 302",
+        "AP",
+        AvatarColor.BLUE,
+        GroupShape.COOKIE,
+        photoUrl = null,
+        memberCount = 2,
+    ),
+    BillGroup(
+        "preview-soccer",
+        "Futebol de quinta",
+        "FQ",
+        AvatarColor.GREEN,
+        GroupShape.COOKIE,
+        photoUrl = null,
+        memberCount = 10,
+    ),
+    BillGroup(
+        "preview-barbecue",
+        "Churrasco de sábado",
+        "CS",
+        AvatarColor.SAND,
+        GroupShape.COOKIE,
+        photoUrl = null,
+        memberCount = 8,
+    ),
 )
 
 internal fun createPreviewBillState(
@@ -113,6 +146,8 @@ internal fun createPreviewBillState(
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.PEACH,
+    groupShape = GroupShape.COOKIE,
+    groupPhotoUrl = null,
     groups = previewGroups,
     groupSelection = groupSelection,
     currency = GroupCurrency.BRL,

@@ -153,7 +153,7 @@ function searchItemsOf(presenter: GroupsPresenter, state: JsGroupsState, pick: (
     open: () => pick(() => presenter.openGroup(hit.group.id)),
     content: (
       <>
-        <GroupAvatar initials={hit.group.initials} color={hit.group.color} className="size-6 shrink-0 rounded-md text-[10px]" />
+        <GroupAvatar initials={hit.group.initials} color={hit.group.color} photoUrl={hit.group.photoUrl} className="size-6 shrink-0 rounded-md text-[10px]" />
         <span className="min-w-0 flex-1 truncate">
           <Marked text={hit.group.name} match={hit.nameMatch} />
           {hit.billDescription != null && (

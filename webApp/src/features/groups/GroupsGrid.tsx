@@ -104,7 +104,7 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
           className={cn('flex min-w-0 cursor-pointer flex-col gap-2 rounded-xl border bg-card hover:bg-accent', sizes.padding)}
         >
           <span className="flex items-start gap-2">
-            <GroupAvatar initials={group.initials} color={group.color} className={sizes.avatar} />
+            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className={sizes.avatar} />
             {group.isPending && <QueuedBadge />}
             <span className="-mt-1.5 -mr-1.5 ml-auto">{menuOf(group)}</span>
           </span>

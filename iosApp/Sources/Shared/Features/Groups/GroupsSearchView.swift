@@ -275,7 +275,7 @@ private struct SearchGroupRow: View {
     var body: some View {
         let group = hit.group
         HStack(spacing: 12) {
-            GroupAvatar(initials: group.initials, color: group.color, size: 36)
+            GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(GroupsSearchCopy.marked(group.name, hit.nameMatch))
                     .lineLimit(2)

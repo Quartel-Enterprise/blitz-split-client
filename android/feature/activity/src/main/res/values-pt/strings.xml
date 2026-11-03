@@ -89,6 +89,8 @@
     <string name="activity_field_name">Nome</string>
     <string name="activity_field_type">Tipo</string>
     <string name="activity_field_color">Cor</string>
+    <string name="activity_field_shape">Forma</string>
+    <string name="activity_field_photo">Foto</string>
     <string name="activity_field_currency">Moeda</string>
     <string name="activity_field_default_split">Divisão padrão</string>
     <string name="activity_field_category">Categoria</string>
@@ -96,6 +98,9 @@
     <string name="activity_visibility_members">Só quem está na conta</string>
     <string name="activity_visibility_anyone">Qualquer pessoa com o link</string>
     <string name="activity_visibility_off">Desativado</string>
+    <string name="activity_photo_previous">Foto anterior</string>
+    <string name="activity_photo_new">Nova foto</string>
+    <string name="activity_photo_none">Sem foto</string>
     <string name="activity_split_equal">Igual</string>
     <string name="activity_split_amount">Valores</string>
     <string name="activity_split_percent">Porcentagem</string>

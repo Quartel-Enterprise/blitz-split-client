@@ -3,8 +3,14 @@
     <string name="edit_group_title">Edit group</string>
     <string name="edit_group_close">Close</string>
     <string name="edit_group_save">Save</string>
-    <string name="edit_group_change_color">Change color</string>
-    <string name="edit_group_change_color_description">Change the group\'s color</string>
+    <string name="edit_group_change_icon">Change icon or photo</string>
+    <string name="edit_group_icon_title">Group icon</string>
+    <string name="edit_group_icon_shape">Shape</string>
+    <string name="edit_group_icon_color">Color</string>
+    <string name="edit_group_choose_photo">Choose photo</string>
+    <string name="edit_group_take_photo">Take photo</string>
+    <string name="edit_group_use_icon">Use this icon</string>
+    <string name="edit_group_photo_error">Couldn\'t use this photo. Try another one.</string>
     <string name="edit_group_name_label">Group name</string>
     <string name="edit_group_name_help">Everyone in the group sees the new name.</string>
     <string name="edit_group_name_error">Give the group a name, up to 40 characters.</string>
@@ -14,7 +20,7 @@
     <string name="edit_group_currency_lock">Doesn\'t change after the first expense</string>
     <string name="edit_group_currency_locked">Locked</string>
     <string name="edit_group_note">Anyone in the group can change the name, the icon and the type.</string>
-    <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects.</string>
+    <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects. A new photo goes up with it.</string>
     <string name="edit_group_save_error">Couldn’t save the group. Try again.</string>
     <string name="edit_group_default_split">Default split</string>
     <string name="edit_group_default_split_help">How new expenses split</string>

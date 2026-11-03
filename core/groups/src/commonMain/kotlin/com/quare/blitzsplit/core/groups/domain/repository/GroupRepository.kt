@@ -6,7 +6,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
@@ -27,6 +29,10 @@ interface GroupRepository {
         name: String,
         type: GroupType,
         color: AvatarColor,
+        // Why: null keeps the stored one, which may be none (a group made before shapes) or a newer app's.
+        shape: GroupShape?,
+        // Why: a Pending one goes up with the next sync; null takes the photo off.
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit>

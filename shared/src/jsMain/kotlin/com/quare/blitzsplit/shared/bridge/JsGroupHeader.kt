@@ -35,6 +35,8 @@ class JsGroupHeader(
     val groupName: String,
     val groupInitials: String,
     val groupColor: String,
+    // Why: drawn in place of the color and the initials, null for none.
+    val groupPhotoUrl: String?,
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
@@ -53,6 +55,7 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     groupName = header.groupName,
     groupInitials = header.groupInitials,
     groupColor = header.groupColor.code,
+    groupPhotoUrl = header.groupPhotoUrl,
     currency = header.currency.code,
     fractionDigits = header.currency.fractionDigits,
     faces = header.faces.map(::toJsGroupFace).toTypedArray(),
