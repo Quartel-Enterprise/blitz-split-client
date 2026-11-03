@@ -411,6 +411,7 @@ class EditProfileUiStateTest {
         photo = photo,
         isPreparingPhoto = isPreparingPhoto,
         showsPhotoError = false,
+        photoCrop = null,
         nameError = null,
         isNameValid = isNameValid,
         hasChanges = hasChanges,

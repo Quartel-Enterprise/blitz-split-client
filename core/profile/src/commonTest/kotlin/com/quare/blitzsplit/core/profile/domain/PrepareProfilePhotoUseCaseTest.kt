@@ -1,80 +1,80 @@
 package com.quare.blitzsplit.core.profile.domain
 
-import com.quare.blitzsplit.core.profile.domain.model.PhotoTooLargeException
+import com.quare.blitzsplit.core.model.CropPhoto
+import com.quare.blitzsplit.core.model.PhotoCrop
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
+import com.quare.blitzsplit.core.provider.image.CropTransform
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 class PrepareProfilePhotoUseCaseTest {
-    private lateinit var encodedSources: MutableList<ByteArray>
+    private lateinit var encoded: MutableList<Pair<ByteArray, CropTransform>>
     private lateinit var useCase: PrepareProfilePhotoUseCase
 
     @Test
-    fun `GIVEN a photo over 30 MB WHEN preparing THEN fails as too large without encoding it`() = runTest {
-        // Given
-        prepareScenario()
-        val source = ByteArray(THIRTY_MEGABYTES + 1)
+    fun `GIVEN a framed photo WHEN preparing THEN encodes its JPEG where the crop put it on the 512 avatar`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val photo = CropPhoto(
+                jpeg = byteArrayOf(1, 2, 3),
+                width = 1200,
+                height = 600,
+            )
 
-        // When
-        val result = useCase(source)
+            // When
+            val result = useCase(
+                photo,
+                PhotoCrop.of(
+                    photoWidth = 1200,
+                    photoHeight = 600,
+                ),
+            )
 
-        // Then
-        assertIs<PhotoTooLargeException>(result.exceptionOrNull())
-        assertTrue(encodedSources.isEmpty())
-    }
+            // Then
+            assertContentEquals(encodedJpeg, result.getOrThrow().jpeg)
+            val (source, transform) = encoded.single()
+            assertContentEquals(photo.jpeg, source)
+            // The centered square: 600 px fill the 512, the 300 px on each side left out
+            assertEquals(512.0 / 600, transform.scaleX, TOLERANCE)
+            assertEquals(-300 * 512.0 / 600, transform.translateX, TOLERANCE)
+            assertEquals(0.0, transform.translateY, TOLERANCE)
+        }
 
     @Test
-    fun `GIVEN a photo of exactly 30 MB WHEN preparing THEN encodes it`() = runTest {
-        // Given
-        prepareScenario()
-        val source = ByteArray(THIRTY_MEGABYTES)
-
-        // When
-        val result = useCase(source)
-
-        // Then
-        assertTrue(result.isSuccess)
-        assertContentEquals(source, encodedSources.single())
-    }
-
-    @Test
-    fun `GIVEN a file that is not an image WHEN preparing THEN fails as unsupported`() = runTest {
+    fun `GIVEN the encoder fails WHEN preparing THEN fails with its error`() = runTest {
         // Given
         prepareScenario(encoderError = UnsupportedImageException())
-        val source = "not an image".encodeToByteArray()
+        val photo = CropPhoto(
+            jpeg = byteArrayOf(1),
+            width = 10,
+            height = 10,
+        )
 
         // When
-        val result = useCase(source)
+        val result = useCase(
+            photo,
+            PhotoCrop.of(
+                photoWidth = 10,
+                photoHeight = 10,
+            ),
+        )
 
         // Then
         assertIs<UnsupportedImageException>(result.exceptionOrNull())
     }
 
-    @Test
-    fun `GIVEN a picked photo WHEN preparing THEN returns the encoded JPEG as a pending photo`() = runTest {
-        // Given
-        prepareScenario()
-        val source = byteArrayOf(1, 2, 3)
-
-        // When
-        val result = useCase(source)
-
-        // Then
-        assertContentEquals(encodedJpeg, result.getOrThrow().jpeg)
-        assertContentEquals(source, encodedSources.single())
-    }
-
     private val encodedJpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 9)
 
     private fun prepareScenario(encoderError: Exception? = null) {
-        encodedSources = mutableListOf()
+        encoded = mutableListOf()
         useCase = PrepareProfilePhotoUseCase(
-            encodeAvatar = { source ->
-                encodedSources += source
+            encodeAvatar = { source, transform ->
+                encoded += source to transform
                 encoderError?.let { throw it }
                 encodedJpeg
             },
@@ -82,6 +82,6 @@ class PrepareProfilePhotoUseCaseTest {
     }
 
     private companion object {
-        const val THIRTY_MEGABYTES = 30 * 1024 * 1024
+        const val TOLERANCE = 1e-9
     }
 }

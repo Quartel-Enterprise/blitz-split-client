@@ -49,6 +49,7 @@ class ProfileSetupUiStateTest {
         photo = photo,
         isPreparingPhoto = false,
         showsPhotoError = false,
+        photoCrop = null,
         nameError = null,
         canContinue = true,
         isSaving = false,

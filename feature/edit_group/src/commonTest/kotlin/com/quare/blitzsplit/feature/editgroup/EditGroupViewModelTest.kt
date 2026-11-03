@@ -14,11 +14,13 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.CropPhoto
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -1464,7 +1466,7 @@ class EditGroupViewModelTest {
             viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
 
             // Then
             val state = viewModel.uiState.value
@@ -1478,7 +1480,7 @@ class EditGroupViewModelTest {
         // Given
         prepareScenario(isPhotoHeld = true)
         viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
-        viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+        pickAndConfirmPhoto(pickedFile)
 
         // When
         viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -1496,7 +1498,7 @@ class EditGroupViewModelTest {
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
 
             // Then
             val state = viewModel.uiState.value
@@ -1516,7 +1518,7 @@ class EditGroupViewModelTest {
         viewModel.onEvent(EditGroupUiEvent.OnPhotoUnreadable)
 
         // When
-        viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+        pickAndConfirmPhoto(pickedFile)
 
         // Then
         val state = viewModel.uiState.value
@@ -1534,7 +1536,7 @@ class EditGroupViewModelTest {
             )
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
 
             // Then
             val state = viewModel.uiState.value
@@ -1566,7 +1568,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPhotoHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
             viewModel.onEvent(EditGroupUiEvent.OnPhotoUnreadable)
 
             // When
@@ -1597,7 +1599,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPhotoHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
             viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
@@ -1616,7 +1618,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPhotoHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
             viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
             viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
@@ -1642,7 +1644,7 @@ class EditGroupViewModelTest {
         viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
         // When
-        viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+        pickAndConfirmPhoto(pickedFile)
 
         // Then
         val state = viewModel.uiState.value
@@ -1655,7 +1657,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(online = false)
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -1752,7 +1754,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario(storedGroup = trip.copy(photo = remotePhoto))
             groups.groups.value = listOf(trip.copy(photo = otherRemotePhoto))
-            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            pickAndConfirmPhoto(pickedFile)
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -1888,6 +1890,44 @@ class EditGroupViewModelTest {
         updatedByMemberId = null,
     )
 
+    @Test
+    fun `GIVEN a photo picked WHEN turning it in Ajustar foto THEN frames it turned before the form shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(1, state.photoCrop?.crop?.quarterTurns)
+            assertNull(state.photo)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN dismissing it THEN the group keeps no photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertNull(state.photoCrop)
+        assertNull(state.photo)
+        assertFalse(state.canSave)
+    }
+
+    // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
+    private fun pickAndConfirmPhoto(source: ByteArray) {
+        viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(source))
+        viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+    }
+
     private fun prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -1917,7 +1957,16 @@ class EditGroupViewModelTest {
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeExpenses = ObserveExpensesUseCase(expenses),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
-            prepareProfilePhoto = {
+            loadCropPhoto = { source ->
+                Result.success(
+                    CropPhoto(
+                        jpeg = source,
+                        width = 1200,
+                        height = 900,
+                    ),
+                )
+            },
+            prepareProfilePhoto = { _, _ ->
                 photoGate.await()
                 if (photoError != null) Result.failure(photoError) else Result.success(preparedPhoto)
             },

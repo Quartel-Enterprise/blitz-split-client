@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.creategroup
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,20 +11,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -56,6 +64,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
@@ -66,6 +75,10 @@ import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUi
 
 internal val listEndRadius = 20.dp
 internal val listInnerRadius = 6.dp
+private val previewPhotoPickers = PhotoPickers(
+    onTakePhotoClick = {},
+    onChoosePhotoClick = {},
+)
 
 /*
  * Why: full screen on a phone, in two columns lying down (who the group is on the left, "Quem participa" on the
@@ -77,6 +90,7 @@ fun CreateGroupContent(
     // Why: anything wider than a phone draws the new group as a dialog over the home.
     isDialog: Boolean,
     onEvent: (CreateGroupUiEvent) -> Unit,
+    photoPickers: PhotoPickers,
     modifier: Modifier = Modifier,
 ) {
     val usesTwoColumns = !isDialog && rememberDeviceLayout().usesTwoColumns
@@ -105,11 +119,13 @@ fun CreateGroupContent(
             IdentityColumn(
                 state = state,
                 onEvent = onEvent,
+                photoPickers = photoPickers,
             )
         } else {
             CreateGroupFormColumn(
                 state = state,
                 onEvent = onEvent,
+                photoPickers = photoPickers,
             )
         }
     }
@@ -120,11 +136,13 @@ fun CreateGroupContent(
 private fun IdentityColumn(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
+    photoPickers: PhotoPickers,
 ) {
     CreateErrorText(state)
     IdentitySection(
         state = state,
         onEvent = onEvent,
+        photoPickers = photoPickers,
     )
     TypeChipRow(
         state = state,
@@ -192,11 +210,13 @@ private fun CreateGroupTopBar(
 private fun CreateGroupFormColumn(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
+    photoPickers: PhotoPickers,
 ) {
     CreateErrorText(state)
     IdentitySection(
         state = state,
         onEvent = onEvent,
+        photoPickers = photoPickers,
     )
     TypeChipRow(
         state = state,
@@ -259,6 +279,7 @@ private fun MembersNoticesSection(
 private fun IdentitySection(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
+    photoPickers: PhotoPickers,
 ) {
     Row(
         modifier = Modifier.padding(
@@ -269,18 +290,10 @@ private fun IdentitySection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val changeIconLabel = stringResource(R.string.create_group_change_shape_and_color)
-        // Why: tapping the avatar steps through the shapes and the colors together.
-        GroupBadge(
-            initials = state.initials,
-            color = state.color,
-            size = 72.dp,
-            shape = state.shape,
-            modifier = Modifier
-                .clickable(
-                    role = Role.Button,
-                    onClick = { onEvent(CreateGroupUiEvent.OnShapeAndColorClicked) },
-                ).semantics { contentDescription = changeIconLabel },
+        GroupIconWithPhotoButton(
+            state = state,
+            onEvent = onEvent,
+            photoPickers = photoPickers,
         )
         OutlinedTextField(
             value = state.name,
@@ -293,6 +306,105 @@ private fun IdentitySection(
                 imeAction = ImeAction.Next,
             ),
         )
+    }
+    if (state.showsPhotoError) {
+        Text(
+            text = stringResource(R.string.create_group_photo_error),
+            modifier = Modifier.padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = 8.dp,
+            ),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+}
+
+/*
+ * Why: tapping the avatar steps through the shapes and the colors together while no photo covers them; the button on
+ * its corner takes or picks a photo, which opens "Ajustar foto", or removes it.
+ */
+@Composable
+private fun GroupIconWithPhotoButton(
+    state: CreateGroupUiState,
+    onEvent: (CreateGroupUiEvent) -> Unit,
+    photoPickers: PhotoPickers,
+) {
+    var isPhotoMenuOpen by rememberSaveable { mutableStateOf(false) }
+    val changeIconLabel = stringResource(R.string.create_group_change_shape_and_color)
+    Box(modifier = Modifier.size(76.dp)) {
+        GroupBadge(
+            initials = state.initials,
+            color = state.color,
+            size = 72.dp,
+            shape = state.shape,
+            photoUrl = state.photoUrl,
+            modifier = Modifier
+                .clickable(
+                    enabled = state.canChangeColor,
+                    role = Role.Button,
+                    onClick = { onEvent(CreateGroupUiEvent.OnShapeAndColorClicked) },
+                ).semantics { contentDescription = changeIconLabel },
+        )
+        if (state.isPreparingPhoto) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(32.dp),
+            )
+        }
+        Box(modifier = Modifier.align(Alignment.BottomEnd)) {
+            FilledIconButton(
+                onClick = { isPhotoMenuOpen = true },
+                modifier = Modifier
+                    .size(32.dp)
+                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PhotoCamera,
+                    contentDescription = stringResource(R.string.create_group_photo),
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+            DropdownMenu(
+                expanded = isPhotoMenuOpen,
+                onDismissRequest = { isPhotoMenuOpen = false },
+            ) {
+                photoPickers.onTakePhotoClick?.let { onTakePhotoClick ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.create_group_take_photo)) },
+                        leadingIcon = { Icon(Icons.Outlined.PhotoCamera, contentDescription = null) },
+                        onClick = {
+                            isPhotoMenuOpen = false
+                            onTakePhotoClick()
+                        },
+                    )
+                }
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.create_group_choose_photo)) },
+                    leadingIcon = { Icon(Icons.Outlined.PhotoLibrary, contentDescription = null) },
+                    onClick = {
+                        isPhotoMenuOpen = false
+                        photoPickers.onChoosePhotoClick()
+                    },
+                )
+                if (state.hasPhoto) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.create_group_remove_photo)) },
+                        leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
+                        onClick = {
+                            isPhotoMenuOpen = false
+                            onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -411,6 +523,7 @@ private fun CreateGroupPreview() {
                 draft = "",
                 takenName = null,
             ),
+            photoPickers = previewPhotoPickers,
             isDialog = false,
             onEvent = {},
         )
@@ -426,6 +539,7 @@ private fun CreateGroupTakenNamePreview() {
                 draft = "Ana",
                 takenName = "Ana",
             ),
+            photoPickers = previewPhotoPickers,
             isDialog = false,
             onEvent = {},
         )
@@ -440,6 +554,10 @@ private fun buildPreviewState(
     initials = previewInitialsOf("Viagem Floripa"),
     color = AvatarColor.PEACH,
     shape = GroupShape.COOKIE,
+    photo = null,
+    isPreparingPhoto = false,
+    showsPhotoError = false,
+    photoCrop = null,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     members = listOf(

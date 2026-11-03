@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,6 +33,7 @@ class CreateGroupUseCaseTest {
                 type = GroupType.TRIP,
                 color = AvatarColor.PEACH,
                 shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.BRL,
                 members = listOf(me),
             )
@@ -248,6 +250,7 @@ class CreateGroupUseCaseTest {
                 type = GroupType.TRIP,
                 color = AvatarColor.BLUE,
                 shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.BRL,
                 members = listOf(me, ana),
             )
@@ -295,6 +298,7 @@ class CreateGroupUseCaseTest {
             type = GroupType.TRIP,
             color = AvatarColor.PEACH,
             shape = shape,
+            photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(me),
         )
@@ -305,6 +309,27 @@ class CreateGroupUseCaseTest {
         assertNull(created.photo)
     }
 
+    @Test
+    fun `GIVEN a photo picked WHEN creating the group THEN stores it to go up with the group`() = runTest {
+        // Given
+        prepareScenario()
+        val photo = ProfilePhoto.Pending(jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 1))
+
+        // When
+        useCase(
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = photo,
+            currency = GroupCurrency.BRL,
+            members = listOf(me),
+        )
+
+        // Then
+        assertEquals(photo, repository.createdGroups.single().photo)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),
@@ -313,6 +338,7 @@ class CreateGroupUseCaseTest {
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
         shape = GroupShape.COOKIE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = members,
     ).getOrThrow()

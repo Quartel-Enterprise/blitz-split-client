@@ -38,15 +38,19 @@ import platform.CoreFoundation.kCFNumberIntType
 import platform.CoreFoundation.kCFStringEncodingUTF8
 import platform.CoreFoundation.kCFTypeDictionaryKeyCallBacks
 import platform.CoreFoundation.kCFTypeDictionaryValueCallBacks
+import platform.CoreGraphics.CGAffineTransformMake
 import platform.CoreGraphics.CGBitmapContextCreate
 import platform.CoreGraphics.CGBitmapContextCreateImage
 import platform.CoreGraphics.CGColorSpaceCreateDeviceRGB
 import platform.CoreGraphics.CGColorSpaceRelease
+import platform.CoreGraphics.CGContextConcatCTM
 import platform.CoreGraphics.CGContextDrawImage
 import platform.CoreGraphics.CGContextFillRect
 import platform.CoreGraphics.CGContextRelease
+import platform.CoreGraphics.CGContextScaleCTM
 import platform.CoreGraphics.CGContextSetInterpolationQuality
 import platform.CoreGraphics.CGContextSetRGBFillColor
+import platform.CoreGraphics.CGContextTranslateCTM
 import platform.CoreGraphics.CGImageAlphaInfo
 import platform.CoreGraphics.CGImageGetHeight
 import platform.CoreGraphics.CGImageGetWidth
@@ -68,7 +72,6 @@ import platform.ImageIO.kCGImagePropertyPixelWidth
 import platform.ImageIO.kCGImageSourceCreateThumbnailFromImageAlways
 import platform.ImageIO.kCGImageSourceCreateThumbnailWithTransform
 import platform.ImageIO.kCGImageSourceThumbnailMaxPixelSize
-import kotlin.math.ceil
 
 private const val JPEG_TYPE = "public.jpeg"
 private const val BITS_PER_COMPONENT = 8uL
@@ -79,36 +82,64 @@ internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AppleAvatar
 internal actual fun createBillImageEncoder(): BillImageEncoder = AppleBillImageEncoder()
 
 /*
- * Why: ImageIO and Core Graphics exist on iOS and macOS alike, so one encoder serves both. The
- * thumbnail API decodes HEIC, applies the EXIF rotation and downsamples while decoding, so a
- * 48 MP photo never sits whole in memory.
+ * Why: ImageIO and Core Graphics exist on iOS and macOS alike, so one encoder serves both. Core Graphics draws y up,
+ * so the context flips the avatar's y and the photo's around the editor's transform, which has y down on both.
  */
 @OptIn(ExperimentalForeignApi::class)
 internal class AppleAvatarImageEncoder : AvatarImageEncoder {
-    override suspend fun invoke(source: ByteArray): ByteArray = withContext(Dispatchers.IO) { encode(source) }
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+    ): ByteArray = withContext(Dispatchers.IO) { encode(source, transform) }
 
-    private fun encode(source: ByteArray): ByteArray = withImageSource(source) { imageSource, width, height ->
-        // Why: the thumbnail's longest side is capped, so it is sized for the shortest one to reach 512.
-        val longest = maxOf(width, height)
-        val maxPixelSize = ceil(AVATAR_SIZE_PX.toDouble() * longest / minOf(width, height)).toInt()
-        val upright = imageSource.createUprightThumbnail(minOf(maxPixelSize, longest))
-            ?: throw UnsupportedImageException()
-        val scale = AVATAR_SIZE_PX / minOf(CGImageGetWidth(upright), CGImageGetHeight(upright)).toDouble()
-        val drawnWidth = CGImageGetWidth(upright).toDouble() * scale
-        val drawnHeight = CGImageGetHeight(upright).toDouble() * scale
-        val square = upright.createOnWhite(
-            width = AVATAR_SIZE_PX,
-            height = AVATAR_SIZE_PX,
-            at = CGRectMake(
-                x = (AVATAR_SIZE_PX - drawnWidth) / 2,
-                y = (AVATAR_SIZE_PX - drawnHeight) / 2,
-                width = drawnWidth,
-                height = drawnHeight,
-            ),
-        )
+    private fun encode(
+        source: ByteArray,
+        transform: CropTransform,
+    ): ByteArray = withImageSource(source) { imageSource, width, height ->
+        // Why: decoded whole and upright, since the transform is in the photo's own pixels.
+        val upright = imageSource.createUprightThumbnail(maxOf(width, height)) ?: throw UnsupportedImageException()
+        val square = upright.createAvatar(transform)
         CGImageRelease(upright)
         square ?: throw UnsupportedImageException()
         square.toJpeg(AVATAR_JPEG_QUALITY).also { CGImageRelease(square) }
+    }
+
+    private fun CGImageRef.createAvatar(transform: CropTransform): CGImageRef? {
+        val side = AVATAR_SIZE_PX.toDouble()
+        val photoHeight = CGImageGetHeight(this).toDouble()
+        val colorSpace = CGColorSpaceCreateDeviceRGB()
+        val context = CGBitmapContextCreate(
+            data = null,
+            width = AVATAR_SIZE_PX.toULong(),
+            height = AVATAR_SIZE_PX.toULong(),
+            bitsPerComponent = BITS_PER_COMPONENT,
+            bytesPerRow = 0u,
+            space = colorSpace,
+            bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNoneSkipLast.value,
+        )
+        CGColorSpaceRelease(colorSpace)
+        context ?: return null
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
+        CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
+        CGContextFillRect(context, CGRectMake(0.0, 0.0, side, side))
+        // Why: each call applies before the ones above it, so a point of the image goes up the list.
+        CGContextTranslateCTM(context, 0.0, side)
+        CGContextScaleCTM(context, 1.0, -1.0)
+        CGContextConcatCTM(
+            context,
+            CGAffineTransformMake(
+                a = transform.scaleX,
+                b = transform.skewY,
+                c = transform.skewX,
+                d = transform.scaleY,
+                tx = transform.translateX,
+                ty = transform.translateY,
+            ),
+        )
+        CGContextTranslateCTM(context, 0.0, photoHeight)
+        CGContextScaleCTM(context, 1.0, -1.0)
+        CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGImageGetWidth(this).toDouble(), photoHeight), this)
+        return CGBitmapContextCreateImage(context).also { CGContextRelease(context) }
     }
 }
 
