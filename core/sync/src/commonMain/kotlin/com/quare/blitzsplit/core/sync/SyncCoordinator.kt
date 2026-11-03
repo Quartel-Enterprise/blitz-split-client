@@ -131,6 +131,8 @@ class SyncCoordinator(
         } finally {
             firstDownload.end()
         }
+        // Why: only a sync that brought every part down completes the account's copy; one that failed leaves it awaited.
+        if (accountRepository.observeAccount().first().awaitsFullSync) accountRepository.updateAwaitsFullSync(false)
     }.also { result -> lastSyncFailed.value = result.isFailure }
 
     private suspend fun syncSteps() {
@@ -497,8 +499,8 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: a first download ends with a sync, which never runs offline, so offline Início and Grupos go back to what
-     * the device holds ("Rachar conta" included) rather than counting groups that can't come.
+     * Why: a first download ends with a sync, which never runs offline, so offline its count goes; the account still
+     * awaits its full sync, which Início and Grupos show as waiting for the internet (see ObserveFirstDownload).
      */
     private suspend fun endFirstDownloadOffline() {
         combine(

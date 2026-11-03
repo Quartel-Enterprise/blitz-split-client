@@ -137,6 +137,40 @@ class CompleteSignInUseCaseTest {
         }
 
     @Test
+    fun `GIVEN a device with no profile WHEN the sign in restores the profile THEN the account awaits its full sync`() =
+        runTest {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = null,
+                serverProfile = pierre,
+            )
+
+            // When
+            useCase()
+
+            // Then
+            assertTrue(account.awaitsFullSync)
+        }
+
+    @Test
+    fun `GIVEN a device that has a profile WHEN completing the sign in THEN the account awaits no full sync`() =
+        runTest {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = pierre,
+                serverProfile = pierre,
+            )
+
+            // When
+            useCase()
+
+            // Then
+            assertFalse(account.awaitsFullSync)
+        }
+
+    @Test
     fun `GIVEN a device with no profile WHEN the account has none on the server THEN no first download is pending`() =
         runTest {
             // Given

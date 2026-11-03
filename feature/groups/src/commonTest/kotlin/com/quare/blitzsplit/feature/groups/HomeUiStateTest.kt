@@ -7,6 +7,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -75,6 +76,7 @@ class HomeUiStateTest {
             firstDownload = DownloadProgress(
                 arrivedGroupCount = 3,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
         )
 
@@ -261,12 +263,13 @@ class HomeUiStateTest {
         firstDownload = DownloadProgress(
             arrivedGroupCount = 0,
             groupCount = null,
+            isWaitingForInternet = false,
         ).takeIf { isFirstDownload },
         isOnline = isOnline,
         isLoaded = isLoaded,
         groupCount = groupCount,
-        people = people,
-        summary = HomeSummary(totals = emptyList()),
+        people = people.toLoaded(),
+        summary = HomeSummary(totals = emptyList()).toLoaded(),
         groups = emptyList(),
         billDays = emptyList(),
         showsRecoveryCodeCard = false,

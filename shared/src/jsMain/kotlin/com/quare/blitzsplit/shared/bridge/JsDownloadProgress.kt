@@ -14,6 +14,8 @@ class JsDownloadProgress(
     val fraction: Double?,
     // Why: the grey rows under the groups that came, holding the place of a few still coming.
     val placeholderCount: Int,
+    // Why: offline, "Sem internet. Seus grupos aparecem quando reconectar." instead of the count.
+    val isWaitingForInternet: Boolean,
 )
 
 internal fun DownloadProgress.toJsDownloadProgress(): JsDownloadProgress = JsDownloadProgress(
@@ -21,4 +23,5 @@ internal fun DownloadProgress.toJsDownloadProgress(): JsDownloadProgress = JsDow
     groupCount = groupCount,
     fraction = fraction?.toDouble(),
     placeholderCount = placeholderCount,
+    isWaitingForInternet = isWaitingForInternet,
 )

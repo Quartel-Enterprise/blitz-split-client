@@ -16,6 +16,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 // Why: a face of "Saldos com pessoas"; netMinor is positive when they owe you, in the currency's minor unit.
 class JsHomePerson(
@@ -105,8 +106,9 @@ class JsHomeState(
     val showsFirstUse: Boolean,
     val showsHome: Boolean,
     val showsPeople: Boolean,
-    val people: Array<JsHomePerson>,
-    val summary: JsHomeSummary,
+    // Why: null while the balances are still being read, which draws the shimmer.
+    val people: Array<JsHomePerson>?,
+    val summary: JsHomeSummary?,
     val groups: Array<JsHomeGroup>,
     val billDays: Array<JsHomeBillDay>,
     val canScanReceipt: Boolean,
@@ -145,8 +147,11 @@ class HomePresenter {
                 showsFirstUse = state.showsFirstUse,
                 showsHome = state.showsHome,
                 showsPeople = state.showsPeople,
-                people = state.people.map(::toJsHomePerson).toTypedArray(),
-                summary = toJsHomeSummary(state.summary),
+                people = state.people
+                    .valueOrNull()
+                    ?.map(::toJsHomePerson)
+                    ?.toTypedArray(),
+                summary = state.summary.valueOrNull()?.let(::toJsHomeSummary),
                 groups = state.groups.map(::toJsHomeGroup).toTypedArray(),
                 billDays = state.billDays.map(::toJsHomeBillDay).toTypedArray(),
                 canScanReceipt = state.canScanReceipt,

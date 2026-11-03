@@ -12,6 +12,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 0,
             groupCount = null,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -27,6 +28,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 2,
             groupCount = null,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -42,6 +44,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 0,
             groupCount = 0,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -58,6 +61,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 3,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -73,6 +77,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 0,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -88,6 +93,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 7,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -104,6 +110,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 3,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -119,6 +126,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 5,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When
@@ -134,6 +142,7 @@ class DownloadProgressTest {
         val progress = DownloadProgress(
             arrivedGroupCount = 8,
             groupCount = 7,
+            isWaitingForInternet = false,
         )
 
         // When

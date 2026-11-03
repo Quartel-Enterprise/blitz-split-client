@@ -350,6 +350,7 @@ class CategoryMapViewModelTest {
                         recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
                         email = null,
                         signOutWhenSynced = false,
+                        awaitsFullSync = false,
                     ),
                 )
             },

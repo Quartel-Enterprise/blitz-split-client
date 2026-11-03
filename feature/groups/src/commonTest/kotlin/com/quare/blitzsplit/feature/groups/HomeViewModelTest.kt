@@ -84,11 +84,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
@@ -558,6 +560,8 @@ class HomeViewModelTest {
 
             // When
             val people = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
 
             // Then
             assertEquals(
@@ -632,6 +636,8 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(GroupCurrency.BRL to -3000L, GroupCurrency.USD to -200L),
                 viewModel.uiState.value.people
+                    .valueOrNull()
+                    .orEmpty()
                     .filter { it.key == "name:ana" }
                     .map { it.currency to it.netMinor },
             )
@@ -698,6 +704,8 @@ class HomeViewModelTest {
             // Then
             assertTrue(
                 viewModel.uiState.value.people
+                    .valueOrNull()
+                    .orEmpty()
                     .isEmpty(),
             )
             assertEquals(listOf(Route.Home), navigator.backStack.value)
@@ -730,7 +738,10 @@ class HomeViewModelTest {
             )
 
             // When
-            val summary = viewModel.uiState.value.summary
+            val summary = assertNotNull(
+                viewModel.uiState.value.summary
+                    .valueOrNull(),
+            )
 
             // Then
             assertEquals(
@@ -1371,6 +1382,7 @@ class HomeViewModelTest {
                 DownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
                 state.firstDownload,
             )
@@ -1396,6 +1408,7 @@ class HomeViewModelTest {
             DownloadProgress(
                 arrivedGroupCount = 3,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
             viewModel.uiState.value.firstDownload,
         )
@@ -2156,7 +2169,11 @@ class HomeViewModelTest {
             observeProfile = ObserveProfileUseCase(FakeProfileRepository(profile)),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this@HomeViewModelTest.syncState },
-            observeFirstDownload = ObserveFirstDownloadUseCase(firstDownload),
+            observeFirstDownload = ObserveFirstDownloadUseCase(
+                firstDownload = firstDownload,
+                accountRepository = account,
+                connectivityObserver = NetworkConnectivityObserver { isOnline },
+            ),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
             observeGroupsMoney = money,

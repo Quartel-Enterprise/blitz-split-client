@@ -10,4 +10,6 @@ data class AccountSnapshot(
     // Why: the Google or Apple account's address, null while there is none.
     val email: String?,
     val signOutWhenSynced: Boolean,
+    // Why: the account came to this device from the server and no sync settled since, so its copy is still partial.
+    val awaitsFullSync: Boolean,
 )

@@ -70,6 +70,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -187,6 +188,8 @@ class GroupsViewModel(
         },
     )
 
+    private val isLayoutRead = MutableStateFlow(false)
+
     init {
         combine(
             observeProfile(),
@@ -242,6 +245,8 @@ class GroupsViewModel(
             }
             // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
             .combine(minuteTicks()) { home, _ -> home.copy(rows = agedRowsOf(home.rows, activityClock())) }
+            // Why: the groups wait for "Lista" or "Grade" too, so a grid picked here never shows as a list first.
+            .combine(isLayoutRead.filter { it }) { home, _ -> home }
             .onEach { home ->
                 uiState.update {
                     it.copy(
@@ -262,8 +267,10 @@ class GroupsViewModel(
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
         observeGroupsLayout()
-            .onEach { layout -> uiState.update { it.copy(layout = layout) } }
-            .launchIn(viewModelScope)
+            .onEach { layout ->
+                uiState.update { it.copy(layout = layout) }
+                isLayoutRead.value = true
+            }.launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)

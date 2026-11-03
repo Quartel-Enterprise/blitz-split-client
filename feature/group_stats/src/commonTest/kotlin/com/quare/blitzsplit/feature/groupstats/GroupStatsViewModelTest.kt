@@ -617,6 +617,7 @@ class GroupStatsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -634,6 +635,7 @@ class GroupStatsViewModelTest {
             downloading = FirstDownloadProgress(
                 arrivedGroupCount = 1,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
         )
 
@@ -652,6 +654,7 @@ class GroupStatsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -671,6 +674,7 @@ class GroupStatsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
