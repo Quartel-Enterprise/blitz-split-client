@@ -53,7 +53,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.latestBillOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
-import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.searchedIn
 import com.quare.blitzsplit.feature.groups.presentation.mapper.summaryOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
@@ -440,14 +440,7 @@ class GroupsViewModel(
     private fun searchedOf(
         search: GroupsSearch,
         rows: List<GroupRow>,
-    ): GroupsSearch = search.copy(
-        results = searchResultsOf(
-            groups = groupsWithMoney,
-            rows = rows,
-            query = search.query,
-            scope = search.scope,
-        ),
-    )
+    ): GroupsSearch = search.searchedIn(groupsWithMoney, rows)
 
     // Why: as a group's Despesas opens it, over the group, which takes the place of the group beside the list.
     private fun openBill(

@@ -9680,17 +9680,6 @@
         }
       }
     },
-    "In your groups · %lld" : {
-      "comment" : "Contacts' search: the people of your groups found",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nos seus grupos · %lld"
-          }
-        }
-      }
-    },
     "Invite %@" : {
       "comment" : "Invites someone named: a title, or a guest's or a contact's button",
       "localizations" : {
@@ -10325,17 +10314,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ninguém participa ainda"
-          }
-        }
-      }
-    },
-    "Nobody named “%@”" : {
-      "comment" : "Contacts' search found nobody; %@ is what was typed",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ninguém com “%@”"
           }
         }
       }
@@ -15757,17 +15735,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aguardando %@ aceitar"
-          }
-        }
-      }
-    },
-    "We couldn't find anyone with that name in your groups or your contacts. Check the spelling or invite them." : {
-      "comment" : "Contacts' search found nobody",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não achamos ninguém com esse nome nos seus grupos nem na agenda. Confira a grafia ou convide a pessoa."
           }
         }
       }
