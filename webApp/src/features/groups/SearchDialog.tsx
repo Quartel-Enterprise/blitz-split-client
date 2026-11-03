@@ -27,24 +27,24 @@ export interface SearchActions {
   openSearchedBill(groupId: string, expenseId: string): void
 }
 
-/** The sidebar's "Buscar… ⌘K" (the phone's magnifier) of a home tab, once there is a group to look in. */
-export function homeSearchOf(canSearch: boolean, onOpen: () => void) {
-  return canSearch ? { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K', onOpen } : undefined
-}
-
-/** ⌘K (Ctrl+K off Apple devices) opens "Buscar" from anywhere on a home tab, once there is a group to look in. */
-export function useSearchShortcut(canSearch: boolean, onOpen: (() => void) | null) {
+/**
+ * A home tab's "Buscar", once there is a group to look in: ⌘K (Ctrl+K off Apple devices) from anywhere on the tab,
+ * and the sidebar's "Buscar… ⌘K" (the phone's magnifier), whose HomeShell prop it returns.
+ */
+export function useHomeSearch(presenter: { openSearch(): void } | null, canSearch: boolean) {
   useEffect(() => {
-    if (!onOpen || !canSearch) return
+    if (!presenter || !canSearch) return
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
         event.preventDefault()
-        onOpen()
+        presenter.openSearch()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onOpen, canSearch])
+  }, [presenter, canSearch])
+  if (!presenter || !canSearch) return undefined
+  return { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K', onOpen: () => presenter.openSearch() }
 }
 
 /** "Buscar" over Início, Saldos, Contatos or Atividade (`Route.Search`): what is picked opens in its place. */

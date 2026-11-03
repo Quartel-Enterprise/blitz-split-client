@@ -133,6 +133,7 @@ private fun createPreviewState(
     recordedPayment = null,
     pickedPersonId = null,
     activityUnreadCount = 3,
+    canSearch = true,
 )
 
 @DevicePreviews

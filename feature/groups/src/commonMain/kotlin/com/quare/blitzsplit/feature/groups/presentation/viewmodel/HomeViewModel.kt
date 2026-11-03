@@ -276,7 +276,10 @@ class HomeViewModel(
         when (event) {
             HomeUiEvent.OnProfileClicked -> open(Route.Profile)
 
-            HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch) navigator.openSearchOver(HomeTab.HOME)
+            // Why: never over the recovery code's prompt, which is no route, so ⌘K on the web can't stack the search on it.
+            HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.showsRecoveryCodePrompt) {
+                navigator.openSearchOver(HomeTab.HOME)
+            }
 
             HomeUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()
 

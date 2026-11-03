@@ -60,6 +60,8 @@ class SearchViewModel(
                 groups = items
                 rows = rowsOf(items, clock)
                 search { it }
+                // Why: as Grupos' own search, it closes once a sync leaves no group to look in.
+                if (items.isEmpty()) onEvent(SearchUiEvent.OnClosed)
             }.launchIn(viewModelScope)
     }
 

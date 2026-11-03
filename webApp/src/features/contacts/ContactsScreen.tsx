@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight, QrCode, UserRound, Users, WifiOff } from 'lucide-react'
 import { ContactsPresenter, type JsContactRow, type JsContactsState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect, useMemo, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -8,7 +8,7 @@ import { HomeShell, homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
-import { homeSearchOf, useSearchShortcut } from '@/features/groups/SearchDialog'
+import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -33,8 +33,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>
 export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   const presenter = usePresenter(() => new ContactsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsContactsState) => void) => p.observeState(onChange))
-  const openSearch = useMemo(() => (presenter ? () => presenter.openSearch() : null), [presenter])
-  useSearchShortcut((state?.canSearch ?? false) && !profileRoute, openSearch)
+  const search = useHomeSearch(presenter, (state?.canSearch ?? false) && !profileRoute)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () =>
     toast(t('contacts_changeError')),
   )
@@ -54,7 +53,7 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
       activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
-      search={homeSearchOf(state.canSearch, () => presenter.openSearch())}
+      search={search}
     >
       <main
         className={cn(

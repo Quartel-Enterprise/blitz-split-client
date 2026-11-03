@@ -1,6 +1,6 @@
 import { Banknote, Camera, KeyRound, SquarePlus, Users, X } from 'lucide-react'
 import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
-import { useMemo, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
 import { SplitBillIcon } from '@/components/common'
@@ -10,7 +10,7 @@ import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DownloadProgressBar } from '@/features/groups/FirstDownload'
 import { SyncStatus } from '@/features/groups/GroupsPage'
-import { homeSearchOf, useSearchShortcut } from '@/features/groups/SearchDialog'
+import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/features/home/HomeSections'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
@@ -32,8 +32,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = 
 export function HomeScreen() {
   const presenter = usePresenter(() => new HomePresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsHomeState) => void) => p.observeState(onChange))
-  const openSearch = useMemo(() => (presenter ? () => presenter.openSearch() : null), [presenter])
-  useSearchShortcut(state?.canSearch ?? false, openSearch)
+  const search = useHomeSearch(presenter, state?.canSearch ?? false)
   useActions(
     presenter,
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
@@ -50,7 +49,7 @@ export function HomeScreen() {
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
-      search={homeSearchOf(state.canSearch, () => presenter.openSearch())}
+      search={search}
       activityUnreadCount={state.activityUnreadCount}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >

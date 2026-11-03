@@ -287,6 +287,20 @@ class SearchViewModelTest {
     }
 
     @Test
+    fun `GIVEN the search over Contatos WHEN a sync deletes every group THEN goes back to Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("apê"))
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the search over Contatos WHEN tapping a group THEN its Despesas takes the search place`() =
         runTest(testDispatcher) {
             // Given

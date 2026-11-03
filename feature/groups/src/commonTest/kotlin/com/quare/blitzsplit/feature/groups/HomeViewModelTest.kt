@@ -1044,6 +1044,24 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `GIVEN the recovery code prompt over Inicio WHEN Buscar is asked for THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.DUE,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodePrompt)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN no group WHEN a late tap on Buscar arrives THEN opens nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

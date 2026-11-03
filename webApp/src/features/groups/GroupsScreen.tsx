@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
-import { homeSearchOf, SearchDialog, useSearchShortcut, type SearchActions } from '@/features/groups/SearchDialog'
+import { SearchDialog, useHomeSearch, type SearchActions } from '@/features/groups/SearchDialog'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
 
@@ -60,8 +60,7 @@ export function GroupsScreen() {
   useDeletedGroupNotice(presenter, state)
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  const openSearch = useMemo(() => (presenter ? () => presenter.openSearch() : null), [presenter])
-  useSearchShortcut(state?.canSearch ?? false, openSearch)
+  const search = useHomeSearch(presenter, state?.canSearch ?? false)
   const searchActions = useMemo(() => (presenter ? searchActionsOf(presenter) : null), [presenter])
   if (!presenter || !state) return null
 
@@ -72,7 +71,7 @@ export function GroupsScreen() {
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
-      search={homeSearchOf(state.canSearch, () => presenter.openSearch())}
+      search={search}
       overlays={
         <>
           {state.isSearching && searchActions && <SearchDialog search={state.search} actions={searchActions} />}
