@@ -2,10 +2,12 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 // Why: "Editar conta" opens what each of several payers paid, whoever left the group among them as "Ex-membro".
@@ -159,3 +161,13 @@ internal fun SplitBillUiState.withSeveralPayersOpened(decimalSeparator: Char): S
     payerSelection = null,
     payerAmounts = severalPayers ?: toPayerAmounts(decimalSeparator),
 )
+
+// Why: what one of several payers paid, as typed in "Várias pessoas pagaram".
+internal fun SplitBillUiState.withPayerAmount(
+    memberId: String,
+    text: String,
+): SplitBillUiState = copy(payerAmounts = payerAmounts?.withAmountText(memberId, TypedText.toAmountText(text)))
+
+// Why: "Quem pagou" marks one person until Pronto; someone no longer in the group can't be marked.
+internal fun SplitBillUiState.withPayerPicked(memberId: String): SplitBillUiState =
+    if (people.none { it.id == memberId }) this else copy(payerSelection = PayerSelection(memberId = memberId))

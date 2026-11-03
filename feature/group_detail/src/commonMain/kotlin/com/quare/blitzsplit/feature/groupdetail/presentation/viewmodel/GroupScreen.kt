@@ -188,6 +188,7 @@ internal class GroupScreen(
                 groupId = groupId,
                 expenseId = null,
                 picksGroupFirst = false,
+                scansReceipt = false,
             ),
         )
     }

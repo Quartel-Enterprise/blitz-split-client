@@ -4,6 +4,9 @@ enum class CategorySuggestionReason {
     // Why: the map's term in the description chose it.
     DESCRIPTION,
 
+    // Why: "Pelo cupom": the receipt read suggested it (7.1e).
+    RECEIPT,
+
     // Why: the group's bills use it the most.
     MOST_USED,
 

@@ -237,7 +237,7 @@ struct HomeSummaryCard: View {
     }
 }
 
-/// "Scan a receipt" (it needs the internet, and answers "Coming soon" for now), "Record payment" and "New group".
+/// "Scan a receipt" (it needs the internet), "Record payment" and "New group".
 /// The Mac has them in its toolbar instead.
 struct HomeShortcuts: View {
     let canScanReceipt: Bool

@@ -67,6 +67,11 @@ internal class CategoryEditing(
         }
     }
 
+    // Why: a receipt read or removed (7.1e) changes the description and the category it suggests, so the words choose again.
+    fun rematch(transform: (SplitBillUiState) -> SplitBillUiState) {
+        change { transform(it).withCategoryMatched(terms) }
+    }
+
     fun onEvent(event: SplitBillUiEvent.Categories) {
         when (event) {
             SplitBillUiEvent.OnCategoryClicked -> uiState.update {

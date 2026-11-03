@@ -16659,10 +16659,40 @@
     "%lld items" : {
       "comment" : "How many items the bill splits by",
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items"
+                }
+              }
+            }
+          }
+        },
         "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld itens"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld itens"
+                }
+              }
+            }
           }
         }
       }
@@ -16748,6 +16778,322 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%@ from the receipt. Tap the icon to change it." : {
+      "comment" : "Split a bill: the receipt chose the category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pelo cupom fiscal. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "From the receipt" : {
+      "comment" : "Category: a suggestion the receipt gave",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelo cupom"
+          }
+        }
+      }
+    },
+    "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand." : {
+      "comment" : "Split a bill: the receipt couldn't be read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "Try again with more light and the whole receipt in the photo, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"Couldn't read the receipt\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "Couldn't read the receipt" : {
+      "comment" : "Split a bill on the Mac: the receipt couldn't be read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para ler o cupom"
+          }
+        }
+      }
+    },
+    "Choose Another Photo…" : {
+      "comment" : "Split a bill on the Mac: picks another photo of the receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher Outra Foto…"
+          }
+        }
+      }
+    },
+    "Take another photo" : {
+      "comment" : "Split a bill: takes another photo of the receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar outra foto"
+          }
+        }
+      }
+    },
+    "Read from the receipt" : {
+      "comment" : "Split a bill: a chip under the description once a receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lido do cupom"
+          }
+        }
+      }
+    },
+    "Receipt photo" : {
+      "comment" : "Split a bill: the receipt's photo the bill attaches",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do cupom"
+          }
+        }
+      }
+    },
+    "Reading the receipt…" : {
+      "comment" : "Split a bill: while the receipt is being read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lendo o cupom…"
+          }
+        }
+      }
+    },
+    "Everyone in the group sees it" : {
+      "comment" : "Split a bill: who sees the receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo do grupo vê"
+          }
+        }
+      }
+    },
+    "Remove the receipt photo" : {
+      "comment" : "Split a bill: removes the receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar a foto do cupom"
+          }
+        }
+      }
+    },
+    "Scan receipt" : {
+      "comment" : "Split a bill: reads a receipt's photo; the receipt camera's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler cupom fiscal"
+          }
+        }
+      }
+    },
+    "Fills in the amount, date and description from the photo." : {
+      "comment" : "Split a bill: under Scan receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preenche valor, data e descrição pela foto."
+          }
+        }
+      }
+    },
+    "Needs internet. Fill it in by hand or scan the receipt once you reconnect." : {
+      "comment" : "Split a bill: Scan receipt while offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Precisa de internet. Preencha à mão ou leia o cupom quando reconectar."
+          }
+        }
+      }
+    },
+    "Receipt:" : {
+      "comment" : "Split a bill on the Mac: the receipt's row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cupom:"
+          }
+        }
+      }
+    },
+    "Receipt photo attached" : {
+      "comment" : "Split a bill on the Mac: the receipt's photo the bill attaches",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do cupom anexada"
+          }
+        }
+      }
+    },
+    "Reading…" : {
+      "comment" : "Split a bill on the Mac: while the receipt is being read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lendo…"
+          }
+        }
+      }
+    },
+    "· Read from the receipt, %lld items" : {
+      "comment" : "Split a bill on the Mac: the receipt was read with its items",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld items"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld itens"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "· Read from the receipt" : {
+      "comment" : "Split a bill on the Mac: the receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "· Lido do cupom"
+          }
+        }
+      }
+    },
+    "Scan Receipt…" : {
+      "comment" : "Split a bill on the Mac: picks a receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler Cupom Fiscal…"
+          }
+        }
+      }
+    },
+    "Turn on the flash" : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligar o flash"
+          }
+        }
+      }
+    },
+    "Turn off the flash" : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar o flash"
+          }
+        }
+      }
+    },
+    "Allow the camera to scan the receipt, or choose a photo of it from Photos." : {
+      "comment" : "Receipt camera: access refused",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita a câmera para ler o cupom, ou escolha uma foto dele nas fotos."
+          }
+        }
+      }
+    },
+    "The camera isn't available. Choose a photo of the receipt from Photos." : {
+      "comment" : "Receipt camera: no camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A câmera não está disponível. Escolha uma foto do cupom nas fotos."
+          }
+        }
+      }
+    },
+    "Frame the whole receipt. We fill in the amount, the date and the description; you check them before saving." : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enquadre o cupom inteiro. A gente preenche o valor, a data e a descrição; você confere antes de salvar."
           }
         }
       }

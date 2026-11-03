@@ -351,17 +351,28 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN says it is coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
+    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN opens Rachar conta on the camera asking the group first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
 
-        // When
-        viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
 
-        // Then
-        assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Home), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.SplitBill(
+                        groupId = trio().id,
+                        expenseId = null,
+                        picksGroupFirst = true,
+                        scansReceipt = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN no internet WHEN tapping Ler cupom fiscal THEN does nothing`() = runTest(testDispatcher) {
@@ -375,7 +386,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
 
         // Then
-        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
         assertFalse(viewModel.uiState.value.canScanReceipt)
     }
 
@@ -479,6 +490,7 @@ class HomeViewModelTest {
                         groupId = "old",
                         expenseId = null,
                         picksGroupFirst = true,
+                        scansReceipt = false,
                     ),
                 ),
                 navigator.backStack.value,

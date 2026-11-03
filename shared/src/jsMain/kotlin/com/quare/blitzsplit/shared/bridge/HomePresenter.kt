@@ -162,11 +162,10 @@ class HomePresenter {
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" and "change-error", a toast in the page's words.
+    // Why: "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                HomeUiAction.ShowComingSoon -> "coming-soon"
                 HomeUiAction.ShowChangeError -> "change-error"
             }
         }

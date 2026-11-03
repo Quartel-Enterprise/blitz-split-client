@@ -82,8 +82,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     app…". "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
-    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal" ("Em breve" for now; offline disabled
-    with "Precisa de internet"),
+    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal", which opens Rachar conta as
+    "Rachar conta" does (asking the group first) and its camera at once (7.1e, `Route.SplitBill.scansReceipt`;
+    offline disabled with "Precisa de internet"),
     "Registrar pagamento", which asks "Quem pagou a quem?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Registrar pagamento in its place), and
     "Novo grupo". "Seus grupos": up to three open groups, the pinned first, then the latest activity, as Grupos draws
@@ -566,8 +567,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`expenses.items`, stamped with the bill's `updated_at`) beside shares holding each one's total, stored as
     "amount": an older version reads it by Valores, and items another version saved the bill without are dropped,
     on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
-    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
-    receipt read (7.1e) come later.
+    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. A receipt read
+    (7.1e) opens Itens with its items, nobody marked in any ("14 itens sem ninguém"), its service percentage and
+    no couvert (a couvert printed is one of the items), checked against the total it read ("o cupom diz").
   - "Categoria" (7.7): every bill has one, the icon beside "Descrição" (a menu with a submenu per main category on
     the Mac). Until it is picked by hand, the description's words choose it (the 60 default terms of flow 9, whole
     words ignoring case and accents, the longest term winning, ties to the first in the text, `CategoryMatcher`), else
@@ -627,6 +629,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     in the map; where a word goes now is the whole map's, every group's categories as Mapa de categorias reads them,
     so a word of another group's category says "Sai de Praia" and teaching moves it (one category per term). The
     bills already saved don't change.
+  - "Ler cupom fiscal" (7.1e to 7.1g, `ReadReceipt`, the server's `read-receipt`): a new bill's form offers it under
+    "Divisão" (never on "Editar conta", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
+    leave it out there; Início's shortcut still opens it), online only ("Precisa de internet. Preencha à mão ou leia
+    o cupom quando reconectar."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
+    the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
+    photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
+    the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
+    a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…" and
+    Salvar waits. Once read it fills the total, the description (the place) and Quando (the day printed, with its
+    time or the form's, never after now), each only while nobody typed in it during the read, shows "Lido do cupom" and "14 itens" under the description, and its items
+    wait for Dividir's Itens; the split stays the group's default until Itens or another mode is picked. Its category
+    counts only while the description's words choose none and none was picked: "Alimentação › Restaurante pelo cupom
+    fiscal", and "Pelo cupom" in the picker's Sugeridas. A receipt that can't be read (no receipt in it, no total, a
+    server error, the reader not set up, a photo the camera failed to take) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
+    na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were and keeping no photo (it may
+    be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
+    items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Conta's
+    "Anexos", badge "Cupom").
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
