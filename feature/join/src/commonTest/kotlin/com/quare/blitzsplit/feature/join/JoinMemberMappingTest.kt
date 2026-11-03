@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class JoinMemberMappingTest {
     @Test
-    fun `GIVEN Ana who joined WHEN mapping her THEN keeps her id color and join with the first two letters`() {
+    fun `GIVEN Ana who joined WHEN mapping her THEN keeps her id color and join with her first letter`() {
         // Given
         val ana = InviteMember("member-2", "Ana", AvatarColor.PEACH, hasJoined = true)
 
@@ -17,7 +17,7 @@ class JoinMemberMappingTest {
         val member = ana.toJoinMember()
 
         // Then
-        assertEquals(JoinMember("member-2", "Ana", "AN", AvatarColor.PEACH, hasJoined = true), member)
+        assertEquals(JoinMember("member-2", "Ana", "A", AvatarColor.PEACH, hasJoined = true), member)
     }
 
     @Test

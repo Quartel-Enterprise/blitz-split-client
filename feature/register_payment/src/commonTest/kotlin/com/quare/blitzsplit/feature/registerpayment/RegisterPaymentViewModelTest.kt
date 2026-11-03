@@ -288,7 +288,7 @@ class RegisterPaymentViewModelTest {
                 PaymentPerson(
                     ANA,
                     "Ana",
-                    "AN",
+                    "A",
                     AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
@@ -336,7 +336,7 @@ class RegisterPaymentViewModelTest {
             PaymentPerson(
                 BRUNO,
                 "Bruno",
-                "BR",
+                "B",
                 AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = false,
@@ -364,7 +364,7 @@ class RegisterPaymentViewModelTest {
             PaymentPerson(
                 DIEGO,
                 "Diego",
-                "DI",
+                "D",
                 AvatarColor.SAND,
                 photoUrl = null,
                 isMe = false,
@@ -375,7 +375,7 @@ class RegisterPaymentViewModelTest {
             PaymentPerson(
                 BRUNO,
                 "Bruno",
-                "BR",
+                "B",
                 AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = false,

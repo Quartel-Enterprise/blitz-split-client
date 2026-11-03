@@ -259,7 +259,7 @@ private fun createPreviewInvite(
     member = MembersMember(
         id = "4",
         name = "Carla",
-        initials = "CA",
+        initials = "C",
         avatarColor = AvatarColor.LILAC,
         photoUrl = null,
         isMe = false,

@@ -241,7 +241,7 @@ class BillDetailViewModelTest {
             listOf(
                 BillPayer(
                     name = "Ana",
-                    initials = "AN",
+                    initials = "A",
                     avatarColor = AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
@@ -300,14 +300,14 @@ class BillDetailViewModelTest {
                 listOf(
                     BillPayer(
                         name = "Ana",
-                        initials = "AN",
+                        initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
                     ),
                     BillPayer(
                         name = "Bruno",
-                        initials = "BR",
+                        initials = "B",
                         avatarColor = AvatarColor.GREEN,
                         photoUrl = null,
                         isMe = false,
@@ -361,7 +361,7 @@ class BillDetailViewModelTest {
                     ),
                     BillPayer(
                         name = "Ana",
-                        initials = "AN",
+                        initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
@@ -865,7 +865,7 @@ class BillDetailViewModelTest {
                     BillShareRow(
                         memberId = ANA,
                         name = "Ana",
-                        initials = "AN",
+                        initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
@@ -887,7 +887,7 @@ class BillDetailViewModelTest {
                     BillShareRow(
                         memberId = BRUNO,
                         name = "Bruno",
-                        initials = "BR",
+                        initials = "B",
                         avatarColor = AvatarColor.GREEN,
                         photoUrl = null,
                         isMe = false,
@@ -898,7 +898,7 @@ class BillDetailViewModelTest {
                     BillShareRow(
                         memberId = CARLA,
                         name = "Carla",
-                        initials = "CA",
+                        initials = "C",
                         avatarColor = AvatarColor.LILAC,
                         photoUrl = null,
                         isMe = false,

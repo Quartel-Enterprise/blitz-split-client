@@ -48,7 +48,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_ANA_ID,
         "Ana",
-        "AN",
+        "A",
         AvatarColor.GREEN,
         null,
         isMe = false,
@@ -57,7 +57,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_BRUNO_ID,
         "Bruno",
-        "BR",
+        "B",
         AvatarColor.PEACH,
         null,
         isMe = false,
@@ -66,7 +66,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         "ca",
         "Carla",
-        "CA",
+        "C",
         AvatarColor.LILAC,
         null,
         isMe = false,
@@ -75,7 +75,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         "el",
         "Elisa",
-        "EL",
+        "E",
         AvatarColor.SAND,
         null,
         isMe = false,
@@ -84,7 +84,7 @@ private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_DIEGO_ID,
         "Diego",
-        "DI",
+        "D",
         AvatarColor.GREEN,
         null,
         isMe = false,

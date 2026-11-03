@@ -96,10 +96,10 @@ class JoinInviteViewModelTest {
             assertEquals("Pierre", state.creatorName)
             assertEquals(
                 listOf(
-                    JoinMember("member-1", "Pierre", "PI", AvatarColor.BLUE, hasJoined = true),
-                    JoinMember("member-2", "Ana", "AN", AvatarColor.PEACH, hasJoined = true),
-                    JoinMember("member-3", "Bruno", "BR", AvatarColor.GREEN, hasJoined = false),
-                    JoinMember("member-4", "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
+                    JoinMember("member-1", "Pierre", "P", AvatarColor.BLUE, hasJoined = true),
+                    JoinMember("member-2", "Ana", "A", AvatarColor.PEACH, hasJoined = true),
+                    JoinMember("member-3", "Bruno", "B", AvatarColor.GREEN, hasJoined = false),
+                    JoinMember("member-4", "Carla", "C", AvatarColor.LILAC, hasJoined = false),
                 ),
                 state.members,
             )
@@ -679,7 +679,7 @@ class JoinInviteViewModelTest {
             assertEquals(JoinInviteStatus.READY, state.status)
             assertTrue(state.isPersonal)
             assertEquals(
-                JoinMember(CARLA_ID, "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
+                JoinMember(CARLA_ID, "Carla", "C", AvatarColor.LILAC, hasJoined = false),
                 state.personalMember,
             )
             assertEquals("Ana", state.inviterName)

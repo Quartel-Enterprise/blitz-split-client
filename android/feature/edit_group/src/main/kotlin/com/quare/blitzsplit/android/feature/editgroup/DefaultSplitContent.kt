@@ -39,6 +39,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -371,7 +372,7 @@ private fun createPreviewPerson(
 ): DefaultSplitPerson = DefaultSplitPerson(
     id = id,
     name = name,
-    initials = name.take(2).uppercase(),
+    initials = previewInitialsOf(name),
     avatarColor = if (isMe) AvatarColor.BLUE else AvatarColor.GREEN,
     photoUrl = null,
     isMe = isMe,

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -67,7 +68,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             StatsPersonRow(
                 memberId = "member-$index",
                 name = name,
-                initials = name.take(2).uppercase(),
+                initials = previewInitialsOf(name),
                 avatarColor = color,
                 photoUrl = null,
                 isMe = name == "Pierre",

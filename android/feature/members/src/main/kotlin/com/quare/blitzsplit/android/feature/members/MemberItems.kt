@@ -166,7 +166,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "2",
             name = "Ana",
-            initials = "AN",
+            initials = "A",
             avatarColor = AvatarColor.GREEN,
             photoUrl = null,
             isMe = false,
@@ -181,7 +181,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "3",
             name = "Bruno",
-            initials = "BR",
+            initials = "B",
             avatarColor = AvatarColor.PEACH,
             photoUrl = null,
             isMe = false,
@@ -196,7 +196,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
         MembersMember(
             id = "4",
             name = "Carla",
-            initials = "CA",
+            initials = "C",
             avatarColor = AvatarColor.LILAC,
             photoUrl = null,
             isMe = false,

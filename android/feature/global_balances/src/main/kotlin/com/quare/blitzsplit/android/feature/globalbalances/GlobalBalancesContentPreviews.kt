@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -53,7 +54,7 @@ private val previewPeople = listOf(
 private val previewCharge = ChargeDraft(
     personId = "Carla",
     name = "Carla",
-    initials = "CA",
+    initials = "C",
     color = AvatarColor.LILAC,
     photoUrl = null,
     currency = GroupCurrency.BRL,
@@ -98,7 +99,7 @@ private fun createPreviewRow(
     id = name,
     personKey = name,
     name = name,
-    initials = name.take(2).uppercase(),
+    initials = previewInitialsOf(name),
     color = AvatarColor.LILAC,
     photoUrl = null,
     currency = GroupCurrency.BRL,

@@ -26,7 +26,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "2",
         name = "Ana",
-        initials = "AN",
+        initials = "A",
         avatarColor = AvatarColor.PEACH,
         isMe = false,
         hasJoined = false,
@@ -34,7 +34,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "3",
         name = "Bruno",
-        initials = "BR",
+        initials = "B",
         avatarColor = AvatarColor.GREEN,
         isMe = false,
         hasJoined = false,
@@ -42,7 +42,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
     InviteMember(
         id = "4",
         name = "Carla",
-        initials = "CA",
+        initials = "C",
         avatarColor = AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,

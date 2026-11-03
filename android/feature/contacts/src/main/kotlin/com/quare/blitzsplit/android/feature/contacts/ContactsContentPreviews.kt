@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.designsystem.component.DetailPlaceholderPane
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -37,7 +38,7 @@ private fun createPreviewRow(
 ): ContactRow = ContactRow(
     key = name,
     name = name,
-    initials = name.take(2).uppercase(),
+    initials = previewInitialsOf(name),
     color = AvatarColor.LILAC,
     photoUrl = null,
     net = ContactNet(

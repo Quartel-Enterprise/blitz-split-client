@@ -41,7 +41,7 @@ class SharedBillRowsTest {
                 ),
                 BillPayer(
                     name = "Bruno",
-                    initials = "BR",
+                    initials = "B",
                     avatarColor = AvatarColor.default,
                     photoUrl = null,
                     isMe = false,
@@ -93,7 +93,7 @@ class SharedBillRowsTest {
             BillShareRow(
                 memberId = DIEGO,
                 name = "Diego",
-                initials = "DI",
+                initials = "D",
                 avatarColor = AvatarColor.default,
                 photoUrl = null,
                 isMe = false,

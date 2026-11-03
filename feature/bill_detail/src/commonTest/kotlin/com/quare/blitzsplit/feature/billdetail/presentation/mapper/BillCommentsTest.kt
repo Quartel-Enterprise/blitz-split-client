@@ -111,7 +111,7 @@ class BillCommentsTest {
 
         // Then
         assertEquals("Carla", row.authorName)
-        assertEquals("CA", row.initials)
+        assertEquals("C", row.initials)
         assertEquals(AvatarColor.default, row.avatarColor)
         assertFalse(row.isMe)
     }
@@ -285,7 +285,7 @@ class BillCommentsTest {
 
         // Then
         assertEquals("Ana", thread.comment.authorName)
-        assertEquals("AN", thread.comment.initials)
+        assertEquals("A", thread.comment.initials)
         assertEquals(AvatarColor.default, thread.comment.avatarColor)
         assertNull(thread.comment.photoUrl)
         assertFalse(thread.comment.isMe)
