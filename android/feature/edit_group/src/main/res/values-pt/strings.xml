@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="edit_group_title">Editar grupo</string>
     <string name="edit_group_close">Fechar</string>
     <string name="edit_group_save">Salvar</string>
@@ -35,15 +35,18 @@
         <item quantity="one">%s entrou no grupo</item>
         <item quantity="other">%s entraram no grupo</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
+    <!-- Why: shown only once someone joined, so "one" is never 0. -->
+    <plurals name="default_split_joined_equal" tools:ignore="ImpliedQuantity">
         <item quantity="one">Já entra na divisão</item>
         <item quantity="other">Já entram na divisão</item>
     </plurals>
-    <plurals name="default_split_joined_shares">
+    <!-- Why: shown only once someone joined, so "one" is never 0. -->
+    <plurals name="default_split_joined_shares" tools:ignore="ImpliedQuantity">
         <item quantity="one">Começa com 1 parte</item>
         <item quantity="other">Cada um começa com 1 parte</item>
     </plurals>
-    <plurals name="default_split_joined_percent">
+    <!-- Why: shown only once someone joined, so "one" is never 0. -->
+    <plurals name="default_split_joined_percent" tools:ignore="ImpliedQuantity">
         <item quantity="one">Começa com 0%</item>
         <item quantity="other">Cada um começa com 0%</item>
     </plurals>

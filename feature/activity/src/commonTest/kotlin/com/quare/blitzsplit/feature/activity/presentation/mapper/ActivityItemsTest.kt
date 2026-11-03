@@ -981,7 +981,8 @@ class ActivityItemsTest {
         )
 
         // When
-        val days = daysOf(items, NOW, TimeZone.of("America/Sao_Paulo"))
+        // Why: a fixed offset, since the browser's tests have no time zone database to read a region from.
+        val days = daysOf(items, NOW, TimeZone.of("UTC-03:00"))
 
         // Then
         assertEquals(RelativeDay.YESTERDAY, days.single().relativeDay)
