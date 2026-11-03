@@ -1,9 +1,7 @@
 package com.quare.blitzsplit.android.feature.contacts
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -30,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -44,12 +40,14 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
+import software.quare.loadable.valueOrNull
 
 private const val SKELETON_ROWS = 6
 private val rowPadding = Modifier.padding(
@@ -80,7 +78,7 @@ internal fun LazyListScope.contactsListItems(
         }
     }
     when {
-        state.isLoading -> skeletonItems()
+        state.isLoading -> skeletonItems(isWaitingForInternet = state.isWaitingForInternet)
 
         state.isEmpty -> if (isPaneShown) {
             inviteActionItems(
@@ -157,7 +155,11 @@ private fun BalancesSummaryCard(
     onEvent: (ContactsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val money = rememberMoneyFormatter(state.total.currency)
+    val total = state.total.valueOrNull() ?: run {
+        ContactsSummarySkeleton(modifier = modifier)
+        return
+    }
+    val money = rememberMoneyFormatter(total.currency)
     Surface(
         onClick = { onEvent(ContactsUiEvent.OnBalancesCardClicked) },
         modifier = modifier.fillMaxWidth(),
@@ -175,16 +177,16 @@ private fun BalancesSummaryCard(
         ) {
             SummaryTotalCell(
                 label = stringResource(R.string.contacts_summary_you_owe),
-                amount = money.toText(state.total.toPayMinor),
-                isEnabled = state.total.toPayMinor > 0,
+                amount = money.toText(total.toPayMinor),
+                isEnabled = total.toPayMinor > 0,
                 isOwed = false,
                 onClick = { onEvent(ContactsUiEvent.OnYouOweClicked) },
                 modifier = Modifier.weight(1f),
             )
             SummaryTotalCell(
                 label = stringResource(R.string.contacts_summary_owed_to_you),
-                amount = money.toText(state.total.toReceiveMinor),
-                isEnabled = state.total.toReceiveMinor > 0,
+                amount = money.toText(total.toReceiveMinor),
+                isEnabled = total.toReceiveMinor > 0,
                 isOwed = true,
                 onClick = { onEvent(ContactsUiEvent.OnOwedToYouClicked) },
                 modifier = Modifier.weight(1f),
@@ -394,59 +396,35 @@ private fun HiddenContactRow(
     }
 }
 
-// Why: only until Room is read: rows in the shape of people, fading down the list.
-private fun LazyListScope.skeletonItems() {
-    item(key = "skeleton-title") { SectionTitle(stringResource(R.string.contacts_people_loading)) }
-    items(
-        count = SKELETON_ROWS,
-        key = { "skeleton-$it" },
-    ) { index ->
-        SkeletonRow(
-            index = index,
-            modifier = rowPadding.alpha(1f - index * 0.12f),
+/*
+ * Why: until Room is read and the account's copy is whole: the totals' card and rows in the shape of people, with
+ * "Sem internet. Seus dados aparecem quando reconectar." under them while that copy waits offline.
+ */
+private fun LazyListScope.skeletonItems(isWaitingForInternet: Boolean) {
+    item(key = "skeleton-summary") {
+        ContactsSummarySkeleton(
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 12.dp,
+            ),
         )
     }
-}
-
-@Composable
-private fun SkeletonRow(
-    index: Int,
-    modifier: Modifier = Modifier,
-) {
-    val bar = MaterialTheme.colorScheme.surfaceContainerHigh
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 64.dp),
-        shape = groupedRowShapeOf(index, SKELETON_ROWS),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(bar, CircleShape),
+    item(key = "skeleton-title") { SectionTitle(stringResource(R.string.contacts_people_loading)) }
+    item(key = "skeleton-rows") {
+        ContactRowsSkeleton(
+            count = SKELETON_ROWS,
+            modifier = contactsSkeletonPadding,
+        )
+    }
+    if (isWaitingForInternet) {
+        item(key = "waiting-for-internet") {
+            WaitingForInternetMessage(
+                modifier = Modifier.padding(
+                    horizontal = 20.dp,
+                    vertical = 16.dp,
+                ),
             )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(
-                            width = (72 + index % 3 * 20).dp,
-                            height = 14.dp,
-                        ).background(bar, RoundedCornerShape(7.dp)),
-                )
-                Box(
-                    modifier = Modifier
-                        .size(
-                            width = (110 + index % 2 * 30).dp,
-                            height = 10.dp,
-                        ).background(bar, RoundedCornerShape(5.dp)),
-                )
-            }
         }
     }
 }

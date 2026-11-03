@@ -3,6 +3,8 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 // Why: "Início" (flow 10), the home's first tab and where the app opens.
 data class HomeUiState(
@@ -27,9 +29,13 @@ data class HomeUiState(
     val isLoaded: Boolean,
     // Why: every group on the device, settled ones included; none and nobody is the first use.
     val groupCount: Int,
-    // Why: "Saldos com pessoas": whom you owe first, then who owes you, the largest first in each.
-    val people: List<HomePerson>,
-    val summary: HomeSummary,
+    /*
+     * Why: "Saldos com pessoas": whom you owe first, then who owes you, the largest first in each. Read apart from
+     * the groups, so until then it shimmers rather than reading as everyone settled.
+     */
+    val people: Loadable<List<HomePerson>>,
+    // Why: "Saldo geral", from the same read as the people: never "Nada a receber" before it.
+    val summary: Loadable<HomeSummary>,
     // Why: "Seus grupos", up to three: the pinned first, then the latest activity; settled groups stay out.
     val groups: List<HomeGroup>,
     // Why: "Últimas despesas", the five latest bills you paid or take part in, the most recent day first.
@@ -58,13 +64,20 @@ data class HomeUiState(
     val showsHome: Boolean
         get() = (isLoaded && groupCount > 0) || isFirstDownload
 
+    /*
+     * Why: "Saldos com pessoas" shimmers while the balances are read, and while the first download brought nobody yet,
+     * whom the rest of the groups may still bring; the faces that came show.
+     */
+    val isLoadingPeople: Boolean
+        get() = people.valueOrNull()?.takeIf { it.isNotEmpty() || !isFirstDownload } == null
+
     // Why: everyone settled: the row of faces goes without leaving a gap, and the card says "tudo acertado".
     val showsPeople: Boolean
-        get() = people.isNotEmpty()
+        get() = people.valueOrNull()?.isNotEmpty() == true
 
     // Why: "Você deve" goes straight to settling up with them ("Acertar com Ana") while only they are owed.
     val onlyPersonToPay: HomePerson?
-        get() = people.singleOrNull { it.netMinor < 0 }
+        get() = people.valueOrNull()?.singleOrNull { it.netMinor < 0 }
 
     val showsSplitBillButton: Boolean
         get() = isLoaded && groupCount > 0

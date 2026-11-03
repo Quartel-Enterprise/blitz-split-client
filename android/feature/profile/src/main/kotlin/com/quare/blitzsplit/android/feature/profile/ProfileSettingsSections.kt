@@ -40,6 +40,8 @@ import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 
 @Composable
 internal fun PreferencesSection(
@@ -51,36 +53,38 @@ internal fun PreferencesSection(
             icon = Icons.Outlined.Palette,
             headline = stringResource(R.string.profile_appearance),
         )
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                ),
-        ) {
-            ThemePreference.entries.forEachIndexed { index, theme ->
-                SegmentedButton(
-                    selected = state.theme == theme,
-                    onClick = { onEvent(ProfileUiEvent.OnThemeSelected(theme)) },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = ThemePreference.entries.size,
-                    ),
-                ) { Text(stringResource(theme.labelRes)) }
+        val themeModifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp,
+            )
+        if (state.isLoaded) {
+            SingleChoiceSegmentedButtonRow(modifier = themeModifier) {
+                ThemePreference.entries.forEachIndexed { index, theme ->
+                    SegmentedButton(
+                        selected = state.theme == theme,
+                        onClick = { onEvent(ProfileUiEvent.OnThemeSelected(theme)) },
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = ThemePreference.entries.size,
+                        ),
+                    ) { Text(stringResource(theme.labelRes)) }
+                }
             }
+        } else {
+            ThemePickerSkeleton(modifier = themeModifier)
         }
         HorizontalDivider()
         SectionRow(
             icon = Icons.Outlined.Notifications,
             headline = stringResource(R.string.profile_notifications),
             modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnNotificationsClicked) },
-            supporting = pluralStringResource(
-                R.plurals.profile_notifications_active,
-                state.activeNotificationCount,
-                state.activeNotificationCount,
-            ),
+            supporting = state.activeNotificationCount.valueOrNull()?.let { count ->
+                pluralStringResource(R.plurals.profile_notifications_active, count, count)
+            },
+            isSupportingLoading = state.activeNotificationCount.isLoading(),
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

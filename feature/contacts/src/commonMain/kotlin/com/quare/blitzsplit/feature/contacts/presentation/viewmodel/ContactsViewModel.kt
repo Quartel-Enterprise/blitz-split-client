@@ -20,7 +20,9 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.mapper.rowOf
+import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
@@ -28,11 +30,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 /*
  * Why: Contatos (flow 11), the home's tab over the groups. Everything comes from the device, offline too: the people,
@@ -45,6 +51,7 @@ class ContactsViewModel(
     observePeopleBalances: ObservePeopleBalances,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
@@ -59,12 +66,13 @@ class ContactsViewModel(
                 contacts = emptyList(),
                 hiddenContacts = emptyList(),
                 isHiddenExpanded = false,
-                total = zeroTotalOf(GroupCurrency.fallback),
+                total = Loadable.Loading,
                 isSearchOpen = false,
                 query = "",
-                agenda = emptyList(),
+                agenda = emptyList<AgendaContact>().toLoaded(),
                 isOnline = true,
                 isLoaded = false,
+                isWaitingForInternet = false,
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
@@ -99,23 +107,25 @@ class ContactsViewModel(
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
-        observeContactBook()
-            .onEach { book ->
-                val (hidden, shown) = book.contacts.partition { it.isHidden }
-                uiState.update {
-                    it.copy(
-                        contacts = shown.map(::rowOf),
-                        hiddenContacts = hidden.map(::rowOf),
-                        // Why: the section closes once nobody is left in it, so a new hidden one starts closed.
-                        isHiddenExpanded = it.isHiddenExpanded && hidden.isNotEmpty(),
-                        isLoaded = true,
-                    )
-                }
-            }.launchIn(viewModelScope)
-        observePeopleBalances()
-            .onEach { people ->
-                uiState.update { it.copy(total = people.totals.firstOrNull() ?: zeroTotalOf(GroupCurrency.fallback)) }
-            }.launchIn(viewModelScope)
+        val firstDownload = observeFirstDownload()
+        combine(observeContactBook(), firstDownload) { book, download ->
+            val (hidden, shown) = book.contacts.partition { it.isHidden }
+            val isWhole = download == null
+            uiState.update {
+                it.copy(
+                    contacts = if (isWhole) shown.map(::rowOf) else emptyList(),
+                    hiddenContacts = if (isWhole) hidden.map(::rowOf) else emptyList(),
+                    // Why: the section closes once nobody is left in it, so a new hidden one starts closed.
+                    isHiddenExpanded = it.isHiddenExpanded && isWhole && hidden.isNotEmpty(),
+                    isLoaded = isWhole,
+                    isWaitingForInternet = download?.isWaitingForInternet == true,
+                )
+            }
+        }.launchIn(viewModelScope)
+        combine(observePeopleBalances(), firstDownload) { people, download ->
+            val total = people.totals.firstOrNull() ?: zeroTotalOf(GroupCurrency.fallback)
+            uiState.update { it.copy(total = if (download == null) total.toLoaded() else Loadable.Loading) }
+        }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -147,11 +157,21 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnBalancesCardClicked -> openBalances(BalancesFilter.ALL)
 
-            ContactsUiEvent.OnYouOweClicked -> if (uiState.value.total.toPayMinor > 0) {
+            ContactsUiEvent.OnYouOweClicked -> if ((
+                    uiState.value.total
+                        .valueOrNull()
+                        ?.toPayMinor ?: 0L
+                ) > 0L
+            ) {
                 openBalances(BalancesFilter.YOU_OWE)
             }
 
-            ContactsUiEvent.OnOwedToYouClicked -> if (uiState.value.total.toReceiveMinor > 0) {
+            ContactsUiEvent.OnOwedToYouClicked -> if ((
+                    uiState.value.total
+                        .valueOrNull()
+                        ?.toReceiveMinor ?: 0L
+                ) > 0L
+            ) {
                 openBalances(BalancesFilter.OWES_YOU)
             }
 
@@ -165,7 +185,9 @@ class ContactsViewModel(
             )
 
             is ContactsUiEvent.OnAgendaContactInviteClicked -> {
-                val contact = uiState.value.agenda.firstOrNull { it.id == event.contactId } ?: return
+                val contact = uiState.value.agenda
+                    .valueOrNull()
+                    ?.firstOrNull { it.id == event.contactId } ?: return
                 openFromList(
                     Route.ContactInvite(
                         personKey = null,
@@ -174,7 +196,9 @@ class ContactsViewModel(
                 )
             }
 
-            is ContactsUiEvent.OnAgendaLoaded -> uiState.update { it.copy(agenda = event.contacts) }
+            ContactsUiEvent.OnAgendaReadStarted -> uiState.update { it.copy(agenda = Loadable.Loading) }
+
+            is ContactsUiEvent.OnAgendaLoaded -> uiState.update { it.copy(agenda = event.contacts.toLoaded()) }
 
             ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)
 

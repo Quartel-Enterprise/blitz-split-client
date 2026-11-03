@@ -11,6 +11,8 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiState
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -31,6 +34,7 @@ class ContactInviteViewModel(
     private val navigator: Navigator,
     private val encodeQrCode: EncodeQrCode,
     observeContactBook: ObserveContactBook,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<ContactInviteUiState>
@@ -45,6 +49,7 @@ class ContactInviteViewModel(
                 isOnline = true,
                 isLinkCopied = false,
                 isLoaded = false,
+                isWaitingForInternet = false,
             ),
         )
 
@@ -55,16 +60,18 @@ class ContactInviteViewModel(
     val actionWatcher: FlowWatcher<ContactInviteUiAction> = FlowWatcher(uiAction)
 
     private var book: ContactBookSnapshot? = null
+
+    private var firstDownload: FirstDownloadProgress? = null
     private val copiedFeedback = CopiedFeedbackTimer(viewModelScope) { isCopied ->
         uiState.update { it.copy(isLinkCopied = isCopied) }
     }
 
     init {
-        observeContactBook()
-            .onEach { snapshot ->
-                book = snapshot
-                show(snapshot)
-            }.launchIn(viewModelScope)
+        combine(observeContactBook(), observeFirstDownload()) { snapshot, download ->
+            book = snapshot
+            firstDownload = download
+            show(snapshot)
+        }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -127,7 +134,9 @@ class ContactInviteViewModel(
                 link = link,
                 qrCode = qrCode,
                 isLinkCopied = state.isLinkCopied && link == state.link,
-                isLoaded = true,
+                // Why: what came shows; only "no group yet" waits for the whole copy (see hasNoGroups).
+                isLoaded = firstDownload == null || links.isNotEmpty(),
+                isWaitingForInternet = firstDownload?.isWaitingForInternet == true,
             )
         }
     }

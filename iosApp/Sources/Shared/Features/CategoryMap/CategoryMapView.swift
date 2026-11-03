@@ -70,7 +70,12 @@ struct CategoryMapScreen: View {
 
     var body: some View {
         Group {
-            if layout.usesTwoColumns, !state.isSearching, !state.isEmpty {
+            if !state.isLoaded {
+                // The terms, the categories or a restored account's own map not read yet: never "No terms" before them
+                ShimmerScreen {
+                    CategoryMapPlaceholder()
+                }
+            } else if layout.usesTwoColumns, !state.isSearching, !state.isEmpty {
                 TwoColumnsLayout(firstWidth: 320, spacing: 24) {
                     List { MapListSections(model: model, showsCards: false) }
                 } second: {
@@ -89,15 +94,18 @@ struct CategoryMapScreen: View {
         .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
         #endif
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Add term", systemImage: "plus") {
-                    model.send(CategoryMapUiEventOnAddTermClicked(categoryId: nil, text: ""))
+            // A change before the account's own terms came down could go up over them
+            if state.canEditMap {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Add term", systemImage: "plus") {
+                        model.send(CategoryMapUiEventOnAddTermClicked(categoryId: nil, text: ""))
+                    }
                 }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Menu("More options", systemImage: "ellipsis") {
-                    Button("Restore default", systemImage: "arrow.counterclockwise") {
-                        model.send(CategoryMapUiEventOnRestoreClicked.shared)
+                ToolbarItem(placement: .primaryAction) {
+                    Menu("More options", systemImage: "ellipsis") {
+                        Button("Restore default", systemImage: "arrow.counterclockwise") {
+                            model.send(CategoryMapUiEventOnRestoreClicked.shared)
+                        }
                     }
                 }
             }
@@ -129,6 +137,28 @@ struct CategoryMapScreen: View {
                 if !shown, model.current.termForm != nil { model.send(CategoryMapUiEventOnTermDismissed.shared) }
             },
         )
+    }
+}
+
+/// The map still coming: a few category cards with their terms as chips, as blocks the caller makes shimmer.
+struct CategoryMapPlaceholder: View {
+    var body: some View {
+        ForEach(0..<3, id: \.self) { _ in
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 10) {
+                    ShimmerBlock(width: 32, height: 32, cornerRadius: 10)
+                    ShimmerLine(width: 140, height: 14)
+                }
+                HStack(spacing: 8) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        ShimmerBlock(width: 72, height: 28, cornerRadius: 14)
+                    }
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Palette.card, in: .rect(cornerRadius: 22))
+        }
     }
 }
 

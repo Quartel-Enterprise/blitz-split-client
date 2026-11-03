@@ -38,13 +38,19 @@ struct MacCategoryMapSettings: View {
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 260)
                 Spacer()
-                Button("Restore Default…") {
-                    model.send(CategoryMapUiEventOnRestoreClicked.shared)
+                if state.canEditMap {
+                    Button("Restore Default…") {
+                        model.send(CategoryMapUiEventOnRestoreClicked.shared)
+                    }
                 }
             }
             .padding(12)
             MapNoticeBar(model: model)
-            if state.isSearching || state.isEmpty {
+            if !state.isLoaded {
+                ShimmerScreen {
+                    CategoryMapPlaceholder()
+                }
+            } else if state.isSearching || state.isEmpty {
                 List { MapListSections(model: model, showsCards: true) }
             } else {
                 HSplitView {

@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -57,8 +58,9 @@ export function PaymentKeyDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new PaymentKeyPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsPaymentKeyState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  // Why: a saved key fills the form once read, so nothing shows until then rather than an empty form.
-  if (!presenter || !state?.isLoaded) return null
+  // Why: a saved key fills the form once read, so its fields shimmer until then rather than an empty form.
+  if (!presenter || !state) return null
+  if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} onClose={() => presenter.back()} className="sm:max-w-[500px]" />
 
   const method = state.method as PaymentMethod
   const title = t(state.isEditing ? `paymentKey_titleEdit${method}` : `paymentKey_titleNew${method}`)

@@ -43,6 +43,7 @@ class EditProfileViewModel(
     val uiState: StateFlow<EditProfileUiState>
         field = MutableStateFlow(
             EditProfileUiState(
+                isLoaded = false,
                 name = "",
                 avatarColor = AvatarColor.default,
                 photo = null,
@@ -59,6 +60,8 @@ class EditProfileViewModel(
 
     // Why: what the form compares against, kept up to date as sync replaces a pending photo with its upload.
     private var saved: UserProfile? = null
+
+    private var isAccountRead = false
 
     private val photoPicker = ProfilePhotoPicker(
         prepareProfilePhoto = prepareProfilePhoto,
@@ -84,8 +87,10 @@ class EditProfileViewModel(
                 .distinctUntilChanged()
                 .collectLatest { connected ->
                     // Why: the notice names the provider at once; the picture follows once the session is read.
+                    isAccountRead = true
                     uiState.update {
                         it.copy(
+                            isLoaded = saved != null,
                             accountProvider = connected?.provider,
                             accountPhotoUrl = null,
                         )
@@ -98,6 +103,8 @@ class EditProfileViewModel(
     }
 
     fun onEvent(event: EditProfileUiEvent) {
+        // Why: the form takes edits only once it holds the saved profile, which would otherwise replace them.
+        if (!uiState.value.isLoaded && event != EditProfileUiEvent.OnBackClicked) return
         when (event) {
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
@@ -119,7 +126,7 @@ class EditProfileViewModel(
         val previous = saved
         saved = profile
         edit { state ->
-            if (previous == null) return@edit state.withProfile(profile)
+            if (previous == null) return@edit state.withProfile(profile).copy(isLoaded = isAccountRead)
             val name = if (state.name.trim() == previous.displayName) profile.displayName else state.name
             val color = if (state.avatarColor == previous.avatarColor) profile.avatarColor else state.avatarColor
             val photo = if (state.photo == previous.photo) profile.photo else state.photo

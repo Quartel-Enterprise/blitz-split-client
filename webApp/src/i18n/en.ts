@@ -16,6 +16,9 @@ export const en = {
   common_signInFailed: "Couldn't sign in right now. Try again.",
   common_close: 'Close',
   common_cancel: 'Cancel',
+  common_loading: 'Loading',
+  common_waitingForInternet: "No internet. Your data shows up once you're back online.",
+  common_waitingForInternetGroups: "No internet. Your groups show up once you're back online.",
 
   otherTab_title: 'Blitz Split is open in another tab',
   otherTab_body: 'Close that tab, or keep using it. This one opens on its own as soon as the other closes.',
@@ -606,6 +609,7 @@ export const en = {
   join_offlineTitle: 'No internet to open the invite',
   join_offlineMessage: 'We kept the link. As soon as this browser connects, the invite opens by itself.',
   join_retry: 'Try again',
+  join_failedTitle: "Couldn't open the invite. Try again.",
   join_personalChip: 'Personal invite',
   join_personalTitle: '{inviter} invited you as {name}',
   join_personalTitleNoInviter: "You're joining as {name}",

@@ -1,7 +1,7 @@
 import { HomeSidebarPresenter, type JsHomeSidebarState } from 'blitzsplit-shared'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 
 interface HomeSidebar {
   presenter: HomeSidebarPresenter
@@ -62,18 +62,18 @@ export function PageShell({
   overlays?: ReactNode
 }) {
   const sidebar = useContext(HomeSidebarContext)
-  // Why: nothing is drawn until the sidebar is read, so it never fills in beside the page.
-  if (!sidebar?.state.isLoaded) return null
-  const { presenter, state } = sidebar
+  // Why: the frame draws at once, the profile and the open groups shimmering until the sidebar is read.
+  const presenter = sidebar?.presenter
+  const state = sidebar?.state.isLoaded ? sidebar.state : null
   return (
     <HomeShell
       selected={selected}
       isProfileSelected={selected === undefined}
-      profile={state}
-      activityUnreadCount={state.activityUnreadCount}
-      onTab={(tab) => presenter.openTab(tab)}
-      onProfile={() => presenter.openProfile()}
-      openGroups={groups && { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) }}
+      profile={state && loadedProfile(state)}
+      activityUnreadCount={state?.activityUnreadCount ?? 0}
+      onTab={(tab) => presenter?.openTab(tab)}
+      onProfile={() => presenter?.openProfile()}
+      openGroups={groups && (state && presenter ? { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) } : 'loading')}
       phoneBars={phoneBars}
       isOutsideTabs
       overlays={overlays}

@@ -12,11 +12,14 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaAccess
+import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.InviteGroupOption
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 private val previewContacts = listOf(
     createPreviewRow("Ana", 16_230L, groupCount = 2),
@@ -54,6 +57,7 @@ private fun createPreviewRow(
 private fun createPreviewState(
     contacts: List<ContactRow>,
     isOnline: Boolean = true,
+    isLoaded: Boolean = true,
 ): ContactsUiState = ContactsUiState(
     displayName = "Pierre",
     avatarInitial = "P",
@@ -70,12 +74,13 @@ private fun createPreviewState(
         toPayMinor = 12_600L,
         toReceiveCount = 2,
         toPayCount = 1,
-    ),
+    ).toLoaded(),
     isSearchOpen = false,
     query = "",
-    agenda = emptyList(),
+    agenda = emptyList<AgendaContact>().toLoaded(),
     isOnline = isOnline,
-    isLoaded = true,
+    isLoaded = isLoaded,
+    isWaitingForInternet = !isOnline && !isLoaded,
     isDetailPaneShown = false,
     pickedKey = null,
     isAgendaPicked = false,
@@ -114,6 +119,22 @@ private fun ContactsOfflinePreview() {
 
 @DevicePreviews
 @Composable
+private fun ContactsLoadingPreview() {
+    BlitzSplitTheme {
+        ContactsContent(
+            state = createPreviewState(
+                contacts = emptyList(),
+                isOnline = false,
+                isLoaded = false,
+            ).copy(total = Loadable.Loading),
+            onEvent = {},
+            detailPane = { DetailPlaceholderPane() },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
 private fun ContactsEmptyPreview() {
     BlitzSplitTheme {
         ContactsContent(
@@ -131,7 +152,7 @@ private fun AgendaAskPreview() {
         AgendaContent(
             state = AgendaUiState(
                 access = AgendaAccess.NOT_ASKED,
-                contacts = emptyList(),
+                contacts = Loadable.Loading,
                 query = "",
             ),
             isInPane = false,
@@ -158,6 +179,7 @@ private fun ContactInvitePreview() {
                 isOnline = true,
                 isLinkCopied = false,
                 isLoaded = true,
+                isWaitingForInternet = false,
             ),
             presentation = FormPresentation.Dialog,
             onEvent = {},

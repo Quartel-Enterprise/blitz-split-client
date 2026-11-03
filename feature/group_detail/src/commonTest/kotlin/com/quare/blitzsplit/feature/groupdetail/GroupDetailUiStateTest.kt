@@ -355,6 +355,8 @@ class GroupDetailUiStateTest {
         showsBillDeletedNotice = false,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        awaitsFullSync = false,
+        isWaitingForInternet = false,
         teach = null,
         homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,

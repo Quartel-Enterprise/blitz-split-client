@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
@@ -59,6 +60,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
 private val bookGap = 72.dp
+private const val SKELETON_FIELDS = 3
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
 private val phoneLandscapeStartColumnWidth = 300.dp
@@ -120,8 +122,18 @@ private fun PaymentKeyFullScreenScaffold(
         val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
             when {
-                // Why: a saved key fills the form once read, so the form doesn't flash empty first.
-                !body.state.isLoaded -> Unit
+                // Why: a saved key fills the form once read, so the form shimmers instead of flashing empty first.
+                !body.state.isLoaded -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    ShimmerFormSkeleton(
+                        modifier = Modifier
+                            .widthIn(max = singleColumnMaxWidth)
+                            .padding(16.dp),
+                        fieldCount = SKELETON_FIELDS,
+                    )
+                }
 
                 isBook -> PaymentKeyBookLayout(body = body)
 
@@ -169,7 +181,16 @@ private fun PaymentKeyDialogSurface(
                 onEvent = body.onEvent,
                 isDialog = true,
             )
-            if (body.state.isLoaded) {
+            if (!body.state.isLoaded) {
+                ShimmerFormSkeleton(
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 24.dp,
+                    ),
+                    fieldCount = SKELETON_FIELDS,
+                )
+            } else {
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())

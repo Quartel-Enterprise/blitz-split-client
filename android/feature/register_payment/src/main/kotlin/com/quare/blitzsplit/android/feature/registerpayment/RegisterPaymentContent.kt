@@ -54,6 +54,8 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPe
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 private const val PREVIEW_NOW_MILLIS = 1_761_652_200_000L
 
@@ -74,8 +76,8 @@ fun RegisterPaymentContent(
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
     // Why: a sheet and a dialog sit over the group and wait for the form; full screen, the tabletop draws its bar first.
-    if (state.showsReceiverKeys) {
-        PayWithKeyPane(
+    when {
+        state.showsReceiverKeys -> PayWithKeyPane(
             state = state,
             presentation = presentation,
             money = money,
@@ -83,8 +85,16 @@ fun RegisterPaymentContent(
             onEvent = onEvent,
             modifier = modifier,
         )
-    } else {
-        FormPane(
+
+        !state.isLoaded || state.isLoadingReceiverKeys -> RegisterPaymentLoadingPane(
+            state = state,
+            presentation = presentation,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+
+        else -> FormPane(
             state = state,
             presentation = presentation,
             money = money,
@@ -109,29 +119,25 @@ private fun FormPane(
     modifier: Modifier = Modifier,
 ) {
     when (presentation) {
-        FormPresentation.Dialog -> if (state.isLoaded) {
-            DialogContent(
-                state = state,
-                money = money,
-                dates = dates,
-                snackbarHostState = snackbarHostState,
-                onWhenClick = onWhenClick,
-                onEvent = onEvent,
-                modifier = modifier,
-            )
-        }
+        FormPresentation.Dialog -> DialogContent(
+            state = state,
+            money = money,
+            dates = dates,
+            snackbarHostState = snackbarHostState,
+            onWhenClick = onWhenClick,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
 
-        FormPresentation.BottomSheet -> if (state.isLoaded) {
-            SheetContent(
-                state = state,
-                money = money,
-                dates = dates,
-                snackbarHostState = snackbarHostState,
-                onWhenClick = onWhenClick,
-                onEvent = onEvent,
-                modifier = modifier,
-            )
-        }
+        FormPresentation.BottomSheet -> SheetContent(
+            state = state,
+            money = money,
+            dates = dates,
+            snackbarHostState = snackbarHostState,
+            onWhenClick = onWhenClick,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
 
         FormPresentation.TabletopHalves -> TabletopContent(
             state = state,
@@ -431,7 +437,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     isOnline = isOnline,
     isSaving = false,
     isLoaded = true,
-    receiverKeys = emptyList(),
+    receiverKeys = emptyList<ReceiverKey>().toLoaded(),
     groupName = "Apê 302",
     keyMethod = PaymentMethod.PIX,
     offersReceiverKeys = true,
@@ -469,7 +475,7 @@ private fun createPayPreviewState(isOnline: Boolean = true): RegisterPaymentUiSt
                 text = "ana@walletofsatoshi.com",
                 isDefault = true,
             ),
-        ),
+        ).toLoaded(),
         pixCode = "00020126360014br.gov.bcb.pix0114+5521987654321520400005303986540598.005802BR5903Ana6006BRASIL" +
             "62070503***6304D3C1",
     )
@@ -509,6 +515,20 @@ private fun PayWithKeyContentPreview() {
     BlitzSplitTheme {
         RegisterPaymentContent(
             state = createPayPreviewState(),
+            presentation = FormPresentation.BottomSheet,
+            snackbarHostState = SnackbarHostState(),
+            onWhenClick = {},
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PayWithKeyContentLoadingPreview() {
+    BlitzSplitTheme {
+        RegisterPaymentContent(
+            state = createPayPreviewState(isOnline = true).copy(receiverKeys = Loadable.Loading),
             presentation = FormPresentation.BottomSheet,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},

@@ -32,7 +32,10 @@ class JsPickPaymentGroup(
 )
 
 class JsPickPaymentState(
+    // Why: false draws the shimmer, also while no pair came and the account's first full sync is still due.
     val isLoaded: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
+    val isWaitingForInternet: Boolean,
     // Why: the groups with an open pair, the most recently used first.
     val groups: Array<JsPickPaymentGroup>,
     // Why: "Ninguém deve nada agora".
@@ -48,6 +51,7 @@ class PickPaymentPresenter {
         val states = viewModel.uiState.map { state ->
             JsPickPaymentState(
                 isLoaded = state.isLoaded,
+                isWaitingForInternet = state.isWaitingForInternet,
                 groups = state.groups.map(::toJsPickPaymentGroup).toTypedArray(),
                 showsEmpty = state.showsEmpty,
             )

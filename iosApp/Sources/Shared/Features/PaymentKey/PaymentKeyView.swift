@@ -80,7 +80,11 @@ struct PaymentKeyView: View {
                     usesTwoColumns: layout.usesTwoColumns && !isSheet,
                 )
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The key not read yet: its fields shimmer in place
+                ShimmerScreen {
+                    ShimmerForm(fieldCount: 3)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .measuringScreenLayout($layout)

@@ -7,6 +7,7 @@ import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
@@ -49,7 +50,9 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     if (action === 'remove-photo-error') toast(t('billDetail_removePhotoError'))
   })
   const localPhotoUrls = useLocalPhotoUrls(state?.attachments ?? [])
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  // Why: the panel opens at once, the bill shimmering in it until it was read, rather than nothing on the tap.
+  const isLoaded = state.isLoaded
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
   const onOpenChange = (open: boolean) => {
@@ -60,19 +63,24 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     presenter.reply(commentId)
     composerRef.current?.focus()
   }
-  const actions = <BillActions presenter={presenter} state={state} />
-  const offline = !state.isOnline && (
+  const actions = isLoaded && <BillActions presenter={presenter} state={state} />
+  const groupName = isLoaded ? (
+    <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+  ) : (
+    <SkeletonLine className="mr-auto w-28" />
+  )
+  const offline = isLoaded && !state.isOnline && (
     <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[13px] leading-[18px] text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
       {t('billDetail_offline')}
     </p>
   )
-  const conversation = (
+  const conversation = isLoaded && (
     <>
       <BillComments state={state} onReply={onReply} />
       <BillHistory history={state.history} isUndoing={state.isUndoing} money={money} onUndo={() => presenter.undo()} />
     </>
   )
-  const composer = (className: string) => <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
+  const composer = (className: string) => isLoaded && <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
   const attachments = <BillAttachments presenter={presenter} state={state} localUrls={localPhotoUrls} />
   // Why: outside the panel, like the delete dialog, so the lightbox covers the whole window over the drawer too.
   const viewer = <AttachmentViewer presenter={presenter} state={state} localUrls={localPhotoUrls} />
@@ -87,7 +95,9 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   )
 
   if (isDesktop) {
-    const body = (
+    const body = !isLoaded ? (
+      <BillBodySkeleton title={<SheetTitle className="sr-only">{t('common_loading')}</SheetTitle>} />
+    ) : (
       <BillBody
         state={state}
         money={money}
@@ -101,7 +111,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
         <Sheet open={!isCovered} onOpenChange={onOpenChange}>
           <SheetContent side="right" showCloseButton={false} className="w-full gap-0 sm:max-w-[560px] lg:max-w-[880px]">
             <header className="flex h-14 shrink-0 items-center gap-1 border-b pr-3 pl-6">
-              <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+              {groupName}
               {actions}
               <SheetClose asChild>
                 <Button variant="ghost" size="icon-sm" aria-label={t('common_close')} className="text-muted-foreground">
@@ -110,7 +120,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
               </SheetClose>
             </header>
             {offline && <div className="shrink-0 px-6 pt-4">{offline}</div>}
-            {isWide ? (
+            {isWide && isLoaded ? (
               <div className="grid min-h-0 flex-1 grid-cols-2 gap-8 px-6">
                 <div className="min-w-0 overflow-y-auto py-6">{body}</div>
                 <div className="flex min-h-0 min-w-0 flex-col">
@@ -140,18 +150,22 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <Drawer open={!isCovered} onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
           <DrawerHeader className="flex-row items-center gap-1 border-b py-2 pr-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
-            <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+            {groupName}
             {actions}
           </DrawerHeader>
           <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4 pb-6">
             {offline}
-            <BillBody
-              state={state}
-              money={money}
-              attachments={attachments}
-              title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
-              description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
-            />
+            {isLoaded ? (
+              <BillBody
+                state={state}
+                money={money}
+                attachments={attachments}
+                title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
+                description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
+              />
+            ) : (
+              <BillBodySkeleton title={<DrawerTitle className="sr-only">{t('common_loading')}</DrawerTitle>} />
+            )}
             {conversation}
           </div>
           {/* Why: on the phone the composer stays at the bottom, the bill and the conversation scrolling above it. */}
@@ -160,6 +174,33 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       </Drawer>
       {viewer}
       {deletion}
+    </>
+  )
+}
+
+/**
+ * The bill until it was read: its category and title, the total and who paid, then each person's part, after 150 ms.
+ * `title` is the panel's accessible name meanwhile, which a dialog needs.
+ */
+function BillBodySkeleton({ title }: { title: ReactNode }) {
+  return (
+    <>
+      {title}
+      <LoadingRegion className="flex flex-col gap-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="size-10 rounded-xl" />
+          <span className="flex flex-1 flex-col gap-2">
+            <SkeletonLine className="h-2.5 w-1/3" />
+            <SkeletonLine className="h-4 w-1/2" />
+            <SkeletonLine className="h-2.5 w-1/4" />
+          </span>
+        </div>
+        <span className="flex flex-col gap-2.5">
+          <Skeleton className="h-9 w-40" />
+          <SkeletonLine className="w-1/3" />
+        </span>
+        <SkeletonRows count={3} className="rounded-lg border" />
+      </LoadingRegion>
     </>
   )
 }

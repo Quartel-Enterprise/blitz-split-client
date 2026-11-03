@@ -126,14 +126,26 @@ class SyncCoordinator(
     private suspend fun syncLocked(): Result<Unit> = suspendRunCatching {
         profileRepository.observeProfile().first() ?: return@suspendRunCatching
         // Why: the first sync with a profile restored here settles the first download, failed or not.
-        try {
+        val userId = try {
             syncSteps()
         } finally {
             firstDownload.end()
         }
-    }.also { result -> lastSyncFailed.value = result.isFailure }
+        /*
+         * Why: only a sync that brought every part down completes the account's copy; one that failed leaves it awaited,
+         * and so does a switch to another user while it ran, whose copy this sync never brought.
+         */
+        val account = accountRepository.observeAccount().first()
+        if (account.awaitsFullSync && userIdOrNull(account.status) == userId) {
+            accountRepository.updateAwaitsFullSync(false)
+        }
+    }.also { result ->
+        lastSyncFailed.value = result.isFailure
+        if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
+    }
 
-    private suspend fun syncSteps() {
+    // Why: returns the user it synced, whose copy it completed.
+    private suspend fun syncSteps(): String {
         val userId = accountRepository.ensureRegistered().getOrThrow()
         profileRepository.downloadProfile(userId).getOrThrow()
         profileRepository.uploadPendingProfile(userId).getOrThrow()
@@ -235,6 +247,7 @@ class SyncCoordinator(
         attachmentsSynced.getOrThrow()
         activitySynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
+        return userId
     }
 
     /*
@@ -474,8 +487,8 @@ class SyncCoordinator(
      * Why: a first download (5.1d) asks the server which groups are coming, then brings each one whole, the latest
      * activity first, so Início and Grupos count "3 de 7 grupos" and what came is usable before the rest. A group's
      * rows are all read first, then written in Room's foreign key order with no round trip in between, so no screen
-     * shows a group with its bills and without its payments. It ends there; the full download right after it takes
-     * off what left meanwhile and brings the rest of the account.
+     * shows a group with its bills and without its payments. The count stays until the sync settles; the full download
+     * right after it takes off what left meanwhile and brings the rest of the account.
      */
     private suspend fun downloadGroupByGroup(userId: String) {
         val groupIds = groupRepository.fetchFirstDownloadGroupIds().getOrThrow()
@@ -493,12 +506,12 @@ class SyncCoordinator(
             writes.forEach { write -> write() }
             firstDownload.groupArrived()
         }
-        firstDownload.end()
+        // Why: "7 de 7 grupos" stays until the rest of the sync settles, which ends it, never a bar that runs again.
     }
 
     /*
-     * Why: a first download ends with a sync, which never runs offline, so offline Início and Grupos go back to what
-     * the device holds ("Rachar conta" included) rather than counting groups that can't come.
+     * Why: a first download ends with a sync, which never runs offline, so offline its count goes; the account still
+     * awaits its full sync, which Início and Grupos show as waiting for the internet (see ObserveFirstDownload).
      */
     private suspend fun endFirstDownloadOffline() {
         combine(

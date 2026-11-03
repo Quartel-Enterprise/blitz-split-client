@@ -1,4 +1,4 @@
-import { Check, Copy, Info, Link2, Loader2, Send, WifiOff } from 'lucide-react'
+import { Check, Copy, Info, Link2, Send, WifiOff } from 'lucide-react'
 import { ShareBillPresenter, type JsRoute, type JsShareBillAction, type JsShareBillState } from 'blitzsplit-shared'
 import { useId } from 'react'
 import { toast } from 'sonner'
@@ -6,6 +6,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatNames } from '@/lib/money'
@@ -116,14 +117,15 @@ function ShareBody({ presenter, state }: { presenter: ShareBillPresenter; state:
   )
 }
 
-/** The link with "Copiar", a progress while it is read or made, or "Tentar de novo" when that failed. */
+/** The link with "Copiar", a shimmer while it is read or made, or "Tentar de novo" when that failed. */
 function LinkRow({ presenter, state }: { presenter: ShareBillPresenter; state: JsShareBillState }) {
   const row = 'flex min-h-10 items-center gap-2 rounded-md border pr-1 pl-3'
+  // Why: the server is asked for the link, so the shimmer shows at once in the link's shape.
   if (state.isLoading) {
     return (
-      <div role="status" aria-label={t('shareBill_loading')} className={cn(row, 'border-dashed text-muted-foreground')}>
-        <Loader2 aria-hidden className="size-4 animate-spin" />
-      </div>
+      <LoadingRegion isDelayed={false} label={t('shareBill_loading')}>
+        <Skeleton className="h-10 w-full" />
+      </LoadingRegion>
     )
   }
   if (state.hasFailed) {

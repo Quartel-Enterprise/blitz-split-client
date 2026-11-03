@@ -56,6 +56,8 @@ import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
@@ -286,6 +288,10 @@ private fun ProfileIdentityContent(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
+    if (!state.isLoaded) {
+        ProfileIdentitySkeleton()
+        return
+    }
     ProfileHeader(
         state = state,
         onEvent = onEvent,
@@ -316,6 +322,10 @@ private fun ProfileSignOutContent(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
+    if (!state.isLoaded) {
+        SignOutSkeleton()
+        return
+    }
     SignOutButton(
         state = state,
         onEvent = onEvent,
@@ -422,12 +432,17 @@ internal fun SectionRow(
     headline: String,
     modifier: Modifier = Modifier,
     supporting: String? = null,
+    isSupportingLoading: Boolean = false,
     trailing: @Composable (() -> Unit)? = null,
 ) {
     FlatListItem(
         headlineContent = { Text(headline) },
         modifier = modifier,
-        supportingContent = supporting?.let { { Text(it) } },
+        supportingContent = if (isSupportingLoading) {
+            { ProfileValueSkeleton() }
+        } else {
+            supporting?.let { { Text(it) } }
+        },
         leadingContent = {
             Icon(
                 imageVector = icon,
@@ -455,6 +470,7 @@ internal fun createPreviewProfileState(
     isOnline = isOnline,
     syncStatus = syncStatus,
     pendingChanges = if (syncStatus == null) emptyList() else listOf(PendingChange.PROFILE),
+    isLoaded = true,
     paymentKeys = listOf(
         PaymentKeyItem(
             id = "pix-phone",
@@ -484,10 +500,10 @@ internal fun createPreviewProfileState(
             maskedValue = "bc1p5d7r…sxg3297",
             isDefault = false,
         ),
-    ),
+    ).toLoaded(),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
-    activeNotificationCount = 3,
+    activeNotificationCount = 3.toLoaded(),
     dialog = null,
     hasConfirmedCodeSaved = false,
     isConnectExpanded = false,
@@ -505,6 +521,22 @@ private fun ProfileConnectedPreview() {
     BlitzSplitTheme {
         ProfileContent(
             state = createPreviewProfileState(),
+            appVersion = "1.0.0",
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ProfileLoadingPreview() {
+    BlitzSplitTheme {
+        ProfileContent(
+            state = createPreviewProfileState().copy(
+                isLoaded = false,
+                paymentKeys = Loadable.Loading,
+                activeNotificationCount = Loadable.Loading,
+            ),
             appVersion = "1.0.0",
             onEvent = {},
         )

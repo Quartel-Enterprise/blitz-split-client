@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -32,7 +31,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
@@ -63,6 +68,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
+import software.quare.loadable.valueOrNull
 
 private const val SECONDARY_TEXT_ALPHA = 0.72f
 private val viewerBackground = Color.Black
@@ -129,7 +135,7 @@ private fun ViewerContent(
     isInHalf: Boolean,
 ) {
     val insets = if (isInHalf) Modifier else Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
-    val attachments = state.attachments
+    val attachments = state.attachments.valueOrNull().orEmpty()
     val pagerState = rememberPagerState(initialPage = index) { attachments.size }
     val currentAttachments by rememberUpdatedState(attachments)
     val currentViewedId by rememberUpdatedState(state.viewedAttachmentId)
@@ -156,7 +162,7 @@ private fun ViewerContent(
         Column(modifier = insets.fillMaxSize()) {
             ViewerTopBar(
                 attachment = current,
-                photoCount = state.photoCount,
+                photoCount = state.photoCount ?: attachments.size,
                 onDownloadClick = onDownloadClick,
                 onEvent = onEvent,
             )
@@ -274,7 +280,7 @@ private fun ViewerPageBox(
         val image = attachment.localImage ?: attachment.imageUrl
         if (image == null && isOnline) {
             // Why: online, its signed URL is on the way (or tried again each minute).
-            CircularProgressIndicator(color = viewerContent)
+            ViewerImageSkeleton()
         } else if (image == null) {
             // Why: offline, a photo another device added and this one never loaded.
             Column(
@@ -294,13 +300,28 @@ private fun ViewerPageBox(
                 )
             }
         } else {
+            // Why: the photo shimmers behind until Coil has it, rather than a black page while it downloads.
+            var isImageLoading by remember(image) { mutableStateOf(true) }
+            if (isImageLoading) ViewerImageSkeleton()
             AsyncImage(
                 model = image,
                 contentDescription = attachmentTitleOf(attachment),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),
+                onState = { imageState -> isImageLoading = imageState is AsyncImagePainter.State.Loading },
             )
         }
+    }
+}
+
+@Composable
+private fun ViewerImageSkeleton() {
+    ShimmerBox(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .shimmer(MaterialTheme.shapes.large),
+        )
     }
 }
 

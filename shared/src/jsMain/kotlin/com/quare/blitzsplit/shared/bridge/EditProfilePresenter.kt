@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
 
 class JsEditProfileState(
+    // Why: false until the saved profile was read: the form shimmers and takes no edit.
+    val isLoaded: Boolean,
     val name: String,
     val nameLength: Int,
     val avatarColor: String,
@@ -41,6 +43,7 @@ class EditProfilePresenter {
     fun observeState(onChange: (JsEditProfileState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsEditProfileState(
+                isLoaded = state.isLoaded,
                 name = state.name,
                 nameLength = state.nameLength,
                 avatarColor = state.avatarColor.code,

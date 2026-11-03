@@ -643,6 +643,17 @@
         }
       }
     },
+    "Couldn't open the invite. Try again." : {
+      "comment" : "Join: the server failed to read an invite while online",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para abrir o convite. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't open this image. Choose another one." : {
       "localizations" : {
         "pt-BR" : {
@@ -1154,6 +1165,17 @@
         }
       }
     },
+    "Loading" : {
+      "comment" : "VoiceOver's label of a shimmering placeholder while a section loads",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregando"
+          }
+        }
+      }
+    },
     "Mark as paid" : {
       "comment" : "Pay with a key (4.5): records the whole debt as paid",
       "localizations" : {
@@ -1181,6 +1203,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Próxima"
+          }
+        }
+      }
+    },
+    "No internet. Your data shows up once you're back online." : {
+      "comment" : "Under a shimmer while the account's first full sync waits for the internet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet. Seus dados aparecem quando reconectar."
+          }
+        }
+      }
+    },
+    "No internet. Your groups show up once you're back online." : {
+      "comment" : "Home and Groups while the account's first download waits for the internet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet. Seus grupos aparecem quando reconectar."
           }
         }
       }
@@ -4910,6 +4954,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você escolheu %1$@. Pelo mapa seria %2$@ (“%3$@”). Ao salvar, perguntamos se o mapa aprende."
+          }
+        }
+      }
+    },
+    "Your contacts are empty. The invite link works without them." : {
+      "comment" : "Invite from contacts: the agenda was read and holds nobody",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua agenda está vazia. O link de convite funciona sem ela."
           }
         }
       }

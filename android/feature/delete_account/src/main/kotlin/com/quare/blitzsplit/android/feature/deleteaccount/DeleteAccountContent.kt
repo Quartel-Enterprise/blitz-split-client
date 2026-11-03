@@ -50,6 +50,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -57,6 +59,8 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiState
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val singleColumnMaxWidth = 592.dp
@@ -351,12 +355,19 @@ private fun DeleteAccountHeading() {
     }
 }
 
+// Why: the provider's line shimmers until the account was read, so the list never leaves it out before its time.
 @Composable
-private fun DeletedItemsCard(provider: AccountProvider?) {
+private fun DeletedItemsCard(provider: Loadable<AccountProvider?>) {
     val items = buildList {
         add(stringResource(R.string.delete_account_deleted_profile))
         add(stringResource(R.string.delete_account_deleted_keys))
-        provider?.let { add(stringResource(R.string.delete_account_deleted_provider, stringResource(it.labelRes))) }
+        when (provider) {
+            Loadable.Loading -> add(null)
+
+            is Loadable.Loaded -> provider.value?.let {
+                add(stringResource(R.string.delete_account_deleted_provider, stringResource(it.labelRes)))
+            }
+        }
         add(stringResource(R.string.delete_account_deleted_device))
     }
     Surface(
@@ -378,15 +389,27 @@ private fun DeletedItemsCard(provider: AccountProvider?) {
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items.forEach { item ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Text(
                             text = "•",
                             style = MaterialTheme.typography.bodyMedium,
                         )
-                        Text(
-                            text = item,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                        if (item == null) {
+                            ShimmerBox {
+                                ShimmerLine(
+                                    width = 200.dp,
+                                    height = 14.dp,
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = item,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                     }
                 }
             }
@@ -484,7 +507,7 @@ private fun createPreviewState(
     hasConfirmed: Boolean = true,
     hasFailed: Boolean = false,
 ): DeleteAccountUiState = DeleteAccountUiState(
-    accountProvider = AccountProvider.GOOGLE,
+    accountProvider = AccountProvider.GOOGLE.toLoaded(),
     isOnline = isOnline,
     hasConfirmed = hasConfirmed,
     isDeleting = false,

@@ -30,6 +30,8 @@
     <string name="join_scan_another">Scan another QR code</string>
     <string name="join_offline_title">No internet to open the invite</string>
     <string name="join_offline_message">We kept the link. As soon as the device connects, the invite opens by itself.</string>
+    <string name="join_failed_title">Couldn\'t open the invite</string>
+    <string name="join_failed_message">Try again.</string>
     <string name="join_retry">Try again</string>
     <string name="join_pick_back">Back</string>
     <string name="join_pick_title">Who are you in the group?</string>

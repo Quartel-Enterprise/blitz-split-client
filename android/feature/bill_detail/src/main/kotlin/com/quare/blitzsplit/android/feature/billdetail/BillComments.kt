@@ -50,14 +50,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 
 // Why: a reply sits under its comment's text, past the comment's avatar (16 + 32 + 12).
 private val replyStartPadding = 60.dp
+private const val SKELETON_COMMENTS = 2
 private const val COMPOSER_MAX_LINES = 5
 private val commentAvatarSize = 32.dp
 private val replyAvatarSize = 28.dp
@@ -165,7 +169,7 @@ internal fun BillCommentsSection(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         BillSectionTitle(
             text = stringResource(R.string.bill_detail_comments),
-            trailing = state.commentCount.takeIf { it > 0 }?.toString(),
+            trailing = state.commentCount?.takeIf { it > 0 }?.toString(),
         )
         if (state.showsNoComments) {
             Surface(
@@ -184,8 +188,18 @@ internal fun BillCommentsSection(
                 )
             }
         }
+        // Why: the comments shimmer while they are read, never "Nenhum comentário ainda" before it is known.
+        if (state.threads.isLoading()) {
+            ShimmerListSkeleton(
+                count = SKELETON_COMMENTS,
+                leadingSize = 32.dp,
+                trailingWidth = null,
+                containerShapeOf = { index -> groupedRowShapeOf(index, SKELETON_COMMENTS) },
+                spacing = 2.dp,
+            )
+        }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            state.threads.forEachIndexed { threadIndex, thread ->
+            state.threads.valueOrNull().orEmpty().forEachIndexed { threadIndex, thread ->
                 val rows = listOf(thread.comment) + thread.replies
                 rows.forEachIndexed { index, row ->
                     CommentRow(

@@ -15,10 +15,12 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { AmountInput, controlClass, WhenField } from '@/components/fields'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SkeletonForm } from '@/components/ui/skeleton'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { settledPairDetail, settledPairLead, settledPairSentence } from '@/features/bill-detail/settledPairText'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -75,7 +77,20 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
     else if (action === 'category-save-error') toast(t('splitBill_categorySaveError'))
     else if (action === 'category-delete-error') toast(t('splitBill_categoryDeleteError'))
   })
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) {
+    if (isCovered) return null
+    return (
+      <LoadingDialog
+        isDesktop={isDesktop}
+        title={t(route.expenseId ? 'splitBill_editTitle' : 'splitBill_title')}
+        onClose={() => presenter.close()}
+        className="sm:max-w-[520px] lg:max-w-[760px]"
+      >
+        <SkeletonForm fields={4} />
+      </LoadingDialog>
+    )
+  }
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
   const editor = state.splitEditor

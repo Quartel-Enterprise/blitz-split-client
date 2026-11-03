@@ -47,6 +47,8 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysU
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.CurrencyAmount
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
@@ -63,6 +65,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -81,6 +85,7 @@ class GlobalBalancesViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GlobalBalancesViewModel
     private lateinit var activity: FakeActivityRepository
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private val actions = mutableListOf<GlobalBalancesUiAction>()
 
     @BeforeTest
@@ -109,8 +114,8 @@ class GlobalBalancesViewModelTest {
             assertEquals(listOf("Ana", "Diego", "Carla"), state.sections[1].rows.map { it.name })
             assertEquals(listOf(CurrencyAmount(GroupCurrency.BRL, 12_600L)), state.sections[0].totals)
             assertEquals(listOf(CurrencyAmount(GroupCurrency.BRL, 24_020L)), state.sections[1].totals)
-            assertEquals(11_420L, state.primaryTotal.netMinor)
-            assertEquals(3, state.primaryTotal.toReceiveCount)
+            assertEquals(11_420L, state.primaryTotal.valueOrNull()?.netMinor)
+            assertEquals(3, state.primaryTotal.valueOrNull()?.toReceiveCount)
             assertNull(state.emptyState)
         }
 
@@ -122,6 +127,8 @@ class GlobalBalancesViewModelTest {
 
             // When
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
 
             // Then
@@ -139,6 +146,8 @@ class GlobalBalancesViewModelTest {
 
         // When
         val diego = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Diego" }
 
         // Then
@@ -165,7 +174,13 @@ class GlobalBalancesViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(4, state.totals.sumOf { it.toReceiveCount })
+            assertEquals(
+                4,
+                state.totals
+                    .valueOrNull()
+                    .orEmpty()
+                    .sumOf { it.toReceiveCount },
+            )
             assertEquals(3, state.toReceivePeopleCount)
             assertEquals(1, state.toPayPeopleCount)
         }
@@ -190,6 +205,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario(filter = BalancesFilter.YOU_OWE)
         val bruno = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Bruno" }
 
         // When
@@ -198,6 +215,8 @@ class GlobalBalancesViewModelTest {
         // Then
         assertFalse(
             viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.id == bruno.id }
                 .isExpanded,
         )
@@ -208,6 +227,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
 
         // When
@@ -217,6 +238,8 @@ class GlobalBalancesViewModelTest {
         assertEquals(
             listOf("Carla"),
             viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .filter { it.isExpanded }
                 .map { it.name },
         )
@@ -240,6 +263,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
 
         // When
@@ -258,6 +283,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
         viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
 
@@ -277,6 +304,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
         viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
         viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
@@ -316,6 +345,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario(filter = BalancesFilter.YOU_OWE)
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
 
@@ -349,6 +380,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario(filter = BalancesFilter.OWES_YOU)
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carla.id))
 
@@ -369,6 +402,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario(filter = BalancesFilter.YOU_OWE)
             val bruno = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Bruno" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(bruno.id))
 
@@ -389,6 +424,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carla.id))
 
@@ -399,7 +436,12 @@ class GlobalBalancesViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(BalancesFilter.OWES_YOU, state.filter)
             assertEquals(listOf(false), state.sections.map { it.isYouOwe })
-            assertTrue(state.people.none { it.isExpanded })
+            assertTrue(
+                state.people
+                    .valueOrNull()
+                    .orEmpty()
+                    .none { it.isExpanded },
+            )
         }
 
     @Test
@@ -435,10 +477,10 @@ class GlobalBalancesViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(BalancesEmptyState.NOTHING_TO_PAY, state.emptyState)
-            assertEquals(GroupCurrency.BRL, state.primaryTotal.currency)
-            assertEquals(GroupCurrency.USD, state.emptyStateTotal.currency)
-            assertEquals(3_250L, state.emptyStateTotal.toReceiveMinor)
-            assertEquals(1, state.emptyStateTotal.toReceiveCount)
+            assertEquals(GroupCurrency.BRL, state.primaryTotal.valueOrNull()?.currency)
+            assertEquals(GroupCurrency.USD, state.emptyStateTotal?.currency)
+            assertEquals(3_250L, state.emptyStateTotal?.toReceiveMinor)
+            assertEquals(1, state.emptyStateTotal?.toReceiveCount)
         }
 
     @Test
@@ -486,7 +528,12 @@ class GlobalBalancesViewModelTest {
 
         // Then
         assertEquals(BalancesEmptyState.SETTLED, emptyState)
-        assertEquals(0L, viewModel.uiState.value.primaryTotal.netMinor)
+        assertEquals(
+            0L,
+            viewModel.uiState.value.primaryTotal
+                .valueOrNull()
+                ?.netMinor,
+        )
         assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
@@ -500,16 +547,88 @@ class GlobalBalancesViewModelTest {
 
         // When
         val totals = viewModel.uiState.value.totals
+            .valueOrNull()
+            .orEmpty()
 
         // Then
         assertEquals(listOf(0L), totals.map { it.netMinor })
     }
 
     @Test
+    fun `GIVEN the account copy not whole yet WHEN Saldos opens THEN shimmers instead of saying all settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = emptyList(),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 3,
+                    isWaitingForInternet = false,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertTrue(state.people.isLoading())
+            assertTrue(state.primaryTotal.isLoading())
+            assertNull(state.emptyState)
+            assertNull(state.emptyStateTotal)
+            assertTrue(state.sections.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the account copy waiting offline WHEN Saldos opens THEN says it waits for the internet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isWaitingForInternet)
+            assertTrue(state.totals.isLoading())
+        }
+
+    @Test
+    fun `GIVEN the account copy not whole yet WHEN its full sync ends THEN shows the balances`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = false,
+                ),
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            assertFalse(state.isWaitingForInternet)
+            assertEquals(11_420L, state.primaryTotal.valueOrNull()?.netMinor)
+        }
+
+    @Test
     fun `GIVEN someone you owe WHEN tapping Acertar THEN opens settling up with them`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val bruno = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Bruno" }
 
         // When
@@ -524,6 +643,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
 
         // When
@@ -538,6 +659,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val bruno = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Bruno" }
 
         // When
@@ -552,6 +675,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
 
         // When
@@ -569,6 +694,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val diego = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Diego" }
 
         // When
@@ -594,6 +721,8 @@ class GlobalBalancesViewModelTest {
                 bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
             )
             val carlaInDollars = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" && it.currency == GroupCurrency.USD }
 
             // When
@@ -611,6 +740,8 @@ class GlobalBalancesViewModelTest {
 
             // When
             val exMember = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == null }
 
             // Then
@@ -622,6 +753,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario(bills = defaultBills + exMemberBill)
         val exMember = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == null }
 
         // When
@@ -637,6 +770,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
             expenses.expenses.update { bills -> bills.filterNot { it.id in setOf("e3", "e4", "e5") } }
 
@@ -653,6 +788,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carla.id))
 
@@ -672,6 +809,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val apeOfCarla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
                 .groups
                 .single { it.groupName == "Apê 302" }
@@ -730,6 +869,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Carla" }
 
             // When
@@ -750,6 +891,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val diego = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Diego" }
 
         // When
@@ -766,6 +909,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario(storedKeys = emptyList())
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
 
         // When
@@ -841,6 +986,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val bruno = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Bruno" }
 
         // When
@@ -1047,6 +1194,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val ana = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Ana" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
 
@@ -1132,6 +1281,8 @@ class GlobalBalancesViewModelTest {
             viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
             viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
             val ana = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Ana" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
 
@@ -1371,6 +1522,8 @@ class GlobalBalancesViewModelTest {
 
     private fun openChargeForCarla() {
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
         viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
     }
@@ -1568,6 +1721,7 @@ class GlobalBalancesViewModelTest {
         storedKeys: List<PaymentKey> = listOf(bitcoinKey, pixKey),
         online: Boolean = true,
         charge: BalancesCharge? = null,
+        downloading: FirstDownloadProgress? = null,
     ) {
         val groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -1575,6 +1729,7 @@ class GlobalBalancesViewModelTest {
         recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
+        firstDownload = MutableStateFlow(downloading)
         val opened = Route.GlobalBalances(filter, charge = charge)
         navigator = BackStackNavigator(startRoute = Route.Home).also { navigator ->
             // Why: Contatos' "Cobrar" opens Saldos over the person's profile.
@@ -1604,6 +1759,7 @@ class GlobalBalancesViewModelTest {
                 FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)),
             ),
             observePaymentKeys = ObservePaymentKeysUseCase(keys),
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             observeActivityUnreadCount = ObserveActivityUnreadCountUseCase(activity, accountStatus),
             recordCharges = RecordChargesUseCase(activity, accountStatus) { 0L },

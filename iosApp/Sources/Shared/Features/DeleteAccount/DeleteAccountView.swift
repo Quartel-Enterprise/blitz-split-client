@@ -85,7 +85,7 @@ private struct DeleteAccountContent: View {
             String(localized: "Your profile (name, photo and color)"),
             String(localized: "Your Pix and Bitcoin keys"),
         ]
-        if let provider = state.accountProvider?.displayName {
+        if let provider = state.accountProvider.loaded(as: AccountProvider.self)?.displayName {
             items.append(String(localized: "The link to your \(provider) account"))
         }
         items.append(String(localized: "The copy of your data on this \(DeviceName.current)"))
@@ -135,6 +135,11 @@ private struct DeleteAccountContent: View {
                                 .accessibilityHidden(true)
                             Text(verbatim: item)
                         }
+                    }
+                    if state.accountProvider.isLoading {
+                        // The account not read yet: its link's line shimmers rather than being left out
+                        ShimmerLine(width: 220, height: 12)
+                            .shimmering()
                     }
                 }
                 .padding(.horizontal, 16)
@@ -208,6 +213,10 @@ private struct DeleteAccountContent: View {
                 Text(verbatim: deletedItems.joined(separator: " · "))
                     .font(.callout)
                     .fixedSize(horizontal: false, vertical: true)
+                if state.accountProvider.isLoading {
+                    ShimmerLine(width: 220, height: 12)
+                        .shimmering()
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)

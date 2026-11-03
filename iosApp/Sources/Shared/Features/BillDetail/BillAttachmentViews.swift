@@ -4,9 +4,10 @@ import UniformTypeIdentifiers
 
 /// The words of Bill's Attachments and its viewer (7.3): the shared code hands over who added what and when.
 extension BillCopy {
-    /// "2 of 5 photos"; the receipt isn't one of them.
-    static func photoCount(_ state: BillDetailUiState) -> String {
-        String(localized: "\(Int(state.photoCount)) of \(Int(state.photoLimit)) photos")
+    /// "2 of 5 photos"; the receipt isn't one of them. Nil while the attachments load.
+    static func photoCount(_ state: BillDetailUiState) -> String? {
+        guard let count = state.photoCount?.intValue else { return nil }
+        return String(localized: "\(count) of \(Int(state.photoLimit)) photos")
     }
 
     /// "Photo 2", or "Store receipt".
@@ -112,9 +113,14 @@ struct BillAttachmentsHeader: View {
         HStack(alignment: .firstTextBaseline) {
             Text("Attachments", comment: "The bill's photos section")
             Spacer(minLength: 8)
-            Text(verbatim: BillCopy.photoCount(state))
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
+            if let count = BillCopy.photoCount(state) {
+                Text(verbatim: count)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            } else {
+                ShimmerLine(width: 80, height: 10)
+                    .shimmering()
+            }
         }
     }
 }
@@ -141,7 +147,14 @@ struct BillAttachmentStrip: View {
     @ViewBuilder
     private var tiles: some View {
         let state = model.state
-        ForEach(state.attachments, id: \.id) { attachment in
+        if state.attachments.isLoading {
+            // The attachments not read yet: tiles shimmer in their place, and "Add" waits for the count
+            ForEach(0..<2, id: \.self) { _ in
+                ShimmerBlock(width: metrics.tile.width, height: metrics.tile.height, cornerRadius: metrics.cornerRadius)
+                    .shimmering()
+            }
+        }
+        ForEach(state.loadedAttachments ?? [], id: \.id) { attachment in
             BillAttachmentTileView(attachment: attachment, metrics: metrics) {
                 model.send(BillDetailUiEventOnAttachmentClicked(id: attachment.id))
             }

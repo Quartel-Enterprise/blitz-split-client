@@ -54,6 +54,9 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
+import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -277,6 +280,12 @@ private fun AvatarSection(
     onEvent: (EditProfileUiEvent) -> Unit,
     onPhotoClick: () -> Unit,
 ) {
+    if (!state.isLoaded) {
+        ShimmerBox {
+            ShimmerAvatarSkeleton(size = avatarSize)
+        }
+        return
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -328,6 +337,11 @@ private fun NameSection(
     state: EditProfileUiState,
     onEvent: (EditProfileUiEvent) -> Unit,
 ) {
+    // Why: never an empty field the saved name would then replace under the typing.
+    if (!state.isLoaded) {
+        ShimmerFormSkeleton(fieldCount = 1)
+        return
+    }
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedTextField(
             value = state.name,
@@ -471,6 +485,7 @@ private fun PhotoMenuItem(
 }
 
 private fun createPreviewState(): EditProfileUiState = EditProfileUiState(
+    isLoaded = true,
     name = "Pierre Vieira",
     avatarColor = AvatarColor.BLUE,
     photo = null,
@@ -515,5 +530,19 @@ private fun EditProfileTabletopPreview() {
                 onChoosePhotoClick = {},
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EditProfileLoadingPreview() {
+    BlitzSplitTheme {
+        EditProfileContent(
+            state = createPreviewState().copy(isLoaded = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onEvent = {},
+            onTakePhotoClick = {},
+            onChoosePhotoClick = {},
+        )
     }
 }

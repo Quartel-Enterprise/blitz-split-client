@@ -22,8 +22,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
+import software.quare.loadable.valueOrNull
 
 /*
  * Why: a Flip's cover screen has room for a glance: "Saldo geral", who owes whom in total and the latest bill, read
@@ -31,7 +34,8 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
  */
 @Composable
 internal fun HomeCoverPane(state: HomeUiState) {
-    val main = state.summary.main
+    val summary = state.summary.valueOrNull()
+    val main = summary?.main
     val money = rememberMoneyFormatter(main?.currency ?: rememberRegionCurrency())
     val latestBill = state.billDays
         .firstOrNull()
@@ -54,7 +58,7 @@ internal fun HomeCoverPane(state: HomeUiState) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.semantics { heading() },
             )
-            if (state.showsHome) {
+            if (state.showsHome && summary != null) {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
                         text = stringResource(R.string.groups_summary_title),
@@ -91,6 +95,17 @@ internal fun HomeCoverPane(state: HomeUiState) {
                         isCompact = true,
                         onClick = null,
                     )
+                }
+            } else if (!state.showsFirstUse) {
+                ShimmerBox {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ShimmerLine(width = 96.dp)
+                        ShimmerLine(
+                            width = 200.dp,
+                            height = 40.dp,
+                        )
+                        ShimmerLine(widthFraction = 0.7f)
+                    }
                 }
             }
             Text(

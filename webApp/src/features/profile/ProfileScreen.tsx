@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
 import { NotificationSettingsCard } from '@/features/notification-settings/NotificationSettingsCard'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
@@ -100,14 +101,21 @@ export function ProfileScreen() {
                 </CardContent>
               </Card>
               <AboutCard presenter={presenter} className="order-6" />
-              <Button
-                variant="outline"
-                className="order-7 text-destructive hover:text-destructive"
-                disabled={!state.canSignOut}
-                onClick={() => presenter.signOut()}
-              >
-                <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
-              </Button>
+              {/* Why: "Sair" or "Apagar perfil e sair" depends on the account, never guessed before it was read. */}
+              {state.isLoaded ? (
+                <Button
+                  variant="outline"
+                  className="order-7 text-destructive hover:text-destructive"
+                  disabled={!state.canSignOut}
+                  onClick={() => presenter.signOut()}
+                >
+                  <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
+                </Button>
+              ) : (
+                <LoadingRegion className="order-7">
+                  <Skeleton className="h-9 w-full" />
+                </LoadingRegion>
+              )}
               {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
             </div>
           </div>
@@ -152,7 +160,8 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
         <CardDescription>{t('profile_keysSubtitle')}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col divide-y">
-        {state.paymentKeys.map((key) => (
+        {!state.paymentKeys && <RowsSkeleton count={2} />}
+        {state.paymentKeys?.map((key) => (
           <button
             key={key.id}
             onClick={() => presenter.clickPaymentKey(key.id)}
@@ -166,9 +175,10 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
             <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
           </button>
         ))}
+        {/* Why: a key added before the account's own came down could take the default the server already gave another. */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
+          <DropdownMenuTrigger asChild disabled={!state.canAddPaymentKey}>
+            <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
               <Plus className="size-4 shrink-0" />
               {t('profile_keysAdd')}
             </button>
@@ -197,7 +207,10 @@ function AccountCard({ presenter, state, className }: CardProps) {
         <CardTitle>{t('profile_account')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col divide-y">
-        {provider ? (
+        {!state.isLoaded ? (
+          // Why: never "Sem conta" with Conectar before the account was read.
+          <RowsSkeleton count={2} />
+        ) : provider ? (
           <Row title={providerLabel(provider, true)} detail={state.maskedEmail && t('profile_accountConnectedDetail', { email: state.maskedEmail })}>
             <Badge variant="secondary">{t('profile_accountConnected')}</Badge>
             <Button size="sm" variant="outline" onClick={() => presenter.account()}>
@@ -252,6 +265,23 @@ function AccountCard({ presenter, state, className }: CardProps) {
   )
 }
 
+/** A card's rows still being read: a title and its detail each, after 150 ms. */
+function RowsSkeleton({ count }: { count: number }) {
+  return (
+    <LoadingRegion className="flex flex-col divide-y">
+      {Array.from({ length: count }, (_, index) => (
+        <span key={index} className="flex min-h-14 items-center gap-3 py-2">
+          <span className="flex flex-1 flex-col gap-2">
+            <SkeletonLine className={index === 0 ? 'w-1/3' : 'w-2/5'} />
+            <SkeletonLine className="h-2.5 w-1/2" />
+          </span>
+          <Skeleton className="h-8 w-20" />
+        </span>
+      ))}
+    </LoadingRegion>
+  )
+}
+
 function syncDetail(state: JsProfileState): string {
   switch (state.syncStatus) {
     case 'SYNCING':
@@ -271,25 +301,32 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
         <CardTitle id="appearance">{t('profile_appearance')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div role="radiogroup" aria-labelledby="appearance" className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
-          {themes.map((theme) => {
-            const isSelected = theme.code === state.theme
-            return (
-              <button
-                key={theme.code}
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => presenter.selectTheme(theme.code)}
-                className={cn(
-                  'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                  isSelected ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {t(theme.label)}
-              </button>
-            )
-          })}
-        </div>
+        {/* Why: no theme is marked before the saved one was read. */}
+        {!state.isLoaded ? (
+          <LoadingRegion>
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </LoadingRegion>
+        ) : (
+          <div role="radiogroup" aria-labelledby="appearance" className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+            {themes.map((theme) => {
+              const isSelected = theme.code === state.theme
+              return (
+                <button
+                  key={theme.code}
+                  role="radio"
+                  aria-checked={isSelected}
+                  onClick={() => presenter.selectTheme(theme.code)}
+                  className={cn(
+                    'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                    isSelected ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {t(theme.label)}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

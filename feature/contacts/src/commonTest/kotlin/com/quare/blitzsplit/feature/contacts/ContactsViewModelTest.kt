@@ -27,6 +27,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -42,11 +44,15 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.isLoaded
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -56,6 +62,7 @@ class ContactsViewModelTest {
     private lateinit var hidden: FakeHiddenContactRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ContactsViewModel
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private val activityUnread = MutableStateFlow(0)
     private val actions = mutableListOf<ContactsUiAction>()
 
@@ -119,7 +126,10 @@ class ContactsViewModelTest {
             prepareScenario()
 
             // When
-            val total = viewModel.uiState.value.total
+            val total = assertNotNull(
+                viewModel.uiState.value.total
+                    .valueOrNull(),
+            )
 
             // Then
             assertEquals(GroupCurrency.BRL, total.currency)
@@ -127,6 +137,79 @@ class ContactsViewModelTest {
             assertEquals(9_500L, total.toReceiveMinor)
             assertEquals(2_000L, total.toPayMinor)
             assertTrue(viewModel.uiState.value.showsSummary)
+        }
+
+    @Test
+    fun `GIVEN the copy not whole yet WHEN Contatos opens with no group THEN a skeleton not the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isEmpty)
+            assertTrue(state.isLoading)
+            assertTrue(state.isWaitingForInternet)
+            assertTrue(state.total.isLoading())
+            assertFalse(state.showsSummary)
+        }
+
+    @Test
+    fun `GIVEN someone hidden on another device WHEN the account copy becomes whole THEN only then lists the people`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 2,
+                    isWaitingForInternet = false,
+                ),
+            )
+            val downloading = viewModel.uiState.value
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertTrue(downloading.contacts.isEmpty())
+            assertTrue(downloading.isLoading)
+            assertFalse(viewModel.uiState.value.isLoading)
+            assertTrue(
+                viewModel.uiState.value.contacts
+                    .isNotEmpty(),
+            )
+            assertTrue(
+                viewModel.uiState.value.total
+                    .isLoaded(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the agenda still being read WHEN searching a name nobody has THEN waits instead of nothing found`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
+            viewModel.onEvent(ContactsUiEvent.OnAgendaReadStarted)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnQueryChanged("rodrigo"))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSearchLoading)
+            assertFalse(viewModel.uiState.value.showsNoResults)
+            viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(agenda))
+            assertTrue(viewModel.uiState.value.showsNoResults)
         }
 
     @Test
@@ -145,7 +228,7 @@ class ContactsViewModelTest {
             assertTrue(state.isEmpty)
             assertFalse(state.isLoading)
             assertFalse(state.showsSummary)
-            assertEquals(0L, state.total.netMinor)
+            assertEquals(0L, state.total.valueOrNull()?.netMinor)
         }
 
     @Test
@@ -870,6 +953,7 @@ class ContactsViewModelTest {
         storedHidden: List<HiddenContact> = emptyList(),
         online: Boolean = true,
         isBookRead: Boolean = true,
+        downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         val expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -879,6 +963,7 @@ class ContactsViewModelTest {
             initialHidden = storedHidden,
         )
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Contacts) }
+        firstDownload = MutableStateFlow(downloading)
         val roomNeverAnswers = MutableSharedFlow<ContactBookSnapshot>()
         viewModel = ContactsViewModel(
             navigator = navigator,
@@ -898,6 +983,7 @@ class ContactsViewModelTest {
             observeAccount = ObserveAccountUseCase(
                 FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)),
             ),
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )

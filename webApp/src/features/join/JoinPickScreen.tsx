@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -43,7 +44,13 @@ export function JoinPickScreen({ route }: { route: JsRoute }) {
         </Button>
       </header>
       {!state.isLoaded ? (
-        <Loader2 aria-hidden className="m-auto size-8 animate-spin text-muted-foreground" />
+        <main className="mx-auto flex w-full max-w-[560px] flex-1 flex-col px-4 pt-5 pb-8 md:px-6 md:pt-6">
+          <LoadingRegion className="flex flex-col gap-5">
+            <SkeletonLine className="h-7 w-3/4" />
+            <SkeletonLine className="w-1/2" />
+            <SkeletonRows count={4} hasTrailing={false} className="rounded-xl border bg-card" />
+          </LoadingRegion>
+        </main>
       ) : (
         <>
           <main className="mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-5 px-4 pt-5 pb-8 md:gap-6 md:px-6 md:pt-6 lg:max-w-[1120px] lg:flex-row lg:items-start lg:gap-8">

@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
+import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
+import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -54,6 +57,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.PickP
 import org.koin.compose.viewmodel.koinViewModel
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+private const val PICK_SKELETON_ROWS = 4
 private val pairFaceSize = 32.dp
 
 /*
@@ -82,8 +86,6 @@ fun PickPaymentContent(
     onEvent: (PickPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Why: nothing until Room is read, so "Ninguém deve nada" never flashes before the pairs.
-    if (!state.isLoaded) return
     if (isDialog) {
         DialogCard(
             isWide = false,
@@ -140,6 +142,16 @@ private fun ColumnScope.PickPaymentList(
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
     )
+    // Why: the pairs shimmer until Room and the account's copy are read, so "Ninguém deve nada" never flashes first.
+    if (!state.isLoaded) {
+        ShimmerListSkeleton(
+            count = PICK_SKELETON_ROWS,
+            containerShapeOf = { index -> groupedRowShapeOf(index, PICK_SKELETON_ROWS) },
+            spacing = 2.dp,
+        )
+        if (state.isWaitingForInternet) WaitingForInternetMessage()
+        return
+    }
     if (state.showsEmpty) {
         PickPaymentEmptyMessage()
         return
@@ -358,6 +370,7 @@ private fun PickPaymentContentPreview() {
         PickPaymentContent(
             state = PickPaymentUiState(
                 isLoaded = true,
+                isWaitingForInternet = false,
                 groups = listOf(
                     PickPaymentGroup(
                         groupId = "1",
@@ -385,6 +398,22 @@ private fun PickPaymentContentPreview() {
                 ),
             ),
             isDialog = false,
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PickPaymentContentLoadingPreview() {
+    BlitzSplitTheme {
+        PickPaymentContent(
+            state = PickPaymentUiState(
+                isLoaded = false,
+                isWaitingForInternet = true,
+                groups = emptyList(),
+            ),
+            isDialog = true,
             onEvent = {},
         )
     }

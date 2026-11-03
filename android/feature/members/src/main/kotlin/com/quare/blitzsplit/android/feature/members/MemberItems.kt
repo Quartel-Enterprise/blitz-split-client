@@ -38,7 +38,7 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 
 /*
  * Why: Membros under the group's header: the group's link, who is in it and, unless it floats over the list,
- * "Adicionar pessoa". Nothing until Room is read, the header staying where it is.
+ * "Adicionar pessoa". The link and the people shimmer until Room is read, the header staying where it is.
  */
 internal fun LazyListScope.memberItems(
     state: MembersUiState,
@@ -46,7 +46,14 @@ internal fun LazyListScope.memberItems(
     showsAddButton: Boolean,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
-    if (!state.isLoaded) return
+    if (!state.isLoaded) {
+        item(key = "members-skeleton") {
+            MembersSkeleton(
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+        return
+    }
     item(key = "members-link") {
         LinkCard(
             displayLink = state.displayLink,
@@ -226,6 +233,22 @@ private fun MemberItemsPreview() {
         LazyColumn {
             memberItems(
                 state = createPreviewState(),
+                money = money,
+                showsAddButton = true,
+                onEvent = {},
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MemberItemsLoadingPreview() {
+    BlitzSplitTheme {
+        val money = rememberMoneyFormatter(GroupCurrency.BRL)
+        LazyColumn {
+            memberItems(
+                state = createPreviewState().copy(isLoaded = false),
                 money = money,
                 showsAddButton = true,
                 onEvent = {},

@@ -3,7 +3,8 @@ import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { SummaryListPageSkeleton } from '@/components/PageSkeletons'
 import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
@@ -79,7 +80,7 @@ export function GroupsScreen() {
     <HomeShell
       activityUnreadCount={state.activityUnreadCount}
       selected="groups"
-      profile={state}
+      profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
       search={
@@ -100,6 +101,8 @@ export function GroupsScreen() {
         {/* Why: the first download draws the page before its first group, with what is still coming in gray. */}
         {state.groups.length > 0 || state.firstDownload ? (
           <GroupsPage presenter={presenter} state={state} />
+        ) : !state.hasLoadedGroups ? (
+          <SummaryListPageSkeleton leading="square" />
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2">

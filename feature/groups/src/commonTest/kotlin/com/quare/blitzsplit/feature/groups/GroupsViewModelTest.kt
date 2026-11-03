@@ -2629,6 +2629,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2636,6 +2637,7 @@ class GroupsViewModelTest {
             firstDownload.value = FirstDownloadProgress(
                 arrivedGroupCount = 3,
                 groupCount = 7,
+                isWaitingForInternet = false,
             )
 
             // Then
@@ -2643,6 +2645,7 @@ class GroupsViewModelTest {
                 DownloadProgress(
                     arrivedGroupCount = 3,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
                 viewModel.uiState.value.firstDownload,
             )
@@ -2684,6 +2687,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2705,6 +2709,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2743,6 +2748,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2763,6 +2769,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2783,6 +2790,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 1,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2805,6 +2813,7 @@ class GroupsViewModelTest {
                 downloading = FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = 0,
+                    isWaitingForInternet = false,
                 ),
             )
 
@@ -2845,6 +2854,73 @@ class GroupsViewModelTest {
         assertFalse(viewModel.uiState.value.isRefreshing)
         assertEquals(0, syncNowCount)
     }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN the groups open THEN offers no Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(groupsRead = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN a restore whose full sync never finished WHEN the groups open offline THEN waits for the internet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                DownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+                state.firstDownload,
+            )
+            assertNull(state.firstDownload?.fraction)
+            assertFalse(state.showsEmptyState)
+            assertFalse(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN a restore waiting for the internet with a group down WHEN the groups open THEN hides Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+                storedGroups = listOf(trio()),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("trio"), state.groups.map(GroupRow::id))
+            assertEquals(true, state.firstDownload?.isWaitingForInternet)
+            assertFalse(state.showsSplitBillButton)
+        }
 
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 

@@ -139,7 +139,7 @@ private fun GroupTitle(
 
 // Why: beside the home's list the group has nothing to go back to; another row takes its place.
 @Composable
-private fun GroupBackButton(onAction: (GroupAction) -> Unit) {
+internal fun GroupBackButton(onAction: (GroupAction) -> Unit) {
     if (LocalInDetailPane.current) return
     IconButton(onClick = { onAction(GroupAction.BACK) }) {
         Icon(

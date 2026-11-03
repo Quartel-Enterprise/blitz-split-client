@@ -50,6 +50,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
@@ -1305,6 +1306,7 @@ class GroupDetailPaymentsViewModelTest {
                 saveTerm = SaveCategoryTermUseCase(FakeCategoryTermRepository()) { 0L },
             ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

@@ -31,6 +31,7 @@ class FakeAccountRepository(
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
             email = null,
             signOutWhenSynced = false,
+            awaitsFullSync = false,
         ),
     )
 
@@ -62,6 +63,12 @@ class FakeAccountRepository(
         get() = snapshot.value.signOutWhenSynced
         set(value) {
             snapshot.update { it.copy(signOutWhenSynced = value) }
+        }
+
+    var awaitsFullSync: Boolean
+        get() = snapshot.value.awaitsFullSync
+        set(value) {
+            snapshot.update { it.copy(awaitsFullSync = value) }
         }
     var sessionUser: SessionUser? = null
     val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>()
@@ -212,6 +219,10 @@ class FakeAccountRepository(
         signOutWhenSynced = isScheduled
     }
 
+    override suspend fun updateAwaitsFullSync(awaits: Boolean) {
+        awaitsFullSync = awaits
+    }
+
     // Why: like the real one, back to the empty row of a fresh install.
     override suspend fun signOut() {
         signOutCount++
@@ -223,6 +234,7 @@ class FakeAccountRepository(
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
             email = null,
             signOutWhenSynced = false,
+            awaitsFullSync = false,
         )
     }
 
@@ -257,6 +269,7 @@ class FakeAccountRepository(
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
             email = null,
             signOutWhenSynced = false,
+            awaitsFullSync = false,
         )
     }
 
