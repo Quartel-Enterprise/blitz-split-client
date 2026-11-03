@@ -15,12 +15,14 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
@@ -38,6 +40,7 @@ class AppViewModel(
     val navigator: Navigator,
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
+    private val observeDynamicColors: ObserveDynamicColors,
     private val linkInbox: LinkInbox,
     private val markActivityRead: MarkActivityRead,
     private val observeGroup: ObserveGroup,
@@ -50,6 +53,10 @@ class AppViewModel(
 
     val theme: StateFlow<ThemePreference>
         field = MutableStateFlow(ThemePreference.SYSTEM)
+
+    // Why: Material You's scheme in place of the brand's, only where the platform draws one (Android 12 and later).
+    val usesDynamicColors: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     private val isThemeKnown = CompletableDeferred<Unit>()
 
@@ -75,13 +82,13 @@ class AppViewModel(
         }
     }
 
-    // Why: the first frame waits for the chosen theme, so a Light or Dark one never flashes the system's.
+    // Why: the first frame waits for the chosen theme and colors, so neither flashes the system's or the brand's.
     private fun followTheme() {
-        observeThemePreference()
-            .onEach { preference ->
-                theme.value = preference
-                isThemeKnown.complete(Unit)
-            }.launchIn(viewModelScope)
+        combine(observeThemePreference(), observeDynamicColors()) { preference, isDynamic ->
+            theme.value = preference
+            usesDynamicColors.value = isDynamic
+            isThemeKnown.complete(Unit)
+        }.launchIn(viewModelScope)
     }
 
     /*

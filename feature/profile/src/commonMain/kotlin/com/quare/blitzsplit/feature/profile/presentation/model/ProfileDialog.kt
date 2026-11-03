@@ -15,4 +15,10 @@ enum class ProfileDialog {
 
     // Why: tapping the Google or Apple row; the device goes on without an account, with a new recovery code.
     UNLINK_ACCOUNT,
+
+    // Why: Android's "Aparência", the theme's preview cards and "Cores dinâmicas", as Bible Planner draws them.
+    APPEARANCE,
+
+    // Why: what "Cores dinâmicas" does, opened from Aparência's info button; closing it goes back to Aparência.
+    DYNAMIC_COLORS_INFO,
 }

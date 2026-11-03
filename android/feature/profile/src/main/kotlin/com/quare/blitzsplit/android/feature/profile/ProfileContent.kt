@@ -503,6 +503,8 @@ internal fun createPreviewProfileState(
     ).toLoaded(),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
+    showsDynamicColors = true,
+    usesDynamicColors = false,
     activeNotificationCount = 3.toLoaded(),
     dialog = null,
     hasConfirmedCodeSaved = false,

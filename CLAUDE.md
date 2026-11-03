@@ -261,6 +261,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - Android's Perfil › Preferências › "Aparência" is a row ("Sistema", "Sistema · cores dinâmicas") opening a sheet
+    as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
+    (Sistema half light, half dark, in the wallpaper's colors while they are on), then "Cores dinâmicas" with an ⓘ
+    explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Entendi" back to the sheet); a bottom sheet
+    on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
+  - "Cores dinâmicas" (Material You) shows in Aparência only where the platform draws a
+    scheme from the wallpaper, Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off
+    by default, it swaps the brand's Material scheme for the wallpaper's in light and dark alike, while the groups',
+    avatars' and categories' own colors stay the brand's. Kept per device and never synced (`usesDynamicColors` in
+    `device_settings`, so it outlives a sign out); a choice restored onto a device that can't draw it reads as off.
+    The Apple apps and the web have no such scheme and show nothing.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

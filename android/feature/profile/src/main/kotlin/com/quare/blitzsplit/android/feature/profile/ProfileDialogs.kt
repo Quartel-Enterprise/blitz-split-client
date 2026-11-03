@@ -50,6 +50,13 @@ internal fun ProfileDialogsOverlay(
 ) {
     val onDismiss = { onEvent(ProfileUiEvent.OnDialogDismissed) }
     val placement = rememberDialogPlacement()
+    // Why: the dynamic colors' explanation opens over Aparência, which stays in place under it.
+    if (state.dialog == ProfileDialog.APPEARANCE || state.dialog == ProfileDialog.DYNAMIC_COLORS_INFO) {
+        AppearanceSheet(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
     when (state.dialog) {
         ProfileDialog.VISIBILITY_INFO -> FoldAlertDialog(
             onDismissRequest = onDismiss,
@@ -141,7 +148,12 @@ internal fun ProfileDialogsOverlay(
             placement = placement,
         )
 
-        null -> Unit
+        ProfileDialog.DYNAMIC_COLORS_INFO -> DynamicColorsInfoDialog(
+            onDismiss = onDismiss,
+            placement = placement,
+        )
+
+        ProfileDialog.APPEARANCE, null -> Unit
     }
 }
 

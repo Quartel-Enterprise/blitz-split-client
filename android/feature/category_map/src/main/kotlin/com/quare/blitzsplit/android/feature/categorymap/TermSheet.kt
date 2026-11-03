@@ -8,25 +8,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,62 +30,29 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.format.categoryName
-import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
-import com.quare.blitzsplit.android.designsystem.layout.FormFactor
-import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
 import com.quare.blitzsplit.feature.categorymap.presentation.model.TermError
 import com.quare.blitzsplit.feature.categorymap.presentation.model.TermForm
 
-private val landscapeSheetMaxWidth = 640.dp
-private val dialogWidth = 560.dp
-
 /*
  * Why: "Novo termo" and "Editar termo" (9.2): a bottom sheet on a phone (centered at up to 640dp lying down), a 560dp
  * dialog on a tablet and a foldable upright, and the book's right half with the map under the scrim.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TermSheet(
     state: CategoryMapUiState,
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val form = state.termForm ?: return
-    val onDismiss = { onEvent(CategoryMapUiEvent.OnTermDismissed) }
-    val formFactor = rememberFoldLayout().formFactor
-    if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            sheetState = rememberBottomSheetState(
-                initialValue = SheetValue.Hidden,
-                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-            ),
-            sheetMaxWidth = landscapeSheetMaxWidth,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        ) {
-            TermFormContent(
-                state = state,
-                form = form,
-                onEvent = onEvent,
-            )
-        }
-    } else {
-        FoldDialog(onDismissRequest = onDismiss) {
-            Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                modifier = Modifier.widthIn(max = dialogWidth),
-            ) {
-                TermFormContent(
-                    state = state,
-                    form = form,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(top = 24.dp),
-                )
-            }
-        }
+    AdaptiveSheet(onDismissRequest = { onEvent(CategoryMapUiEvent.OnTermDismissed) }) {
+        TermFormContent(
+            state = state,
+            form = form,
+            onEvent = onEvent,
+        )
     }
 }
 

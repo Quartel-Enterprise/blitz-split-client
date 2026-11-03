@@ -35,6 +35,9 @@ data class ProfileUiState(
     val paymentKeys: Loadable<List<PaymentKeyItem>>,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
+    // Why: "Cores dinâmicas" only shows where the platform draws the wallpaper's scheme (Android 12 and later).
+    val showsDynamicColors: Boolean,
+    val usesDynamicColors: Boolean,
     /*
      * Why: "3 ativas" under "Notificações"; the toggles themselves live on their own screen or section. Loading like
      * the keys, since a restored account's choices only come with its first full sync.

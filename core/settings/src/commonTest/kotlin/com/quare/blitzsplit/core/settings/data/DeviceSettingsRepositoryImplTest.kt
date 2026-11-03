@@ -26,6 +26,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var observed: MutableList<ThemePreference>
     private lateinit var observedLayouts: MutableList<GroupsLayout>
     private lateinit var observedCharts: MutableList<StatsChartPreferences>
+    private lateinit var observedDynamicColors: MutableList<Boolean>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -333,12 +334,202 @@ class DeviceSettingsRepositoryImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN a fresh install WHEN observing Material You THEN is off`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val dynamicColors = observedDynamicColors.toList()
+
+        // Then
+        assertEquals(listOf(false), dynamicColors)
+    }
+
+    @Test
+    fun `GIVEN Material You turned on on this device WHEN observing Material You THEN is on`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                usesDynamicColors = true,
+            ),
+        )
+
+        // When
+        val dynamicColors = observedDynamicColors.toList()
+
+        // Then
+        assertEquals(listOf(true), dynamicColors)
+    }
+
+    @Test
+    fun `GIVEN a fresh install WHEN turning Material You on THEN stores it with the theme following the system`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            repository.updateDynamicColors(true)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "system",
+                        usesDynamicColors = true,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(false, true), observedDynamicColors)
+            assertEquals(listOf(ThemePreference.SYSTEM), observed)
+        }
+
+    @Test
+    fun `GIVEN Material You on WHEN turning it off THEN stores off and observers see off`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                usesDynamicColors = true,
+            ),
+        )
+
+        // When
+        repository.updateDynamicColors(false)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    usesDynamicColors = false,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(true, false), observedDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN dark the grid and the line chart picked WHEN turning Material You on THEN keeps all of them`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "large",
+                    statsChartType = "line",
+                    statsGrain = "week",
+                ),
+            )
+
+            // When
+            repository.updateDynamicColors(true)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        groupsDisplay = "grid",
+                        groupGridSize = "large",
+                        statsChartType = "line",
+                        statsGrain = "week",
+                        usesDynamicColors = true,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(ThemePreference.DARK), observed)
+            assertEquals(listOf(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)), observedLayouts)
+            assertEquals(listOf(StatsChartPreferences(StatsChartType.LINE, StatsGrain.WEEK)), observedCharts)
+        }
+
+    @Test
+    fun `GIVEN Material You on WHEN picking dark THEN Material You stays on`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "light",
+                usesDynamicColors = true,
+            ),
+        )
+
+        // When
+        repository.updateTheme(ThemePreference.DARK)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    usesDynamicColors = true,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(true), observedDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN Material You on WHEN picking the grid and the line chart THEN Material You stays on`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                usesDynamicColors = true,
+            ),
+        )
+        repository.updateGroupsLayout(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.COMPACT))
+
+        // When
+        repository.updateStatsChart(StatsChartPreferences(StatsChartType.LINE, StatsGrain.MONTH))
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "system",
+                    groupsDisplay = "grid",
+                    groupGridSize = "compact",
+                    statsChartType = "line",
+                    statsGrain = "month",
+                    usesDynamicColors = true,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(true), observedDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN Material You on WHEN the device row is emitted again unchanged THEN observers are not notified again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "system",
+                    usesDynamicColors = true,
+                ),
+            )
+
+            // When
+            local.emitAgain()
+
+            // Then
+            assertEquals(listOf(true), observedDynamicColors)
+        }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
         groupGridSize: String? = null,
         statsChartType: String? = null,
         statsGrain: String? = null,
+        usesDynamicColors: Boolean = false,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -346,6 +537,7 @@ class DeviceSettingsRepositoryImplTest {
         groupGridSize = groupGridSize,
         statsChartType = statsChartType,
         statsGrain = statsGrain,
+        usesDynamicColors = usesDynamicColors,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -354,6 +546,7 @@ class DeviceSettingsRepositoryImplTest {
         observed = mutableListOf()
         observedLayouts = mutableListOf()
         observedCharts = mutableListOf()
+        observedDynamicColors = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
         }
@@ -362,6 +555,9 @@ class DeviceSettingsRepositoryImplTest {
         }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeStatsChart().collect(observedCharts::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeDynamicColors().collect(observedDynamicColors::add)
         }
     }
 }
@@ -391,6 +587,7 @@ private class FakeDeviceSettingsLocalDataSource(
             groupGridSize = null,
             statsChartType = null,
             statsGrain = null,
+            usesDynamicColors = false,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

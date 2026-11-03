@@ -16,6 +16,8 @@ internal class FakeDeviceSettingsRepository(
     val updatedLayouts = mutableListOf<GroupsLayout>()
     val statsChart = MutableStateFlow(StatsChartPreferences.initial)
     val updatedStatsCharts = mutableListOf<StatsChartPreferences>()
+    val dynamicColors = MutableStateFlow(false)
+    val updatedDynamicColors = mutableListOf<Boolean>()
 
     override fun observeTheme(): Flow<ThemePreference> = theme
 
@@ -36,5 +38,12 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateStatsChart(preferences: StatsChartPreferences) {
         updatedStatsCharts += preferences
         statsChart.value = preferences
+    }
+
+    override fun observeDynamicColors(): Flow<Boolean> = dynamicColors
+
+    override suspend fun updateDynamicColors(isOn: Boolean) {
+        updatedDynamicColors += isOn
+        dynamicColors.value = isOn
     }
 }

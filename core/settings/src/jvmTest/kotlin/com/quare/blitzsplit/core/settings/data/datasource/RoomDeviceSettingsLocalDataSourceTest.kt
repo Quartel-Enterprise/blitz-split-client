@@ -38,6 +38,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 groupGridSize = null,
                 statsChartType = null,
                 statsGrain = null,
+                usesDynamicColors = false,
             ),
             dataSource.observe().first(),
         )
@@ -66,6 +67,113 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 groupGridSize = "large",
                 statsChartType = null,
                 statsGrain = null,
+                usesDynamicColors = false,
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a fresh install WHEN Material You is turned on THEN the theme still follows the system`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        dataSource.update { it.copy(usesDynamicColors = true) }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "system",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = true,
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN dark and the grid picked WHEN Material You is turned on THEN dark and the grid stay`() = runTest {
+        // Given
+        prepareScenario()
+        dataSource.update {
+            it.copy(
+                theme = "dark",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+            )
+        }
+
+        // When
+        dataSource.update { it.copy(usesDynamicColors = true) }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "dark",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = true,
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN Material You on WHEN dark is picked THEN Material You stays on`() = runTest {
+        // Given
+        prepareScenario()
+        dataSource.update { it.copy(usesDynamicColors = true) }
+
+        // When
+        dataSource.update { it.copy(theme = "dark") }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "dark",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = true,
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN Material You on and dark picked WHEN Material You is turned off THEN dark stays`() = runTest {
+        // Given
+        prepareScenario()
+        dataSource.update {
+            it.copy(
+                theme = "dark",
+                usesDynamicColors = true,
+            )
+        }
+
+        // When
+        dataSource.update { it.copy(usesDynamicColors = false) }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "dark",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = false,
             ),
             dataSource.observe().first(),
         )
