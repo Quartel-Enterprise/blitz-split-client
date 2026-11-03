@@ -3,7 +3,7 @@ package com.quare.blitzsplit.navigation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -37,8 +37,9 @@ private class BottomSheetScene<T : Any>(
         val lock = remember { mutableStateOf(false) }
         ModalBottomSheet(
             onDismissRequest = onBack,
-            sheetState = rememberModalBottomSheetState(
-                skipPartiallyExpanded = true,
+            sheetState = rememberBottomSheetState(
+                initialValue = SheetValue.Hidden,
+                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
                 confirmValueChange = { value -> value != SheetValue.Hidden || !lock.value },
             ),
         ) {

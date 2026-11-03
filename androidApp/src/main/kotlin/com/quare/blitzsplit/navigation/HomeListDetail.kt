@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.navigation
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
@@ -35,7 +35,7 @@ import com.quare.blitzsplit.core.navigation.Route
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun rememberHomeListDetailStrategy(listDetail: ListDetailLayout?): SceneStrategy<Route> {
-    val windowDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
+    val windowDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2())
     val directive = remember(windowDirective, listDetail) { homeDirectiveOf(windowDirective, listDetail) }
     val listDetailStrategy = rememberListDetailSceneStrategy<Route>(directive = directive)
     return remember(listDetailStrategy) { BesideGroupsSceneStrategy(listDetailStrategy) }

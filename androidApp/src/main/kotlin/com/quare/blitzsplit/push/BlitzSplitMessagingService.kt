@@ -25,6 +25,11 @@ import org.koin.android.ext.android.inject
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
 
+    /*
+     * Why: Firebase 26 deprecates the token for register()/onRegistered(), which need the installation id opted in
+     * by a manifest flag and hand the server another kind of id; the token is what `push_devices` stores.
+     */
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onNewToken(token: String) {
         PushSetup.handOver(setPushDevice, token)
     }
