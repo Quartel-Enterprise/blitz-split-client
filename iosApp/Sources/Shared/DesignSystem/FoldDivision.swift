@@ -85,9 +85,10 @@ extension View {
     /// with what it opened over in the other one (iOS 27's `presentationPlacement`), no wider than that half: the
     /// form sheet's size where it fits (`isForm`), a bill's (`isBill`, `ScreenLayout.billSheetSize`), else the
     /// system's. Everywhere else, the iPhone Duo upright and closed included, the system places it and it keeps that
-    /// size. A sheet's sizing is decided once, here: the root's sheet picks `isForm` and `isBill` from the route
-    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), a screen's own sheet from what it draws. Put it on the sheet's
-    /// content, as a detent.
+    /// size. A sheet's sizing is decided here: the root's sheet picks `isForm` and `isBill` from its route
+    /// (`AppRoute.usesFormSheet`, `usesBillSheet`) or what is pushed inside it (`growsSheetToBill`), a screen's own
+    /// sheet from what it draws. SwiftUI applies it only as the sheet opens, so the root's sheet also resizes as routes
+    /// are pushed inside it (`resizingSheet`). Put it on the sheet's content, as a detent.
     func foldSheetPlacement(isForm: Bool = false, isBill: Bool = false) -> some View {
         modifier(FoldSheetPlacement(isForm: isForm, isBill: isBill))
     }
@@ -122,6 +123,105 @@ private struct FoldSheetPlacement: ViewModifier {
     }
 }
 
+extension View {
+    /// Grows the open sheet to a bill's size while `toBill` (Divisão padrão pushed inside Editar grupo's), and hands
+    /// that size below as `grownSheetSize`, so what is pushed lays out for it from its first frame; back to its own
+    /// size once it no longer does, since SwiftUI reads a sheet's `presentationSizing` only as it opens. Only the
+    /// root's sheets grow; the Mac sizes a sheet by its content.
+    func resizingSheet(toBill: Bool) -> some View {
+        #if os(iOS)
+        modifier(SheetResizing(toBill: toBill))
+        #else
+        self
+        #endif
+    }
+}
+
+extension EnvironmentValues {
+    /// The size the root's sheet grows to while a route pushed inside it asks for a bill's (`resizingSheet`), which
+    /// that route lays out for rather than for the size it measures while the sheet is still growing. Nil otherwise.
+    @Entry var grownSheetSize: CGSize?
+}
+
+#if os(iOS)
+private struct SheetResizing: ViewModifier {
+    let toBill: Bool
+
+    @Environment(\.windowFold) private var fold
+    @Environment(\.windowLayout) private var window
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.grownSheetSize, size)
+            .background(SheetResizer(size: size))
+    }
+
+    /// A bill's size, no wider than the half before the fold, as `FoldHalfSizing` proposes it; nil for any other sheet.
+    private var size: CGSize? {
+        guard toBill, var size = window.billSheetSize else { return nil }
+        if let foldStart = fold?.verticalFrame?.minX {
+            size.width = FoldHalfSizing.width(size.width, before: foldStart)
+        }
+        return size
+    }
+}
+
+/// The open sheet's `preferredContentSize`, which UIKit animates: `size` while there is one, and none once it goes, so
+/// the sheet takes its own size again for the window it is in now, never one kept from before a rotation.
+private struct SheetResizer: UIViewControllerRepresentable {
+    let size: CGSize?
+
+    func makeUIViewController(context: Context) -> Controller {
+        Controller()
+    }
+
+    func updateUIViewController(_ controller: Controller, context: Context) {
+        controller.resize(to: size)
+    }
+
+    final class Controller: UIViewController {
+        private var size: CGSize?
+        /// Whether the sheet holds a size set here.
+        private var isResized = false
+
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            view.isUserInteractionEnabled = false
+            view.accessibilityElementsHidden = true
+        }
+
+        func resize(to size: CGSize?) {
+            self.size = size
+            apply()
+        }
+
+        override func didMove(toParent parent: UIViewController?) {
+            super.didMove(toParent: parent)
+            apply()
+        }
+
+        private func apply() {
+            guard let sheet = presentedSheet else { return }
+            if let size {
+                sheet.preferredContentSize = size
+                isResized = true
+            } else if isResized {
+                // None makes SwiftUI write the sheet's own sizing again, for the window as it is now
+                sheet.preferredContentSize = .zero
+                isResized = false
+            }
+        }
+
+        /// The view controller the sheet presents, at the top of the containers this one sits in.
+        private var presentedSheet: UIViewController? {
+            var controller: UIViewController = self
+            while let parent = controller.parent { controller = parent }
+            return controller.presentingViewController == nil ? nil : controller
+        }
+    }
+}
+#endif
+
 /// A sheet no wider than the half before the fold, its margins included, so it never runs over it; its own size
 /// (a bill's, the form's, or the system's) anywhere else.
 private struct FoldHalfSizing: PresentationSizing {
@@ -134,6 +234,12 @@ private struct FoldHalfSizing: PresentationSizing {
     /// What the sheet keeps clear of the screen's edge and of the fold, on either side.
     private static let margin: CGFloat = 10
 
+    /// `width`, the whole half without one, no wider than the half before the fold.
+    static func width(_ width: CGFloat?, before foldStart: CGFloat) -> CGFloat {
+        let half = foldStart - margin * 2
+        return min(width ?? half, half)
+    }
+
     func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
         let own = if let size {
             ProposedViewSize(size)
@@ -143,7 +249,6 @@ private struct FoldHalfSizing: PresentationSizing {
             AutomaticPresentationSizing.automatic.proposedSize(for: root, context: context)
         }
         guard let foldStart else { return own }
-        let half = foldStart - Self.margin * 2
-        return ProposedViewSize(width: min(own.width ?? half, half), height: own.height)
+        return ProposedViewSize(width: Self.width(own.width, before: foldStart), height: own.height)
     }
 }

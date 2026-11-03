@@ -195,6 +195,15 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
+    /// Pushed inside a form sheet, grows it to a bill's size with an iPad's room until it is popped: Divisão padrão
+    /// inside Editar grupo's, as the boards draw it.
+    var growsSheetToBill: Bool {
+        switch self {
+        case .defaultSplit: true
+        default: false
+        }
+    }
+
     /// A group's screen, whatever tab it shows: the screen that roots the column beside the list, and the one whose
     /// "Invite people" (Members' Share) anchors the Mac's invite popover.
     var isGroupScreen: Bool {

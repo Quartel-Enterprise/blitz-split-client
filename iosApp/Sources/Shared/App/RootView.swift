@@ -61,10 +61,11 @@ struct RootView: View {
                             screen(for: route)
                         }
                 }
-                .foldSheetPlacement(isForm: route.usesFormSheet, isBill: route.usesBillSheet)
+                .rootSheetSizing(for: route, pushed: app.stackedSheetPath)
             }
-            // The front half of an iPhone Duo open, with what it opened over in the other one
-            .foldSheetPlacement(isForm: route.usesFormSheet, isBill: route.usesBillSheet)
+            // The front half of an iPhone Duo open, with what it opened over in the other one; pushing Divisão padrão
+            // grows Editar grupo's form sheet to a bill's, and popping it shrinks it back
+            .rootSheetSizing(for: route, pushed: app.sheetPath)
         }
         #if os(iOS)
         .fullScreenCover(item: $app.cover) { route in
@@ -144,5 +145,16 @@ struct RootView: View {
         case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
+    }
+}
+
+private extension View {
+    /// The sheet at its route's size, or a bill's while a route that grows it is pushed inside it (Divisão padrão in
+    /// Editar grupo's), placed by the iPhone Duo's fold: SwiftUI keeps the sizing it is given now, but only
+    /// `resizingSheet` moves the open sheet to it.
+    func rootSheetSizing(for route: AppRoute, pushed: [AppRoute]) -> some View {
+        let isGrown = !route.usesBillSheet && pushed.contains { $0.growsSheetToBill }
+        return foldSheetPlacement(isForm: route.usesFormSheet && !isGrown, isBill: route.usesBillSheet || isGrown)
+            .resizingSheet(toBill: isGrown)
     }
 }
