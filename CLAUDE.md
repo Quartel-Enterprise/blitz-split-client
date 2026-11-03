@@ -105,8 +105,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     them; "Ver todos" opens Grupos. "Últimas despesas": the five latest bills you paid or take part in, by day, with
     your share and its category's badge exactly as the group's Despesas rows draw it (Pierre's call, the category as
     it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
-    "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
-    on Grupos). States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
+    "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). "Buscar" is the home's (5.2), over
+    Início. States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
     once the account's copy is whole; a new device's first download (an account restored on a device with no profile,
     or a sign in that switched to another user, until a sync settled, also across relaunches, `FirstDownload`,
     `AccountSnapshot.awaitsFullSync`)
@@ -216,12 +216,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - The home's "Buscar" (5.2) looks in the groups, people (the members, never this device's user, once per group they
     are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
     (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
-    found. It only shows once there is a group: Android's magnifier in the top bar, whose search bar takes the bar's
-    place (back closes it), iOS's search tab with an iPad's room (both size classes regular, in its sidebar),
-    and on an iPhone, lying down too, a magnifier in Grupos' bar that opens it in place, with ✕ (five tabs leave no
-    room for a sixth), "Buscar… ⌘K" in the web's sidebar (the phone's
-    magnifier), opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field, whose results take the
-    groups' place once something is typed. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
+    found. It is the same search on all five tabs (Início, Grupos, Saldos, Contatos, Atividade, Pierre's call), and
+    only shows once there is a group: Android's magnifier in each tab's top bar, whose search bar takes the bar's
+    place on Grupos (back closes it), iOS's search tab with an iPad's room (both size classes regular, in its
+    sidebar, opening over Grupos), and on an iPhone, lying down too, a magnifier in each tab's bar (five tabs leave
+    no room for a sixth), which opens it in place with ✕ on Grupos, "Buscar… ⌘K" in the web's sidebar (the phone's
+    magnifier) on each tab, opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field on Grupos,
+    whose results take the groups' place once something is typed, and a magnifier (⌘K's dialog's twin, a sheet) on
+    the other tabs. Over Início, Saldos, Contatos and Atividade it is a route of its own over the tab
+    (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with Grupos' search bar,
+    pushed on an iPhone, a sheet on the Mac and the web's dialog; closing goes back to the tab, and a result opens in
+    its place, over the tab. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Quitado · despesa “Churros”", as the design draws it), and "Despesas"
     lists it too. A group opens the group, a person the Membros of the group they were found in, a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
@@ -320,8 +325,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0 · quitado") and "3 grupos" or the group's
     name, under the card "Você deve / Te devem / Ver Saldos" (Saldos' totals). It all works offline on the device's
-    data ("Offline · contatos deste aparelho"). "Buscar" looks in the people (hidden ones too) and, on Android and
-    Apple, in the device's agenda when access was already given ("Na agenda", with Convidar). "Ocultos" holds whoever
+    data ("Offline · contatos deste aparelho"). Its magnifier opens the home's "Buscar" (5.2) over Contatos (Pierre's
+    call: the people are in its Pessoas), and the agenda is searched only in "Convidar da agenda". "Ocultos" holds whoever
     was hidden ("Ocultar de Contatos", only while the balance with them is zero, asked first), synced to the user's
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Mostrar"; someone hidden comes back by
     themselves once a bill shared with them is saved later or the balance opens again. The profile

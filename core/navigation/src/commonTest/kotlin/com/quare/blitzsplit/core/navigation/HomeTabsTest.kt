@@ -456,6 +456,30 @@ class HomeTabsTest {
         assertEquals(HomeTab.HOME, tab)
     }
 
+    @Test
+    fun `GIVEN Contatos on top WHEN opening the search over it THEN the search goes above Contatos`() {
+        // Given
+        prepareScenario(Route.Home, Route.Contacts)
+
+        // When
+        navigator.openSearchOver(HomeTab.CONTACTS)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a profile Contatos opened WHEN a late search over Contatos arrives THEN stacks nothing`() {
+        // Given
+        prepareScenario(Route.Home, Route.Contacts, Route.Profile)
+
+        // When
+        navigator.openSearchOver(HomeTab.CONTACTS)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
+    }
+
     private fun prepareScenario(vararg stack: Route) {
         navigator = BackStackNavigator(startRoute = stack.first()).also { navigator ->
             stack.drop(1).forEach(navigator::navigate)

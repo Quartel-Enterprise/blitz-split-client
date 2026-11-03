@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="contacts_title">Contacts</string>
-    <string name="contacts_search">Search contacts</string>
     <string name="contacts_profile">Profile</string>
     <string name="contacts_offline">Offline · this device\'s contacts</string>
     <string name="contacts_summary_you_owe">You owe</string>
@@ -31,14 +30,11 @@
     <string name="contacts_hidden_note">Whoever is hidden stays in the groups. They come back to the list on their own if they join a new account with you.</string>
     <string name="contacts_empty_title">Nobody here yet</string>
     <string name="contacts_empty_body">Whoever shares a group with you shows up here, with the balance of each one.</string>
-    <string name="contacts_search_back">Close search</string>
     <string name="contacts_search_clear">Clear search</string>
-    <string name="contacts_search_in_groups">In your groups · %d</string>
     <string name="contacts_search_in_agenda">In your contacts · %d</string>
     <string name="contacts_invite">Invite</string>
     <string name="contacts_invite_person">Invite %s</string>
     <string name="contacts_no_results_title">Nobody named “%s”</string>
-    <string name="contacts_no_results_body">We didn\'t find anyone with that name in your groups or in your contacts. Check the spelling or invite them.</string>
     <string name="contacts_coming_soon">Coming soon</string>
     <string name="contacts_change_error">Couldn\'t save the change. Try again.</string>
     <string name="contacts_close">Close</string>

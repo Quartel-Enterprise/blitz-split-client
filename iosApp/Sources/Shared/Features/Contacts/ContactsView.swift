@@ -24,42 +24,8 @@ final class ContactsModel {
         })
     }
 
-    /// The state as the ViewModel holds it right now: the search field reads its text back at once.
-    var current: ContactsUiState {
-        (holder.viewModel.uiState.value as? ContactsUiState) ?? state
-    }
-
     func send(_ event: any ContactsUiEvent) {
         holder.viewModel.onEvent(event: event)
-    }
-
-    /// The search also looks in the agenda, but only with the access already given: it never asks from here.
-    func loadAgendaIfAllowed() {
-        guard AgendaReader.canRead else { return }
-        // The search shimmers until the agenda is read, rather than saying nobody was found
-        send(ContactsUiEventOnAgendaReadStarted.shared)
-        Task { [weak self] in
-            let contacts = await AgendaReader.load()
-            self?.send(ContactsUiEventOnAgendaLoaded(contacts: contacts))
-        }
-    }
-
-    /// The search field: opening and closing it, and what is typed.
-    var query: Binding<String> {
-        Binding(
-            get: { self.current.query },
-            set: { self.send(ContactsUiEventOnQueryChanged(query: $0)) },
-        )
-    }
-
-    var isSearchOpen: Binding<Bool> {
-        Binding(
-            get: { self.state.isSearchOpen },
-            set: { isOpen in
-                guard isOpen != self.current.isSearchOpen else { return }
-                self.send(isOpen ? ContactsUiEventOnSearchOpened.shared : ContactsUiEventOnSearchClosed.shared)
-            },
-        )
     }
 
     isolated deinit {
@@ -167,8 +133,8 @@ private struct ContactsPane: View {
     }
 }
 
-/// The people of your groups A to Z with the net with each, then the invites and whoever is hidden; the search shows
-/// its results in the list's place once something is typed.
+/// The people of your groups A to Z with the net with each, then the invites and whoever is hidden. The magnifier
+/// opens the home's search over Contacts (`Route.Search`).
 struct ContactsView: View {
     let model: ContactsModel
     /// The column beside the list shows, so the row of what it shows is highlighted.
@@ -177,7 +143,7 @@ struct ContactsView: View {
     var body: some View {
         let state = model.state
         Group {
-            if state.isEmpty, !state.isSearching {
+            if state.isEmpty {
                 ContactsEmptyState(model: model)
             } else {
                 List {
@@ -190,8 +156,6 @@ struct ContactsView: View {
                     }
                     if state.isLoading {
                         ContactsSkeleton(isWaitingForInternet: state.isWaitingForInternet)
-                    } else if state.isSearching {
-                        ContactsSearchResults(model: model)
                     } else {
                         ContactsSections(model: model, showsDetail: showsDetail)
                     }
@@ -207,10 +171,6 @@ struct ContactsView: View {
         .navigationTitle("Contacts")
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
-        .searchable(text: model.query, isPresented: model.isSearchOpen, prompt: Text("Search contacts"))
-        .searchToolbarBehavior(.minimize)
-        #else
-        .searchable(text: macSearch, placement: .toolbar, prompt: Text("Search contacts"))
         #endif
         .toolbar {
             #if os(macOS)
@@ -220,6 +180,7 @@ struct ContactsView: View {
                 }
             }
             #endif
+            SearchToolbarItem(canSearch: state.canSearch) { model.send(ContactsUiEventOnSearchClicked.shared) }
             ToolbarItem(placement: .primaryAction) {
                 ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
                     model.send(ContactsUiEventOnProfileClicked.shared)
@@ -230,27 +191,7 @@ struct ContactsView: View {
         .glassToast([
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model.changeErrorCount),
         ])
-        .onChange(of: state.isSearchOpen) { _, isOpen in
-            if isOpen { model.loadAgendaIfAllowed() }
-        }
     }
-
-    #if os(macOS)
-    /// The toolbar's field: typing opens the search, clearing it closes it.
-    private var macSearch: Binding<String> {
-        Binding(
-            get: { model.current.query },
-            set: { query in
-                if query.isEmpty {
-                    if model.current.isSearchOpen { model.send(ContactsUiEventOnSearchClosed.shared) }
-                    return
-                }
-                if !model.current.isSearchOpen { model.send(ContactsUiEventOnSearchOpened.shared) }
-                model.send(ContactsUiEventOnQueryChanged(query: query))
-            },
-        )
-    }
-    #endif
 }
 
 /// The summary, the people, the invites and the hidden ones.
@@ -365,7 +306,7 @@ private struct ContactsSummaryCard: View {
     }
 }
 
-/// Someone once: the face, the name (what the search found in bold), their group or how many, and the net with its
+/// Someone once: the face, the name, their group or how many, and the net with its
 /// word.
 struct ContactRowLabel: View {
     let row: ContactRow
@@ -375,7 +316,7 @@ struct ContactRowLabel: View {
             AvatarPhoto(initial: row.initials, color: row.color, photoUrl: row.photoUrl, size: 40)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
-                Text(ContactsCopy.marked(row.name, row.match))
+                Text(verbatim: row.name)
                     .lineLimit(1)
                 Text(verbatim: ContactsCopy.meta(row))
                     .font(.footnote)
@@ -513,62 +454,6 @@ private struct HiddenContactsSection: View {
         } footer: {
             if state.isHiddenExpanded {
                 Text("Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new account with you.")
-            }
-        }
-    }
-}
-
-/// "In your groups" first, then "In your contacts" with Invite, or what wasn't found with the link.
-private struct ContactsSearchResults: View {
-    let model: ContactsModel
-
-    var body: some View {
-        let state = model.state
-        if state.isSearchLoading {
-            // The people or the agenda it also looks in aren't read yet: never "Nobody named" before them
-            Section {
-                ShimmerList(count: 4, showsTrailing: false)
-                    .shimmering()
-            }
-        } else if state.showsNoResults {
-            Section {
-                ContentUnavailableView {
-                    Label {
-                        Text("Nobody named “\(state.query.trimmingCharacters(in: .whitespaces))”")
-                    } icon: {
-                        Image(systemName: "magnifyingglass")
-                    }
-                } description: {
-                    Text("We couldn't find anyone with that name in your groups or your contacts. Check the spelling or invite them.")
-                } actions: {
-                    Button("Invite with a link or QR code") {
-                        model.send(ContactsUiEventOnInviteWithLinkClicked.shared)
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                }
-            }
-            .listRowBackground(Color.clear)
-        } else {
-            if !state.groupResults.isEmpty {
-                Section {
-                    ForEach(state.groupResults, id: \.key) { row in
-                        ContactPickRow(model: model, row: row, isSelected: false)
-                    }
-                } header: {
-                    Text("In your groups · \(state.groupResults.count)")
-                }
-            }
-            if !state.agendaResults.isEmpty {
-                Section {
-                    ForEach(state.agendaResults, id: \.contact.id) { match in
-                        AgendaContactRow(match: match) {
-                            model.send(ContactsUiEventOnAgendaContactInviteClicked(contactId: match.contact.id))
-                        }
-                    }
-                } header: {
-                    Text("In your contacts · \(state.agendaResults.count)")
-                }
             }
         }
     }

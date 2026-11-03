@@ -9,6 +9,8 @@ enum AppRoute: Hashable, Identifiable {
     case home
     /// Grupos, the home's tab right above Início.
     case groups
+    /// "Search" over Home, Balances, Contacts or Activity: pushed on an iPhone, a sheet on the Mac.
+    case search
     case createGroup
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case invite(RouteInvite)
@@ -67,6 +69,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteRestore: self = .restore
         case is RouteHome: self = .home
         case is RouteGroups: self = .groups
+        case is RouteSearch: self = .search
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
         case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
@@ -109,7 +112,8 @@ enum AppRoute: Hashable, Identifiable {
     /// Mac's inspector). The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
     /// on the Mac it is a sheet, or the popover of the group behind it (`AppModel.invitePopover`). The invite reader is
     /// a sheet on the Mac, and covers the whole screen on iPhone and iPad. An invite opened from its link is one sheet
-    /// on the Mac, "Who are you" pushed inside it.
+    /// on the Mac, "Who are you" pushed inside it. Search over a tab other than Groups is a sheet on the Mac and pushed
+    /// on an iPhone.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
         case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .pickPayment,
@@ -121,7 +125,7 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return !isLargeWindow
             #endif
-        case .joinWithLink, .joinInvite:
+        case .joinWithLink, .joinInvite, .search:
             #if os(macOS)
             return true
             #else

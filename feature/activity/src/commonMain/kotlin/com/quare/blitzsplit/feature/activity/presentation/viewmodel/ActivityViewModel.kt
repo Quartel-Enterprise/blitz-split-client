@@ -16,13 +16,16 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -62,6 +65,7 @@ class ActivityViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeActivityFeed: ObserveActivityFeed,
     observeGroups: ObserveGroups,
+    observeHasGroups: ObserveHasGroups,
     observeMapCategories: ObserveMapCategories,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
@@ -100,6 +104,7 @@ class ActivityViewModel(
                 isRefreshing = false,
                 hasMore = false,
                 deletedNotice = null,
+                canSearch = false,
             ),
         )
 
@@ -156,6 +161,10 @@ class ActivityViewModel(
                 feedVersion++
                 show()
             }.launchIn(viewModelScope)
+        // Why: on its own, so the search doesn't wait for the feed and its categories.
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
+            .launchIn(viewModelScope)
         combine(
             observeSyncState(),
             connectivityObserver.observe(),
@@ -234,6 +243,11 @@ class ActivityViewModel(
             ActivityUiEvent.OnDeletedNoticeShown -> uiState.update { it.copy(deletedNotice = null) }
 
             ActivityUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
+
+            // Why: never over "Filtrar atividade", which is no route, so ⌘K on the web can't stack the search over it.
+            ActivityUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.isFilterOpen) {
+                navigator.openSearchOver(HomeTab.ACTIVITY)
+            }
 
             ActivityUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
 

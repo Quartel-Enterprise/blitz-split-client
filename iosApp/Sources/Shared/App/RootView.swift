@@ -110,6 +110,7 @@ struct RootView: View {
         case .restore: RestoreView()
         // Grupos is never the root now; a stack that starts there still draws the tabs
         case .home, .groups: MainTabView(path: $app.path)
+        case .search: SearchView()
         case .createGroup: CreateGroupView()
         case let .invite(route): InviteView(route: route)
         case let .groupDetail(route): GroupDetailView(route: route)

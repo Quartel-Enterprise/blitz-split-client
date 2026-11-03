@@ -45,6 +45,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -285,7 +286,7 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
             // Then
             assertEquals(
@@ -311,7 +312,7 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("carla"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
 
             // Then
             assertEquals(
@@ -329,7 +330,7 @@ class GroupsDetailPaneTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("mercado"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("mercado")))
 
             // Then
             assertEquals(
@@ -352,11 +353,11 @@ class GroupsDetailPaneTest {
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("aniversario"))
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("churr"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("churr")))
 
             // Then
             assertEquals(
@@ -379,7 +380,7 @@ class GroupsDetailPaneTest {
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("aniversario"))
 
             // When
@@ -441,7 +442,7 @@ class GroupsDetailPaneTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
         // Then
         assertEquals(listOf(Route.Groups), navigator.backStack.value)
@@ -453,7 +454,7 @@ class GroupsDetailPaneTest {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))

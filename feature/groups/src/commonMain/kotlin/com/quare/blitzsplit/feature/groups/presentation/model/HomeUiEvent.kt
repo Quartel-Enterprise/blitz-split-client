@@ -6,6 +6,9 @@ import com.quare.blitzsplit.core.presentation.UiEvent
 sealed interface HomeUiEvent : UiEvent {
     data object OnProfileClicked : HomeUiEvent
 
+    // Why: "Buscar" (5.2), the same search as Grupos', over Início: the magnifier, the web's ⌘K.
+    data object OnSearchClicked : HomeUiEvent
+
     // Why: the chip "Sem resposta do servidor · tentar de novo".
     data object OnRetrySyncClicked : HomeUiEvent
 

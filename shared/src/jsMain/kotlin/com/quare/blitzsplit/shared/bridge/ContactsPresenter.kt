@@ -11,10 +11,7 @@ import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
 import software.quare.loadable.valueOrNull
 
-/*
- * Why: one person of Contatos. netMinor is positive when they owe you, negative when you owe them; matchStart and
- * matchEnd mark where the search found the name, -1 outside the search.
- */
+// Why: one person of Contatos. netMinor is positive when they owe you, negative when you owe them.
 class JsContactRow(
     val key: String,
     val name: String,
@@ -27,8 +24,6 @@ class JsContactRow(
     val groupCount: Int,
     val firstGroupName: String,
     val isGuest: Boolean,
-    val matchStart: Int,
-    val matchEnd: Int,
 )
 
 class JsContactsState(
@@ -43,16 +38,11 @@ class JsContactsState(
     val isHiddenExpanded: Boolean,
     // Why: "Você deve" and "Te devem", Saldos' totals in its main currency; null while they load (the shimmer).
     val total: JsBalanceTotal?,
-    val query: String,
-    val isSearching: Boolean,
-    // Why: "Nos seus grupos", hidden ones included; the web has no agenda to look in.
-    val groupResults: Array<JsContactRow>,
-    val showsNoResults: Boolean,
+    // Why: "Buscar…" and ⌘K only once there is a group to look in.
+    val canSearch: Boolean,
     val isEmpty: Boolean,
     // Why: the skeleton rows, until the people are read and the account's copy is whole.
     val isLoading: Boolean,
-    // Why: the search's skeleton while what it looks in is still being read.
-    val isSearchLoading: Boolean,
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the skeleton.
     val isWaitingForInternet: Boolean,
     val showsSummary: Boolean,
@@ -87,13 +77,9 @@ class ContactsPresenter {
                         toPayMinor = total.toPayMinor.toDouble(),
                     )
                 },
-                query = state.query,
-                isSearching = state.isSearching,
-                groupResults = state.groupResults.map(::toJsContactRow).toTypedArray(),
-                showsNoResults = state.showsNoResults,
+                canSearch = state.canSearch,
                 isEmpty = state.isEmpty,
                 isLoading = state.isLoading,
-                isSearchLoading = state.isSearchLoading,
                 isWaitingForInternet = state.isWaitingForInternet,
                 showsSummary = state.showsSummary,
                 showsOfflineNotice = state.showsOfflineNotice,
@@ -121,18 +107,9 @@ class ContactsPresenter {
         viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown))
     }
 
-    // Why: the field is always there on the web; typing opens the search, clearing it closes it.
-    fun search(query: String) {
-        if (query.isEmpty()) {
-            viewModel.onEvent(ContactsUiEvent.OnSearchClosed)
-            return
-        }
-        viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-        viewModel.onEvent(ContactsUiEvent.OnQueryChanged(query))
-    }
-
-    fun closeSearch() {
-        viewModel.onEvent(ContactsUiEvent.OnSearchClosed)
+    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over Contatos.
+    fun openSearch() {
+        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
     }
 
     fun toggleHidden() {
@@ -200,6 +177,4 @@ private fun toJsContactRow(row: ContactRow): JsContactRow = JsContactRow(
     groupCount = row.groupCount,
     firstGroupName = row.firstGroupName,
     isGuest = row.isGuest,
-    matchStart = row.match?.start ?: -1,
-    matchEnd = row.match?.end ?: -1,
 )

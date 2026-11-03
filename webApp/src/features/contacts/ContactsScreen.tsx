@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, QrCode, Search, SearchX, UserRound, Users, WifiOff, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, QrCode, UserRound, Users, WifiOff } from 'lucide-react'
 import { ContactsPresenter, type JsContactRow, type JsContactsState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -7,10 +7,9 @@ import { Avatar } from '@/components/common'
 import { HomeShell, homeTabLabel, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
-import { useDraft } from '@/hooks/useDraft'
+import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -35,6 +34,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>
 export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   const presenter = usePresenter(() => new ContactsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsContactsState) => void) => p.observeState(onChange))
+  const search = useHomeSearch(presenter, (state?.canSearch ?? false) && !profileRoute)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () =>
     toast(t('contacts_changeError')),
   )
@@ -54,6 +54,7 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
       activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      search={search}
     >
       <main
         className={cn(
@@ -126,14 +127,13 @@ function ContactPanel({ personKey }: { personKey: string }) {
 }
 
 function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresenter; state: JsContactsState; isWide: boolean }) {
-  const showsPeople = !state.isLoading && !state.isEmpty && !state.isSearching
+  const showsPeople = !state.isLoading && !state.isEmpty
   const selectedKey = isWide ? state.selectedKey : null
   const open = (row: JsContactRow) => presenter.openContact(row.key)
   return (
     <div className="flex min-w-0 flex-col gap-3 sm:gap-4">
       {/* Why: the phone's top bar already names the app, so only a screen reader gets the title there. */}
       <h1 className="sr-only text-2xl font-semibold tracking-tight sm:not-sr-only">{t('contacts_title')}</h1>
-      <SearchField presenter={presenter} query={state.query} />
       {state.showsOfflineNotice && (
         <span className="inline-flex items-center gap-1.5 self-start rounded-md border px-2 py-1 text-xs text-muted-foreground">
           <WifiOff aria-hidden className="size-3.5" />
@@ -152,30 +152,6 @@ function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresent
           ))}
         </section>
       )}
-      {state.isSearchLoading && <ContactSkeletonRows isWaitingForInternet={state.isWaitingForInternet} />}
-      {state.isSearching && !state.isSearchLoading && !state.showsNoResults && (
-        <>
-          <section aria-label={t('contacts_results')} className="overflow-hidden rounded-xl border bg-card">
-            <h2 className="flex h-9 items-center border-b bg-muted px-4 text-xs font-medium text-muted-foreground">
-              {t('contacts_inYourGroups', { count: state.groupResults.length })}
-            </h2>
-            {state.groupResults.map((row) => (
-              <ContactRowButton key={row.key} row={row} isSelected={row.key === selectedKey} onClick={() => open(row)} />
-            ))}
-          </section>
-          {/* Why: where the phones list "Na agenda": the browser has no agenda to look in. */}
-          <p className="text-[13px] text-muted-foreground">{t('contacts_noAgenda')}</p>
-        </>
-      )}
-      {state.showsNoResults && (
-        <EmptyCard
-          label={t('contacts_results')}
-          icon={<SearchX className="size-6" />}
-          title={t('contacts_noResultsTitle', { query: state.query.trim() })}
-          body={t('contacts_noResultsBody')}
-          onInvite={() => presenter.inviteWithLink()}
-        />
-      )}
       {state.isEmpty && (
         <EmptyCard
           label={t('contacts_title')}
@@ -185,43 +161,8 @@ function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresent
           onInvite={() => presenter.inviteWithLink()}
         />
       )}
-      {(showsPeople || (state.isSearching && !state.isSearchLoading && !state.showsNoResults)) && <InviteRow onClick={() => presenter.inviteWithLink()} />}
+      {showsPeople && <InviteRow onClick={() => presenter.inviteWithLink()} />}
       {showsPeople && state.hiddenContacts.length > 0 && <HiddenSection presenter={presenter} state={state} />}
-    </div>
-  )
-}
-
-/** "Buscar contatos": typing searches the groups' people, hidden ones included; clearing it or Esc closes the search. */
-function SearchField({ presenter, query }: { presenter: ContactsPresenter; query: string }) {
-  const [draft, setDraft] = useDraft(query, (next) => presenter.search(next))
-  return (
-    <div className="relative">
-      <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        type="search"
-        aria-label={t('contacts_search')}
-        placeholder={t('contacts_search')}
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape' && draft) {
-            event.preventDefault()
-            setDraft('')
-          }
-        }}
-        className="bg-card pr-9 pl-9 [&::-webkit-search-cancel-button]:hidden"
-      />
-      {draft && (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label={t('contacts_clearSearch')}
-          onClick={() => setDraft('')}
-          className="absolute top-1/2 right-0.5 -translate-y-1/2 text-muted-foreground"
-        >
-          <X />
-        </Button>
-      )}
     </div>
   )
 }
@@ -261,7 +202,7 @@ function SummaryCard({ presenter, state }: { presenter: ContactsPresenter; state
   )
 }
 
-/** A person, A to Z: the face, the name (with what the search found in bold), where they are, and the net with its word. */
+/** A person, A to Z: the face, the name, where they are, and the net with its word. */
 function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isSelected: boolean; onClick: () => void }) {
   return (
     <button
@@ -275,9 +216,7 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
     >
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-sm font-medium">
-          <MatchedName row={row} />
-        </span>
+        <span className="truncate text-sm font-medium">{row.name}</span>
         <span className="truncate text-xs text-muted-foreground">{rowMeta(row)}</span>
       </span>
       <span className="flex shrink-0 flex-col items-end">
@@ -287,17 +226,6 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
         <span className="text-xs text-muted-foreground">{netWord(row.netMinor)}</span>
       </span>
     </button>
-  )
-}
-
-function MatchedName({ row }: { row: JsContactRow }) {
-  if (row.matchStart < 0) return <>{row.name}</>
-  return (
-    <>
-      {row.name.slice(0, row.matchStart)}
-      <strong className="font-bold">{row.name.slice(row.matchStart, row.matchEnd)}</strong>
-      {row.name.slice(row.matchEnd)}
-    </>
   )
 }
 

@@ -1198,6 +1198,162 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN a group WHEN tapping Buscar THEN opens the search over Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.canSearch)
+        assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the recovery code prompt over Inicio WHEN Buscar is asked for THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.DUE,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodePrompt)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN a late tap on Buscar arrives THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSearch)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            groupsRead = false,
+        )
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSearch)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN only a group where everyone settled WHEN tapping Buscar THEN opens the search over Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "gas",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Ana", "Pierre"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 3000L,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.canSearch)
+            assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN a sync brings the first one THEN Buscar shows`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        groups.groups.value = listOf(trio())
+
+        // Then
+        assertTrue(viewModel.uiState.value.canSearch)
+    }
+
+    @Test
+    fun `GIVEN the profile over Inicio WHEN a late tap on Buscar arrives THEN the profile stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group opened from Inicio WHEN a late tap on Buscar arrives THEN the group stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.GroupDetail(
+                        "trio",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search already open over Inicio WHEN a second tap on Buscar arrives THEN opens no second search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a group card WHEN tapping it THEN opens the group over Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(trio()))
