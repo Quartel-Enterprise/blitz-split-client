@@ -45,12 +45,18 @@ internal fun LazyListScope.balanceItems(
     )
 }
 
-// Why: nothing to settle yet, or "Todo mundo acertou" once there were bills and nobody owes anything.
+// Why: skeletons while it may still change, nothing to settle yet, or "Todo mundo acertou" once there were bills and nobody owes anything.
 internal fun LazyListScope.balancesStateItems(
     state: GroupDetailUiState,
     onAction: (GroupAction) -> Unit,
 ) {
     when {
+        !state.isLoaded || state.isLoadingBalances -> groupRowsSkeletonItem(
+            key = "balances-skeleton",
+            isWaitingForInternet = state.isWaitingForInternet,
+            isBadgeSquare = false,
+        )
+
         state.isBalancesEmpty -> item(key = "balances-empty") { EmptyBalancesCard() }
 
         state.header.isEveryoneSettled -> item(key = "balances-settled") {

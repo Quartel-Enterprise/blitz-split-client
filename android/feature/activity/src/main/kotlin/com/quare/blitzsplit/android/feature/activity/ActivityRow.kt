@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
@@ -338,44 +339,20 @@ internal fun ChangeList(
     }
 }
 
-// Why: a row's place while a new device waits for its first page.
+// Why: the rows' places while the feed is read or a new device waits for its first page, in the rows' own shape.
 @Composable
-internal fun PlaceholderRow(
-    index: Int,
+internal fun ActivityFeedSkeleton(
     count: Int,
     modifier: Modifier = Modifier,
 ) {
-    val widths = listOf(0.88f, 0.72f, 0.8f, 0.64f, 0.76f)
-    val line = MaterialTheme.colorScheme.surfaceContainerHigh
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = groupedRowShapeOf(index, count),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Row(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 14.dp,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(line, CircleShape),
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(widths[index % widths.size])
-                        .height(14.dp)
-                        .background(line, CircleShape),
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(widths[(index + 2) % widths.size] * 0.7f)
-                        .height(12.dp)
-                        .background(line, CircleShape),
+    ShimmerBox(modifier = modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            repeat(count) { index ->
+                ShimmerRowSkeleton(
+                    trailingWidth = null,
+                    containerShape = groupedRowShapeOf(index, count),
+                    verticalPadding = 14.dp,
+                    spacing = 12.dp,
                 )
             }
         }

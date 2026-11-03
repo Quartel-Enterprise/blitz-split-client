@@ -45,11 +45,12 @@ internal fun BalancesTabletopContent(
                     isOnline = state.exit.isOnline,
                     onAction = onAction,
                 )
+            } else {
+                GroupLoadingTopBar(onAction)
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        if (!state.isLoaded) return@Scaffold
         TopBottomHalvesLayout(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,7 +68,9 @@ internal fun BalancesTabletopContent(
                         selectedTab = state.tab,
                         onAction = onAction,
                     )
-                    state.header.myBalance?.let { balance ->
+                    val myBalance = state.header.myBalance
+                    if (myBalance == null && (!state.isLoaded || state.awaitsFullSync)) MyBalanceSkeleton()
+                    myBalance?.let { balance ->
                         MyBalanceCard(
                             balance = balance,
                             isEveryoneSettled = state.header.isEveryoneSettled,

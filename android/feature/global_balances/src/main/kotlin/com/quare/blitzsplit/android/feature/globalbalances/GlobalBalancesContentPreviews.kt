@@ -19,6 +19,8 @@ import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 private val previewTotal = PeopleTotal(
     currency = GroupCurrency.BRL,
@@ -123,13 +125,13 @@ private fun createPreviewState(
     avatarColor = AvatarColor.BLUE,
     photoUrl = null,
     accountProvider = null,
-    people = people,
-    totals = listOf(previewTotal),
+    people = people.toLoaded(),
+    totals = listOf(previewTotal).toLoaded(),
+    isWaitingForInternet = false,
     filter = filter,
     pixKey = null,
     charge = null,
     isOnline = isOnline,
-    isLoaded = true,
     recordedPayment = null,
     pickedPersonId = null,
     activityUnreadCount = 3,
@@ -152,6 +154,21 @@ private fun GlobalBalancesOfflinePreview() {
     BlitzSplitTheme {
         GlobalBalancesContent(
             state = createPreviewState(previewPeople, isOnline = false),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GlobalBalancesLoadingPreview() {
+    BlitzSplitTheme {
+        GlobalBalancesContent(
+            state = createPreviewState(emptyList(), isOnline = false).copy(
+                people = Loadable.Loading,
+                totals = Loadable.Loading,
+                isWaitingForInternet = true,
+            ),
             onEvent = {},
         )
     }

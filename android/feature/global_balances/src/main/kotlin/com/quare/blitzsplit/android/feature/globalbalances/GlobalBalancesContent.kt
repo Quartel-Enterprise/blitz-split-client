@@ -121,7 +121,6 @@ fun GlobalBalancesContent(
                     WindowInsets.safeDrawing
                 },
             ) { padding ->
-                if (!state.isLoaded) return@Scaffold
                 if (listDetail != null) {
                     BalancesListDetailLayout(
                         state = state,
@@ -222,11 +221,15 @@ private fun BalancesListDetailLayout(
                     onEvent = onEvent,
                 )
             }
-            pickableSections(
-                state = state,
-                selectedId = selected?.id,
-                onEvent = onEvent,
-            )
+            if (state.isLoaded) {
+                pickableSections(
+                    state = state,
+                    selectedId = selected?.id,
+                    onEvent = onEvent,
+                )
+            } else {
+                item(key = "skeleton") { PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet) }
+            }
         }
         Box(
             modifier = Modifier
@@ -239,10 +242,13 @@ private fun BalancesListDetailLayout(
                 ),
         ) {
             val emptyState = state.emptyState
+            val emptyTotal = state.emptyStateTotal
             when {
-                emptyState != null -> EmptyBalancesSection(
+                !state.isLoaded -> PersonDetailSkeleton()
+
+                emptyState != null && emptyTotal != null -> EmptyBalancesSection(
                     emptyState = emptyState,
-                    total = state.emptyStateTotal,
+                    total = emptyTotal,
                     onAction = { onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked) },
                 )
 
@@ -343,12 +349,17 @@ private fun PeopleList(
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
         header()
+        if (!state.isLoaded) {
+            item(key = "skeleton") { PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet) }
+            return@LazyColumn
+        }
         val emptyState = state.emptyState
-        if (emptyState != null) {
+        val emptyTotal = state.emptyStateTotal
+        if (emptyState != null && emptyTotal != null) {
             item(key = "empty") {
                 EmptyBalancesSection(
                     emptyState = emptyState,
-                    total = state.emptyStateTotal,
+                    total = emptyTotal,
                     onAction = { onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked) },
                 )
             }

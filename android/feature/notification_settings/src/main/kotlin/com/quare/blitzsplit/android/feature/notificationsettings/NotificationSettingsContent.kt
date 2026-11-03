@@ -42,6 +42,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -50,6 +52,8 @@ import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val singleColumnMaxWidth = 592.dp
@@ -111,6 +115,7 @@ fun NotificationSettingsContent(
                             type = type,
                             isChecked = state.isEnabled(type),
                             isEnabled = state.areTogglesEnabled,
+                            isLoading = state.showsTogglesLoading,
                             shape = createRowShape(
                                 index = index,
                                 count = state.types.size,
@@ -182,6 +187,7 @@ private fun NotificationRow(
     type: NotificationType,
     isChecked: Boolean,
     isEnabled: Boolean,
+    isLoading: Boolean,
     shape: RoundedCornerShape,
     onEvent: (NotificationSettingsUiEvent) -> Unit,
 ) {
@@ -190,7 +196,7 @@ private fun NotificationRow(
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(if (isEnabled) 1f else DISABLED_ALPHA),
+            .alpha(if (isEnabled || isLoading) 1f else DISABLED_ALPHA),
     ) {
         Row(
             modifier = Modifier
@@ -221,12 +227,22 @@ private fun NotificationRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            // Why: the whole row toggles, so the switch only shows the state.
-            Switch(
-                checked = isChecked,
-                onCheckedChange = null,
-                enabled = isEnabled,
-            )
+            // Why: until the choices and the system's permission are known, the switch shimmers, neither on nor off.
+            if (isLoading) {
+                ShimmerBox {
+                    ShimmerLine(
+                        width = 52.dp,
+                        height = 32.dp,
+                    )
+                }
+            } else {
+                // Why: the whole row toggles, so the switch only shows the state.
+                Switch(
+                    checked = isChecked,
+                    onCheckedChange = null,
+                    enabled = isEnabled,
+                )
+            }
         }
     }
 }
@@ -270,8 +286,22 @@ private fun NotificationSettingsPreview() {
     BlitzSplitTheme {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
-                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes,
+                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes.toLoaded(),
                 permission = NotificationPermission.GRANTED,
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NotificationSettingsLoadingPreview() {
+    BlitzSplitTheme {
+        NotificationSettingsContent(
+            state = NotificationSettingsUiState(
+                enabledTypes = Loadable.Loading,
+                permission = null,
             ),
             onEvent = {},
         )
@@ -284,7 +314,7 @@ private fun NotificationSettingsDeniedPreview() {
     BlitzSplitTheme {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
-                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes,
+                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes.toLoaded(),
                 permission = NotificationPermission.DENIED,
             ),
             onEvent = {},

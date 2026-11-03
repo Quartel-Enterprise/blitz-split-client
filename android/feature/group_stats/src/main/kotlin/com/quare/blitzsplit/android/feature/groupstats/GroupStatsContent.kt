@@ -195,7 +195,6 @@ private fun GroupStatsScaffold(
                 .padding(padding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (!state.isLoaded) return@Box
             val chip = @Composable {
                 if (!isTabletop) {
                     periodChip(
@@ -215,12 +214,19 @@ private fun GroupStatsScaffold(
                         .padding(horizontal = 16.dp),
                 ) {
                     chip()
-                    StatsEmptyCard(
-                        state = state,
-                        dates = dates,
-                        onEvent = onEvent,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
+                    if (!state.isLoaded || state.isLoadingBills) {
+                        StatsSkeleton(
+                            isWaitingForInternet = state.isWaitingForInternet,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    } else {
+                        StatsEmptyCard(
+                            state = state,
+                            dates = dates,
+                            onEvent = onEvent,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
                 }
             }
             when {
@@ -534,6 +540,21 @@ private fun GroupStatsContentEmptyPreview() {
     BlitzSplitTheme {
         GroupStatsContent(
             state = createPreviewGroupStatsState(hasBills = false),
+            onEvent = {},
+            onPickDates = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupStatsContentFirstDownloadPreview() {
+    BlitzSplitTheme {
+        GroupStatsContent(
+            state = createPreviewGroupStatsState(hasBills = false).copy(
+                isFirstDownload = true,
+                isWaitingForInternet = true,
+            ),
             onEvent = {},
             onPickDates = {},
         )

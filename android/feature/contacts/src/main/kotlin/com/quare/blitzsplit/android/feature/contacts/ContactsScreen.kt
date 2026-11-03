@@ -34,6 +34,7 @@ fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
     val context = LocalContext.current
     LaunchedEffect(state.isSearchOpen) {
         if (state.isSearchOpen && context.isContactsPermissionGranted()) {
+            viewModel.onEvent(ContactsUiEvent.OnAgendaReadStarted)
             viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(context.readAgenda()))
         }
     }

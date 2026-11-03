@@ -60,6 +60,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 
+// Why: Room and the layout are still being read (a first download draws its own card and rows instead).
+internal val GroupsUiState.isReadingGroups: Boolean
+    get() = !hasLoadedGroups && firstDownload == null
+
 // Why: what isn't a card of the grid takes the whole line, so the list is a grid of one column.
 internal val fullLine: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
 
@@ -78,6 +82,10 @@ internal fun LazyGridScope.groupsListItems(
     showsSummary: Boolean = true,
 ) {
     val firstDownload = state.firstDownload
+    if (state.isReadingGroups) {
+        groupsSkeletonItems(showsSummary)
+        return
+    }
     // Why: "Trazendo seus grupos" takes Saldo geral's place while the first download brings the groups down.
     if (showsSummary) {
         item(

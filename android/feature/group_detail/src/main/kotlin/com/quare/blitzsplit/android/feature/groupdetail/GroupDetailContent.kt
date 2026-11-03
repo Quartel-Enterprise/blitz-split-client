@@ -63,6 +63,7 @@ fun GroupDetailContent(
             selectedTab = state.tab,
             hasBills = state.hasBills,
             isLoaded = state.isLoaded,
+            awaitsFullSync = state.awaitsFullSync,
             isOnline = state.exit.isOnline,
             money = money,
         ),
@@ -104,7 +105,13 @@ private fun expensesTabOf(
                     )
                 }
             }
-            if (state.isEmpty) {
+            if (!state.isLoaded || state.isLoadingBills) {
+                groupRowsSkeletonItem(
+                    key = "bills-skeleton",
+                    isWaitingForInternet = state.isWaitingForInternet,
+                    isBadgeSquare = true,
+                )
+            } else if (state.isEmpty) {
                 item(key = "empty") { EmptyExpensesCard(onAction = onAction) }
             } else {
                 expenseDayItems(
@@ -187,6 +194,35 @@ private fun GroupDetailContentEmptyPreview() {
     BlitzSplitTheme {
         GroupDetailContent(
             state = createPreviewGroupDetailState(days = emptyList()),
+            snackbarHostState = SnackbarHostState(),
+            membersTab = previewMembersTab,
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupDetailContentLoadingPreview() {
+    BlitzSplitTheme {
+        GroupDetailContent(
+            state = createPreviewGroupDetailState(days = emptyList()).copy(isLoaded = false),
+            snackbarHostState = SnackbarHostState(),
+            membersTab = previewMembersTab,
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupDetailContentFirstDownloadPreview() {
+    BlitzSplitTheme {
+        GroupDetailContent(
+            state = createPreviewGroupDetailState(days = emptyList()).copy(
+                awaitsFullSync = true,
+                isWaitingForInternet = true,
+            ),
             snackbarHostState = SnackbarHostState(),
             membersTab = previewMembersTab,
             onEvent = {},

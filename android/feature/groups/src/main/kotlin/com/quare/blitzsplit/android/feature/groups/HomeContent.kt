@@ -166,7 +166,10 @@ fun HomeContent(
     }
 }
 
-// Why: nothing until Room is read, so the first use's card never flashes before the groups.
+/*
+ * Why: until Room is read the home's sections shimmer in their places (never the first use's card before the groups),
+ * each one only after 150 ms, so a fast read never flashes.
+ */
 @Composable
 private fun HomePane(
     state: HomeUiState,
@@ -189,8 +192,6 @@ private fun HomePane(
                 onEvent = onEvent,
             )
         }
-
-        !state.showsHome -> Unit
 
         homeLayout == HomeLayout.TWO_COLUMNS -> Row(modifier = Modifier.fillMaxSize()) {
             val firstWidth = if (metrics.isCompact) phoneFirstColumnWidth else tabletFirstColumnWidth
@@ -326,12 +327,19 @@ private fun HomeShortcutsSection(
     onEvent: (HomeUiEvent) -> Unit,
     metrics: HomeMetrics,
 ) {
-    HomeShortcutsRow(
-        state = state,
-        onEvent = onEvent,
-        metrics = metrics,
-        modifier = Modifier.padding(horizontal = metrics.gutter),
-    )
+    if (!state.isLoaded && !state.isFirstDownload) {
+        HomeShortcutsSkeleton(
+            metrics = metrics,
+            modifier = Modifier.padding(horizontal = metrics.gutter),
+        )
+    } else {
+        HomeShortcutsRow(
+            state = state,
+            onEvent = onEvent,
+            metrics = metrics,
+            modifier = Modifier.padding(horizontal = metrics.gutter),
+        )
+    }
     if (state.showsRecoveryCodeCard) {
         HomeRecoveryCodeCard(
             onEvent = onEvent,
