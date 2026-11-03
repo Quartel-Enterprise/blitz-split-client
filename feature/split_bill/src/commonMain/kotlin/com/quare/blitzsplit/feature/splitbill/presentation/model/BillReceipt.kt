@@ -7,4 +7,6 @@ data class BillReceipt(
     val itemCount: Int,
     // Why: "Foto do cupom", attached to the bill once saved; false once nothing could be read from it.
     val hasPhoto: Boolean,
+    // Why: why nothing was read, only while FAILED.
+    val error: ReceiptError?,
 )

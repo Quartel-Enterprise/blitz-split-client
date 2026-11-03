@@ -22,28 +22,66 @@ extension SplitBillModel {
     }
 }
 
-/// "Não deu para ler o cupom…" with "Tirar outra foto" (7.1g); the fields stay as they were, to fill in by hand.
+/// Why the receipt read nothing (7.1g); the fields stay as they were, to fill in by hand. "Tirar outra foto" for a
+/// photo nothing could be read from, "Tentar de novo" sends the same photo when the reader didn't answer or the
+/// connection dropped, and the day's limit offers neither.
 struct ReceiptFailureText: View {
     let model: SplitBillModel
+    let error: ReceiptError
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(message)
                 .fixedSize(horizontal: false, vertical: true)
-            Button(retakeLabel) {
-                model.send(SplitBillUiEventOnScanReceiptClicked.shared)
+            if model.state.offersReceiptRetake {
+                Button(retakeLabel) {
+                    model.send(SplitBillUiEventOnScanReceiptClicked.shared)
+                }
+                .disabled(!model.state.canScanReceipt)
+            } else if model.state.offersReceiptRetry {
+                Button("Try again") {
+                    model.send(SplitBillUiEventOnReceiptRetryClicked.shared)
+                }
+                .disabled(!model.state.canScanReceipt)
             }
-            .disabled(!model.state.canScanReceipt)
         }
     }
 
-    /// The Mac's banner already heads it with "Couldn't read the receipt", so its text goes on from there.
+    /// The Mac's banner heads the text with it.
+    static func title(of error: ReceiptError) -> LocalizedStringKey {
+        switch error {
+        case .readerUnavailable: "The receipt reader didn't answer"
+        case .limitReached: "Today's reading limit"
+        case .offline: "No connection"
+        default: "Couldn't read the receipt"
+        }
+    }
+
+    /// The Mac's banner already heads it with the title, so its text goes on from there.
     private var message: LocalizedStringKey {
         #if os(macOS)
-        "Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        detail
         #else
-        "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        switch error {
+        case .readerUnavailable:
+            "The receipt reader didn't answer. It isn't your photo: try again in a moment, or fill it in by hand."
+        case .limitReached:
+            "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow."
+        case .offline:
+            "No connection. The photo didn't reach the reader: try again once you're back online, or fill it in by hand."
+        default:
+            "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        }
         #endif
+    }
+
+    private var detail: LocalizedStringKey {
+        switch error {
+        case .readerUnavailable: "It isn't your photo. Try again in a moment, or fill it in by hand."
+        case .limitReached: "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow."
+        case .offline: "The photo didn't reach the reader. Try again once you're back online, or fill it in by hand."
+        default: "Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        }
     }
 
     private var retakeLabel: LocalizedStringKey {

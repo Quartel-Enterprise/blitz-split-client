@@ -17584,6 +17584,83 @@
           }
         }
       }
+    },
+    "The receipt reader didn't answer. It isn't your photo: try again in a moment, or fill it in by hand." : {
+      "comment" : "Split a bill: the server's receipt reader didn't answer",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O leitor de cupom não respondeu. Não é a sua foto: tente de novo daqui a pouco ou preencha à mão."
+          }
+        }
+      }
+    },
+    "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow." : {
+      "comment" : "Split a bill: the account reached the receipt reads of the day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já leu 30 cupons nas últimas 24 horas. Preencha à mão ou leia de novo amanhã."
+          }
+        }
+      }
+    },
+    "No connection. The photo didn't reach the reader: try again once you're back online, or fill it in by hand." : {
+      "comment" : "Split a bill: the connection dropped while the receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conexão. A foto não chegou ao leitor: tente de novo quando reconectar, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "The receipt reader didn't answer" : {
+      "comment" : "Split a bill on the Mac: the server's receipt reader didn't answer",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O leitor de cupom não respondeu"
+          }
+        }
+      }
+    },
+    "Today's reading limit" : {
+      "comment" : "Split a bill on the Mac: the account reached the receipt reads of the day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de leituras de hoje"
+          }
+        }
+      }
+    },
+    "It isn't your photo. Try again in a moment, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"The receipt reader didn't answer\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não é a sua foto. Tente de novo daqui a pouco ou preencha à mão."
+          }
+        }
+      }
+    },
+    "The photo didn't reach the reader. Try again once you're back online, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"No connection\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A foto não chegou ao leitor. Tente de novo quando reconectar, ou preencha à mão."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

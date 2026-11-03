@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
@@ -609,10 +610,7 @@ class BillCategoryViewModelTest {
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             offerCategoryTeach = OfferCategoryTeachUseCase(teach),
             readReceipt = { _, _, _ ->
-                ReceiptScan(
-                    photo = null,
-                    reading = null,
-                )
+                ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
