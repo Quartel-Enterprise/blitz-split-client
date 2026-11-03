@@ -5,8 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,7 +54,8 @@ private class Shortcut(
 
 /*
  * Why: the three shortcuts, joined as one connected group. "Rachar conta" is the FAB, so it is not repeated here;
- * "Ler cupom fiscal" needs the internet and says so offline.
+ * "Ler cupom fiscal" needs the internet and says so offline. Every tile takes the tallest one's height, so a label
+ * wrapping to two lines never leaves the others shorter.
  */
 @Composable
 internal fun HomeShortcutsRow(
@@ -81,7 +85,9 @@ internal fun HomeShortcutsRow(
         ),
     )
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         shortcuts.forEachIndexed { index, shortcut ->
@@ -95,7 +101,9 @@ internal fun HomeShortcutsRow(
                 ),
                 isCompact = metrics.isCompact,
                 onClick = { onEvent(shortcut.event) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
             )
         }
     }
