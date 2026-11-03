@@ -194,14 +194,17 @@ function PaymentForm({
             {amountHelp}
           </p>
         )}
-        {/* Why: a plain action, not a pill, so it doesn't compete with "Como foi pago" (beta feedback 5). */}
+        {/*
+          Why: a plain action, not a pill, so it doesn't compete with "Como foi pago" (beta feedback 5). It stays
+          focusable once done (aria-disabled), so a press from the keyboard doesn't drop the focus out of the dialog.
+        */}
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          disabled={state.isFullDebt}
-          onClick={() => presenter.fullDebt()}
-          className="mt-1.5 -ml-2.5 self-start text-primary hover:text-primary disabled:opacity-60"
+          aria-disabled={state.isFullDebt}
+          onClick={() => !state.isFullDebt && presenter.fullDebt()}
+          className="mt-1.5 -ml-2.5 self-start text-primary hover:text-primary aria-disabled:pointer-events-none aria-disabled:opacity-60"
         >
           {state.isFullDebt && <Check aria-hidden />}
           {t('registerPayment_fullDebt')}

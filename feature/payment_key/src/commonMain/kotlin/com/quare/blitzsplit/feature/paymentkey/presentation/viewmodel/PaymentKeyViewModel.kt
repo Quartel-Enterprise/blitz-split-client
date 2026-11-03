@@ -63,7 +63,7 @@ class PaymentKeyViewModel(
     private var validValue: String? = null
 
     // Why: each type keeps what was typed in it, so picking another type never carries a phone into CPF or email.
-    private val drafts = mutableMapOf<PaymentKeyType, String>()
+    private val drafts = mutableMapOf<PaymentKeyType, Draft>()
     private var isErrorRevealed = false
 
     // Why: these aren't a key half typed but the wrong thing altogether, so they show right away.
@@ -153,10 +153,11 @@ class PaymentKeyViewModel(
 
     private fun selectType(type: PaymentKeyType) {
         if (type.method != route.method || type == uiState.value.type) return
-        drafts[uiState.value.type] = uiState.value.input
-        val input = formatPaymentKeyInput(type, drafts[type].orEmpty())
-        // Why: a type's own draft was left there, as leaving the field does, so its error shows again.
-        isErrorRevealed = input.text.isNotBlank()
+        drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed)
+        val draft = drafts[type]
+        val input = formatPaymentKeyInput(type, draft?.input.orEmpty())
+        // Why: a type's own draft comes back as it was left, its error shown again only if it was showing then.
+        isErrorRevealed = input.text.isNotBlank() && (draft?.isErrorRevealed == true || input.isComplete)
         uiState.update {
             it.copy(
                 type = type,
@@ -188,10 +189,10 @@ class PaymentKeyViewModel(
         val type = detected ?: state.type
         val input =
             formatPaymentKeyInput(type, toInputAfterErase(state.input, raw, type, isSwitched = detected != null))
-        // Why: what was typed moved to the type detected, while a paste replaced the field and left nothing behind.
+        // Why: what was typed moved to the type detected, while a paste replaced the field, so what it held stays.
         if (detected != null) {
+            if (isPaste) drafts[state.type] = Draft(state.input, isErrorRevealed) else drafts.remove(state.type)
             isErrorRevealed = false
-            drafts[state.type] = if (isPaste) state.input else ""
         }
         if (isPaste || input.isComplete) isErrorRevealed = true
         if (input.text.isBlank()) isErrorRevealed = false
@@ -306,4 +307,9 @@ class PaymentKeyViewModel(
     private fun leave() {
         if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
     }
+
+    private data class Draft(
+        val input: String,
+        val isErrorRevealed: Boolean,
+    )
 }

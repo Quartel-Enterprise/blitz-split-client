@@ -587,6 +587,22 @@ class PaymentKeyViewModelTest {
         }
 
     @Test
+    fun `GIVEN half a CPF still being typed WHEN picking email and back THEN shows no error yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("123456"))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // Then
+            assertEquals("123.456", viewModel.uiState.value.input)
+            assertNull(viewModel.uiState.value.error)
+        }
+
+    @Test
     fun `GIVEN phone WHEN typing 11 digits that are also a valid CPF THEN stays on phone`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
