@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
@@ -155,6 +156,7 @@ class SplitBillViewModel(
         scope = viewModelScope,
         readReceipt = readReceipt,
         attachBillImage = attachBillImage,
+        categoryHints = { ReceiptCategoryHints.of(it.categories, categoryEditing.terms) },
         onRead = { read, before ->
             categoryEditing.rematch {
                 it.withReceiptRead(read, before, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()

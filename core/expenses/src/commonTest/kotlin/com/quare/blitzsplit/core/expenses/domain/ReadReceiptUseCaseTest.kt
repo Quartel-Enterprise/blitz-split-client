@@ -1,9 +1,15 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ReadReceiptUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeReceiptRepository
+import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
@@ -27,7 +33,7 @@ class ReadReceiptUseCaseTest {
         prepareScenario()
 
         // When
-        useCase(source, GroupCurrency.BRL)
+        useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(source.contentEquals(encodedSources.single()))
@@ -39,7 +45,7 @@ class ReadReceiptUseCaseTest {
         prepareScenario()
 
         // When
-        useCase(source, GroupCurrency.BRL)
+        useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         val (sentJpeg, sentCurrency) = repository.readPhotos.single()
@@ -48,12 +54,28 @@ class ReadReceiptUseCaseTest {
     }
 
     @Test
+    fun `GIVEN the group categories and map terms WHEN reading a receipt THEN sends them as they came`() = runTest {
+        // Given
+        prepareScenario()
+        val hints = ReceiptCategoryHints(
+            groupCategories = listOf(pet),
+            terms = listOf(CategoryTerm("ração", "pet")),
+        )
+
+        // When
+        useCase(source, GroupCurrency.BRL, hints)
+
+        // Then
+        assertEquals(listOf(hints), repository.readHints)
+    }
+
+    @Test
     fun `GIVEN the server reads the receipt WHEN reading it THEN gives the encoded photo and the reading`() = runTest {
         // Given
         prepareScenario(reading = restaurantReading)
 
         // When
-        val scan = useCase(source, GroupCurrency.BRL)
+        val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
@@ -66,7 +88,7 @@ class ReadReceiptUseCaseTest {
         prepareScenario(reading = null)
 
         // When
-        val scan = useCase(source, GroupCurrency.BRL)
+        val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
@@ -82,7 +104,7 @@ class ReadReceiptUseCaseTest {
         )
 
         // When
-        val scan = useCase(source, GroupCurrency.BRL)
+        val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
@@ -98,7 +120,7 @@ class ReadReceiptUseCaseTest {
         )
 
         // When
-        val scan = useCase(source, GroupCurrency.BRL)
+        val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertNull(scan.photo)
@@ -116,7 +138,7 @@ class ReadReceiptUseCaseTest {
             )
 
             // When
-            val scan = useCase(source, GroupCurrency.BRL)
+            val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
             // Then
             assertNull(scan.photo)
@@ -127,6 +149,17 @@ class ReadReceiptUseCaseTest {
     private val source = byteArrayOf(1, 2, 3, 4)
 
     private val encodedJpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 9)
+
+    private val pet = Category(
+        id = "pet",
+        app = null,
+        name = "Pet",
+        icon = CategoryIcon.DOTS,
+        color = AvatarColor.LILAC,
+        parentId = null,
+        createdByMemberId = "ana",
+        isPending = false,
+    )
 
     private val restaurantReading = ReceiptReading(
         totalMinor = 64_200L,

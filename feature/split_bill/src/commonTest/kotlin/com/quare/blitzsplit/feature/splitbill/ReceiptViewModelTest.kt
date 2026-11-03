@@ -4,9 +4,16 @@ import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRep
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
+import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
@@ -43,6 +50,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -70,9 +78,12 @@ class ReceiptViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var categories: FakeCategoryRepository
+    private lateinit var terms: FakeCategoryTermRepository
     private lateinit var viewModel: SplitBillViewModel
     private val readSources = mutableListOf<List<Byte>>()
     private val readCurrencies = mutableListOf<GroupCurrency>()
+    private val readHints = mutableListOf<ReceiptCategoryHints>()
     private val pendingReads = mutableListOf<CompletableDeferred<ReceiptScan>>()
     private val attachments = mutableListOf<RecordedAttachment>()
 
@@ -1021,6 +1032,244 @@ class ReceiptViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a group with categories of its own WHEN a receipt is read THEN sends only its live ones`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupCategories = listOf(pet, petFood, deletedGym, museum))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val sent = readHints.single().groupCategories
+            assertEquals(
+                listOf(
+                    Triple(PET_ID, "Pet", null),
+                    Triple(PET_FOOD_ID, "Ração", PET_ID),
+                ),
+                sent
+                    .map { Triple(it.id, it.name, it.parentId) }
+                    .sortedBy { it.first },
+            )
+            assertTrue(sent.all { it.isGroupCategory })
+        }
+
+    @Test
+    fun `GIVEN map terms of several groups WHEN a receipt is read THEN sends only those that count here`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood, museum),
+                termChanges = listOf(
+                    termChange("ração", PET_FOOD_ID),
+                    termChange("pizzaria", AppCategory.FOOD_RESTAURANT.key),
+                    termChange("museu", MUSEUM_ID),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val sent = readHints.single().terms
+            assertTrue(CategoryTerm("ração", PET_FOOD_ID) in sent)
+            assertTrue(CategoryTerm("pizzaria", AppCategory.FOOD_RESTAURANT.key) in sent)
+            assertTrue(sent.none { it.categoryId == MUSEUM_ID })
+            assertTrue(sent.none { it.term == "museu" })
+        }
+
+    @Test
+    fun `GIVEN no group category nor map change WHEN a receipt is read THEN sends only the app terms`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val hints = readHints.single()
+            assertTrue(hints.groupCategories.isEmpty())
+            assertEquals(DefaultCategoryTerms.terms, hints.terms)
+        }
+
+    @Test
+    fun `GIVEN a group category synced after the form opened WHEN a receipt is read THEN sends it too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupCategories = listOf(pet))
+            categories.groupCategories.update { it + petFood }
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                setOf(PET_ID, PET_FOOD_ID),
+                readHints
+                    .single()
+                    .groupCategories
+                    .map { it.id }
+                    .toSet(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a term added to the map after the form opened WHEN a receipt is read THEN sends it too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupCategories = listOf(pet, petFood))
+            terms.changes.value = listOf(termChange("ração", PET_FOOD_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertTrue(CategoryTerm("ração", PET_FOOD_ID) in readHints.single().terms)
+        }
+
+    @Test
+    fun `GIVEN another group picked WHEN a receipt is read THEN sends that group categories and terms`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                groupCategories = listOf(pet, petFood, museum),
+                termChanges = listOf(
+                    termChange("ração", PET_FOOD_ID),
+                    termChange("museu", MUSEUM_ID),
+                ),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val hints = readHints.single()
+            assertEquals(listOf(MUSEUM_ID), hints.groupCategories.map { it.id })
+            assertTrue(CategoryTerm("museu", MUSEUM_ID) in hints.terms)
+            assertTrue(hints.terms.none { it.categoryId == PET_FOOD_ID })
+        }
+
+    @Test
+    fun `GIVEN no map word in the place WHEN the receipt reads a group category THEN the bill takes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood),
+                scan = scanOf(reading(categoryId = PET_FOOD_ID)),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PET_FOOD_ID, state.receiptCategory?.id)
+            assertEquals(PET_FOOD_ID, state.category.id)
+            assertEquals("Ração", state.category.name)
+            assertEquals(PET_ID, state.categoryParent?.id)
+            assertEquals(CategoryHint.BY_RECEIPT, state.categoryHint)
+            val suggestion = state.categorySuggestions.single { it.category.id == PET_FOOD_ID }
+            assertEquals(CategorySuggestionReason.RECEIPT, suggestion.reason)
+            assertTrue(suggestion.isSelected)
+        }
+
+    @Test
+    fun `GIVEN a map word in the place WHEN the receipt reads a group category THEN the map category wins`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood),
+                scan = scanOf(
+                    reading(
+                        description = "Supermercado Bom Preço",
+                        categoryId = PET_FOOD_ID,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(AppCategory.FOOD_MARKET.key, state.category.id)
+            assertEquals(CategoryHint.BY_TERM, state.categoryHint)
+            assertEquals(
+                listOf(
+                    AppCategory.FOOD_MARKET.key to CategorySuggestionReason.DESCRIPTION,
+                    PET_FOOD_ID to CategorySuggestionReason.RECEIPT,
+                ),
+                state.categorySuggestions.take(2).map { it.category.id to it.reason },
+            )
+        }
+
+    @Test
+    fun `GIVEN a category picked by hand WHEN the receipt reads a group category THEN the picked one stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood),
+                scan = scanOf(reading(categoryId = PET_FOOD_ID)),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(AppCategory.LEISURE_SPORTS.key, state.category.id)
+            assertEquals(CategoryHint.PICKED, state.categoryHint)
+        }
+
+    @Test
+    fun `GIVEN the receipt chose a group category WHEN removing it THEN the category falls back to Outros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood),
+                scan = scanOf(reading(categoryId = PET_FOOD_ID)),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.receiptCategoryId)
+            assertNull(state.receiptCategory)
+            assertTrue(state.category.isOther)
+            assertEquals(CategoryHint.NO_TERM, state.categoryHint)
+            assertTrue(state.categorySuggestions.none { it.reason == CategorySuggestionReason.RECEIPT })
+        }
+
+    @Test
+    fun `GIVEN a reading with another group category WHEN it comes back THEN the bill stays in Outros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, museum),
+                scan = scanOf(reading(categoryId = MUSEUM_ID)),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.receiptCategory)
+            assertTrue(state.category.isOther)
+            assertEquals(CategoryHint.NO_TERM, state.categoryHint)
+        }
+
     private fun TestScope.answerRead(
         index: Int,
         scan: ReceiptScan,
@@ -1119,6 +1368,68 @@ class ReceiptViewModelTest {
         updatedByMemberId = null,
     )
 
+    private val pet = groupCategory(
+        id = PET_ID,
+        groupId = GROUP_ID,
+        parentId = null,
+        name = "Pet",
+        icon = CategoryIcon.PAW,
+    )
+
+    private val petFood = groupCategory(
+        id = PET_FOOD_ID,
+        groupId = GROUP_ID,
+        parentId = PET_ID,
+        name = "Ração",
+        icon = null,
+    )
+
+    private val deletedGym = groupCategory(
+        id = GYM_ID,
+        groupId = GROUP_ID,
+        parentId = null,
+        name = "Academia",
+        icon = CategoryIcon.GYM,
+        isDeleted = true,
+    )
+
+    private val museum = groupCategory(
+        id = MUSEUM_ID,
+        groupId = TRIP_ID,
+        parentId = AppCategory.LEISURE.key,
+        name = "Museu",
+        icon = null,
+    )
+
+    private fun groupCategory(
+        id: String,
+        groupId: String,
+        parentId: String?,
+        name: String,
+        icon: CategoryIcon?,
+        isDeleted: Boolean = false,
+    ): GroupCategory = GroupCategory(
+        id = id,
+        groupId = groupId,
+        parentId = parentId,
+        name = name,
+        icon = icon,
+        createdByMemberId = null,
+        isDeleted = isDeleted,
+        isPending = false,
+    )
+
+    private fun termChange(
+        term: String,
+        categoryId: String,
+    ): CategoryTermChange = CategoryTermChange(
+        key = CategoryMatcher.keyOf(term),
+        term = term,
+        categoryId = categoryId,
+        isRestored = false,
+        isPending = false,
+    )
+
     private fun newRoute(scansReceipt: Boolean = false): Route.SplitBill = Route.SplitBill(
         GROUP_ID,
         expenseId = null,
@@ -1184,8 +1495,12 @@ class ReceiptViewModelTest {
         ),
         holdsReads: Boolean = false,
         attachResult: Result<BillAttachmentAddition> = Result.success(BillAttachmentAddition.ADDED),
+        groupCategories: List<GroupCategory> = emptyList(),
+        termChanges: List<CategoryTermChange> = emptyList(),
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
+        categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
+        terms = FakeCategoryTermRepository(initialChanges = termChanges)
         expenses = FakeExpenseRepository(initialExpenses = listOf(storedBill))
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             if (!route.picksGroupFirst) {
@@ -1215,12 +1530,13 @@ class ReceiptViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
-            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeCategoryMap = ObserveCategoryMapUseCase(terms),
             offerCategoryTeach = {},
-            readReceipt = { photo, currency ->
+            readReceipt = { photo, currency, hints ->
                 readSources += photo.toList()
                 readCurrencies += currency
+                readHints += hints
                 if (holdsReads) {
                     CompletableDeferred<ReceiptScan>().also { pendingReads += it }.await()
                 } else {
@@ -1246,6 +1562,10 @@ class ReceiptViewModelTest {
         const val BRUNO = "member-3"
         const val PIERRE_TRIP = "member-4"
         const val CARLA = "member-5"
+        const val PET_ID = "pet"
+        const val PET_FOOD_ID = "pet-food"
+        const val GYM_ID = "gym"
+        const val MUSEUM_ID = "museum"
 
         // Why: 2026-10-30T15:00:00Z.
         const val NOW_MILLIS = 1_793_372_400_000L

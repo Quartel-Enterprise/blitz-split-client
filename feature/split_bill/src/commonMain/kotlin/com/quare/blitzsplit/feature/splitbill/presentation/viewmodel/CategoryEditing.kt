@@ -40,7 +40,8 @@ internal class CategoryEditing(
     private val onCategoryChanged: () -> Unit,
 ) {
     // Why: the person's map (flow 9), whose words suggest a bill's category from its description.
-    private var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
+    var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
+        private set
 
     // Why: the group's categories and how its bills use them, as a sync or a change here moves them.
     fun observe(groupId: Flow<String>) {

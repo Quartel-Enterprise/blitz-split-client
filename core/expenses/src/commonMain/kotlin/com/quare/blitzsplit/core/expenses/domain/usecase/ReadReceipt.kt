@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.model.GroupCurrency
 
@@ -8,5 +9,6 @@ fun interface ReadReceipt {
     suspend operator fun invoke(
         source: ByteArray,
         currency: GroupCurrency,
+        hints: ReceiptCategoryHints,
     ): ReceiptScan
 }

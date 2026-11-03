@@ -2454,7 +2454,7 @@ class SplitBillViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
-            readReceipt = { _, _ ->
+            readReceipt = { _, _, _ ->
                 ReceiptScan(
                     photo = null,
                     reading = null,
