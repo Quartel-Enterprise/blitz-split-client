@@ -156,9 +156,9 @@ class SplitBillViewModel(
         readReceipt = readReceipt,
         attachBillImage = attachBillImage,
         categoryTerms = { categoryEditing.terms },
-        onRead = { read, before ->
+        onRead = { read ->
             categoryEditing.rematch {
-                it.withReceiptRead(read, before, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
+                it.withReceiptRead(read, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
             }
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
@@ -220,6 +220,7 @@ class SplitBillViewModel(
     }
 
     private fun handleEvent(event: SplitBillUiEvent) {
+        if (uiState.value.isFormLocked && event.isLockedWhileReading()) return
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 

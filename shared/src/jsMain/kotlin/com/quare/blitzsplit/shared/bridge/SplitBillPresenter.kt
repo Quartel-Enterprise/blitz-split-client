@@ -189,6 +189,8 @@ class JsSplitBillState(
     val receiptError: String?,
     val offersReceiptRetake: Boolean,
     val offersReceiptRetry: Boolean,
+    // Why: every field but "Foto do cupom" shows disabled while the receipt is read (7.1e).
+    val isFormLocked: Boolean,
 )
 
 class SplitBillPresenter(
@@ -299,6 +301,7 @@ class SplitBillPresenter(
                 receiptError = state.receiptError?.name?.lowercase(),
                 offersReceiptRetake = state.offersReceiptRetake,
                 offersReceiptRetry = state.offersReceiptRetry,
+                isFormLocked = state.isFormLocked,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

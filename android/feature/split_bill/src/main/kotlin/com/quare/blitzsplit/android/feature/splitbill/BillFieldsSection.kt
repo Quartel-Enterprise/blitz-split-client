@@ -43,7 +43,7 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
-// Why: what to read first: the group the bill goes to, how much it was and what it was.
+// Why: what to read first: the group the bill goes to, what it was and how much it was (beta feedback 10).
 @Composable
 internal fun BillFieldsSection(
     state: SplitBillUiState,
@@ -54,16 +54,44 @@ internal fun BillFieldsSection(
         state = state,
         onEvent = onEvent,
     )
+    DescriptionField(
+        state = state,
+        onEvent = onEvent,
+    )
+    if (!state.isEditing && state.categoryMatches.size > 1) {
+        MatchedTermsRow(state)
+    }
+    ReceiptReadRow(state)
     AmountField(
         state = state,
         money = money,
         onEvent = onEvent,
     )
+}
+
+/*
+ * Why: a new bill opens on the description, its keyboard up, as the canvas draws it focused; not when back from
+ * Dividir, and only once "Rachar em qual grupo?" no longer covers it.
+ */
+@Composable
+private fun DescriptionField(
+    state: SplitBillUiState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val isNewBill = !state.isEditing && state.description.isEmpty() && state.amountText.isEmpty()
+    val isAskingGroup = state.groupSelection != null
+    LaunchedEffect(focusRequester, isAskingGroup) {
+        if (isNewBill && !isAskingGroup && !state.isFormLocked) focusRequester.requestFocus()
+    }
     val categoryLabel = stringResource(R.string.split_bill_category_change, billCategoryPathOf(state))
     OutlinedTextField(
         value = state.description,
         onValueChange = { onEvent(SplitBillUiEvent.OnDescriptionChanged(it)) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
+        enabled = !state.isFormLocked,
         label = { Text(stringResource(R.string.split_bill_description)) },
         placeholder = { Text(stringResource(R.string.split_bill_description_placeholder)) },
         // Why: the category's icon opens "Categoria" (7.7).
@@ -71,6 +99,7 @@ internal fun BillFieldsSection(
             IconButton(
                 onClick = { onEvent(SplitBillUiEvent.OnCategoryClicked) },
                 modifier = Modifier.semantics { contentDescription = categoryLabel },
+                enabled = !state.isFormLocked,
             ) {
                 CategoryBadge(
                     category = state.category,
@@ -91,12 +120,9 @@ internal fun BillFieldsSection(
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done,
+            imeAction = ImeAction.Next,
         ),
     )
-    if (!state.isEditing && state.categoryMatches.size > 1) {
-        MatchedTermsRow(state)
-    }
 }
 
 // Why: every word of the map the description has, the one that chose marked (7.1l).
@@ -202,22 +228,12 @@ private fun GroupChipContent(state: SplitBillUiState) {
     }
 }
 
-/*
- * Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir, and
- * only once "Rachar em qual grupo?" no longer covers it.
- */
 @Composable
 private fun AmountField(
     state: SplitBillUiState,
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val isAmountEmpty = state.amountText.isEmpty()
-    val isAskingGroup = state.groupSelection != null
-    LaunchedEffect(focusRequester, isAskingGroup) {
-        if (isAmountEmpty && !isAskingGroup) focusRequester.requestFocus()
-    }
     val help = listOfNotNull(
         amountHelpOrNull(
             state = state,
@@ -233,7 +249,8 @@ private fun AmountField(
         symbol = money.symbol,
         help = help,
         isError = state.showsAmountError,
-        modifier = Modifier.focusRequester(focusRequester),
+        imeAction = ImeAction.Done,
+        enabled = !state.isFormLocked,
     )
 }
 

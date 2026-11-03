@@ -199,6 +199,14 @@ data class SplitBillUiState(
         get() = receipt?.status == ReceiptStatus.READING
 
     /*
+     * Why: while "Lendo o cupom…" every other field of the form shows disabled (valor, descrição, categoria, grupo, quem
+     * pagou, quando, divisão), so nothing typed is overwritten by what the read fills; × on "Foto do cupom" still
+     * cancels it.
+     */
+    val isFormLocked: Boolean
+        get() = isReadingReceipt
+
+    /*
      * Why: why the receipt read nothing (7.1g), each worded its own way: "Não deu para ler o cupom…" with "Tirar outra
      * foto", the reader that didn't answer and a dropped connection with "Tentar de novo", the day's limit with neither.
      */

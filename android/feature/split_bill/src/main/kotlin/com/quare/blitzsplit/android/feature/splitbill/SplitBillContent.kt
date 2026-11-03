@@ -66,7 +66,6 @@ fun SplitBillContent(
                     money = money,
                     onEvent = onEvent,
                 )
-                ReceiptReadRow(state)
             }
         },
         second = {

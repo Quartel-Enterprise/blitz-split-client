@@ -362,8 +362,9 @@ private struct PhoneSplitBill: View {
                     .foldSheetPlacement()
             }
         }
+        // A new bill opens on the description, which comes before the amount (beta feedback 10)
         .onAppear {
-            if state.amountText.isEmpty { focusedField = .amount }
+            if !state.isEditing, state.description_.isEmpty, !state.isFormLocked { focusedField = .description }
         }
         .task {
             try? await Task.sleep(for: SheetPresentation.settle)
@@ -388,14 +389,6 @@ private struct PhoneSplitBill: View {
             .listRowBackground(Palette.negative.opacity(0.12))
         }
         Section {
-            AmountField(currency: state.currency, text: model.amount, label: "Amount")
-                .focused($focusedField, equals: .amount)
-        } header: {
-            Text("Amount")
-        } footer: {
-            AmountHelp(state: state)
-        }
-        Section {
             HStack(spacing: 12) {
                 // The category's icon opens "Category" (7.7)
                 Button {
@@ -407,8 +400,9 @@ private struct PhoneSplitBill: View {
                 .accessibilityLabel("Category: \(CategoryCopy.path(state.category, parent: state.categoryParent)). Change it")
                 TextField("What was it? E.g. Groceries", text: model.billDescription)
                     .textInputAutocapitalization(.sentences)
-                    .submitLabel(.done)
+                    .submitLabel(.next)
                     .focused($focusedField, equals: .description)
+                    .onSubmit { focusedField = .amount }
             }
         } header: {
             Text("Description")
@@ -428,6 +422,16 @@ private struct PhoneSplitBill: View {
                 }
             }
         }
+        .disabled(state.isFormLocked)
+        Section {
+            AmountField(currency: state.currency, text: model.amount, label: "Amount")
+                .focused($focusedField, equals: .amount)
+        } header: {
+            Text("Amount")
+        } footer: {
+            AmountHelp(state: state)
+        }
+        .disabled(state.isFormLocked)
     }
 
     private var detailsSection: some View {
@@ -543,6 +547,8 @@ private struct PhoneSplitBill: View {
                 }
             }
         }
+        // While a receipt is read nothing here changes, so the read never overwrites what was picked (7.1e)
+        .disabled(state.isFormLocked)
     }
 
     /// "Elisa already settled up with Bruno after this bill. …", while the change unsettles a payment (7.4b).
@@ -940,7 +946,7 @@ private struct MacSplitBill: View {
 private struct MacBillForm: View {
     let model: SplitBillModel
 
-    @FocusState private var isAmountFocused: Bool
+    @FocusState private var isDescriptionFocused: Bool
     /// Whether this sheet has settled, so "Split in Which Group?" can present over it.
     @State private var isSettled = false
 
@@ -1017,87 +1023,91 @@ private struct MacBillForm: View {
                         }
                     }
                 }
-                LabeledContent("Amount:") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        AmountField(currency: state.currency, text: model.amount, label: "Amount")
-                            .focused($isAmountFocused)
-                        AmountHelp(state: state)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                LabeledContent("Description:") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            MacCategoryMenu(model: model)
-                            TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
-                                Text("Description")
+                // Locked while a receipt is read, so the read never overwrites what was typed (7.1e)
+                Group {
+                    LabeledContent("Description:") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 8) {
+                                MacCategoryMenu(model: model)
+                                TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
+                                    Text("Description")
+                                }
+                                .labelsHidden()
+                                .focused($isDescriptionFocused)
                             }
-                            .labelsHidden()
-                        }
-                        if state.showsDescriptionError {
-                            Text("Say what it was, for example Groceries.")
-                                .font(.callout)
-                                .foregroundStyle(Palette.negative)
-                        } else {
-                            Text(verbatim: CategoryPickerCopy.hint(state))
-                                .font(.callout)
-                                .foregroundStyle(.secondary)
-                            if !state.isEditing, state.categoryMatches.count > 1 {
-                                MatchedTerms(matches: state.categoryMatches)
-                            }
-                        }
-                    }
-                }
-                Picker("Who paid:", selection: payer) {
-                    ForEach(state.people, id: \.id) { person in
-                        Text(verbatim: SplitBillCopy.name(person)).tag(person.id)
-                    }
-                    Divider()
-                    // Why: the empty id stands for several payers, the payer id a bill several people paid has.
-                    if let several = state.severalPayers {
-                        Text(verbatim: ExpenseFormat.payerNames(SplitBillCopy.payerNames(several))).tag("")
-                    } else {
-                        Text("Several People…").tag("")
-                    }
-                }
-                .fixedSize()
-                if let several = state.severalPayers {
-                    LabeledContent {
-                        HStack(spacing: 8) {
-                            Button("Change Amounts…") {
-                                model.openSeveralPayers()
-                            }
-                            if several.showsMismatch {
-                                Text(verbatim: SplitBillCopy.payersMismatch(several))
+                            if state.showsDescriptionError {
+                                Text("Say what it was, for example Groceries.")
+                                    .font(.callout)
                                     .foregroundStyle(Palette.negative)
+                            } else {
+                                Text(verbatim: CategoryPickerCopy.hint(state))
+                                    .font(.callout)
+                                    .foregroundStyle(.secondary)
+                                if !state.isEditing, state.categoryMatches.count > 1 {
+                                    MatchedTerms(matches: state.categoryMatches)
+                                }
                             }
                         }
-                    } label: {
-                        Text(verbatim: "")
                     }
-                }
-                MacWhenField(
-                    millis: state.spentAt,
-                    relativeDay: state.spentDay,
-                    selection: model.spentAt,
-                    latest: model.latestSpentAt,
-                    onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
-                )
-                LabeledContent("Split:") {
-                    HStack(alignment: .firstTextBaseline, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(verbatim: SplitBillCopy.modeSummary(state.split.mode))
-                            Text(verbatim: SplitBillCopy.splitSubtitle(state))
+                    LabeledContent("Amount:") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            AmountField(currency: state.currency, text: model.amount, label: "Amount")
+                            AmountHelp(state: state)
                                 .font(.callout)
                                 .foregroundStyle(.secondary)
                         }
-                        Spacer()
-                        Button("Change…") {
-                            model.send(SplitBillUiEventOnSplitClicked.shared)
+                    }
+                    Picker("Who paid:", selection: payer) {
+                        ForEach(state.people, id: \.id) { person in
+                            Text(verbatim: SplitBillCopy.name(person)).tag(person.id)
+                        }
+                        Divider()
+                        // Why: the empty id stands for several payers, the payer id a bill several people paid has.
+                        if let several = state.severalPayers {
+                            Text(verbatim: ExpenseFormat.payerNames(SplitBillCopy.payerNames(several))).tag("")
+                        } else {
+                            Text("Several People…").tag("")
+                        }
+                    }
+                    .fixedSize()
+                    if let several = state.severalPayers {
+                        LabeledContent {
+                            HStack(spacing: 8) {
+                                Button("Change Amounts…") {
+                                    model.openSeveralPayers()
+                                }
+                                if several.showsMismatch {
+                                    Text(verbatim: SplitBillCopy.payersMismatch(several))
+                                        .foregroundStyle(Palette.negative)
+                                }
+                            }
+                        } label: {
+                            Text(verbatim: "")
+                        }
+                    }
+                    MacWhenField(
+                        millis: state.spentAt,
+                        relativeDay: state.spentDay,
+                        selection: model.spentAt,
+                        latest: model.latestSpentAt,
+                        onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
+                    )
+                    LabeledContent("Split:") {
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(verbatim: SplitBillCopy.modeSummary(state.split.mode))
+                                Text(verbatim: SplitBillCopy.splitSubtitle(state))
+                                    .font(.callout)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Button("Change…") {
+                                model.send(SplitBillUiEventOnSplitClicked.shared)
+                            }
                         }
                     }
                 }
+                .disabled(state.isFormLocked)
                 MacReceiptRow(model: model)
             }
             .formStyle(.columns)
@@ -1135,7 +1145,8 @@ private struct MacBillForm: View {
             .controlSize(.large)
         }
         .padding(20)
-        .onAppear { isAmountFocused = true }
+        // The description comes first, before the amount (beta feedback 10)
+        .onAppear { isDescriptionFocused = !state.isFormLocked }
         .task {
             try? await Task.sleep(for: SheetPresentation.settle)
             if !Task.isCancelled { isSettled = true }

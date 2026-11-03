@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 /** A button that looks like a field: "Quem pagou", "Quando". */
 export const controlClass =
-  'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30'
+  'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30'
 
 /**
  * A large amount field with the currency's symbol before it ("R$ 312,00"), the number keyboard on phones. The
@@ -39,7 +39,7 @@ export function AmountInput({
   return (
     <div
       className={cn(
-        'flex h-14 items-center gap-2 rounded-md border bg-card px-3 focus-within:ring-[3px] dark:bg-input/30',
+        'flex h-14 items-center gap-2 rounded-md border bg-card px-3 focus-within:ring-[3px] has-[:disabled]:opacity-50 dark:bg-input/30',
         isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
       )}
     >
