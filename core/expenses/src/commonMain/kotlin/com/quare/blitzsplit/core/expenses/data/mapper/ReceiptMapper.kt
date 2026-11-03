@@ -9,5 +9,6 @@ fun interface ReceiptMapper {
     fun toDomain(
         dto: ReadReceiptResponseDto,
         currency: GroupCurrency,
+        groupCategoryIds: Set<String>,
     ): ReceiptReading?
 }

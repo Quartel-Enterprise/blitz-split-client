@@ -608,7 +608,7 @@ class BillCategoryViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             offerCategoryTeach = OfferCategoryTeachUseCase(teach),
-            readReceipt = { _, _ ->
+            readReceipt = { _, _, _ ->
                 ReceiptScan(
                     photo = null,
                     reading = null,

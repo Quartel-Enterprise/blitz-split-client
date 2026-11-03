@@ -1,13 +1,24 @@
 package com.quare.blitzsplit.core.expenses.data
 
 import com.quare.blitzsplit.core.expenses.data.datasource.ReceiptRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptCategoryDto
 import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptItemDto
 import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptRequestDto
 import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptResponseDto
+import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptTermDto
 import com.quare.blitzsplit.core.expenses.data.mapper.ReceiptMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ReceiptRepositoryImpl
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
+import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
@@ -17,6 +28,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -30,7 +42,7 @@ class ReceiptRepositoryImplTest {
         prepareScenario()
 
         // When
-        repository.readReceipt(jpeg, GroupCurrency.EUR)
+        repository.readReceipt(jpeg, GroupCurrency.EUR, noReceiptCategoryHints)
 
         // Then
         assertEquals(
@@ -38,6 +50,8 @@ class ReceiptRepositoryImplTest {
                 ReadReceiptRequestDto(
                     image = "/9j/4AAQSkZJRg==",
                     currency = "EUR",
+                    categories = emptyList(),
+                    terms = emptyList(),
                 ),
             ),
             remote.requests,
@@ -45,12 +59,171 @@ class ReceiptRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN the group categories WHEN reading a receipt THEN sends each one with its name and parent`() = runTest {
+        // Given
+        prepareScenario()
+        val hints = ReceiptCategoryHints.of(CategoryTree.of(listOf(pet, racao, reforma)), emptyList())
+
+        // When
+        repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+        // Then
+        assertEquals(
+            setOf(
+                ReadReceiptCategoryDto(
+                    id = "pet",
+                    name = "Pet",
+                    parentId = null,
+                ),
+                ReadReceiptCategoryDto(
+                    id = "racao",
+                    name = "Ração",
+                    parentId = "pet",
+                ),
+                ReadReceiptCategoryDto(
+                    id = "reforma",
+                    name = "Reforma",
+                    parentId = AppCategory.HOME.key,
+                ),
+            ),
+            remote.requests
+                .single()
+                .categories
+                .toSet(),
+        )
+    }
+
+    @Test
+    fun `GIVEN the map terms WHEN reading a receipt THEN sends each term with its category`() = runTest {
+        // Given
+        prepareScenario()
+        val hints = ReceiptCategoryHints.of(
+            tree = CategoryTree.of(listOf(pet, reforma)),
+            terms = listOf(
+                CategoryTerm("ração", "pet"),
+                CategoryTerm("cimento", "reforma"),
+                CategoryTerm("aluguel", AppCategory.HOME_RENT.key),
+            ),
+        )
+
+        // When
+        repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+        // Then
+        assertEquals(
+            listOf(
+                ReadReceiptTermDto(
+                    term = "ração",
+                    categoryId = "pet",
+                ),
+                ReadReceiptTermDto(
+                    term = "cimento",
+                    categoryId = "reforma",
+                ),
+                ReadReceiptTermDto(
+                    term = "aluguel",
+                    categoryId = AppCategory.HOME_RENT.key,
+                ),
+            ),
+            remote.requests.single().terms,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group category with no name WHEN reading a receipt THEN leaves it out of the request`() = runTest {
+        // Given
+        prepareScenario()
+        val hints = ReceiptCategoryHints(
+            groupCategories = listOf(
+                petCategory.copy(
+                    id = "sem-nome",
+                    name = null,
+                ),
+                petCategory,
+            ),
+            terms = emptyList(),
+        )
+
+        // When
+        repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+        // Then
+        assertEquals(
+            listOf(
+                ReadReceiptCategoryDto(
+                    id = "pet",
+                    name = "Pet",
+                    parentId = null,
+                ),
+            ),
+            remote.requests.single().categories,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server picks a group category that was sent WHEN reading a receipt THEN reads that category`() =
+        runTest {
+            // Given
+            prepareScenario(answer = supermarketDto.copy(category = "pet"))
+            val hints = ReceiptCategoryHints.of(CategoryTree.of(listOf(pet, reforma)), emptyList())
+
+            // When
+            val result = repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+            // Then
+            assertEquals("pet", result.getOrThrow()?.categoryId)
+        }
+
+    @Test
+    fun `GIVEN the server picks a group subcategory that was sent WHEN reading a receipt THEN reads that category`() =
+        runTest {
+            // Given
+            prepareScenario(answer = supermarketDto.copy(category = "reforma"))
+            val hints = ReceiptCategoryHints.of(CategoryTree.of(listOf(pet, reforma)), emptyList())
+
+            // When
+            val result = repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+            // Then
+            assertEquals("reforma", result.getOrThrow()?.categoryId)
+        }
+
+    @Test
+    fun `GIVEN the server picks a category id that was not sent WHEN reading a receipt THEN reads no category`() =
+        runTest {
+            // Given
+            prepareScenario(answer = supermarketDto.copy(category = "praia"))
+            val hints = ReceiptCategoryHints.of(CategoryTree.of(listOf(pet)), emptyList())
+
+            // When
+            val result = repository.readReceipt(jpeg, GroupCurrency.BRL, hints)
+
+            // Then
+            val reading = assertNotNull(result.getOrThrow())
+            assertNull(reading.categoryId)
+            assertEquals(8_743L, reading.totalMinor)
+        }
+
+    @Test
+    fun `GIVEN no hints and the server picks a group category WHEN reading a receipt THEN reads no category`() =
+        runTest {
+            // Given
+            prepareScenario(answer = supermarketDto.copy(category = "pet"))
+
+            // When
+            val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
+
+            // Then
+            assertNull(assertNotNull(result.getOrThrow()).categoryId)
+        }
+
+    @Test
     fun `GIVEN the server reads the receipt WHEN reading it THEN reads it checked for the group currency`() = runTest {
         // Given
         prepareScenario(answer = supermarketDto)
 
         // When
-        val result = repository.readReceipt(jpeg, GroupCurrency.BRL)
+        val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertEquals(
@@ -84,7 +257,7 @@ class ReceiptRepositoryImplTest {
         prepareScenario(answer = null)
 
         // When
-        val result = repository.readReceipt(jpeg, GroupCurrency.BRL)
+        val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(result.isSuccess)
@@ -97,7 +270,7 @@ class ReceiptRepositoryImplTest {
         prepareScenario(answer = supermarketDto.copy(totalMinor = 0L))
 
         // When
-        val result = repository.readReceipt(jpeg, GroupCurrency.BRL)
+        val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(result.isSuccess)
@@ -110,7 +283,7 @@ class ReceiptRepositoryImplTest {
         prepareScenario(error = IllegalStateException("offline"))
 
         // When
-        val result = repository.readReceipt(jpeg, GroupCurrency.BRL)
+        val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
@@ -122,7 +295,7 @@ class ReceiptRepositoryImplTest {
         prepareScenario(error = RuntimeException("429 Too Many Requests"))
 
         // When
-        val result = repository.readReceipt(jpeg, GroupCurrency.BRL)
+        val result = repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
         assertTrue(result.isFailure)
@@ -135,7 +308,7 @@ class ReceiptRepositoryImplTest {
 
         // When
         val failure = assertFailsWith<CancellationException> {
-            repository.readReceipt(jpeg, GroupCurrency.BRL)
+            repository.readReceipt(jpeg, GroupCurrency.BRL, noReceiptCategoryHints)
         }
 
         // Then
@@ -175,6 +348,42 @@ class ReceiptRepositoryImplTest {
             ),
         ),
         servicePercent = 0L,
+    )
+
+    private val pet = GroupCategory(
+        id = "pet",
+        groupId = "apto-302",
+        parentId = null,
+        name = "Pet",
+        icon = CategoryIcon.DOTS,
+        createdByMemberId = "ana",
+        isDeleted = false,
+        isPending = false,
+    )
+
+    private val racao = pet.copy(
+        id = "racao",
+        parentId = "pet",
+        name = "Ração",
+        icon = null,
+    )
+
+    private val reforma = pet.copy(
+        id = "reforma",
+        parentId = AppCategory.HOME.key,
+        name = "Reforma",
+        icon = null,
+    )
+
+    private val petCategory = Category(
+        id = "pet",
+        app = null,
+        name = "Pet",
+        icon = CategoryIcon.DOTS,
+        color = AvatarColor.LILAC,
+        parentId = null,
+        createdByMemberId = "ana",
+        isPending = false,
     )
 
     private fun prepareScenario(

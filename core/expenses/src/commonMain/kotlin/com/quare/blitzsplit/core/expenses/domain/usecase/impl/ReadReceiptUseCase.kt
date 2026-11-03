@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.repository.ReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
@@ -18,9 +19,10 @@ class ReadReceiptUseCase(
     override suspend fun invoke(
         source: ByteArray,
         currency: GroupCurrency,
+        hints: ReceiptCategoryHints,
     ): ReceiptScan {
         val photo = suspendRunCatching { encodeImage(source) }.getOrNull() ?: return ReceiptScan(null, null)
-        val reading = repository.readReceipt(photo.jpeg, currency).getOrNull()
+        val reading = repository.readReceipt(photo.jpeg, currency, hints).getOrNull()
         return ReceiptScan(photo, reading)
     }
 }

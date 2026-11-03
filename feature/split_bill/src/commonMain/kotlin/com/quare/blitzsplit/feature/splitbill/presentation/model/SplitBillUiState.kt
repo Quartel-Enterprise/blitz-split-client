@@ -236,9 +236,12 @@ data class SplitBillUiState(
     val categoryParent: Category?
         get() = category.parentId?.let { categories.findOrNull(it) }
 
-    // Why: the category the receipt suggests (7.1e), null without a receipt read or one this tree doesn't have.
+    /*
+     * Why: the category the receipt suggests (7.1e), null without a receipt read or one this tree doesn't know; a group
+     * category a sync deleted since reads as where its bills go (7.8f), as the bill's own does.
+     */
     val receiptCategory: Category?
-        get() = receiptCategoryId?.let { categories.findOrNull(it) }?.takeIf { !it.isOther }
+        get() = receiptCategoryId?.let { categories.readAsOrNull(it) }?.takeIf { !it.isOther }
 
     // Why: the category the map's term chooses, null when no term is in the description.
     val mapCategory: Category?
