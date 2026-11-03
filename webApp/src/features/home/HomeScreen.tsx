@@ -1,8 +1,9 @@
-import { Banknote, Camera, KeyRound, Plus, SquarePlus, Users, X } from 'lucide-react'
+import { Banknote, Camera, KeyRound, SquarePlus, Users, X } from 'lucide-react'
 import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { SplitBillIcon } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
@@ -58,7 +59,7 @@ export function HomeScreen() {
               <Shortcuts presenter={presenter} state={state} variant="buttons" />
               {state.showsSplitBillButton && (
                 <Button className="h-11 md:h-9" onClick={() => presenter.splitBill()}>
-                  <Plus /> {t('groups_splitBill')}
+                  <SplitBillIcon /> {t('groups_splitBill')}
                 </Button>
               )}
             </div>

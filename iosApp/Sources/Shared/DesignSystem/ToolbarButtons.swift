@@ -22,14 +22,20 @@ struct ProfileToolbarButton: View {
     }
 }
 
-/// "Split a bill" spelled out with its plus, a toolbar draws a Label as its icon only: iOS's tinted glass item (iOS
-/// has no FAB), the Mac window's prominent button. In an iPhone Duo's vertical bar, the plus alone (`showsTitle`).
+/// "Split a bill" spelled out with its receipt and plus (the legacy app's icon, `SplitBill` in the asset catalog), a
+/// toolbar draws a Label as its icon only: iOS's tinted glass item (iOS has no FAB), the Mac window's prominent
+/// button. In an iPhone Duo's vertical bar, the icon alone (`showsTitle`).
 struct SplitBillButton: View {
     var showsTitle = true
     let action: () -> Void
 
     var body: some View {
-        ProminentBarButton(title: "Split a bill", systemImage: "plus", showsTitle: showsTitle, action: action)
+        ProminentBarButton(
+            title: "Split a bill",
+            image: Image(decorative: "SplitBill"),
+            showsTitle: showsTitle,
+            action: action,
+        )
     }
 }
 
@@ -41,7 +47,7 @@ struct AddPersonButton: View {
     var body: some View {
         ProminentBarButton(
             title: "Add person",
-            systemImage: "person.badge.plus",
+            image: Image(systemName: "person.badge.plus"),
             showsTitle: showsTitle,
             action: action,
         )
@@ -52,7 +58,7 @@ struct AddPersonButton: View {
 /// no room for words.
 private struct ProminentBarButton: View {
     let title: LocalizedStringKey
-    let systemImage: String
+    let image: Image
     let showsTitle: Bool
     let action: () -> Void
 
@@ -60,12 +66,12 @@ private struct ProminentBarButton: View {
         Button(action: action) {
             if showsTitle {
                 HStack(spacing: 6) {
-                    Image(systemName: systemImage)
+                    image
                     Text(title)
                 }
                 .fontWeight(.semibold)
             } else {
-                Label(title, systemImage: systemImage)
+                Label { Text(title) } icon: { image }
                     .labelStyle(.iconOnly)
                     .fontWeight(.semibold)
             }

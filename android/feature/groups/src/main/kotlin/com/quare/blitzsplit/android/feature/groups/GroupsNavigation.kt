@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -11,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 
@@ -67,7 +66,7 @@ internal fun SplitBillNavigationRail(
                     modifier = Modifier.padding(top = 16.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Add,
+                        imageVector = splitBillIcon(),
                         contentDescription = stringResource(R.string.groups_split_bill),
                     )
                 }

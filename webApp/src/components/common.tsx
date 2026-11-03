@@ -89,6 +89,19 @@ function AppleLogo() {
   )
 }
 
+/** "Split a bill"'s icon: a receipt with a plus, the legacy Blitz Split app's, in place of lucide's bare `Plus`. */
+export function SplitBillIcon() {
+  return (
+    <svg aria-hidden width={24} height={24} viewBox="0 0 24 24" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        d="M5.75 12V10.334H18.25V2.834L17 4.084 15.75 2.834 14.5 4.084 13.25 2.834 12 4.084 10.75 2.834 9.5 4.084 8.25 2.834 7 4.084 5.75 2.834 4.5 4.084 3.25 2.834V19.5L4.5 18.25 5.75 19.5 7 18.25 8.25 19.5 9.5 18.25 10.75 19.5 12 18.25H10.75V14.167H14.5V12H5.75ZM5.75 8.667H15.75V7H5.75V8.667ZM13.25 19.5 12 18.25H14.5L13.25 19.5Z"
+      />
+      <path d="M20.75 15.016V17.063H11.75V15.016H20.75ZM17.922 11.167V21.167H15.588V11.167H17.922Z" />
+    </svg>
+  )
+}
+
 /** "or" between the account buttons and the account-free path. */
 export function OrDivider() {
   return (

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- "Split a bill": a receipt with a plus, the legacy Blitz Split app's icon -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3300" height="2200">
+ <g id="Notes">
+  <text id="template-version" style="stroke:none;fill:black;font-family:sans-serif;font-size:13;text-anchor:end;" transform="matrix(1 0 0 1 3036 1933)">Template v.3.0</text>
+ </g>
+ <g id="Guides">
+  <path id="Capline-S" d="M9 625.541L2793 625.541" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="Baseline-S" d="M9 696L2793 696" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="Capline-M" d="M9 1055.54L2793 1055.54" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="Baseline-M" d="M9 1126L2793 1126" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="Capline-L" d="M9 1485.54L2793 1485.54" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="Baseline-L" d="M9 1556L2793 1556" style="fill:none;stroke:#27AAE1;stroke-width:0.5;"/>
+  <path id="left-margin-Regular-M" d="M1391.200 1030.79L1391.200 1150.12" style="fill:none;stroke:#00AEEF;stroke-width:0.5;"/>
+  <path id="right-margin-Regular-M" d="M1471.700 1030.79L1471.700 1150.12" style="fill:none;stroke:#00AEEF;stroke-width:0.5;"/>
+ </g>
+ <g id="Symbols">
+  <g id="Regular-M">
+   <path d="M1402.700 1090.768 L1402.700 1083.105 L1442.950 1083.105 L1448.700 1083.105 L1460.200 1083.105 L1460.200 1048.605 L1454.450 1054.355 L1448.700 1048.605 L1442.950 1054.355 L1437.200 1048.605 L1431.450 1054.355 L1425.700 1048.605 L1419.950 1054.355 L1414.200 1048.605 L1408.450 1054.355 L1402.700 1048.605 L1396.950 1054.355 L1391.200 1048.605 L1391.200 1125.268 L1396.950 1119.518 L1402.700 1125.268 L1408.450 1119.518 L1414.200 1125.268 L1419.950 1119.518 L1425.700 1125.268 L1431.450 1119.518 L1425.700 1119.518 L1425.700 1100.736 L1442.950 1100.736 L1442.950 1098.436 L1442.950 1090.768 L1402.700 1090.768 Z M1402.700 1075.436 L1402.700 1067.768 L1448.700 1067.768 L1448.700 1075.436 L1402.700 1075.436 Z M1437.200 1125.268 L1431.450 1119.518 L1442.950 1119.518 L1437.200 1125.268 Z M1471.700 1104.642 L1471.700 1114.058 L1430.300 1114.058 L1430.300 1104.642 L1471.700 1104.642 Z M1458.691 1086.936 L1458.691 1132.936 L1447.955 1132.936 L1447.955 1086.936 L1458.691 1086.936 Z"/>
+  </g>
+ </g>
+</svg>
