@@ -2,8 +2,6 @@ package com.quare.blitzsplit.push
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -45,13 +43,12 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         val data = message.data
         val kind = PushMessage.ofKind(data[KIND]) ?: return
-        val args = data[ARGS]?.let(::JSONArray)?.let { array -> List(array.length()) { array.optString(it) } }.orEmpty()
-        val text = getString(kind.textRes, *args.toTypedArray())
+        // Why: words that don't fit this version's sentence (a newer server's) drop the notification, never the app.
+        val text = runCatching { buildText(kind, data[ARGS]) }.getOrNull() ?: return
         val title = data[TITLE].orEmpty().ifEmpty { getString(R.string.push_reminder_title) }
         val tag = data[EVENT_ID] ?: kind.kind
         val link = data[LINK]
         if (!canNotify()) return
-        createChannel(kind.channel)
         val notification = NotificationCompat
             .Builder(this, kind.channel.id)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
@@ -59,7 +56,6 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setAutoCancel(true)
-            .setGroup(data[GROUP_ID])
             .apply { link?.let { setContentIntent(openIntent(it, tag)) } }
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
@@ -70,14 +66,12 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
         PackageManager.PERMISSION_GRANTED
 
-    private fun createChannel(channel: PushChannel) {
-        val manager = getSystemService(NotificationManager::class.java)
-        val systemChannel = NotificationChannel(
-            channel.id,
-            getString(channel.nameRes),
-            NotificationManager.IMPORTANCE_DEFAULT,
-        ).apply { description = getString(channel.descriptionRes) }
-        manager.createNotificationChannel(systemChannel)
+    private fun buildText(
+        kind: PushMessage,
+        args: String?,
+    ): String {
+        val words = args?.let(::JSONArray)?.let { array -> List(array.length()) { array.getString(it) } }.orEmpty()
+        return getString(kind.textRes, *words.toTypedArray())
     }
 
     private fun openIntent(
@@ -96,6 +90,5 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         const val ARGS = "args"
         const val LINK = "link"
         const val EVENT_ID = "event_id"
-        const val GROUP_ID = "group_id"
     }
 }

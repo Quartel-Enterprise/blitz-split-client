@@ -6065,6 +6065,26 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a registered device offline WHEN signing out THEN ends the session without trying to unregister`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            isOnline.value = false
+
+            // When
+            val result = coordinator.signOut()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(0, pushDevices.unregisterCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
     fun `GIVEN the push token fails to unregister WHEN signing out THEN still ends the session and erases the copy`() =
         runTest {
             // Given

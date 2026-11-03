@@ -43,12 +43,14 @@ export async function startWebPush(): Promise<void> {
   try {
     const registration = await navigator.serviceWorker.register('/push-sw.js')
     await storeWords()
-    const subscription =
-      (await registration.pushManager.getSubscription()) ??
-      (await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: base64UrlToBytes(vapidPublicKey),
-      }))
+    const applicationServerKey = base64UrlToBytes(vapidPublicKey)
+    let subscription = await registration.pushManager.getSubscription()
+    // Why: a subscription made with another VAPID key (one replaced since) is refused by its push service
+    if (subscription && !isSameKey(subscription.options.applicationServerKey, applicationServerKey)) {
+      await subscription.unsubscribe()
+      subscription = null
+    }
+    subscription ??= await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
     const keys = subscription.toJSON().keys
     if (keys?.p256dh && keys.auth) setPushDevice(subscription.endpoint, keys.p256dh, keys.auth)
   } catch (error) {
@@ -56,11 +58,16 @@ export async function startWebPush(): Promise<void> {
   }
 }
 
-/** A notification tapped while this tab is open comes here from the service worker. */
+/**
+ * A notification tapped while this tab runs the app comes here from the service worker, which waits for the answer:
+ * a tab still starting, or waiting for the one that holds the database, doesn't listen yet, so it opens another.
+ */
 export function listenToNotificationTaps(): void {
   if (!('serviceWorker' in navigator)) return
   navigator.serviceWorker.addEventListener('message', (event: MessageEvent<{ type?: string; link?: string }>) => {
-    if (event.data?.type === 'notification-link' && event.data.link) openNotificationLink(event.data.link)
+    if (event.data?.type !== 'notification-link' || !event.data.link) return
+    openNotificationLink(event.data.link)
+    event.ports[0]?.postMessage('opened')
   })
 }
 
@@ -75,6 +82,12 @@ async function storeWords(): Promise<void> {
   }
   const cache = await caches.open(WORDS_CACHE)
   await cache.put(WORDS_URL, new Response(JSON.stringify(words), { headers: { 'Content-Type': 'application/json' } }))
+}
+
+function isSameKey(current: ArrayBuffer | null, expected: Uint8Array): boolean {
+  if (!current) return false
+  const bytes = new Uint8Array(current)
+  return bytes.length === expected.length && bytes.every((byte, index) => byte === expected[index])
 }
 
 function base64UrlToBytes(value: string): Uint8Array<ArrayBuffer> {

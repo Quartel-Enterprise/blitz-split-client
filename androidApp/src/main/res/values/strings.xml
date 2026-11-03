@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <!-- Atividade's push notifications: the channels are Perfil › Notificações' toggles -->
-    <string name="push_channel_new_expense">New expense in my groups</string>
-    <string name="push_channel_new_expense_description">When someone adds an expense with you</string>
-    <string name="push_channel_payment_marked">Someone marked a payment to me</string>
-    <string name="push_channel_payment_marked_description">When someone says they\'ve paid you</string>
-    <string name="push_channel_settle_reminders">Settle-up reminders</string>
-    <string name="push_channel_settle_reminders_description">Once a week, if there\'s an open balance</string>
-    <string name="push_channel_invites">Invites and new members</string>
-    <string name="push_channel_invites_description">When someone joins one of your groups</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
     <string name="push_reminder_title">Settle-up reminder</string>
     <string name="push_bill_created">%1$s added “%2$s” with you</string>
     <string name="push_bill_edited">%1$s edited “%2$s”</string>

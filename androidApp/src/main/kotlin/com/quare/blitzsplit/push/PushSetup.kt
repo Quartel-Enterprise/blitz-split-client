@@ -28,6 +28,7 @@ object PushSetup {
         setPushDevice: SetPushDevice,
     ) {
         if (!isConfigured) return
+        PushChannel.createAll(context)
         if (FirebaseApp.getApps(context).isEmpty()) {
             val options = FirebaseOptions
                 .Builder()

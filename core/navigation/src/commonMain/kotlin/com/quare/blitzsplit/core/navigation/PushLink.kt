@@ -39,7 +39,10 @@ data class PushLink(
 
                 ADDED_TO_GROUP, MEMBER_JOINED -> listOf(buildGroupRoute(groupId, GroupTab.MEMBERS))
 
-                // Why: a deleted bill and the payments show in Despesas, and a kind a newer server adds opens the group.
+                /*
+                 * Why: the payments show in Despesas, and a kind a newer server adds opens the group. Unlike its item
+                 * in Atividade, a deleted bill opens Despesas too: the notification already said who deleted it.
+                 */
                 else -> listOf(buildGroupRoute(groupId, GroupTab.EXPENSES))
             }
         }

@@ -353,8 +353,11 @@ class SyncCoordinator(
      * Apple session behind the welcome, where a new profile would overwrite the account's.
      */
     private suspend fun clearSession() {
-        // Why: while the session still says whose token it is. Offline it stays theirs until someone registers it.
-        pushDeviceRepository.unregister()
+        /*
+         * Why: while the session still says whose token it is. Offline it isn't tried, so a sign out never waits on
+         * the network; the token stays theirs until someone registers it.
+         */
+        if (connectivityObserver.observe().first()) pushDeviceRepository.unregister()
         accountRepository.signOut()
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()

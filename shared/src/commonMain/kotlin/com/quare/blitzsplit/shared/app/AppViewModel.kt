@@ -127,8 +127,10 @@ class AppViewModel(
     }
 
     /*
-     * Why: a push notification's tap opens its tab, then what it is about once its group is on the device, after a
-     * sync when it isn't yet (a group the person was just added to), unless the person moved on meanwhile. The event
+     * Why: a push notification's tap opens its tab, then, after a sync, what it is about: a notification comes right
+     * after the change it tells of, which this device may not have yet (a new bill, a group the person was just
+     * added to), and Conta closes on a bill it can't find. Offline the sync fails at once and what the device has
+     * opens. Nothing opens over the tab once the person moved on, nor for a group still not on the device. The event
      * is read, as its tap in Atividade makes it. Without a profile there is no home, and nothing opens.
      */
     private suspend fun openPushLink(link: PushLink) {
@@ -137,10 +139,8 @@ class AppViewModel(
         navigator.openHomeTab(link.homeTab)
         val groupId = link.groupId ?: return
         val tabTop = navigator.backStack.value
-        if (observeGroup(groupId).first() == null) {
-            syncNow()
-            if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return
-        }
+        syncNow()
+        if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return
         link.routesAbove.forEach(navigator::navigate)
     }
 

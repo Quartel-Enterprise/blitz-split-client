@@ -1,7 +1,7 @@
 /*
  * Atividade's push notifications on the web. The server sends { kind, title, args, link, tag }, never a sentence:
  * the words come from the app's dictionaries, which the page leaves in the cache (src/push/webPush.ts). A tap hands
- * the link to an open tab of the app, or opens one on it.
+ * the link to the tab running the app, or opens one on it.
  */
 const WORDS_CACHE = 'blitzsplit-push'
 const WORDS_URL = '/push-words.json'
@@ -39,6 +39,20 @@ self.addEventListener('push', (event) => {
   )
 })
 
+const HAND_OVER_TIMEOUT_MS = 500
+
+function handOver(client, link) {
+  return new Promise((resolve, reject) => {
+    const channel = new MessageChannel()
+    const timeout = setTimeout(() => reject(new Error('no answer')), HAND_OVER_TIMEOUT_MS)
+    channel.port1.onmessage = () => {
+      clearTimeout(timeout)
+      resolve(client)
+    }
+    client.postMessage({ type: 'notification-link', link }, [channel.port2])
+  })
+}
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const link = event.notification.data?.link
@@ -46,10 +60,11 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     (async () => {
       const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-      const open = windows.find((client) => new URL(client.url).origin === self.location.origin)
-      if (open) {
-        await open.focus()
-        open.postMessage({ type: 'notification-link', link })
+      const sameOrigin = windows.filter((client) => new URL(client.url).origin === self.location.origin)
+      // Only the tab running the app answers: another one waits for its database, or is still starting
+      const running = await Promise.any(sameOrigin.map((client) => handOver(client, link))).catch(() => null)
+      if (running) {
+        await running.focus()
         return
       }
       // The app's own address, wherever it is hosted (a preview, a local server)
