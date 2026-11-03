@@ -1562,6 +1562,8 @@ class GlobalBalancesViewModelTest {
             // Given
             prepareScenario()
             val bruno = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
                 .single { it.name == "Bruno" }
             viewModel.onEvent(GlobalBalancesUiEvent.OnSettleClicked(bruno.id))
 
@@ -1580,6 +1582,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         val carla = viewModel.uiState.value.people
+            .valueOrNull()
+            .orEmpty()
             .single { it.name == "Carla" }
         viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
 
