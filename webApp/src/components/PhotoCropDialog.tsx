@@ -68,6 +68,8 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
   }, [presenter])
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    // Why: React events bubble out of the portal to the form, and a phone's form is a drawer a drag would pull down.
+    event.stopPropagation()
     event.currentTarget.setPointerCapture(event.pointerId)
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
   }

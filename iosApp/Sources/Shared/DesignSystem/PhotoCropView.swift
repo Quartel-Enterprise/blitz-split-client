@@ -1,3 +1,4 @@
+import ImageIO
 import Shared
 import SwiftUI
 
@@ -68,7 +69,9 @@ struct PhotoCropView: View {
         .foregroundStyle(.white)
         .environment(\.colorScheme, .dark)
         .task(id: ObjectIdentifier(editor.photo)) {
-            image = Self.decode(editor.photo)
+            let jpeg = BlitzSplitApple.shared.toData(bytes: editor.photo.jpeg) as Data
+            // Why: a 1600 px JPEG decoded on the main thread hitches the cover sliding in.
+            image = await Task.detached(priority: .userInitiated) { Self.decode(jpeg) }.value
         }
         #if os(macOS)
         .frame(width: 560, height: 720)
@@ -229,13 +232,16 @@ struct PhotoCropView: View {
             .buttonStyle(.glass)
     }
 
-    private static func decode(_ photo: CropPhoto) -> Image? {
-        let data = BlitzSplitApple.shared.toData(bytes: photo.jpeg)
-        #if os(macOS)
-        return NSImage(data: data).map { Image(nsImage: $0) }
-        #else
-        return UIImage(data: data).map { Image(uiImage: $0) }
-        #endif
+    /// Decoded whole here, since an image made from data only decodes when first drawn. The photo is upright already.
+    private nonisolated static func decode(_ data: Data) -> Image? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let decoded = CGImageSourceCreateImageAtIndex(
+                  source,
+                  0,
+                  [kCGImageSourceShouldCacheImmediately: true] as CFDictionary,
+              )
+        else { return nil }
+        return Image(decorative: decoded, scale: 1)
     }
 }
 

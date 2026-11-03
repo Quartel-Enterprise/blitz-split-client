@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
+import kotlin.math.hypot
 
 internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AndroidAvatarImageEncoder()
 
@@ -24,13 +25,35 @@ internal class AndroidAvatarImageEncoder : AvatarImageEncoder {
         transform: CropTransform,
     ): ByteArray = withContext(Dispatchers.Default) {
         // Why: decoded whole, since the transform is in the photo's own pixels and the editor's is at most 1600 px.
-        val decoded = decode(source) { _, _ -> 1 }
+        var photo = decode(source) { _, _ -> 1 }
+        val matrix = transform.toMatrix()
+        /*
+         * Why: bilinear filtering only blends neighbors, so shrinking 1600 px to 512 in one pass aliases hair and
+         * text. Halved first until the last pass shrinks by half at most, as Apple's and the web's smoothing do.
+         */
+        while (matrix.findScale() < HALF && photo.width > 1 && photo.height > 1) {
+            val halved = Bitmap.createScaledBitmap(photo, photo.width / 2, photo.height / 2, true)
+            matrix.preScale(photo.width.toFloat() / halved.width, photo.height.toFloat() / halved.height)
+            photo.recycle()
+            photo = halved
+        }
         val output = Bitmap.createBitmap(AVATAR_SIZE_PX, AVATAR_SIZE_PX, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
         canvas.drawColor(Color.WHITE)
-        canvas.drawBitmap(decoded, transform.toMatrix(), Paint(Paint.FILTER_BITMAP_FLAG))
-        decoded.recycle()
+        canvas.drawBitmap(photo, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+        photo.recycle()
         output.toJpeg(AVATAR_JPEG_QUALITY).also { output.recycle() }
+    }
+
+    // Why: how much the matrix scales a length, the same whatever quarter turn or mirror it holds.
+    private fun Matrix.findScale(): Float {
+        val values = FloatArray(MATRIX_VALUES).also(::getValues)
+        return hypot(values[Matrix.MSCALE_X], values[Matrix.MSKEW_Y])
+    }
+
+    private companion object {
+        const val HALF = 0.5f
+        const val MATRIX_VALUES = 9
     }
 
     private fun CropTransform.toMatrix(): Matrix = Matrix().apply {
