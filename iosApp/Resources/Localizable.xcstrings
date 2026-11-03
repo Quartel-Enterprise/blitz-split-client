@@ -9236,16 +9236,6 @@
         }
       }
     },
-    "From %lld to %lld characters" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De %1$lld a %2$lld caracteres"
-          }
-        }
-      }
-    },
     "Give at least one person a share to split %@." : {
       "comment" : "The split by shares has no share given; %@ is the total",
       "localizations" : {

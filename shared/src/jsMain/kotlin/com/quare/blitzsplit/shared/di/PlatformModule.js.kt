@@ -12,7 +12,7 @@ internal actual val platformModule: Module = module {
     single { DeviceDecimalSeparator(::getBrowserDecimalSeparator) }
 }
 
-// Why: a language without a region takes its likely one ("pt" → BR), as the brand badge of the web does.
+// Why: a language without a region takes its likely one ("pt" → BR).
 private fun getBrowserRegion(): String? = try {
     js("new Intl.Locale(navigator.language).maximize().region") as? String
 } catch (unsupported: Throwable) {

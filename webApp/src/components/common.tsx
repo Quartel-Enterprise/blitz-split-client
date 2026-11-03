@@ -4,26 +4,19 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { t, type MessageKey } from '@/i18n'
 import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
-import { regionCurrencySymbol } from '@/lib/currency'
 import { accountProviders, type AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
 /**
- * The tile with the region's currency symbol ("R$", "€", "CHF"…), with the product name: Bora Rachar
- * in Portuguese, Blitz Split in every other language.
+ * The tile with the app's logo (the glyph of its icon, public/icon.svg), with the product name: Bora Rachar in
+ * Portuguese, Blitz Split in every other language.
  */
 export function BrandMark({ showsName = true, className }: { showsName?: boolean; className?: string }) {
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
-      <span
-        aria-hidden
-        className={cn(
-          'flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold whitespace-nowrap text-primary-foreground',
-          // Three-letter symbols like "CHF" would overflow a tile sized for "R$"
-          regionCurrencySymbol.length >= 3 ? 'text-[0.625rem] tracking-tight' : 'text-xs',
-        )}
-      >
-        {regionCurrencySymbol}
+      <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        {/* Why: a mask over the favicon's own file, so the glyph is drawn from one copy in the tile's color. */}
+        <span className="size-5 bg-current mask-[url(/icon.svg)] mask-contain mask-center mask-no-repeat" />
       </span>
       {showsName && <span className="font-semibold">{t('appName')}</span>}
     </div>
@@ -170,6 +163,15 @@ export function AvatarColorPicker({ colors, selected, onSelect, labelledBy }: { 
   )
 }
 
+/**
+ * A segment of a segmented control on its `bg-muted` track (Dividir's modes, a group's tabs, Aparência…): the one
+ * picked lifts in the page's background in both themes. Why not shadcn's `dark:bg-input/30`: the dark `--input` is
+ * the track's own color, so the pick vanished.
+ */
+export function segmentClass(isSelected: boolean): string {
+  return isSelected ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+}
+
 export type GroupTab = 'expenses' | 'balances' | 'members'
 
 const groupTabs: { tab: GroupTab; label: MessageKey }[] = [
@@ -198,7 +200,7 @@ export function GroupTabs({ selected, onSelect, className }: { selected: GroupTa
           }}
           className={cn(
             'flex items-center justify-center rounded-md px-3 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-            tab === selected ? 'bg-background text-foreground shadow-sm dark:bg-input/30' : 'hover:text-foreground',
+            segmentClass(tab === selected),
           )}
         >
           {t(label)}

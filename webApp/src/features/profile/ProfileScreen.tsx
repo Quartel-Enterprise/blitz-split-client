@@ -3,7 +3,7 @@ import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsP
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { AccountButtons, providerLabel } from '@/components/common'
+import { AccountButtons, providerLabel, segmentClass } from '@/components/common'
 import { PageShell } from '@/components/HomeSidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -318,7 +318,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                   onClick={() => presenter.selectTheme(theme.code)}
                   className={cn(
                     'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground',
+                    segmentClass(isSelected),
                   )}
                 >
                   {t(theme.label)}

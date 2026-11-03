@@ -7,18 +7,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /*
  * Why: the decorative cluster of expressive shapes at the top of the welcome screen. Compact, it is
@@ -47,7 +45,15 @@ private fun FullShapeClusterHero(modifier: Modifier) {
                 .offset(20.dp, 26.dp)
                 .size(110.dp)
                 .background(colors.primaryContainer, MaterialShapes.Cookie9Sided.toShape()),
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = logoIcon(),
+                contentDescription = null,
+                modifier = Modifier.size(44.dp),
+                tint = colors.onPrimaryContainer,
+            )
+        }
         Box(
             Modifier
                 .offset(122.dp, 6.dp)
@@ -66,15 +72,6 @@ private fun FullShapeClusterHero(modifier: Modifier) {
                 .offset(82.dp, 108.dp)
                 .size(64.dp)
                 .background(colors.primary, MaterialShapes.Circle.toShape()),
-        )
-        val symbol = rememberCurrencySymbol()
-        Text(
-            text = symbol,
-            modifier = Modifier.offset(46.dp, 60.dp),
-            color = colors.onPrimaryContainer,
-            fontSize = toCurrencyFontSize(symbol, 30.sp),
-            maxLines = 1,
-            fontWeight = FontWeight.ExtraBold,
         )
     }
 }
@@ -109,22 +106,20 @@ private fun CompactShapeClusterHero(modifier: Modifier) {
                 .background(colors.primary, MaterialShapes.Cookie9Sided.toShape()),
             contentAlignment = Alignment.Center,
         ) {
-            val symbol = rememberCurrencySymbol()
-            Text(
-                text = symbol,
-                color = colors.onPrimary,
-                fontSize = toCurrencyFontSize(symbol, 18.sp),
-                fontWeight = FontWeight.ExtraBold,
-                maxLines = 1,
+            Icon(
+                imageVector = logoIcon(),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = colors.onPrimary,
             )
         }
     }
 }
 
-// Why: the currency cookie that heads the tablet pitch panel, whose own color would hide the cluster.
+// Why: the logo cookie that heads the tablet pitch panel, whose own color would hide the cluster.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun CurrencyBadgeIcon(modifier: Modifier = Modifier) {
+fun LogoBadgeIcon(modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
@@ -133,13 +128,11 @@ fun CurrencyBadgeIcon(modifier: Modifier = Modifier) {
             .background(colors.primary, MaterialShapes.Cookie9Sided.toShape()),
         contentAlignment = Alignment.Center,
     ) {
-        val symbol = rememberCurrencySymbol()
-        Text(
-            text = symbol,
-            color = colors.onPrimary,
-            fontSize = toCurrencyFontSize(symbol, 26.sp),
-            fontWeight = FontWeight.ExtraBold,
-            maxLines = 1,
+        Icon(
+            imageVector = logoIcon(),
+            contentDescription = null,
+            modifier = Modifier.size(32.dp),
+            tint = colors.onPrimary,
         )
     }
 }

@@ -11,7 +11,6 @@
     <string name="edit_profile_avatar_color">Avatar color</string>
     <string name="edit_profile_avatar_color_hint">Shows when you have no photo.</string>
     <string name="edit_profile_name_label">Your name</string>
-    <string name="edit_profile_name_hint">From %1$d to %2$d characters</string>
     <string name="edit_profile_name_count">%1$d/%2$d</string>
     <string name="edit_profile_name_too_short">Type at least %d letters.</string>
     <string name="edit_profile_name_too_long">Use up to %d characters.</string>

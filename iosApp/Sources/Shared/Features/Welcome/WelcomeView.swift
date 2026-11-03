@@ -106,7 +106,7 @@ private struct WelcomePitch: View {
     var body: some View {
         VStack(alignment: alignment, spacing: 28) {
             VStack(alignment: alignment, spacing: 16) {
-                CurrencyBadge(size: isLarge ? 88 : 72)
+                LogoBadge(size: isLarge ? 88 : 72)
                 Text("Split the bill, no hassle")
                     .font(isLarge ? .largeTitle.bold() : .title.bold())
                     .multilineTextAlignment(alignment == .center ? .center : .leading)

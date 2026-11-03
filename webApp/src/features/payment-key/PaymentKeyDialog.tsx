@@ -2,6 +2,7 @@ import { CircleAlert, CircleCheck, ClipboardPaste, Info, Link2, Loader2, Trash2,
 import { PaymentKeyPresenter, type JsPaymentKeyState, type JsRoute } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { segmentClass } from '@/components/common'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -236,7 +237,8 @@ function PixTypes({ presenter, state }: { presenter: PaymentKeyPresenter; state:
             onClick={() => presenter.selectType(type)}
             className={cn(
               'h-[30px] min-w-0 truncate rounded-md px-1 text-[13px] outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              isSelected ? 'bg-background font-medium shadow-sm' : 'text-muted-foreground hover:text-foreground',
+              segmentClass(isSelected),
+              isSelected && 'font-medium',
             )}
           >
             {t(`paymentKey_type${type}`)}

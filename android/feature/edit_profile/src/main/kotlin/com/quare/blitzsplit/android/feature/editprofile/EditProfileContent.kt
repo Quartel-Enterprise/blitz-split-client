@@ -352,7 +352,7 @@ private fun NameSection(
             singleLine = true,
             supportingText = {
                 Row {
-                    val hint = when (state.nameError) {
+                    val error = when (state.nameError) {
                         EditProfileNameError.TOO_SHORT -> stringResource(
                             R.string.edit_profile_name_too_short,
                             state.nameMinLength,
@@ -363,14 +363,10 @@ private fun NameSection(
                             state.nameMaxLength,
                         )
 
-                        null -> stringResource(
-                            R.string.edit_profile_name_hint,
-                            state.nameMinLength,
-                            state.nameMaxLength,
-                        )
+                        null -> null
                     }
                     Text(
-                        text = hint,
+                        text = error.orEmpty(),
                         modifier = Modifier.weight(1f),
                     )
                     Text(stringResource(R.string.edit_profile_name_count, state.nameLength, state.nameMaxLength))
