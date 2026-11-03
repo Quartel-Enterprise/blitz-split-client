@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -156,6 +157,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
           )}
         </CardFooter>
       </form>
+      {state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="circle" />}
     </Card>
   )
 }

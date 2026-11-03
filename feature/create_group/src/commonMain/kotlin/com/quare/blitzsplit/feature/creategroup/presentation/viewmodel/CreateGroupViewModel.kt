@@ -13,10 +13,14 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
+import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
@@ -35,6 +39,8 @@ class CreateGroupViewModel(
     private val checkMemberName: CheckMemberName,
     observeProfile: ObserveProfile,
     deviceRegion: DeviceRegion,
+    loadCropPhoto: LoadCropPhoto,
+    prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<CreateGroupUiState>
         field = MutableStateFlow(
@@ -43,6 +49,10 @@ class CreateGroupViewModel(
                 initials = "",
                 color = AvatarColor.default,
                 shape = GroupShape.default,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+                photoCrop = null,
                 type = GroupType.default,
                 currency = GroupCurrency.ofRegion(deviceRegion()),
                 members = emptyList(),
@@ -55,6 +65,18 @@ class CreateGroupViewModel(
         )
 
     val stateWatcher: FlowWatcher<CreateGroupUiState> = FlowWatcher(uiState)
+
+    // Why: the group's photo is the same 512x512 JPEG as a profile's, framed the same way.
+    private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
+        prepareProfilePhoto = prepareProfilePhoto,
+        scope = viewModelScope,
+        showStatus = ::showPhotoStatus,
+        showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
+        onPrepared = ::showPhoto,
+        // Why: Criar sends the photo shown.
+        isBusy = { uiState.value.isCreating },
+    )
 
     // Why: the nickname's initial ("Ana P."), the creator's.
     private var creatorName = ""
@@ -91,14 +113,22 @@ class CreateGroupViewModel(
 
             is CreateGroupUiEvent.OnNameChanged -> changeName(event.name)
 
-            CreateGroupUiEvent.OnColorClicked -> uiState.update { it.copy(color = it.color.toNextColor()) }
+            CreateGroupUiEvent.OnColorClicked -> changeColor { it.copy(color = it.color.toNextColor()) }
 
-            CreateGroupUiEvent.OnShapeAndColorClicked -> uiState.update {
+            CreateGroupUiEvent.OnShapeAndColorClicked -> changeColor {
                 it.copy(
                     color = it.color.toNextColor(),
                     shape = it.shape.toNext(),
                 )
             }
+
+            is CreateGroupUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+
+            is CreateGroupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
+
+            CreateGroupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
+
+            CreateGroupUiEvent.OnPhotoRemoved -> removePhoto()
 
             is CreateGroupUiEvent.OnTypeSelected -> uiState.update { it.copy(type = event.type) }
 
@@ -113,6 +143,45 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnRemoveMemberClicked -> removeMember(event.memberId)
 
             CreateGroupUiEvent.OnCreateClicked -> create()
+        }
+    }
+
+    private fun changeColor(transform: (CreateGroupUiState) -> CreateGroupUiState) {
+        uiState.update { if (it.canChangeColor) transform(it) else it }
+    }
+
+    private fun removePhoto() {
+        if (uiState.value.isCreating) return
+        photoPicker.cancel()
+        uiState.update {
+            it.copy(
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+            )
+        }
+    }
+
+    private fun showPhotoStatus(
+        isPreparing: Boolean,
+        hasFailed: Boolean,
+    ) {
+        uiState.update {
+            it.copy(
+                isPreparingPhoto = isPreparing,
+                showsPhotoError = hasFailed,
+            )
+        }
+    }
+
+    // Why: the picker only prepares pending photos.
+    private fun showPhoto(photo: ProfilePhoto) {
+        uiState.update {
+            it.copy(
+                photo = photo as? ProfilePhoto.Pending,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+            )
         }
     }
 
@@ -214,6 +283,7 @@ class CreateGroupViewModel(
                 type = state.type,
                 color = state.color,
                 shape = state.shape,
+                photo = state.photo,
                 currency = state.currency,
                 members = members,
             ).onSuccess(::openInvite)

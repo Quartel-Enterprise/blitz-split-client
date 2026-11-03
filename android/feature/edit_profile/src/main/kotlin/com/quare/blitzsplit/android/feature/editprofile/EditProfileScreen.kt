@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
@@ -28,4 +30,11 @@ fun EditProfileScreen(viewModel: EditProfileViewModel = koinViewModel()) {
         onTakePhotoClick = pickers.onTakePhotoClick,
         onChoosePhotoClick = pickers.onChoosePhotoClick,
     )
+    state.photoCrop?.let { editor ->
+        PhotoCropDialog(
+            editor = editor,
+            frame = PhotoCropFrame.CIRCLE,
+            onEvent = { event -> viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(event)) },
+        )
+    }
 }

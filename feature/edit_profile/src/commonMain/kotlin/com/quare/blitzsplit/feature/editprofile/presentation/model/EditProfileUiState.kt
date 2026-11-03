@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editprofile.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
@@ -17,6 +18,8 @@ data class EditProfileUiState(
     val photo: ProfilePhoto?,
     val isPreparingPhoto: Boolean,
     val showsPhotoError: Boolean,
+    // Why: "Ajustar foto" while a picked photo is being framed, drawn over the form in a circle.
+    val photoCrop: PhotoCropEditor?,
     // Why: null while the name is valid, and also while it is empty, until something is typed.
     val nameError: EditProfileNameError?,
     val isNameValid: Boolean,

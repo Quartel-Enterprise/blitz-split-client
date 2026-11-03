@@ -372,6 +372,17 @@
         }
       }
     },
+    "Adjust photo" : {
+      "comment" : "Photo editor: its title, over a picked photo being framed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustar foto"
+          }
+        }
+      }
+    },
     "After" : {
       "comment" : "The Mac's table of what an edit changed",
       "localizations" : {
@@ -695,6 +706,17 @@
         }
       }
     },
+    "Drag and zoom to frame" : {
+      "comment" : "Photo editor: the hint under the zoom slider",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arraste e use o zoom para enquadrar"
+          }
+        }
+      }
+    },
     "Group icon" : {
       "comment" : "Title of the sheet that picks the group icon",
       "localizations" : {
@@ -702,6 +724,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ícone do grupo"
+          }
+        }
+      }
+    },
+    "Group photo" : {
+      "comment" : "New group: the menu on the avatar's corner that takes, chooses or removes the group's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do grupo"
+          }
+        }
+      }
+    },
+    "Horizontal" : {
+      "comment" : "Photo editor: mirrors the photo horizontally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horizontal"
           }
         }
       }
@@ -1651,6 +1695,17 @@
         }
       }
     },
+    "Rotate" : {
+      "comment" : "Photo editor: turns the photo 90 degrees clockwise",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Girar"
+          }
+        }
+      }
+    },
     "Syncing… %lld of %lld groups" : {
       "comment" : "The sync status during a new device's first download: the groups that came down, of those coming",
       "localizations" : {
@@ -1669,6 +1724,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sincronizando… %lld de 1 grupo"
+          }
+        }
+      }
+    },
+    "Vertical" : {
+      "comment" : "Photo editor: mirrors the photo vertically",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertical"
           }
         }
       }
@@ -12829,6 +12895,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "você"
+          }
+        }
+      }
+    },
+    "Zoom" : {
+      "comment" : "Photo editor: the zoom slider's accessibility label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
           }
         }
       }

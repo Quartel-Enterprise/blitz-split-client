@@ -1,16 +1,15 @@
-import { Copy, Download, Loader2, ShieldCheck } from 'lucide-react'
+import { Copy, Download, ShieldCheck } from 'lucide-react'
 import { RecoveryCodePresenter, type JsRecoveryCodeAction, type JsRecoveryCodeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { providerLabel } from '@/components/common'
+import { AccountButtons } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { downloadFile } from '@/lib/download'
-import { accountProviders } from '@/lib/platform'
 
 /**
  * A dialog on desktop and tablet, a drawer on the phone. Without an account the data lives in the
@@ -84,15 +83,12 @@ function RecoveryCodeBody({ presenter, state }: { presenter: RecoveryCodePresent
       </div>
       <Option icon={<Download className="size-4" />} title={t('recoveryCode_download')} onClick={() => presenter.download()} />
       {state.isConnectExpanded ? (
-        // Apple first on Apple devices, Google first elsewhere
-        <div className="grid grid-cols-2 gap-2">
-          {accountProviders.map((provider) => (
-            <Button key={provider} variant="outline" disabled={!state.areAccountButtonsEnabled} onClick={() => presenter.clickProvider(provider)}>
-              {state.connectingProvider === provider && <Loader2 className="animate-spin" />}
-              {providerLabel(provider, true)}
-            </Button>
-          ))}
-        </div>
+        <AccountButtons
+          short
+          isEnabled={state.areAccountButtonsEnabled}
+          connectingProvider={state.connectingProvider}
+          onClick={(provider) => presenter.clickProvider(provider)}
+        />
       ) : (
         <Option
           icon={<ShieldCheck className="size-4" />}

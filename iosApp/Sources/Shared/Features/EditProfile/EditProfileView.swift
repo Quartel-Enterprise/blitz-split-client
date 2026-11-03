@@ -99,6 +99,7 @@ struct EditProfileView: View {
             }
         }
         .interactiveDismissDisabled(model.state.isSaving)
+        .photoCrop(model.state.photoCrop, frame: .circle) { model.send(EditProfileUiEventOnPhotoCrop(event: $0)) }
         #if os(iOS)
         // The canvas' 540 pt form sheet with an iPad's room; pushed on an iPhone, where it changes nothing
         .formSheetSizing()

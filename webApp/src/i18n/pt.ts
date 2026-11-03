@@ -21,6 +21,14 @@ export const pt: Record<MessageKey, string> = {
   common_waitingForInternet: 'Sem internet. Seus dados aparecem quando reconectar.',
   common_waitingForInternetGroups: 'Sem internet. Seus grupos aparecem quando reconectar.',
 
+  photoCrop_title: 'Ajustar foto',
+  photoCrop_hint: 'Arraste e use o zoom para enquadrar',
+  photoCrop_zoom: 'Zoom',
+  photoCrop_mirrorHorizontally: 'Horizontal',
+  photoCrop_mirrorVertically: 'Vertical',
+  photoCrop_turn: 'Girar',
+  photoCrop_confirm: 'Pronto',
+
   otherTab_title: 'O Bora Rachar está aberto em outra aba',
   otherTab_body: 'Feche aquela aba ou continue usando ela. Esta abre sozinha assim que a outra fechar.',
 
@@ -207,6 +215,10 @@ export const pt: Record<MessageKey, string> = {
   createGroup_useNickname: 'Usar “{name}”',
   createGroup_noAppNotice: 'Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.',
   createGroup_saveError: 'Não deu para salvar o grupo. Tente de novo.',
+  createGroup_photo: 'Foto do grupo',
+  createGroup_choosePhoto: 'Escolher foto',
+  createGroup_removePhoto: 'Remover foto',
+  createGroup_photoError: 'Não deu para usar essa foto. Tente outra.',
 
   invite_title: 'Convidar para {group}',
   invite_close: 'Fechar',

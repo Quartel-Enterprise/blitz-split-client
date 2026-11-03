@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { ProfileSetupPresenter, type JsProfileSetupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker } from '@/components/common'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -105,6 +106,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
           {t('profileSetup_continue')}
         </Button>
       </form>
+      {state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="circle" />}
     </main>
   )
 }

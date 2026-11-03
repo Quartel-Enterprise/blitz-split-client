@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface EditGroupUiEvent : UiEvent {
@@ -38,6 +39,11 @@ sealed interface EditGroupUiEvent : UiEvent {
     // Why: each UI opens its own picker or camera straight from the tap and hands over the file it returned.
     class OnPhotoPicked(
         val source: ByteArray,
+    ) : EditGroupUiEvent
+
+    // Why: what was done in "Ajustar foto", the editor a picked photo opens in.
+    data class OnPhotoCrop(
+        val event: PhotoCropEvent,
     ) : EditGroupUiEvent
 
     // Why: the picker returned an item the UI couldn't read, such as a cloud-only photo while offline.

@@ -25,6 +25,8 @@ class JsEditGroupState(
     val photoUrl: String?,
     val isPreparingPhoto: Boolean,
     val showsPhotoError: Boolean,
+    // Why: "Ajustar foto" while a picked photo is being framed, null while closed.
+    val photoCrop: JsPhotoCropState?,
     // Why: the GroupType's code ("trip"); types lists them in the order the UIs draw them.
     val type: String,
     val types: Array<String>,
@@ -53,6 +55,9 @@ class EditGroupPresenter(
     }
     private val viewModel get() = holder.viewModel
 
+    val crop: PhotoCropPresenter =
+        PhotoCropPresenter { event -> viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(event)) }
+
     fun observeState(onChange: (JsEditGroupState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsEditGroupState(
@@ -64,6 +69,7 @@ class EditGroupPresenter(
                 photoUrl = state.photoUrl,
                 isPreparingPhoto = state.isPreparingPhoto,
                 showsPhotoError = state.showsPhotoError,
+                photoCrop = state.photoCrop?.toJs(),
                 type = state.type.code,
                 types = state.types.toCodes(),
                 currency = state.currency.code,

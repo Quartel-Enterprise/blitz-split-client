@@ -20,7 +20,7 @@ core/
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
     ├── supabase/       # SupabaseClient, Auth / Postgrest / Functions / Storage, SupabaseConfig (BuildKonfig)
-    └── image/          # AvatarImageEncoder: any picked image to a 512x512 JPEG, per platform
+    └── image/          # AvatarImageEncoder: the square framed in "Ajustar foto" (CropTransform) to a 512x512 JPEG, per platform
 feature/                # Presentation only: ViewModel, UiState, UiEvent, UiAction, Koin module
 ├── welcome/
 ├── profile_setup/
