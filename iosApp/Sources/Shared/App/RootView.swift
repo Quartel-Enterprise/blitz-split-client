@@ -61,11 +61,11 @@ struct RootView: View {
                             screen(for: route)
                         }
                 }
-                .foldSheetPlacement(sizedBy: route, pushed: app.stackedSheetPath)
+                .rootSheetSizing(for: route, pushed: app.stackedSheetPath)
             }
             // The front half of an iPhone Duo open, with what it opened over in the other one; pushing Divisão padrão
             // grows Editar grupo's form sheet to a bill's, and popping it shrinks it back
-            .foldSheetPlacement(sizedBy: route, pushed: app.sheetPath)
+            .rootSheetSizing(for: route, pushed: app.sheetPath)
         }
         #if os(iOS)
         .fullScreenCover(item: $app.cover) { route in
@@ -149,12 +149,12 @@ struct RootView: View {
 }
 
 private extension View {
-    /// The sheet sized by the last route pushed inside it that asks for a size of its own (Divisão padrão), else by
-    /// its own route (Mapa de categorias keeps its bill's), resized on each push and pop: SwiftUI keeps the sizing it
-    /// is given now, but only `resizingSheet` moves the open sheet to it.
-    func foldSheetPlacement(sizedBy route: AppRoute, pushed: [AppRoute]) -> some View {
-        let front = pushed.last { $0.usesFormSheet || $0.usesBillSheet } ?? route
-        return foldSheetPlacement(isForm: front.usesFormSheet, isBill: front.usesBillSheet)
-            .resizingSheet(isBill: front.usesBillSheet, isOwnBill: route.usesBillSheet)
+    /// The sheet at its route's size, or a bill's while a route that grows it is pushed inside it (Divisão padrão in
+    /// Editar grupo's), placed by the iPhone Duo's fold: SwiftUI keeps the sizing it is given now, but only
+    /// `resizingSheet` moves the open sheet to it.
+    func rootSheetSizing(for route: AppRoute, pushed: [AppRoute]) -> some View {
+        let isGrown = !route.usesBillSheet && pushed.contains { $0.growsSheetToBill }
+        return foldSheetPlacement(isForm: route.usesFormSheet && !isGrown, isBill: route.usesBillSheet || isGrown)
+            .resizingSheet(toBill: isGrown)
     }
 }

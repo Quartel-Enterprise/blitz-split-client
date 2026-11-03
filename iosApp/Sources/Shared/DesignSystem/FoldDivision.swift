@@ -85,10 +85,10 @@ extension View {
     /// with what it opened over in the other one (iOS 27's `presentationPlacement`), no wider than that half: the
     /// form sheet's size where it fits (`isForm`), a bill's (`isBill`, `ScreenLayout.billSheetSize`), else the
     /// system's. Everywhere else, the iPhone Duo upright and closed included, the system places it and it keeps that
-    /// size. A sheet's sizing is decided here: the root's sheet picks `isForm` and `isBill` from the route in front
-    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), a screen's own sheet from what it draws. SwiftUI applies it only as
-    /// the sheet opens, so the root's sheet also resizes as routes are pushed inside it (`resizingSheet`). Put it on
-    /// the sheet's content, as a detent.
+    /// size. A sheet's sizing is decided here: the root's sheet picks `isForm` and `isBill` from its route
+    /// (`AppRoute.usesFormSheet`, `usesBillSheet`) or what is pushed inside it (`growsSheetToBill`), a screen's own
+    /// sheet from what it draws. SwiftUI applies it only as the sheet opens, so the root's sheet also resizes as routes
+    /// are pushed inside it (`resizingSheet`). Put it on the sheet's content, as a detent.
     func foldSheetPlacement(isForm: Bool = false, isBill: Bool = false) -> some View {
         modifier(FoldSheetPlacement(isForm: isForm, isBill: isBill))
     }
@@ -124,34 +124,41 @@ private struct FoldSheetPlacement: ViewModifier {
 }
 
 extension View {
-    /// Resizes the open sheet to a bill's size while `isBill` asks for one its own route (`isOwnBill`) didn't open
-    /// with (Divisão padrão pushed inside Editar grupo's), and back once it no longer does, since SwiftUI reads a
-    /// sheet's `presentationSizing` only as it opens. Only the root's sheets change what they ask for; the Mac sizes a
-    /// sheet by its content.
-    func resizingSheet(isBill: Bool, isOwnBill: Bool) -> some View {
+    /// Grows the open sheet to a bill's size while `toBill` (Divisão padrão pushed inside Editar grupo's), and hands
+    /// that size below as `grownSheetSize`, so what is pushed lays out for it from its first frame; back to its own
+    /// size once it no longer does, since SwiftUI reads a sheet's `presentationSizing` only as it opens. Only the
+    /// root's sheets grow; the Mac sizes a sheet by its content.
+    func resizingSheet(toBill: Bool) -> some View {
         #if os(iOS)
-        modifier(SheetResizing(isBill: isBill, isOwnBill: isOwnBill))
+        modifier(SheetResizing(toBill: toBill))
         #else
         self
         #endif
     }
 }
 
+extension EnvironmentValues {
+    /// The size the root's sheet grows to while a route pushed inside it asks for a bill's (`resizingSheet`), which
+    /// that route lays out for rather than for the size it measures while the sheet is still growing. Nil otherwise.
+    @Entry var grownSheetSize: CGSize?
+}
+
 #if os(iOS)
 private struct SheetResizing: ViewModifier {
-    let isBill: Bool
-    let isOwnBill: Bool
+    let toBill: Bool
 
     @Environment(\.windowFold) private var fold
     @Environment(\.windowLayout) private var window
 
     func body(content: Content) -> some View {
-        content.background(SheetResizer(size: billSize(isBill), ownSize: billSize(isOwnBill)))
+        content
+            .environment(\.grownSheetSize, size)
+            .background(SheetResizer(size: size))
     }
 
     /// A bill's size, no wider than the half before the fold, as `FoldHalfSizing` proposes it; nil for any other sheet.
-    private func billSize(_ isBill: Bool) -> CGSize? {
-        guard isBill, var size = window.billSheetSize else { return nil }
+    private var size: CGSize? {
+        guard toBill, var size = window.billSheetSize else { return nil }
         if let foldStart = fold?.verticalFrame?.minX {
             size.width = FoldHalfSizing.width(size.width, before: foldStart)
         }
@@ -159,25 +166,23 @@ private struct SheetResizing: ViewModifier {
     }
 }
 
-/// The open sheet's `preferredContentSize`, which UIKit animates: `size` while it differs from the sheet's own
-/// (`ownSize`, which SwiftUI already gave it), back to what it was once it no longer does.
+/// The open sheet's `preferredContentSize`, which UIKit animates: `size` while there is one, and none once it goes, so
+/// the sheet takes its own size again for the window it is in now, never one kept from before a rotation.
 private struct SheetResizer: UIViewControllerRepresentable {
     let size: CGSize?
-    let ownSize: CGSize?
 
     func makeUIViewController(context: Context) -> Controller {
         Controller()
     }
 
     func updateUIViewController(_ controller: Controller, context: Context) {
-        controller.resize(to: size, own: ownSize)
+        controller.resize(to: size)
     }
 
     final class Controller: UIViewController {
         private var size: CGSize?
-        private var ownSize: CGSize?
-        /// The sheet's own `preferredContentSize` before it was changed here.
-        private var original: CGSize?
+        /// Whether the sheet holds a size set here.
+        private var isResized = false
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -185,9 +190,8 @@ private struct SheetResizer: UIViewControllerRepresentable {
             view.accessibilityElementsHidden = true
         }
 
-        func resize(to size: CGSize?, own ownSize: CGSize?) {
+        func resize(to size: CGSize?) {
             self.size = size
-            self.ownSize = ownSize
             apply()
         }
 
@@ -198,12 +202,13 @@ private struct SheetResizer: UIViewControllerRepresentable {
 
         private func apply() {
             guard let sheet = presentedSheet else { return }
-            if let size, size != ownSize {
-                if original == nil { original = sheet.preferredContentSize }
+            if let size {
                 sheet.preferredContentSize = size
-            } else if let original {
-                sheet.preferredContentSize = original
-                self.original = nil
+                isResized = true
+            } else if isResized {
+                // None makes SwiftUI write the sheet's own sizing again, for the window as it is now
+                sheet.preferredContentSize = .zero
+                isResized = false
             }
         }
 

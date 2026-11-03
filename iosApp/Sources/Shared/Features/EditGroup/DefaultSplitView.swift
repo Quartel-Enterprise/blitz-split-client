@@ -56,11 +56,14 @@ struct DefaultSplitView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: DefaultSplitModel?
     @State private var layout = ScreenLayout()
+    /// The bill's size Edit group's sheet grows to while this is pushed inside it, laid out for from the first frame
+    /// rather than the form's size measured while the sheet still grows.
+    @Environment(\.grownSheetSize) private var grownSheetSize
 
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                if layout.usesTwoColumns {
+                if (grownSheetSize.map { ScreenLayout(size: $0) } ?? layout).usesTwoColumns {
                     HStack(alignment: .top, spacing: 0) {
                         Form { DefaultSplitOverview(model: model) }
                         Form {
