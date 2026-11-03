@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -43,6 +44,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 private const val SPLIT_FACE_COUNT = 3
 private const val OPTION_ROW_COUNT = 3
 private val splitFaceSize = 26.dp
+private const val DISABLED_ALPHA = 0.38f
 
 // Why: the controls: who paid, when, how it splits, and the offline note under them.
 @Composable
@@ -68,6 +70,7 @@ internal fun BillDetailsSection(
             subtitle = several?.takeIf { it.showsMismatch }?.let { payersMismatchOf(it, money) },
             shape = rowShapeOf(index = 0),
             onClick = { onEvent(SplitBillUiEvent.OnPayerClicked) },
+            enabled = !state.isFormLocked,
             isSubtitleError = true,
         ) {
             val faces = several?.paying?.mapNotNull { it.person }.orEmpty()
@@ -93,6 +96,7 @@ internal fun BillDetailsSection(
             subtitle = null,
             shape = rowShapeOf(index = 1),
             onClick = onWhenClick,
+            enabled = !state.isFormLocked,
         ) {
             LeadingIcon { Icon(Icons.Outlined.Event, contentDescription = null) }
         }
@@ -106,6 +110,7 @@ internal fun BillDetailsSection(
             ),
             shape = rowShapeOf(index = 2),
             onClick = { onEvent(SplitBillUiEvent.OnSplitClicked) },
+            enabled = !state.isFormLocked,
         ) {
             StackedFacesRow(state.split.included)
         }
@@ -152,12 +157,17 @@ private fun BillOptionRow(
     subtitle: String?,
     shape: Shape,
     onClick: () -> Unit,
+    // Why: off while a receipt is read, drawn faded as a disabled field is.
+    enabled: Boolean,
     isSubtitleError: Boolean = false,
     leading: @Composable () -> Unit,
 ) {
     Surface(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (enabled) 1f else DISABLED_ALPHA),
+        enabled = enabled,
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {

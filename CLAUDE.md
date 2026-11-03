@@ -585,7 +585,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     312 de R$ 312. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
     (`SplitBillUiState.severalPayers`, `payerAmounts`). A new total keeps what each one paid, and Salvar waits until
     someone makes it add up again; one person holding the whole total is one payer again. "Quando"
-    picks date and time, never after now. A bill is 0.01 to 100 million in the group's currency with a
+    picks date and time, never after now. The form asks what it was before how much (Pierre's call, beta feedback
+    10): "Descrição" with its category's icon and the line saying why, then "Valor", in every layout, a new bill
+    opening on the description. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
     Valores, % (whole numbers adding up to 100), Partes or Itens, and only changes the bill on "Pronto". A new bill starts
@@ -605,7 +607,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`GroupBalances.findDebtsWithin`). On a fold (flow 7) Rachar conta, Dividir, Itens and Editar conta open in a
     book's right half with the group under the scrim, "Quem pagou", "Várias pessoas pagaram", "Rachar em qual grupo?",
     Quando's date (in the book only) and every confirmation in that half too; a tabletop splits a new bill in two
-    full screen (`TabletopForm`): the amount, Dividir's modes or the items on top, the rest and Salvar or Pronto
+    full screen (`TabletopForm`): the description and the amount, Dividir's modes or the items on top, the rest and Salvar or Pronto
     below, Item and Categoria opening above the hinge, while Editar conta and Conta open as the book's dialog. The
     iPad's Rachar conta is a bill sheet (820×640 lying down, 620×860 upright).
   - "Itens da conta" (7.5, `SplitBillUiState.itemsEditor`) is Dividir's fifth mode, "Itens": it opens in Dividir's
@@ -695,9 +697,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
     photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
-    a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…" and
-    Salvar waits. Once read it fills the total, the description (the place) and Quando (the day printed, with its
-    time or the form's, never after now), each only while nobody typed in it during the read, shows "Lido do cupom" and "14 itens" under the description, and its items
+    a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…",
+    Salvar waits and every other field of the form shows disabled, so nothing typed is overwritten (Pierre's call,
+    beta feedback 17, `SplitBillUiState.isFormLocked`: descrição, categoria, valor, grupo, quem pagou, quando and
+    divisão; a sheet or picker left open closes as the read starts), while × on "Foto do cupom" still cancels it. Once read it fills the total, the description (the place)
+    and Quando (the day printed, with its time or the form's, never after now), shows "Lido do cupom" and "14 itens" under the description, and its items
     wait for Dividir's Itens; the split stays the group's default until Itens or another mode is picked. Its category
     is one of the app's or of the group's own, which go with the photo with the person's map terms counting in that
     group (a term of another group's category or of Outros stays out, one of a deleted category as where its bills
@@ -773,7 +777,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`foldSheetPlacement()`). Open upright, as a notebook, Convidar (QR and link on top), Convite (the group on top),
     the group (the header and "Seu saldo" on top, the tabs and what they hold below, on every tab), Registrar
     pagamento (who and how much on top, how and when below), Estatísticas (the total and Ao longo do tempo on top),
-    Rachar conta (valor and descrição on top) and Dividir (the summary and modes on top, the people below) split on
+    Rachar conta (descrição and valor on top) and Dividir (the summary and modes on top, the people below) split on
     the fold (`FoldHalves`); everything else is an iPad's upright. Pix and Bitcoin keys stay a sheet in the leading
     half lying down, not the boards' two columns.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1

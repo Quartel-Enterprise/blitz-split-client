@@ -224,33 +224,10 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <SettledPairAnnouncement change={state.settledPair} money={money} />
       <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
-        <div className="flex min-w-0 flex-col gap-4">
+        {/* Why: what to read first: the group, what it was and how much (beta feedback 10). While the receipt is read
+            every field but "Foto do cupom" is disabled, so the read never overwrites what was typed (7.1e). */}
+        <fieldset disabled={state.isFormLocked} className="flex min-w-0 flex-col gap-4">
           <GroupField presenter={presenter} state={state} />
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>
-              {t('splitBill_amount')}
-            </Label>
-            <AmountInput
-              id={amountId}
-              currency={state.currency}
-              fractionDigits={state.fractionDigits}
-              value={amount}
-              onChange={setAmount}
-              isInvalid={state.showsAmountError}
-              describedBy={amountDescribedBy}
-              autoFocus
-            />
-            {amountHelp && (
-              <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
-                {amountHelp}
-              </p>
-            )}
-            {showsEditAmountHelp && (
-              <p id={amountEditHelpId} className="text-[13px] text-muted-foreground">
-                {t('splitBill_editAmountHelp')}
-              </p>
-            )}
-          </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={descriptionId} className={cn(state.showsDescriptionError && 'text-destructive')}>
               {t('splitBill_description')}
@@ -274,6 +251,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 placeholder={t('splitBill_descriptionPlaceholder')}
                 aria-invalid={state.showsDescriptionError}
                 aria-describedby={descriptionHelpId}
+                autoFocus={!state.isEditing}
                 onChange={(event) => setDescription(event.target.value)}
               />
             </div>
@@ -294,29 +272,56 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             )}
             <ReceiptReadChips receipt={state.receipt} />
           </div>
-        </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>
+              {t('splitBill_amount')}
+            </Label>
+            <AmountInput
+              id={amountId}
+              currency={state.currency}
+              fractionDigits={state.fractionDigits}
+              value={amount}
+              onChange={setAmount}
+              isInvalid={state.showsAmountError}
+              describedBy={amountDescribedBy}
+            />
+            {amountHelp && (
+              <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
+                {amountHelp}
+              </p>
+            )}
+            {showsEditAmountHelp && (
+              <p id={amountEditHelpId} className="text-[13px] text-muted-foreground">
+                {t('splitBill_editAmountHelp')}
+              </p>
+            )}
+          </div>
+        </fieldset>
 
         <div className="flex min-w-0 flex-col gap-4">
-          <PayerField presenter={presenter} state={state} money={money} />
-          <WhenField
-            id={whenId}
-            label={t('splitBill_when')}
-            millis={state.spentAt}
-            relativeDay={state.spentDay}
-            latestMillis={state.latestSpentAt}
-            onOpen={() => presenter.openSpentAt()}
-            onChange={(millis) => presenter.changeSpentAt(millis)}
-          />
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">{t('splitBill_split')}</span>
-            <SplitSummary
-              presenter={presenter}
-              split={state.split}
-              summary={state.splitSummary}
-              exceptionName={state.categories.defaultSplitException ? categoryName(state.categories.defaultSplitException) : undefined}
-              money={money}
+          <fieldset disabled={state.isFormLocked} className="flex min-w-0 flex-col gap-4">
+            <PayerField presenter={presenter} state={state} money={money} />
+            <WhenField
+              id={whenId}
+              label={t('splitBill_when')}
+              millis={state.spentAt}
+              relativeDay={state.spentDay}
+              latestMillis={state.latestSpentAt}
+              onOpen={() => presenter.openSpentAt()}
+              onChange={(millis) => presenter.changeSpentAt(millis)}
+              disabled={state.isFormLocked}
             />
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium">{t('splitBill_split')}</span>
+              <SplitSummary
+                presenter={presenter}
+                split={state.split}
+                summary={state.splitSummary}
+                exceptionName={state.categories.defaultSplitException ? categoryName(state.categories.defaultSplitException) : undefined}
+                money={money}
+              />
+            </div>
+          </fieldset>
           <ReceiptField presenter={presenter} state={state} input={receiptInput} />
         </div>
       </div>
@@ -553,7 +558,7 @@ function SplitSummary({
     <button
       type="button"
       onClick={() => presenter.openSplit()}
-      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
     >
       <span aria-hidden className="flex shrink-0">
         {faces.map((person, index) => (
