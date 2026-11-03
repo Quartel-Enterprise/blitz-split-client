@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
@@ -31,8 +32,8 @@ internal class ReceiptScanning(
     private val scope: CoroutineScope,
     private val readReceipt: ReadReceipt,
     private val attachBillImage: AttachBillImage,
-    // Why: the group's categories and the person's terms as the form has them, which the read may choose by.
-    private val categoryHints: (SplitBillUiState) -> ReceiptCategoryHints,
+    // Why: the person's map terms as the form has them, which the read may choose by with the group's categories.
+    private val categoryTerms: () -> List<CategoryTerm>,
     private val onRead: (reading: ReceiptReading, beforeRead: SplitBillUiState) -> Unit,
     private val onRemoved: () -> Unit,
 ) {
@@ -100,7 +101,7 @@ internal class ReceiptScanning(
             )
         }
         reading = scope.launch {
-            val scan = readReceipt(source, state.currency, categoryHints(state))
+            val scan = readReceipt(source, state.currency, ReceiptCategoryHints.of(state.categories, categoryTerms()))
             /*
              * Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g). A sync
              * that moved the bill to a group of another currency meanwhile reads the same, so the amounts never land
