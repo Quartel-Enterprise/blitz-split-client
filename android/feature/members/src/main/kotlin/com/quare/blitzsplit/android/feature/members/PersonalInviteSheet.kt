@@ -43,6 +43,7 @@ import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -259,7 +260,7 @@ private fun createPreviewInvite(
     member = MembersMember(
         id = "4",
         name = "Carla",
-        initials = "CA",
+        initials = previewInitialsOf("Carla"),
         avatarColor = AvatarColor.LILAC,
         photoUrl = null,
         isMe = false,

@@ -118,7 +118,7 @@ class InviteViewModelTest {
                     InviteMember(
                         "member-2",
                         "Ana",
-                        "AN",
+                        "A",
                         AvatarColor.PEACH,
                         isMe = false,
                         hasJoined = false,
@@ -126,7 +126,7 @@ class InviteViewModelTest {
                     InviteMember(
                         "member-3",
                         "Bruno",
-                        "BR",
+                        "B",
                         AvatarColor.GREEN,
                         isMe = false,
                         hasJoined = false,
@@ -134,7 +134,7 @@ class InviteViewModelTest {
                     InviteMember(
                         "member-4",
                         "Carla",
-                        "CA",
+                        "C",
                         AvatarColor.LILAC,
                         isMe = false,
                         hasJoined = false,

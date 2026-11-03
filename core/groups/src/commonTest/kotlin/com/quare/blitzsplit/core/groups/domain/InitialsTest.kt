@@ -68,15 +68,15 @@ class InitialsTest {
     }
 
     @Test
-    fun `GIVEN a single word WHEN taking the initials THEN gives its first two letters`() {
+    fun `GIVEN a single word WHEN taking the initials THEN gives only its first letter`() {
         // Given
-        val name = "Ana"
+        val name = "Larissa"
 
         // When
         val initials = Initials.of(name)
 
         // Then
-        assertEquals("AN", initials)
+        assertEquals("L", initials)
     }
 
     @Test
@@ -140,7 +140,7 @@ class InitialsTest {
     }
 
     @Test
-    fun `GIVEN one meaningful word after a joining word WHEN taking the initials THEN gives its first two letters`() {
+    fun `GIVEN one meaningful word after a joining word WHEN taking the initials THEN gives only its first letter`() {
         // Given
         val name = "The Office"
 
@@ -148,7 +148,7 @@ class InitialsTest {
         val initials = Initials.of(name)
 
         // Then
-        assertEquals("OF", initials)
+        assertEquals("O", initials)
     }
 
     @Test
@@ -190,7 +190,7 @@ class InitialsTest {
     }
 
     @Test
-    fun `GIVEN one word starting with an emoji WHEN taking the initials THEN gives the emoji and a letter`() {
+    fun `GIVEN one word starting with an emoji WHEN taking the initials THEN gives only the emoji`() {
         // Given
         val name = "\uD83D\uDE00ana"
 
@@ -198,7 +198,7 @@ class InitialsTest {
         val initials = Initials.of(name)
 
         // Then
-        assertEquals("\uD83D\uDE00A", initials)
+        assertEquals("\uD83D\uDE00", initials)
     }
 
     @Test

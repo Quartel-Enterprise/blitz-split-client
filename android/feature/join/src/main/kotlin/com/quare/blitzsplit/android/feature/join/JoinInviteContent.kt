@@ -48,6 +48,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -442,7 +443,7 @@ private fun namesOf(names: List<String>): String {
 private fun createPreviewState(status: JoinInviteStatus): JoinInviteUiState = JoinInviteUiState(
     status = status,
     groupName = "Viagem Floripa",
-    groupInitials = "VF",
+    groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.BLUE,
     creatorName = "Pierre",
     members = createPreviewMembers(),

@@ -40,6 +40,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -406,7 +407,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     from = PaymentPerson(
         id = "ana",
         name = "Ana",
-        initials = "AN",
+        initials = previewInitialsOf("Ana"),
         avatarColor = AvatarColor.GREEN,
         photoUrl = null,
         isMe = false,
@@ -414,7 +415,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     to = PaymentPerson(
         id = "me",
         name = "Pierre",
-        initials = "PV",
+        initials = previewInitialsOf("Pierre"),
         avatarColor = AvatarColor.BLUE,
         photoUrl = null,
         isMe = true,

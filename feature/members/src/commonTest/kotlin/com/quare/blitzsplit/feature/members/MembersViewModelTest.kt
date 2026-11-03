@@ -126,7 +126,7 @@ class MembersViewModelTest {
                     MembersMember(
                         "member-2",
                         "Ana",
-                        "AN",
+                        "A",
                         AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
@@ -138,7 +138,7 @@ class MembersViewModelTest {
                     MembersMember(
                         "member-3",
                         "Bruno",
-                        "BR",
+                        "B",
                         AvatarColor.GREEN,
                         photoUrl = null,
                         isMe = false,
@@ -150,7 +150,7 @@ class MembersViewModelTest {
                     MembersMember(
                         "member-4",
                         "Carla",
-                        "CA",
+                        "C",
                         AvatarColor.LILAC,
                         photoUrl = null,
                         isMe = false,
@@ -2559,7 +2559,7 @@ class MembersViewModelTest {
     private val carlaOnScreen = MembersMember(
         "member-4",
         "Carla",
-        "CA",
+        "C",
         AvatarColor.LILAC,
         photoUrl = null,
         isMe = false,
@@ -2572,7 +2572,7 @@ class MembersViewModelTest {
     private val brunoOnScreen = MembersMember(
         "member-3",
         "Bruno",
-        "BR",
+        "B",
         AvatarColor.GREEN,
         photoUrl = null,
         isMe = false,

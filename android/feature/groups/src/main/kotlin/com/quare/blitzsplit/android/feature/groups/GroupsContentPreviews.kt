@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.coverFoldLayoutOf
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -255,7 +256,7 @@ internal fun buildPreviewRow(
 ): GroupRow = GroupRow(
     id = id,
     name = name,
-    initials = name.take(2).uppercase(),
+    initials = previewInitialsOf(name),
     color = color,
     shape = GroupShape.COOKIE,
     photoUrl = null,

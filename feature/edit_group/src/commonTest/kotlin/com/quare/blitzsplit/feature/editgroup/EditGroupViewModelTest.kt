@@ -132,7 +132,7 @@ class EditGroupViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals("Churrasco", state.name)
-            assertEquals("CH", state.initials)
+            assertEquals("C", state.initials)
             assertEquals(AvatarColor.GREEN, state.color)
             assertEquals(GroupType.EVENT, state.type)
         }

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -34,12 +35,12 @@ internal fun createPreviewBillDetailState(
 ): BillDetailUiState {
     val payerId = if (isMePayer) "me" else "bruno"
     val people = listOf(
-        createPreviewRow("me", "Pierre", "P", AvatarColor.PEACH, isMe = true),
-        createPreviewRow("bruno", "Bruno", "BR", AvatarColor.GREEN),
-        createPreviewRow("ana", "Ana", "AN", AvatarColor.BLUE),
-        createPreviewRow("carla", "Carla", "CA", AvatarColor.LILAC),
-        createPreviewRow("diego", "Diego", "DI", AvatarColor.SAND, hasJoined = false),
-        createPreviewRow("elisa", "Elisa", "EL", AvatarColor.BLUE),
+        createPreviewRow("me", "Pierre", previewInitialsOf("Pierre"), AvatarColor.PEACH, isMe = true),
+        createPreviewRow("bruno", "Bruno", previewInitialsOf("Bruno"), AvatarColor.GREEN),
+        createPreviewRow("ana", "Ana", previewInitialsOf("Ana"), AvatarColor.BLUE),
+        createPreviewRow("carla", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC),
+        createPreviewRow("diego", "Diego", previewInitialsOf("Diego"), AvatarColor.SAND, hasJoined = false),
+        createPreviewRow("elisa", "Elisa", previewInitialsOf("Elisa"), AvatarColor.BLUE),
     ).map { row ->
         row.copy(
             paidMinor = PREVIEW_TOTAL_MINOR.takeIf { row.memberId == payerId },
@@ -56,7 +57,7 @@ internal fun createPreviewBillDetailState(
         payers = listOf(
             BillPayer(
                 name = if (isMePayer) "Pierre" else "Bruno",
-                initials = if (isMePayer) "P" else "BR",
+                initials = if (isMePayer) "P" else "B",
                 avatarColor = if (isMePayer) AvatarColor.PEACH else AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = isMePayer,
@@ -159,7 +160,7 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
         comment = createPreviewComment(
             "c1",
             "Carla",
-            "CA",
+            previewInitialsOf("Carla"),
             AvatarColor.LILAC,
             "A cerveja que ficou comigo foi do Bruno, eu só tomei água.",
         ),
@@ -167,18 +168,25 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
             createPreviewComment(
                 "c2",
                 "Bruno",
-                "BR",
+                previewInitialsOf("Bruno"),
                 AvatarColor.GREEN,
                 "Verdade, passei para mim. Sua parte ficou R$ 98,00.",
             ),
-            createPreviewComment("c3", "Carla", "CA", AvatarColor.LILAC, "Valeu, Bruno!", replyToName = "Bruno"),
+            createPreviewComment(
+                "c3",
+                "Carla",
+                previewInitialsOf("Carla"),
+                AvatarColor.LILAC,
+                "Valeu, Bruno!",
+                replyToName = "Bruno",
+            ),
         ),
     ),
     BillCommentThread(
         comment = createPreviewComment(
             "c4",
             "Diego",
-            "DI",
+            previewInitialsOf("Diego"),
             AvatarColor.SAND,
             "Pago a minha parte amanhã, Bruno.",
             viaLink = true,
@@ -188,7 +196,7 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
                 createPreviewComment(
                     "c5",
                     "Pierre",
-                    "P",
+                    previewInitialsOf("Pierre"),
                     AvatarColor.PEACH,
                     "Pode ser no Pix.",
                     isMe = true,
@@ -324,7 +332,7 @@ private fun createPreviewEntry(
     id = id,
     kind = kind,
     actorName = actor,
-    actorInitials = actor.take(2).uppercase(),
+    actorInitials = previewInitialsOf(actor),
     actorColor = if (isMe) AvatarColor.PEACH else AvatarColor.GREEN,
     actorPhotoUrl = null,
     actorIsMe = isMe,

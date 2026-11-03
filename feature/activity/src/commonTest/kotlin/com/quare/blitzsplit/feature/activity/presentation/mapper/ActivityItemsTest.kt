@@ -152,7 +152,7 @@ class ActivityItemsTest {
         // Then
         assertEquals("Ana", actor.name)
         assertFalse(actor.isMe)
-        assertEquals("AN", actor.initials)
+        assertEquals("A", actor.initials)
         assertEquals(AvatarColor.GREEN, actor.color)
     }
 

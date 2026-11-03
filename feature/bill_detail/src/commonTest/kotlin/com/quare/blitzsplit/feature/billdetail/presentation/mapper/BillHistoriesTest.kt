@@ -55,7 +55,7 @@ class BillHistoriesTest {
         assertEquals(SplitMode.EQUAL, entry.splitMode)
         assertEquals(3, entry.sharesCount)
         assertEquals("Ana", entry.actorName)
-        assertEquals("AN", entry.actorInitials)
+        assertEquals("A", entry.actorInitials)
         assertEquals(AvatarColor.PEACH, entry.actorColor)
         assertFalse(entry.actorIsMe)
         assertFalse(entry.isPending)
@@ -118,7 +118,7 @@ class BillHistoriesTest {
 
         // Then
         assertEquals("Diego", entry.actorName)
-        assertEquals("DI", entry.actorInitials)
+        assertEquals("D", entry.actorInitials)
         assertFalse(entry.actorIsMe)
     }
 

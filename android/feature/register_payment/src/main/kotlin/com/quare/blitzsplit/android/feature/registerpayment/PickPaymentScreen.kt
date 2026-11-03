@@ -41,6 +41,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -343,7 +344,7 @@ private fun createPreviewPerson(
 ): PaymentPerson = PaymentPerson(
     id = id,
     name = name,
-    initials = name.take(2).uppercase(),
+    initials = previewInitialsOf(name),
     avatarColor = color,
     photoUrl = null,
     isMe = isMe,
@@ -361,7 +362,7 @@ private fun PickPaymentContentPreview() {
                     PickPaymentGroup(
                         groupId = "1",
                         name = "Viagem Floripa",
-                        initials = "VF",
+                        initials = previewInitialsOf("Viagem Floripa"),
                         color = AvatarColor.PEACH,
                         currency = GroupCurrency.BRL,
                         pairs = listOf(
