@@ -156,7 +156,7 @@ jobs:
       # first leaves a comment on the pull request instead of a failed merge nobody looks at.
       - id: threads
         if: steps.green.outputs.pr != ''
-        uses: Quartel-Enterprise/claude-review/threads@1.1.0
+        uses: Quartel-Enterprise/claude-review/threads@1.2.0
         with:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
@@ -191,7 +191,7 @@ jobs:
       # GITHUB_TOKEN does starts no other workflow, so its re-runs might never start this one.
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.1.0
+        uses: Quartel-Enterprise/claude-review/threads@1.2.0
         with:
           command: rerun-held
           sha: ${{ steps.green.outputs.head }}
