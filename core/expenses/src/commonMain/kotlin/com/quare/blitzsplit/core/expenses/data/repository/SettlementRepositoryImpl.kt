@@ -66,8 +66,9 @@ class SettlementRepositoryImpl(
         local.markSynced(pending.map { it.copy(createdBy = it.createdBy ?: userId) })
     }
 
-    override suspend fun downloadGroupSettlements(groupId: String): Result<Unit> = suspendRunCatching {
-        local.applyRemote(remote.fetchSettlements(groupId).map(mapper::toEntity))
+    override suspend fun fetchGroupSettlements(groupId: String): Result<suspend () -> Unit> = suspendRunCatching {
+        val entities = remote.fetchSettlements(groupId).map(mapper::toEntity)
+        return@suspendRunCatching { local.applyRemote(entities) }
     }
 
     override suspend fun downloadSettlements(userId: String): Result<Unit> = suspendRunCatching {

@@ -92,7 +92,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
     on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
-    first download (an account restored on a device with no profile, until its groups came down, `FirstDownload`)
+    first download (an account restored on a device with no profile, until its groups came down or the device is
+    offline, `FirstDownload`)
     shows "Sincronizando… 3 de 7 grupos" with its bar filling (the server says first how many are coming,
     `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
     "Sincronizando…" and a bar that runs), what already came with skeletons under it and "até agora · chegando o

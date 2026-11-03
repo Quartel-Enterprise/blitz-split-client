@@ -95,9 +95,9 @@ data class GroupsUiState(
     val showsEmptyState: Boolean
         get() = hasLoadedGroups && groups.isEmpty() && firstDownload == null
 
-    // Why: the "Saldo geral" card, once there is a group.
+    // Why: the "Saldo geral" card, once there is a group; a first download draws its own card in its place.
     val showsSummary: Boolean
-        get() = groups.isNotEmpty() && firstDownload == null
+        get() = groups.isNotEmpty()
 
     // Why: 5.1d draws no "Rachar conta" while the groups come down; the ones that came take bills once it ends.
     val showsSplitBillButton: Boolean

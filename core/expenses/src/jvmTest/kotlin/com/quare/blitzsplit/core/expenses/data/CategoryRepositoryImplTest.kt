@@ -186,7 +186,8 @@ class CategoryRepositoryImplTest {
             )
 
             // When
-            val result = repository.downloadGroup(GROUP_ID)
+            val result = repository.fetchGroupCategories(GROUP_ID)
+            result.getOrNull()?.invoke()
 
             // Then
             assertTrue(result.isSuccess)
@@ -222,7 +223,7 @@ class CategoryRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(GROUP_ID)
+            repository.fetchGroupCategories(GROUP_ID).getOrThrow()()
 
             // Then
             assertEquals(
@@ -257,7 +258,7 @@ class CategoryRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(GROUP_ID)
+            repository.fetchGroupCategories(GROUP_ID).getOrThrow()()
 
             // Then
             val stored = repository.observeGroupCategories(GROUP_ID).first().single()
@@ -285,7 +286,7 @@ class CategoryRepositoryImplTest {
         )
 
         // When
-        repository.downloadGroup(GROUP_ID)
+        repository.fetchGroupCategories(GROUP_ID).getOrThrow()()
 
         // Then
         val stored = repository.observeGroupCategories(GROUP_ID).first().single()
@@ -315,7 +316,8 @@ class CategoryRepositoryImplTest {
             remote.fetchError = IllegalStateException("server down")
 
             // When
-            val result = repository.downloadGroup(GROUP_ID)
+            val result = repository.fetchGroupCategories(GROUP_ID)
+            result.getOrNull()?.invoke()
 
             // Then
             assertIs<IllegalStateException>(result.exceptionOrNull())

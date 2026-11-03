@@ -290,18 +290,22 @@ class GroupRepositoryImpl(
         remote.fetchFirstDownloadGroupIds()
     }
 
-    override suspend fun downloadGroup(
+    override suspend fun fetchGroupDownload(
         userId: String,
         groupId: String,
-    ): Result<Unit> = suspendRunCatching {
+    ): Result<suspend () -> Unit> = suspendRunCatching {
         val (group, members) = coroutineScope {
             val group = async { remote.fetchGroup(groupId) }
             val members = async { remote.fetchMembers(groupId) }
             group.await() to members.await()
         }
-        group ?: return@suspendRunCatching
-        local.applyRemoteGroup(mapper.toEntity(group, ownerUserId = userId))
-        members.forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
+        return@suspendRunCatching {
+            // Why: a group gone since the server listed it brings nothing; its members would have no group to go in.
+            if (group != null) {
+                local.applyRemoteGroup(mapper.toEntity(group, ownerUserId = userId))
+                members.forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
+            }
+        }
     }
 
     /*

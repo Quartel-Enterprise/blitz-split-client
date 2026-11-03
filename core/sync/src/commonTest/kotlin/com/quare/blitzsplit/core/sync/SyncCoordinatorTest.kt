@@ -676,6 +676,41 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a first download pending with the restored profile WHEN the device is offline THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            online = false,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertFalse(firstDownload.isPending)
+    }
+
+    @Test
+    fun `GIVEN a first download pending before the profile came WHEN the device is offline THEN it stays pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                firstDownloadPending = true,
+                online = false,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertTrue(firstDownload.isPending)
+        }
+
+    @Test
     fun `GIVEN a first download pending WHEN syncing THEN each group comes whole in server order before the rest`() =
         runTest {
             // Given
@@ -784,7 +819,7 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a first download and no group on the server WHEN syncing THEN expects none and ends`() = runTest {
+    fun `GIVEN a first download and no group on the server WHEN syncing THEN never counts and ends`() = runTest {
         // Given
         prepareScenario(
             storedProfile = pierre,
@@ -802,10 +837,6 @@ class SyncCoordinatorTest {
                 FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
-                ),
-                FirstDownloadProgress(
-                    arrivedGroupCount = 0,
-                    groupCount = 0,
                 ),
                 null,
             ),
@@ -881,51 +912,29 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a first download and no list of groups from the server WHEN syncing THEN fails and ends`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            firstDownloadPending = true,
-            serverGroups = listOf(trip),
-        )
-        groups.firstDownloadError = IllegalStateException("server down")
+    fun `GIVEN a first download and no list of groups from the server WHEN syncing THEN the full download runs`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip),
+            )
+            groups.firstDownloadError = IllegalStateException("server down")
 
-        // When
-        val result = coordinator.syncNow()
+            // When
+            val result = coordinator.syncNow()
 
-        // Then
-        assertTrue(result.isFailure)
-        assertFalse(firstDownload.isPending)
-        assertTrue(groups.downloadedGroupIds.isEmpty())
-        assertTrue(groups.downloadedUserIds.isEmpty())
-        assertTrue(expenses.downloadedUserIds.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN a first download and the bills of the first group failing WHEN syncing THEN stops there`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            firstDownloadPending = true,
-            serverGroups = listOf(trip, dinner),
-        )
-        expenses.pullError = IllegalStateException("server down")
-
-        // When
-        val result = coordinator.syncNow()
-
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(listOf("trip"), groups.downloadedGroupIds)
-        assertEquals(listOf("trip"), categories.downloadedGroupIds)
-        assertEquals(listOf("trip"), expenses.downloadedGroupIds)
-        assertTrue(settlements.downloadedGroupIds.isEmpty())
-        assertTrue(groups.downloadedUserIds.isEmpty())
-        assertFalse(firstDownload.isPending)
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertFalse(firstDownload.isPending)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.downloadedUserIds)
+        }
 
     @Test
-    fun `GIVEN a first download and the categories of a group failing WHEN syncing THEN its bills never come`() =
+    fun `GIVEN a first download and the bills of the first group failing WHEN syncing THEN none of that group lands`() =
         runTest {
             // Given
             prepareScenario(
@@ -933,18 +942,41 @@ class SyncCoordinatorTest {
                 firstDownloadPending = true,
                 serverGroups = listOf(trip, dinner),
             )
-            categories.pullError = IllegalStateException("server down")
+            expenses.pullError = IllegalStateException("server down")
 
             // When
             val result = coordinator.syncNow()
 
             // Then
             assertTrue(result.isFailure)
-            assertEquals(listOf("trip"), categories.downloadedGroupIds)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertTrue(categories.downloadedGroupIds.isEmpty())
             assertTrue(expenses.downloadedGroupIds.isEmpty())
             assertTrue(settlements.downloadedGroupIds.isEmpty())
             assertFalse(firstDownload.isPending)
         }
+
+    @Test
+    fun `GIVEN a first download and the categories of a group failing WHEN syncing THEN none of it lands`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip, dinner),
+        )
+        categories.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(groups.downloadedGroupIds.isEmpty())
+        assertTrue(categories.downloadedGroupIds.isEmpty())
+        assertTrue(expenses.downloadedGroupIds.isEmpty())
+        assertTrue(settlements.downloadedGroupIds.isEmpty())
+        assertFalse(firstDownload.isPending)
+    }
 
     @Test
     fun `GIVEN a first download and the payments of a group failing WHEN syncing THEN that group never counts`() =
@@ -976,7 +1008,8 @@ class SyncCoordinatorTest {
                 ),
                 firstDownloadProgress,
             )
-            assertEquals(listOf("trip"), groups.downloadedGroupIds)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertTrue(expenses.downloadedGroupIds.isEmpty())
         }
 
     @Test
@@ -994,7 +1027,7 @@ class SyncCoordinatorTest {
             val result = coordinator.syncNow()
 
             // Then
-            assertTrue(result.isFailure)
+            assertTrue(result.isSuccess)
             assertEquals(
                 listOf(
                     FirstDownloadProgress(
@@ -1014,29 +1047,29 @@ class SyncCoordinatorTest {
                 firstDownloadProgress,
             )
             assertEquals(listOf("trip"), categories.downloadedGroupIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
             assertFalse(firstDownload.isPending)
         }
 
     @Test
-    fun `GIVEN a first download and a group failing WHEN syncing THEN the activity still syncs but not the comments`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedProfile = pierre,
-                firstDownloadPending = true,
-                serverGroups = listOf(trip),
-                failingGroupDownloadId = "trip",
-                logsCommentsAndActivity = true,
-            )
+    fun `GIVEN a first download and a group failing WHEN syncing THEN the rest of the sync still runs`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip),
+            failingGroupDownloadId = "trip",
+            logsCommentsAndActivity = true,
+        )
 
-            // When
-            val result = coordinator.syncNow()
+        // When
+        val result = coordinator.syncNow()
 
-            // Then
-            assertTrue(result.isFailure)
-            assertTrue("activity download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
-            assertFalse("comments download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue("activity download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
+        assertTrue("comments download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
+    }
 
     @Test
     fun `GIVEN a pending change WHEN a sync is in flight THEN the sync state is syncing`() = runTest {
@@ -6481,12 +6514,12 @@ private class RecordingGroupRepository(
         return delegate.fetchFirstDownloadGroupIds()
     }
 
-    override suspend fun downloadGroup(
+    override suspend fun fetchGroupDownload(
         userId: String,
         groupId: String,
-    ): Result<Unit> {
+    ): Result<suspend () -> Unit> {
         calls += "groups download group $groupId"
-        return delegate.downloadGroup(userId, groupId)
+        return delegate.fetchGroupDownload(userId, groupId)
     }
 
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> {
@@ -6521,13 +6554,13 @@ private class FailingGroupDownloadGroupRepository(
     private val delegate: FakeGroupRepository,
     private val failingGroupId: String,
 ) : GroupRepository by delegate {
-    override suspend fun downloadGroup(
+    override suspend fun fetchGroupDownload(
         userId: String,
         groupId: String,
-    ): Result<Unit> = if (groupId == failingGroupId) {
+    ): Result<suspend () -> Unit> = if (groupId == failingGroupId) {
         Result.failure(IllegalStateException("server down"))
     } else {
-        delegate.downloadGroup(userId, groupId)
+        delegate.fetchGroupDownload(userId, groupId)
     }
 }
 
@@ -6536,9 +6569,9 @@ private class RecordingCategoryRepository(
     private val delegate: CategoryRepository,
     private val calls: MutableList<String>,
 ) : CategoryRepository by delegate {
-    override suspend fun downloadGroup(groupId: String): Result<Unit> {
+    override suspend fun fetchGroupCategories(groupId: String): Result<suspend () -> Unit> {
         calls += "categories download group $groupId"
-        return delegate.downloadGroup(groupId)
+        return delegate.fetchGroupCategories(groupId)
     }
 }
 
@@ -6560,9 +6593,9 @@ private class RecordingExpenseRepository(
         return delegate.uploadPendingExpenses(userId)
     }
 
-    override suspend fun downloadGroupExpenses(groupId: String): Result<Unit> {
+    override suspend fun fetchGroupExpenses(groupId: String): Result<suspend () -> Unit> {
         calls += "bills download group $groupId"
-        return delegate.downloadGroupExpenses(groupId)
+        return delegate.fetchGroupExpenses(groupId)
     }
 }
 
@@ -6587,9 +6620,9 @@ private class RecordingSettlementRepository(
         return delegate.uploadPendingSettlements(userId)
     }
 
-    override suspend fun downloadGroupSettlements(groupId: String): Result<Unit> {
+    override suspend fun fetchGroupSettlements(groupId: String): Result<suspend () -> Unit> {
         calls += "payments download group $groupId"
-        return delegate.downloadGroupSettlements(groupId)
+        return delegate.fetchGroupSettlements(groupId)
     }
 }
 

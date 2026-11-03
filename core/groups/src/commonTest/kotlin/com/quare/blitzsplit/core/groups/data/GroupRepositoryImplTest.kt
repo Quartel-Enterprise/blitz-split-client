@@ -3958,6 +3958,34 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a group on the server WHEN only fetching it THEN nothing reaches the device until its write runs`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-1",
+                        name = "Pierre",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(local.group("group-1"))
+            assertNull(local.member("m-1"))
+        }
+
+    @Test
     fun `GIVEN a group with members on the server WHEN downloading it THEN stores them synced and owned by the user`() =
         runTest {
             // Given
@@ -3992,10 +4020,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            val result = repository.downloadGroup(
+            val result = repository.fetchGroupDownload(
                 userId = "user-1",
                 groupId = "group-1",
             )
+            result.getOrNull()?.invoke()
 
             // Then
             assertTrue(result.isSuccess)
@@ -4031,10 +4060,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             val members = repository
@@ -4068,10 +4098,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             assertEquals(listOf("group-1"), local.groups.value.map { it.id })
@@ -4114,10 +4145,11 @@ class GroupRepositoryImplTest {
         )
 
         // When
-        repository.downloadGroup(
-            userId = "user-1",
-            groupId = "group-1",
-        )
+        repository
+            .fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-1",
+            ).getOrThrow()()
 
         // Then
         assertEquals(
@@ -4158,10 +4190,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             val stored = local.group("group-1")
@@ -4193,10 +4226,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             val stored = local.group("group-1")
@@ -4233,10 +4267,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             val stored = local.member("m-1")
@@ -4272,10 +4307,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroup(
-                userId = "user-1",
-                groupId = "group-1",
-            )
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
 
             // Then
             assertEquals("Ana Paula", local.member("m-1")?.name)
@@ -4297,10 +4333,11 @@ class GroupRepositoryImplTest {
             )
 
             // When
-            val result = repository.downloadGroup(
+            val result = repository.fetchGroupDownload(
                 userId = "user-1",
                 groupId = "group-gone",
             )
+            result.getOrNull()?.invoke()
 
             // Then
             assertTrue(result.isSuccess)
@@ -4335,10 +4372,11 @@ class GroupRepositoryImplTest {
         )
 
         // When
-        val result = repository.downloadGroup(
+        val result = repository.fetchGroupDownload(
             userId = "user-1",
             groupId = "group-1",
         )
+        result.getOrNull()?.invoke()
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())

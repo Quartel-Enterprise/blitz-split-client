@@ -2692,7 +2692,7 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a first download with a group down WHEN the groups open THEN hides Saldo geral and Rachar conta`() =
+    fun `GIVEN a first download with a group down WHEN the groups open THEN hides Rachar conta`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -2708,7 +2708,7 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(listOf("trio"), state.groups.map(GroupRow::id))
-            assertFalse(state.showsSummary)
+            assertEquals(1, state.firstDownload?.arrivedGroupCount)
             assertFalse(state.showsSplitBillButton)
             assertFalse(state.showsEmptyState)
         }

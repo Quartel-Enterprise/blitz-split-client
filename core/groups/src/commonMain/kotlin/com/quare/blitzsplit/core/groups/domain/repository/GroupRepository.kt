@@ -94,13 +94,14 @@ interface GroupRepository {
     suspend fun fetchFirstDownloadGroupIds(): Result<List<String>>
 
     /*
-     * Why: one group and its members, as a first download brings each group whole before the next; nothing leaves the
-     * device, which the full download that follows decides.
+     * Why: one group and its members, as a first download brings each group whole before the next. It only reads the
+     * server; the write it returns puts them on the device, so the sync writes a group's rows together, with no round
+     * trip in between. Nothing leaves the device, which the full download that follows decides.
      */
-    suspend fun downloadGroup(
+    suspend fun fetchGroupDownload(
         userId: String,
         groupId: String,
-    ): Result<Unit>
+    ): Result<suspend () -> Unit>
 
     // Why: a sign out leaves no group on the device.
     suspend fun clear()

@@ -96,8 +96,7 @@ class FakeCategoryRepository(
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 
-    override suspend fun downloadGroup(groupId: String): Result<Unit> {
-        downloadedGroupIds += groupId
-        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
-    }
+    // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
+    override suspend fun fetchGroupCategories(groupId: String): Result<suspend () -> Unit> =
+        pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
 }

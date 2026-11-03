@@ -97,8 +97,7 @@ class FakeSettlementRepository(
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 
-    override suspend fun downloadGroupSettlements(groupId: String): Result<Unit> {
-        downloadedGroupIds += groupId
-        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
-    }
+    // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
+    override suspend fun fetchGroupSettlements(groupId: String): Result<suspend () -> Unit> =
+        pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
 }

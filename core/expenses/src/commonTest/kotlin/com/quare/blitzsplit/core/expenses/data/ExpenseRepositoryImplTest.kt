@@ -574,7 +574,8 @@ class ExpenseRepositoryImplTest {
             )
 
             // When
-            val result = repository.downloadGroupExpenses(GROUP_ID)
+            val result = repository.fetchGroupExpenses(GROUP_ID)
+            result.getOrNull()?.invoke()
 
             // Then
             assertTrue(result.isSuccess)
@@ -599,7 +600,7 @@ class ExpenseRepositoryImplTest {
         )
 
         // When
-        repository.downloadGroupExpenses(GROUP_ID)
+        repository.fetchGroupExpenses(GROUP_ID).getOrThrow()()
 
         // Then
         assertTrue(local.goneFromServerCalls.isEmpty())
@@ -621,7 +622,8 @@ class ExpenseRepositoryImplTest {
         )
 
         // When
-        val result = repository.downloadGroupExpenses(GROUP_ID)
+        val result = repository.fetchGroupExpenses(GROUP_ID)
+        result.getOrNull()?.invoke()
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())

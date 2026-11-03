@@ -262,15 +262,16 @@ class FakeGroupRepository(
         return Result.success(serverGroups.map { it.id })
     }
 
-    // Why: puts the server's group on the device, as a first download does.
-    override suspend fun downloadGroup(
+    // Why: its write puts the server's group on the device, as a first download does.
+    override suspend fun fetchGroupDownload(
         userId: String,
         groupId: String,
-    ): Result<Unit> {
+    ): Result<suspend () -> Unit> {
         firstDownloadError?.let { return Result.failure(it) }
-        downloadedGroupIds += groupId
-        serverGroups.firstOrNull { it.id == groupId }?.let { group -> groups.value += group }
-        return Result.success(Unit)
+        return Result.success {
+            downloadedGroupIds += groupId
+            serverGroups.firstOrNull { it.id == groupId }?.let { group -> groups.value += group }
+        }
     }
 
     override suspend fun clear() {

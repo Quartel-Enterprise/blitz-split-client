@@ -352,7 +352,8 @@ class SettlementRepositoryImplTest {
             )
 
             // When
-            val result = repository.downloadGroupSettlements(GROUP_ID)
+            val result = repository.fetchGroupSettlements(GROUP_ID)
+            result.getOrNull()?.invoke()
 
             // Then
             assertTrue(result.isSuccess)
@@ -378,7 +379,7 @@ class SettlementRepositoryImplTest {
             )
 
             // When
-            repository.downloadGroupSettlements(GROUP_ID)
+            repository.fetchGroupSettlements(GROUP_ID).getOrThrow()()
 
             // Then
             assertEquals(listOf("apply payment-1"), local.calls)
@@ -400,7 +401,8 @@ class SettlementRepositoryImplTest {
         )
 
         // When
-        val result = repository.downloadGroupSettlements(GROUP_ID)
+        val result = repository.fetchGroupSettlements(GROUP_ID)
+        result.getOrNull()?.invoke()
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
