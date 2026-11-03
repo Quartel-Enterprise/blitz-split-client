@@ -80,11 +80,14 @@ data class GroupDetailUiState(
     val showsDebtNote: Boolean
         get() = myDebts.isNotEmpty() || otherDebts.isNotEmpty()
 
-    // Why: the empty Despesas has its own "Rachar conta", and Membros has "Adicionar pessoa" instead.
+    /*
+     * Why: the empty Despesas has its own "Rachar conta", and Membros has "Adicionar pessoa" instead. Over the
+     * skeletons too, so a bill can still be split offline while the account's copy waits for the internet.
+     */
     val showsSplitBillButton: Boolean
         get() = isLoaded &&
             when (tab) {
-                GroupTab.EXPENSES -> days.isNotEmpty()
+                GroupTab.EXPENSES -> days.isNotEmpty() || isLoadingBills
                 GroupTab.BALANCES -> true
                 GroupTab.MEMBERS -> false
             }

@@ -28,7 +28,9 @@ class FirstDownload {
     // Why: null when there is no first download.
     fun observeProgress(): StateFlow<FirstDownloadProgress?> = progress.asStateFlow()
 
+    // Why: a sync that failed before this account was restored says nothing about its copy.
     fun start() {
+        hasSyncFailed.value = false
         progress.value = FirstDownloadProgress(
             arrivedGroupCount = 0,
             groupCount = null,
@@ -52,5 +54,10 @@ class FirstDownload {
 
     fun syncFailed() {
         hasSyncFailed.value = true
+    }
+
+    // Why: a later sync got through, so a switch to another user afterwards waits for its copy again.
+    fun syncSucceeded() {
+        hasSyncFailed.value = false
     }
 }

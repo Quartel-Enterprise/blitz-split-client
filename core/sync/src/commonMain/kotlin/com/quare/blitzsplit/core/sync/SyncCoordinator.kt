@@ -126,19 +126,26 @@ class SyncCoordinator(
     private suspend fun syncLocked(): Result<Unit> = suspendRunCatching {
         profileRepository.observeProfile().first() ?: return@suspendRunCatching
         // Why: the first sync with a profile restored here settles the first download, failed or not.
-        try {
+        val userId = try {
             syncSteps()
         } finally {
             firstDownload.end()
         }
-        // Why: only a sync that brought every part down completes the account's copy; one that failed leaves it awaited.
-        if (accountRepository.observeAccount().first().awaitsFullSync) accountRepository.updateAwaitsFullSync(false)
+        /*
+         * Why: only a sync that brought every part down completes the account's copy; one that failed leaves it awaited,
+         * and so does a switch to another user while it ran, whose copy this sync never brought.
+         */
+        val account = accountRepository.observeAccount().first()
+        if (account.awaitsFullSync && userIdOrNull(account.status) == userId) {
+            accountRepository.updateAwaitsFullSync(false)
+        }
     }.also { result ->
         lastSyncFailed.value = result.isFailure
-        if (result.isFailure) firstDownload.syncFailed()
+        if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
     }
 
-    private suspend fun syncSteps() {
+    // Why: returns the user it synced, whose copy it completed.
+    private suspend fun syncSteps(): String {
         val userId = accountRepository.ensureRegistered().getOrThrow()
         profileRepository.downloadProfile(userId).getOrThrow()
         profileRepository.uploadPendingProfile(userId).getOrThrow()
@@ -240,6 +247,7 @@ class SyncCoordinator(
         attachmentsSynced.getOrThrow()
         activitySynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
+        return userId
     }
 
     /*
