@@ -48,9 +48,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`RecoveryCodeUiState.isConnectExpanded`).
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
-  - Every UI is in English and Portuguese, English for any other language. The brand badge shows the app's logo
-    (Pierre's call, beta feedback 15): the glyph of its icon (`webApp/public/icon.svg`) in the badge's own color,
-    wherever it heads the app (the welcome, the web's sidebar and bars, Android's Flip cover).
+  - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
+    symbol of the device's region, `$` when there is none.
   - Every amount field (Rachar conta's total, "Várias pessoas pagaram", Valores, an item's price and Valor, the
     couvert, Registrar pagamento, Pela renda's incomes) types as a cash machine does (Pierre's call): the number
     keyboard, digits coming in from the right with the group currency's decimals fixed (`GroupCurrency.fractionDigits`:

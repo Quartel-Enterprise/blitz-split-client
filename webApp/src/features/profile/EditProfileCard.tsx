@@ -127,7 +127,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
               onChange={(event) => setName(event.target.value)}
             />
             <div className="flex justify-between gap-2 text-xs">
-              <span id="edit-profile-name-help" role={nameError ? 'alert' : undefined} className="text-destructive">
+              <span id="edit-profile-name-help" role="alert" className="text-destructive">
                 {nameError && t(nameError, { min: state.nameMinLength, max: state.nameMaxLength })}
               </span>
               <span className="text-muted-foreground tabular-nums">

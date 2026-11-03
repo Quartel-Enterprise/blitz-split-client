@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -366,14 +365,10 @@ private fun NameSection(
 
                         null -> null
                     }
-                    if (error == null) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
-                        Text(
-                            text = error,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
+                    Text(
+                        text = error.orEmpty(),
+                        modifier = Modifier.weight(1f),
+                    )
                     Text(stringResource(R.string.edit_profile_name_count, state.nameLength, state.nameMaxLength))
                 }
             },
