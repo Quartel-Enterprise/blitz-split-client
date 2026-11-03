@@ -269,30 +269,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
-  - "Ajustar foto" (Bible Planner's editor, Pierre's call): every photo taken or picked for a profile (Seu perfil,
-    Editar perfil, the Mac's Ajustes) or a group (Novo grupo, Editar grupo) opens it before it becomes the avatar,
-    never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
-    sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
-    for a profile and a rounded square for a group (the group's one shape off Android, its badge's 32% corners): drag,
-    pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Girar" turns it 90°
-    clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Pronto" makes the 512x512
-    JPEG of what the frame holds; ✕, Cancelar or back leave the photo shown as it was. The framing is the shared
-    `PhotoCrop` (fractions of the frame, so a turned device keeps it), the photo the upright, at most 1600 px JPEG of
-    `LoadCropPhoto`, and each platform's canvas draws the result from `CropTransform`. On a fold the photo and the
-    controls take a half each, never the hinge: side by side on a book and an iPhone Duo open lying down, the photo
-    on top on a tabletop and an iPhone Duo open upright. Novo grupo's Criar and Seu perfil's Continuar wait while it
-    is open.
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
     participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
     with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar steps
     its color through the palette, and on Android its shape too, both at once ("Trocar forma e cor do grupo": five
-    colors over four shapes go through all twenty), starting as a peach Biscoito, and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+    colors over four shapes go through all twenty), starting as a peach Biscoito (a new group has no photo; Editar
+    grupo adds it), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
-    grupo") and "Ana 2". The avatar's corner holds the photo's menu (Tirar foto where there is a camera, Escolher
-    foto, the Mac's "Escolher foto…" a file, and Remover foto once there is one), which opens "Ajustar foto"; while a
-    photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Editar grupo's does.
+    grupo") and "Ana 2".
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
     only time it shows the "Grupo criado" badge. The server makes each group's invite code, and only the group's creator may change it ("Trocar link",
     `InviteUiState.showsChangeLink`): only on Convidar opened from the group and online, at the top on Android and
@@ -540,7 +526,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
     Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
     made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
-    The photo is the profile's 512x512 JPEG framed in "Ajustar foto" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
+    The photo is the profile's 512x512 JPEG (`PrepareProfilePhoto`), drawn in place of the color and initials in the
     group's shape, and picking a color or a shape takes it off. A new photo waits on the device and goes up with
     the group's next sync, offline too ("Uma foto nova sobe junto."), to the public `group-photos` bucket
     (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the shape and the photo are fields of the

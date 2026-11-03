@@ -17,10 +17,11 @@ struct PhotoCropView: View {
 
     /// The editor's photo, decoded once per pick: it is upright already and at most 1600 px.
     @State private var image: Image?
-    @State private var lastDrag: CGSize = .zero
-    @State private var lastMagnification: CGFloat = 1
+    // Why: gesture state, so a drag or a pinch the system cancels (no onEnded) starts the next one afresh.
+    @GestureState private var lastDrag: CGSize = .zero
+    @GestureState private var lastMagnification: CGFloat = 1
     /// A pinch is on: the drag, which follows one of its fingers, waits until it ends.
-    @State private var isMagnifying = false
+    @GestureState private var isMagnifying = false
 
     private static let background = Color(red: 11 / 255, green: 11 / 255, blue: 15 / 255)
     private static let frameRatio: CGFloat = 0.9
@@ -138,21 +139,20 @@ struct PhotoCropView: View {
 
     private func dragGesture(side: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { value in
+            .updating($lastDrag) { value, lastDrag, _ in
                 let dx = value.translation.width - lastDrag.width
                 let dy = value.translation.height - lastDrag.height
                 lastDrag = value.translation
                 guard side > 0, !isMagnifying else { return }
                 send(PhotoCropEventOnDragged(dx: Float(dx / side), dy: Float(dy / side)))
             }
-            .onEnded { _ in lastDrag = .zero }
     }
 
     /// Zooms around the point between the fingers, from the frame's center (the area's) in fractions of its side.
     private func magnifyGesture(side: CGFloat, size: CGSize) -> some Gesture {
         MagnifyGesture()
-            .onChanged { value in
-                isMagnifying = true
+            .updating($isMagnifying) { _, isMagnifying, _ in isMagnifying = true }
+            .updating($lastMagnification) { value, lastMagnification, _ in
                 let change = value.magnification / lastMagnification
                 lastMagnification = value.magnification
                 guard side > 0 else { return }
@@ -163,10 +163,6 @@ struct PhotoCropView: View {
                         focusY: Float((value.startLocation.y - size.height / 2) / side),
                     ),
                 )
-            }
-            .onEnded { _ in
-                lastMagnification = 1
-                isMagnifying = false
             }
     }
 
@@ -210,12 +206,15 @@ struct PhotoCropView: View {
                     Text("Cancel").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glass)
+                // Why: a Mac sheet closes on Esc only through its cancel action.
+                .keyboardShortcut(.cancelAction)
                 Button {
                     send(PhotoCropEventOnConfirmClicked.shared)
                 } label: {
                     Text("Done").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
+                .keyboardShortcut(.defaultAction)
             }
             .controlSize(.large)
             .padding(.top, 4)

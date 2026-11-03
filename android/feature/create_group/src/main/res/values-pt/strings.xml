@@ -22,7 +22,7 @@
     <string name="create_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
     <string name="create_group_photo">Foto do grupo</string>
     <string name="create_group_take_photo">Tirar foto</string>
-    <string name="create_group_choose_photo">Escolher da galeria</string>
+    <string name="create_group_choose_photo">Escolher foto</string>
     <string name="create_group_remove_photo">Remover foto</string>
     <string name="create_group_photo_error">Não deu para usar essa foto. Tente outra.</string>
 </resources>

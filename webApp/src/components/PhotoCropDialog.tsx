@@ -26,7 +26,8 @@ export function PhotoCropDialog({ crop, presenter, frame }: { crop: JsPhotoCropS
       <DialogContent
         className={cn(
           'dark flex flex-col gap-0 overflow-hidden border-0 bg-[#0B0B0F] p-0 text-white',
-          'max-sm:h-dvh max-sm:max-w-none max-sm:rounded-none sm:h-[min(720px,calc(100dvh-2rem))] sm:max-w-[560px]',
+          // Why: the tablet starts at 768 px, as the forms that open it (a drawer below it, a dialog from it).
+          'h-dvh max-w-none rounded-none sm:max-w-none md:h-[min(720px,calc(100dvh-2rem))] md:max-w-[560px] md:rounded-lg',
         )}
       >
         <div className="flex h-14 shrink-0 items-center justify-center px-12">
