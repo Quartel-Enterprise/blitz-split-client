@@ -115,7 +115,10 @@ private fun WelcomeSingleColumn(
         ) {
             if (layout.isTablet) {
                 // Why: upright on a tablet the pitch panel sits on top and the actions below it.
-                WelcomePitchPanel(modifier = Modifier.padding(horizontal = 24.dp))
+                WelcomePitchPanel(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    isScrollable = false,
+                )
             } else {
                 ShapeClusterHero(modifier = Modifier.padding(horizontal = 16.dp))
                 Text(
@@ -280,12 +283,18 @@ private fun WelcomeBookLayout(
     )
 }
 
-// Why: compact in a book's half, which is narrower and shorter than a tablet's column.
+/*
+ * Why: compact in a book's half, which is narrower and shorter than a tablet's column. It scrolls inside its own
+ * corners where it fills a bounded height (a half, a column lying down); upright it sits in the column's scroll,
+ * where a second vertical scroll is measured with an unbounded height and throws.
+ */
 @Composable
 private fun WelcomePitchPanel(
     modifier: Modifier = Modifier,
     isCompact: Boolean = false,
+    isScrollable: Boolean = true,
 ) {
+    val scrollState = rememberScrollState()
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -301,7 +310,7 @@ private fun WelcomePitchPanel(
             )
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .then(if (isScrollable) Modifier.verticalScroll(scrollState) else Modifier)
                     .padding(
                         horizontal = if (isCompact) 28.dp else 48.dp,
                         vertical = if (isCompact) 32.dp else 40.dp,
