@@ -39,6 +39,34 @@ UiState carries no copy. An error is an enum (`RestoreError`, `WelcomeError`) or
 status is an enum (`SyncBadge`); each UI maps it to its localized text. Use a `sealed interface` only when the screen
 has genuinely distinct shapes; an enum is enough for a status without data (`AppUiState.LOADING` / `READY`).
 
+### Loadable — a section that has no answer yet
+
+A screen never guesses: until a section has a concrete answer it draws a shimmer, never an empty state, a zero or a
+default. A section that loads on its own (another flow, the server, or data only the account's first full sync
+brings) is a `Loadable<T>` of [`software.quare:loadable`](https://github.com/Quartel-Enterprise/loadable-kt), an `api`
+dependency of `:core:presentation`; fields that all come from one read may share an `isLoaded: Boolean`.
+
+```kotlin
+data class HomeUiState(
+    val isLoaded: Boolean,
+    val people: Loadable<List<HomePerson>>,
+    val summary: Loadable<HomeSummary>,
+) {
+    val showsPeople: Boolean
+        get() = people.valueOrNull()?.isNotEmpty() == true
+}
+```
+
+The ViewModel starts it as `Loadable.Loading` and fills it with `toLoaded()`. A getter that announces an empty or
+settled answer is false while its input loads. An empty list only means "none" once the device holds the whole
+account: `ObserveFirstDownload` emits while an account restored or switched to on this device awaits its first full
+sync (`AccountSnapshot.awaitsFullSync`, kept in Room, so a relaunch midway still waits), with `isWaitingForInternet`
+when offline.
+
+Each UI matches it: Compose with `when`, Swift with `state.people.loaded(as: [HomePerson].self)` (generics don't reach
+the Objective-C header, see `Loadable+Swift.swift`), and the JS presenter hands React a nullable value, `null` while
+it loads. Each platform has one shimmer component, which a read of the device shows only after 150 ms.
+
 ### UiEvent — what the person did
 
 A `sealed interface` that extends the `UiEvent` marker of `:core:presentation`, named after what happened, not what

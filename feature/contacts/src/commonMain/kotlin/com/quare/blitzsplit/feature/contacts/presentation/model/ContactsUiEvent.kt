@@ -48,6 +48,9 @@ sealed interface ContactsUiEvent : UiEvent {
         val contactId: String,
     ) : ContactsUiEvent
 
+    // Why: the platform starts reading the agenda, with the access it already had, so no result waits for it.
+    data object OnAgendaReadStarted : ContactsUiEvent
+
     // Why: the platform read the agenda, with the access it already had (it never asks from here).
     data class OnAgendaLoaded(
         val contacts: List<AgendaContact>,

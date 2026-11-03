@@ -31,6 +31,8 @@ import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
@@ -50,11 +52,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
@@ -71,6 +75,7 @@ class PayReceiverViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var route: Route.RegisterPayment
     private lateinit var viewModel: RegisterPaymentViewModel
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private val actions = mutableListOf<RegisterPaymentUiAction>()
 
     // Why: what the device clock says, which a case moves on after the screen opened.
@@ -201,7 +206,12 @@ class PayReceiverViewModelTest {
 
         // Then
         assertTrue(state.isLoaded)
-        assertTrue(state.receiverKeys.isEmpty())
+        assertTrue(
+            state.receiverKeys
+                .valueOrNull()
+                .orEmpty()
+                .isEmpty(),
+        )
         assertFalse(state.showsReceiverKeys)
         assertNull(state.pixCode)
     }
@@ -232,9 +242,115 @@ class PayReceiverViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals(1, state.receiverKeys.size)
+            assertEquals(
+                1,
+                state.receiverKeys
+                    .valueOrNull()
+                    .orEmpty()
+                    .size,
+            )
             assertFalse(state.showsReceiverKeys)
         }
+
+    @Test
+    fun `GIVEN Bruno with no key and the copy not whole WHEN the screen opens THEN the keys shimmer not the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                downloading = awaitingFullSync,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoadingReceiverKeys)
+            assertFalse(state.showsReceiverKeys)
+            assertFalse(state.prefersForm)
+            assertFalse(state.canConfirm)
+        }
+
+    @Test
+    fun `GIVEN the keys shimmering WHEN the full sync brings the key of Bruno THEN shows Pagar Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                downloading = awaitingFullSync,
+            )
+
+            // When
+            paymentKeys.memberKeys.value = mapOf(BRUNO_USER to listOf(phoneKey))
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isLoadingReceiverKeys)
+            assertTrue(state.showsReceiverKeys)
+            assertNotNull(state.pixCode)
+        }
+
+    @Test
+    fun `GIVEN the keys shimmering WHEN the sync ends with no key and a later one brings it THEN keeps the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                downloading = awaitingFullSync,
+            )
+            firstDownload.value = null
+            val afterFullSync = viewModel.uiState.value
+
+            // When
+            paymentKeys.memberKeys.value = mapOf(BRUNO_USER to listOf(phoneKey))
+
+            // Then
+            assertTrue(afterFullSync.prefersForm)
+            assertFalse(afterFullSync.isLoadingReceiverKeys)
+            assertFalse(viewModel.uiState.value.showsReceiverKeys)
+        }
+
+    @Test
+    fun `GIVEN the copy waiting offline WHEN the screen opens without the key of Bruno THEN says it waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                online = false,
+                downloading = awaitingFullSync.copy(isWaitingForInternet = true),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoadingReceiverKeys)
+            assertTrue(state.isWaitingForInternet)
+        }
+
+    @Test
+    fun `GIVEN Bruno is a guest and the account copy not whole WHEN the screen opens THEN shows the form at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoUserId = null,
+                downloading = awaitingFullSync,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoadingReceiverKeys)
+            assertTrue(state.canConfirm)
+        }
+
+    private val awaitingFullSync = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
 
     @Test
     fun `GIVEN the keys shown WHEN tapping Paguei outro valor THEN shows the form`() = runTest(testDispatcher) {
@@ -300,7 +416,12 @@ class PayReceiverViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertNull(state.to)
-            assertTrue(state.receiverKeys.isEmpty())
+            assertTrue(
+                state.receiverKeys
+                    .valueOrNull()
+                    .orEmpty()
+                    .isEmpty(),
+            )
             assertFalse(state.showsReceiverKeys)
         }
 
@@ -694,6 +815,7 @@ class PayReceiverViewModelTest {
         recordError: Throwable? = null,
         recordGate: CompletableDeferred<Unit>? = null,
         keysReadOf: Map<String, CompletableDeferred<Unit>> = emptyMap(),
+        downloading: FirstDownloadProgress? = null,
     ) {
         clockMillis = nowMillis
         route = Route.RegisterPayment(
@@ -727,6 +849,7 @@ class PayReceiverViewModelTest {
             defaultSplit = null,
             updatedAt = 0L,
         )
+        firstDownload = MutableStateFlow(downloading)
         paymentKeys = FakePaymentKeyRepository().also {
             it.memberKeys.value = mapOf(
                 BRUNO_USER to brunoKeys,
@@ -795,6 +918,7 @@ class PayReceiverViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observePeopleBalances = { emptyFlow() },
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

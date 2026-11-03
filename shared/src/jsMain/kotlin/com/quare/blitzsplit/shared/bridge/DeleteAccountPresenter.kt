@@ -9,10 +9,14 @@ import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccou
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 
 class JsDeleteAccountState(
-    // Why: "google" or "apple", null once the account is gone.
+    // Why: "google" or "apple", null once the account is gone and while it loads (isAccountLoading).
     val accountProvider: String?,
+    // Why: the provider line of "o que será apagado" shimmers until the account was read.
+    val isAccountLoading: Boolean,
     val hasConfirmed: Boolean,
     val isDeleting: Boolean,
     val hasFailed: Boolean,
@@ -34,7 +38,8 @@ class DeleteAccountPresenter {
     fun observeState(onChange: (JsDeleteAccountState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsDeleteAccountState(
-                accountProvider = state.accountProvider?.code,
+                accountProvider = state.accountProvider.valueOrNull()?.code,
+                isAccountLoading = state.accountProvider.isLoading(),
                 hasConfirmed = state.hasConfirmed,
                 isDeleting = state.isDeleting,
                 hasFailed = state.hasFailed,

@@ -277,6 +277,7 @@ internal fun groupHeaderOf(
     totalSpentMinor: Long,
     balances: GroupBalances,
     isPinned: Boolean,
+    isCopyWhole: Boolean,
 ): GroupHeader {
     val meId = group.members.firstOrNull { it.isMe }?.id
     return GroupHeader(
@@ -290,8 +291,10 @@ internal fun groupHeaderOf(
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
         totalSpentMinor = totalSpentMinor,
-        myBalance = balances.balanceOrNull(meId),
-        isEveryoneSettled = balances.isEveryoneSettled,
+        // Why: a balance counted before the group's bills came would read as settled; the UIs shimmer it meanwhile.
+        myBalance = balances.balanceOrNull(meId)?.takeIf { isCopyWhole },
+        // Why: bills still coming down may leave someone owing; "Apagar grupo" waits for the whole copy.
+        isEveryoneSettled = isCopyWhole && balances.isEveryoneSettled,
         isPinned = isPinned,
     )
 }

@@ -9,6 +9,7 @@ kotlin {
             api(projects.core.model)
             implementation(projects.core.navigation)
             implementation(projects.core.profile)
+            implementation(projects.core.sync)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)

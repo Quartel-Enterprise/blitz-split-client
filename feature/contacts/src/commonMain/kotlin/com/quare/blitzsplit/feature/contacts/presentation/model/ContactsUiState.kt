@@ -3,6 +3,9 @@ package com.quare.blitzsplit.feature.contacts.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoaded
+import software.quare.loadable.valueOrNull
 
 data class ContactsUiState(
     val displayName: String,
@@ -17,16 +20,27 @@ data class ContactsUiState(
     // Why: "Ocultos · 1", at the end of the list, each with "Mostrar".
     val hiddenContacts: List<ContactRow>,
     val isHiddenExpanded: Boolean,
-    // Why: "Você deve R$ 126,00 · Te devem R$ 312,40", the same totals as Saldos, in its main currency.
-    val total: PeopleTotal,
+    /*
+     * Why: "Você deve R$ 126,00 · Te devem R$ 312,40", the same totals as Saldos, in its main currency. Read apart from
+     * the people, and Loading too while the account's copy is not whole, so it shimmers rather than saying R$ 0,00.
+     */
+    val total: Loadable<PeopleTotal>,
     // Why: "Buscar contatos" is open (Android's and iOS's search screen, the web's and the Mac's field).
     val isSearchOpen: Boolean,
     val query: String,
-    // Why: the device's agenda, while the platform may read it; the search looks in it after the groups.
-    val agenda: List<AgendaContact>,
+    /*
+     * Why: the device's agenda, while the platform may read it; the search looks in it after the groups. Loading from
+     * OnAgendaReadStarted to OnAgendaLoaded; an empty Loaded where the platform reads none (no access, the web).
+     */
+    val agenda: Loadable<List<AgendaContact>>,
     val isOnline: Boolean,
-    // Why: nothing is drawn until Room is read, so the empty state never flashes.
+    /*
+     * Why: nothing is drawn until Room is read and the account's copy on this device is whole: who was hidden on
+     * another device only comes with its full sync, so until then the empty state and the rows never flash.
+     */
     val isLoaded: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the skeleton while the copy waits offline.
+    val isWaitingForInternet: Boolean,
     // Why: the UI draws Contatos with the profile beside it (a wide window), so a tap picks instead of opening.
     val isDetailPaneShown: Boolean,
     // Why: what the pane beside the list shows: a person, the agenda, or nothing yet (it says what will show there).
@@ -73,6 +87,8 @@ data class ContactsUiState(
         if (folded.isEmpty()) return@lazy emptyList()
         val inGroups = groupResults.map { Search.toFolded(it.name) }.toSet()
         agenda
+            .valueOrNull()
+            .orEmpty()
             .filterNot { Search.toFolded(it.name) in inGroups }
             .mapNotNull { contact ->
                 Search.matchOrNull(contact.name, folded)?.let { match ->
@@ -85,7 +101,11 @@ data class ContactsUiState(
             }
     }
 
-    // Why: "Ninguém com “Rodrigo”", with the link.
+    // Why: the search's skeleton while the people or the agenda it also looks in are still being read.
+    val isSearchLoading: Boolean
+        get() = isSearching && (!isLoaded || !agenda.isLoaded())
+
+    // Why: "Ninguém com “Rodrigo”", with the link, only once everything it looks in was read.
     val showsNoResults: Boolean
-        get() = isSearching && groupResults.isEmpty() && agendaResults.isEmpty()
+        get() = isSearching && !isSearchLoading && groupResults.isEmpty() && agendaResults.isEmpty()
 }

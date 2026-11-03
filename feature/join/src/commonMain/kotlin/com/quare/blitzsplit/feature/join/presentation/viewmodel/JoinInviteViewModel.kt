@@ -43,7 +43,7 @@ class JoinInviteViewModel(
     private val joinGroup: JoinGroup,
     private val observeGroup: ObserveGroup,
     private val syncNow: SyncNow,
-    connectivityObserver: NetworkConnectivityObserver,
+    private val connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<JoinInviteUiState>
         field = MutableStateFlow(
@@ -92,7 +92,7 @@ class JoinInviteViewModel(
             // Why: the first value is the connection as it is now, which the first load already covers.
             .distinctUntilChanged()
             .drop(1)
-            .onEach { isOnline -> if (isOnline && uiState.value.status == JoinInviteStatus.OFFLINE) load() }
+            .onEach { isOnline -> if (isOnline && uiState.value.status.isUnreachable()) load() }
             .launchIn(viewModelScope)
         navigator.backStack
             .onEach { backStack ->
@@ -134,12 +134,22 @@ class JoinInviteViewModel(
 
                     else -> show(invite)
                 }
-            }.onFailure { uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) } }
+            }.onFailure { showUnreachable() }
         }
     }
 
+    // Why: only the connectivity says the device is offline; a failure while online is the server's, said apart.
+    private suspend fun showUnreachable() {
+        val isOnline = connectivityObserver.observe().first()
+        val status = if (isOnline) JoinInviteStatus.FAILED else JoinInviteStatus.OFFLINE
+        uiState.update { it.copy(status = status) }
+    }
+
+    private fun JoinInviteStatus.isUnreachable(): Boolean =
+        this == JoinInviteStatus.OFFLINE || this == JoinInviteStatus.FAILED
+
     private fun retry() {
-        if (uiState.value.status != JoinInviteStatus.OFFLINE) return
+        if (!uiState.value.status.isUnreachable()) return
         uiState.update { it.copy(status = JoinInviteStatus.LOADING) }
         load()
     }
@@ -168,7 +178,7 @@ class JoinInviteViewModel(
     private suspend fun openGroup(groupId: String) {
         if (observeGroup(groupId).first() == null) syncNow()
         if (observeGroup(groupId).first() == null) {
-            uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) }
+            showUnreachable()
         } else if (isOnTop()) {
             navigator.replaceTop(
                 Route.GroupDetail(

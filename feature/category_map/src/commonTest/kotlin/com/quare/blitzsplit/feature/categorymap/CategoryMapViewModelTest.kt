@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUs
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -20,11 +21,16 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.TermError
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -39,11 +45,16 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CategoryMapViewModelTest {
     private lateinit var terms: FakeCategoryTermRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: CategoryMapViewModel
     private val isOnline = MutableStateFlow(true)
+    private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
+
+    // Why: null holds the group categories back, as a read Room hasn't answered yet.
+    private val groupCategories = MutableStateFlow<Unit?>(Unit)
 
     @BeforeTest
     fun setUp() {
@@ -298,6 +309,112 @@ class CategoryMapViewModelTest {
         updatedAt = 0L,
     )
 
+    @Test
+    fun `GIVEN the group categories not read yet WHEN the map opens THEN it is not loaded and lists no section`() =
+        runTest {
+            // Given
+            prepareScenario(
+                changes = listOf(changeOf("picanha", GROUP_CATEGORY_ID)),
+                holdsGroupCategories = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertTrue(state.sections.isEmpty())
+            assertFalse(state.isEmpty)
+            assertFalse(state.showsDeviceOnlyNotice)
+        }
+
+    @Test
+    fun `GIVEN the group categories not read yet WHEN they are read THEN the group term shows in its category`() =
+        runTest {
+            // Given
+            prepareScenario(
+                changes = listOf(changeOf("picanha", GROUP_CATEGORY_ID)),
+                holdsGroupCategories = true,
+            )
+
+            // When
+            groupCategories.value = Unit
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            val food = state.sections.first { it.category.id == AppCategory.FOOD.key }
+            assertEquals(
+                listOf("picanha"),
+                food.rows
+                    .first { it.category.id == GROUP_CATEGORY_ID }
+                    .terms
+                    .map { it.term },
+            )
+        }
+
+    @Test
+    fun `GIVEN a restored Google account whose copy is not whole WHEN the map opens THEN it waits with no notice`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.canEditMap)
+            assertFalse(state.showsDeviceOnlyNotice)
+            assertTrue(state.sections.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a restored account whose copy is not whole WHEN adding a term or restoring THEN nothing opens`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            viewModel.onEvent(
+                CategoryMapUiEvent.OnAddTermClicked(
+                    categoryId = null,
+                    text = "pizza",
+                ),
+            )
+            viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.termForm)
+            assertFalse(state.isRestoreConfirmOpen)
+        }
+
+    @Test
+    fun `GIVEN a restored Google account whose copy is not whole WHEN its first full sync ends THEN the map loads`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            assertFalse(state.showsDeviceOnlyNotice)
+            assertTrue(state.sections.isNotEmpty())
+        }
+
     private fun changeOf(
         term: String,
         categoryId: String?,
@@ -311,10 +428,23 @@ class CategoryMapViewModelTest {
         isPending = isPending,
     )
 
+    private val connectedWithGoogle = AccountStatus.Connected("user-1", AccountProvider.GOOGLE)
+
+    private val pendingDownload = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
+
     private fun prepareScenario(
         changes: List<CategoryTermChange> = emptyList(),
         isGroupCategoryDeleted: Boolean = false,
+        status: AccountStatus = AccountStatus.LocalOnly,
+        firstDownload: FirstDownloadProgress? = null,
+        holdsGroupCategories: Boolean = false,
     ) {
+        this.firstDownload.value = firstDownload
+        groupCategories.value = if (holdsGroupCategories) null else Unit
         terms = FakeCategoryTermRepository(initialChanges = changes)
         val categories = FakeCategoryRepository(
             initialGroupCategories = listOf(
@@ -340,12 +470,14 @@ class CategoryMapViewModelTest {
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },
             restoreCategoryMap = RestoreCategoryMapUseCase(terms) { NOW },
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
-            observeMapCategories = ObserveMapCategoriesUseCase(categories),
+            observeMapCategories = {
+                groupCategories.filterNotNull().flatMapLatest { ObserveMapCategoriesUseCase(categories)() }
+            },
             observeGroups = { flowOf(listOf(trip)) },
             observeAccount = {
                 flowOf(
                     AccountSnapshot(
-                        status = AccountStatus.LocalOnly,
+                        status = status,
                         recoveryCode = null,
                         recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
                         email = null,
@@ -354,6 +486,7 @@ class CategoryMapViewModelTest {
                     ),
                 )
             },
+            observeFirstDownload = ObserveFirstDownload { this.firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
     }

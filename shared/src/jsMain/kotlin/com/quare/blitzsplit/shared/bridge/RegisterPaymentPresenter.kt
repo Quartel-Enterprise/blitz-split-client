@@ -67,6 +67,10 @@ class JsRegisterPaymentState(
     val isLoaded: Boolean,
     // Why: "Pagar Ana" (4.5) takes the form's place while this person pays someone with a key.
     val showsReceiverKeys: Boolean,
+    // Why: neither "Pagar Ana" nor the form yet: the keys' shimmer until the account's full sync brings them.
+    val isLoadingReceiverKeys: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under that shimmer.
+    val isWaitingForInternet: Boolean,
     val groupName: String?,
     // Why: the PaymentMethod's names, "PIX" or "BITCOIN": those the receiver has keys of, and the one shown.
     val keyMethods: Array<String>,
@@ -121,6 +125,8 @@ class RegisterPaymentPresenter(
                 canConfirm = state.canConfirm,
                 isLoaded = state.isLoaded,
                 showsReceiverKeys = state.showsReceiverKeys,
+                isLoadingReceiverKeys = state.isLoadingReceiverKeys,
+                isWaitingForInternet = state.isWaitingForInternet,
                 groupName = state.groupName,
                 keyMethods = state.keyMethods.map(PaymentMethod::name).toTypedArray(),
                 showsKeyMethodPicker = state.showsKeyMethodPicker,

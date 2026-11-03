@@ -37,6 +37,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyl
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -503,6 +504,91 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a first download and no bill yet WHEN the statistics open THEN skeletons not nothing to show`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = emptyList(),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoadingBills)
+            assertFalse(state.isGroupEmpty)
+            assertFalse(state.isPeriodEmpty)
+        }
+
+    @Test
+    fun `GIVEN a first download WHEN picking last month without bills THEN skeletons instead of the empty period`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.LAST_MONTH))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoadingBills)
+            assertFalse(state.isPeriodEmpty)
+        }
+
+    @Test
+    fun `GIVEN a first download waiting for the internet WHEN the statistics open THEN say the rest waits for it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = emptyList(),
+                downloading = downloadingOnline.copy(isWaitingForInternet = true),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isWaitingForInternet)
+            assertTrue(state.isLoadingBills)
+        }
+
+    @Test
+    fun `GIVEN whether the copy is whole not read yet WHEN the group has no bill THEN nothing is drawn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = emptyList(),
+                isDownloadReadAtStart = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.isGroupEmpty)
+        }
+
+    @Test
+    fun `GIVEN no bill while a first download runs WHEN it ends THEN says nothing to show yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = emptyList(),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isGroupEmpty)
+            assertFalse(state.isLoadingBills)
+        }
+
+    @Test
     fun `GIVEN a group without bills WHEN the statistics open THEN shows nothing to show yet`() =
         runTest(testDispatcher) {
             // Given
@@ -923,12 +1009,19 @@ class GroupStatsViewModelTest {
         updatedByMemberId = null,
     )
 
+    private val downloadingOnline = FirstDownloadProgress(
+        arrivedGroupCount = 1,
+        groupCount = 7,
+        isWaitingForInternet = false,
+    )
+
     private fun prepareScenario(
         group: Group = trip,
         stored: List<Expense> = tripBills,
         keptChart: StatsChartPreferences = StatsChartPreferences.initial,
         groupCategories: List<GroupCategory> = emptyList(),
         downloading: FirstDownloadProgress? = null,
+        isDownloadReadAtStart: Boolean = true,
     ) {
         firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
@@ -960,7 +1053,7 @@ class GroupStatsViewModelTest {
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
-            observeFirstDownload = ObserveFirstDownload { firstDownload },
+            observeFirstDownload = ObserveFirstDownload { if (isDownloadReadAtStart) firstDownload else emptyFlow() },
         )
     }
 

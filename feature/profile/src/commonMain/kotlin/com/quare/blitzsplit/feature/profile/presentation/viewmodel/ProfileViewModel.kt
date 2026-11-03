@@ -8,12 +8,12 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -47,6 +48,7 @@ import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -57,6 +59,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 class ProfileViewModel(
     private val navigator: Navigator,
@@ -79,11 +84,13 @@ class ProfileViewModel(
     observeThemePreference: ObserveThemePreference,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<ProfileUiState>
         field = MutableStateFlow(
             ProfileUiState(
+                isLoaded = false,
                 displayName = "",
                 avatarColor = AvatarColor.default,
                 photoUrl = null,
@@ -95,10 +102,10 @@ class ProfileViewModel(
                 isOnline = true,
                 syncStatus = null,
                 pendingChanges = emptyList(),
-                paymentKeys = emptyList(),
+                paymentKeys = Loadable.Loading,
                 isSignOutScheduled = false,
                 theme = ThemePreference.SYSTEM,
-                activeNotificationCount = NotificationPreferences.DEFAULT.enabledTypes.size,
+                activeNotificationCount = Loadable.Loading,
                 dialog = null,
                 hasConfirmedCodeSaved = false,
                 isConnectExpanded = false,
@@ -120,48 +127,31 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeProfile()
-            .onEach { profile ->
-                uiState.update {
-                    it.copy(
-                        displayName = profile?.displayName?.trim().orEmpty(),
-                        avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                        photoUrl = profile?.photo?.toImageUrl(),
-                    )
-                }
-            }.launchIn(viewModelScope)
-        observeAccount()
-            .onEach(::updateAccount)
-            .launchIn(viewModelScope)
+        // Why: isLoaded once the profile, the account, the theme and what waits to go up each answered once.
         combine(
-            observeSyncState(),
-            observePendingProfileChanges(),
-            observePendingPaymentKeyChanges(),
-            observePendingNotificationPreferenceChanges(),
-            connectivityObserver.observe(),
-        ) { syncState, hasPendingProfile, hasPendingKeys, hasPendingPreferences, isOnline ->
-            uiState.update {
-                it.copy(
-                    isOnline = isOnline,
-                    syncStatus = syncStatusOf(syncState),
-                    pendingChanges = listOfNotNull(
-                        PendingChange.PROFILE.takeIf { hasPendingProfile },
-                        PendingChange.PAYMENT_KEYS.takeIf { hasPendingKeys },
-                        PendingChange.NOTIFICATION_PREFERENCES.takeIf { hasPendingPreferences },
-                    ),
-                )
-            }
-        }.launchIn(viewModelScope)
-        observePaymentKeys()
-            .onEach { keys -> uiState.update { it.copy(paymentKeys = keys.mapNotNull(::toItem)) } }
+            observeProfile().onEach(::updateProfile),
+            observeAccount().onEach(::updateAccount),
+            observeThemePreference().onEach { theme -> uiState.update { it.copy(theme = theme) } },
+            observeSyncSummary(
+                syncState = observeSyncState(),
+                hasPendingProfile = observePendingProfileChanges(),
+                hasPendingKeys = observePendingPaymentKeyChanges(),
+                hasPendingPreferences = observePendingNotificationPreferenceChanges(),
+                isOnline = connectivityObserver.observe(),
+            ),
+        ) { _, _, _, _ -> }
+            .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
-        observeThemePreference()
-            .onEach { theme -> uiState.update { it.copy(theme = theme) } }
+        val firstDownload = observeFirstDownload()
+        // Why: a restored account's keys and notification choices only come with its first full sync.
+        combine(observePaymentKeys(), firstDownload) { keys, download ->
+            if (download != null) Loadable.Loading else keys.mapNotNull(::toItem).toLoaded()
+        }.onEach { keys -> uiState.update { it.copy(paymentKeys = keys) } }
             .launchIn(viewModelScope)
-        observeNotificationPreferences()
-            .onEach { preferences ->
-                uiState.update { it.copy(activeNotificationCount = preferences.enabledTypes.size) }
-            }.launchIn(viewModelScope)
+        combine(observeNotificationPreferences(), firstDownload) { preferences, download ->
+            if (download != null) Loadable.Loading else preferences.enabledTypes.size.toLoaded()
+        }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
+            .launchIn(viewModelScope)
         providerConnector.connection
             .onEach { connection ->
                 uiState.update {
@@ -188,7 +178,7 @@ class ProfileViewModel(
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
             ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
             ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
-            is ProfileUiEvent.OnAddPaymentKeyClicked -> openPaymentKey(event.method, keyId = null)
+            is ProfileUiEvent.OnAddPaymentKeyClicked -> addPaymentKey(event.method)
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
             ProfileUiEvent.OnAccountClicked -> openUnlink()
@@ -210,6 +200,42 @@ class ProfileViewModel(
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
             ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE) eraseProfile()
+        }
+    }
+
+    private fun updateProfile(profile: UserProfile?) {
+        uiState.update {
+            it.copy(
+                displayName = profile?.displayName?.trim().orEmpty(),
+                avatarColor = profile?.avatarColor ?: AvatarColor.default,
+                photoUrl = profile?.photo?.toImageUrl(),
+            )
+        }
+    }
+
+    private fun observeSyncSummary(
+        syncState: Flow<SyncState>,
+        hasPendingProfile: Flow<Boolean>,
+        hasPendingKeys: Flow<Boolean>,
+        hasPendingPreferences: Flow<Boolean>,
+        isOnline: Flow<Boolean>,
+    ): Flow<Unit> = combine(
+        syncState,
+        hasPendingProfile,
+        hasPendingKeys,
+        hasPendingPreferences,
+        isOnline,
+    ) { state, pendingProfile, pendingKeys, pendingPreferences, online ->
+        uiState.update {
+            it.copy(
+                isOnline = online,
+                syncStatus = syncStatusOf(state),
+                pendingChanges = listOfNotNull(
+                    PendingChange.PROFILE.takeIf { pendingProfile },
+                    PendingChange.PAYMENT_KEYS.takeIf { pendingKeys },
+                    PendingChange.NOTIFICATION_PREFERENCES.takeIf { pendingPreferences },
+                ),
+            )
         }
     }
 
@@ -248,8 +274,14 @@ class ProfileViewModel(
         else -> ProfileDialog.SIGN_OUT
     }
 
+    private fun addPaymentKey(method: PaymentMethod) {
+        if (uiState.value.canAddPaymentKey) openPaymentKey(method, keyId = null)
+    }
+
     private fun openSavedPaymentKey(keyId: String) {
-        val key = uiState.value.paymentKeys.find { it.id == keyId } ?: return
+        val key = uiState.value.paymentKeys
+            .valueOrNull()
+            ?.find { it.id == keyId } ?: return
         openPaymentKey(key.type.method, keyId)
     }
 

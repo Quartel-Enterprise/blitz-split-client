@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.core.account)
             implementation(projects.core.activity)
             implementation(projects.core.profile)
+            implementation(projects.core.sync)
             implementation(projects.core.utils)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

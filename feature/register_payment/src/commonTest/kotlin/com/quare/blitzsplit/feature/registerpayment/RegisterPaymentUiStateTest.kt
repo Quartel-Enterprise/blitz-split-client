@@ -11,6 +11,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKi
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
+import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -600,7 +601,8 @@ class RegisterPaymentUiStateTest {
         isOnline = isOnline,
         isSaving = isSaving,
         isLoaded = isLoaded,
-        receiverKeys = receiverKeys,
+        receiverKeys = receiverKeys.toLoaded(),
+        isWaitingForInternet = false,
         groupName = null,
         keyMethod = keyMethod,
         offersReceiverKeys = offersReceiverKeys,

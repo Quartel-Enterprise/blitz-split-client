@@ -9,11 +9,14 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -381,6 +384,29 @@ class ContactInviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN no group yet and the copy not whole WHEN the invite opens THEN waits instead of only Novo grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                online = false,
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasNoGroups)
+            assertFalse(state.isLoaded)
+            assertTrue(state.isWaitingForInternet)
+        }
+
+    @Test
     fun `GIVEN no group WHEN the invite opens THEN offers only Novo grupo`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = emptyList())
@@ -431,6 +457,7 @@ class ContactInviteViewModelTest {
         name: String? = null,
         storedGroups: List<Group> = defaultGroups(),
         online: Boolean = true,
+        downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         val route = Route.ContactInvite(
@@ -452,6 +479,7 @@ class ContactInviteViewModelTest {
                 FakeSettlementRepository(),
                 FakeHiddenContactRepository(),
             ),
+            observeFirstDownload = ObserveFirstDownload { flowOf(downloading) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

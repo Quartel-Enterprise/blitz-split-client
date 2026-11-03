@@ -72,7 +72,10 @@ class JsTermForm(
 )
 
 class JsCategoryMapState(
+    // Why: false while the terms, the categories, the account or a restored account's first full sync are pending.
     val isLoaded: Boolean,
+    // Why: Adicionar termo, a term's edit and Restaurar padrão wait for the whole map.
+    val canEditMap: Boolean,
     val query: String,
     val isSearching: Boolean,
     val sections: Array<JsMapSection>,
@@ -198,6 +201,7 @@ private fun toJsMapState(state: CategoryMapUiState): JsCategoryMapState {
     val form = state.termForm
     return JsCategoryMapState(
         isLoaded = state.isLoaded,
+        canEditMap = state.canEditMap,
         query = state.query,
         isSearching = state.isSearching,
         sections = state.sections.map { toJsMapSection(it, state) }.toTypedArray(),

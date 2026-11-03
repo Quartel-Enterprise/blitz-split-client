@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -114,6 +115,38 @@ class AgendaViewModelTest {
     }
 
     @Test
+    fun `GIVEN the access given WHEN the agenda is still being read THEN shimmers rather than saying it is empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnQueryChanged("zé"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoadingContacts)
+            assertFalse(state.showsEmptyAgenda)
+            assertFalse(state.showsNoResults)
+        }
+
+    @Test
+    fun `GIVEN the access given WHEN the platform reads an empty agenda THEN says it is empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnContactsLoaded(emptyList()))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isLoadingContacts)
+            assertTrue(viewModel.uiState.value.showsEmptyAgenda)
+        }
+
+    @Test
     fun `GIVEN the agenda never asked WHEN contacts arrive THEN ignores them`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -125,7 +158,8 @@ class AgendaViewModelTest {
         // Then
         assertTrue(
             viewModel.uiState.value.contacts
-                .isEmpty(),
+                .valueOrNull()
+                .isNullOrEmpty(),
         )
     }
 
@@ -143,7 +177,8 @@ class AgendaViewModelTest {
             // Then
             assertTrue(
                 viewModel.uiState.value.contacts
-                    .isEmpty(),
+                    .valueOrNull()
+                    .isNullOrEmpty(),
             )
             assertTrue(viewModel.uiState.value.showsDenied)
         }
@@ -160,7 +195,11 @@ class AgendaViewModelTest {
             viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.LIMITED))
 
             // Then
-            assertEquals(agenda, viewModel.uiState.value.contacts)
+            assertEquals(
+                agenda,
+                viewModel.uiState.value.contacts
+                    .valueOrNull(),
+            )
         }
 
     @Test

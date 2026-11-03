@@ -32,6 +32,13 @@ data class GroupDetailUiState(
     val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    /*
+     * Why: the account's copy isn't whole yet (a first download, ObserveFirstDownload not null, or not read yet), so an
+     * empty Despesas or Saldos may only be bills still coming: skeletons instead of "Nenhuma despesa ainda".
+     */
+    val awaitsFullSync: Boolean,
+    // Why: what is still coming waits for the internet, said over the skeletons instead of a bar that runs.
+    val isWaitingForInternet: Boolean,
     // Why: "Ensinar ao mapa?" (9.3e) after a bill of this group was saved in a category picked by hand.
     val teach: CategoryTeach?,
     // Why: the home tab the screen was opened from, which Android's rail beside it selects.
@@ -46,13 +53,24 @@ data class GroupDetailUiState(
     val showsProtectAccess: Boolean
         get() = joinedAs != null && isAccountUnprotected
 
-    // Why: Despesas' "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it.
+    // Why: Despesas' "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it; never a guess.
     val isEmpty: Boolean
-        get() = isLoaded && days.isEmpty()
+        get() = isLoaded && !awaitsFullSync && days.isEmpty()
+
+    // Why: Despesas' skeleton rows, while no bill is on the device yet and some may still be coming.
+    val isLoadingBills: Boolean
+        get() = isLoaded && awaitsFullSync && days.isEmpty()
 
     // Why: Saldos' "Ninguém deve nada ainda" / "Os saldos aparecem quando a primeira despesa for lançada."
     val isBalancesEmpty: Boolean
-        get() = isLoaded && !hasBills && myDebts.isEmpty() && otherDebts.isEmpty()
+        get() = isLoaded && !awaitsFullSync && hasNoBalances
+
+    // Why: Saldos' skeleton rows, while nobody owes anything on the device yet and bills may still be coming.
+    val isLoadingBalances: Boolean
+        get() = isLoaded && awaitsFullSync && hasNoBalances
+
+    private val hasNoBalances: Boolean
+        get() = !hasBills && myDebts.isEmpty() && otherDebts.isEmpty()
 
     // Why: "As dívidas de cada par já vêm compensadas…" under Saldos' lists, while there is any.
     val showsDebtNote: Boolean

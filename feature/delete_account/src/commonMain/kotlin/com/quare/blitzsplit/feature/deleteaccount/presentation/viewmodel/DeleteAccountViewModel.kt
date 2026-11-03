@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 class DeleteAccountViewModel(
     private val navigator: Navigator,
@@ -32,7 +34,7 @@ class DeleteAccountViewModel(
     val uiState: StateFlow<DeleteAccountUiState>
         field = MutableStateFlow(
             DeleteAccountUiState(
-                accountProvider = null,
+                accountProvider = Loadable.Loading,
                 isOnline = true,
                 hasConfirmed = false,
                 isDeleting = false,
@@ -49,7 +51,7 @@ class DeleteAccountViewModel(
     init {
         observeAccountStatus()
             .onEach { status ->
-                uiState.update { it.copy(accountProvider = (status as? AccountStatus.Connected)?.provider) }
+                uiState.update { it.copy(accountProvider = (status as? AccountStatus.Connected)?.provider.toLoaded()) }
             }.launchIn(viewModelScope)
         connectivityObserver
             .observe()

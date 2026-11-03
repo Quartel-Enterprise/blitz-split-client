@@ -28,6 +28,8 @@ data class GroupStatsUiState(
     val totalMinor: Long,
     // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
     val isFirstDownload: Boolean,
+    // Why: the bills still coming wait for the internet, said over the skeletons instead of a bar that runs.
+    val isWaitingForInternet: Boolean,
     val expenseCount: Int,
     // Why: "7 despesas, 1 na fila", with the orange dot.
     val pendingCount: Int,
@@ -52,20 +54,24 @@ data class GroupStatsUiState(
     val biggestExpense: StatsBiggestExpense?,
     // Why: "Por categoria" and the pie, the largest first; a bill without one counts in "Outros".
     val categories: List<StatsCategoryRow>,
-    // Why: nothing is drawn until Room is read.
+    // Why: nothing is drawn until Room and whether the account's copy is whole are read.
     val isLoaded: Boolean,
     // Why: the home tab the screen was opened from, which Android's rail beside it selects.
     val homeTab: HomeTab,
     // Why: Atividade's unread badge on Android's rail beside the screen.
     val activityUnreadCount: Int,
 ) {
-    // Why: "Nada para mostrar ainda", with "Rachar conta", while the group has no bill at all.
+    // Why: "Nada para mostrar ainda", with "Rachar conta", while the group has no bill at all, never a guess.
     val isGroupEmpty: Boolean
-        get() = isLoaded && allStartMillis == null
+        get() = isLoaded && !isFirstDownload && allStartMillis == null
 
-    // Why: "Nenhuma despesa em setembro", with "Ver toda a viagem".
+    // Why: "Nenhuma despesa em setembro", with "Ver toda a viagem", once no bill of the period may still come.
     val isPeriodEmpty: Boolean
-        get() = isLoaded && allStartMillis != null && expenseCount == 0
+        get() = isLoaded && !isFirstDownload && allStartMillis != null && expenseCount == 0
+
+    // Why: skeletons in place of either empty state while the period has no bill and a first download brings more.
+    val isLoadingBills: Boolean
+        get() = isLoaded && isFirstDownload && expenseCount == 0
 
     val showsStats: Boolean
         get() = isLoaded && expenseCount > 0
