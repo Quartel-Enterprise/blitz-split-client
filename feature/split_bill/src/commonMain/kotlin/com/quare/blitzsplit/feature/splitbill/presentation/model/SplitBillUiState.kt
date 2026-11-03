@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 
 data class SplitBillUiState(
     // Why: "Editar conta" rather than "Rachar conta", with "Apagar conta" under the form.
@@ -24,6 +25,10 @@ data class SplitBillUiState(
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: only Android draws it.
+    val groupShape: GroupShape,
+    // Why: drawn in place of the color and the initials, null for none.
+    val groupPhotoUrl: String?,
     // Why: the groups a new bill may go to, the most recently used first; empty while editing.
     val groups: List<BillGroup>,
     // Why: the "Rachar em qual grupo?" sheet, open while not null, with what is marked in it until "Continuar".

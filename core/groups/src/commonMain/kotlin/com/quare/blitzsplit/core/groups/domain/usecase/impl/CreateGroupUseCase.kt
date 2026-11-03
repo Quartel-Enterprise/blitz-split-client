@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import kotlin.uuid.Uuid
@@ -21,6 +22,7 @@ class CreateGroupUseCase(
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape,
         currency: GroupCurrency,
         members: List<NewGroupMember>,
     ): Result<String> {
@@ -33,6 +35,9 @@ class CreateGroupUseCase(
                     name = GroupNameRules.toCapped(name.trim()),
                     type = type,
                     color = color,
+                    shape = shape,
+                    // Why: "Novo grupo" has no photo; it is picked in "Editar grupo".
+                    photo = null,
                     currency = currency,
                     members = members.map { member ->
                         GroupMember(

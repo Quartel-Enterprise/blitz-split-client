@@ -35,6 +35,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -423,6 +424,8 @@ class BillCategoryViewModelTest {
         name = "Apê 302",
         type = GroupType.HOME,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(pierre, ana),
         isPending = false,

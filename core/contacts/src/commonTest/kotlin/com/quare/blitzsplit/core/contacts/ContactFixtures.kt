@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 
 // Test data the contacts tests share: groups, their members, bills and payments, and contacts.
@@ -64,6 +65,8 @@ internal fun group(
     name = name,
     type = GroupType.OTHER,
     color = color,
+    shape = GroupShape.SQUARE,
+    photo = null,
     currency = currency,
     members = members.toList(),
     isPending = false,

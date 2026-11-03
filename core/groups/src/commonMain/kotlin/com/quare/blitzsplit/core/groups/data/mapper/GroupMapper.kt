@@ -45,9 +45,11 @@ interface GroupMapper {
         addedAt: Long,
     ): GroupMemberEntity
 
+    // Why: photoUrl is the one the row goes up with, a photo still to upload's included.
     fun toDto(
         entity: GroupEntity,
         userId: String,
+        photoUrl: String?,
     ): GroupDto
 
     fun toDto(entity: GroupMemberEntity): GroupMemberDto

@@ -106,6 +106,9 @@ targets:
         # https://blitzsplit.com/.well-known/apple-app-site-association, served by blitz-split-site
         # (webApp/public/.well-known keeps the same copy: change both)
         com.apple.developer.associated-domains: [webcredentials:blitzsplit.com, applinks:blitzsplit.com]
+        # Atividade's push notifications. Xcode's automatic signing adds Push Notifications to the App ID, and an
+        # export for the App Store turns it into production
+        aps-environment: development
 
   BoraRachar-macOS:
     templates: [BoraRachar]
@@ -126,6 +129,7 @@ targets:
         com.apple.security.personal-information.addressbook: true
         com.apple.developer.applesignin: [Default]
         com.apple.developer.associated-domains: [webcredentials:blitzsplit.com, applinks:blitzsplit.com]
+        com.apple.developer.aps-environment: development
 
 schemes:
   BoraRachar-iOS:

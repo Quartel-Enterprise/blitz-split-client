@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -37,12 +38,16 @@ import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.domain.model.PushDevice
+import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -77,6 +82,7 @@ class SyncCoordinatorTest {
     private lateinit var categories: FakeCategoryRepository
     private lateinit var billComments: FakeBillCommentRepository
     private lateinit var billAttachments: FakeBillAttachmentRepository
+    private lateinit var pushDevices: FakePushDeviceRepository
     private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -6119,10 +6125,563 @@ class SyncCoordinatorTest {
             assertEquals(1, account.signOutCount)
         }
 
+    @Test
+    fun `GIVEN a push token and an anonymous account without a profile WHEN starting THEN registers the device`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                status = anonymous,
+                storedPushDevice = androidDevice,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token and a Google account online WHEN starting THEN registers the device for the Google user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token and no account WHEN starting online THEN unregisters it instead`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and no account WHEN starting offline THEN touches nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and an account offline WHEN starting THEN registers nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an account online and no push token yet WHEN starting THEN registers nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an account online and no push token yet WHEN the platform hands the token THEN registers the device`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            pushDevices.setDevice(androidDevice)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token offline WHEN the device comes online THEN registers the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN the push token changes THEN registers the new token`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.setDevice(androidDevice.copy(token = "fcm-token-renewed"))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+            pushDevices.registeredUserIds,
+        )
+        assertEquals("fcm-token-renewed", pushDevices.device.value?.token)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN the same push token is handed again THEN does not register again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.setDevice(androidDevice.copy())
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN a sync runs THEN does not register again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        val result = coordinator.syncNow()
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a device of an anonymous user WHEN switching to another Google user THEN registers it for him`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID, OTHER_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a local only profile and a push token WHEN the first sync makes the account THEN registers it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            isOnline.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.registrationCount)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a registered device WHEN the device goes offline and comes back online THEN registers it again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+            isOnline.value = false
+            runCurrent()
+
+            // When
+            isOnline.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+                pushDevices.registeredUserIds,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server refuses the push token WHEN starting THEN the sync still succeeds`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.registerError = noConnection
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a push token the server refused WHEN a change is queued THEN syncs it without registering again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            pushDevices.registerError = noConnection
+            coordinator.start()
+            runCurrent()
+            val uploadsBefore = profile.uploadedUserIds.size
+
+            // When
+            profile.saveProfile(pierre.copy(avatarColor = AvatarColor.PEACH))
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, profile.uploadedUserIds.size)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token the server refused WHEN the device comes back online THEN registers it again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.registerError = noConnection
+        coordinator.start()
+        runCurrent()
+        pushDevices.registerError = null
+        isOnline.value = false
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+            pushDevices.registeredUserIds,
+        )
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN signing out THEN unregisters it once the session ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+            logsPushDevice = true,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        coordinator.signOut()
+        runCurrent()
+
+        // Then
+        assertEquals(1, pushDevices.unregisterCount)
+        assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
+    }
+
+    @Test
+    fun `GIVEN a registered device offline WHEN signing out THEN unregisters it only once back online`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+        isOnline.value = false
+        runCurrent()
+
+        // When
+        val result = coordinator.signOut()
+        runCurrent()
+        val unregisteredOffline = pushDevices.unregisterCount
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(0, unregisteredOffline)
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push token fails to unregister WHEN signing out THEN still ends the session and erases the copy`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                storedPushDevice = androidDevice,
+            )
+            pushDevices.unregisterError = noConnection
+            coordinator.start()
+            runCurrent()
+
+            // When
+            val result = coordinator.signOut()
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, pushDevices.unregisterCount)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+            assertEquals(1, profile.clearCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN the push token failed to unregister WHEN back online THEN tries again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterError = noConnection
+        coordinator.start()
+        runCurrent()
+        coordinator.signOut()
+        runCurrent()
+        pushDevices.unregisterError = null
+
+        // When
+        isOnline.value = false
+        runCurrent()
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(2, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push token unregister never answers WHEN signing out THEN still ends the session`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterHangs = true
+        coordinator.start()
+        runCurrent()
+
+        // When
+        val result = coordinator.signOut()
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN signing out THEN registers nothing for the device without an account`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            coordinator.signOut()
+            runCurrent()
+
+            // Then
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a queued change WHEN signing out once synced THEN unregisters the device once the session ends`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                storedPushDevice = androidDevice,
+                logsPushDevice = true,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(1, pushDevices.unregisterCount)
+            assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN signing out once synced THEN keeps the device registered`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            pendingChanges = true,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN deleting the account THEN does not unregister it`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val noConnection = IllegalStateException("no connection")
+    private val androidDevice = PushDevice(
+        token = "fcm-token",
+        platform = PushPlatform.ANDROID,
+        apnsEnvironment = null,
+        webP256dh = null,
+        webAuth = null,
+    )
     private val pixKey = PaymentKey(
         id = "pix-email",
         type = PaymentKeyType.EMAIL,
@@ -6157,6 +6716,8 @@ class SyncCoordinatorTest {
         name = name,
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(
@@ -6257,6 +6818,8 @@ class SyncCoordinatorTest {
         logsCommentsAndActivity: Boolean = false,
         attachmentQueuedDuringFirstPush: Boolean = false,
         logsAttachments: Boolean = false,
+        storedPushDevice: PushDevice? = null,
+        logsPushDevice: Boolean = false,
     ) {
         firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -6283,6 +6846,7 @@ class SyncCoordinatorTest {
         categories = FakeCategoryRepository()
         billComments = FakeBillCommentRepository(initialComments = storedComments)
         billAttachments = FakeBillAttachmentRepository(initialAttachments = storedAttachments)
+        pushDevices = FakePushDeviceRepository(initialDevice = storedPushDevice)
         // Why: only the cases that assert where the comments go log them, so the others keep their exact logs.
         val commentAndActivityCalls = if (logsCommentsAndActivity) calls else mutableListOf()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
@@ -6360,6 +6924,11 @@ class SyncCoordinatorTest {
             ),
             activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
+            pushDeviceRepository = RecordingPushDeviceRepository(
+                delegate = pushDevices,
+                // Why: only the cases that assert when the device leaves log it, so the others keep their exact logs.
+                calls = if (logsPushDevice) calls else mutableListOf(),
+            ),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
@@ -6692,5 +7261,20 @@ private class RecordingActivityRepository(
     override suspend fun downloadActivity(userId: String): Result<Unit> {
         calls += "activity download $userId"
         return delegate.downloadActivity(userId)
+    }
+}
+
+private class RecordingPushDeviceRepository(
+    private val delegate: PushDeviceRepository,
+    private val calls: MutableList<String>,
+) : PushDeviceRepository by delegate {
+    override suspend fun register(userId: String): Result<Unit> {
+        calls += "push register $userId"
+        return delegate.register(userId)
+    }
+
+    override suspend fun unregister(): Result<Unit> {
+        calls += "push unregister"
+        return delegate.unregister()
     }
 }

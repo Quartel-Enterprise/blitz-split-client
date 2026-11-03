@@ -27,6 +27,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDeletion
@@ -220,6 +221,8 @@ internal fun fieldLabelOf(field: ActivityField): String = stringResource(
         ActivityField.NAME -> R.string.activity_field_name
         ActivityField.TYPE -> R.string.activity_field_type
         ActivityField.COLOR -> R.string.activity_field_color
+        ActivityField.SHAPE -> R.string.activity_field_shape
+        ActivityField.PHOTO -> R.string.activity_field_photo
         ActivityField.CURRENCY -> R.string.activity_field_currency
         ActivityField.DEFAULT_SPLIT -> R.string.activity_field_default_split
         ActivityField.CATEGORY -> R.string.activity_field_category
@@ -263,6 +266,16 @@ internal fun changeValueTextOf(
         ActivityField.TYPE -> value.code?.let(GroupType::fromCodeOrNull)?.let { stringResource(it.labelRes) }
 
         ActivityField.COLOR -> value.code?.let(AvatarColor::fromCodeOrNull)?.let { stringResource(it.labelRes) }
+
+        ActivityField.SHAPE -> value.code?.let(GroupShape::fromCodeOrNull)?.let { stringResource(it.labelRes) }
+
+        ActivityField.PHOTO -> stringResource(
+            when (value.code) {
+                ActivityField.PHOTO_PREVIOUS -> R.string.activity_photo_previous
+                ActivityField.PHOTO_NEW -> R.string.activity_photo_new
+                else -> R.string.activity_photo_none
+            },
+        )
 
         ActivityField.CURRENCY ->
             value.code

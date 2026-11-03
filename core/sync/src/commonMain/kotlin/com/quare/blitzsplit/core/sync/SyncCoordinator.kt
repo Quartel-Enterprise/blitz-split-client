@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -54,6 +56,7 @@ class SyncCoordinator(
     private val billAttachmentRepository: BillAttachmentRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
+    private val pushDeviceRepository: PushDeviceRepository,
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
@@ -88,6 +91,7 @@ class SyncCoordinator(
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncWhenDue() }
+        scope.launch { registerPushDevice() }
         scope.launch { endFirstDownloadOffline() }
     }
 
@@ -425,6 +429,26 @@ class SyncCoordinator(
                 val isSwitch = previousUserId != null && userId != null
                 previousUserId = userId
                 if (isSwitch) syncUntilSettled()
+            }
+    }
+
+    /*
+     * Why: Atividade's push notifications go to the devices of the account signed in, so this device's token goes to
+     * the server for each user it signs in as, an anonymous one included, once online. With no account signed in the
+     * token is removed instead, also once online: a sign out made offline, or one whose call failed, would otherwise
+     * leave the device getting the old account's notices, and the server forgets a token whoever holds it. A failure
+     * waits for the next change: back online, another token or another user.
+     */
+    private suspend fun registerPushDevice() {
+        combine(
+            pushDeviceRepository.observeDevice(),
+            accountRepository.observeStatus().map(::userIdOrNull),
+            connectivityObserver.observe(),
+        ) { device, userId, isOnline -> if (device != null && isOnline) device to userId else null }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .collect { (_, userId) ->
+                if (userId == null) pushDeviceRepository.unregister() else pushDeviceRepository.register(userId)
             }
     }
 

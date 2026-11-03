@@ -9,6 +9,14 @@ plugins {
  */
 val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
+/*
+ * Atividade's push notifications (FCM): the Firebase project's public config, from a Gradle property or an
+ * environment variable of the same name. Until all four are set the app never starts Firebase, so a build without
+ * them runs as before, with no notifications.
+ */
+val firebaseConfig = listOf("FIREBASE_APP_ID", "FIREBASE_API_KEY", "FIREBASE_PROJECT_ID", "FIREBASE_SENDER_ID")
+    .associateWith { key -> providers.gradleProperty(key).orNull ?: System.getenv(key).orEmpty() }
+
 android {
     namespace = "com.quare.blitzsplit"
     compileSdk = libs.versions.android.compileSdk
@@ -25,6 +33,10 @@ android {
             .toInt()
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
+        firebaseConfig.forEach { (key, value) -> buildConfigField("String", key, "\"$value\"") }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     // Lists English and Portuguese in the system's per-app language setting (Android 13+)
     androidResources {
@@ -65,6 +77,8 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.model)
     implementation(projects.core.provider.supabase)
+    implementation(projects.core.profile)
+    implementation(projects.android.platform)
 
     // Android UI
     implementation(projects.android.designsystem)
@@ -92,6 +106,10 @@ dependencies {
     implementation(projects.android.feature.deleteAccount)
     implementation(projects.android.feature.notificationSettings)
     implementation(projects.android.feature.categoryMap)
+
+    // Atividade's push notifications
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))

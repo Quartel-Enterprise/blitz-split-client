@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
@@ -34,6 +35,8 @@ internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupH
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.PEACH,
+    groupShape = GroupShape.COOKIE,
+    groupPhotoUrl = null,
     currency = GroupCurrency.BRL,
     faces = previewFaces,
     memberCount = 6,

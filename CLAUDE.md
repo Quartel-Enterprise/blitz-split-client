@@ -123,7 +123,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
     other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it), which
     open the bill's Conta; a bill's attachments and its share link show only in its Conta's Histórico, never in the
-    feed nor its badge (`ActivityKind.isInFeed`). No push notifications yet.
+    feed nor its badge (`ActivityKind.isInFeed`).
+  - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
+    event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
+    grupos" for a bill created, edited or deleted while you are its payer or in its split (before the change too) and
+    a comment on a bill you're in or a thread you wrote in; "Alguém marcou um pagamento para mim" for a payment
+    recorded or undone that you paid or received; "Lembretes de acerto" for a charge sent to you and, every Monday at
+    10:00 in Brasília, "Você tem saldo em aberto em Apê 302" (or "em 3 grupos") while you owe or are owed;
+    "Convites e novos membros" (off by default) for being added to a group and someone joining yours. No amount in
+    them. The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
+    insert), and each device words them in its language from a kind and the names (Android's channels are the four
+    toggles, Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana lançou “Jantar”
+    com você". A tap opens what the item's tap in Atividade opens, over Atividade (after a sync when its group isn't
+    on the device yet) and marks it read; a reminder opens the group's Saldos over Grupos, or Saldos. Each device
+    registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
+    it while none is, a sign out made offline once back online. Android and Apple ask for the permission the first time Início shows, the web on the toggles.
+    Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
+    Firebase service account on the server, the web's VAPID keys on both (`docs/push-notifications.md`). Muting a
+    group isn't built yet, though the footer of Notificações mentions it.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -233,8 +250,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
     participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
-    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar cycles its
-    color through the palette (no shapes yet), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar steps
+    its color through the palette, and on Android its shape too, both at once ("Trocar forma e cor do grupo": five
+    colors over four shapes go through all twenty), starting as a peach Biscoito (a new group has no photo; Editar
+    grupo adds it), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
@@ -452,8 +471,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"
     and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
-    tombstone, offline too). No
-    notifications nor Atividade yet.
+    tombstone, offline too). Whoever paid or received it, if not who recorded it, gets a push notification (below).
   - "Pagar Ana" (4.5) is what Registrar pagamento shows, in the same sheet or dialog, when this device's user pays
     someone with an account who has a Pix or Bitcoin key: every "Acertar" (the group's Saldos, "Seu saldo neste
     grupo", the global Saldos' `SettleUp`, Início's faces, Contatos' profile), never "Recebi", "Já pagou" nor Início's
@@ -477,13 +495,28 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
-    grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
-    the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
-    stays editable. Moeda locks once the group has a bill on the device ("Não muda
+    grupo" (`Route.EditGroup`) has Novo grupo's fields, the icon being a shape and a color or a photo (6.4d): on
+    Android and iOS the avatar or "Trocar ícone ou foto" opens "Ícone do grupo" (Android's bottom sheet: Forma, Cor,
+    "Escolher foto", "Tirar foto" and "Usar este ícone", a 480 dp dialog where Editar grupo is one, in a book's right
+    half; iOS's medium sheet: the colors as tiles, the photo's two
+    sources and ✓), the shape and color picked there reaching the form only on "Usar este ícone"; the web ("Cor do
+    ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
+    Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
+    made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
+    The photo is the profile's 512x512 JPEG (`PrepareProfilePhoto`), drawn in place of the color and initials in the
+    group's shape, and picking a color or a shape takes it off. A new photo waits on the device and goes up with
+    the group's next sync, offline too ("Uma foto nova sobe junto."), to the public `group-photos` bucket
+    (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the shape and the photo are fields of the
+    group row like the color, saved only when this person changed them, and Atividade says "Forma" and "Foto"
+    ("Foto anterior", "Nova foto", "Sem foto"). The photo and the shape show wherever the group's own badge does:
+    Grupos' rows and cards, Início, the search, Despesas' header, Rachar conta and "Rachar em qual grupo?", and the
+    web's and the Mac's "Em aberto"; Convite (the invite, read before joining), Atividade's dot, "Quem pagou a
+    quem?" and the groups listed under a person (Saldos, Contatos) keep the color. The name has 1 to 40 letters and
+    the type stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
-    with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
+    with an iPad's room, the avatar beside "Trocar ícone ou foto" on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
     under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).

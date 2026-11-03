@@ -44,6 +44,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -2018,6 +2019,8 @@ class HomeViewModelTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = false,

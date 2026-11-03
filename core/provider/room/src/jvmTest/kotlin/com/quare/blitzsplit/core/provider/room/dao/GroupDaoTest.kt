@@ -529,6 +529,9 @@ class GroupDaoTest {
             name = "Casa da praia",
             type = "home",
             color = "peach",
+            shape = "petal",
+            photoUrl = null,
+            pendingPhoto = null,
             currency = "USD",
             updatedAt = 6L,
         )
@@ -543,6 +546,7 @@ class GroupDaoTest {
                 name = "Casa da praia",
                 type = "home",
                 color = "peach",
+                shape = "petal",
                 currency = "USD",
             ),
             dao
@@ -551,6 +555,36 @@ class GroupDaoTest {
                 .single(),
         )
     }
+
+    @Test
+    fun `GIVEN a shape a newer app wrote WHEN editing the group without a shape THEN keeps the stored shape`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 1L).copy(shape = "hexagon"))
+
+            // When
+            dao.updateGroup(
+                id = "group-1",
+                name = "Casa da praia",
+                type = "trip",
+                color = "blue",
+                shape = null,
+                photoUrl = null,
+                pendingPhoto = null,
+                currency = "BRL",
+                updatedAt = 6L,
+            )
+
+            // Then
+            assertEquals(
+                "hexagon",
+                dao
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .shape,
+            )
+        }
 
     @Test
     fun `GIVEN a group stamped by a clock ahead WHEN editing it THEN the edit is stamped after it`() = runTest {
@@ -563,6 +597,9 @@ class GroupDaoTest {
             name = "Casa da praia",
             type = "trip",
             color = "blue",
+            shape = "cookie",
+            photoUrl = null,
+            pendingPhoto = null,
             currency = "BRL",
             updatedAt = 6L,
         )
@@ -875,6 +912,9 @@ class GroupDaoTest {
         inviteCode = inviteCode,
         defaultSplit = null,
         splitIncomes = null,
+        shape = null,
+        photoUrl = null,
+        pendingPhoto = null,
     )
 
     private fun member(

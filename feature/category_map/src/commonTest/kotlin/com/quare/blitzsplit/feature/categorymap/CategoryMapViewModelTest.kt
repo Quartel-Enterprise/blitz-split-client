@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -286,6 +287,8 @@ class CategoryMapViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = emptyList(),
         isPending = false,

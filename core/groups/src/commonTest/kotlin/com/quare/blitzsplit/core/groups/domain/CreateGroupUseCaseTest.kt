@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -30,6 +31,7 @@ class CreateGroupUseCaseTest {
                 name = "Viagem Floripa",
                 type = GroupType.TRIP,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
                 currency = GroupCurrency.BRL,
                 members = listOf(me),
             )
@@ -245,6 +247,7 @@ class CreateGroupUseCaseTest {
                 name = "Viagem Floripa",
                 type = GroupType.TRIP,
                 color = AvatarColor.BLUE,
+                shape = GroupShape.COOKIE,
                 currency = GroupCurrency.BRL,
                 members = listOf(me, ana),
             )
@@ -280,6 +283,28 @@ class CreateGroupUseCaseTest {
         assertTrue(repository.createdGroups.single().isCreatedByMe)
     }
 
+    @Test
+    fun `GIVEN a shape WHEN creating the group THEN stores that shape and no photo`() = runTest {
+        // Given
+        prepareScenario()
+        val shape = GroupShape.PETAL
+
+        // When
+        useCase(
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = shape,
+            currency = GroupCurrency.BRL,
+            members = listOf(me),
+        )
+
+        // Then
+        val created = repository.createdGroups.single()
+        assertEquals(GroupShape.PETAL, created.shape)
+        assertNull(created.photo)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),
@@ -287,6 +312,7 @@ class CreateGroupUseCaseTest {
         name = name,
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.COOKIE,
         currency = GroupCurrency.BRL,
         members = members,
     ).getOrThrow()

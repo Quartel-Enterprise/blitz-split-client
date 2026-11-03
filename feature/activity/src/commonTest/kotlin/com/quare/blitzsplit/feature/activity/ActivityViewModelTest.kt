@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.SyncState
@@ -1576,6 +1577,8 @@ class ActivityViewModelTest {
             name = "Apê 302",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.SQUARE,
+            photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(
                 member(
@@ -1599,6 +1602,8 @@ class ActivityViewModelTest {
             name = "Viagem Floripa",
             type = GroupType.TRIP,
             color = AvatarColor.GREEN,
+            shape = GroupShape.SQUARE,
+            photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(
                 member(

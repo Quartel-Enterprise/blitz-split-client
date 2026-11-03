@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -1294,6 +1295,8 @@ class GlobalBalancesViewModelTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members.toList(),
         isPending = false,

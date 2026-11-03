@@ -11,6 +11,10 @@ data class GroupDto(
     @SerialName("name") val name: String,
     @SerialName("type") val type: String,
     @SerialName("color") val color: String,
+    // Why: null for a group made before shapes, or last written by an older app, which never sends it.
+    @SerialName("shape") val shape: String?,
+    // Why: sent as null too, so taking the photo off reaches the server.
+    @SerialName("photo_url") val photoUrl: String?,
     @SerialName("currency") val currency: String,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,

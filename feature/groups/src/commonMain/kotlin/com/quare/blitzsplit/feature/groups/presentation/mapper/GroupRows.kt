@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -48,6 +49,8 @@ internal fun rowOf(
         name = group.name,
         initials = Initials.of(group.name),
         color = group.color,
+        shape = group.shape,
+        photoUrl = group.photo?.toImageUrl(),
         faces = group.members.take(MAX_FACES).map {
             MemberFace(
                 initial = Initials.firstOf(it.name),

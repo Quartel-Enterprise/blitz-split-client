@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry
@@ -1249,6 +1250,8 @@ class BillHistoriesTest {
         name = "Viagem de Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(ANA, "Ana", AvatarColor.PEACH),

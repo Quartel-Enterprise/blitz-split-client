@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Download, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
 import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState } from 'blitzsplit-shared'
-import { useEffect, useReducer, useRef, type ChangeEvent, type KeyboardEvent } from 'react'
+import { useEffect, useReducer, useRef, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -9,6 +9,7 @@ import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
 import { postedText } from './BillComments'
+import { onPhotoFile } from '@/lib/photoFile'
 
 /**
  * What "Anexos" and the viewer read and send: Conta's, or a bill's link page's, which adds and removes nothing (no
@@ -18,17 +19,6 @@ export type AttachmentsPresenter = Pick<BillDetailPresenter, 'openAttachment' | 
   Partial<Pick<BillDetailPresenter, 'photoPicked' | 'photoUnreadable' | 'removeAttachment'>>
 export type AttachmentsState = Pick<JsBillDetailState, 'attachments' | 'photoCount' | 'viewedAttachmentIndex' | 'isOnline'> &
   Partial<Pick<JsBillDetailState, 'photoLimit' | 'showsAddPhoto' | 'canAddPhoto' | 'isAddingPhoto'>>
-
-async function onPhotoFile(presenter: AttachmentsPresenter, event: ChangeEvent<HTMLInputElement>) {
-  const file = event.target.files?.[0]
-  event.target.value = ''
-  if (!file) return
-  try {
-    presenter.photoPicked?.(new Int8Array(await file.arrayBuffer()))
-  } catch {
-    presenter.photoUnreadable?.()
-  }
-}
 
 function adderText(attachment: JsBillAttachment): string {
   if (attachment.isAddedByMe) return t('splitBill_you')

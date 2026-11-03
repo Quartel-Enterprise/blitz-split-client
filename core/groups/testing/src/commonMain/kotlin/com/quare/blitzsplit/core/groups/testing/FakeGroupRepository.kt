@@ -7,7 +7,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -124,6 +126,8 @@ class FakeGroupRepository(
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape?,
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit> {
@@ -137,6 +141,8 @@ class FakeGroupRepository(
                     name = name,
                     type = type,
                     color = color,
+                    shape = shape ?: group.shape,
+                    photo = photo,
                     currency = currency,
                     isPending = true,
                 )
