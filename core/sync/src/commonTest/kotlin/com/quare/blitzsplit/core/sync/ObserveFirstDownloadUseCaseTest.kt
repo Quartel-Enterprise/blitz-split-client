@@ -99,25 +99,24 @@ class ObserveFirstDownloadUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a first download counting groups WHEN observing THEN its count wins over the account's flag`() =
-        runTest {
-            // Given
-            account.awaitsFullSync = true
-            firstDownload.start()
-            firstDownload.expect(7)
-            firstDownload.groupArrived()
+    fun `GIVEN a first download counting groups WHEN observing THEN its count wins over the account flag`() = runTest {
+        // Given
+        account.awaitsFullSync = true
+        firstDownload.start()
+        firstDownload.expect(7)
+        firstDownload.groupArrived()
 
-            // When
-            val progress = useCase().first()
+        // When
+        val progress = useCase().first()
 
-            // Then
-            assertEquals(
-                FirstDownloadProgress(
-                    arrivedGroupCount = 1,
-                    groupCount = 7,
-                    isWaitingForInternet = false,
-                ),
-                progress,
-            )
-        }
+        // Then
+        assertEquals(
+            FirstDownloadProgress(
+                arrivedGroupCount = 1,
+                groupCount = 7,
+                isWaitingForInternet = false,
+            ),
+            progress,
+        )
+    }
 }
