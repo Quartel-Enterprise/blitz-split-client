@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -1797,6 +1798,20 @@ class ActivityViewModelTest {
     }
 
     @Test
+    fun `GIVEN groups on the device and the feed not read yet WHEN Atividade opens THEN offers the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertTrue(state.canSearch)
+        }
+
+    @Test
     fun `GIVEN no group on the device WHEN Atividade opens THEN hides the search`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = emptyList())
@@ -2255,6 +2270,7 @@ class ActivityViewModelTest {
             } else {
                 ObserveGroups { MutableSharedFlow() }
             },
+            observeHasGroups = ObserveHasGroupsUseCase(groupRepository),
             observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository()),
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),

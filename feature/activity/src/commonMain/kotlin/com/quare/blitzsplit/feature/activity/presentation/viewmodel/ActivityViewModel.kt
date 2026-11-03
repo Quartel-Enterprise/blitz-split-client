@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
@@ -63,6 +64,7 @@ class ActivityViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeActivityFeed: ObserveActivityFeed,
     observeGroups: ObserveGroups,
+    observeHasGroups: ObserveHasGroups,
     observeMapCategories: ObserveMapCategories,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
@@ -97,6 +99,7 @@ class ActivityViewModel(
                 isRefreshing = false,
                 hasMore = false,
                 deletedNotice = null,
+                canSearch = false,
             ),
         )
 
@@ -143,6 +146,10 @@ class ActivityViewModel(
                 entries = entriesOf(newFeed, newGroups, categories)
                 show()
             }.launchIn(viewModelScope)
+        // Why: on its own, so the search doesn't wait for the feed and its categories.
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
+            .launchIn(viewModelScope)
         combine(observeSyncState(), connectivityObserver.observe()) { syncState, isOnline ->
             uiState.update {
                 it.copy(

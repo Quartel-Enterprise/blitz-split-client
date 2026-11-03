@@ -12,9 +12,9 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
+import com.quare.blitzsplit.feature.groups.presentation.mapper.findResultsIn
 import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
-import com.quare.blitzsplit.feature.groups.presentation.mapper.searchedIn
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
@@ -85,7 +85,7 @@ class SearchViewModel(
     }
 
     private fun search(change: (GroupsSearch) -> GroupsSearch) {
-        uiState.update { state -> state.copy(search = change(state.search).searchedIn(groups, rows)) }
+        uiState.update { state -> state.copy(search = change(state.search).findResultsIn(groups, rows)) }
     }
 
     /*

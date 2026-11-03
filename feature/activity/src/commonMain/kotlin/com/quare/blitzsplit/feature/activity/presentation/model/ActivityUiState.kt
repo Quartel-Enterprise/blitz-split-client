@@ -45,6 +45,8 @@ data class ActivityUiState(
     val hasMore: Boolean,
     // Why: the item tapped whose bill or group is gone: a snackbar on Android, an alert on iOS, a toast on the web.
     val deletedNotice: ActivityDeletion?,
+    // Why: "Buscar" only once there is a group to look in, as on Grupos, before the feed is read too.
+    val canSearch: Boolean,
 ) {
     val items: List<ActivityItem>
         get() = days.flatMap { it.items }
@@ -88,10 +90,6 @@ data class ActivityUiState(
 
     val canMarkAllRead: Boolean
         get() = unreadCount > 0
-
-    // Why: "Buscar" only once there is a group to look in, as on Grupos.
-    val canSearch: Boolean
-        get() = groups.isNotEmpty()
 
     val emptyState: ActivityEmptyState?
         get() = when {

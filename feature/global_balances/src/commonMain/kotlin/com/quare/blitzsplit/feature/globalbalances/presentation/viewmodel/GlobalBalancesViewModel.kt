@@ -16,8 +16,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
-import com.quare.blitzsplit.core.groups.domain.usecase.hasGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -66,7 +65,7 @@ class GlobalBalancesViewModel(
     observePaymentKeys: ObservePaymentKeys,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
-    observeGroups: ObserveGroups,
+    observeHasGroups: ObserveHasGroups,
 ) : ViewModel() {
     val uiState: StateFlow<GlobalBalancesUiState>
         field = MutableStateFlow(
@@ -146,8 +145,7 @@ class GlobalBalancesViewModel(
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
-        observeGroups
-            .hasGroups()
+        observeHasGroups()
             .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
         connectivityObserver

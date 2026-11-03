@@ -580,5 +580,6 @@ class ActivityUiStateTest {
         isRefreshing = false,
         hasMore = false,
         deletedNotice = null,
+        canSearch = true,
     )
 }

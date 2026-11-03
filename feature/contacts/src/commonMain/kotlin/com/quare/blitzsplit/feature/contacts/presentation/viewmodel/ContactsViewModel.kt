@@ -9,8 +9,7 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
-import com.quare.blitzsplit.core.groups.domain.usecase.hasGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
@@ -51,7 +50,7 @@ class ContactsViewModel(
     observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
-    observeGroups: ObserveGroups,
+    observeHasGroups: ObserveHasGroups,
 ) : ViewModel() {
     val uiState: StateFlow<ContactsUiState>
         field = MutableStateFlow(
@@ -123,8 +122,7 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        observeGroups
-            .hasGroups()
+        observeHasGroups()
             .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
     }

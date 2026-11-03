@@ -16,7 +16,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 
 // Why: the search with what its text and scope find, wherever it opens: Grupos' place or Route.Search.
-internal fun GroupsSearch.searchedIn(
+internal fun GroupsSearch.findResultsIn(
     groups: List<GroupWithMoney>,
     rows: List<GroupRow>,
 ): GroupsSearch = copy(

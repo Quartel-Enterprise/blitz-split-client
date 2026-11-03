@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface GroupLocalDataSource {
     fun observeGroups(): Flow<List<GroupEntity>>
 
+    fun observeHasGroups(): Flow<Boolean>
+
     fun observeMembers(): Flow<List<GroupMemberEntity>>
 
     fun observeHasPending(): Flow<Boolean>

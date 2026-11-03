@@ -27,8 +27,9 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -1798,12 +1799,10 @@ class GlobalBalancesViewModelTest {
             observeActivityUnreadCount = ObserveActivityUnreadCountUseCase(activity, accountStatus),
             recordCharges = RecordChargesUseCase(activity, accountStatus) { 0L },
             // Why: Room not read yet is a flow that hasn't emitted.
-            observeGroups = if (groupsRead) {
-                ObserveGroupsUseCase(
-                    groups,
-                )
+            observeHasGroups = if (groupsRead) {
+                ObserveHasGroupsUseCase(groups)
             } else {
-                ObserveGroups { flow { awaitCancellation() } }
+                ObserveHasGroups { flow { awaitCancellation() } }
             },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

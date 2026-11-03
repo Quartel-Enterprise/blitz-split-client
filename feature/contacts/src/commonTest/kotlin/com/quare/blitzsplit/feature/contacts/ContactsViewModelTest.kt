@@ -15,8 +15,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalan
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -905,10 +906,10 @@ class ContactsViewModelTest {
             ),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
-            observeGroups = if (areGroupsRead) {
-                ObserveGroupsUseCase(groups)
+            observeHasGroups = if (areGroupsRead) {
+                ObserveHasGroupsUseCase(groups)
             } else {
-                ObserveGroups { MutableSharedFlow() }
+                ObserveHasGroups { MutableSharedFlow() }
             },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
