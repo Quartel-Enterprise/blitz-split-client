@@ -27,10 +27,12 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -273,6 +275,8 @@ class HomeViewModel(
     fun onEvent(event: HomeUiEvent) {
         when (event) {
             HomeUiEvent.OnProfileClicked -> open(Route.Profile)
+
+            HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch) navigator.openSearchOver(HomeTab.HOME)
 
             HomeUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()
 

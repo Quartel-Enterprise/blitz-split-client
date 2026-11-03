@@ -200,4 +200,5 @@
         <item quantity="one">%d não lida</item>
         <item quantity="other">%d não lidas</item>
     </plurals>
+    <string name="designsystem_search">Buscar</string>
 </resources>

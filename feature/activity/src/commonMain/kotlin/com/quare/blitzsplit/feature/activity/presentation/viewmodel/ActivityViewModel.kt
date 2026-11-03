@@ -19,10 +19,12 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -211,6 +213,11 @@ class ActivityViewModel(
             ActivityUiEvent.OnDeletedNoticeShown -> uiState.update { it.copy(deletedNotice = null) }
 
             ActivityUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
+
+            // Why: never over "Filtrar atividade", which is no route, so ⌘K on the web can't stack the search over it.
+            ActivityUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.isFilterOpen) {
+                navigator.openSearchOver(HomeTab.ACTIVITY)
+            }
 
             ActivityUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
 

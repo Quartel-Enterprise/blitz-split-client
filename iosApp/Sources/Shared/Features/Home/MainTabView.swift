@@ -360,6 +360,8 @@ struct MainTabView: View {
         case let .contactProfile(route): ContactProfileView(route: route)
         case .contactsAgenda: AgendaView()
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
+        // Search over Home, Balances, Contacts or Activity; the Mac opens it as a sheet
+        case .search: SearchView()
         default:
             #if os(macOS)
             // The Mac's profile is Ajustes (⌘,), never pushed

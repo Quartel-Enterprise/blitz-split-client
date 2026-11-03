@@ -198,4 +198,5 @@
         <item quantity="one">%d unread</item>
         <item quantity="other">%d unread</item>
     </plurals>
+    <string name="designsystem_search">Search</string>
 </resources>

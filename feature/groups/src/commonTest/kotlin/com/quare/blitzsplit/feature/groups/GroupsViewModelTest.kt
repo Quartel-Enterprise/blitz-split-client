@@ -68,6 +68,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.LatestBill
 import com.quare.blitzsplit.feature.groups.presentation.model.LatestBillAuthor
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -344,7 +345,7 @@ class GroupsViewModelTest {
         // Given
         prepareScenario(storedGroups = listOf(trio()))
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("apê"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("apê")))
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)

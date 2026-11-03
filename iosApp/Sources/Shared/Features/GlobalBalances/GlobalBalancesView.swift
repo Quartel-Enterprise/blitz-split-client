@@ -144,6 +144,9 @@ struct GlobalBalancesView: View {
                 }
             }
             #endif
+            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
+                model?.send(GlobalBalancesUiEventOnSearchClicked.shared)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     model?.send(GlobalBalancesUiEventOnProfileClicked.shared)

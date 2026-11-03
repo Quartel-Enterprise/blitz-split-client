@@ -1,11 +1,12 @@
 import { CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
+import { homeSearchOf, useSearchShortcut } from '@/features/groups/SearchDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
@@ -31,6 +32,8 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>
 export function ActivityScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new ActivityPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsActivityState) => void) => p.observeState(onChange))
+  const openSearch = useMemo(() => (presenter ? () => presenter.openSearch() : null), [presenter])
+  useSearchShortcut(state?.canSearch ?? false, openSearch)
   // Why: the canvas' desktop (from 1024 px) splits the feed and the item picked; narrower, one column.
   const isWide = useMediaQuery('(min-width: 1024px)')
   const isPhone = !useMediaQuery('(min-width: 768px)')
@@ -47,6 +50,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
       activityUnreadCount={state.unreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      search={homeSearchOf(state.canSearch, () => presenter.openSearch())}
     >
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
         <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>

@@ -14,6 +14,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import com.quare.blitzsplit.android.designsystem.R as DesignR
@@ -63,7 +64,7 @@ fun GroupsScreen(
         onDispose { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = false)) }
     }
     // Why: back closes the search before it leaves the home.
-    BackHandler(enabled = state.isSearching) { viewModel.onEvent(GroupsUiEvent.OnSearchClosed) }
+    BackHandler(enabled = state.isSearching) { viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed)) }
     GroupsContent(
         state = state,
         onEvent = viewModel::onEvent,

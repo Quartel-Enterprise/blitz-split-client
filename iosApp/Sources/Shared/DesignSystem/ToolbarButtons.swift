@@ -160,3 +160,32 @@ private struct VerticalEdgeReading: ViewModifier {
     }
 }
 #endif
+
+/// The magnifier of Home, Balances, Contacts and Activity, which opens "Search" (5.2) over the tab, once there is a
+/// group to look in: pushed on an iPhone, a sheet on the Mac. An iPad's room has the search tab instead, which already
+/// reaches the search from every tab.
+struct SearchToolbarItem: ToolbarContent {
+    let canSearch: Bool
+    let action: () -> Void
+    #if os(iOS)
+    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
+    #endif
+
+    private var isShown: Bool {
+        #if os(iOS)
+        canSearch && !hasSearchTabRoom
+        #else
+        canSearch
+        #endif
+    }
+
+    var body: some ToolbarContent {
+        if isShown {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Search", systemImage: "magnifyingglass", action: action)
+                    .help(Text("Search"))
+            }
+            .prefersVerticalBar()
+        }
+    }
+}

@@ -3,13 +3,10 @@ package com.quare.blitzsplit.android.feature.contacts
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DetailPlaceholderPane
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
-import com.quare.blitzsplit.android.platform.isContactsPermissionGranted
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
@@ -30,17 +27,9 @@ fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
         viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(showsPane))
         onDispose { viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown = false)) }
     }
-    // Why: the search looks in the agenda only with the access the agenda's own screen already got; it never asks.
-    val context = LocalContext.current
-    LaunchedEffect(state.isSearchOpen) {
-        if (state.isSearchOpen && context.isContactsPermissionGranted()) {
-            viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(context.readAgenda()))
-        }
-    }
     val hasPanePick = showsPane && (state.selectedKey != null || state.isAgendaPicked)
-    // Why: back closes the pane's pick before it leaves Contatos, and the search before both.
-    BackHandler(enabled = hasPanePick && !state.isSearchOpen) { viewModel.onEvent(ContactsUiEvent.OnPaneBackClicked) }
-    BackHandler(enabled = state.isSearchOpen) { viewModel.onEvent(ContactsUiEvent.OnSearchClosed) }
+    // Why: back closes the pane's pick before it leaves Contatos.
+    BackHandler(enabled = hasPanePick) { viewModel.onEvent(ContactsUiEvent.OnPaneBackClicked) }
     ContactsContent(
         state = state,
         onEvent = viewModel::onEvent,

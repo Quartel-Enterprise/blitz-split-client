@@ -30,7 +30,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 
 // Why: a phone lying down's column of the actions and "Saldo geral", or Buscar's field, as the canvas draws it.
-private val sideColumnWidth = 320.dp
+internal val sideColumnWidth = 320.dp
 
 // Why: the QR reader, Buscar once there is a group, and the profile: the top bar's, or the side column's lying down.
 @Composable
@@ -96,7 +96,7 @@ internal fun GroupsSideColumnLayout(
             if (state.isSearching) {
                 GroupsSearchHeader(
                     search = state.search,
-                    onEvent = onEvent,
+                    onEvent = { onEvent(GroupsUiEvent.OnSearch(it)) },
                 )
             } else {
                 Row(
@@ -130,7 +130,7 @@ internal fun GroupsSideColumnLayout(
         if (state.isSearching) {
             GroupsSearchPane(
                 search = state.search,
-                onEvent = onEvent,
+                onEvent = { onEvent(GroupsUiEvent.OnSearch(it)) },
                 layout = layout,
                 modifier = Modifier.weight(1f),
                 horizontalPadding = 0.dp,

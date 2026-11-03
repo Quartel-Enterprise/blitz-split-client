@@ -89,6 +89,10 @@ data class ActivityUiState(
     val canMarkAllRead: Boolean
         get() = unreadCount > 0
 
+    // Why: "Buscar" only once there is a group to look in, as on Grupos.
+    val canSearch: Boolean
+        get() = groups.isNotEmpty()
+
     val emptyState: ActivityEmptyState?
         get() = when {
             !isLoaded || showsPlaceholders || days.isNotEmpty() -> null

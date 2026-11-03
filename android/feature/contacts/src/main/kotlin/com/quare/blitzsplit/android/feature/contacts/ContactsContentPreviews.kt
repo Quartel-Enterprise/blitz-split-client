@@ -48,7 +48,6 @@ private fun createPreviewRow(
     groupCount = groupCount,
     firstGroupName = "Viagem Floripa",
     isGuest = isGuest,
-    match = null,
 )
 
 private fun createPreviewState(
@@ -71,15 +70,13 @@ private fun createPreviewState(
         toReceiveCount = 2,
         toPayCount = 1,
     ),
-    isSearchOpen = false,
-    query = "",
-    agenda = emptyList(),
     isOnline = isOnline,
     isLoaded = true,
     isDetailPaneShown = false,
     pickedKey = null,
     isAgendaPicked = false,
     activityUnreadCount = 3,
+    canSearch = true,
 )
 
 // Why: a stand-in pattern for the previews, which can't run the shared encoder.

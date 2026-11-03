@@ -248,11 +248,11 @@ struct GroupsView: View {
             get: { model.current.search.query },
             set: { query in
                 if query.isEmpty {
-                    if model.current.search.isOpen { model.send(GroupsUiEventOnSearchClosed.shared) }
+                    if model.current.search.isOpen { model.sendSearch(SearchUiEventOnClosed.shared) }
                     return
                 }
                 if !model.current.search.isOpen { model.send(GroupsUiEventOnSearchOpened.shared) }
-                model.send(GroupsUiEventOnSearchQueryChanged(query: query))
+                model.sendSearch(SearchUiEventOnQueryChanged(query: query))
             },
         )
     }

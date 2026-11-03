@@ -9,14 +9,17 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -28,7 +31,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,7 +41,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 
 /*
  * Why: Contatos (flow 11), the home's tab over the groups. Everything comes from the device, offline too: the people,
- * their nets (the same as Saldos'), the hidden list and the search, which also looks in the agenda the platform read.
+ * their nets (the same as Saldos') and the hidden list. Its "Buscar" is the home's (Route.Search).
  */
 class ContactsViewModel(
     private val navigator: Navigator,
@@ -47,6 +52,7 @@ class ContactsViewModel(
     observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeGroups: ObserveGroups,
 ) : ViewModel() {
     val uiState: StateFlow<ContactsUiState>
         field = MutableStateFlow(
@@ -60,15 +66,13 @@ class ContactsViewModel(
                 hiddenContacts = emptyList(),
                 isHiddenExpanded = false,
                 total = zeroTotalOf(GroupCurrency.fallback),
-                isSearchOpen = false,
-                query = "",
-                agenda = emptyList(),
                 isOnline = true,
                 isLoaded = false,
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
                 activityUnreadCount = 0,
+                canSearch = false,
             ),
         )
 
@@ -120,6 +124,11 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
+        observeGroups()
+            .map { groups -> groups.isNotEmpty() }
+            .distinctUntilChanged()
+            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: ContactsUiEvent) {
@@ -128,16 +137,7 @@ class ContactsViewModel(
 
             is ContactsUiEvent.OnDetailPaneChanged -> uiState.update { it.copy(isDetailPaneShown = event.isShown) }
 
-            ContactsUiEvent.OnSearchOpened -> uiState.update { it.copy(isSearchOpen = true) }
-
-            is ContactsUiEvent.OnQueryChanged -> uiState.update { it.copy(query = event.query) }
-
-            ContactsUiEvent.OnSearchClosed -> uiState.update {
-                it.copy(
-                    isSearchOpen = false,
-                    query = "",
-                )
-            }
+            ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch) navigator.openSearchOver(HomeTab.CONTACTS)
 
             ContactsUiEvent.OnHiddenToggled -> uiState.update {
                 it.copy(isHiddenExpanded = !it.isHiddenExpanded && it.hiddenContacts.isNotEmpty())
@@ -163,18 +163,6 @@ class ContactsViewModel(
                     name = null,
                 ),
             )
-
-            is ContactsUiEvent.OnAgendaContactInviteClicked -> {
-                val contact = uiState.value.agenda.firstOrNull { it.id == event.contactId } ?: return
-                openFromList(
-                    Route.ContactInvite(
-                        personKey = null,
-                        name = contact.name,
-                    ),
-                )
-            }
-
-            is ContactsUiEvent.OnAgendaLoaded -> uiState.update { it.copy(agenda = event.contacts) }
 
             ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)
 

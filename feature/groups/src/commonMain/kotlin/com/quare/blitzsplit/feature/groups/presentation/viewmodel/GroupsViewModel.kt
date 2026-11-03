@@ -63,6 +63,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -367,31 +368,11 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnGridSizeChanged -> changeGridSize(event.size)
 
-            GroupsUiEvent.OnSearchOpened -> {
-                openSearch()
-                detailPane.preview(uiState.value.search)
-            }
-
-            GroupsUiEvent.OnSearchClosed -> closeSearch()
+            GroupsUiEvent.OnSearchOpened -> openSearch()
 
             GroupsUiEvent.OnSearchTabLeft -> leaveSearchTab()
 
-            is GroupsUiEvent.OnSearchQueryChanged -> {
-                search { it.copy(query = event.query) }
-                detailPane.preview(uiState.value.search)
-            }
-
-            is GroupsUiEvent.OnSearchScopeChanged -> {
-                search { it.copy(scope = event.scope) }
-                detailPane.preview(uiState.value.search)
-            }
-
-            // Why: the group on its Membros, which takes the place of the group beside the list.
-            is GroupsUiEvent.OnSearchPersonClicked -> if (isListShown()) {
-                detailPane.openGroup(event.groupId, GroupTab.MEMBERS)
-            }
-
-            is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
+            is GroupsUiEvent.OnSearch -> onSearchEvent(event.event)
 
             GroupsUiEvent.OnHomeTabClicked -> {
                 closeSearch()
@@ -408,13 +389,33 @@ class GroupsViewModel(
         }
     }
 
+    private fun onSearchEvent(event: SearchUiEvent) {
+        when (event) {
+            SearchUiEvent.OnClosed -> closeSearch()
+
+            is SearchUiEvent.OnQueryChanged -> search { it.copy(query = event.query) }
+
+            is SearchUiEvent.OnScopeChanged -> search { it.copy(scope = event.scope) }
+
+            is SearchUiEvent.OnGroupClicked -> onEvent(GroupsUiEvent.OnGroupClicked(event.groupId))
+
+            // Why: the group on its Membros, which takes the place of the group beside the list.
+            is SearchUiEvent.OnPersonClicked -> if (isListShown()) {
+                detailPane.openGroup(event.groupId, GroupTab.MEMBERS)
+            }
+
+            is SearchUiEvent.OnBillClicked -> openBill(event.groupId, event.expenseId)
+        }
+    }
+
     /*
      * Why: there is nothing to look in before the first group, and only from the groups on top, so ⌘K over a dialog
      * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
      */
     private fun openSearch() {
         if (!uiState.value.canSearch || !isListShown()) return
-        uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
+        uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
+        search { it }
     }
 
     // Why: closing forgets what was typed.
@@ -429,10 +430,11 @@ class GroupsViewModel(
         navigator.popToGroups()
     }
 
-    // Why: what is typed or picked only counts while the search shows, so a late keystroke can't reopen it.
+    // Why: only while the search shows, so a late keystroke can't reopen it; the pane previews the first result.
     private fun search(change: (GroupsSearch) -> GroupsSearch) {
         if (!uiState.value.search.isOpen) return
         uiState.update { it.copy(search = searchedOf(change(it.search), it.groups)) }
+        detailPane.preview(uiState.value.search)
     }
 
     private fun searchedOf(

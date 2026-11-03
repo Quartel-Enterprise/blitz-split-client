@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -88,19 +86,11 @@ fun ContactsContent(
             Scaffold(
                 modifier = Modifier.weight(1f),
                 topBar = {
-                    if (state.isSearchOpen) {
-                        ContactsSearchBar(
-                            query = state.query,
-                            onEvent = onEvent,
-                            maxWidth = paneLayout?.listWidth ?: columnWidth,
-                        )
-                    } else {
-                        ContactsTopBar(
-                            state = state,
-                            title = title,
-                            onEvent = onEvent,
-                        )
-                    }
+                    ContactsTopBar(
+                        state = state,
+                        title = title,
+                        onEvent = onEvent,
+                    )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
@@ -181,12 +171,8 @@ private fun ContactsTopBar(
     TopAppBar(
         title = { Text(title) },
         actions = {
-            IconButton(onClick = { onEvent(ContactsUiEvent.OnSearchOpened) }) {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = stringResource(R.string.contacts_search),
-                )
-            }
+            // Why: the home's search, over Contatos, only once there is a group to look in.
+            if (state.canSearch) SearchActionButton(onClick = { onEvent(ContactsUiEvent.OnSearchClicked) })
             IconButton(
                 onClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
                 modifier = Modifier.semantics { contentDescription = profile },
@@ -212,19 +198,11 @@ private fun ContactsLazyList(
         modifier = modifier,
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        if (state.isSearching) {
-            searchResultItems(
-                state = state,
-                isPaneShown = isPaneShown,
-                onEvent = onEvent,
-            )
-        } else {
-            contactsListItems(
-                state = state,
-                isPaneShown = isPaneShown,
-                onEvent = onEvent,
-            )
-        }
+        contactsListItems(
+            state = state,
+            isPaneShown = isPaneShown,
+            onEvent = onEvent,
+        )
     }
 }
 

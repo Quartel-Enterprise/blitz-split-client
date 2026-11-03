@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalan
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -27,10 +28,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
-import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
-import com.quare.blitzsplit.feature.contacts.presentation.model.NameMatch
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -320,117 +319,6 @@ class ContactsViewModelTest {
     }
 
     @Test
-    fun `GIVEN the search open WHEN typing a name in another case without its accent THEN finds it and marks where`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnQueryChanged("JULIA"))
-
-            // Then
-            val results = viewModel.uiState.value.groupResults
-            assertEquals(listOf(JULIA_KEY), results.map { it.key })
-            assertEquals(NameMatch(0, 5), results.single().match)
-            assertTrue(viewModel.uiState.value.isSearching)
-            assertFalse(viewModel.uiState.value.showsSummary)
-        }
-
-    @Test
-    fun `GIVEN the search open WHEN typing the middle of a name THEN marks that part of it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnQueryChanged("rla"))
-
-            // Then
-            val results = viewModel.uiState.value.groupResults
-            assertEquals(listOf(CARLA_KEY), results.map { it.key })
-            assertEquals(NameMatch(2, 5), results.single().match)
-        }
-
-    @Test
-    fun `GIVEN Julia hidden WHEN searching her name THEN the search finds her too`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedHidden = listOf(
-                HiddenContact(
-                    JULIA_KEY,
-                    isHidden = true,
-                    hiddenAt = 10L,
-                ),
-            ),
-        )
-        viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-
-        // When
-        viewModel.onEvent(ContactsUiEvent.OnQueryChanged("júl"))
-
-        // Then
-        assertEquals(
-            listOf(JULIA_KEY),
-            viewModel.uiState.value.groupResults
-                .map { it.key },
-        )
-    }
-
-    @Test
-    fun `GIVEN the agenda read WHEN searching THEN lists the agenda after the groups without the same name twice`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(agenda))
-            viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnQueryChanged("carl"))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(listOf(CARLA_KEY), state.groupResults.map { it.key })
-            assertEquals(listOf("Carlos Mendes"), state.agendaResults.map { it.contact.name })
-            assertEquals(NameMatch(0, 4), state.agendaResults.single().match)
-            assertEquals("CM", state.agendaResults.single().initials)
-            assertFalse(state.showsNoResults)
-        }
-
-    @Test
-    fun `GIVEN the search open WHEN typing a name nobody has THEN says nothing was found`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(agenda))
-        viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-
-        // When
-        viewModel.onEvent(ContactsUiEvent.OnQueryChanged("Rodrigo"))
-
-        // Then
-        assertTrue(viewModel.uiState.value.showsNoResults)
-    }
-
-    @Test
-    fun `GIVEN something typed in the search WHEN it closes THEN forgets what was typed`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ContactsUiEvent.OnSearchOpened)
-        viewModel.onEvent(ContactsUiEvent.OnQueryChanged("carla"))
-
-        // When
-        viewModel.onEvent(ContactsUiEvent.OnSearchClosed)
-
-        // Then
-        val state = viewModel.uiState.value
-        assertFalse(state.isSearchOpen)
-        assertEquals("", state.query)
-        assertFalse(state.isSearching)
-        assertTrue(state.groupResults.isEmpty())
-    }
-
-    @Test
     fun `GIVEN no pane beside the list WHEN Carla is tapped THEN opens her profile over Contatos`() =
         runTest(testDispatcher) {
             // Given
@@ -613,43 +501,6 @@ class ContactsViewModelTest {
                 ),
                 navigator.backStack.value,
             )
-        }
-
-    @Test
-    fun `GIVEN Carlos found in the agenda WHEN Convidar is tapped on him THEN opens the invite with his name`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ContactsUiEvent.OnAgendaLoaded(agenda))
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnAgendaContactInviteClicked("agenda-carlos"))
-
-            // Then
-            assertEquals(
-                listOf(
-                    Route.Home,
-                    Route.Contacts,
-                    Route.ContactInvite(
-                        personKey = null,
-                        name = "Carlos Mendes",
-                    ),
-                ),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
-    fun `GIVEN an agenda contact no longer read WHEN Convidar is tapped on it THEN opens nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnAgendaContactInviteClicked("agenda-carlos"))
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -846,23 +697,176 @@ class ContactsViewModelTest {
         assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
     }
 
-    private val agenda = listOf(
-        AgendaContact(
-            id = "agenda-carla",
-            name = "Carla",
-            phone = "(11) 91234-5678",
-        ),
-        AgendaContact(
-            id = "agenda-carlos",
-            name = "Carlos Mendes",
-            phone = null,
-        ),
-        AgendaContact(
-            id = "agenda-helena",
-            name = "Helena Souza",
-            phone = "(21) 99876-5432",
-        ),
-    )
+    @Test
+    fun `GIVEN groups on the device WHEN Contatos opens THEN offers the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN no group WHEN Contatos opens THEN offers no search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN Contatos opens THEN offers no search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(areGroupsRead = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN only a settled group WHEN Contatos opens THEN offers the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(futebol()),
+            bills = listOf(
+                owes(FUTEBOL, memberId("julia", FUTEBOL), meId(FUTEBOL), 3_000L, id = "ball"),
+                owes(FUTEBOL, meId(FUTEBOL), memberId("julia", FUTEBOL), 3_000L, id = "drinks"),
+            ),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN no group WHEN a sync brings the first group THEN offers the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        groups.groups.value = listOf(ape())
+
+        // Then
+        assertTrue(viewModel.uiState.value.canSearch)
+    }
+
+    @Test
+    fun `GIVEN a single group WHEN a sync takes it away THEN offers no search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(ape()),
+            bills = emptyList(),
+        )
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSearch)
+    }
+
+    @Test
+    fun `GIVEN Contatos on top WHEN the magnifier is tapped THEN opens the search over Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN the magnifier is tapped THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN the magnifier is tapped THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(areGroupsRead = false)
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the search already open WHEN a late tap on the magnifier arrives THEN stacks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Carla profile over Contatos WHEN the magnifier is tapped THEN stacks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the agenda over Contatos WHEN the magnifier is tapped THEN stacks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
+    }
 
     private fun TestScope.prepareScenario(
         storedGroups: List<Group> = defaultGroups(),
@@ -870,6 +874,7 @@ class ContactsViewModelTest {
         storedHidden: List<HiddenContact> = emptyList(),
         online: Boolean = true,
         isBookRead: Boolean = true,
+        areGroupsRead: Boolean = true,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         val expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -900,6 +905,11 @@ class ContactsViewModelTest {
             ),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeGroups = if (areGroupsRead) {
+                ObserveGroupsUseCase(groups)
+            } else {
+                ObserveGroups { MutableSharedFlow() }
+            },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

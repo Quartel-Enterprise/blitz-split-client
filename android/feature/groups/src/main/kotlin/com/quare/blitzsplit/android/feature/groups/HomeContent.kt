@@ -43,6 +43,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
+import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -364,6 +365,7 @@ private fun HomeColumnHeader(
                 onEvent = onEvent,
             )
         }
+        if (state.canSearch) SearchActionButton(onClick = { onEvent(HomeUiEvent.OnSearchClicked) })
         ProfileAvatarButton(
             initial = state.avatarInitial,
             color = state.avatarColor,
@@ -403,6 +405,8 @@ private fun HomeTopBar(
     TopAppBar(
         title = {},
         actions = {
+            // Why: only once there is a group to look in, as on Grupos.
+            if (state.canSearch) SearchActionButton(onClick = { onEvent(HomeUiEvent.OnSearchClicked) })
             ProfileAvatarButton(
                 initial = state.avatarInitial,
                 color = state.avatarColor,

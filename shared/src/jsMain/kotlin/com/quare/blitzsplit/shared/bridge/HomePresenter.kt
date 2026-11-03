@@ -123,6 +123,8 @@ class JsHomeState(
     val deletedGroupByName: String?,
     // Why: the Atividade tab's badge.
     val activityUnreadCount: Int,
+    // Why: "Buscar…" and ⌘K only once there is a group to look in.
+    val canSearch: Boolean,
 )
 
 class HomePresenter {
@@ -159,6 +161,7 @@ class HomePresenter {
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
                 activityUnreadCount = state.activityUnreadCount,
+                canSearch = state.canSearch,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -178,6 +181,11 @@ class HomePresenter {
 
     fun openProfile() {
         viewModel.onEvent(HomeUiEvent.OnProfileClicked)
+    }
+
+    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
+    fun openSearch() {
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
     }
 
     fun retrySync() {

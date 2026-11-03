@@ -107,6 +107,7 @@ struct HomeView: View {
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             HiddenTabTitle(title: HomeCopy.tabTitle)
+            SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
             ToolbarItem(placement: .primaryAction) { profileButton }
                 .prefersVerticalBar()
             if state.showsSplitBillButton, !usesBottomButton {
@@ -394,6 +395,7 @@ struct HomeView: View {
                 }
             }
         }
+        SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
         ToolbarItem(placement: .primaryAction) { profileButton }
         if state.showsSplitBillButton {
             ToolbarItem(placement: .primaryAction) {

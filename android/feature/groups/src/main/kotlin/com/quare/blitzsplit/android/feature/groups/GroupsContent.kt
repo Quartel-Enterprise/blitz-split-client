@@ -132,7 +132,7 @@ fun GroupsContent(
                     if (state.isSearching && !usesSideColumn) {
                         GroupsSearchBar(
                             search = state.search,
-                            onEvent = onEvent,
+                            onEvent = { onEvent(GroupsUiEvent.OnSearch(it)) },
                             layout = layout,
                         )
                     } else if (!usesSideColumn) {
@@ -185,7 +185,7 @@ fun GroupsContent(
                 if (state.isSearching) {
                     GroupsSearchPane(
                         search = state.search,
-                        onEvent = onEvent,
+                        onEvent = { onEvent(GroupsUiEvent.OnSearch(it)) },
                         layout = layout,
                         modifier = Modifier
                             .padding(padding)
