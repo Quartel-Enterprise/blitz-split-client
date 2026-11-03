@@ -19,10 +19,13 @@ struct PhotoCropView: View {
     @State private var image: Image?
     @State private var lastDrag: CGSize = .zero
     @State private var lastMagnification: CGFloat = 1
+    /// A pinch is on: the drag, which follows one of its fingers, waits until it ends.
+    @State private var isMagnifying = false
 
     private static let background = Color(red: 11 / 255, green: 11 / 255, blue: 15 / 255)
     private static let frameRatio: CGFloat = 0.9
     private static let maxFrameSide: CGFloat = 360
+    private static let panelWidth: CGFloat = 360
     /// GroupAvatar's corners, a share of its side.
     private static let roundedSquareCornerRatio: CGFloat = 0.32
 
@@ -31,19 +34,31 @@ struct PhotoCropView: View {
             let isWide = proxy.size.width > proxy.size.height
             Group {
                 if isWide {
-                    HStack(spacing: 0) {
+                    // An iPhone Duo open lying down puts the photo and the controls each on its side of the fold
+                    TwoColumnsLayout(secondWidth: Self.panelWidth, spacing: 0, maxWidth: .infinity, alignment: .center) {
                         cropArea
+                    } second: {
                         VStack(spacing: 0) {
                             header
                             controls
                         }
-                        .frame(width: 360)
                     }
                 } else {
-                    VStack(spacing: 0) {
-                        header
+                    // Open upright, as a notebook, the photo above the fold and the controls below it
+                    FoldHalves(scrollsHalves: false) {
                         cropArea
-                        controls
+                    } bottom: {
+                        VStack(spacing: 0) {
+                            header
+                            controls
+                        }
+                        .frame(maxHeight: .infinity)
+                    } single: {
+                        VStack(spacing: 0) {
+                            header
+                            cropArea
+                            controls
+                        }
                     }
                 }
             }
@@ -96,7 +111,7 @@ struct PhotoCropView: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
             .clipped()
             .contentShape(Rectangle())
-            .gesture(dragGesture(side: side).simultaneously(with: magnifyGesture))
+            .gesture(dragGesture(side: side).simultaneously(with: magnifyGesture(side: side, size: proxy.size)))
         }
     }
 
@@ -127,20 +142,32 @@ struct PhotoCropView: View {
                 let dx = value.translation.width - lastDrag.width
                 let dy = value.translation.height - lastDrag.height
                 lastDrag = value.translation
-                guard side > 0 else { return }
+                guard side > 0, !isMagnifying else { return }
                 send(PhotoCropEventOnDragged(dx: Float(dx / side), dy: Float(dy / side)))
             }
             .onEnded { _ in lastDrag = .zero }
     }
 
-    private var magnifyGesture: some Gesture {
+    /// Zooms around the point between the fingers, from the frame's center (the area's) in fractions of its side.
+    private func magnifyGesture(side: CGFloat, size: CGSize) -> some Gesture {
         MagnifyGesture()
             .onChanged { value in
+                isMagnifying = true
                 let change = value.magnification / lastMagnification
                 lastMagnification = value.magnification
-                send(PhotoCropEventOnPinched(zoomChange: Float(change)))
+                guard side > 0 else { return }
+                send(
+                    PhotoCropEventOnPinched(
+                        zoomChange: Float(change),
+                        focusX: Float((value.startLocation.x - size.width / 2) / side),
+                        focusY: Float((value.startLocation.y - size.height / 2) / side),
+                    ),
+                )
             }
-            .onEnded { _ in lastMagnification = 1 }
+            .onEnded { _ in
+                lastMagnification = 1
+                isMagnifying = false
+            }
     }
 
     private var controls: some View {

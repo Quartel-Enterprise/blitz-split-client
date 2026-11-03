@@ -48,6 +48,59 @@ class ProfilePhotoPickerTest {
     }
 
     @Test
+    fun `GIVEN the screen busy saving WHEN a photo is picked THEN it is not read`() = runTest {
+        // Given
+        prepareScenario(isBusy = { true })
+
+        // When
+        picker.prepare(firstSource)
+        runCurrent()
+
+        // Then
+        assertTrue(loadedSources.isEmpty())
+        assertTrue(statuses.isEmpty())
+        assertTrue(editors.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a photo in the editor and the screen turned busy WHEN confirming THEN nothing is prepared`() = runTest {
+        // Given
+        var isBusy = false
+        prepareScenario(isBusy = { isBusy })
+        picker.prepare(firstSource)
+        runCurrent()
+        isBusy = true
+
+        // When
+        picker.onEvent(PhotoCropEvent.OnConfirmClicked)
+        runCurrent()
+
+        // Then
+        assertTrue(preparations.isEmpty())
+        assertEquals(listOf<PhotoCropEditor?>(editorOf(landscape)), editors)
+    }
+
+    @Test
+    fun `GIVEN a photo in the editor WHEN pinching around a point THEN the crop zooms around it`() = runTest {
+        // Given
+        prepareScenario()
+        picker.prepare(firstSource)
+        runCurrent()
+
+        // When
+        picker.onEvent(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 2f,
+                focusX = 0.1f,
+                focusY = 0.1f,
+            ),
+        )
+
+        // Then
+        assertEquals(editorOf(landscape, centered(landscape).toZoomedBy(2f, 0.1f, 0.1f)), editors.last())
+    }
+
+    @Test
     fun `GIVEN an unreadable photo WHEN preparing it THEN shows the error and opens no editor`() = runTest {
         // Given
         prepareScenario(loadResult = Result.failure(UnsupportedImageException()))
@@ -189,7 +242,13 @@ class ProfilePhotoPickerTest {
         runCurrent()
 
         // When
-        picker.onEvent(PhotoCropEvent.OnPinched(zoomChange = 1.5f))
+        picker.onEvent(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 1.5f,
+                focusX = 0f,
+                focusY = 0f,
+            ),
+        )
 
         // Then
         assertEquals(editorOf(landscape, centered(landscape).toZoomedBy(1.5f)), editors.last())
@@ -202,10 +261,22 @@ class ProfilePhotoPickerTest {
         prepareScenario()
         picker.prepare(firstSource)
         runCurrent()
-        picker.onEvent(PhotoCropEvent.OnPinched(zoomChange = 1.5f))
+        picker.onEvent(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 1.5f,
+                focusX = 0f,
+                focusY = 0f,
+            ),
+        )
 
         // When
-        picker.onEvent(PhotoCropEvent.OnPinched(zoomChange = 1.5f))
+        picker.onEvent(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 1.5f,
+                focusX = 0f,
+                focusY = 0f,
+            ),
+        )
 
         // Then
         assertEquals(2.25f, editors.last()?.crop?.zoom)
@@ -285,7 +356,13 @@ class ProfilePhotoPickerTest {
                 dy = 0.1f,
             ),
         )
-        picker.onEvent(PhotoCropEvent.OnPinched(zoomChange = 2f))
+        picker.onEvent(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 2f,
+                focusX = 0f,
+                focusY = 0f,
+            ),
+        )
         picker.onEvent(PhotoCropEvent.OnZoomChanged(zoom = 2f))
         picker.onEvent(PhotoCropEvent.OnTurnClicked)
         picker.onEvent(PhotoCropEvent.OnMirrorHorizontallyClicked)
@@ -648,6 +725,7 @@ class ProfilePhotoPickerTest {
         prepareResult: Result<ProfilePhoto.Pending> = Result.success(pending),
         holdsLoads: Boolean = false,
         holdsPreparations: Boolean = false,
+        isBusy: () -> Boolean = { false },
     ) {
         statuses = mutableListOf()
         editors = mutableListOf()
@@ -684,6 +762,7 @@ class ProfilePhotoPickerTest {
             showStatus = { isPreparing, hasFailed -> statuses += isPreparing to hasFailed },
             showEditor = editors::add,
             onPrepared = prepared::add,
+            isBusy = isBusy,
         )
     }
 }

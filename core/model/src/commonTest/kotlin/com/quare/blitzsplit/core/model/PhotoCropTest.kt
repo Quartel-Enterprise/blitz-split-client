@@ -320,6 +320,24 @@ class PhotoCropTest {
     }
 
     @Test
+    fun `GIVEN a centered photo WHEN pinching it around a point off center THEN that point stays put`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 1000)
+
+        // When
+        val zoomed = crop.toZoomedBy(
+            factor = 2f,
+            focusX = 0.25f,
+            focusY = 0.25f,
+        )
+
+        // Then
+        assertEquals(2f, zoomed.zoom, TOLERANCE)
+        assertEquals(-0.25f, zoomed.offsetX, TOLERANCE)
+        assertEquals(-0.25f, zoomed.offsetY, TOLERANCE)
+    }
+
+    @Test
     fun `GIVEN an upright photo WHEN turning it THEN it is one quarter turn clockwise`() {
         // Given
         val crop = PhotoCrop.of(2000, 1000)

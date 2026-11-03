@@ -7,7 +7,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
-import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -72,6 +71,8 @@ class EditProfileViewModel(
         showStatus = ::showPhotoStatus,
         showEditor = ::showPhotoCrop,
         onPrepared = ::showPhoto,
+        // Why: Save sends the photo shown.
+        isBusy = { uiState.value.isSaving },
     )
 
     val stateWatcher: FlowWatcher<EditProfileUiState> = FlowWatcher(uiState)
@@ -108,8 +109,8 @@ class EditProfileViewModel(
         when (event) {
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
-            is EditProfileUiEvent.OnPhotoPicked -> preparePhoto(event.source)
-            is EditProfileUiEvent.OnPhotoCrop -> cropPhoto(event.event)
+            is EditProfileUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+            is EditProfileUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
             EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
@@ -173,18 +174,6 @@ class EditProfileViewModel(
                 showsPhotoError = false,
             )
         }
-    }
-
-    // Why: Save sends the photo shown, so a pick while saving is ignored.
-    private fun preparePhoto(source: ByteArray) {
-        if (uiState.value.isSaving) return
-        photoPicker.prepare(source)
-    }
-
-    // Why: "Usar foto" brings the photo to the form, so it is ignored while saving, as a pick is.
-    private fun cropPhoto(event: PhotoCropEvent) {
-        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
-        photoPicker.onEvent(event)
     }
 
     private fun showPhotoCrop(editor: PhotoCropEditor?) {

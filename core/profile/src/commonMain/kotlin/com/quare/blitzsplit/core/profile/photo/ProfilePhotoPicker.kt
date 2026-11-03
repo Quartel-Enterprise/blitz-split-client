@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
  * Why: the profile setup, "Editar perfil", "Novo grupo" and "Editar grupo" take a picked photo the same way: it opens
  * in "Ajustar foto", and only "Pronto" prepares the square framed there. A newer pick replaces the one still being
  * read or prepared, and a failed one keeps the photo shown. The screen keeps the spinner, the error, the editor and
- * the photo in its own state, through these callbacks, and decides when a pick is ignored (while saving).
+ * the photo in its own state, through these callbacks. While the screen is busy (saving, creating), a pick and "Pronto"
+ * are ignored, since what it sends is the photo shown.
  */
 class ProfilePhotoPicker(
     private val loadCropPhoto: LoadCropPhoto,
@@ -24,6 +25,7 @@ class ProfilePhotoPicker(
     private val showStatus: (isPreparing: Boolean, hasFailed: Boolean) -> Unit,
     private val showEditor: (PhotoCropEditor?) -> Unit,
     private val onPrepared: (ProfilePhoto) -> Unit,
+    private val isBusy: () -> Boolean = { false },
 ) {
     private var job: Job? = null
 
@@ -34,6 +36,7 @@ class ProfilePhotoPicker(
         get() = job?.takeIf { it.isActive }
 
     fun prepare(source: ByteArray) {
+        if (isBusy()) return
         cancel()
         showStatus(true, false)
         job = scope.launch {
@@ -55,7 +58,7 @@ class ProfilePhotoPicker(
     fun onEvent(event: PhotoCropEvent) {
         when (event) {
             is PhotoCropEvent.OnDragged -> editCrop { it.toDragged(event.dx, event.dy) }
-            is PhotoCropEvent.OnPinched -> editCrop { it.toZoomedBy(event.zoomChange) }
+            is PhotoCropEvent.OnPinched -> editCrop { it.toZoomedBy(event.zoomChange, event.focusX, event.focusY) }
             is PhotoCropEvent.OnZoomChanged -> editCrop { it.toZoomed(event.zoom) }
             PhotoCropEvent.OnTurnClicked -> editCrop(PhotoCrop::toTurned)
             PhotoCropEvent.OnMirrorHorizontallyClicked -> editCrop(PhotoCrop::toMirroredHorizontally)
@@ -79,6 +82,7 @@ class ProfilePhotoPicker(
 
     // Why: the editor closes at once and the avatar shows the spinner while the square is encoded, as a pick did.
     private fun confirm() {
+        if (isBusy()) return
         val confirmed = editor ?: return
         edit(null)
         showStatus(true, false)

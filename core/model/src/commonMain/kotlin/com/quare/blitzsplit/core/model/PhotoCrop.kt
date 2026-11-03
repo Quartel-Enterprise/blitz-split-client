@@ -49,7 +49,20 @@ data class PhotoCrop(
         offsetY = offsetY + dy,
     ).clamp()
 
-    fun toZoomedBy(factor: Float): PhotoCrop = toZoomed(zoom * factor)
+    // Why: the point of the photo under the focus (from the frame's center) stays there, as under a pinch's fingers.
+    fun toZoomedBy(
+        factor: Float,
+        focusX: Float = 0f,
+        focusY: Float = 0f,
+    ): PhotoCrop {
+        val newZoom = (zoom * factor).coerceIn(MIN_ZOOM, MAX_ZOOM)
+        val scale = newZoom / zoom
+        return copy(
+            zoom = newZoom,
+            offsetX = focusX + (offsetX - focusX) * scale,
+            offsetY = focusY + (offsetY - focusY) * scale,
+        ).clamp()
+    }
 
     fun toZoomed(zoom: Float): PhotoCrop = copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp()
 

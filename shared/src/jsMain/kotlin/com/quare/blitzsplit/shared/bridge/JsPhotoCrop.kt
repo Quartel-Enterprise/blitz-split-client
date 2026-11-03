@@ -48,9 +48,13 @@ class PhotoCropPresenter internal constructor(
         send(PhotoCropEvent.OnDragged(dx, dy))
     }
 
-    // Why: the wheel or a trackpad's pinch, as the factor it scaled by.
-    fun zoomBy(factor: Float) {
-        send(PhotoCropEvent.OnPinched(factor))
+    // Why: a pinch, the trackpad's included, as the factor it scaled by around its focus (fractions from the frame's center).
+    fun zoomBy(
+        factor: Float,
+        focusX: Float,
+        focusY: Float,
+    ) {
+        send(PhotoCropEvent.OnPinched(factor, focusX, focusY))
     }
 
     fun changeZoom(zoom: Float) {

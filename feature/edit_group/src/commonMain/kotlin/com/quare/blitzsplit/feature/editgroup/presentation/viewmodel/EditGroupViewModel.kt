@@ -13,7 +13,6 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
-import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -88,6 +87,8 @@ class EditGroupViewModel(
         showStatus = ::showPhotoStatus,
         showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
+        // Why: Salvar sends the photo shown.
+        isBusy = { uiState.value.isSaving },
     )
 
     /*
@@ -142,7 +143,7 @@ class EditGroupViewModel(
 
             is EditGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
 
-            is EditGroupUiEvent.OnPhotoCrop -> cropPhoto(event.event)
+            is EditGroupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
 
             EditGroupUiEvent.OnPhotoUnreadable -> {
                 uiState.update { it.copy(iconEditor = null) }
@@ -232,17 +233,9 @@ class EditGroupViewModel(
         }
     }
 
-    // Why: Salvar sends the photo shown, so a pick while saving is ignored.
     private fun preparePhoto(source: ByteArray) {
         uiState.update { it.copy(iconEditor = null) }
-        if (uiState.value.isSaving) return
         photoPicker.prepare(source)
-    }
-
-    // Why: "Usar foto" brings the photo to the form, so it is ignored while saving, as a pick is.
-    private fun cropPhoto(event: PhotoCropEvent) {
-        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
-        photoPicker.onEvent(event)
     }
 
     private fun showPhotoStatus(

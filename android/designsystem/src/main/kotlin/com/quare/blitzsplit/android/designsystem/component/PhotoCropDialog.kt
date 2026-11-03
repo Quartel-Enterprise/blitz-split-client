@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Flip
@@ -65,11 +67,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.R
+import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.CropPhoto
 import com.quare.blitzsplit.core.model.PhotoCrop
 import com.quare.blitzsplit.core.model.PhotoCropEditor
@@ -113,14 +120,61 @@ fun PhotoCropDialog(
             decorFitsSystemWindows = false,
         ),
     ) {
+        val fold = rememberFoldLayout()
+        val tabletopSplit = fold.tabletopSplit
+        val bookSplit = fold.bookSplit
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(editorBackground)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-            if (maxWidth > maxHeight) {
-                Row(modifier = Modifier.fillMaxSize()) {
+            when {
+                // Why: the photo never under the hinge: above it on a tabletop, the controls below it.
+                tabletopSplit != null -> TopBottomHalvesLayout(
+                    top = {
+                        PhotoCropPane(
+                            editor = editor,
+                            frame = frame,
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    },
+                    bottom = {
+                        PhotoCropControlsColumn(
+                            crop = editor.crop,
+                            onEvent = onEvent,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                // Why: a book's halves, the photo before the hinge and the controls after it.
+                bookSplit != null -> TwoHalvesLayout(
+                    start = {
+                        PhotoCropPane(
+                            editor = editor,
+                            frame = frame,
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    },
+                    end = {
+                        PhotoCropControlsColumn(
+                            crop = editor.crop,
+                            onEvent = onEvent,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                maxWidth > maxHeight -> Row(modifier = Modifier.fillMaxSize()) {
                     PhotoCropPane(
                         editor = editor,
                         frame = frame,
@@ -129,21 +183,16 @@ fun PhotoCropDialog(
                             .weight(1f)
                             .fillMaxHeight(),
                     )
-                    Column(
+                    PhotoCropControlsColumn(
+                        crop = editor.crop,
+                        onEvent = onEvent,
                         modifier = Modifier
                             .width(sidePanelWidth)
                             .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        PhotoCropHeader(onEvent = onEvent)
-                        PhotoCropPanel(
-                            crop = editor.crop,
-                            onEvent = onEvent,
-                        )
-                    }
+                    )
                 }
-            } else {
-                Column(modifier = Modifier.fillMaxSize()) {
+
+                else -> Column(modifier = Modifier.fillMaxSize()) {
                     PhotoCropHeader(onEvent = onEvent)
                     PhotoCropPane(
                         editor = editor,
@@ -160,6 +209,25 @@ fun PhotoCropDialog(
                 }
             }
         }
+    }
+}
+
+// Why: the header and the panel together, beside the photo lying down or in the half after the hinge.
+@Composable
+private fun PhotoCropControlsColumn(
+    crop: PhotoCrop,
+    onEvent: (PhotoCropEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        PhotoCropHeader(onEvent = onEvent)
+        PhotoCropPanel(
+            crop = crop,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -215,9 +283,17 @@ private fun PhotoCropPane(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
+                    detectTransformGestures { centroid, pan, zoom, _ ->
                         currentOnEvent(PhotoCropEvent.OnDragged(pan.x / currentSidePx, pan.y / currentSidePx))
-                        if (zoom != 1f) currentOnEvent(PhotoCropEvent.OnPinched(zoom))
+                        if (zoom != 1f) {
+                            currentOnEvent(
+                                PhotoCropEvent.OnPinched(
+                                    zoomChange = zoom,
+                                    focusX = (centroid.x - size.width / 2f) / currentSidePx,
+                                    focusY = (centroid.y - size.height / 2f) / currentSidePx,
+                                ),
+                            )
+                        }
                     }
                 },
             contentAlignment = Alignment.Center,
@@ -295,6 +371,7 @@ private fun ColumnScope.PhotoCropPanel(
     crop: PhotoCrop,
     onEvent: (PhotoCropEvent) -> Unit,
 ) {
+    val zoomDescription = stringResource(R.string.designsystem_photo_crop_zoom)
     Row(
         modifier = Modifier.padding(
             start = 24.dp,
@@ -313,7 +390,9 @@ private fun ColumnScope.PhotoCropPanel(
         Slider(
             value = crop.zoom,
             onValueChange = { onEvent(PhotoCropEvent.OnZoomChanged(it)) },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .semantics { contentDescription = zoomDescription },
             valueRange = crop.minZoom..crop.maxZoom,
             colors = SliderDefaults.colors(
                 thumbColor = Color.White,

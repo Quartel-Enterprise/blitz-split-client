@@ -13,7 +13,6 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
-import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -75,6 +74,8 @@ class CreateGroupViewModel(
         showStatus = ::showPhotoStatus,
         showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
+        // Why: Criar sends the photo shown.
+        isBusy = { uiState.value.isCreating },
     )
 
     // Why: the nickname's initial ("Ana P."), the creator's.
@@ -121,9 +122,9 @@ class CreateGroupViewModel(
                 )
             }
 
-            is CreateGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+            is CreateGroupUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
 
-            is CreateGroupUiEvent.OnPhotoCrop -> cropPhoto(event.event)
+            is CreateGroupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
 
             CreateGroupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
 
@@ -147,17 +148,6 @@ class CreateGroupViewModel(
 
     private fun changeColor(transform: (CreateGroupUiState) -> CreateGroupUiState) {
         uiState.update { if (it.canChangeColor) transform(it) else it }
-    }
-
-    // Why: Criar sends the photo shown, so a pick or "Usar foto" while creating is ignored.
-    private fun preparePhoto(source: ByteArray) {
-        if (uiState.value.isCreating) return
-        photoPicker.prepare(source)
-    }
-
-    private fun cropPhoto(event: PhotoCropEvent) {
-        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isCreating) return
-        photoPicker.onEvent(event)
     }
 
     private fun removePhoto() {

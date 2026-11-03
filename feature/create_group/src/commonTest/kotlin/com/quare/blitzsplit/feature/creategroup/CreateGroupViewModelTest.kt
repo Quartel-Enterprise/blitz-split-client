@@ -1056,7 +1056,15 @@ class CreateGroupViewModelTest {
         viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
 
         // When
-        viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnPinched(zoomChange = 1.5f)))
+        viewModel.onEvent(
+            CreateGroupUiEvent.OnPhotoCrop(
+                PhotoCropEvent.OnPinched(
+                    zoomChange = 1.5f,
+                    focusX = 0f,
+                    focusY = 0f,
+                ),
+            ),
+        )
 
         // Then
         assertEquals(

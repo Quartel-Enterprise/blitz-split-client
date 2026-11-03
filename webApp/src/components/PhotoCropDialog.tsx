@@ -11,7 +11,7 @@ export type PhotoCropFrame = 'circle' | 'rounded-square'
 
 const FRAME_RATIO = 0.9
 const MAX_FRAME_SIDE = 360
-// Why: a wheel notch (100 px) zooms by about a fifth, as a pinch of the same feel.
+// Why: a trackpad's pinch (a wheel with Ctrl) of 100 px zooms by about a fifth, as a touch pinch of the same feel.
 const WHEEL_ZOOM_SPEED = 0.002
 
 /**
@@ -47,13 +47,20 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
   const sideRef = useRef(side)
   sideRef.current = side
 
-  // Why: React's wheel listener is passive, so the page would scroll under the zoom.
+  /*
+   * Why: a trackpad's pinch (the browser's wheel with Ctrl, as Ctrl and a mouse wheel) zooms around the pointer, and a
+   * scroll moves the photo, as a two-finger drag does. React's wheel listener is passive, so the page would scroll too.
+   */
   useEffect(() => {
     const element = area.current
     if (!element) return
     const onWheel = (event: WheelEvent) => {
       event.preventDefault()
-      presenter.zoomBy(Math.exp(-event.deltaY * WHEEL_ZOOM_SPEED))
+      if (event.ctrlKey) {
+        presenter.zoomBy(Math.exp(-event.deltaY * WHEEL_ZOOM_SPEED), ...focusIn(element, sideRef.current, event.clientX, event.clientY))
+      } else if (sideRef.current > 0) {
+        presenter.drag(-event.deltaX / sideRef.current, -event.deltaY / sideRef.current)
+      }
     }
     element.addEventListener('wheel', onWheel, { passive: false })
     return () => element.removeEventListener('wheel', onWheel)
@@ -73,7 +80,9 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
     if (after.length >= 2) {
       const distanceBefore = Math.hypot(before[0].x - before[1].x, before[0].y - before[1].y)
       const distanceAfter = Math.hypot(after[0].x - after[1].x, after[0].y - after[1].y)
-      if (distanceBefore > 0) presenter.zoomBy(distanceAfter / distanceBefore)
+      if (distanceBefore > 0) {
+        presenter.zoomBy(distanceAfter / distanceBefore, ...focusIn(area.current, sideRef.current, (after[0].x + after[1].x) / 2, (after[0].y + after[1].y) / 2))
+      }
       presenter.drag((event.clientX - previous.x) / 2 / sideRef.current, (event.clientY - previous.y) / 2 / sideRef.current)
     } else {
       presenter.drag((event.clientX - previous.x) / sideRef.current, (event.clientY - previous.y) / sideRef.current)
@@ -123,6 +132,13 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
       )}
     </div>
   )
+}
+
+// Why: where a point sits from the frame's center (the area's), in fractions of the frame's side.
+function focusIn(area: HTMLElement | null, side: number, x: number, y: number): [number, number] {
+  const rect = area?.getBoundingClientRect()
+  if (!rect || side <= 0) return [0, 0]
+  return [(x - rect.left - rect.width / 2) / side, (y - rect.top - rect.height / 2) / side]
 }
 
 // Why: the frame follows the area, so a window resized or a phone turned keeps the framing (it is in fractions of it).

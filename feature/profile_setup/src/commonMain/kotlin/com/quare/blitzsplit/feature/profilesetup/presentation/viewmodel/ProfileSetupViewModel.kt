@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -57,6 +56,8 @@ class ProfileSetupViewModel(
         showStatus = ::showPhotoStatus,
         showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
+        // Why: once Continue is waiting on a pick, a later one would cancel the photo being saved.
+        isBusy = { uiState.value.isSaving },
     )
 
     val stateWatcher: FlowWatcher<ProfileSetupUiState> = FlowWatcher(uiState)
@@ -69,8 +70,8 @@ class ProfileSetupViewModel(
         when (event) {
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }
-            is ProfileSetupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
-            is ProfileSetupUiEvent.OnPhotoCrop -> cropPhoto(event.event)
+            is ProfileSetupUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+            is ProfileSetupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
             ProfileSetupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             ProfileSetupUiEvent.OnContinueClicked -> save()
             ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
@@ -118,17 +119,6 @@ class ProfileSetupViewModel(
         else -> null
     }
 
-    // Why: once Continue is waiting on a pick, a later one would cancel the photo being saved, so it is ignored.
-    private fun preparePhoto(source: ByteArray) {
-        if (uiState.value.isSaving) return
-        photoPicker.prepare(source)
-    }
-
-    private fun cropPhoto(event: PhotoCropEvent) {
-        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
-        photoPicker.onEvent(event)
-    }
-
     private fun showPhotoStatus(
         isPreparing: Boolean,
         hasFailed: Boolean,
@@ -151,7 +141,7 @@ class ProfileSetupViewModel(
     }
 
     /*
-     * Why: Continue right after "Usar foto" waits for the photo instead of saving the profile without it. If that
+     * Why: Continue right after "Pronto" waits for the photo instead of saving the profile without it. If that
      * fails, or the pick it waited on opened "Ajustar foto", the screen stays so the error or the editor is seen; a
      * later Continue saves without it.
      */

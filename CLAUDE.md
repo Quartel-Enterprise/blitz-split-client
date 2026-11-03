@@ -259,12 +259,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
     for a profile and a rounded square for a group (the group's one shape off Android, its badge's 32% corners): drag,
-    pinch (the trackpad on the Mac, the wheel on the web too) and a 1× to 3× slider zoom, "Girar" turns it 90°
+    pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Girar" turns it 90°
     clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Pronto" makes the 512x512
     JPEG of what the frame holds; ✕, Cancelar or back leave the photo shown as it was. The framing is the shared
     `PhotoCrop` (fractions of the frame, so a turned device keeps it), the photo the upright, at most 1600 px JPEG of
-    `LoadCropPhoto`, and each platform's canvas draws the result from `CropTransform`. Novo grupo's Criar and Seu
-    perfil's Continuar wait while it is open.
+    `LoadCropPhoto`, and each platform's canvas draws the result from `CropTransform`. On a fold the photo and the
+    controls take a half each, never the hinge: side by side on a book and an iPhone Duo open lying down, the photo
+    on top on a tabletop and an iPhone Duo open upright. Novo grupo's Criar and Seu perfil's Continuar wait while it
+    is open.
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
     participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
