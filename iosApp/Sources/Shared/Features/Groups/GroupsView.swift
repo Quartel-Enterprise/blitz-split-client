@@ -158,10 +158,9 @@ struct GroupsView: View {
             if state.showsSplitBillButton {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Split a bill", systemImage: "plus") {
+                    SplitBillButton(showsTitle: false) {
                         model.send(GroupsUiEventOnSplitBillClicked.shared)
                     }
-                    .buttonStyle(.glassProminent)
                 }
                 .prefersVerticalBar()
             }

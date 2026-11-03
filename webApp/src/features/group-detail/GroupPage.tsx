@@ -1,7 +1,7 @@
-import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Plus, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
+import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
 import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
@@ -75,7 +75,7 @@ export function GroupPage({
       ? t(header.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: header.notJoinedCount })
       : null
   const mainButton = showsSplitBillButton
-    ? { icon: <Plus />, label: t('groupDetail_splitBill'), onClick: () => events.splitBill() }
+    ? { icon: <SplitBillIcon />, label: t('groupDetail_splitBill'), onClick: () => events.splitBill() }
     : onAddPerson
       ? { icon: <UserPlus />, label: t('members_add'), onClick: onAddPerson }
       : null

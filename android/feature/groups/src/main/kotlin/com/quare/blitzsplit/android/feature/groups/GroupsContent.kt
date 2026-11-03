@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Refresh
@@ -64,6 +63,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -148,7 +148,7 @@ fun GroupsContent(
                     if (!layout.usesNavigationRail && !state.isSearching && state.showsSplitBillButton) {
                         ExtendedFloatingActionButton(
                             onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
-                            icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                            icon = { Icon(splitBillIcon(), contentDescription = null) },
                             text = { Text(stringResource(R.string.groups_split_bill)) },
                             expanded = !listState.canScrollBackward,
                         )

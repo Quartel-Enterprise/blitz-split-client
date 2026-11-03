@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -13,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.GroupTabFloatingButton
+import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -147,7 +146,7 @@ private fun splitBillButtonOf(
     val label = stringResource(R.string.group_detail_split_bill)
     if (!state.showsSplitBillButton || LocalInDetailPane.current) return null
     return GroupTabFloatingButton(
-        icon = Icons.Outlined.Add,
+        icon = splitBillIcon(),
         label = label,
         position = FabPosition.End,
         onClick = { onAction(GroupAction.SPLIT_BILL) },

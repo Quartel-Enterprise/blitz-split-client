@@ -1,7 +1,8 @@
-import { ChevronRight, CloudOff, ListFilter, Plus, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
+import { ChevronRight, CloudOff, ListFilter, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
 import type { GroupsPresenter, JsBalanceTotal, JsDownloadProgress, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
+import { SplitBillIcon } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -56,7 +57,7 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
           </Button>
           {state.showsSplitBillButton && (
             <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
-              <Plus /> {t('groups_splitBill')}
+              <SplitBillIcon /> {t('groups_splitBill')}
             </Button>
           )}
           <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
