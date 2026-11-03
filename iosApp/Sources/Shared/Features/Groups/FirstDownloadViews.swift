@@ -7,7 +7,11 @@ struct DownloadProgressBar: View {
     let progress: DownloadProgress
 
     var body: some View {
-        if let fraction = progress.fraction {
+        if progress.isWaitingForInternet {
+            // Offline nothing comes, so the bar stops where it was
+            ProgressView(value: progress.fraction?.doubleValue ?? 0)
+                .progressViewStyle(.linear)
+        } else if let fraction = progress.fraction {
             ProgressView(value: fraction.doubleValue)
                 .progressViewStyle(.linear)
         } else {
@@ -18,18 +22,24 @@ struct DownloadProgressBar: View {
 }
 
 /// "Bringing your groups" in Overall balance's place while the first download brings the groups down one by one, with
-/// "3 of 7 groups" and its bar once the server said how many are coming (5.1d).
+/// "3 of 7 groups" and its bar once the server said how many are coming (5.1d). Offline, "No internet. Your groups
+/// show up once you're back online." over the stopped bar instead, since nothing comes.
 struct GroupsFirstDownloadCard: View {
     let progress: DownloadProgress
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Bringing your groups")
-                .font(.headline)
-            DownloadProgressBar(progress: progress)
-            Text(verbatim: GroupsCopy.firstDownloadHint(progress))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if progress.isWaitingForInternet {
+                WaitingForInternetNote(isAboutGroups: true)
+                DownloadProgressBar(progress: progress)
+            } else {
+                Text("Bringing your groups")
+                    .font(.headline)
+                DownloadProgressBar(progress: progress)
+                Text(verbatim: GroupsCopy.firstDownloadHint(progress))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -38,28 +48,12 @@ struct GroupsFirstDownloadCard: View {
     }
 }
 
-/// A grey row holding the place of a group still coming down.
-struct GroupSkeletonRow: View {
-    var body: some View {
-        HStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 44 * 0.32)
-                .fill(.fill.tertiary)
-                .frame(width: 44, height: 44)
-            VStack(alignment: .leading, spacing: 6) {
-                Capsule().fill(.fill.tertiary).frame(width: 140, height: 12)
-                Capsule().fill(.fill.quaternary).frame(width: 100, height: 10)
-            }
-            Spacer()
-            Capsule().fill(.fill.tertiary).frame(width: 64, height: 12)
-        }
-        .padding(.vertical, 4)
-        .accessibilityHidden(true)
-    }
-}
-
 extension GroupsCopy {
     /// "Syncing… 3 of 7 groups" once the first download knows how many are coming, else "Syncing…".
     static func syncing(_ progress: DownloadProgress?) -> String {
+        if progress?.isWaitingForInternet == true {
+            return String(localized: "No internet. Your groups show up once you're back online.")
+        }
         guard let progress, let groupCount = progress.groupCount?.intValue else {
             return String(localized: "Syncing…")
         }

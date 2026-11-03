@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { LoadingRegion, Skeleton, SkeletonCard, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -85,12 +86,13 @@ export function CategoryMapScreen() {
           <ArrowLeft />
         </Button>
         <h1 className="mr-auto text-lg font-semibold">{t('categoryMap_title')}</h1>
-        <Button size="sm" onClick={() => presenter.addTerm(null, '')}>
+        {/* Why: a term added or the map restored before the whole map was read could overwrite what is coming. */}
+        <Button size="sm" disabled={!state.canEditMap} onClick={() => presenter.addTerm(null, '')}>
           <Plus /> <span className="hidden sm:inline">{t('categoryMap_add')}</span>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label={t('categoryMap_more')}>
+            <Button variant="ghost" size="icon" aria-label={t('categoryMap_more')} disabled={!state.canEditMap}>
               <Ellipsis />
             </Button>
           </DropdownMenuTrigger>
@@ -105,7 +107,9 @@ export function CategoryMapScreen() {
           <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('categoryMap_search')} aria-label={t('categoryMap_search')} className="pl-9" />
         </div>
         <MapNotices presenter={presenter} state={state} />
-        {state.isSearching ? (
+        {!state.isLoaded ? (
+          <MapSkeleton isWide={isWide} />
+        ) : state.isSearching ? (
           <SearchResults presenter={presenter} state={state} />
         ) : state.isEmpty ? (
           <EmptyMap presenter={presenter} />
@@ -148,6 +152,41 @@ export function CategoryMapScreen() {
         />
       )}
     </div>
+  )
+}
+
+/** The map until its terms, categories and account were read: category cards with their terms, or beside the list. */
+function MapSkeleton({ isWide }: { isWide: boolean }) {
+  const card = (
+    <SkeletonCard>
+      <span className="flex items-center gap-3">
+        <Skeleton className="size-10 rounded-xl" />
+        <span className="flex flex-1 flex-col gap-2">
+          <SkeletonLine className="h-4 w-1/3" />
+          <SkeletonLine className="h-2.5 w-1/5" />
+        </span>
+      </span>
+      <span className="flex flex-wrap gap-2">
+        {[16, 20, 14, 24, 18].map((width) => (
+          <Skeleton key={width} className="h-6 rounded-full" style={{ width: `${width * 4}px` }} />
+        ))}
+      </span>
+    </SkeletonCard>
+  )
+  return (
+    <LoadingRegion>
+      {isWide ? (
+        <div className="grid grid-cols-[minmax(0,18rem)_minmax(0,1fr)] gap-6">
+          <SkeletonRows count={6} leading="square" hasTrailing={false} rowClassName="px-2" />
+          {card}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {card}
+          {card}
+        </div>
+      )}
+    </LoadingRegion>
   )
 }
 

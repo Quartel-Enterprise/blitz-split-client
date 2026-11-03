@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker } from '@/components/common'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -36,7 +37,8 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
   const presenter = usePresenter(() => new EditGroupPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsEditGroupState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state || isCovered) return null
+  if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} title={t('editGroup_title')} onClose={() => presenter.close()} />
 
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.close()

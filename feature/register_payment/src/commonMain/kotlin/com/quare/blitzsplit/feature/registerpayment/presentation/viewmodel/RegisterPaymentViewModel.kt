@@ -29,6 +29,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
@@ -56,6 +58,9 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoaded
+import software.quare.loadable.toLoaded
 import kotlin.math.abs
 
 /*
@@ -77,6 +82,7 @@ class RegisterPaymentViewModel(
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observePeopleBalances: ObservePeopleBalances,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RegisterPaymentUiState>
@@ -99,6 +105,9 @@ class RegisterPaymentViewModel(
 
     // Why: the receiver's keys Room gave with the latest target, shown again with it.
     private var receiverKeys: List<ReceiverKey> = emptyList()
+
+    // Why: while the account's copy is not whole, a receiver with no key cached may still have some coming.
+    private var firstDownload: FirstDownloadProgress? = null
 
     /*
      * Why: the screen under the form, owed the notice of what it records. The entry itself, not an equal route: a
@@ -123,12 +132,14 @@ class RegisterPaymentViewModel(
             .map { it?.toUserId }
             .distinctUntilChanged()
             .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
-        combine(targets, keys) { target, (userId, receiverKeys) -> Triple(target, userId, receiverKeys) }
-            .filter { (target, userId) -> target?.toUserId == userId }
-            .onEach { (target, _, keys) ->
+        combine(targets, keys, observeFirstDownload()) { target, (userId, receiverKeys), download ->
+            KeyedTarget(target, userId, receiverKeys, download)
+        }.filter { it.target?.toUserId == it.userId }
+            .onEach { keyed ->
                 hasRead = true
-                receiverKeys = keys
-                handle(target)
+                receiverKeys = keyed.keys
+                firstDownload = keyed.download
+                handle(keyed.target)
             }.launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isDebtGone) leave() }
@@ -204,7 +215,7 @@ class RegisterPaymentViewModel(
             isOnline = true,
             isSaving = false,
             isLoaded = false,
-            receiverKeys = emptyList(),
+            receiverKeys = Loadable.Loading,
             groupName = null,
             keyMethod = PaymentMethod.PIX,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
@@ -311,16 +322,31 @@ class RegisterPaymentViewModel(
             leave()
             return
         }
+        val download = firstDownload
+        /*
+         * Why: someone with no account has no key to wait for; one with keys cached already shows them. Offline nothing
+         * is coming, so the form opens rather than a wait that blocks recording the payment.
+         */
+        val awaitsKeys = download != null &&
+            !download.isWaitingForInternet &&
+            target.toUserId != null &&
+            receiverKeys.isEmpty()
         uiState.update {
+            // Why: once known, the keys never go back to loading.
+            val wereKeysKnown = it.receiverKeys.isLoaded()
+            val keys = if (awaitsKeys && !wereKeysKnown) Loadable.Loading else receiverKeys.toLoaded()
             it.copy(
                 currency = target.currency,
                 from = target.from,
                 to = target.to,
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
-                receiverKeys = receiverKeys,
-                // Why: a form that opened with no key stays one, so a sync bringing the first never swaps it mid-typing.
-                prefersForm = it.prefersForm || (!it.isLoaded && receiverKeys.isEmpty()),
+                receiverKeys = keys,
+                /*
+                 * Why: keys first known as none make the form stay, so a sync bringing the first never swaps it
+                 * mid-typing; while they load, nothing is decided yet.
+                 */
+                prefersForm = it.prefersForm || (!wereKeysKnown && keys.isLoaded() && receiverKeys.isEmpty()),
                 groupName = target.groupName,
                 // Why: until something is typed, the field follows the whole debt as a sync changes it.
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {

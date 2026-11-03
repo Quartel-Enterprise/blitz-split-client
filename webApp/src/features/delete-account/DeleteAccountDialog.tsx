@@ -1,5 +1,5 @@
 import { Loader2, WifiOff } from 'lucide-react'
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { DeleteAccountPresenter, type JsDeleteAccountAction, type JsDeleteAccountState } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { providerLabel } from '@/components/common'
@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { LoadingRegion, SkeletonLine } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { blockBrowserBack } from '@/lib/browserBack'
@@ -80,13 +81,16 @@ export function DeleteAccountDialog() {
 }
 
 function DeleteAccountContent({ presenter, state }: { presenter: DeleteAccountPresenter; state: JsDeleteAccountState }) {
+  const accountItem = state.accountProvider ? [t('deleteAccount_deletedAccount', { provider: providerLabel(state.accountProvider as AccountProvider, true) })] : []
   const items = [
     t('deleteAccount_deletedProfile'),
     t('deleteAccount_deletedKeys'),
     // Why: the account is gone once deleted, and the screen closes right after
-    ...(state.accountProvider ? [t('deleteAccount_deletedAccount', { provider: providerLabel(state.accountProvider as AccountProvider, true) })] : []),
+    ...accountItem,
     t('deleteAccount_deletedDevice'),
   ]
+  // Why: the provider's line waits for the account, in its place before the device's line.
+  const deviceIndex = items.length - 1
   return (
     <div className="flex flex-col gap-4">
       {state.showsOfflineNotice && (
@@ -104,8 +108,17 @@ function DeleteAccountContent({ presenter, state }: { presenter: DeleteAccountPr
           {t('deleteAccount_deleted')}
         </h3>
         <ul className="flex flex-col gap-1.5">
-          {items.map((item) => (
-            <li key={item}>{item}</li>
+          {items.map((item, index) => (
+            <Fragment key={item}>
+              {index === deviceIndex && state.isAccountLoading && (
+                <li>
+                  <LoadingRegion>
+                    <SkeletonLine className="my-1 w-3/5" />
+                  </LoadingRegion>
+                </li>
+              )}
+              <li>{item}</li>
+            </Fragment>
           ))}
         </ul>
       </section>

@@ -56,7 +56,13 @@ struct EditGroupView: View {
             if let model, model.state.isLoaded {
                 EditGroupForm(model: model)
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The group not read yet: its icon and fields shimmer in place
+                ShimmerScreen {
+                    ShimmerBlock(width: 88, height: 88, cornerRadius: 28)
+                        .frame(maxWidth: .infinity)
+                    ShimmerForm(fieldCount: 3)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .navigationTitle("Edit group")

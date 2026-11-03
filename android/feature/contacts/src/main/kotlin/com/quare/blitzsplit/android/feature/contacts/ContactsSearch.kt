@@ -44,6 +44,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaMatch
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
 
+private const val SEARCH_SKELETON_ROWS = 4
 private val rowPadding = Modifier.padding(
     horizontal = 16.dp,
     vertical = 1.dp,
@@ -118,13 +119,22 @@ internal fun ContactsSearchBar(
 
 /*
  * Why: what the search found once something is typed: "Nos seus grupos", then "Na agenda" (when the agenda may be
- * read), or "Ninguém com “Rodrigo”" with the link.
+ * read), or "Ninguém com “Rodrigo”" with the link; a shimmer while what it looks in is still being read.
  */
 internal fun LazyListScope.searchResultItems(
     state: ContactsUiState,
     isPaneShown: Boolean,
     onEvent: (ContactsUiEvent) -> Unit,
 ) {
+    if (state.isSearchLoading) {
+        item(key = "search-skeleton") {
+            ContactRowsSkeleton(
+                count = SEARCH_SKELETON_ROWS,
+                modifier = contactsSkeletonPadding.padding(top = 12.dp),
+            )
+        }
+        return
+    }
     if (state.showsNoResults) {
         item(key = "no-results") {
             NoResultsMessage(

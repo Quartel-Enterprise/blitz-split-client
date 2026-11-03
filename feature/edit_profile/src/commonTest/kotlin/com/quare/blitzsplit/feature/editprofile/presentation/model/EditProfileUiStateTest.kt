@@ -382,7 +382,20 @@ class EditProfileUiStateTest {
         assertFalse(canSave)
     }
 
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN checking Save THEN cannot save`() {
+        // Given
+        val uiState = state(isLoaded = false)
+
+        // When
+        val canSave = uiState.canSave
+
+        // Then
+        assertFalse(canSave)
+    }
+
     private fun state(
+        isLoaded: Boolean = true,
         name: String = "Pierre",
         photo: ProfilePhoto? = null,
         isPreparingPhoto: Boolean = false,
@@ -392,6 +405,7 @@ class EditProfileUiStateTest {
         accountProvider: AccountProvider? = null,
         accountPhotoUrl: String? = null,
     ): EditProfileUiState = EditProfileUiState(
+        isLoaded = isLoaded,
         name = name,
         avatarColor = AvatarColor.default,
         photo = photo,

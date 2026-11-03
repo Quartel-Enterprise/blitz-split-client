@@ -55,7 +55,8 @@ class ShareBillViewModel(
                 // Why: nothing picked until the server says, so a link anyone opens never shows as the group's only.
                 visibility = null,
                 isOnline = true,
-                isLoading = false,
+                // Why: the link is read as soon as the connectivity says online; never an idle sheet with no link first.
+                isLoading = true,
                 isUpdating = false,
                 hasFailed = false,
                 isLinkCopied = false,
@@ -71,6 +72,9 @@ class ShareBillViewModel(
     private val copiedFeedback = CopiedFeedbackTimer(viewModelScope) { isCopied ->
         uiState.update { it.copy(isLinkCopied = isCopied) }
     }
+
+    // Why: isLoading also covers the wait for connectivity, so the read in flight is tracked on its own.
+    private var isFetching = false
 
     init {
         combine(observeGroup(route.groupId), observeExpense(route.expenseId), ::Pair)
@@ -88,7 +92,13 @@ class ShareBillViewModel(
         connectivityObserver
             .observe()
             .onEach { isOnline ->
-                uiState.update { it.copy(isOnline = isOnline) }
+                // Why: offline nothing is read, so the sheet says so instead of loading.
+                uiState.update {
+                    it.copy(
+                        isOnline = isOnline,
+                        isLoading = isFetching || (isOnline && it.link == null && !it.hasFailed),
+                    )
+                }
                 if (isOnline) loadOnce()
             }.launchIn(viewModelScope)
     }
@@ -122,7 +132,8 @@ class ShareBillViewModel(
     // Why: once per sheet, the first time it is online; again only after a failure, through "Tentar de novo".
     private fun loadOnce() {
         val state = uiState.value
-        if (state.link != null || state.isLoading || state.hasFailed) return
+        if (state.link != null || isFetching || state.hasFailed) return
+        isFetching = true
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             val loaded = loadBillShareLink(route.expenseId)
@@ -132,6 +143,7 @@ class ShareBillViewModel(
             } else {
                 loaded.getOrNull()
             }
+            isFetching = false
             uiState.update {
                 it.copy(
                     isLoading = false,

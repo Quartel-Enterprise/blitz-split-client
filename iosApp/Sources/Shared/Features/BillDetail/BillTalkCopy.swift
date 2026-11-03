@@ -16,9 +16,11 @@ extension BillCopy {
     // MARK: - Comments
 
     /// "Comments · 3", or just "Comments" while there is none.
-    static func commentsHeader(_ count: Int32) -> String {
+    static func commentsHeader(_ count: KotlinInt?) -> String {
         let title = String(localized: "Comments", comment: "The bill's comments section")
-        return count > 0 ? "\(title) · \(Int(count))" : title
+        // No count while the comments load
+        guard let count = count?.intValue, count > 0 else { return title }
+        return "\(title) · \(count)"
     }
 
     /// "You", the author's name, or "Someone" when the server kept no name.

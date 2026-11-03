@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.deleteaccount
 
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteA
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -21,6 +23,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -61,7 +65,7 @@ class DeleteAccountViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+            assertEquals(AccountProvider.GOOGLE, state.accountProvider.valueOrNull())
             assertTrue(state.isOnline)
             assertFalse(state.hasConfirmed)
             assertFalse(state.isDeleting)
@@ -77,7 +81,7 @@ class DeleteAccountViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(AccountProvider.APPLE, state.accountProvider)
+        assertEquals(AccountProvider.APPLE, state.accountProvider.valueOrNull())
     }
 
     @Test
@@ -89,7 +93,7 @@ class DeleteAccountViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertNull(state.accountProvider)
+        assertNull(state.accountProvider.valueOrNull())
     }
 
     @Test
@@ -101,7 +105,7 @@ class DeleteAccountViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertNull(state.accountProvider)
+        assertNull(state.accountProvider.valueOrNull())
     }
 
     @Test
@@ -277,7 +281,10 @@ class DeleteAccountViewModelTest {
             account.status = AccountStatus.LocalOnly
 
             // Then
-            assertNull(viewModel.uiState.value.accountProvider)
+            assertNull(
+                viewModel.uiState.value.accountProvider
+                    .valueOrNull(),
+            )
             assertTrue(viewModel.uiState.value.isDeleting)
         }
 
@@ -455,6 +462,23 @@ class DeleteAccountViewModelTest {
             assertTrue(viewModel.uiState.value.canDelete)
         }
 
+    @Test
+    fun `GIVEN the account not read yet WHEN the screen opens THEN the provider loads and nothing can be confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsAccount = true)
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(Loadable.Loading, state.accountProvider)
+            assertFalse(state.isConfirmEnabled)
+            assertFalse(state.hasConfirmed)
+            assertFalse(state.canDelete)
+        }
+
     private val googleAccount = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val appleAccount = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
     private val exportedJson = """{"profile":{"displayName":"Pierre"}}"""
@@ -464,6 +488,7 @@ class DeleteAccountViewModelTest {
         online: Boolean = true,
         deleteResult: Result<Unit> = Result.success(Unit),
         deleteHangs: Boolean = false,
+        holdsAccount: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status)
         isOnline = MutableStateFlow(online)
@@ -480,7 +505,11 @@ class DeleteAccountViewModelTest {
                 deleteGate?.await() ?: this@DeleteAccountViewModelTest.deleteResult
             },
             exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportedJson) },
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
+            observeAccountStatus = if (holdsAccount) {
+                ObserveAccountStatus { emptyFlow() }
+            } else {
+                ObserveAccountStatusUseCase(account)
+            },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

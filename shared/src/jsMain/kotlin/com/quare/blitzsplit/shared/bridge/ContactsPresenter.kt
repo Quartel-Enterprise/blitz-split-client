@@ -9,6 +9,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 /*
  * Why: one person of Contatos. netMinor is positive when they owe you, negative when you owe them; matchStart and
@@ -40,15 +41,20 @@ class JsContactsState(
     val contacts: Array<JsContactRow>,
     val hiddenContacts: Array<JsContactRow>,
     val isHiddenExpanded: Boolean,
-    // Why: "Você deve" and "Te devem", Saldos' totals in its main currency.
-    val total: JsBalanceTotal,
+    // Why: "Você deve" and "Te devem", Saldos' totals in its main currency; null while they load (the shimmer).
+    val total: JsBalanceTotal?,
     val query: String,
     val isSearching: Boolean,
     // Why: "Nos seus grupos", hidden ones included; the web has no agenda to look in.
     val groupResults: Array<JsContactRow>,
     val showsNoResults: Boolean,
     val isEmpty: Boolean,
+    // Why: the skeleton rows, until the people are read and the account's copy is whole.
     val isLoading: Boolean,
+    // Why: the search's skeleton while what it looks in is still being read.
+    val isSearchLoading: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the skeleton.
+    val isWaitingForInternet: Boolean,
     val showsSummary: Boolean,
     val showsOfflineNotice: Boolean,
     // Why: the person the desktop's pane beside the list shows, null for its placeholder.
@@ -72,19 +78,23 @@ class ContactsPresenter {
                 contacts = state.contacts.map(::toJsContactRow).toTypedArray(),
                 hiddenContacts = state.hiddenContacts.map(::toJsContactRow).toTypedArray(),
                 isHiddenExpanded = state.isHiddenExpanded,
-                total = JsBalanceTotal(
-                    currency = state.total.currency.code,
-                    fractionDigits = state.total.currency.fractionDigits,
-                    netMinor = state.total.netMinor.toDouble(),
-                    toReceiveMinor = state.total.toReceiveMinor.toDouble(),
-                    toPayMinor = state.total.toPayMinor.toDouble(),
-                ),
+                total = state.total.valueOrNull()?.let { total ->
+                    JsBalanceTotal(
+                        currency = total.currency.code,
+                        fractionDigits = total.currency.fractionDigits,
+                        netMinor = total.netMinor.toDouble(),
+                        toReceiveMinor = total.toReceiveMinor.toDouble(),
+                        toPayMinor = total.toPayMinor.toDouble(),
+                    )
+                },
                 query = state.query,
                 isSearching = state.isSearching,
                 groupResults = state.groupResults.map(::toJsContactRow).toTypedArray(),
                 showsNoResults = state.showsNoResults,
                 isEmpty = state.isEmpty,
                 isLoading = state.isLoading,
+                isSearchLoading = state.isSearchLoading,
+                isWaitingForInternet = state.isWaitingForInternet,
                 showsSummary = state.showsSummary,
                 showsOfflineNotice = state.showsOfflineNotice,
                 selectedKey = state.selectedKey,

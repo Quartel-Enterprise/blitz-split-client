@@ -161,7 +161,7 @@ private struct JoinInviteContent: View {
                 hint(state)
                 buttons(state)
             }
-        case .invalid, .offline:
+        case .invalid, .offline, .failed:
             VStack(spacing: 16) {
                 problemText(state, isCentered: true)
                 problemButtons(state)
@@ -169,9 +169,17 @@ private struct JoinInviteContent: View {
             }
             .padding(.top, 48)
         default:
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding(.top, 160)
+            // The server reading the invite: the group's card and the buttons shimmer in place
+            VStack(alignment: .leading, spacing: 20) {
+                ShimmerLine(width: 220, height: 24)
+                ShimmerLine(width: 160, height: 12)
+                ShimmerRow(leading: .badge, leadingSize: 56, showsTrailing: false)
+                    .padding(16)
+                    .background(Palette.card, in: .rect(cornerRadius: 24))
+                ShimmerBlock(height: 50, cornerRadius: 25)
+            }
+            .shimmering()
+            .padding(.top, 48)
         }
     }
 
@@ -354,12 +362,15 @@ private struct JoinInviteContent: View {
     @ViewBuilder
     private func problemText(_ state: JoinInviteUiState, isCentered: Bool) -> some View {
         let alignment: TextAlignment = isCentered ? .center : .leading
-        Image(systemName: state.status == .offline ? "wifi.slash" : "xmark.circle")
+        Image(systemName: problemIcon(state.status))
             .font(.system(size: 44))
             .foregroundStyle(Palette.accent)
         Group {
             if state.status == .offline {
                 Text("No internet to open the invite")
+            } else if state.status == .failed {
+                // Online, the server failed: it may work on the next try
+                Text("Couldn't open the invite. Try again.")
             } else {
                 Text("This invite is no longer valid")
             }
@@ -369,6 +380,8 @@ private struct JoinInviteContent: View {
         Group {
             if state.status == .offline {
                 Text("We kept the link. As soon as the device connects, the invite opens by itself.")
+            } else if state.status == .failed {
+                EmptyView()
             } else if state.isPersonal {
                 Text("Someone already joined through this link, or it was changed. Ask whoever sent it for a new one.")
             } else {
@@ -377,7 +390,7 @@ private struct JoinInviteContent: View {
         }
         .foregroundStyle(.secondary)
         .multilineTextAlignment(alignment)
-        if state.status == .offline {
+        if state.status == .offline || state.status == .failed {
             Text(verbatim: state.displayLink)
                 .font(.callout.monospaced())
                 .padding(.horizontal, 12)
@@ -386,9 +399,18 @@ private struct JoinInviteContent: View {
         }
     }
 
-    /// "Try again" while offline, "Go to home", and "Scan another QR code" for a link no longer valid.
+    private func problemIcon(_ status: JoinInviteStatus) -> String {
+        switch status {
+        case .offline: "wifi.slash"
+        case .failed: "exclamationmark.triangle"
+        default: "xmark.circle"
+        }
+    }
+
+    /// "Try again" while offline or after the server failed, "Go to home", and "Scan another QR code" for a link no
+    /// longer valid.
     private func problemButtons(_ state: JoinInviteUiState) -> some View {
-        let isOffline = state.status == .offline
+        let isOffline = state.status == .offline || state.status == .failed
         return VStack(spacing: 8) {
             if isOffline {
                 PrimaryButton(title: "Try again") {

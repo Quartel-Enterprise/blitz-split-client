@@ -40,6 +40,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -54,6 +56,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -1278,6 +1281,65 @@ class ActivityViewModelTest {
         }
 
     @Test
+    fun `GIVEN a contact with only older events WHEN Atividade opens on them THEN loads older pages`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = "user:elisa",
+                hasOlder = true,
+                isOlderPageHeld = true,
+            )
+            val loading = viewModel.uiState.value
+
+            // When
+            loadOlderGate?.complete(Unit)
+
+            // Then
+            assertTrue(loading.isLoadingOlderItems)
+            assertNull(loading.emptyState)
+            assertEquals(1, loadOlderCount)
+            assertEquals(ActivityEmptyState.NO_RESULTS, viewModel.uiState.value.emptyState)
+        }
+
+    @Test
+    fun `GIVEN a filter with no match and older ones offline WHEN applying it THEN says they load once online`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasOlder = true,
+                online = false,
+            )
+
+            // When
+            applyFilter(groupId = FLORIPA, ActivityType.CHARGES)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.emptyState)
+            assertTrue(state.showsOfflineEnd)
+            assertFalse(state.isLoadingOlderItems)
+            assertEquals(0, loadOlderCount)
+        }
+
+    @Test
+    fun `GIVEN a filter with no match WHEN the older page fails THEN stops asking and says the server failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(hasOlder = true)
+            activity.loadOlderError = IllegalStateException("500")
+
+            // When
+            applyFilter(groupId = FLORIPA, ActivityType.CHARGES)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(1, loadOlderCount)
+            assertEquals(ActivityStatus.SERVER_ERROR, state.status)
+            assertNull(state.emptyState)
+            assertFalse(state.isLoadingOlderItems)
+        }
+
+    @Test
     fun `GIVEN a filter nothing matches WHEN applying it THEN says nothing matches with the tools still shown`() =
         runTest(testDispatcher) {
             // Given
@@ -1568,6 +1630,72 @@ class ActivityViewModelTest {
             assertEquals(ActivityStatus.SYNCING, state.status)
             assertTrue(state.showsPlaceholders)
             assertFalse(state.showsNotSyncedNotice)
+            assertNull(state.emptyState)
+        }
+
+    @Test
+    fun `GIVEN the sync state not known yet WHEN Atividade opens THEN shows neither nothing yet nor the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = emptyList(),
+                readState = neverDownloaded,
+                syncStateRead = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertNull(state.emptyState)
+            assertFalse(state.showsNotSyncedNotice)
+        }
+
+    @Test
+    fun `GIVEN an account awaiting its full sync before it starts WHEN Atividade opens THEN shows placeholders`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = emptyList(),
+                readState = neverDownloaded,
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = false,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsPlaceholders)
+            assertNull(state.emptyState)
+            assertFalse(state.showsNotSyncedNotice)
+        }
+
+    @Test
+    fun `GIVEN an account awaiting its full sync offline WHEN Atividade opens THEN says it waits for the internet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = emptyList(),
+                readState = neverDownloaded,
+                online = false,
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsPlaceholders)
+            assertTrue(state.isWaitingForInternet)
             assertNull(state.emptyState)
         }
 
@@ -2041,11 +2169,14 @@ class ActivityViewModelTest {
         online: Boolean = true,
         sync: SyncState = SyncState.SYNCED,
         groupsRead: Boolean = true,
+        syncStateRead: Boolean = true,
+        downloading: FirstDownloadProgress? = null,
+        isOlderPageHeld: Boolean = false,
     ) {
         clockMillis = NOW
         syncGate = null
         syncNowCount = 0
-        loadOlderGate = null
+        loadOlderGate = if (isOlderPageHeld) CompletableDeferred() else null
         loadOlderCount = 0
         minutes = MutableStateFlow(0)
         isOnline = MutableStateFlow(online)
@@ -2091,7 +2222,14 @@ class ActivityViewModelTest {
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
             ),
             observeAccount = ObserveAccountUseCase(account),
-            observeSyncState = ObserveSyncState { syncState },
+            observeSyncState = if (syncStateRead) {
+                ObserveSyncState {
+                    syncState
+                }
+            } else {
+                ObserveSyncState { MutableSharedFlow() }
+            },
+            observeFirstDownload = ObserveFirstDownload { flowOf(downloading) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             minuteTicks = MinuteTicks { minutes.map { } },
         )

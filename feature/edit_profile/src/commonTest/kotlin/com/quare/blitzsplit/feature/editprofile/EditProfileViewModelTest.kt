@@ -148,11 +148,41 @@ class EditProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
+            assertFalse(state.isLoaded)
             assertEquals("", state.name)
             assertNull(state.photo)
             assertNull(state.nameError)
             assertFalse(state.isNameValid)
             assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN typing a name THEN takes no edit`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Ana"))
+
+        // Then
+        assertEquals("", viewModel.uiState.value.name)
+    }
+
+    @Test
+    fun `GIVEN a name typed before the saved profile was read WHEN it arrives THEN fills the form with it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedProfile = null)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Ana"))
+
+            // When
+            profiles.profile.value = pierre
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            assertEquals("Pierre", state.name)
+            assertFalse(state.hasChanges)
         }
 
     @Test

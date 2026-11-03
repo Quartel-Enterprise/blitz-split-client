@@ -209,4 +209,6 @@
     <string name="designsystem_photo_crop_turn">Girar</string>
     <string name="designsystem_photo_crop_cancel">Cancelar</string>
     <string name="designsystem_photo_crop_confirm">Pronto</string>
+    <string name="designsystem_loading">Carregando</string>
+    <string name="designsystem_waiting_for_internet">Sem internet. Seus dados aparecem quando reconectar.</string>
 </resources>

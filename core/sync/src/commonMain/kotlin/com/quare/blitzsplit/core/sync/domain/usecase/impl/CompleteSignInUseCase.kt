@@ -26,6 +26,8 @@ class CompleteSignInUseCase(
                 profileRepository.downloadProfile(user.userId).getOrThrow()
             }
             val hasProfile = profileRepository.observeProfile().first() != null
+            // Why: the restored profile came without its groups, which only a sync brings, also after a relaunch.
+            if (isNewDevice && hasProfile) accountRepository.updateAwaitsFullSync(true)
             if (hasProfile) SignInOutcome.PROFILE_RESTORED else SignInOutcome.NEEDS_PROFILE
         }.also { result ->
             if (isNewDevice && result.getOrNull() != SignInOutcome.PROFILE_RESTORED) firstDownload.end()

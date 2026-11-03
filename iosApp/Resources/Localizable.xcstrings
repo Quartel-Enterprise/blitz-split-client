@@ -654,6 +654,17 @@
         }
       }
     },
+    "Couldn't open the invite. Try again." : {
+      "comment" : "Join: the server failed to read an invite while online",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para abrir o convite. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't open this image. Choose another one." : {
       "localizations" : {
         "pt-BR" : {
@@ -1198,6 +1209,17 @@
         }
       }
     },
+    "Loading" : {
+      "comment" : "VoiceOver's label of a shimmering placeholder while a section loads",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregando"
+          }
+        }
+      }
+    },
     "Mark as paid" : {
       "comment" : "Pay with a key (4.5): records the whole debt as paid",
       "localizations" : {
@@ -1225,6 +1247,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Próxima"
+          }
+        }
+      }
+    },
+    "No internet. Your data shows up once you're back online." : {
+      "comment" : "Under a shimmer while the account's first full sync waits for the internet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet. Seus dados aparecem quando reconectar."
+          }
+        }
+      }
+    },
+    "No internet. Your groups show up once you're back online." : {
+      "comment" : "Home and Groups while the account's first download waits for the internet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet. Seus grupos aparecem quando reconectar."
           }
         }
       }
@@ -4976,6 +5020,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você escolheu %1$@. Pelo mapa seria %2$@ (“%3$@”). Ao salvar, perguntamos se o mapa aprende."
+          }
+        }
+      }
+    },
+    "Your contacts are empty. The invite link works without them." : {
+      "comment" : "Invite from contacts: the agenda was read and holds nobody",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua agenda está vazia. O link de convite funciona sem ela."
           }
         }
       }
@@ -17658,6 +17713,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enquadre o cupom inteiro. A gente preenche o valor, a data e a descrição; você confere antes de salvar."
+          }
+        }
+      }
+    },
+    "The receipt reader didn't answer. It isn't your photo: try again in a moment, or fill it in by hand." : {
+      "comment" : "Split a bill: the server's receipt reader didn't answer",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O leitor de cupom não respondeu. Não é a sua foto: tente de novo daqui a pouco ou preencha à mão."
+          }
+        }
+      }
+    },
+    "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow." : {
+      "comment" : "Split a bill: the account reached the receipt reads of the day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já leu 30 cupons nas últimas 24 horas. Preencha à mão ou leia de novo amanhã."
+          }
+        }
+      }
+    },
+    "No connection. The photo didn't reach the reader: try again once you're back online, or fill it in by hand." : {
+      "comment" : "Split a bill: the connection dropped while the receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conexão. A foto não chegou ao leitor: tente de novo quando reconectar, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "The receipt reader didn't answer" : {
+      "comment" : "Split a bill on the Mac: the server's receipt reader didn't answer",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O leitor de cupom não respondeu"
+          }
+        }
+      }
+    },
+    "Today's reading limit" : {
+      "comment" : "Split a bill on the Mac: the account reached the receipt reads of the day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de leituras de hoje"
+          }
+        }
+      }
+    },
+    "It isn't your photo. Try again in a moment, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"The receipt reader didn't answer\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não é a sua foto. Tente de novo daqui a pouco ou preencha à mão."
+          }
+        }
+      }
+    },
+    "The photo didn't reach the reader. Try again once you're back online, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"No connection\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A foto não chegou ao leitor. Tente de novo quando reconectar, ou preencha à mão."
           }
         }
       }

@@ -36,6 +36,7 @@ class FirstDownloadTest {
             FirstDownloadProgress(
                 arrivedGroupCount = 0,
                 groupCount = null,
+                isWaitingForInternet = false,
             ),
             restored.observeProgress().value,
         )
@@ -56,6 +57,7 @@ class FirstDownloadTest {
             FirstDownloadProgress(
                 arrivedGroupCount = 0,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
             firstDownload.observeProgress().value,
         )
@@ -78,6 +80,7 @@ class FirstDownloadTest {
             FirstDownloadProgress(
                 arrivedGroupCount = 3,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
             firstDownload.observeProgress().value,
         )

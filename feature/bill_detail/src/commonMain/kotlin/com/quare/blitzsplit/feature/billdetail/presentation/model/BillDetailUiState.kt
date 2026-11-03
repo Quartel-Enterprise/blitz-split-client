@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 
 data class BillDetailUiState(
     // Why: the top bar's title over the bill, as Despesas do grupo is the screen under it.
@@ -37,35 +39,43 @@ data class BillDetailUiState(
     val isDeleting: Boolean,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
-    // Why: "Comentários", in the order they were written, each with its replies.
-    val threads: List<BillCommentThread>,
+    /*
+     * Why: "Comentários", in the order they were written, each with its replies. Loading until read and while a
+     * restored account's copy is not whole, since the comments only come with its first full sync.
+     */
+    val threads: Loadable<List<BillCommentThread>>,
     // Why: what is typed in "Escreva um comentário".
     val commentDraft: String,
     // Why: "Respondendo a Diego" while not null.
     val replyTarget: BillReplyTarget?,
-    // Why: "Histórico", the most recent first, by day; never the comments.
-    val history: List<BillHistoryDay>,
+    /*
+     * Why: "Histórico", the most recent first, by day; never the comments. Loading online until the server's history
+     * answered; offline, or once that read failed, the device's lines (isHistoryFromDeviceOnly).
+     */
+    val history: Loadable<List<BillHistoryDay>>,
+    // Why: the history holds only what the device keeps (its 90 days of Atividade): offline, or the server failed.
+    val isHistoryFromDeviceOnly: Boolean,
     // Why: "Sem internet. Comentários e fotos ficam na fila e saem ao reconectar."
     val isOnline: Boolean,
     // Why: "Desfazer" saving the bill as it was.
     val isUndoing: Boolean,
-    // Why: "Anexos", the receipt first, then the photos in the order they were added.
-    val attachments: List<BillAttachmentTile>,
+    // Why: "Anexos", the receipt first, then the photos in the order they were added; Loading like the comments.
+    val attachments: Loadable<List<BillAttachmentTile>>,
     // Why: the attachment the viewer shows, full screen, while not null.
     val viewedAttachmentId: String?,
     // Why: a photo picked and being made ready, which takes a moment on a large one.
     val isAddingPhoto: Boolean,
 ) {
-    // Why: "Anexos · 2 de 5 fotos"; the receipt isn't one of them.
-    val photoCount: Int
-        get() = attachments.count { !it.isReceipt }
+    // Why: "Anexos · 2 de 5 fotos"; the receipt isn't one of them. Null while the attachments load.
+    val photoCount: Int?
+        get() = attachments.valueOrNull()?.count { !it.isReceipt }
 
     val photoLimit: Int
         get() = BillAttachmentKind.PHOTO.limit
 
     // Why: the "Adicionar foto" tile, there while the bill has room for one more photo.
     val showsAddPhoto: Boolean
-        get() = photoCount < photoLimit
+        get() = photoCount?.let { it < photoLimit } == true
 
     // Why: "Adicionar foto" while the bill has room, offline too.
     val canAddPhoto: Boolean
@@ -73,14 +83,19 @@ data class BillDetailUiState(
 
     // Why: the viewer's page, gone with the attachment (removed on another device meanwhile).
     val viewedAttachmentIndex: Int?
-        get() = attachments.indexOfFirst { it.id == viewedAttachmentId }.takeIf { it >= 0 }
+        get() = attachments
+            .valueOrNull()
+            ?.indexOfFirst { it.id == viewedAttachmentId }
+            ?.takeIf { it >= 0 }
+
+    fun hasAttachment(id: String): Boolean = attachments.valueOrNull()?.any { it.id == id } == true
 
     val viewedAttachment: BillAttachmentTile?
-        get() = viewedAttachmentIndex?.let(attachments::get)
+        get() = viewedAttachmentIndex?.let { attachments.valueOrNull()?.getOrNull(it) }
 
-    // Why: the count beside "Comentários", replies included.
-    val commentCount: Int
-        get() = threads.sumOf { 1 + it.replies.size }
+    // Why: the count beside "Comentários", replies included; null while they load.
+    val commentCount: Int?
+        get() = threads.valueOrNull()?.sumOf { 1 + it.replies.size }
 
     // Why: "Enviar comentário" stays disabled until something is typed, up to what the server takes.
     val canSendComment: Boolean
@@ -88,7 +103,7 @@ data class BillDetailUiState(
 
     // Why: "Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta."
     val showsNoComments: Boolean
-        get() = isLoaded && threads.isEmpty()
+        get() = isLoaded && threads.valueOrNull()?.isEmpty() == true
 
     // Why: "Alimentação › Mercado" under the bill's title, "Outros" for none.
     val category: Category

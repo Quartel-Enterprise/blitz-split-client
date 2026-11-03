@@ -55,6 +55,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -63,9 +66,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
+import software.quare.loadable.valueOrNull
 
 // Why: the canvas' tiles, 104×80 and 92×70 on a phone lying down, where the screen is short.
 private val regularTile = TileSize(104.dp, 80.dp)
+private const val SKELETON_TILES = 2
 private val shortTile = TileSize(92.dp, 70.dp)
 private val tileSpacing = 8.dp
 private val thumbShape = RoundedCornerShape(12.dp)
@@ -93,8 +98,10 @@ internal fun BillAttachmentsSection(
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
     val size = if (rememberFoldLayout().formFactor == FormFactor.PhoneLandscape) shortTile else regularTile
+    val attachments = state.attachments.valueOrNull()
     val tiles: @Composable () -> Unit = {
-        state.attachments.forEach { attachment ->
+        if (attachments == null) AttachmentTilesSkeleton(size)
+        attachments?.forEach { attachment ->
             AttachmentTile(
                 attachment = attachment,
                 size = size,
@@ -115,12 +122,14 @@ internal fun BillAttachmentsSection(
         BillSectionTitle(
             text = stringResource(R.string.bill_detail_attachments),
             // Why: "2 de 5 fotos", whose noun follows the limit.
-            trailing = pluralStringResource(
-                R.plurals.bill_detail_attachments_count,
-                state.photoLimit,
-                state.photoCount,
-                state.photoLimit,
-            ),
+            trailing = state.photoCount?.let { count ->
+                pluralStringResource(
+                    R.plurals.bill_detail_attachments_count,
+                    state.photoLimit,
+                    count,
+                    state.photoLimit,
+                )
+            },
         )
         if (wraps) {
             FlowRow(
@@ -132,6 +141,25 @@ internal fun BillAttachmentsSection(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(tileSpacing),
             ) { tiles() }
+        }
+    }
+}
+
+// Why: two tiles in the thumbnails' size and corners while the bill's attachments are read.
+@Composable
+private fun AttachmentTilesSkeleton(size: TileSize) {
+    ShimmerBox {
+        Row(horizontalArrangement = Arrangement.spacedBy(tileSpacing)) {
+            repeat(SKELETON_TILES) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    ShimmerAvatarSkeleton(
+                        size = size.width,
+                        modifier = Modifier.size(size.width, size.thumbHeight),
+                        shape = thumbShape,
+                    )
+                    ShimmerLine(width = size.width * 0.7f)
+                }
+            }
         }
     }
 }

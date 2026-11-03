@@ -5,7 +5,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReaderException
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ReadReceiptUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeReceiptRepository
 import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
@@ -19,7 +22,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ReadReceiptUseCaseTest {
@@ -78,12 +81,13 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
-        assertEquals(restaurantReading, scan.reading)
+        val read = assertIs<ReceiptScan.Read>(scan)
+        assertTrue(encodedJpeg.contentEquals(read.photo.jpeg))
+        assertEquals(restaurantReading, read.reading)
     }
 
     @Test
-    fun `GIVEN the photo shows no receipt WHEN reading it THEN keeps the photo with no reading`() = runTest {
+    fun `GIVEN the photo shows no receipt WHEN reading it THEN fails as unreadable`() = runTest {
         // Given
         prepareScenario(reading = null)
 
@@ -91,28 +95,43 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
-        assertNull(scan.reading)
+        assertEquals(ReceiptReadFailure.UNREADABLE, assertIs<ReceiptScan.Failed>(scan).failure)
     }
 
     @Test
-    fun `GIVEN the server fails WHEN reading a receipt THEN keeps the photo with no reading`() = runTest {
-        // Given
-        prepareScenario(
-            reading = restaurantReading,
-            readError = IllegalStateException("503 Service Unavailable"),
-        )
+    fun `GIVEN the server fails with no reason named WHEN reading a receipt THEN fails as the reader unavailable`() =
+        runTest {
+            // Given
+            prepareScenario(
+                reading = restaurantReading,
+                readError = IllegalStateException("503 Service Unavailable"),
+            )
 
-        // When
-        val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
+            // When
+            val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
-        // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
-        assertNull(scan.reading)
-    }
+            // Then
+            assertEquals(ReceiptReadFailure.READER_UNAVAILABLE, assertIs<ReceiptScan.Failed>(scan).failure)
+        }
 
     @Test
-    fun `GIVEN a file that is no image WHEN reading it THEN gives no photo nor reading and sends nothing`() = runTest {
+    fun `GIVEN the server refuses past the daily limit WHEN reading a receipt THEN fails as the limit reached`() =
+        runTest {
+            // Given
+            prepareScenario(
+                reading = restaurantReading,
+                readError = ReceiptReaderException(ReceiptReadFailure.LIMIT_REACHED, IllegalStateException("429")),
+            )
+
+            // When
+            val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
+
+            // Then
+            assertEquals(ReceiptReadFailure.LIMIT_REACHED, assertIs<ReceiptScan.Failed>(scan).failure)
+        }
+
+    @Test
+    fun `GIVEN a file that is no image WHEN reading it THEN fails as unreadable and sends nothing`() = runTest {
         // Given
         prepareScenario(
             reading = restaurantReading,
@@ -123,13 +142,12 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
         // Then
-        assertNull(scan.photo)
-        assertNull(scan.reading)
+        assertEquals(ReceiptReadFailure.UNREADABLE, assertIs<ReceiptScan.Failed>(scan).failure)
         assertTrue(repository.readPhotos.isEmpty())
     }
 
     @Test
-    fun `GIVEN a photo too large at every quality WHEN reading it THEN gives no photo nor reading and sends nothing`() =
+    fun `GIVEN a photo too large at every quality WHEN reading it THEN fails as unreadable and sends nothing`() =
         runTest {
             // Given
             prepareScenario(
@@ -141,8 +159,7 @@ class ReadReceiptUseCaseTest {
             val scan = useCase(source, GroupCurrency.BRL, noReceiptCategoryHints)
 
             // Then
-            assertNull(scan.photo)
-            assertNull(scan.reading)
+            assertEquals(ReceiptReadFailure.UNREADABLE, assertIs<ReceiptScan.Failed>(scan).failure)
             assertTrue(repository.readPhotos.isEmpty())
         }
 

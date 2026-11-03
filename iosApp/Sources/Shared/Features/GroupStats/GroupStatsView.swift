@@ -58,7 +58,11 @@ struct GroupStatsView: View {
                     pickDates: { isPickingDates = true },
                 )
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The bills not read yet: the totals, the ring and the people shimmer in place
+                ShimmerScreen {
+                    StatsPlaceholder()
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .measuringScreenLayout($layout)
@@ -225,6 +229,16 @@ private struct StatsScroll: View {
                         StatsOverTimeSection(model: model)
                         StatsBiggestSection(model: model)
                     }
+                } else if state.isLoadingBills {
+                    // A first download may still bring this period's bills: never "Nothing to show yet" before them
+                    VStack(alignment: .leading, spacing: 16) {
+                        StatsPlaceholder()
+                            .shimmering()
+                        if state.isWaitingForInternet {
+                            WaitingForInternetNote()
+                        }
+                    }
+                    .padding(.top, 16)
                 } else {
                     StatsEmptyCard(model: model)
                         .padding(.top, 16)
@@ -636,6 +650,25 @@ private struct StatsBiggestSection: View {
                 .buttonStyle(.plain)
                 .background(Palette.card, in: .rect(cornerRadius: 26))
             }
+        }
+    }
+}
+
+/// The statistics still coming: the total, the ring by category and the people, as blocks the caller makes shimmer.
+private struct StatsPlaceholder: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ShimmerCard(showsButtons: false)
+                .background(Palette.card, in: .rect(cornerRadius: 26))
+            HStack(spacing: 16) {
+                ShimmerCircle(size: 112)
+                VStack(alignment: .leading, spacing: 10) {
+                    ShimmerLine(height: 12)
+                    ShimmerLine(width: 140, height: 12)
+                    ShimmerLine(width: 100, height: 12)
+                }
+            }
+            ShimmerList(count: 3)
         }
     }
 }

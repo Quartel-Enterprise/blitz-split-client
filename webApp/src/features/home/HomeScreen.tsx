@@ -2,9 +2,11 @@ import { Banknote, Camera, KeyRound, SquarePlus, Users, X } from 'lucide-react'
 import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
 import { SplitBillIcon } from '@/components/common'
+import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { ListCardSkeleton, SummaryCardsSkeleton } from '@/components/PageSkeletons'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
@@ -44,7 +46,7 @@ export function HomeScreen() {
   return (
     <HomeShell
       selected="home"
-      profile={state}
+      profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
       activityUnreadCount={state.activityUnreadCount}
@@ -76,6 +78,8 @@ export function HomeScreen() {
           </div>
         )}
 
+        {!state.isLoaded && !state.firstDownload && <HomeSkeleton />}
+
         {state.showsFirstUse && <FirstUseCard presenter={presenter} />}
 
         {state.showsHome && (
@@ -91,6 +95,38 @@ export function HomeScreen() {
         )}
       </main>
     </HomeShell>
+  )
+}
+
+/**
+ * Início before the browser's database answered, in the shape of the page: the shortcuts, the summary cards, the
+ * faces, then "Últimas despesas" beside "Seus grupos" on the desktop. Nothing says yet whether this is the first use.
+ */
+function HomeSkeleton() {
+  return (
+    <LoadingRegion className="flex flex-col gap-3.5 md:gap-4 lg:gap-5">
+      <div className="grid grid-cols-3 gap-2 lg:hidden">
+        {[0, 1, 2].map((index) => (
+          <Skeleton key={index} className="min-h-[72px] rounded-lg md:min-h-16" />
+        ))}
+      </div>
+      <SummaryCardsSkeleton className="gap-2 md:gap-4" />
+      <div className="flex flex-col gap-3 rounded-lg border bg-card p-3 md:px-4 md:py-3.5">
+        <SkeletonLine className="h-4 w-36" />
+        <div className="flex gap-1.5 overflow-hidden md:gap-2">
+          {[0, 1, 2, 3, 4].map((index) => (
+            <span key={index} className="flex w-[72px] shrink-0 flex-col items-center gap-2 py-1.5 md:w-[88px]">
+              <SkeletonCircle className="size-12 md:size-14" />
+              <SkeletonLine className="w-12" />
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-3.5 md:gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-5">
+        <ListCardSkeleton rows={4} leading="square" className="rounded-lg" />
+        <ListCardSkeleton rows={3} leading="square" className="rounded-lg" />
+      </div>
+    </LoadingRegion>
   )
 }
 

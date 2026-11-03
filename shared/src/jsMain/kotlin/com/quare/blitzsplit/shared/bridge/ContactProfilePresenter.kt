@@ -18,6 +18,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfi
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 // Why: one of "Grupos em comum"; amountMinor is positive when they owe you in that group.
 class JsContactGroup(
@@ -103,7 +104,11 @@ class JsContactProfileState(
     val canMerge: Boolean,
     val showsGuestCard: Boolean,
     val showsPendingMerge: Boolean,
-    // Why: "Convite pessoal enviado hoje, 14:20", in epoch millis; null while nothing waits.
+    // Why: online and the server hasn't said whether a request waits: the merge row shimmers.
+    val isMergeStatusLoading: Boolean,
+    // Why: offline (or the ask failed) before the server answered: neither Juntar nor "Aguardando", it needs internet.
+    val isMergeStatusUnavailable: Boolean,
+    // Why: "Convite pessoal enviado hoje, 14:20", in epoch millis; null while nothing waits or it isn't known yet.
     val pendingMergeRequestedAt: Double?,
     val isCancellingMerge: Boolean,
     val isNetOfSeveralGroups: Boolean,
@@ -288,7 +293,12 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     canMerge = state.canMerge,
     showsGuestCard = state.showsGuestCard,
     showsPendingMerge = state.showsPendingMerge,
-    pendingMergeRequestedAt = state.pendingMerge?.requestedAt?.toDouble(),
+    isMergeStatusLoading = state.isMergeStatusLoading,
+    isMergeStatusUnavailable = state.isMergeStatusUnavailable,
+    pendingMergeRequestedAt = state.pendingMerge
+        .valueOrNull()
+        ?.requestedAt
+        ?.toDouble(),
     isCancellingMerge = state.isCancellingMerge,
     isNetOfSeveralGroups = state.isNetOfSeveralGroups,
     balanceNote = state.balanceNote.name

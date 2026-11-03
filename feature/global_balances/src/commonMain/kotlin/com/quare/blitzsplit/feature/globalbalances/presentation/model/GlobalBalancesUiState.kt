@@ -6,6 +6,10 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.PaymentKey
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoaded
+import software.quare.loadable.map
+import software.quare.loadable.valueOrNull
 
 data class GlobalBalancesUiState(
     val displayName: String,
@@ -15,20 +19,24 @@ data class GlobalBalancesUiState(
     val photoUrl: String?,
     // Why: the web's sidebar names the account under the profile; null without Google or Apple.
     val accountProvider: AccountProvider?,
-    // Why: everyone with an open balance, the largest net first, whichever the filter.
-    val people: List<PersonRow>,
+    /*
+     * Why: everyone with an open balance, the largest net first, whichever the filter. Loading until Room is read and
+     * while the account's copy on this device is not whole (its groups come before their bills), so it shimmers rather
+     * than reading as "Tudo acertado".
+     */
+    val people: Loadable<List<PersonRow>>,
     /*
      * Why: "Tudo", "Você deve" and "Te devem", one per currency of the groups, the currency with the most groups
-     * first; never empty, so a device with nothing open still says R$ 0,00.
+     * first; once loaded never empty, so a device with nothing open still says R$ 0,00. Loading as people is.
      */
-    val totals: List<PeopleTotal>,
+    val totals: Loadable<List<PeopleTotal>>,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer while the copy waits offline.
+    val isWaitingForInternet: Boolean,
     val filter: BalancesFilter,
     // Why: the device user's Pix key that Cobrar offers to include, the default one; null without a Pix key.
     val pixKey: PaymentKey?,
     val charge: ChargeDraft?,
     val isOnline: Boolean,
-    // Why: nothing is drawn until Room is read, so the empty state never flashes.
-    val isLoaded: Boolean,
     // Why: "Pagamento de Carla registrado." with "Desfazer", once settling up with her closed over Saldos.
     val recordedPayment: PaymentNotice?,
     /*
@@ -39,7 +47,11 @@ data class GlobalBalancesUiState(
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
 ) {
-    // Why: once per state, since the JS presenter and each SwiftUI body pass read it many times.
+    // Why: the people and the totals load together; until then nothing reads as settled or zero.
+    val isLoaded: Boolean
+        get() = people.isLoaded() && totals.isLoaded()
+
+    // Why: once per state, since the JS presenter and each SwiftUI body pass read it many times. Empty while loading.
     val sections: List<PeopleSection> by lazy {
         listOfNotNull(
             sectionOf(isYouOwe = true).takeIf { filter != BalancesFilter.OWES_YOU },
@@ -59,13 +71,13 @@ data class GlobalBalancesUiState(
     val emptyState: BalancesEmptyState? by lazy {
         when {
             !isLoaded || sections.isNotEmpty() -> null
-            people.isEmpty() -> BalancesEmptyState.SETTLED
+            loadedPeople.isEmpty() -> BalancesEmptyState.SETTLED
             filter == BalancesFilter.YOU_OWE -> BalancesEmptyState.NOTHING_TO_PAY
             else -> BalancesEmptyState.NOTHING_TO_RECEIVE
         }
     }
 
-    // Why: "1 pessoa" under Você deve and "4 pessoas" under Te devem, each person once over every currency.
+    // Why: "1 pessoa" under Você deve and "4 pessoas" under Te devem, each person once over every currency; 0 while loading.
     val toPayPeopleCount: Int by lazy { peopleCountOf(owesYou = false) }
 
     val toReceivePeopleCount: Int by lazy { peopleCountOf(owesYou = true) }
@@ -73,41 +85,50 @@ data class GlobalBalancesUiState(
     // Why: the empty states' "para receber de 4 pessoas", in emptyStateTotal's currency.
     val emptyStatePeopleCount: Int
         get() = when (emptyState) {
-            BalancesEmptyState.NOTHING_TO_PAY -> emptyStateTotal.toReceiveCount
-            BalancesEmptyState.NOTHING_TO_RECEIVE -> emptyStateTotal.toPayCount
+            BalancesEmptyState.NOTHING_TO_PAY -> emptyStateTotal?.toReceiveCount ?: 0
+            BalancesEmptyState.NOTHING_TO_RECEIVE -> emptyStateTotal?.toPayCount ?: 0
             else -> 0
         }
 
-    // Why: the hero and the "Tudo" amount.
-    val primaryTotal: PeopleTotal
-        get() = totals.first()
+    // Why: the hero and the "Tudo" amount; Loading shimmers them rather than saying R$ 0,00.
+    val primaryTotal: Loadable<PeopleTotal>
+        get() = totals.map { it.first() }
 
     /*
      * Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open,
-     * which needn't be the one with the most groups.
+     * which needn't be the one with the most groups; null while no empty state shows.
      */
-    val emptyStateTotal: PeopleTotal
-        get() = when (emptyState) {
-            BalancesEmptyState.NOTHING_TO_PAY -> totals.firstOrNull { it.toReceiveMinor > 0 }
-            BalancesEmptyState.NOTHING_TO_RECEIVE -> totals.firstOrNull { it.toPayMinor > 0 }
-            else -> null
-        } ?: primaryTotal
+    val emptyStateTotal: PeopleTotal?
+        get() {
+            val loaded = totals.valueOrNull() ?: return null
+            return when (emptyState) {
+                BalancesEmptyState.NOTHING_TO_PAY -> loaded.firstOrNull { it.toReceiveMinor > 0 } ?: loaded.first()
+                BalancesEmptyState.NOTHING_TO_RECEIVE -> loaded.firstOrNull { it.toPayMinor > 0 } ?: loaded.first()
+                BalancesEmptyState.SETTLED -> loaded.first()
+                null -> null
+            }
+        }
 
     // Why: "Offline · saldos deste aparelho": everything works on what the device has.
     val showsOfflineNotice: Boolean
         get() = !isOnline
 
-    private fun peopleCountOf(owesYou: Boolean): Int = people
+    private val loadedPeople: List<PersonRow>
+        get() = people.valueOrNull().orEmpty()
+
+    private fun peopleCountOf(owesYou: Boolean): Int = loadedPeople
         .filter { it.owesYou == owesYou }
         .distinctBy { it.personKey }
         .size
 
     private fun sectionOf(isYouOwe: Boolean): PeopleSection {
-        val rows = people.filter { (it.netMinor < 0) == isYouOwe }
+        val rows = loadedPeople.filter { (it.netMinor < 0) == isYouOwe }
         return PeopleSection(
             isYouOwe = isYouOwe,
             rows = rows,
             totals = totals
+                .valueOrNull()
+                .orEmpty()
                 .map { total ->
                     CurrencyAmount(
                         currency = total.currency,

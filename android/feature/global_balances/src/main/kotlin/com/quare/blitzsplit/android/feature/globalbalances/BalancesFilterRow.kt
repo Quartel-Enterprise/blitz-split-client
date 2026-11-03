@@ -23,6 +23,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
+import software.quare.loadable.valueOrNull
 
 private val outerCorner = 20.dp
 private val innerCorner = 8.dp
@@ -77,7 +78,9 @@ internal fun BalancesFilterRow(
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    state.totals.forEach { total ->
+                    val totals = state.totals.valueOrNull()
+                    if (totals == null) SegmentAmountSkeleton()
+                    totals?.forEach { total ->
                         SegmentAmountText(
                             filter = filter,
                             total = total,

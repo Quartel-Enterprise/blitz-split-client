@@ -109,6 +109,40 @@ struct BillCommentView: View {
     }
 }
 
+/// Bill's comments, the read of a restored account's copy, or History, which online waits for the server: until they
+/// come, a few lines shimmer in their place, never "No comments yet".
+struct BillTalkPlaceholder: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ShimmerList(count: 2, showsTrailing: false)
+        }
+        .shimmering()
+        .padding(.vertical, 4)
+    }
+}
+
+extension BillDetailUiState {
+    /// The comments once read; nil while they load.
+    var loadedThreads: [BillCommentThread]? {
+        threads.loaded(as: [BillCommentThread].self)
+    }
+
+    /// History's days once known; nil while they load.
+    var loadedHistory: [BillHistoryDay]? {
+        history.loaded(as: [BillHistoryDay].self)
+    }
+
+    /// The receipt and the photos once read; nil while they load.
+    var loadedAttachments: [BillAttachmentTile]? {
+        attachments.loaded(as: [BillAttachmentTile].self)
+    }
+
+    /// History shows while it loads (shimmering) and once it holds a line; never empty.
+    var showsHistory: Bool {
+        history.isLoading || loadedHistory?.isEmpty == false
+    }
+}
+
 /// "No comments yet. Ask or agree on something about this bill."
 struct BillNoComments: View {
     var body: some View {

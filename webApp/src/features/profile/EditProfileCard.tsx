@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
@@ -25,6 +26,7 @@ export function EditProfileCard({ isPending }: { isPending: boolean }) {
   const presenter = usePresenter(() => new EditProfilePresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsEditProfileState) => void) => p.observeState(onChange))
   if (!presenter || !state) return null
+  if (!state.isLoaded) return <EditProfileSkeleton />
   return <EditProfileForm presenter={presenter} state={state} isPending={isPending} />
 }
 
@@ -156,6 +158,27 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
         </CardFooter>
       </form>
       {state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="circle" />}
+    </Card>
+  )
+}
+
+/** "Your profile" until the saved profile was read: never a "?" avatar nor an empty name field before it. */
+function EditProfileSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('profile_yourProfile')}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <LoadingRegion className="flex flex-col gap-6">
+          <SkeletonCircle className="size-24 self-center" />
+          <span className="flex flex-col gap-2">
+            <SkeletonLine className="w-16" />
+            <Skeleton className="h-9 w-full" />
+            <SkeletonLine className="h-2.5 w-1/2" />
+          </span>
+        </LoadingRegion>
+      </CardContent>
     </Card>
   )
 }

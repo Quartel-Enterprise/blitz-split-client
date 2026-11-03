@@ -21,7 +21,7 @@ data class GroupsUiState(
     val showsRecoveryCodePrompt: Boolean,
     /*
      * Why: every group, the most recent activity first. The empty home ("Crie seu primeiro grupo") only once they
-     * were read.
+     * were read, with the layout they are drawn in, and the account's copy is whole (firstDownload).
      */
     val groups: List<GroupRow>,
     val hasLoadedGroups: Boolean,
@@ -101,7 +101,7 @@ data class GroupsUiState(
 
     // Why: 5.1d draws no "Rachar conta" while the groups come down; the ones that came take bills once it ends.
     val showsSplitBillButton: Boolean
-        get() = firstDownload == null
+        get() = hasLoadedGroups && firstDownload == null
 
     val canRetrySync: Boolean
         get() = syncBadge == SyncBadge.FAILED

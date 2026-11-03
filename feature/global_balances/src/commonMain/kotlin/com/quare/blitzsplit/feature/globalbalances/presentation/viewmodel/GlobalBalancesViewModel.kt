@@ -29,6 +29,8 @@ import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.idOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
@@ -48,6 +50,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
@@ -60,6 +65,7 @@ class GlobalBalancesViewModel(
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observePaymentKeys: ObservePaymentKeys,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
@@ -71,13 +77,13 @@ class GlobalBalancesViewModel(
                 avatarColor = AvatarColor.default,
                 photoUrl = null,
                 accountProvider = null,
-                people = emptyList(),
-                totals = listOf(zeroTotalOf(GroupCurrency.fallback)),
+                people = Loadable.Loading,
+                totals = Loadable.Loading,
+                isWaitingForInternet = false,
                 filter = route.filter,
                 pixKey = null,
                 charge = null,
                 isOnline = true,
-                isLoaded = false,
                 recordedPayment = null,
                 pickedPersonId = null,
                 activityUnreadCount = 0,
@@ -97,6 +103,11 @@ class GlobalBalancesViewModel(
         me = null,
     )
 
+    // Why: the people wait for Room's first answer and for the account's copy on this device to be whole.
+    private var isBalancesRead = false
+
+    private var firstDownload: FirstDownloadProgress? = null
+
     // Why: Contatos' "Cobrar" opens the message once, as soon as Room is read.
     private var isRouteChargeOpened = false
 
@@ -109,6 +120,12 @@ class GlobalBalancesViewModel(
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
     init {
+        combine(observePeopleBalances(), observeFirstDownload()) { people, download ->
+            balances = people
+            isBalancesRead = true
+            firstDownload = download
+            showPeople()
+        }.launchIn(viewModelScope)
         combine(observeProfile(), observeAccount()) { profile, account ->
             val badge = UserBadge.of(profile, account.status)
             uiState.update {
@@ -121,11 +138,6 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        observePeopleBalances()
-            .onEach { people ->
-                balances = people
-                showPeople()
-            }.launchIn(viewModelScope)
         observePaymentKeys()
             .map(::pixKeyOrNull)
             .distinctUntilChanged()
@@ -220,12 +232,24 @@ class GlobalBalancesViewModel(
     }
 
     private fun showPeople() {
+        val download = firstDownload
+        if (!isBalancesRead || download != null) {
+            uiState.update {
+                it.copy(
+                    people = Loadable.Loading,
+                    totals = Loadable.Loading,
+                    isWaitingForInternet = download?.isWaitingForInternet == true,
+                )
+            }
+            return
+        }
         val state = uiState.value
         val rows = rowsOf(balances.people, state.filter, expandedById)
         uiState.update {
             it.copy(
-                people = rows,
-                totals = balances.totals.ifEmpty { listOf(zeroTotalOf(GroupCurrency.fallback)) },
+                people = rows.toLoaded(),
+                totals = balances.totals.ifEmpty { listOf(zeroTotalOf(GroupCurrency.fallback)) }.toLoaded(),
+                isWaitingForInternet = false,
                 // Why: a sync may settle the person being charged meanwhile, which leaves nothing to ask for.
                 charge = it.charge
                     ?.let { charge ->
@@ -235,7 +259,6 @@ class GlobalBalancesViewModel(
                         }
                     }?.takeIf { person -> person.netMinor > 0 }
                     ?.let { person -> chargeOf(person, it.charge, it.pixKey) },
-                isLoaded = true,
             )
         }
         openRouteChargeOnce()
@@ -270,7 +293,9 @@ class GlobalBalancesViewModel(
     }
 
     private fun toggle(personId: String) {
-        val row = uiState.value.people.firstOrNull { it.id == personId } ?: return
+        val row = uiState.value.people
+            .valueOrNull()
+            ?.firstOrNull { it.id == personId } ?: return
         expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
     }
@@ -279,7 +304,8 @@ class GlobalBalancesViewModel(
     private fun openProfile(personId: String) {
         if (!isOnTop()) return
         val row = uiState.value.people
-            .firstOrNull { it.id == personId }
+            .valueOrNull()
+            ?.firstOrNull { it.id == personId }
             ?.takeIf { it.opensProfile } ?: return
         navigator.navigate(Route.ContactProfile(row.personKey))
     }
@@ -287,7 +313,10 @@ class GlobalBalancesViewModel(
     // Why: only a group someone's "Por grupo" still lists, so a stale tap never opens one a sync just took away.
     private fun openGroup(groupId: String) {
         if (!isOnTop()) return
-        if (uiState.value.people.none { row -> row.groups.any { it.groupId == groupId } }) return
+        val rows = uiState.value.people
+            .valueOrNull()
+            .orEmpty()
+        if (rows.none { row -> row.groups.any { it.groupId == groupId } }) return
         navigator.navigate(
             Route.GroupDetail(
                 groupId,

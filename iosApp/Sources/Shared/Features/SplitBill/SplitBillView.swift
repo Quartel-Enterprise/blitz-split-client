@@ -141,10 +141,14 @@ struct SplitBillView: View {
                 PhoneSplitBill(model: model)
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
-                    #if os(macOS)
-                    .frame(width: 520, height: 480)
-                    #endif
+                // The group and its people not read yet: the bill's fields shimmer in place
+                ShimmerScreen {
+                    ShimmerForm(fieldCount: 5)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
+                #if os(macOS)
+                .frame(width: 520, height: 480)
+                #endif
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)
@@ -380,9 +384,9 @@ private struct PhoneSplitBill: View {
             }
             .listRowBackground(Palette.accent.opacity(0.12))
         }
-        if state.showsReceiptFailure {
+        if let error = state.receiptError {
             Section {
-                ReceiptFailureText(model: model)
+                ReceiptFailureText(model: model, error: error)
                     .font(.subheadline)
             }
             .listRowBackground(Palette.negative.opacity(0.12))
@@ -976,11 +980,11 @@ private struct MacBillForm: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
-            if state.showsReceiptFailure {
+            if let error = state.receiptError {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Couldn't read the receipt")
+                    Text(ReceiptFailureText.title(of: error))
                         .fontWeight(.semibold)
-                    ReceiptFailureText(model: model)
+                    ReceiptFailureText(model: model, error: error)
                 }
                 .font(.callout)
                 .padding(.horizontal, 12)

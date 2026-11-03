@@ -3,16 +3,18 @@ import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStats
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { controlClass } from '@/components/fields'
 import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { controlClass } from '@/components/fields'
+import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
+import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
@@ -46,8 +48,15 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
   const [isPickingDates, setPickingDates] = useState(false)
   const [isPeriodDrawerOpen, setPeriodDrawerOpen] = useState(false)
   const openHomeTab = useOpenHomeTab()
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
   const homeTab = state.homeTab as HomeTab
+  if (!state.isLoaded) {
+    return (
+      <GroupPageSkeleton groupId={route.groupId ?? ''} homeTab={homeTab} onBack={() => presenter.back()}>
+        <StatsSkeleton />
+      </GroupPageSkeleton>
+    )
+  }
 
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
   const range = formatRange(state.periodRangeStyle, state.periodStartMillis, state.periodEndMillis)
@@ -104,6 +113,13 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                 </button>
               ))}
           </div>
+
+          {/* Why: a new device's first download may still bring the period's bills: never an empty state before. */}
+          {state.isLoadingBills && (
+            <LoadingRegion isDelayed={false} isWaitingForInternet={state.isWaitingForInternet} className="flex flex-col gap-4 sm:gap-5">
+              <StatsSkeleton />
+            </LoadingRegion>
+          )}
 
           {state.showsStats && <SummaryCards state={state} money={money} />}
 
@@ -202,6 +218,35 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
         )}
       </div>
     </PageShell>
+  )
+}
+
+/** The four summary cards, then "Por categoria" beside "Ao longo do tempo", as their places while the bills are read. */
+function StatsSkeleton() {
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-2.5 md:gap-4 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((index) => (
+          <span key={index} className="flex flex-col gap-2.5 rounded-xl border bg-card px-3.5 py-3 md:px-5 md:py-4">
+            <SkeletonLine className="w-20" />
+            <Skeleton className="h-6 w-24" />
+            <SkeletonLine className="h-2.5 w-16" />
+          </span>
+        ))}
+      </div>
+      <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5">
+        <span className={cardClass}>
+          <SkeletonLine className="h-4 w-32" />
+          <Skeleton className="mx-auto size-40 rounded-full" />
+          <SkeletonLine />
+          <SkeletonLine className="w-2/3" />
+        </span>
+        <span className={cardClass}>
+          <SkeletonLine className="h-4 w-36" />
+          <Skeleton className="h-48 w-full" />
+        </span>
+      </div>
+    </>
   )
 }
 

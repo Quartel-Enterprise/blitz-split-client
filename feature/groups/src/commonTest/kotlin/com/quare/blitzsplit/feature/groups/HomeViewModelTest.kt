@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
@@ -64,6 +65,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
@@ -73,7 +75,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -84,11 +88,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
@@ -112,6 +120,7 @@ class HomeViewModelTest {
     private lateinit var dismissal: RecoveryCodeCardDismissal
     private lateinit var firstDownload: FirstDownload
     private lateinit var activityUnread: MutableStateFlow<Int>
+    private lateinit var peopleGate: MutableStateFlow<Boolean>
     private lateinit var viewModel: HomeViewModel
     private val actions = mutableListOf<HomeUiAction>()
     private var retryCount = 0
@@ -558,6 +567,8 @@ class HomeViewModelTest {
 
             // When
             val people = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
 
             // Then
             assertEquals(
@@ -632,6 +643,8 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(GroupCurrency.BRL to -3000L, GroupCurrency.USD to -200L),
                 viewModel.uiState.value.people
+                    .valueOrNull()
+                    .orEmpty()
                     .filter { it.key == "name:ana" }
                     .map { it.currency to it.netMinor },
             )
@@ -698,6 +711,8 @@ class HomeViewModelTest {
             // Then
             assertTrue(
                 viewModel.uiState.value.people
+                    .valueOrNull()
+                    .orEmpty()
                     .isEmpty(),
             )
             assertEquals(listOf(Route.Home), navigator.backStack.value)
@@ -730,7 +745,10 @@ class HomeViewModelTest {
             )
 
             // When
-            val summary = viewModel.uiState.value.summary
+            val summary = assertNotNull(
+                viewModel.uiState.value.summary
+                    .valueOrNull(),
+            )
 
             // Then
             assertEquals(
@@ -906,6 +924,155 @@ class HomeViewModelTest {
         // Then
         assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN the balances not read yet WHEN Inicio opens THEN the faces and Saldo geral are loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                    ),
+                ),
+                peopleRead = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.people)
+            assertEquals(Loadable.Loading, state.summary)
+            assertFalse(state.showsPeople)
+            assertNull(state.onlyPersonToPay)
+        }
+
+    @Test
+    fun `GIVEN the balances not read yet WHEN they are read THEN shows the faces and Saldo geral`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                    ),
+                ),
+                peopleRead = false,
+            )
+
+            // When
+            peopleGate.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf("name:ana"), state.people.valueOrNull()?.map { it.key })
+            assertEquals(GroupBalanceKind.YOU_OWE, state.summary.valueOrNull()?.kind)
+            assertTrue(state.showsPeople)
+        }
+
+    @Test
+    fun `GIVEN a group where nobody owes anybody WHEN Inicio opens THEN reads everyone settled rather than loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loaded(emptyList()), state.people)
+            val summary = assertIs<Loadable.Loaded<HomeSummary>>(state.summary).value
+            assertEquals(GroupBalanceKind.YOU_ARE_SETTLED, summary.kind)
+            assertFalse(state.showsPeople)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN Inicio opens THEN reads nobody and no total rather than loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loaded(emptyList()), state.people)
+            assertEquals(Loadable.Loaded(HomeSummary(totals = emptyList())), state.summary)
+        }
+
+    @Test
+    fun `GIVEN something to receive and the balances not read yet WHEN tapping Te devem THEN does nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                peopleRead = false,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN one person to pay and the balances not read yet WHEN tapping Voce deve THEN does nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                    ),
+                ),
+                peopleRead = false,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnToPayClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN one person to pay read late WHEN tapping Voce deve THEN opens settling up with them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                    ),
+                ),
+                peopleRead = false,
+            )
+            peopleGate.value = true
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnToPayClicked)
+
+            // Then
+            assertEquals(
+                Route.SettleUp(
+                    personKey = "name:ana",
+                    currency = GroupCurrency.BRL,
+                ),
+                navigator.backStack.value
+                    .last(),
+            )
+        }
 
     @Test
     fun `GIVEN five open groups and one pinned far down WHEN Inicio opens THEN shows it and the two latest`() =
@@ -1371,6 +1538,7 @@ class HomeViewModelTest {
                 DownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
                 state.firstDownload,
             )
@@ -1396,6 +1564,7 @@ class HomeViewModelTest {
             DownloadProgress(
                 arrivedGroupCount = 3,
                 groupCount = 7,
+                isWaitingForInternet = false,
             ),
             viewModel.uiState.value.firstDownload,
         )
@@ -1422,6 +1591,57 @@ class HomeViewModelTest {
             assertFalse(state.isFirstDownload)
             assertTrue(state.showsHome)
             assertFalse(state.showsFirstUse)
+        }
+
+    @Test
+    fun `GIVEN a restore whose full sync never finished WHEN Inicio opens offline THEN waits for the internet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+                awaitsFullSync = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                DownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+                state.firstDownload,
+            )
+            assertNull(state.firstDownload?.fraction)
+            assertTrue(state.isFirstDownload)
+            assertFalse(state.showsFirstUse)
+        }
+
+    @Test
+    fun `GIVEN a full sync awaited offline WHEN the internet comes back THEN the download no longer waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+                awaitsFullSync = true,
+            )
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(
+                DownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = false,
+                ),
+                viewModel.uiState.value.firstDownload,
+            )
         }
 
     @Test
@@ -2114,8 +2334,14 @@ class HomeViewModelTest {
         pinnedGroupIds: Set<String> = emptySet(),
         isCardDismissedThisLaunch: Boolean = false,
         isFirstDownloadPending: Boolean = false,
+        peopleRead: Boolean = true,
+        awaitsFullSync: Boolean = false,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
+        account = FakeAccountRepository(initialStatus = status).also {
+            it.recoveryCodePrompt = prompt
+            it.awaitsFullSync = awaitsFullSync
+        }
+        peopleGate = MutableStateFlow(peopleRead)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -2156,14 +2382,23 @@ class HomeViewModelTest {
             observeProfile = ObserveProfileUseCase(FakeProfileRepository(profile)),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this@HomeViewModelTest.syncState },
-            observeFirstDownload = ObserveFirstDownloadUseCase(firstDownload),
+            observeFirstDownload = ObserveFirstDownloadUseCase(
+                firstDownload = firstDownload,
+                accountRepository = account,
+                connectivityObserver = NetworkConnectivityObserver { isOnline },
+            ),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
             observeGroupsMoney = money,
-            observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroups = ObserveGroupsUseCase(groups),
-                observeGroupsMoney = money,
-            ),
+            // Why: the balances are read apart from the groups, so they can still be on their way once the groups are.
+            observePeopleBalances = ObservePeopleBalances {
+                peopleGate.filter { it }.flatMapLatest {
+                    ObservePeopleBalancesUseCase(
+                        observeGroups = ObserveGroupsUseCase(groups),
+                        observeGroupsMoney = money,
+                    )()
+                }
+            },
             observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -489,7 +490,26 @@ class ProfileUiStateTest {
         assertFalse(showsDelete)
     }
 
+    @Test
+    fun `GIVEN the profile not read yet WHEN drawing it THEN shows neither Excluir conta nor the recovery code`() {
+        // Given
+        val profile = state(
+            isLoaded = false,
+            accountProvider = AccountProvider.GOOGLE,
+            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+        )
+
+        // When
+        val showsDelete = profile.showsDeleteAccount
+        val showsCode = profile.showsRecoveryCodeRow
+
+        // Then
+        assertFalse(showsDelete)
+        assertFalse(showsCode)
+    }
+
     private fun state(
+        isLoaded: Boolean = true,
         displayName: String = "Pierre",
         isOnline: Boolean = true,
         syncStatus: ProfileSyncStatus? = null,
@@ -503,6 +523,7 @@ class ProfileUiStateTest {
         formattedRecoveryCode: String? = null,
         isUnlinking: Boolean = false,
     ): ProfileUiState = ProfileUiState(
+        isLoaded = isLoaded,
         displayName = displayName,
         avatarColor = AvatarColor.GREEN,
         photoUrl = null,
@@ -514,10 +535,10 @@ class ProfileUiStateTest {
         isOnline = isOnline,
         syncStatus = syncStatus,
         pendingChanges = pendingChanges,
-        paymentKeys = emptyList(),
+        paymentKeys = emptyList<PaymentKeyItem>().toLoaded(),
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,
-        activeNotificationCount = 3,
+        activeNotificationCount = 3.toLoaded(),
         dialog = null,
         hasConfirmedCodeSaved = hasConfirmedCodeSaved,
         isConnectExpanded = isConnectExpanded,

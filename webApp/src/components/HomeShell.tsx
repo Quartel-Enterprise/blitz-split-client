@@ -2,6 +2,7 @@ import { House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-rea
 import type { JsGroupRow } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
+import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t, type MessageKey } from '@/i18n'
@@ -40,6 +41,15 @@ export interface HomeProfile {
   accountProvider: string | null | undefined
 }
 
+/**
+ * The profile once the frame's screen read it, null before: a read profile always has its initial (the home exists only
+ * with a profile), so an empty one is the empty start of the screen's state, which the frame shimmers instead of
+ * drawing an empty avatar in the default color.
+ */
+export function loadedProfile(profile: HomeProfile): HomeProfile | null {
+  return profile.avatarInitial ? profile : null
+}
+
 /** "Em aberto" under the desktop's tabs, around the group's pages: the open groups, the page's group selected. */
 export interface ShellOpenGroups {
   groups: JsGroupRow[]
@@ -70,14 +80,16 @@ export function HomeShell({
   // Why: undefined on Perfil, which no tab opened: its footer is selected instead.
   selected?: HomeTab
   isProfileSelected?: boolean
-  profile: HomeProfile
+  // Why: null until it was read, a shimmer in the avatar's and the name's place.
+  profile: HomeProfile | null
   onTab: (tab: HomeTab) => void
   onProfile: () => void
   // Why: "Buscar" only on the groups, and once there is a group to look in.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
   // Why: Atividade's badge, in the primary color (never the destructive red), on every width.
   activityUnreadCount?: number
-  openGroups?: ShellOpenGroups
+  // Why: 'loading' while the sidebar is still read, a shimmer in the open groups' place.
+  openGroups?: ShellOpenGroups | 'loading'
   // Why: the home's tabs have the brand's bar and the bottom navigation; Perfil its own bar over the navigation, and
   // the group's pages their own bars with neither.
   phoneBars?: 'home' | 'nav' | 'none'
@@ -87,7 +99,7 @@ export function HomeShell({
   children: ReactNode
   overlays?: ReactNode
 }) {
-  const account = accountLabels[profile.accountProvider as AccountProvider] ?? 'groups_noAccount'
+  const account = accountLabels[profile?.accountProvider as AccountProvider] ?? 'groups_noAccount'
   const select = (tab: HomeTab) => {
     if (tab !== selected || isOutsideTabs) onTab(tab)
   }
@@ -139,7 +151,7 @@ export function HomeShell({
             </button>
           ))}
         </nav>
-        {openGroups && <SidebarGroups openGroups={openGroups} />}
+        {openGroups === 'loading' ? <SidebarGroupsSkeleton /> : openGroups && <SidebarGroups openGroups={openGroups} />}
         <button
           onClick={onProfile}
           aria-current={isProfileSelected ? 'page' : undefined}
@@ -148,14 +160,27 @@ export function HomeShell({
             isProfileSelected && 'bg-sidebar-accent text-sidebar-accent-foreground',
           )}
         >
-          <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-7 text-xs" />
-          {/* Why: the rail hides the name and account only visually, so they stay the button's accessible name. */}
-          {/* Why: the name and account say whose profile it is; this says what the button opens. */}
-          {profile.displayName && <span className="sr-only">{t('groups_profile')}</span>}
-          <span className="sr-only min-w-0 flex-col lg:not-sr-only lg:flex">
-            <span className="truncate text-sm font-medium">{profile.displayName || t('groups_profile')}</span>
-            <span className="text-xs text-muted-foreground">{t(account)}</span>
-          </span>
+          {profile ? (
+            <>
+              <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-7 text-xs" />
+              {/* Why: the rail hides the name and account only visually, so they stay the button's accessible name. */}
+              {/* Why: the name and account say whose profile it is; this says what the button opens. */}
+              {profile.displayName && <span className="sr-only">{t('groups_profile')}</span>}
+              <span className="sr-only min-w-0 flex-col lg:not-sr-only lg:flex">
+                <span className="truncate text-sm font-medium">{profile.displayName || t('groups_profile')}</span>
+                <span className="text-xs text-muted-foreground">{t(account)}</span>
+              </span>
+            </>
+          ) : (
+            <>
+              <SkeletonCircle className="size-7" />
+              <span className="sr-only">{t('groups_profile')}</span>
+              <span aria-hidden className="hidden min-w-0 flex-1 flex-col gap-1.5 lg:flex">
+                <SkeletonLine className="w-24" />
+                <SkeletonLine className="h-2.5 w-16" />
+              </span>
+            </>
+          )}
         </button>
       </aside>
 
@@ -173,7 +198,11 @@ export function HomeShell({
               </button>
             )}
             <button aria-label={t('groups_profile')} onClick={onProfile} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
-              <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-9 text-sm" />
+              {profile ? (
+                <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-9 text-sm" />
+              ) : (
+                <SkeletonCircle className="size-9" />
+              )}
             </button>
           </header>
         )}
@@ -238,6 +267,22 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
           </button>
         ))}
       </nav>
+    </div>
+  )
+}
+
+/** "Em aberto" while the sidebar is still read: its title and a few groups' places, on the desktop only as the list. */
+function SidebarGroupsSkeleton() {
+  return (
+    <div aria-hidden className="mt-5 hidden flex-col gap-2.5 px-2.5 lg:flex">
+      <SkeletonLine className="h-2.5 w-16" />
+      {[0, 1, 2].map((index) => (
+        <span key={index} className="flex items-center gap-2.5">
+          <Skeleton className="size-[22px] rounded-md" />
+          <SkeletonLine className="flex-1" />
+          <SkeletonLine className="w-10" />
+        </span>
+      ))}
     </div>
   )
 }

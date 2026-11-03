@@ -103,6 +103,13 @@ class JsGroupDetailState(
     val exit: JsGroupExit,
     val isEmpty: Boolean,
     val isBalancesEmpty: Boolean,
+    // Why: skeleton rows in Despesas and Saldos while the account's copy isn't whole and nothing came for them yet.
+    val isLoadingBills: Boolean,
+    val isLoadingBalances: Boolean,
+    // Why: what is still coming waits for the internet, said over those skeletons.
+    val isWaitingForInternet: Boolean,
+    // Why: "Seu saldo neste grupo" shimmers in its place while the account's copy isn't whole.
+    val isMyBalanceLoading: Boolean,
     val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
@@ -138,6 +145,10 @@ class GroupDetailPresenter(
                 exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
                 isBalancesEmpty = state.isBalancesEmpty,
+                isLoadingBills = state.isLoadingBills,
+                isLoadingBalances = state.isLoadingBalances,
+                isWaitingForInternet = state.isWaitingForInternet,
+                isMyBalanceLoading = state.isMyBalanceLoading,
                 showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,

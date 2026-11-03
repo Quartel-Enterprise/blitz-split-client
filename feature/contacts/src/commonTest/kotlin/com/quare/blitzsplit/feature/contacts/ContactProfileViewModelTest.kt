@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
+import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.CancelGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.FindPendingGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.RequestGuestMergeUseCase
@@ -27,6 +28,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUi
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -35,6 +37,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -1060,7 +1065,7 @@ class ContactProfileViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertNull(state.merge)
-            assertEquals("merge-1", state.pendingMerge?.id)
+            assertEquals("merge-1", state.pendingMerge.valueOrNull()?.id)
             assertTrue(state.showsPendingMerge)
             assertFalse(state.showsGuestCard)
         }
@@ -1077,7 +1082,7 @@ class ContactProfileViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(waitingMerge, state.pendingMerge)
+        assertEquals(waitingMerge, state.pendingMerge.valueOrNull())
         assertTrue(state.showsPendingMerge)
         assertTrue(merges.requestedMemberIds.isEmpty())
     }
@@ -1097,8 +1102,10 @@ class ContactProfileViewModelTest {
 
             // Then
             assertTrue(merges.pendingLookups.isEmpty())
-            assertNull(state.pendingMerge)
-            assertTrue(state.showsGuestCard)
+            assertTrue(state.pendingMerge.isLoading())
+            assertTrue(state.isMergeStatusUnavailable)
+            assertFalse(state.showsPendingMerge)
+            assertFalse(state.canMerge)
         }
 
     @Test
@@ -1114,7 +1121,7 @@ class ContactProfileViewModelTest {
 
         // Then
         assertEquals(listOf(waitingMerge.id), merges.cancelledIds)
-        assertNull(viewModel.uiState.value.pendingMerge)
+        assertEquals(Loadable.Loaded(null), viewModel.uiState.value.pendingMerge)
         assertFalse(viewModel.uiState.value.isCancellingMerge)
         assertTrue(viewModel.uiState.value.showsGuestCard)
     }
@@ -1134,7 +1141,11 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(listOf<ContactProfileUiAction>(ContactProfileUiAction.ShowCancelMergeError), actions)
-            assertEquals(waitingMerge, viewModel.uiState.value.pendingMerge)
+            assertEquals(
+                waitingMerge,
+                viewModel.uiState.value.pendingMerge
+                    .valueOrNull(),
+            )
             assertFalse(viewModel.uiState.value.isCancellingMerge)
         }
 
@@ -1150,6 +1161,54 @@ class ContactProfileViewModelTest {
 
             // Then
             assertIs<ContactProfileUiAction.ShowComingSoon>(actions.single())
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN his profile opens before the server answers THEN neither Juntar nor a request`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                storedMerge = waitingMerge,
+                pendingAnswered = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.pendingMerge.isLoading())
+            assertTrue(state.isMergeStatusLoading)
+            assertFalse(state.showsPendingMerge)
+            assertFalse(state.canMerge)
+        }
+
+    @Test
+    fun `GIVEN the server failing to say if a request waits WHEN back online THEN asks again and shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                storedMerge = waitingMerge,
+                findFails = true,
+            )
+            val failed = viewModel.uiState.value
+            merges.findError = null
+            isOnline.value = false
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertTrue(failed.isMergeStatusUnavailable)
+            assertFalse(failed.showsPendingMerge)
+            assertEquals(
+                waitingMerge,
+                viewModel.uiState.value.pendingMerge
+                    .valueOrNull(),
+            )
+            assertTrue(viewModel.uiState.value.showsPendingMerge)
+            assertFalse(viewModel.uiState.value.isMergeStatusUnavailable)
         }
 
     @Test
@@ -1190,6 +1249,8 @@ class ContactProfileViewModelTest {
         storedMerge: GuestMerge? = null,
         online: Boolean = true,
         addResult: Result<Unit> = Result.success(Unit),
+        pendingAnswered: Boolean = true,
+        findFails: Boolean = false,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -1197,7 +1258,9 @@ class ContactProfileViewModelTest {
             now = { 20L },
             initialHidden = storedHidden,
         )
-        merges = FakeGuestMergeRepository(pending = storedMerge)
+        merges = FakeGuestMergeRepository(pending = storedMerge).also {
+            if (findFails) it.findError = IllegalStateException("500")
+        }
         isOnline = MutableStateFlow(online)
         val route = Route.ContactProfile(personKey)
         navigator = BackStackNavigator(startRoute = Route.Home).also {
@@ -1213,7 +1276,11 @@ class ContactProfileViewModelTest {
                 addResult
             },
             requestGuestMerge = RequestGuestMergeUseCase(merges),
-            findPendingGuestMerge = FindPendingGuestMergeUseCase(merges),
+            findPendingGuestMerge = if (pendingAnswered) {
+                FindPendingGuestMergeUseCase(merges)
+            } else {
+                FindPendingGuestMerge { awaitCancellation() }
+            },
             cancelGuestMerge = CancelGuestMergeUseCase(merges),
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

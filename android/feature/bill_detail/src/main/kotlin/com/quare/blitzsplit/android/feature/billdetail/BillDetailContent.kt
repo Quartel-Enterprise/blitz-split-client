@@ -246,6 +246,8 @@ private fun BillTopBarAction(
     state: BillDetailUiState,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
+    // Why: no disabled guesses while Room is read; the bill's actions show once it is.
+    if (!state.isLoaded) return
     IconButton(
         onClick = { onEvent(BillDetailUiEvent.OnShareClicked) },
         enabled = state.areActionsEnabled,
@@ -323,7 +325,15 @@ private fun BillColumnsLayout(
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!state.isLoaded) return
+    if (!state.isLoaded) {
+        BillColumnsSkeleton(
+            usesTwoColumns = usesTwoColumns,
+            columnsPadding = columnsPadding,
+            scrollPadding = scrollPadding,
+            modifier = modifier,
+        )
+        return
+    }
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
     val first: @Composable ColumnScope.() -> Unit = {
@@ -426,6 +436,12 @@ private fun BillColumnsLayout(
 @Composable
 private fun BillDetailContentPreview() {
     PreviewBillDetailContent(createPreviewBillDetailState())
+}
+
+@DevicePreviews
+@Composable
+private fun BillDetailContentLoadingPreview() {
+    PreviewBillDetailContent(createPreviewBillDetailState().copy(isLoaded = false))
 }
 
 @DevicePreviews

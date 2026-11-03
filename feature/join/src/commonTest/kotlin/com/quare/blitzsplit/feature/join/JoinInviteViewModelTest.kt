@@ -195,6 +195,51 @@ class JoinInviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN online and the server failing WHEN the screen opens THEN says it could not open rather than offline`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(fetchError = IllegalStateException("server down"))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.FAILED, state.status)
+            assertEquals("blitzsplit.com/g/$CODE", state.displayLink)
+        }
+
+    @Test
+    fun `GIVEN the server failed online WHEN trying again THEN reads it again and shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(fetchError = IllegalStateException("server down"))
+            invites.fetchError = null
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN a member online whose group the sync did not bring WHEN the link opens THEN says it could not open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = trip.copy(isMember = true),
+                storedGroup = null,
+                syncBrings = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.FAILED, state.status)
+        }
+
+    @Test
     fun `GIVEN the invite could not open WHEN trying again THEN reads it again and shows it`() =
         runTest(testDispatcher) {
             // Given

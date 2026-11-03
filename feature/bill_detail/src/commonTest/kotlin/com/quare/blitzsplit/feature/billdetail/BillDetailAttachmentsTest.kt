@@ -44,6 +44,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -53,6 +54,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -62,6 +64,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -102,6 +105,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tiles = viewModel.uiState.value.attachments
+                .loadedItems()
 
             // Then
             assertEquals(listOf(RECEIPT, PHOTO_A, PHOTO_B), tiles.map { it.id })
@@ -125,13 +129,14 @@ class BillDetailAttachmentsTest {
 
             // When
             val tiles = viewModel.uiState.value.attachments
+                .loadedItems()
 
             // Then
             assertEquals(listOf(PHOTO_A), tiles.map { it.id })
         }
 
     @Test
-    fun `GIVEN Room not read yet WHEN the bill opens THEN shows no attachment and a photo cannot be added`() =
+    fun `GIVEN Room not read yet WHEN the bill opens THEN the attachments load and a photo cannot be added`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -143,7 +148,7 @@ class BillDetailAttachmentsTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertTrue(state.attachments.isEmpty())
+            assertEquals(Loadable.Loading, state.attachments)
             assertFalse(state.canAddPhoto)
         }
 
@@ -166,6 +171,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tiles = viewModel.uiState.value.attachments
+                .loadedItems()
 
             // Then
             assertEquals(listOf("Ana", "Pierre"), tiles.map { it.adderName })
@@ -180,6 +186,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tile = viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
 
             // Then
@@ -200,6 +207,7 @@ class BillDetailAttachmentsTest {
         assertEquals(
             "Ana Paula",
             viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
                 .adderName,
         )
@@ -213,6 +221,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 RelativeDay.TODAY,
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .single()
                     .addedDay,
             )
@@ -225,6 +234,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 RelativeDay.YESTERDAY,
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .single()
                     .addedDay,
             )
@@ -241,6 +251,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tiles = viewModel.uiState.value.attachments
+                .loadedItems()
 
             // Then
             assertEquals(listOf(listOf(PHOTO_A, PHOTO_B)), attachments.urlRequests)
@@ -259,6 +270,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tile = viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
 
             // Then
@@ -284,6 +296,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 URL_A,
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .single()
                     .imageUrl,
             )
@@ -307,6 +320,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tile = viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
 
             // Then
@@ -334,6 +348,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 "https://signed/a-again",
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .single()
                     .imageUrl,
             )
@@ -358,6 +373,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 URL_A,
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .single()
                     .imageUrl,
             )
@@ -396,6 +412,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 listOf(URL_A, URL_B),
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .map { it.imageUrl },
             )
         }
@@ -427,6 +444,7 @@ class BillDetailAttachmentsTest {
             // Then
             // Why: no placeholder blinks while a signed URL comes, nor a second download of the same photo.
             val tile = viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
             assertTrue(jpeg.contentEquals(tile.localImage))
             assertEquals(listOf(PHOTO_A), attachments.imageRequests)
@@ -446,6 +464,7 @@ class BillDetailAttachmentsTest {
 
             // When
             val tile = viewModel.uiState.value.attachments
+                .loadedItems()
                 .single()
 
             // Then
@@ -564,7 +583,7 @@ class BillDetailAttachmentsTest {
 
             // Then
             val state = viewModel.uiState.value
-            val tile = state.attachments.single()
+            val tile = state.attachments.loadedItems().single()
             assertEquals(1, tile.photoNumber)
             assertTrue(tile.isAddedByMe)
             assertEquals("Pierre", tile.adderName)
@@ -863,11 +882,13 @@ class BillDetailAttachmentsTest {
         assertEquals(
             listOf(RECEIPT, PHOTO_B),
             viewModel.uiState.value.attachments
+                .loadedItems()
                 .map { it.id },
         )
         assertEquals(
             listOf(null, 1),
             viewModel.uiState.value.attachments
+                .loadedItems()
                 .map { it.photoNumber },
         )
         assertTrue(actions.isEmpty())
@@ -888,6 +909,7 @@ class BillDetailAttachmentsTest {
         assertEquals(listOf(PHOTO_A), attachments.removedIds)
         assertTrue(
             viewModel.uiState.value.attachments
+                .loadedItems()
                 .isEmpty(),
         )
     }
@@ -982,6 +1004,7 @@ class BillDetailAttachmentsTest {
         assertEquals(
             listOf(RECEIPT, PHOTO_A),
             viewModel.uiState.value.attachments
+                .loadedItems()
                 .map { it.id },
         )
     }
@@ -1036,6 +1059,7 @@ class BillDetailAttachmentsTest {
             assertEquals(
                 listOf(PHOTO_A),
                 viewModel.uiState.value.attachments
+                    .loadedItems()
                     .map { it.id },
             )
         }
@@ -1205,6 +1229,7 @@ class BillDetailAttachmentsTest {
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
             loadBillHistory = LoadBillHistoryUseCase(activity),
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
             // Why: the real use case decodes on the platform; this one keeps the picked bytes as the JPEG.
