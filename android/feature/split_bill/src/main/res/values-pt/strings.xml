@@ -363,6 +363,10 @@
     <string name="split_bill_receipt_remove">Tirar a foto do cupom</string>
     <string name="split_bill_receipt_failed">Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão.</string>
     <string name="split_bill_receipt_retake">Tirar outra foto</string>
+    <string name="split_bill_receipt_reader_unavailable">O leitor de cupom não respondeu. Não é a sua foto: tente de novo daqui a pouco ou preencha à mão.</string>
+    <string name="split_bill_receipt_limit_reached">Você já leu 30 cupons nas últimas 24 horas. Preencha à mão ou leia de novo amanhã.</string>
+    <string name="split_bill_receipt_offline">Sem conexão. A foto não chegou ao leitor: tente de novo quando reconectar, ou preencha à mão.</string>
+    <string name="split_bill_receipt_retry">Tentar de novo</string>
     <string name="split_bill_receipt_camera_title">Ler cupom fiscal</string>
     <string name="split_bill_receipt_camera_close">Fechar</string>
     <string name="split_bill_receipt_camera_flash_on">Ligar o flash</string>

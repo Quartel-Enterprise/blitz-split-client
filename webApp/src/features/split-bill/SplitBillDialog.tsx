@@ -204,7 +204,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       }}
     >
       <ReceiptInput presenter={presenter} input={receiptInput} />
-      <ReceiptFailureAlert state={state} input={receiptInput} />
+      <ReceiptFailureAlert state={state} presenter={presenter} input={receiptInput} />
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <SettledPairAnnouncement change={state.settledPair} money={money} />

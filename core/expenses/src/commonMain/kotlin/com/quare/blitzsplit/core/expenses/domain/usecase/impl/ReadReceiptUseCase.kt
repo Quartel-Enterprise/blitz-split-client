@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReaderException
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.repository.ReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
@@ -21,8 +23,16 @@ class ReadReceiptUseCase(
         currency: GroupCurrency,
         hints: ReceiptCategoryHints,
     ): ReceiptScan {
-        val photo = suspendRunCatching { encodeImage(source) }.getOrNull() ?: return ReceiptScan(null, null)
-        val reading = repository.readReceipt(photo.jpeg, currency, hints).getOrNull()
-        return ReceiptScan(photo, reading)
+        val photo = suspendRunCatching { encodeImage(source) }.getOrNull()
+            ?: return ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
+        return repository.readReceipt(photo.jpeg, currency, hints).fold(
+            onSuccess = { reading ->
+                reading?.let { ReceiptScan.Read(photo, it) } ?: ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
+            },
+            // Why: a failure the data source didn't name (a response it couldn't decode) is the server's, not the photo's.
+            onFailure = { error ->
+                ReceiptScan.Failed((error as? ReceiptReaderException)?.failure ?: ReceiptReadFailure.READER_UNAVAILABLE)
+            },
+        )
     }
 }

@@ -198,9 +198,20 @@ data class SplitBillUiState(
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING
 
-    // Why: "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão." (7.1g)
-    val showsReceiptFailure: Boolean
-        get() = receipt?.status == ReceiptStatus.UNREADABLE
+    /*
+     * Why: why the receipt read nothing (7.1g), each worded its own way: "Não deu para ler o cupom…" with "Tirar outra
+     * foto", the reader that didn't answer and a dropped connection with "Tentar de novo", the day's limit with neither.
+     */
+    val receiptError: ReceiptError?
+        get() = receipt?.error?.takeIf { receipt.status == ReceiptStatus.FAILED }
+
+    // Why: "Tirar outra foto", for a photo nothing could be read from.
+    val offersReceiptRetake: Boolean
+        get() = receiptError == ReceiptError.UNREADABLE
+
+    // Why: "Tentar de novo" sends the same photo again, when the photo wasn't what failed.
+    val offersReceiptRetry: Boolean
+        get() = receiptError?.canRetry == true
 
     /*
      * Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays. Not

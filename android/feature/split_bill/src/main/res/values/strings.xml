@@ -363,6 +363,10 @@
     <string name="split_bill_receipt_remove">Remove the receipt photo</string>
     <string name="split_bill_receipt_failed">Couldn\'t read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand.</string>
     <string name="split_bill_receipt_retake">Take another photo</string>
+    <string name="split_bill_receipt_reader_unavailable">The receipt reader didn\'t answer. It isn\'t your photo: try again in a moment, or fill it in by hand.</string>
+    <string name="split_bill_receipt_limit_reached">You\'ve read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow.</string>
+    <string name="split_bill_receipt_offline">No connection. The photo didn\'t reach the reader: try again once you\'re back online, or fill it in by hand.</string>
+    <string name="split_bill_receipt_retry">Try again</string>
     <string name="split_bill_receipt_camera_title">Scan receipt</string>
     <string name="split_bill_receipt_camera_close">Close</string>
     <string name="split_bill_receipt_camera_flash_on">Turn on the flash</string>

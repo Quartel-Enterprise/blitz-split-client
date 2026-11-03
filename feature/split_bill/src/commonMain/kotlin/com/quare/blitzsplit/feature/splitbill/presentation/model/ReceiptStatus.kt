@@ -8,6 +8,6 @@ enum class ReceiptStatus {
     // Why: "Lido do cupom": the amount, description, date and items came from it.
     READ,
 
-    // Why: "Não deu para ler o cupom. Tente de novo com mais luz…", with "Tirar outra foto" (7.1g).
-    UNREADABLE,
+    // Why: nothing was read, BillReceipt.error says why (7.1g).
+    FAILED,
 }
