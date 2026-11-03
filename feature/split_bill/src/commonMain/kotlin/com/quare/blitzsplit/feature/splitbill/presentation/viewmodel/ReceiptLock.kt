@@ -16,11 +16,13 @@ private val lockedOpenings: Set<SplitBillUiEvent> = setOf(
 /*
  * Why: what opens or changes a field of the form, dropped while `SplitBillUiState.isFormLocked`, so nothing typed
  * meanwhile is overwritten by the read; × on "Foto do cupom" and closing the form still work. The category's are here
- * too since the Mac's menu picks, creates and edits one straight from the form, with no picker open. A new field's
- * events belong here as well.
+ * too since the Mac's menu picks, creates and edits one straight from the form, with no picker open, and the payer's
+ * since the Mac's pop-up picks one in one go (a pick opens the selection by itself). A new field's events belong here
+ * as well.
  */
 internal fun SplitBillUiEvent.isLockedWhileReading(): Boolean = this in lockedOpenings ||
     this is SplitBillUiEvent.OnAmountChanged ||
+    this is SplitBillUiEvent.OnPayerPicked ||
     this is SplitBillUiEvent.OnDescriptionChanged ||
     this is SplitBillUiEvent.OnSpentAtChanged ||
     this is SplitBillUiEvent.OnCategoryPicked ||

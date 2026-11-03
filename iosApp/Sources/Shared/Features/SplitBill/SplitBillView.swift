@@ -364,7 +364,9 @@ private struct PhoneSplitBill: View {
         }
         // A new bill opens on the description, which comes before the amount (beta feedback 10)
         .onAppear {
-            if !state.isEditing, state.description_.isEmpty, !state.isFormLocked { focusedField = .description }
+            if !state.isEditing, state.description_.isEmpty, state.amountText.isEmpty, !state.isFormLocked {
+                focusedField = .description
+            }
         }
         .task {
             try? await Task.sleep(for: SheetPresentation.settle)

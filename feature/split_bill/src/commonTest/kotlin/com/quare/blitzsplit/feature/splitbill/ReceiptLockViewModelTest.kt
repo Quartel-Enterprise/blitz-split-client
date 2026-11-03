@@ -199,6 +199,23 @@ class ReceiptLockViewModelTest {
         }
 
     @Test
+    fun `GIVEN a receipt being read WHEN the Mac pop-up picks a payer THEN the payer stays`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            val payerId = viewModel.uiState.value.payerId
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnPayerDone)
+
+            // Then
+            assertEquals(payerId, viewModel.uiState.value.payerId)
+            assertNull(viewModel.uiState.value.payerSelection)
+        }
+
+    @Test
     fun `GIVEN a receipt being read WHEN tapping Varias pessoas THEN the several payers sheet stays closed`() =
         runTest(testDispatcher) {
             // Given
