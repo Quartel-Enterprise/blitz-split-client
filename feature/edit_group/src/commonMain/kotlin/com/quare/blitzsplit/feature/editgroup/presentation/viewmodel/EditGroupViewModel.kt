@@ -285,7 +285,8 @@ class EditGroupViewModel(
         val name = if (state.name.trim() != original.name) state.name else latest.name
         val type = if (state.type != original.type) state.type else latest.type
         val color = if (state.color != original.color) state.color else latest.color
-        val shape = if (state.shape != original.shape) state.shape else latest.shape
+        // Why: null keeps what Room has, which the domain may only read as the fallback (none, or a newer app's).
+        val shape = state.shape.takeIf { it != original.shape }
         val photo = if (state.photo != original.photo) state.photo else latest.photo
         val currency = if (!state.isCurrencyLocked && state.currency != original.currency) {
             state.currency
@@ -307,7 +308,7 @@ class EditGroupViewModel(
                     name = name.trim(),
                     type = type,
                     color = color,
-                    shape = shape,
+                    shape = shape ?: latest.shape,
                     photo = photo,
                     currency = currency,
                 )

@@ -39,7 +39,8 @@ interface GroupLocalDataSource {
         name: String,
         type: String,
         color: String,
-        shape: String,
+        // Why: null keeps the stored one.
+        shape: String?,
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,

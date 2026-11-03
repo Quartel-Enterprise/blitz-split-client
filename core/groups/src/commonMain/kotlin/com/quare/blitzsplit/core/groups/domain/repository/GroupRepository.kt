@@ -29,7 +29,8 @@ interface GroupRepository {
         name: String,
         type: GroupType,
         color: AvatarColor,
-        shape: GroupShape,
+        // Why: null keeps the stored one, which may be none (a group made before shapes) or a newer app's.
+        shape: GroupShape?,
         // Why: a Pending one goes up with the next sync; null takes the photo off.
         photo: ProfilePhoto?,
         currency: GroupCurrency,

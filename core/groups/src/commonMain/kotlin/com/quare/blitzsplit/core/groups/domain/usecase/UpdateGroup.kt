@@ -13,7 +13,8 @@ fun interface UpdateGroup {
         name: String,
         type: GroupType,
         color: AvatarColor,
-        shape: GroupShape,
+        // Why: null keeps the stored one, which may be none (a group made before shapes) or a newer app's.
+        shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
     ): Result<Unit>

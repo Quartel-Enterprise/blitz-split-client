@@ -49,7 +49,7 @@ class RoomGroupLocalDataSource(
         name: String,
         type: String,
         color: String,
-        shape: String,
+        shape: String?,
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,

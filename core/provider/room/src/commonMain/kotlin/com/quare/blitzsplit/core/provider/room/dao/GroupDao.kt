@@ -155,10 +155,11 @@ interface GroupDao {
     /*
      * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
      * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
-     * Last-Write-Wins would drop it on the next sync.
+     * Last-Write-Wins would drop it on the next sync. A null shape keeps the stored code, so an edit that leaves the
+     * shape alone never turns a group made before shapes, or a newer app's shape, into a square.
      */
     @Query(
-        "UPDATE split_group SET name = :name, type = :type, color = :color, shape = :shape, " +
+        "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
             "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )

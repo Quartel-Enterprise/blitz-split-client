@@ -87,7 +87,7 @@ class GroupRepositoryImpl(
         name: String,
         type: GroupType,
         color: AvatarColor,
-        shape: GroupShape,
+        shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
@@ -97,7 +97,7 @@ class GroupRepositoryImpl(
             name = name,
             type = type.code,
             color = color.code,
-            shape = shape.code,
+            shape = shape?.code,
             photoUrl = (photo as? ProfilePhoto.Remote)?.url,
             pendingPhoto = (photo as? ProfilePhoto.Pending)?.jpeg,
             currency = currency.code,
@@ -229,15 +229,12 @@ class GroupRepositoryImpl(
         val removedMemberIds = local.getRemovedMemberIds(userId)
         val heldGroupIds = mutableSetOf<String>()
         val photoErrors = mutableListOf<Throwable>()
-        val uploadedPhotoUrls = mutableMapOf<String, String>()
         val pendingGroups = local.getPendingGroups(userId)
         pendingGroups.filter { it.isOnServer() }.forEach { group ->
-            uploadPhotoOf(group)
-                ?.onSuccess { uploadedPhotoUrls[group.id] = it }
-                ?.onFailure {
-                    heldGroupIds += group.id
-                    photoErrors += it
-                }
+            uploadPhotoOf(group)?.onFailure {
+                heldGroupIds += group.id
+                photoErrors += it
+            }
         }
         val groupsToPush = pendingGroups.filterNot { it.id in heldGroupIds }
         if (groupsToPush.isNotEmpty()) {
@@ -247,7 +244,8 @@ class GroupRepositoryImpl(
                         mapper.toDto(
                             entity = it,
                             userId = userId,
-                            photoUrl = uploadedPhotoUrls[it.id] ?: photoUrlOf(it),
+                            // Why: the snapshot read above, so an uploaded photo's URL is the one it went up under.
+                            photoUrl = photoUrlOf(it),
                         )
                     },
                 ).forEach { dto ->
@@ -295,37 +293,33 @@ class GroupRepositoryImpl(
     // Why: a group with an invite code went up once, as GroupDao.getGroupIdsOnServer counts it.
     private fun GroupEntity.isOnServer(): Boolean = inviteCode != null
 
-    // Why: null for a group with no photo waiting; the URL it now has once it is up.
-    private suspend fun uploadPhotoOf(group: GroupEntity): Result<String>? {
+    // Why: null for a group with no photo waiting; once it is up, the device keeps the URL its row goes up with.
+    private suspend fun uploadPhotoOf(group: GroupEntity): Result<Unit>? {
         val jpeg = group.pendingPhoto ?: return null
         return suspendRunCatching {
             photoRemote.upload(
                 groupId = group.id,
                 jpeg = jpeg,
             )
-            photoRemote
-                .urlOf(
-                    groupId = group.id,
-                    version = group.updatedAt,
-                ).also {
-                    local.markGroupPhotoUploaded(
-                        id = group.id,
-                        jpeg = jpeg,
-                        photoUrl = it,
-                    )
-                }
+            local.markGroupPhotoUploaded(
+                id = group.id,
+                jpeg = jpeg,
+                photoUrl = pendingPhotoUrlOf(group),
+            )
         }
     }
 
     // Why: a photo still to upload goes up under this change's version, which keeps the caches from the old one.
     private fun photoUrlOf(group: GroupEntity): String? = if (group.pendingPhoto != null) {
-        photoRemote.urlOf(
-            groupId = group.id,
-            version = group.updatedAt,
-        )
+        pendingPhotoUrlOf(group)
     } else {
         group.photoUrl
     }
+
+    private fun pendingPhotoUrlOf(group: GroupEntity): String = photoRemote.urlOf(
+        groupId = group.id,
+        version = group.updatedAt,
+    )
 
     /*
      * Why: like the payment keys, another user's groups never go up as this account's, even ones not pushed yet:

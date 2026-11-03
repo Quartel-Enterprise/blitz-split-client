@@ -19,7 +19,7 @@ class UpdateGroupUseCase(
         name: String,
         type: GroupType,
         color: AvatarColor,
-        shape: GroupShape,
+        shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
     ): Result<Unit> = repository.updateGroup(
