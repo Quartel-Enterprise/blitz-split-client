@@ -227,7 +227,7 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
           <Label htmlFor="item-price">{t('item_price')}</Label>
           <Input
             id="item-price"
-            inputMode="decimal"
+            inputMode="numeric"
             value={price}
             placeholder={amountPlaceholder(state.fractionDigits)}
             autoComplete="off"
@@ -349,7 +349,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         </span>
       )}
       <input
-        inputMode={editor.mode === 'amount' ? 'decimal' : 'numeric'}
+        inputMode="numeric"
         autoComplete="off"
         value={value}
         placeholder={editor.mode === 'amount' ? amountPlaceholder(state.fractionDigits) : '0'}
@@ -399,7 +399,7 @@ function FeeBody({ presenter, state, editor }: { presenter: SplitItemsPresenter;
         {!isService && <span className="text-sm text-muted-foreground">{currencySymbol(state.currency)}</span>}
         <Input
           id="items-fee"
-          inputMode={isService ? 'numeric' : 'decimal'}
+          inputMode="numeric"
           value={value}
           placeholder={isService ? '0' : amountPlaceholder(state.fractionDigits)}
           aria-invalid={!editor.canSave}

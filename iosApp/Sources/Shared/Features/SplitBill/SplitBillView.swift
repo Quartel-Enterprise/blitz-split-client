@@ -898,7 +898,7 @@ private struct PayerAmountField: View {
             .multilineTextAlignment(.trailing)
             .monospacedDigit()
             #if os(iOS)
-            .keyboardType(.decimalPad)
+            .keyboardType(.numberPad)
             #endif
         }
         #if os(iOS)

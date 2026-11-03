@@ -14,7 +14,7 @@ export const controlClass =
   'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30'
 
 /**
- * A large amount field with the currency's symbol before it ("R$ 312,00"), the decimal keyboard on phones. The
+ * A large amount field with the currency's symbol before it ("R$ 312,00"), the number keyboard on phones. The
  * ViewModel filters what is typed; `value` is what it kept.
  */
 export function AmountInput({
@@ -48,7 +48,7 @@ export function AmountInput({
       </span>
       <input
         id={id}
-        inputMode="decimal"
+        inputMode="numeric"
         autoComplete="off"
         autoFocus={autoFocus}
         value={value}

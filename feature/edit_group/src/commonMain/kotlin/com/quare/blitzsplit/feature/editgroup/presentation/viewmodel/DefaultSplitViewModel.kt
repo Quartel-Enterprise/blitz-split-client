@@ -121,7 +121,14 @@ class DefaultSplitViewModel(
             }
 
             is DefaultSplitUiEvent.OnIncomeChanged -> updatePerson(event.memberId) {
-                it.copy(incomeText = TypedText.toAmountText(event.text))
+                it.copy(
+                    incomeText = TypedText.toAmountText(
+                        previous = it.incomeText,
+                        typed = event.text,
+                        currency = uiState.value.currency,
+                        decimalSeparator = decimalSeparator(),
+                    ),
+                )
             }
 
             DefaultSplitUiEvent.OnSaveClicked -> save()

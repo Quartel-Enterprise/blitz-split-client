@@ -251,6 +251,7 @@ class SplitBillViewModel(
                 it.withPayerAmount(
                     event.memberId,
                     event.text,
+                    separator,
                 )
             }
 
@@ -284,9 +285,8 @@ class SplitBillViewModel(
                 editor.withRows { it.copy(isIncluded = include) }
             }
 
-            is SplitBillUiEvent.OnPersonValueChanged -> editSplit { editor ->
-                val text = TypedText.toSplitValueText(event.text, editor.mode)
-                editor.withRows { row -> if (row.person.id == event.memberId) row.copy(valueText = text) else row }
+            is SplitBillUiEvent.OnPersonValueChanged -> editSplit {
+                it.withValueTyped(event.memberId, event.text, separator)
             }
 
             is SplitBillUiEvent.OnPartsIncreased -> editSplit { it.withPartsChanged(event.memberId, +1) }
@@ -444,7 +444,7 @@ class SplitBillViewModel(
         }
         uiState.update { current ->
             val state = if (isAnotherGroup) current.toStartInAnotherGroup() else current
-            val shown = state.withGroupShown(group, people)
+            val shown = state.withGroupShown(group, people, separator)
             val withSplit = shown.withSplitAmong(
                 people = people,
                 defaultSplit = group.defaultSplit,
@@ -460,11 +460,10 @@ class SplitBillViewModel(
     }
 
     private fun changeAmount(text: String) {
-        val capped = TypedText.toAmountText(text)
         uiState.update { state ->
             state
                 .copy(
-                    amountText = capped,
+                    amountText = TypedText.toAmountText(state.amountText, text, state.currency, separator),
                     hasEditedAmount = true,
                 ).withBillTotal()
         }

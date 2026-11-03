@@ -166,7 +166,16 @@ internal fun SplitBillUiState.withSeveralPayersOpened(decimalSeparator: Char): S
 internal fun SplitBillUiState.withPayerAmount(
     memberId: String,
     text: String,
-): SplitBillUiState = copy(payerAmounts = payerAmounts?.withAmountText(memberId, TypedText.toAmountText(text)))
+    decimalSeparator: Char,
+): SplitBillUiState {
+    val amounts = payerAmounts ?: return this
+    val previous = amounts.rows
+        .firstOrNull { it.memberId == memberId }
+        ?.amountText
+        .orEmpty()
+    val amountText = TypedText.toAmountText(previous, text, amounts.currency, decimalSeparator)
+    return copy(payerAmounts = amounts.withAmountText(memberId, amountText))
+}
 
 // Why: "Quem pagou" marks one person until Pronto; someone no longer in the group can't be marked.
 internal fun SplitBillUiState.withPayerPicked(memberId: String): SplitBillUiState =

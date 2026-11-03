@@ -429,16 +429,17 @@ class SplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN the bill WHEN typing more than 16 characters THEN keeps the first 16`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the bill WHEN pasting more digits than an amount has THEN keeps the field as it was`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        typeAmount("12345678901234567890")
+            // When
+            typeAmount("12345678901234567890")
 
-        // Then
-        assertEquals("1234567890123456", viewModel.uiState.value.amountText)
-    }
+            // Then
+            assertEquals("", viewModel.uiState.value.amountText)
+        }
 
     @Test
     fun `GIVEN the bill WHEN typing zero THEN shows the amount error`() = runTest(testDispatcher) {
@@ -1147,19 +1148,20 @@ class SplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN Valores WHEN typing more than 16 characters in a field THEN keeps the first 16`() =
+    fun `GIVEN Valores WHEN pasting more digits than an amount has in a field THEN keeps the field as it was`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
             typeAmount("100")
             viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
             switchTo(SplitMode.AMOUNT)
+            val before = editor().row(ANA).valueText
 
             // When
             viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "12345678901234567890"))
 
             // Then
-            assertEquals("1234567890123456", editor().row(ANA).valueText)
+            assertEquals(before, editor().row(ANA).valueText)
         }
 
     @Test
@@ -1550,16 +1552,15 @@ class SplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN Valores confirmed and one digit retyped WHEN typing the second THEN rescales the confirmed parts`() =
+    fun `GIVEN Valores confirmed and the amount retyped WHEN typing ten reais THEN rescales the confirmed parts`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
             typeAmount("100")
             confirmAmounts(ANA to "33,33", PIERRE to "33,34", BRUNO to "33,33", CARLA to "")
-            typeAmount("1")
 
             // When
-            typeAmount("10")
+            typeDigits("1000")
 
             // Then
             assertEquals(
@@ -1576,11 +1577,10 @@ class SplitBillViewModelTest {
             prepareScenario()
             typeAmount("100")
             confirmAmounts(ANA to "33,33", PIERRE to "33,34", BRUNO to "33,33", CARLA to "")
-            typeAmount("1")
-            typeAmount("10")
+            typeDigits("1000")
 
             // When
-            typeAmount("100")
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(viewModel.uiState.value.amountText + "0"))
 
             // Then
             assertEquals(
@@ -1680,9 +1680,10 @@ class SplitBillViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals(125L, state.amountMinor)
-            assertEquals(125L, state.split.totalMinor)
-            assertEquals(125L, state.split.shares?.sumOf { it.amountMinor })
+            assertEquals("12", state.amountText)
+            assertEquals(12L, state.amountMinor)
+            assertEquals(12L, state.split.totalMinor)
+            assertEquals(12L, state.split.shares?.sumOf { it.amountMinor })
         }
 
     @Test
@@ -2312,8 +2313,18 @@ class SplitBillViewModelTest {
         )
     }
 
+    // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(text))
+    }
+
+    // Why: the field emptied, then each digit typed after what it shows, as the keyboard does.
+    private fun typeDigits(digits: String) {
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
+        digits.forEach { digit ->
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(viewModel.uiState.value.amountText + digit))
+        }
     }
 
     private fun describe(text: String) {

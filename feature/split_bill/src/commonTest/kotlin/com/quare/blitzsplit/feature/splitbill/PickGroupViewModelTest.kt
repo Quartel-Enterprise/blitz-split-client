@@ -219,7 +219,7 @@ class PickGroupViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("90", state.amountText)
+            assertEquals("90,00", state.amountText)
             assertEquals("Mercado", state.description)
             assertEquals(9_000L, state.split.totalMinor)
             assertTrue(state.canSave)
@@ -305,7 +305,7 @@ class PickGroupViewModelTest {
             assertEquals(fromGroup, navigator.backStack.value.last())
             assertEquals(TRIP_ID, state.groupId)
             assertEquals("Viagem Floripa", state.groupName)
-            assertEquals("90", state.amountText)
+            assertEquals("90,00", state.amountText)
             assertEquals("Mercado", state.description)
             assertEquals(YESTERDAY, state.spentAt)
             assertEquals(PIERRE_TRIP, state.payerId)

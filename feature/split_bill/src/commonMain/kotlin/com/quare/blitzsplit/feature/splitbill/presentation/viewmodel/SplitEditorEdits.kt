@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -174,6 +175,19 @@ internal fun SplitEditor.toMode(
 }
 
 internal fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
+
+// Why: what was typed in one person's Valores or % field, kept as that field's rules keep it.
+internal fun SplitEditor.withValueTyped(
+    memberId: String,
+    typed: String,
+    decimalSeparator: Char,
+): SplitEditor = withRows { row ->
+    if (row.person.id == memberId) {
+        row.copy(valueText = TypedText.toSplitValueText(row.valueText, typed, mode, currency, decimalSeparator))
+    } else {
+        row
+    }
+}
 
 /*
  * Why: Dividir under "Itens da conta" for a bill split by its items, by "Valores" with each one's total, so going

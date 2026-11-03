@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.numberFieldValueOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
@@ -115,15 +116,15 @@ internal fun ItemEditorContent(
                     onIncrease = { onEvent(SplitBillUiEvent.OnItemQuantityIncreased) },
                 )
                 OutlinedTextField(
-                    value = editor.unitPriceText,
-                    onValueChange = { onEvent(SplitBillUiEvent.OnItemPriceChanged(it)) },
+                    value = numberFieldValueOf(editor.unitPriceText),
+                    onValueChange = { onEvent(SplitBillUiEvent.OnItemPriceChanged(it.text)) },
                     modifier = Modifier.weight(1f),
                     label = { Text(stringResource(R.string.split_bill_item_price)) },
                     prefix = { Text(money.symbol + " ") },
                     placeholder = { Text(money.zeroPlaceholder) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
+                        keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done,
                     ),
                 )
@@ -329,7 +330,6 @@ private fun ItemPersonInputField(
             placeholder = money.zeroPlaceholder,
             prefix = money.symbol,
             suffix = null,
-            keyboardType = KeyboardType.Decimal,
             isError = line.isError,
             width = amountFieldWidth,
         )
@@ -341,7 +341,6 @@ private fun ItemPersonInputField(
             placeholder = "0",
             prefix = null,
             suffix = PERCENT_SUFFIX,
-            keyboardType = KeyboardType.Number,
             isError = line.isError,
             width = percentFieldWidth,
         )

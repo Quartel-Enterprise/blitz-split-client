@@ -170,7 +170,7 @@ class DefaultSplitViewModelTest {
         val people = viewModel.uiState.value.people
 
         // Then
-        assertEquals(listOf("9000,00", "3000,00"), people.map { it.incomeText })
+        assertEquals(listOf("9.000,00", "3.000,00"), people.map { it.incomeText })
         assertFalse(viewModel.uiState.value.hasChanges)
     }
 

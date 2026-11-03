@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
@@ -87,8 +88,6 @@ class RegisterPaymentViewModel(
     val stateWatcher: FlowWatcher<RegisterPaymentUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RegisterPaymentUiAction> = FlowWatcher(uiAction)
 
-    private val amountSeparators = setOf(',', '.')
-
     // Why: the debt is gone (paid elsewhere, the pair or the group gone) while another screen covered this one.
     private var isDebtGone = false
 
@@ -145,9 +144,12 @@ class RegisterPaymentViewModel(
             is RegisterPaymentUiEvent.OnAmountChanged -> if (!uiState.value.isAmountLocked) {
                 uiState.update {
                     it.copy(
-                        amountText = event.text
-                            .filter { char -> char.isDigit() || char in amountSeparators }
-                            .take(AMOUNT_MAX_LENGTH),
+                        amountText = TypedText.toAmountText(
+                            previous = it.amountText,
+                            typed = event.text,
+                            currency = it.currency,
+                            decimalSeparator = decimalSeparator(),
+                        ),
                         hasEditedAmount = true,
                     )
                 }
@@ -451,7 +453,7 @@ class RegisterPaymentViewModel(
     ): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
-        decimalSeparator = decimalSeparator().takeIf { it in amountSeparators } ?: '.',
+        decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
     )
 
     private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(
@@ -476,9 +478,4 @@ class RegisterPaymentViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
-
-    private companion object {
-        // Why: "100.000.000,00" with room for the separators someone types.
-        const val AMOUNT_MAX_LENGTH = 16
-    }
 }
