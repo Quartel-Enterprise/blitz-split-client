@@ -443,9 +443,9 @@ private fun buildPreviewState(
     currency = GroupCurrency.BRL,
     members = listOf(
         CreateGroupMember("1", "Pierre", "P", AvatarColor.BLUE, isMe = true),
-        CreateGroupMember("2", "Ana", "AN", AvatarColor.GREEN, isMe = false),
-        CreateGroupMember("3", "Bruno", "BR", AvatarColor.PEACH, isMe = false),
-        CreateGroupMember("4", "Carla", "CA", AvatarColor.LILAC, isMe = false),
+        CreateGroupMember("2", "Ana", "A", AvatarColor.GREEN, isMe = false),
+        CreateGroupMember("3", "Bruno", "B", AvatarColor.PEACH, isMe = false),
+        CreateGroupMember("4", "Carla", "C", AvatarColor.LILAC, isMe = false),
     ),
     draft = draft,
     takenName = takenName,

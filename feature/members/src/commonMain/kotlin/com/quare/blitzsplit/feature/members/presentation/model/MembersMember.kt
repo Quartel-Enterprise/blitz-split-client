@@ -6,7 +6,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 data class MembersMember(
     val id: String,
     val name: String,
-    // Why: "AN" for Ana; this device's user shows the single initial of the home's avatar.
+    // Why: "A" for Ana, "AP" for Ana Paula; this device's user shows the single initial of the home's avatar.
     val initials: String,
     val avatarColor: AvatarColor,
     // Why: the profile photo over the initials, null for someone with none or nobody joined as.

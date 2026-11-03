@@ -25,10 +25,10 @@ private const val PREVIEW_TODAY_MILLIS = 1_761_609_600_000L
 private const val PREVIEW_HOUR_MILLIS = 3_600_000L
 private const val PREVIEW_DAY_MILLIS = 86_400_000L
 private val previewFaces = listOf(
-    GroupFace("PV", AvatarColor.BLUE, photoUrl = null),
-    GroupFace("AN", AvatarColor.GREEN, photoUrl = null),
-    GroupFace("BR", AvatarColor.PEACH, photoUrl = null),
-    GroupFace("CA", AvatarColor.LILAC, photoUrl = null),
+    GroupFace("P", AvatarColor.BLUE, photoUrl = null),
+    GroupFace("A", AvatarColor.GREEN, photoUrl = null),
+    GroupFace("B", AvatarColor.PEACH, photoUrl = null),
+    GroupFace("C", AvatarColor.LILAC, photoUrl = null),
 )
 
 internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupHeader(
