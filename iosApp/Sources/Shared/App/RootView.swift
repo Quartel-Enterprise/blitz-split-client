@@ -150,9 +150,11 @@ struct RootView: View {
 
 private extension View {
     /// The sheet sized by the last route pushed inside it that asks for a size of its own (Divisão padrão), else by
-    /// the sheet's own route (Mapa de categorias keeps its bill's), so it follows each push and pop.
+    /// its own route (Mapa de categorias keeps its bill's), resized on each push and pop: SwiftUI keeps the sizing it
+    /// is given now, but only `resizingSheet` moves the open sheet to it.
     func foldSheetPlacement(sizedBy route: AppRoute, pushed: [AppRoute]) -> some View {
-        let sizing = pushed.last { $0.usesFormSheet || $0.usesBillSheet } ?? route
-        return foldSheetPlacement(isForm: sizing.usesFormSheet, isBill: sizing.usesBillSheet)
+        let front = pushed.last { $0.usesFormSheet || $0.usesBillSheet } ?? route
+        return foldSheetPlacement(isForm: front.usesFormSheet, isBill: front.usesBillSheet)
+            .resizingSheet(isBill: front.usesBillSheet, isOwnBill: route.usesBillSheet)
     }
 }

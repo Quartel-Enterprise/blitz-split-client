@@ -86,9 +86,9 @@ extension View {
     /// form sheet's size where it fits (`isForm`), a bill's (`isBill`, `ScreenLayout.billSheetSize`), else the
     /// system's. Everywhere else, the iPhone Duo upright and closed included, the system places it and it keeps that
     /// size. A sheet's sizing is decided here: the root's sheet picks `isForm` and `isBill` from the route in front
-    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), a screen's own sheet from what it draws. SwiftUI sizes a sheet only
-    /// as it opens, so a bill's size asked for later (Divisão padrão pushed and popped, a rotation) resizes the open
-    /// sheet through UIKit (`SheetResizer`). Put it on the sheet's content, as a detent.
+    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), a screen's own sheet from what it draws. SwiftUI applies it only as
+    /// the sheet opens, so the root's sheet also resizes as routes are pushed inside it (`resizingSheet`). Put it on
+    /// the sheet's content, as a detent.
     func foldSheetPlacement(isForm: Bool = false, isBill: Bool = false) -> some View {
         modifier(FoldSheetPlacement(isForm: isForm, isBill: isBill))
     }
@@ -114,54 +114,80 @@ private struct FoldSheetPlacement: ViewModifier {
                         foldStart: fold?.verticalFrame?.minX,
                     ),
                 )
-                .background(SheetResizer(size: billSize))
         } else {
             content
-                .background(SheetResizer(size: billSize))
         }
         #else
         content
         #endif
     }
+}
 
-    #if os(iOS)
-    /// A bill's size, no wider than the half before the fold, as `FoldHalfSizing` proposes it; nil for any other sheet.
-    private var billSize: CGSize? {
-        guard isBill, var size = window.billSheetSize else { return nil }
-        if let foldStart = fold?.verticalFrame?.minX {
-            size.width = min(size.width, foldStart - FoldHalfSizing.margin * 2)
-        }
-        return size
+extension View {
+    /// Resizes the open sheet to a bill's size while `isBill` asks for one its own route (`isOwnBill`) didn't open
+    /// with (Divisão padrão pushed inside Editar grupo's), and back once it no longer does, since SwiftUI reads a
+    /// sheet's `presentationSizing` only as it opens. Only the root's sheets change what they ask for; the Mac sizes a
+    /// sheet by its content.
+    func resizingSheet(isBill: Bool, isOwnBill: Bool) -> some View {
+        #if os(iOS)
+        modifier(SheetResizing(isBill: isBill, isOwnBill: isOwnBill))
+        #else
+        self
+        #endif
     }
-    #endif
 }
 
 #if os(iOS)
-/// Resizes the open sheet it sits in once the size asked for changes (Divisão padrão pushed inside Editar grupo), since
-/// SwiftUI reads a sheet's `presentationSizing` only as it opens: the sheet's `preferredContentSize`, which UIKit
-/// animates, back to what it was once the size it opened with is asked for again. A sheet whose size never changes is
-/// left as SwiftUI sized it.
+private struct SheetResizing: ViewModifier {
+    let isBill: Bool
+    let isOwnBill: Bool
+
+    @Environment(\.windowFold) private var fold
+    @Environment(\.windowLayout) private var window
+
+    func body(content: Content) -> some View {
+        content.background(SheetResizer(size: billSize(isBill), ownSize: billSize(isOwnBill)))
+    }
+
+    /// A bill's size, no wider than the half before the fold, as `FoldHalfSizing` proposes it; nil for any other sheet.
+    private func billSize(_ isBill: Bool) -> CGSize? {
+        guard isBill, var size = window.billSheetSize else { return nil }
+        if let foldStart = fold?.verticalFrame?.minX {
+            size.width = FoldHalfSizing.width(size.width, before: foldStart)
+        }
+        return size
+    }
+}
+
+/// The open sheet's `preferredContentSize`, which UIKit animates: `size` while it differs from the sheet's own
+/// (`ownSize`, which SwiftUI already gave it), back to what it was once it no longer does.
 private struct SheetResizer: UIViewControllerRepresentable {
     let size: CGSize?
+    let ownSize: CGSize?
 
     func makeUIViewController(context: Context) -> Controller {
         Controller()
     }
 
     func updateUIViewController(_ controller: Controller, context: Context) {
-        controller.ask(size)
+        controller.resize(to: size, own: ownSize)
     }
 
     final class Controller: UIViewController {
-        /// The size asked for as the sheet opened, which SwiftUI already gave it.
-        private var opened: CGSize??
-        private var asked: CGSize?
-        /// The sheet's own `preferredContentSize` before it was first changed here.
+        private var size: CGSize?
+        private var ownSize: CGSize?
+        /// The sheet's own `preferredContentSize` before it was changed here.
         private var original: CGSize?
 
-        func ask(_ size: CGSize?) {
-            if opened == nil { opened = .some(size) }
-            asked = size
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            view.isUserInteractionEnabled = false
+            view.accessibilityElementsHidden = true
+        }
+
+        func resize(to size: CGSize?, own ownSize: CGSize?) {
+            self.size = size
+            self.ownSize = ownSize
             apply()
         }
 
@@ -171,10 +197,10 @@ private struct SheetResizer: UIViewControllerRepresentable {
         }
 
         private func apply() {
-            guard let opened, let sheet = presentedSheet else { return }
-            if let asked, asked != opened {
+            guard let sheet = presentedSheet else { return }
+            if let size, size != ownSize {
                 if original == nil { original = sheet.preferredContentSize }
-                sheet.preferredContentSize = asked
+                sheet.preferredContentSize = size
             } else if let original {
                 sheet.preferredContentSize = original
                 self.original = nil
@@ -201,7 +227,13 @@ private struct FoldHalfSizing: PresentationSizing {
     let foldStart: CGFloat?
 
     /// What the sheet keeps clear of the screen's edge and of the fold, on either side.
-    static let margin: CGFloat = 10
+    private static let margin: CGFloat = 10
+
+    /// `width`, the whole half without one, no wider than the half before the fold.
+    static func width(_ width: CGFloat?, before foldStart: CGFloat) -> CGFloat {
+        let half = foldStart - margin * 2
+        return min(width ?? half, half)
+    }
 
     func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
         let own = if let size {
@@ -212,7 +244,6 @@ private struct FoldHalfSizing: PresentationSizing {
             AutomaticPresentationSizing.automatic.proposedSize(for: root, context: context)
         }
         guard let foldStart else { return own }
-        let half = foldStart - Self.margin * 2
-        return ProposedViewSize(width: min(own.width ?? half, half), height: own.height)
+        return ProposedViewSize(width: Self.width(own.width, before: foldStart), height: own.height)
     }
 }
