@@ -138,7 +138,10 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 `formSheetSizing()` sizes the recovery code's, Novo grupo's, Editar perfil's and Editar grupo's sheets;
 `billSheetSizing` Rachar conta's and Conta's. The root's sheet follows what is pushed inside it: pushing Divisão padrão
 grows Editar grupo's form sheet to a bill's (the boards' 820×640, in two columns, lying down; 620×860 upright) and
-popping it shrinks it back, while a route with no size of its own (Mapa de categorias over a bill) keeps the sheet's. Not checked on a device yet: Estatísticas in an iPad's group pane.
+popping it shrinks it back, while a route with no size of its own (Mapa de categorias over a bill) keeps the sheet's.
+SwiftUI sizes a sheet only as it opens, so `foldSheetPlacement` resizes the open sheet through its
+`preferredContentSize` (`SheetResizer`) once the bill's size asked for changes. Not checked on a device yet:
+Estatísticas in an iPad's group pane.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
