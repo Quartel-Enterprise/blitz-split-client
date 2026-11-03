@@ -11,13 +11,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 
 private val logoSize = 20.dp
-private const val DISABLED_ALPHA = 0.38f
 
 @Composable
 fun GoogleSignInButton(
@@ -47,13 +46,12 @@ fun GoogleSignInButton(
             label = label,
             isLoading = isLoading,
         ) {
-            // Why: Google's logo keeps its four colors, so it isn't tinted and only fades while disabled
+            // Why: Google's logo keeps its four colors, so it isn't tinted and only fades as the button's content does
             Image(
                 painter = painterResource(R.drawable.ic_google_logo),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(logoSize)
-                    .alpha(if (isEnabled) 1f else DISABLED_ALPHA),
+                modifier = Modifier.size(logoSize),
+                alpha = LocalContentColor.current.alpha,
             )
         }
     }
@@ -104,7 +102,7 @@ private fun SignInButtonLabelRow(
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(logoSize),
                 strokeWidth = 2.dp,
             )
         } else {
