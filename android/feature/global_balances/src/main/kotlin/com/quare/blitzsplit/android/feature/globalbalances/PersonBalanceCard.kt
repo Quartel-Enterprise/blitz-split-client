@@ -24,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
+import com.quare.blitzsplit.android.designsystem.component.clickableWhen
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -75,6 +77,7 @@ internal fun PersonBalanceCard(
                 row = row,
                 name = name,
                 money = money,
+                onPersonClick = { onEvent(GlobalBalancesUiEvent.OnPersonClicked(row.id)) },
             )
             AnimatedVisibility(visible = row.isExpanded) {
                 PersonGroupsCard(
@@ -82,6 +85,7 @@ internal fun PersonBalanceCard(
                     netMinor = row.netMinor,
                     money = money,
                     modifier = Modifier.padding(start = actionsInset),
+                    onGroupClick = { groupId -> onEvent(GlobalBalancesUiEvent.OnGroupClicked(groupId)) },
                 )
             }
             ActionsRow(
@@ -93,36 +97,49 @@ internal fun PersonBalanceCard(
     }
 }
 
-// Why: the face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick.
+/*
+ * Why: the face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick. In
+ * the row the face and the name open the profile; the list's pick takes the whole row's tap.
+ */
 @Composable
 private fun PersonSummaryRow(
     row: PersonRow,
     name: String,
     money: MoneyFormatter,
+    onPersonClick: (() -> Unit)? = null,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PersonFaceBadge(row)
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .clip(MaterialTheme.shapes.medium)
+                .clickableWhen(onPersonClick != null && row.opensProfile) { onPersonClick?.invoke() },
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = metaOf(row),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            PersonFaceBadge(row)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = metaOf(row),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         Column(
             horizontalAlignment = Alignment.End,

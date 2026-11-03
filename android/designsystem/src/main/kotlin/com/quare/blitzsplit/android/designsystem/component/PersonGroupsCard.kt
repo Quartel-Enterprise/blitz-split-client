@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +25,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 /*
  * Why: "Por grupo", what each group adds to the net with someone, then the net: "Líquido, já compensado" over several
  * groups, "Total" for one. Saldos opens it inside a row, and Registrar pagamento shows it when settling up across groups.
+ * Where onGroupClick is given, a group's badge and name open it.
  */
 @Composable
 fun PersonGroupsCard(
@@ -32,6 +34,7 @@ fun PersonGroupsCard(
     money: MoneyFormatter,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.surface,
+    onGroupClick: ((groupId: String) -> Unit)? = null,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -46,7 +49,10 @@ fun PersonGroupsCard(
         ) {
             groups.forEach { part ->
                 Row(
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .clickableWhen(onGroupClick != null) { onGroupClick?.invoke(part.groupId) }
+                        .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

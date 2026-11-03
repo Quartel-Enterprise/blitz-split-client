@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.clickableWhen
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
@@ -38,17 +40,19 @@ import com.quare.blitzsplit.core.contacts.domain.model.ContactHistoryItem
 
 private val rowPadding = Modifier.padding(vertical = 1.dp)
 
-// Why: one of "Grupos em comum", with what that group adds to the net; not tappable, as the canvas draws it.
+// Why: one of "Grupos em comum", with what that group adds to the net; a tap opens the group.
 @Composable
 internal fun CommonGroupRow(
     group: ContactGroup,
     index: Int,
     count: Int,
+    onClick: () -> Unit,
 ) {
     val money = rememberMoneyFormatter(group.currency)
     ProfileRow(
         index = index,
         count = count,
+        onClick = onClick,
         leading = {
             GroupBadge(
                 initials = group.groupInitials,
@@ -179,12 +183,16 @@ private fun ProfileRow(
     amount: String,
     amountColor: Color,
     word: String?,
+    onClick: (() -> Unit)? = null,
 ) {
+    val shape = groupedRowShapeOf(index, count)
     Surface(
         modifier = rowPadding
             .fillMaxWidth()
-            .heightIn(min = 60.dp),
-        shape = groupedRowShapeOf(index, count),
+            .heightIn(min = 60.dp)
+            .clip(shape)
+            .clickableWhen(onClick != null) { onClick?.invoke() },
+        shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(

@@ -247,7 +247,7 @@ private struct ContactProfileContent: View {
                     PendingMergeCard(model: model, contact: contact, pending: pending)
                 }
                 NetCard(model: model, contact: contact)
-                GroupsInCommon(contact: contact)
+                GroupsInCommon(model: model, contact: contact)
                 if !state.history.isEmpty {
                     ContactHistoryList(model: model, contact: contact)
                 }
@@ -451,8 +451,9 @@ private struct NetCard: View {
     }
 }
 
-/// "Groups in common · 3": each group with what it adds to the net, not tappable.
+/// "Groups in common · 3": each group with what it adds to the net; a tap opens the group.
 private struct GroupsInCommon: View {
+    let model: ContactProfileModel
     let contact: Contact
 
     var body: some View {
@@ -462,24 +463,29 @@ private struct GroupsInCommon: View {
                 .accessibilityAddTraits(.isHeader)
             VStack(spacing: 0) {
                 ForEach(Array(contact.groups.enumerated()), id: \.element.groupId) { index, group in
-                    HStack(spacing: 12) {
-                        GroupAvatar(initials: group.groupInitials, color: group.groupColor, size: 32)
-                            .accessibilityHidden(true)
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(verbatim: group.groupName)
-                                .lineLimit(1)
-                            Text(ContactsCopy.word(group.amountMinor))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                    Button {
+                        model.send(ContactProfileUiEventOnGroupClicked(groupId: group.groupId))
+                    } label: {
+                        HStack(spacing: 12) {
+                            GroupAvatar(initials: group.groupInitials, color: group.groupColor, size: 32)
+                                .accessibilityHidden(true)
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(verbatim: group.groupName)
+                                    .lineLimit(1)
+                                Text(ContactsCopy.word(group.amountMinor))
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer(minLength: 8)
+                            Text(verbatim: group.currency.formatSigned(group.amountMinor))
+                                .font(.subheadline.weight(.semibold))
+                                .monospacedDigit()
+                                .foregroundStyle(Palette.balance(group.amountMinor))
                         }
-                        Spacer(minLength: 8)
-                        Text(verbatim: group.currency.formatSigned(group.amountMinor))
-                            .font(.subheadline.weight(.semibold))
-                            .monospacedDigit()
-                            .foregroundStyle(Palette.balance(group.amountMinor))
+                        .padding(.vertical, 10)
+                        .contentShape(.rect)
                     }
-                    .padding(.vertical, 10)
-                    .accessibilityElement(children: .combine)
+                    .buttonStyle(.plain)
                     if index < contact.groups.count - 1 {
                         Divider()
                     }

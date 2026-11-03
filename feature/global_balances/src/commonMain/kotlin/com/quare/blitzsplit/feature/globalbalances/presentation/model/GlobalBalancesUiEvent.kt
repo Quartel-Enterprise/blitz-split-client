@@ -19,6 +19,16 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
         val personId: String,
     ) : GlobalBalancesUiEvent
 
+    // Why: the face or the name, which open the person's profile (11.2), as Contatos does.
+    data class OnPersonClicked(
+        val personId: String,
+    ) : GlobalBalancesUiEvent
+
+    // Why: a group's badge or name in "Por grupo", which opens the group.
+    data class OnGroupClicked(
+        val groupId: String,
+    ) : GlobalBalancesUiEvent
+
     // Why: "Acertar", someone you owe.
     data class OnSettleClicked(
         val personId: String,

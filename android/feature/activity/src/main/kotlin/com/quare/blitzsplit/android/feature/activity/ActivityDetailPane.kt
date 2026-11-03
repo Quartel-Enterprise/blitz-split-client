@@ -16,11 +16,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.clickableWhen
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
@@ -71,7 +73,11 @@ internal fun ActivityDetailPane(
                     modifier = Modifier.semantics { heading() },
                     style = MaterialTheme.typography.titleLarge,
                 )
+                // Why: the group and when; a tap opens the group while it is still on the device.
                 Row(
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .clickableWhen(item.isGroupOnDevice) { onEvent(ActivityUiEvent.OnGroupClicked(item.id)) },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {

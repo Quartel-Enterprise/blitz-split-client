@@ -72,6 +72,7 @@ class JsActivityItem(
     // Why: null once the group is gone from the device.
     val groupColor: String?,
     val groupType: String?,
+    val isGroupOnDevice: Boolean,
     val occurredAt: Double,
     // Why: the day the item is listed under, "today", "yesterday" or "other", and that day's start.
     val relativeDay: String,
@@ -241,6 +242,10 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(itemId))
     }
 
+    fun openGroup(itemId: String) {
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked(itemId))
+    }
+
     fun openTarget(itemId: String) {
         viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(itemId))
     }
@@ -405,6 +410,7 @@ private fun toJsActivityItem(
     groupInitials = item.groupName?.let(Initials::of).orEmpty(),
     groupColor = item.groupColor?.code,
     groupType = item.groupType?.code,
+    isGroupOnDevice = item.isGroupOnDevice,
     occurredAt = item.occurredAt.toDouble(),
     relativeDay = day?.relativeDay?.let(::toJsRelativeDay) ?: "other",
     dayStartMillis = (day?.dayStartMillis ?: item.occurredAt).toDouble(),

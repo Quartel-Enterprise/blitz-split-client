@@ -165,6 +165,11 @@ class ActivityViewModel(
 
             is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let(::openTarget)
 
+            // Why: only a group still on the device; one deleted or left keeps its name, with nothing to open.
+            is ActivityUiEvent.OnGroupClicked -> itemOrNull(event.itemId)
+                ?.takeIf { it.isGroupOnDevice && isOnTop() }
+                ?.let { item -> openGroup(item.groupId, GroupTab.EXPENSES) }
+
             is ActivityUiEvent.OnChangesToggled -> uiState.update {
                 it.copy(expandedItemId = event.itemId.takeIf { id -> id != it.expandedItemId })
             }
@@ -273,32 +278,29 @@ class ActivityViewModel(
         when (item.target) {
             ActivityTarget.BILL -> {
                 val billId = item.targetId ?: return
-                navigator.navigate(
-                    Route.GroupDetail(
-                        item.groupId,
-                        joinedAs = null,
-                        tab = GroupTab.EXPENSES,
-                    ),
-                )
+                openGroup(item.groupId, GroupTab.EXPENSES)
                 navigator.navigate(Route.BillDetail(item.groupId, billId))
             }
 
-            ActivityTarget.GROUP -> navigator.navigate(
-                Route.GroupDetail(
-                    item.groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            )
+            ActivityTarget.GROUP -> openGroup(item.groupId, GroupTab.EXPENSES)
 
-            ActivityTarget.MEMBERS -> navigator.navigate(
-                Route.GroupDetail(item.groupId, joinedAs = null, GroupTab.MEMBERS),
-            )
+            ActivityTarget.MEMBERS -> openGroup(item.groupId, GroupTab.MEMBERS)
 
-            ActivityTarget.BALANCES -> navigator.navigate(
-                Route.GroupDetail(item.groupId, joinedAs = null, GroupTab.BALANCES),
-            )
+            ActivityTarget.BALANCES -> openGroup(item.groupId, GroupTab.BALANCES)
         }
+    }
+
+    private fun openGroup(
+        groupId: String,
+        tab: GroupTab,
+    ) {
+        navigator.navigate(
+            Route.GroupDetail(
+                groupId,
+                joinedAs = null,
+                tab = tab,
+            ),
+        )
     }
 
     private fun openFilter() {

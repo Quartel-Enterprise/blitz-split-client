@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -167,6 +168,10 @@ class GlobalBalancesViewModel(
                 uiState.update { it.copy(pickedPersonId = event.personId) }
             }
 
+            is GlobalBalancesUiEvent.OnPersonClicked -> openProfile(event.personId)
+
+            is GlobalBalancesUiEvent.OnGroupClicked -> openGroup(event.groupId)
+
             is GlobalBalancesUiEvent.OnSettleClicked -> openSettleUp(event.personId, owesYou = false)
 
             is GlobalBalancesUiEvent.OnReceivedClicked -> openSettleUp(event.personId, owesYou = true)
@@ -268,6 +273,28 @@ class GlobalBalancesViewModel(
         val row = uiState.value.people.firstOrNull { it.id == personId } ?: return
         expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
+    }
+
+    // Why: the person's profile, the same Contatos opens; someone no longer in the group has none.
+    private fun openProfile(personId: String) {
+        if (!isOnTop()) return
+        val row = uiState.value.people
+            .firstOrNull { it.id == personId }
+            ?.takeIf { it.opensProfile } ?: return
+        navigator.navigate(Route.ContactProfile(row.personKey))
+    }
+
+    // Why: only a group someone's "Por grupo" still lists, so a stale tap never opens one a sync just took away.
+    private fun openGroup(groupId: String) {
+        if (!isOnTop()) return
+        if (uiState.value.people.none { row -> row.groups.any { it.groupId == groupId } }) return
+        navigator.navigate(
+            Route.GroupDetail(
+                groupId,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
     }
 
     // Why: only from Saldos on top, and only in the direction the row offers, so a stale tap never pays the wrong way.

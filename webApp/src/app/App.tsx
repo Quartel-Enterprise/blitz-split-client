@@ -61,7 +61,7 @@ export function App() {
 }
 
 // Why: the pages that draw inside the home's frame (`PageShell`), which read the sidebar.
-const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'profile', 'edit-profile'])
+const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'contact-profile', 'profile', 'edit-profile'])
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
@@ -150,7 +150,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <GlobalBalancesScreen route={route} /> : null
     case 'activity':
       return route ? <ActivityScreen route={route} /> : null
-    // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it.
+    // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
+    // one opened from Saldos draws the same page.
     case 'contacts':
       return <ContactsScreen />
     case 'contact-profile':

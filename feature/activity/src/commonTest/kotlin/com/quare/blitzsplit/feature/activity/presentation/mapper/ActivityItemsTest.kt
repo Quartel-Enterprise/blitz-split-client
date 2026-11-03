@@ -337,6 +337,71 @@ class ActivityItemsTest {
     }
 
     @Test
+    fun `GIVEN an event of a group on the device WHEN mapping the feed THEN its group can be opened`() {
+        // Given
+        val feed = feed(events = listOf(payment()))
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.isGroupOnDevice)
+    }
+
+    @Test
+    fun `GIVEN an event of a group deleted or left WHEN mapping the feed THEN its group cannot be opened`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                payment(
+                    id = "payment",
+                    groupId = PRAIA,
+                    groupName = "Praia",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertFalse(item.isGroupOnDevice)
+        assertEquals("Praia", item.groupName)
+    }
+
+    @Test
+    fun `GIVEN a change waiting to be sent WHEN mapping the feed THEN its group can be opened`() {
+        // Given
+        val feed = feed(queued = listOf(queued(id = BILL_MERCADO)))
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.isGroupOnDevice)
+    }
+
+    @Test
+    fun `GIVEN a bill deleted in a group still here WHEN mapping its creation THEN its group can be opened`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "pastel-created",
+                    targetId = BILL_PASTEL,
+                    subject = "Pastel",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.isGroupOnDevice)
+    }
+
+    @Test
     fun `GIVEN events around the read mark WHEN mapping the feed THEN only newer unopened ones of others are unread`() {
         // Given
         val feed = feed(

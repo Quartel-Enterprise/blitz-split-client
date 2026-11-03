@@ -178,7 +178,7 @@ screen's `OnRailTabClicked(HomeTab)` (`HomeTab` in `:core:model`, which Android'
 otherwise opens its first route through `openHomeTab(Route)`. The rail selects the tab the screen sits in, the nearest
 one under it (`List<Route>.findHomeTabUnder`: Início for a group Início opened, Grupos for a row of Grupos). Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
-Saldos). Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
+Saldos); a face tapped in Saldos opens the same profile over Saldos. Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
 
 A group's tabs (Despesas, Saldos, Membros) are state too: the group is one route, `Route.GroupDetail(groupId,
 joinedAs, tab)`, whose `tab` is only the one it opens on (the home's "Ver saldos", Convidar's "Ver quem já entrou").

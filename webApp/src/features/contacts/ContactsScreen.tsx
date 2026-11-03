@@ -4,7 +4,8 @@ import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, homeTabLabel, type HomeTab } from '@/components/HomeShell'
+import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { balanceTone } from '@/features/balances/BalanceCard'
@@ -27,7 +28,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>
 /**
  * The home's Contatos tab: everyone the user shares a group with, A to Z, with the net with each, in the home's frame.
  * The desktop (from 1024 px) draws the list with the person picked beside it; a tablet and a phone open the profile
- * (`profileRoute`, pushed over Contatos) in the list's place. The browser can't read the agenda, so the only way to
+ * (`profileRoute`, pushed over Contatos) in the list's place, as Saldos does at every width. The browser can't read the agenda, so the only way to
  * bring someone new is a group's link.
  */
 export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
@@ -41,10 +42,10 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   useEffect(() => {
     presenter?.setDetailPaneShown(isWide)
   }, [presenter, isWide])
-  if (!presenter || !state) return null
-
+  // Why: the profile reads only its own state, so it never waits for Contatos' (unread when opened from Saldos).
   const personKey = profileRoute?.personKey
-  if (personKey) return <ProfileOverList key={personKey} contacts={presenter} state={state} personKey={personKey} />
+  if (personKey) return <ProfileOverList key={personKey} personKey={personKey} />
+  if (!presenter || !state) return null
   return (
     <HomeShell
       selected="contacts"
@@ -66,25 +67,31 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   )
 }
 
-/** Tablet and phone: the profile in the list's place, still in the home's frame with Contatos selected. */
-function ProfileOverList({ contacts, state, personKey }: { contacts: ContactsPresenter; state: JsContactsState; personKey: string }) {
+/**
+ * The profile in its own page, still in the home's frame with the tab it was opened from selected: Contatos on a tablet
+ * and a phone, Saldos for a face tapped there. The frame's tabs go through the sidebar, which opens any tab from
+ * whichever is under the profile.
+ */
+function ProfileOverList({ personKey }: { personKey: string }) {
   const profile = useContactProfile(personKey)
-  // Why: Contatos' tab events close the profile first, as a tab bar does (ContactsViewModel).
+  // Why: the frame waits for the profile, so it never selects Contatos before the tab it was opened from.
+  if (!profile.state) return null
+  const homeTab = profile.state.homeTab as HomeTab
   return (
-    <HomeShell
-      selected="contacts"
-      profile={state}
-      activityUnreadCount={state.activityUnreadCount}
-      onTab={(tab) => tabEvents[tab]?.(contacts)}
-      onProfile={() => contacts.openProfile()}
-    >
+    <PageShell selected={homeTab} phoneBars="home">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
-        <h1 className="sr-only">{t('contacts_title')}</h1>
-        {profile.presenter && profile.state?.contact && (
-          <ContactProfileView presenter={profile.presenter} state={profile.state} contact={profile.state.contact} onBack={() => profile.presenter?.back()} />
+        <h1 className="sr-only">{homeTabLabel(homeTab)}</h1>
+        {profile.presenter && profile.state.contact && (
+          <ContactProfileView
+            presenter={profile.presenter}
+            state={profile.state}
+            contact={profile.state.contact}
+            backLabel={homeTabLabel(homeTab)}
+            onBack={() => profile.presenter?.back()}
+          />
         )}
       </main>
-    </HomeShell>
+    </PageShell>
   )
 }
 
