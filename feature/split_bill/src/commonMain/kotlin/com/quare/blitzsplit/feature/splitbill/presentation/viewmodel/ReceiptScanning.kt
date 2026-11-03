@@ -114,14 +114,18 @@ internal class ReceiptScanning(
         }
         reading = scope.launch {
             val scan = readReceipt(source, state.currency, ReceiptCategoryHints.of(state.categories, categoryTerms()))
-            /*
-             * Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g). A sync
-             * that moved the bill to a group of another currency meanwhile reads the same, so the amounts never land
-             * in a minor unit they weren't read in.
-             */
-            val scanned = (scan as? ReceiptScan.Read)?.takeIf { uiState.value.currency == state.currency }
+            // Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g).
+            val scanned = scan as? ReceiptScan.Read
             if (scanned == null) {
-                fail((scan as? ReceiptScan.Failed)?.failure ?: ReceiptReadFailure.UNREADABLE, source)
+                fail((scan as ReceiptScan.Failed).failure, source)
+                return@launch
+            }
+            /*
+             * Why: a sync moved the bill to a group of another currency meanwhile. The photo was fine, so it is read
+             * again in that currency, and the amounts never land in a minor unit they weren't read in.
+             */
+            if (uiState.value.currency != state.currency) {
+                read(source)
                 return@launch
             }
             val read = scanned.reading

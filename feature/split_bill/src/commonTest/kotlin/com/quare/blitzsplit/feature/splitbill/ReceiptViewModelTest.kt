@@ -829,7 +829,7 @@ class ReceiptViewModelTest {
         }
 
     @Test
-    fun `GIVEN a receipt being read WHEN a sync moves the bill to another currency THEN it reads as unreadable`() =
+    fun `GIVEN a receipt being read WHEN a sync moves the bill to another currency THEN reads it again in that one`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsReads = true)
@@ -843,15 +843,15 @@ class ReceiptViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(
                 BillReceipt(
-                    ReceiptStatus.FAILED,
+                    ReceiptStatus.READING,
                     itemCount = 0,
-                    hasPhoto = false,
-                    error = ReceiptError.UNREADABLE,
+                    hasPhoto = true,
+                    error = null,
                 ),
                 state.receipt,
             )
-            assertTrue(state.offersReceiptRetake)
-            assertFalse(state.offersReceiptRetry)
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), readCurrencies)
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
             assertEquals("", state.amountText)
             assertEquals("", state.description)
         }

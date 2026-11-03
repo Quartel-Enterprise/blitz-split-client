@@ -10,6 +10,10 @@ import io.github.jan.supabase.functions.Functions
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 
+private const val HTTP_PAYLOAD_TOO_LARGE = 413
+private const val HTTP_UNPROCESSABLE = 422
+private const val HTTP_TOO_MANY_REQUESTS = 429
+
 class SupabaseReceiptRemoteDataSource(
     private val functions: Functions,
 ) : ReceiptRemoteDataSource {
@@ -26,13 +30,8 @@ class SupabaseReceiptRemoteDataSource(
                 body = request,
             )
         } catch (exception: RestException) {
-            if (exception.statusCode == HTTP_UNPROCESSABLE) return null
-            // Why: anything else the server answered isn't the photo's fault: its reader is down, not set up or failed.
-            val failure = if (exception.statusCode == HTTP_TOO_MANY_REQUESTS) {
-                ReceiptReadFailure.LIMIT_REACHED
-            } else {
-                ReceiptReadFailure.READER_UNAVAILABLE
-            }
+            val failure = receiptReadFailureOf(exception.statusCode)
+            if (failure == ReceiptReadFailure.UNREADABLE) return null
             throw ReceiptReaderException(failure, exception)
         } catch (exception: HttpRequestException) {
             throw ReceiptReaderException(ReceiptReadFailure.OFFLINE, exception)
@@ -42,7 +41,15 @@ class SupabaseReceiptRemoteDataSource(
 
     private companion object {
         const val READ_RECEIPT_FUNCTION = "read-receipt"
-        const val HTTP_UNPROCESSABLE = 422
-        const val HTTP_TOO_MANY_REQUESTS = 429
     }
+}
+
+/*
+ * Why: what read-receipt answered besides a reading. A photo with no receipt or no total (422) or too large (413) is
+ * the photo's own fault, which another photo can fix; anything else isn't: the reader is down, not set up or failed.
+ */
+internal fun receiptReadFailureOf(statusCode: Int): ReceiptReadFailure = when (statusCode) {
+    HTTP_UNPROCESSABLE, HTTP_PAYLOAD_TOO_LARGE -> ReceiptReadFailure.UNREADABLE
+    HTTP_TOO_MANY_REQUESTS -> ReceiptReadFailure.LIMIT_REACHED
+    else -> ReceiptReadFailure.READER_UNAVAILABLE
 }

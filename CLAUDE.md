@@ -695,9 +695,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     bills go once a sync deletes it; it counts only while the
     description's words choose none and none was picked: "Alimentação › Restaurante pelo cupom fiscal", and "Pelo
     cupom" in the picker's Sugeridas. A receipt that can't be read (no receipt in it, no total, a
-    server error, the reader not set up, a photo the camera failed to take) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
-    na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were and keeping no photo (it may
-    be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
+    photo the camera failed to take) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na
+    foto, ou preencha à mão." with "Tirar outra foto"; what isn't the photo's fault says so apart (Pierre's call,
+    `SplitBillUiState.receiptError`): the reader that didn't answer or isn't set up "O leitor de cupom não respondeu.
+    Não é a sua foto…" and a connection that dropped "Sem conexão. A foto não chegou ao leitor…", both with "Tentar de
+    novo", which sends the same photo again, and the day's 30 reads "Você já leu 30 cupons nas últimas 24 horas…" with
+    no button. Each leaves the fields as they were and keeps no photo (it may be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
     items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Conta's
     "Anexos", badge "Cupom").
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
