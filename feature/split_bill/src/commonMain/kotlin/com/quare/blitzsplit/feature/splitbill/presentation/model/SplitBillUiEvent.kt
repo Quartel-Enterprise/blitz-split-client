@@ -275,6 +275,9 @@ sealed interface SplitBillUiEvent : UiEvent {
         val photo: ByteArray,
     ) : Receipt
 
+    // Why: "Tentar de novo" once the reader didn't answer or the connection dropped: the same photo, read again.
+    data object OnReceiptRetryClicked : Receipt
+
     // Why: the camera or the file picker closed without a photo.
     data object OnReceiptCameraDismissed : Receipt
 

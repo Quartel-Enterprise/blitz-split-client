@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -173,6 +174,7 @@ private fun SplitBillContentReceiptReadingPreview() {
                 status = ReceiptStatus.READING,
                 itemCount = 0,
                 hasPhoto = true,
+                error = null,
             ),
         ),
     )
@@ -187,6 +189,7 @@ private fun SplitBillContentReceiptReadPreview() {
                 status = ReceiptStatus.READ,
                 itemCount = PREVIEW_RECEIPT_ITEMS,
                 hasPhoto = true,
+                error = null,
             ),
         ),
     )
@@ -198,9 +201,10 @@ private fun SplitBillContentReceiptFailedPreview() {
     PreviewSplitBillContent(
         createPreviewBillState(
             receipt = BillReceipt(
-                status = ReceiptStatus.UNREADABLE,
+                status = ReceiptStatus.FAILED,
                 itemCount = 0,
-                hasPhoto = true,
+                hasPhoto = false,
+                error = ReceiptError.READER_UNAVAILABLE,
             ),
         ),
     )

@@ -1,10 +1,12 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +37,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -100,15 +103,16 @@ internal fun ReceiptReadRow(state: SplitBillUiState) {
 }
 
 /*
- * Why: "Não deu para ler o cupom…" with "Tirar outra foto" (7.1g), on top of the form like the conflict's banner; the
- * fields stay as they were, to fill in by hand.
+ * Why: why the receipt read nothing (7.1g), on top of the form like the conflict's banner; the fields stay as they were,
+ * to fill in by hand. "Tirar outra foto" for a photo nothing could be read from, "Tentar de novo" sends the same photo
+ * when the reader didn't answer or the connection dropped, and the day's limit offers neither.
  */
 @Composable
 internal fun ReceiptFailureBanner(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    if (!state.showsReceiptFailure) return
+    val failure = state.receiptError ?: return
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,7 +126,7 @@ internal fun ReceiptFailureBanner(
                 start = 16.dp,
                 top = 14.dp,
                 end = 8.dp,
-                bottom = 6.dp,
+                bottom = if (state.offersReceiptRetake || state.offersReceiptRetry) 6.dp else 14.dp,
             ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -132,20 +136,49 @@ internal fun ReceiptFailureBanner(
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(R.string.split_bill_receipt_failed),
+                    text = stringResource(failure.toMessageRes()),
                     modifier = Modifier.padding(end = 8.dp),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                TextButton(
-                    onClick = { onEvent(SplitBillUiEvent.OnScanReceiptClicked) },
-                    enabled = state.canScanReceipt,
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    Text(stringResource(R.string.split_bill_receipt_retake))
+                when {
+                    state.offersReceiptRetake -> ReceiptFailureAction(
+                        label = R.string.split_bill_receipt_retake,
+                        enabled = state.canScanReceipt,
+                        onClick = { onEvent(SplitBillUiEvent.OnScanReceiptClicked) },
+                    )
+
+                    state.offersReceiptRetry -> ReceiptFailureAction(
+                        label = R.string.split_bill_receipt_retry,
+                        enabled = state.canScanReceipt,
+                        onClick = { onEvent(SplitBillUiEvent.OnReceiptRetryClicked) },
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ColumnScope.ReceiptFailureAction(
+    @StringRes label: Int,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.align(Alignment.End),
+    ) {
+        Text(stringResource(label))
+    }
+}
+
+@StringRes
+private fun ReceiptError.toMessageRes(): Int = when (this) {
+    ReceiptError.UNREADABLE -> R.string.split_bill_receipt_failed
+    ReceiptError.READER_UNAVAILABLE -> R.string.split_bill_receipt_reader_unavailable
+    ReceiptError.LIMIT_REACHED -> R.string.split_bill_receipt_limit_reached
+    ReceiptError.OFFLINE -> R.string.split_bill_receipt_offline
 }
 
 /*

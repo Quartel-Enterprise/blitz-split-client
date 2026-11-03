@@ -384,9 +384,9 @@ private struct PhoneSplitBill: View {
             }
             .listRowBackground(Palette.accent.opacity(0.12))
         }
-        if state.showsReceiptFailure {
+        if let error = state.receiptError {
             Section {
-                ReceiptFailureText(model: model)
+                ReceiptFailureText(model: model, error: error)
                     .font(.subheadline)
             }
             .listRowBackground(Palette.negative.opacity(0.12))
@@ -980,11 +980,11 @@ private struct MacBillForm: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
-            if state.showsReceiptFailure {
+            if let error = state.receiptError {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Couldn't read the receipt")
+                    Text(ReceiptFailureText.title(of: error))
                         .fontWeight(.semibold)
-                    ReceiptFailureText(model: model)
+                    ReceiptFailureText(model: model, error: error)
                 }
                 .font(.callout)
                 .padding(.horizontal, 12)

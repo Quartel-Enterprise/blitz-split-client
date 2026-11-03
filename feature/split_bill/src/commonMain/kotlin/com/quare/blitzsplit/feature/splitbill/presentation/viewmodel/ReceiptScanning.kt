@@ -6,11 +6,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.image.BillImage
+import com.quare.blitzsplit.feature.splitbill.presentation.mapper.toReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -43,6 +46,9 @@ internal class ReceiptScanning(
     // Why: the read in flight, which a new photo or removing it cancels so an older answer never fills the bill.
     private var reading: Job? = null
 
+    // Why: the photo the reader didn't answer for, which "Tentar de novo" sends again; held here, never in the state.
+    private var unansweredSource: ByteArray? = null
+
     /*
      * Why: the receipt's items with nobody marked yet (7.5b), which "Itens" opens with until the bill has its own
      * items; null without a receipt that lists any.
@@ -62,6 +68,10 @@ internal class ReceiptScanning(
             }
 
             is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo)
+
+            SplitBillUiEvent.OnReceiptRetryClicked -> unansweredSource?.let { source ->
+                if (uiState.value.offersReceiptRetry && uiState.value.canScanReceipt) read(source)
+            }
 
             SplitBillUiEvent.OnReceiptCameraDismissed -> uiState.update { it.copy(isReceiptCameraRequested = false) }
 
@@ -90,6 +100,7 @@ internal class ReceiptScanning(
         reading?.cancel()
         photo = null
         items = null
+        unansweredSource = null
         uiState.update {
             it.copy(
                 isReceiptCameraRequested = false,
@@ -97,30 +108,28 @@ internal class ReceiptScanning(
                     status = ReceiptStatus.READING,
                     itemCount = 0,
                     hasPhoto = true,
+                    error = null,
                 ),
             )
         }
         reading = scope.launch {
             val scan = readReceipt(source, state.currency, ReceiptCategoryHints.of(state.categories, categoryTerms()))
-            /*
-             * Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g). A sync
-             * that moved the bill to a group of another currency meanwhile reads the same, so the amounts never land
-             * in a minor unit they weren't read in.
-             */
-            val read = scan.reading?.takeIf { uiState.value.currency == state.currency }
-            if (read == null) {
-                uiState.update {
-                    it.copy(
-                        receipt = BillReceipt(
-                            status = ReceiptStatus.UNREADABLE,
-                            itemCount = 0,
-                            hasPhoto = false,
-                        ),
-                    )
-                }
+            // Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g).
+            val scanned = scan as? ReceiptScan.Read
+            if (scanned == null) {
+                fail((scan as ReceiptScan.Failed).failure, source)
                 return@launch
             }
-            photo = scan.photo
+            /*
+             * Why: a sync moved the bill to a group of another currency meanwhile. The photo was fine, so it is read
+             * again in that currency, and the amounts never land in a minor unit they weren't read in.
+             */
+            if (uiState.value.currency != state.currency) {
+                read(source)
+                return@launch
+            }
+            val read = scanned.reading
+            photo = scanned.photo
             items = read.toBillItems()
             itemsCurrency = state.currency
             uiState.update {
@@ -129,10 +138,29 @@ internal class ReceiptScanning(
                         status = ReceiptStatus.READ,
                         itemCount = read.items.size,
                         hasPhoto = true,
+                        error = null,
                     ),
                 )
             }
             onRead(read, state)
+        }
+    }
+
+    private fun fail(
+        failure: ReceiptReadFailure,
+        source: ByteArray,
+    ) {
+        val error = failure.toReceiptError()
+        unansweredSource = source.takeIf { error.canRetry }
+        uiState.update {
+            it.copy(
+                receipt = BillReceipt(
+                    status = ReceiptStatus.FAILED,
+                    itemCount = 0,
+                    hasPhoto = false,
+                    error = error,
+                ),
+            )
         }
     }
 
@@ -141,6 +169,7 @@ internal class ReceiptScanning(
         reading = null
         photo = null
         items = null
+        unansweredSource = null
         uiState.update { it.copy(receipt = null) }
         onRemoved()
     }
