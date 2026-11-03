@@ -85,8 +85,13 @@ struct HomeView: View {
             } else if state.showsHome {
                 content
             } else {
-                // Nothing until Room is read, so the first use's card never flashes before the groups
-                Color.clear
+                // Room not read yet: Início's shape shimmers, so the first use's card never flashes before the groups
+                ShimmerScreen {
+                    HomeFacesPlaceholder(faceSize: 56)
+                    ShimmerCard()
+                        .background(Palette.card, in: .rect(cornerRadius: 26))
+                    ShimmerList(count: 3, leading: .badge)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -301,24 +306,34 @@ struct HomeView: View {
         )
     }
 
+    /// The faces shimmer until they are read (nil), and while the first download may still bring more.
     @ViewBuilder
     private var people: some View {
-        if state.showsPeople || state.isFirstDownload {
+        let people = state.people.loaded(as: [HomePerson].self)
+        if state.showsPeople || people == nil || state.isFirstDownload {
             #if os(macOS)
-            HomePeopleSection(people: state.people, isLoading: state.isFirstDownload, faceSize: 44, send: model.send)
+            HomePeopleSection(people: people, isLoading: state.isFirstDownload, faceSize: 44, send: model.send)
             #else
-            HomePeopleSection(people: state.people, isLoading: state.isFirstDownload, faceSize: 56, send: model.send)
+            HomePeopleSection(people: people, isLoading: state.isFirstDownload, faceSize: 56, send: model.send)
             #endif
         }
     }
 
+    /// "Overall balance" shimmers with its two buttons until it is read: never "Nothing to receive" before it.
+    @ViewBuilder
     private func summary(stacksButtons: Bool) -> some View {
-        HomeSummaryCard(
-            summary: state.summary,
-            isFirstDownload: state.isFirstDownload,
-            stacksButtons: stacksButtons,
-            send: model.send,
-        )
+        if let summary = state.summary.loaded(as: HomeSummary.self) {
+            HomeSummaryCard(
+                summary: summary,
+                isFirstDownload: state.isFirstDownload,
+                stacksButtons: stacksButtons,
+                send: model.send,
+            )
+        } else {
+            ShimmerCard()
+                .shimmering()
+                .background(Palette.card, in: .rect(cornerRadius: 26))
+        }
     }
 
     @ViewBuilder

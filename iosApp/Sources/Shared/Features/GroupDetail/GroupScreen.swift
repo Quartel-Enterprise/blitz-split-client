@@ -40,7 +40,7 @@ extension View {
     /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and the tab's main
     /// button, "Split a bill" or Members' "Add person" (the bottom toolbar's prominent glass item on iPhone, iOS has no
     /// FAB; the window toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the
-    /// screen is loaded, which disables the buttons. Offline, the menu's Leave and Delete need the internet; the
+    /// screen is loaded, which keeps the buttons out of the bars rather than drawing them disabled. Offline, the menu's Leave and Delete need the internet; the
     /// dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
@@ -124,23 +124,23 @@ private struct GroupScreenBars: ViewModifier {
         }
         #else
         // A narrow window draws them below the toolbar instead (`MacGroupTop`)
-        if !isNarrowWindow {
+        if !isNarrowWindow, isLoaded {
             ToolbarItem(placement: .principal) {
                 GroupTabsPicker(selected: tab, onSelect: actions.select)
-                    .disabled(!isLoaded)
             }
         }
         #endif
-        ToolbarItem(placement: .primaryAction) {
-            Button("Statistics", systemImage: "chart.bar", action: actions.stats)
-                .disabled(!isLoaded)
+        // The group not read yet: no button stands disabled in the bars, they come with it
+        if isLoaded {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Statistics", systemImage: "chart.bar", action: actions.stats)
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
+                    .invitePopover(host: host, isAnchor: tab != .members)
+            }
+            ToolbarItem(placement: .primaryAction) { groupMenu }
         }
-        ToolbarItem(placement: .primaryAction) {
-            Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
-                .disabled(!isLoaded)
-                .invitePopover(host: host, isAnchor: tab != .members)
-        }
-        ToolbarItem(placement: .primaryAction) { groupMenu }
         if showsSplitBill {
             mainButton { splitBillButton }
         } else if let addPerson {
@@ -183,7 +183,6 @@ private struct GroupScreenBars: ViewModifier {
             }
             .disabled(!isOnline)
         }
-        .disabled(!isLoaded)
     }
 
     /// A menu shows a label's second line as its subtitle: "Needs internet" while offline.
@@ -233,6 +232,47 @@ private struct GroupScreenBars: ViewModifier {
         horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
     }
     #endif
+}
+
+/// "Your balance in this group" once there is a bill; while the account's copy isn't whole the balance isn't known yet,
+/// so the card shimmers in its slot.
+struct GroupBalanceSlot: View {
+    let header: GroupHeader
+    let awaitsFullSync: Bool
+    let onSettle: () -> Void
+
+    var body: some View {
+        if let balance = header.myBalance {
+            BalanceCard(
+                balance: balance,
+                currency: header.currency,
+                isEveryoneSettled: header.isEveryoneSettled,
+                onSettle: onSettle,
+            )
+        } else if awaitsFullSync {
+            ShimmerCard(showsButtons: false)
+                .shimmering()
+                .background(Palette.card, in: .rect(cornerRadius: 26))
+        }
+    }
+}
+
+/// Despesas' or Saldos' rows while the account's first full sync may still bring bills, in the empty state's place,
+/// with "No internet. Your data shows up once you're back online." under them while that sync waits offline.
+struct GroupLoadingRows: View {
+    let isWaitingForInternet: Bool
+    let leading: ShimmerRow.Leading
+
+    var body: some View {
+        Section {
+            ShimmerList(count: 4, leading: leading)
+                .shimmering()
+        } footer: {
+            if isWaitingForInternet {
+                WaitingForInternetNote()
+            }
+        }
+    }
 }
 
 /// "6 members · $2,418.60 in total" or "6 members · no expenses yet".
@@ -381,6 +421,8 @@ struct BalanceCard: View {
 /// sections below it (3.3, 6.2), on every tab so the header never moves. Only the sections change with the tab.
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
+    /// The account's copy isn't whole: "Your balance in this group" shimmers in its place rather than leaving it out.
+    let awaitsFullSync: Bool
     let hasExpenses: Bool
     let tab: GroupTab
     let usesTwoColumns: Bool
@@ -453,16 +495,8 @@ struct PhoneGroupScaffold<Sections: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    @ViewBuilder
     private var balanceCard: some View {
-        if let balance = header.myBalance {
-            BalanceCard(
-                balance: balance,
-                currency: header.currency,
-                isEveryoneSettled: header.isEveryoneSettled,
-                onSettle: actions.settle,
-            )
-        }
+        GroupBalanceSlot(header: header, awaitsFullSync: awaitsFullSync, onSettle: actions.settle)
     }
 
     private func list(withHeader: Bool) -> some View {
@@ -496,6 +530,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
 /// A narrow window puts the tabs above them, below the toolbar.
 struct MacGroupTop: View {
     let header: GroupHeader
+    let awaitsFullSync: Bool
     let tab: GroupTab
     let actions: GroupScreenActions
 
@@ -518,14 +553,7 @@ struct MacGroupTop: View {
                 GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }
-            if let balance = header.myBalance {
-                BalanceCard(
-                    balance: balance,
-                    currency: header.currency,
-                    isEveryoneSettled: header.isEveryoneSettled,
-                    onSettle: actions.settle,
-                )
-            }
+            GroupBalanceSlot(header: header, awaitsFullSync: awaitsFullSync, onSettle: actions.settle)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

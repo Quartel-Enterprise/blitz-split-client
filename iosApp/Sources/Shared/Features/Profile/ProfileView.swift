@@ -101,25 +101,43 @@ struct ProfileView: View {
     #endif
 
     var body: some View {
-        content
-            .navigationTitle("Profile")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Who sees your profile", systemImage: "info.circle") {
-                        model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
+        Group {
+            if model.state.isLoaded {
+                content
+            } else {
+                // Who you are, the account and the theme not read yet: never "No account" with Connect, nor the
+                // default theme, before them
+                ShimmerScreen {
+                    HStack(spacing: 14) {
+                        ShimmerCircle(size: 64)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ShimmerLine(width: 160, height: 18)
+                            ShimmerLine(width: 110, height: 12)
+                        }
                     }
+                    ShimmerForm(fieldCount: 4)
+                }
+                .background(Palette.groupedBackground)
+            }
+        }
+        .navigationTitle("Profile")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Who sees your profile", systemImage: "info.circle") {
+                    model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
                 }
             }
-            .profileDialogs(model: model)
-            #if os(macOS)
-            .onAppear {
-                if notificationModel == nil { notificationModel = NotificationSettingsModel() }
-            }
-            #endif
-            .dataExporter(json: Binding(
-                get: { model.exportJson },
-                set: { model.exportJson = $0 },
-            ))
+        }
+        .profileDialogs(model: model)
+        #if os(macOS)
+        .onAppear {
+            if notificationModel == nil { notificationModel = NotificationSettingsModel() }
+        }
+        #endif
+        .dataExporter(json: Binding(
+            get: { model.exportJson },
+            set: { model.exportJson = $0 },
+        ))
     }
 
     #if os(macOS)
@@ -264,7 +282,13 @@ private struct PreferencesSection: View {
             } label: {
                 LabeledContent("Notifications") {
                     HStack(spacing: 6) {
-                        Text("\(Int(model.state.activeNotificationCount)) active")
+                        // The choices of a restored account come with its first full sync: no count before them
+                        if let count = model.state.activeNotificationCount.loaded(as: KotlinInt.self) {
+                            Text("\(Int(count.int32Value)) active")
+                        } else {
+                            ShimmerLine(width: 56, height: 12)
+                                .shimmering()
+                        }
                         Image(systemName: "chevron.forward")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.tertiary)
@@ -505,37 +529,50 @@ private struct PaymentKeysSection: View {
 
     var body: some View {
         Section {
-            ForEach(model.state.paymentKeys, id: \.id) { key in
-                Button {
-                    model.send(ProfileUiEventOnPaymentKeyClicked(keyId: key.id))
-                } label: {
-                    PaymentKeyRow(key: key)
+            if let keys = model.state.paymentKeys.loaded(as: [PaymentKeyItem].self) {
+                ForEach(keys, id: \.id) { key in
+                    Button {
+                        model.send(ProfileUiEventOnPaymentKeyClicked(keyId: key.id))
+                    } label: {
+                        PaymentKeyRow(key: key)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+            } else {
+                // A restored account's keys come with its first full sync: never "no key" before them
+                ShimmerList(count: 2, leading: .badge, showsTrailing: false)
+                    .shimmering()
             }
-            #if os(macOS)
-            HStack {
-                AddPaymentKeyMenu(model: model) {
-                    Image(systemName: "plus")
-                        .frame(width: 20, height: 20)
-                        .contentShape(.rect)
-                }
-                .menuStyle(.borderlessButton)
-                .menuIndicator(.hidden)
-                .fixedSize()
-                .accessibilityLabel("Add a Pix or Bitcoin key")
-                Spacer()
+            if model.state.canAddPaymentKey {
+                addKey
             }
-            #else
-            AddPaymentKeyMenu(model: model) {
-                Label("Add a Pix or Bitcoin key", systemImage: "plus.circle.fill")
-            }
-            #endif
         } header: {
             Text("Keys to receive payments")
         } footer: {
             Text("Whoever owes you sees your default key when settling up.")
         }
+    }
+
+    @ViewBuilder
+    private var addKey: some View {
+        #if os(macOS)
+        HStack {
+            AddPaymentKeyMenu(model: model) {
+                Image(systemName: "plus")
+                    .frame(width: 20, height: 20)
+                    .contentShape(.rect)
+            }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+            .fixedSize()
+            .accessibilityLabel("Add a Pix or Bitcoin key")
+            Spacer()
+        }
+        #else
+        AddPaymentKeyMenu(model: model) {
+            Label("Add a Pix or Bitcoin key", systemImage: "plus.circle.fill")
+        }
+        #endif
     }
 }
 

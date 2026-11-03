@@ -141,10 +141,14 @@ struct SplitBillView: View {
                 PhoneSplitBill(model: model)
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
-                    #if os(macOS)
-                    .frame(width: 520, height: 480)
-                    #endif
+                // The group and its people not read yet: the bill's fields shimmer in place
+                ShimmerScreen {
+                    ShimmerForm(fieldCount: 5)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
+                #if os(macOS)
+                .frame(width: 520, height: 480)
+                #endif
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)

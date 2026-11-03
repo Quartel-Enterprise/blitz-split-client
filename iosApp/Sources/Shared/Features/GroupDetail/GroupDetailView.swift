@@ -117,6 +117,7 @@ struct GroupDetailView: View {
                 #else
                 PhoneGroupScaffold(
                     header: model.state.header,
+                    awaitsFullSync: model.state.awaitsFullSync,
                     hasExpenses: model.state.hasBills,
                     tab: model.tab,
                     usesTwoColumns: verticalSizeClass == .compact,
@@ -132,7 +133,21 @@ struct GroupDetailView: View {
                 }
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The group not read yet: its header, its balance and its bills shimmer in place
+                ShimmerScreen {
+                    HStack(spacing: 14) {
+                        ShimmerBlock(width: 56, height: 56, cornerRadius: 18)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ShimmerLine(width: 180, height: 22)
+                            ShimmerLine(width: 120, height: 12)
+                        }
+                    }
+                    ShimmerCard(showsButtons: false)
+                        .background(Palette.card, in: .rect(cornerRadius: 26))
+                    ShimmerBlock(height: 32, cornerRadius: 16)
+                    ShimmerList(count: 4, leading: .badge)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .groupScreenBars(
@@ -373,6 +388,9 @@ private struct PhoneExpenseSections: View {
             }
             .listRowBackground(Color.clear)
         }
+        if state.isLoadingBills {
+            GroupLoadingRows(isWaitingForInternet: state.isWaitingForInternet, leading: .badge)
+        }
         ForEach(state.days, id: \.dayStartMillis) { day in
             Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
                 ForEach(day.entries, id: \.id) { entry in
@@ -498,7 +516,12 @@ private struct MacGroupScreen: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            MacGroupTop(header: model.state.header, tab: model.tab, actions: model.actions)
+            MacGroupTop(
+                header: model.state.header,
+                awaitsFullSync: model.state.awaitsFullSync,
+                tab: model.tab,
+                actions: model.actions,
+            )
             switch model.tab {
             case .expenses: MacGroupExpenses(model: model)
             case .balances:
@@ -547,6 +570,12 @@ private struct MacGroupExpenses: View {
             if state.isEmpty {
                 EmptyExpenses { model.send($0) }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if state.isLoadingBills {
+                // Bills may still be coming with the account's first full sync: never "No expenses yet" before them
+                List {
+                    GroupLoadingRows(isWaitingForInternet: state.isWaitingForInternet, leading: .badge)
+                }
+                .scrollContentBackground(.hidden)
             } else {
                 table
             }

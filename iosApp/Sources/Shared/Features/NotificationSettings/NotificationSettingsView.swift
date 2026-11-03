@@ -117,20 +117,23 @@ struct NotificationSettingsSections: View {
                 }
             }
             Section {
-                ForEach(state.types, id: \.self) { type in
-                    Toggle(isOn: Binding(
-                        get: { state.isEnabled(type: type) },
-                        set: { model.send(NotificationSettingsUiEventOnToggled(type: type, isEnabled: $0)) },
-                    )) {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(type.title)
-                            Text(type.detail)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                if state.showsTogglesLoading {
+                    // The choices (a restored account's come with its first full sync) or the system's permission
+                    // not known yet: no toggle shows a default that a tap would save over the server's
+                    ForEach(state.types, id: \.self) { _ in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 6) {
+                                ShimmerLine(width: 180, height: 12)
+                                ShimmerLine(width: 120, height: 10)
+                            }
+                            Spacer()
+                            ShimmerBlock(width: 50, height: 30, cornerRadius: 15)
                         }
+                        .shimmering()
                     }
+                } else {
+                    toggles(state)
                 }
-                .disabled(!state.areTogglesEnabled)
             } header: {
                 Group {
                     #if os(macOS)
@@ -145,6 +148,23 @@ struct NotificationSettingsSections: View {
                 Text("Notices arrive when there's internet. To mute a group, use the menu inside it.")
             }
         }
+    }
+
+    private func toggles(_ state: NotificationSettingsUiState) -> some View {
+        ForEach(state.types, id: \.self) { type in
+            Toggle(isOn: Binding(
+                get: { state.isEnabled(type: type) },
+                set: { model.send(NotificationSettingsUiEventOnToggled(type: type, isEnabled: $0)) },
+            )) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(type.title)
+                    Text(type.detail)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .disabled(!state.areTogglesEnabled)
     }
 }
 

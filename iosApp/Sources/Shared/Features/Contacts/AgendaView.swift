@@ -196,7 +196,18 @@ private struct AgendaList: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            if state.showsNoResults {
+            if state.isLoadingContacts {
+                // Still reading the agenda: never "In your contacts · 0" before it
+                Section {
+                    ShimmerList(count: 6, showsTrailing: false)
+                        .shimmering()
+                }
+            } else if state.showsEmptyAgenda {
+                Section {
+                    Text("Your contacts are empty. The invite link works without them.")
+                        .foregroundStyle(.secondary)
+                }
+            } else if state.showsNoResults {
                 Section {
                     ContentUnavailableView.search(text: state.query)
                 }

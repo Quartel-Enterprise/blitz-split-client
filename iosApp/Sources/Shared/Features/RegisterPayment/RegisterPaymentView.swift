@@ -95,6 +95,19 @@ struct RegisterPaymentView: View {
                     #else
                     PhonePayWithKey(model: model)
                     #endif
+                } else if model.state.isLoadingReceiverKeys {
+                    // Whether Ana has a key only the account's full sync says: neither "Pay Ana" nor the form yet
+                    ShimmerScreen(isWaitingForInternet: model.state.isWaitingForInternet) {
+                        ShimmerRow(showsTrailing: true)
+                        ShimmerBlock(height: 72, cornerRadius: 20)
+                        ShimmerBlock(width: 180, height: 180, cornerRadius: 20)
+                            .frame(maxWidth: .infinity)
+                        ShimmerBlock(height: 50, cornerRadius: 25)
+                    }
+                    .background(Palette.groupedBackground.ignoresSafeArea())
+                    #if os(macOS)
+                    .frame(width: 440, height: 520)
+                    #endif
                 } else {
                     #if os(macOS)
                     MacRegisterPayment(model: model)
@@ -103,10 +116,20 @@ struct RegisterPaymentView: View {
                     #endif
                 }
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
-                    #if os(macOS)
-                    .frame(width: 480, height: 420)
-                    #endif
+                // The pair and the debt not read yet: who pays whom and the amount shimmer in place
+                ShimmerScreen {
+                    HStack(spacing: 16) {
+                        ShimmerCircle(size: 48)
+                        ShimmerLine(width: 40, height: 10)
+                        ShimmerCircle(size: 48)
+                    }
+                    .frame(maxWidth: .infinity)
+                    ShimmerForm(fieldCount: 3)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
+                #if os(macOS)
+                .frame(width: 480, height: 420)
+                #endif
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)

@@ -81,7 +81,12 @@ struct DefaultSplitView: View {
                     .formStyle(.grouped)
                 }
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The group's default not read yet: the ways to split and the people shimmer in place
+                ShimmerScreen {
+                    ShimmerBlock(height: 36, cornerRadius: 18)
+                    ShimmerList(count: 4)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .scrollDismissesKeyboard(.interactively)
