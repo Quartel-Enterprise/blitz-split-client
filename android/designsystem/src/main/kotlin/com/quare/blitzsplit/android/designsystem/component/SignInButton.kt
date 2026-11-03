@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -16,10 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
+
+private val logoSize = 20.dp
 
 @Composable
 fun GoogleSignInButton(
@@ -40,8 +45,15 @@ fun GoogleSignInButton(
         SignInButtonLabelRow(
             label = label,
             isLoading = isLoading,
-            leading = "G",
-        )
+        ) {
+            // Why: Google's logo keeps its four colors, so it isn't tinted and only fades as the button's content does
+            Image(
+                painter = painterResource(R.drawable.ic_google_logo),
+                contentDescription = null,
+                modifier = Modifier.size(logoSize),
+                alpha = LocalContentColor.current.alpha,
+            )
+        }
     }
 }
 
@@ -68,8 +80,13 @@ fun AppleSignInButton(
         SignInButtonLabelRow(
             label = label,
             isLoading = isLoading,
-            leading = null,
-        )
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_apple_logo),
+                contentDescription = null,
+                modifier = Modifier.size(logoSize),
+            )
+        }
     }
 }
 
@@ -77,7 +94,7 @@ fun AppleSignInButton(
 private fun SignInButtonLabelRow(
     label: String,
     isLoading: Boolean,
-    leading: String?,
+    logo: @Composable () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -85,14 +102,11 @@ private fun SignInButtonLabelRow(
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(logoSize),
                 strokeWidth = 2.dp,
             )
-        } else if (leading != null) {
-            Text(
-                text = leading,
-                fontWeight = FontWeight.ExtraBold,
-            )
+        } else {
+            logo()
         }
         Text(
             text = label,
