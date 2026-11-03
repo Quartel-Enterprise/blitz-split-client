@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -470,7 +469,7 @@ private fun BalanceActionsSection(
                         onClick = { onEvent(ContactProfileUiEvent.OnReceivedClicked) },
                         modifier = buttonModifier.weight(1f),
                     ) {
-                        ButtonContent(Icons.Outlined.Download, stringResource(R.string.contacts_received))
+                        ButtonContent(Icons.Outlined.Check, stringResource(R.string.contacts_received))
                     }
                 }
             }

@@ -1,4 +1,4 @@
-import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Download, Ellipsis, EyeOff, Eye, Info, Merge, ReceiptText, UserPlus, Wallet, WifiOff } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Ellipsis, EyeOff, Eye, Info, Merge, ReceiptText, UserPlus, Wallet, WifiOff } from 'lucide-react'
 import {
   ContactProfilePresenter,
   type JsContact,
@@ -230,7 +230,7 @@ function BalanceSection({ presenter, state, contact }: { presenter: ContactProfi
       : (contact.groups[0]?.name ?? '')
   const actions = [
     state.canCharge && { key: 'charge', label: t('globalBalances_charge'), aria: t('globalBalances_chargePerson', { name }), icon: <CircleDollarSign />, isMain: true, onClick: () => presenter.charge() },
-    state.canReceive && { key: 'received', label: t('globalBalances_received'), aria: t('globalBalances_receivedFrom', { name }), icon: <Download />, isMain: false, onClick: () => presenter.received() },
+    state.canReceive && { key: 'received', label: t('globalBalances_received'), aria: t('globalBalances_receivedFrom', { name }), icon: <Check />, isMain: false, onClick: () => presenter.received() },
     state.canSettle && { key: 'settle', label: t('globalBalances_settle'), aria: t('globalBalances_settleWith', { name }), icon: <Check />, isMain: true, onClick: () => presenter.settle() },
     { key: 'add', label: t('contactProfile_addToGroup'), aria: t('contactProfile_addToGroupPerson', { name }), icon: <UserPlus />, isMain: false, onClick: () => presenter.addToGroup() },
   ].filter((action) => action !== false)
