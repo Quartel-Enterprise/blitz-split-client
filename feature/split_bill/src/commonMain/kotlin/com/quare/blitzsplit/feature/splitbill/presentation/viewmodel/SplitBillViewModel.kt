@@ -450,7 +450,7 @@ class SplitBillViewModel(
                 defaultSplit = group.defaultSplit,
                 followsDefault = !state.isEditing && !hasPickedSplit,
             )
-            // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
+            // Why: another currency converts the typed amount to its own minor unit, which the split must add up to.
             withSplit.withItemsAmong(people).withBillTotal()
         }
     }

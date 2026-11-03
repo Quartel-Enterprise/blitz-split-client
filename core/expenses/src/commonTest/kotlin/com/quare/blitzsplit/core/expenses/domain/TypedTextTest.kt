@@ -583,4 +583,40 @@ class TypedTextTest {
         // Then
         assertEquals("0,51", kept)
     }
+
+    @Test
+    fun `GIVEN a field a key behind the amount WHEN typing the next digit THEN it comes in from the right`() {
+        // Given
+        val previous = "0,12"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "0,0123", GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("1,23", kept)
+    }
+
+    @Test
+    fun `GIVEN a field a key behind the first digit WHEN typing the second THEN it comes in from the right`() {
+        // Given
+        val previous = "0,01"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "12", GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("0,12", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting cents after a zero THEN reads them as tens of cents`() {
+        // Given
+        val pasted = "0,5"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("0,50", kept)
+    }
 }

@@ -68,16 +68,20 @@ object TypedText {
 
     /*
      * Why: one key, a digit more or less than the field held, or the field selected whole and one key typed. Digits,
-     * not the text, since a field may still show a separator or letter refused before (a Mac's keyboard).
+     * not the text, since a field may still show a separator or letter refused before (a Mac's keyboard), and without
+     * the zeros the mask pads with in front, since a field whose text lags the ViewModel's by a key ("0,012" while it
+     * holds "0,12", two keys typed in one frame) still sends one key more. An empty field takes one key at a time, so
+     * more is a paste ("0,5" is 50 cents).
      */
     private fun isKeystroke(
         previous: String,
         typed: String,
     ): Boolean {
         if (typed.length <= 1) return true
-        val before = previous.filter { it.isDigit() }
-        val after = typed.filter { it.isDigit() }
+        val before = previous.filter { it.isDigit() }.trimStart('0')
+        val after = typed.filter { it.isDigit() }.trimStart('0')
         if (after == before) return true
+        if (previous.isEmpty()) return false
         val (longer, shorter) = if (after.length > before.length) after to before else before to after
         if (longer.length - shorter.length != 1) return false
         val firstDifference = shorter.indices.firstOrNull { longer[it] != shorter[it] } ?: shorter.length
