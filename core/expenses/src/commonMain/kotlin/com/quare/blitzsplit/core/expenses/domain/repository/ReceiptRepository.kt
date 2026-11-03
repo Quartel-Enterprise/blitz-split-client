@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.repository
 
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.model.GroupCurrency
 
@@ -9,5 +10,6 @@ fun interface ReceiptRepository {
     suspend fun readReceipt(
         jpeg: ByteArray,
         currency: GroupCurrency,
+        hints: ReceiptCategoryHints,
     ): Result<ReceiptReading?>
 }

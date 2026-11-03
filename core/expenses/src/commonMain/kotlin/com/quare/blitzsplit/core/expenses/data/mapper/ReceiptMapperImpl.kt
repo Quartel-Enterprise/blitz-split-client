@@ -19,13 +19,14 @@ class ReceiptMapperImpl : ReceiptMapper {
     override fun toDomain(
         dto: ReadReceiptResponseDto,
         currency: GroupCurrency,
+        groupCategoryIds: Set<String>,
     ): ReceiptReading? {
         if (!ExpenseRules.isAmountValid(dto.totalMinor, currency)) return null
         val date = dto.date?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
         return ReceiptReading(
             totalMinor = dto.totalMinor,
             description = dto.description?.let(::toDescriptionOrNull),
-            categoryId = AppCategory.fromKeyOrNull(dto.category)?.key,
+            categoryId = dto.category?.takeIf { AppCategory.fromKeyOrNull(it) != null || it in groupCategoryIds },
             date = date,
             time = dto.time?.takeIf { date != null }?.let { runCatching { LocalTime.parse(it) }.getOrNull() },
             items = dto.items

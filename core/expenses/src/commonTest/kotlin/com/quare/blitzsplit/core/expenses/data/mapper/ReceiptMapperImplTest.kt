@@ -22,7 +22,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto()
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(
@@ -90,7 +90,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -111,7 +111,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 0L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNull(reading)
@@ -123,7 +123,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = -8_743L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNull(reading)
@@ -135,7 +135,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 1L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(1L, reading?.totalMinor)
@@ -147,7 +147,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 10_000_000_000L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(10_000_000_000L, reading?.totalMinor)
@@ -159,7 +159,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 10_000_000_001L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNull(reading)
@@ -171,7 +171,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 100_000_001L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.JPY)
+        val reading = mapper.toDomain(dto, GroupCurrency.JPY, emptySet())
 
         // Then
         assertNull(reading)
@@ -183,7 +183,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(totalMinor = 100_000_000L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.JPY)
+        val reading = mapper.toDomain(dto, GroupCurrency.JPY, emptySet())
 
         // Then
         assertEquals(100_000_000L, reading?.totalMinor)
@@ -195,7 +195,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = "  Supermercado Bom Preço \n")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals("Supermercado Bom Preço", reading?.description)
@@ -207,7 +207,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = "   ")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -220,7 +220,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = null)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -233,7 +233,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = "A".repeat(150))
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals("A".repeat(100), reading?.description)
@@ -245,7 +245,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = "B".repeat(99) + " Filial Centro")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals("B".repeat(99), reading?.description)
@@ -257,7 +257,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(description = "C".repeat(99) + "🛒 mercado")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals("C".repeat(99), reading?.description)
@@ -269,7 +269,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(category = "food")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals("food", reading?.categoryId)
@@ -281,7 +281,70 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(category = "food.supermarket")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
+
+        // Then
+        assertNotNull(reading)
+        assertNull(reading.categoryId)
+    }
+
+    @Test
+    fun `GIVEN an app category and group categories listed WHEN mapping the reading THEN keeps the app category`() {
+        // Given
+        val dto = supermarketDto(category = "food.market")
+
+        // When
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, setOf("pet", "reforma"))
+
+        // Then
+        assertEquals("food.market", reading?.categoryId)
+    }
+
+    @Test
+    fun `GIVEN one of the group categories listed WHEN mapping the reading THEN keeps it`() {
+        // Given
+        val dto = supermarketDto(category = "pet")
+
+        // When
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, setOf("pet", "reforma"))
+
+        // Then
+        assertEquals("pet", reading?.categoryId)
+    }
+
+    @Test
+    fun `GIVEN a group category id that was not listed WHEN mapping the reading THEN reads no category`() {
+        // Given
+        val dto = supermarketDto(category = "praia")
+
+        // When
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, setOf("pet", "reforma"))
+
+        // Then
+        assertNotNull(reading)
+        assertNull(reading.categoryId)
+    }
+
+    @Test
+    fun `GIVEN a group category id and no group category listed WHEN mapping the reading THEN reads no category`() {
+        // Given
+        val dto = supermarketDto(category = "pet")
+
+        // When
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
+
+        // Then
+        assertNotNull(reading)
+        assertNull(reading.categoryId)
+    }
+
+    @Test
+    fun `GIVEN an unknown key and group categories listed WHEN mapping the reading THEN reads no category`() {
+        // Given
+        val dto = supermarketDto(category = "food.supermarket")
+
+        // When
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, setOf("pet"))
 
         // Then
         assertNotNull(reading)
@@ -294,7 +357,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(category = null)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -310,7 +373,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -325,7 +388,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(date = "30/10/2026")
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -341,7 +404,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -358,7 +421,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -375,7 +438,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -402,7 +465,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(listOf("ARROZ TIPO 1 5KG"), reading?.items?.map { it.name })
@@ -422,7 +485,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(listOf("LEITE INTEGRAL 1L"), reading?.items?.map { it.name })
@@ -442,7 +505,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(listOf("D".repeat(60)), reading?.items?.map { it.name })
@@ -462,7 +525,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(emptyList(), reading?.items)
@@ -482,7 +545,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(emptyList(), reading?.items)
@@ -502,7 +565,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(listOf(ReceiptItem("PREGO 2CM", 999L, 5L)), reading?.items)
@@ -522,7 +585,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(emptyList(), reading?.items)
@@ -542,7 +605,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(emptyList(), reading?.items)
@@ -562,7 +625,7 @@ class ReceiptMapperImplTest {
         )
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -577,7 +640,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(items = emptyList())
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertNotNull(reading)
@@ -591,7 +654,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(servicePercent = -10L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(0L, reading?.servicePercent)
@@ -603,7 +666,7 @@ class ReceiptMapperImplTest {
         val dto = supermarketDto(servicePercent = 150L)
 
         // When
-        val reading = mapper.toDomain(dto, GroupCurrency.BRL)
+        val reading = mapper.toDomain(dto, GroupCurrency.BRL, emptySet())
 
         // Then
         assertEquals(100L, reading?.servicePercent)

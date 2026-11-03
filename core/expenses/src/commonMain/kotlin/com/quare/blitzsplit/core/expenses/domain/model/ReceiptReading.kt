@@ -9,7 +9,7 @@ data class ReceiptReading(
     val totalMinor: Long,
     // Why: the place, "Supermercado Bom Preço", which becomes the bill's description; null when not printed.
     val description: String?,
-    // Why: one of the app's category keys, suggested by the place; null when none fits.
+    // Why: an app category's key or a group category's id the read was sent; null when none fits.
     val categoryId: String?,
     val date: LocalDate?,
     // Why: printed beside the date, null without one.

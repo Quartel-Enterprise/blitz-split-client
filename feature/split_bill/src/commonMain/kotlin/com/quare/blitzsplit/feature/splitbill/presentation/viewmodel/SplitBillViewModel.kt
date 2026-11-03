@@ -155,6 +155,7 @@ class SplitBillViewModel(
         scope = viewModelScope,
         readReceipt = readReceipt,
         attachBillImage = attachBillImage,
+        categoryTerms = { categoryEditing.terms },
         onRead = { read, before ->
             categoryEditing.rematch {
                 it.withReceiptRead(read, before, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()
