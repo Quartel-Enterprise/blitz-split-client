@@ -215,22 +215,39 @@ class GroupRepositoryImpl(
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
      * instead of its members going up without it. A new group's invite code comes back with it, and a new member's
      * with it: the sync downloads before it uploads, so waiting for the next download would keep "Convidar" and the
-     * personal invite without a link until then. A photo picked here goes up once its group and members did, since
-     * only the group's members may upload it, and its row already names its URL. The members removed here go last,
-     * and leave the device once the server deleted them.
+     * personal invite without a link until then. The members removed here go last, and leave the device once the
+     * server deleted them.
+     *
+     * A photo picked here goes up before the row that names it, so no device fetches its URL while the object still
+     * holds the photo it replaces and caches that one under it. Only a group's members may upload its photo, so a new
+     * group's goes up once the group and its members did, its row naming the URL ahead: there is no older photo to
+     * show meanwhile. A photo that fails holds its group, and only it, for the next round, so the bills still go up,
+     * and its error comes back once the rest did.
      */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
         val pendingMembers = local.getPendingMembers(userId)
-        val pendingGroups = local.getPendingGroups(userId)
         val removedMemberIds = local.getRemovedMemberIds(userId)
-        if (pendingGroups.isNotEmpty()) {
+        val heldGroupIds = mutableSetOf<String>()
+        val photoErrors = mutableListOf<Throwable>()
+        val uploadedPhotoUrls = mutableMapOf<String, String>()
+        val pendingGroups = local.getPendingGroups(userId)
+        pendingGroups.filter { it.isOnServer() }.forEach { group ->
+            uploadPhotoOf(group)
+                ?.onSuccess { uploadedPhotoUrls[group.id] = it }
+                ?.onFailure {
+                    heldGroupIds += group.id
+                    photoErrors += it
+                }
+        }
+        val groupsToPush = pendingGroups.filterNot { it.id in heldGroupIds }
+        if (groupsToPush.isNotEmpty()) {
             remote
                 .upsertGroups(
-                    pendingGroups.map {
+                    groupsToPush.map {
                         mapper.toDto(
                             entity = it,
                             userId = userId,
-                            photoUrl = photoUrlOf(it),
+                            photoUrl = uploadedPhotoUrls[it.id] ?: photoUrlOf(it),
                         )
                     },
                 ).forEach { dto ->
@@ -249,23 +266,14 @@ class GroupRepositoryImpl(
                 .toMap()
             if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
         }
-        pendingGroups.forEach { group ->
-            val jpeg = group.pendingPhoto ?: return@forEach
-            photoRemote.upload(
-                groupId = group.id,
-                jpeg = jpeg,
-            )
-            local.markGroupPhotoUploaded(
-                id = group.id,
-                syncedUpdatedAt = group.updatedAt,
-                photoUrl = photoRemote.urlOf(
-                    groupId = group.id,
-                    version = group.updatedAt,
-                ),
-            )
+        groupsToPush.filterNot { it.isOnServer() }.forEach { group ->
+            uploadPhotoOf(group)?.onFailure {
+                heldGroupIds += group.id
+                photoErrors += it
+            }
         }
         // Why: before the deletes, so one that fails doesn't push again what the server already took.
-        pendingGroups.forEach {
+        pendingGroups.filterNot { it.id in heldGroupIds }.forEach {
             local.markGroupSynced(
                 id = it.id,
                 syncedUpdatedAt = it.updatedAt,
@@ -280,6 +288,32 @@ class GroupRepositoryImpl(
         if (removedMemberIds.isNotEmpty()) {
             remote.deleteMembers(removedMemberIds)
             local.deleteRemovedMembers(removedMemberIds)
+        }
+        photoErrors.firstOrNull()?.let { throw it }
+    }
+
+    // Why: a group with an invite code went up once, as GroupDao.getGroupIdsOnServer counts it.
+    private fun GroupEntity.isOnServer(): Boolean = inviteCode != null
+
+    // Why: null for a group with no photo waiting; the URL it now has once it is up.
+    private suspend fun uploadPhotoOf(group: GroupEntity): Result<String>? {
+        val jpeg = group.pendingPhoto ?: return null
+        return suspendRunCatching {
+            photoRemote.upload(
+                groupId = group.id,
+                jpeg = jpeg,
+            )
+            photoRemote
+                .urlOf(
+                    groupId = group.id,
+                    version = group.updatedAt,
+                ).also {
+                    local.markGroupPhotoUploaded(
+                        id = group.id,
+                        jpeg = jpeg,
+                        photoUrl = it,
+                    )
+                }
         }
     }
 

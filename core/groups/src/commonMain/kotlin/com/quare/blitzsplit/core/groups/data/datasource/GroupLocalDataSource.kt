@@ -75,7 +75,7 @@ interface GroupLocalDataSource {
 
     suspend fun markGroupPhotoUploaded(
         id: String,
-        syncedUpdatedAt: Long,
+        jpeg: ByteArray,
         photoUrl: String,
     )
 

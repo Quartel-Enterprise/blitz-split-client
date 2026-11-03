@@ -112,12 +112,12 @@ class RoomGroupLocalDataSource(
 
     override suspend fun markGroupPhotoUploaded(
         id: String,
-        syncedUpdatedAt: Long,
+        jpeg: ByteArray,
         photoUrl: String,
     ) {
         dao.markGroupPhotoUploaded(
             id = id,
-            syncedUpdatedAt = syncedUpdatedAt,
+            jpeg = jpeg,
             photoUrl = photoUrl,
         )
     }

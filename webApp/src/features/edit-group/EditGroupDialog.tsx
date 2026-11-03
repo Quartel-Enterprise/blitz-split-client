@@ -1,5 +1,5 @@
 import { Camera, Check, ChevronDown, ChevronRight, CircleAlert, Loader2, Lock } from 'lucide-react'
-import { useRef, type ChangeEvent } from 'react'
+import { useRef } from 'react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker } from '@/components/common'
@@ -17,6 +17,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
+import { onPhotoFile } from '@/lib/photoFile'
 
 const formId = 'edit-group-form'
 const nameId = 'edit-group-name'
@@ -84,18 +85,6 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
 }
 
 // Why: "Usar uma foto" hands the file's bytes to the ViewModel, which makes the group's 512x512 JPEG.
-async function onPhotoFile(presenter: EditGroupPresenter, event: ChangeEvent<HTMLInputElement>) {
-  const file = event.target.files?.[0]
-  // Why: picking the same file again still fires a change.
-  event.target.value = ''
-  if (!file) return
-  try {
-    presenter.photoPicked(new Int8Array(await file.arrayBuffer()))
-  } catch {
-    presenter.photoUnreadable()
-  }
-}
-
 function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
   const photoInput = useRef<HTMLInputElement>(null)
   // Why: the ViewModel caps the name as it handles it, so the field reads the capped text back.

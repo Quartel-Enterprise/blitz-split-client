@@ -209,16 +209,13 @@ interface GroupDao {
     suspend fun insertMemberIfAbsent(entity: GroupMemberEntity)
 
     /*
-     * Why: the photo is up, so its URL takes the place of the JPEG that waited. A change made while the upload was
-     * in flight, a newer photo included, keeps waiting for its own.
+     * Why: the photo is up, so its URL takes the place of the JPEG that waited, whatever else changed in the group
+     * meanwhile: the photo is the same, so its URL stays the one the server got. A newer photo keeps waiting.
      */
-    @Query(
-        "UPDATE split_group SET photoUrl = :photoUrl, pendingPhoto = NULL " +
-            "WHERE id = :id AND updatedAt = :syncedUpdatedAt",
-    )
+    @Query("UPDATE split_group SET photoUrl = :photoUrl, pendingPhoto = NULL WHERE id = :id AND pendingPhoto = :jpeg")
     suspend fun markGroupPhotoUploaded(
         id: String,
-        syncedUpdatedAt: Long,
+        jpeg: ByteArray,
         photoUrl: String,
     )
 

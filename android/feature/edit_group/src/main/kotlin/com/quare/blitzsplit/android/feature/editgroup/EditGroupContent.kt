@@ -97,6 +97,7 @@ fun EditGroupContent(
         GroupIconSheet(
             editor = editor,
             initials = state.initials,
+            isDialog = isDialog,
             onEvent = onEvent,
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,

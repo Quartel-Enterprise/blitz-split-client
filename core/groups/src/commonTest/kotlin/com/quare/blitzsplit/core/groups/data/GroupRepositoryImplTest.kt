@@ -4122,6 +4122,104 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a group already on the server with a new photo WHEN uploading THEN the photo goes up before its row`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            var callsBeforeUpload = listOf("not uploaded")
+            photoRemote.onUpload = { callsBeforeUpload = remote.calls.toList() }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(emptyList(), callsBeforeUpload)
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .photoUrl,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group on the server whose photo fails WHEN uploading THEN only that group waits for the next round`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                    group(
+                        id = "group-2",
+                        pendingSync = true,
+                        inviteCode = "DEF456",
+                    ),
+                ),
+            )
+            photoRemote.uploadError = IllegalStateException("storage down")
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(listOf("group-2"), remote.upsertedGroups.single().map { it.id })
+            assertEquals(true, local.group("group-1")?.pendingSync)
+            assertEquals(false, local.group("group-2")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN the group edited while its photo goes up WHEN the upload ends THEN the photo still takes its URL`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.onUpload = {
+                editGroup(
+                    shape = GroupShape.CIRCLE,
+                    photo = ProfilePhoto.Pending(photoJpeg),
+                )
+            }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+                stored?.photoUrl,
+            )
+            assertNull(stored?.pendingPhoto)
+            assertEquals(true, stored?.pendingSync)
+        }
+
+    @Test
     fun `GIVEN a photo uploaded WHEN the upload ends THEN the device keeps its URL drops the bytes and is synced`() =
         runTest {
             // Given
@@ -5057,11 +5155,11 @@ private class FakeGroupLocalDataSource(
 
     override suspend fun markGroupPhotoUploaded(
         id: String,
-        syncedUpdatedAt: Long,
+        jpeg: ByteArray,
         photoUrl: String,
     ) {
         groups.value = groups.value.map {
-            if (it.id == id && it.updatedAt == syncedUpdatedAt) {
+            if (it.id == id && it.pendingPhoto?.contentEquals(jpeg) == true) {
                 it.copy(
                     photoUrl = photoUrl,
                     pendingPhoto = null,

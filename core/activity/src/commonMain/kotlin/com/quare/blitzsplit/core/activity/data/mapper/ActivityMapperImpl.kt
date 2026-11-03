@@ -160,28 +160,21 @@ class ActivityMapperImpl : ActivityMapper {
     private fun changeOf(element: JsonElement): ActivityChange? {
         val change = element as? JsonObject ?: return null
         val field = change.findText("field")?.let(ActivityField::fromCodeOrNull) ?: return null
-        if (field == ActivityField.PHOTO) {
-            return ActivityChange(
-                field = field,
-                before = photoValueOf(change["before"], ActivityField.PHOTO_PREVIOUS),
-                after = photoValueOf(change["after"], ActivityField.PHOTO_NEW),
-            )
-        }
         return ActivityChange(
             field = field,
-            before = valueOf(field, change["before"]),
-            after = valueOf(field, change["after"]),
+            before = valueOf(field, change["before"], photoCode = ActivityField.PHOTO_PREVIOUS),
+            after = valueOf(field, change["after"], photoCode = ActivityField.PHOTO_NEW),
         )
     }
 
-    private fun photoValueOf(
-        element: JsonElement?,
-        code: String,
-    ): ActivityValue = ActivityValue.none.copy(code = code.takeIf { (element as? JsonPrimitive).textOrNull() != null })
-
+    /*
+     * Why: a photo's URL means nothing to read, so the value only says whether there was one, as the photo before
+     * or the new one (photoCode).
+     */
     private fun valueOf(
         field: ActivityField,
         element: JsonElement?,
+        photoCode: String,
     ): ActivityValue {
         val primitive = element as? JsonPrimitive
         return when (field) {
@@ -193,8 +186,7 @@ class ActivityMapperImpl : ActivityMapper {
 
             ActivityField.SHAPE -> ActivityValue.none.copy(code = primitive.textOrNull() ?: GroupShape.fallback.code)
 
-            // Why: a photo's change is read by photoValueOf.
-            ActivityField.PHOTO -> ActivityValue.none
+            ActivityField.PHOTO -> ActivityValue.none.copy(code = photoCode.takeIf { primitive.textOrNull() != null })
 
             ActivityField.TYPE,
             ActivityField.COLOR,
