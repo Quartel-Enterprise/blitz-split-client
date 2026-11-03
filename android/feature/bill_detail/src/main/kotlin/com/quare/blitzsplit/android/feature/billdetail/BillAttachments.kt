@@ -238,7 +238,7 @@ private fun AddPhotoTile(
         TileColumn(
             size = size,
             label = stringResource(R.string.bill_detail_add_photo),
-            subtitle = stringResource(R.string.bill_detail_add_photo_sub),
+            subtitle = null,
             onClickLabel = null,
             isEnabled = isEnabled,
             onClick = { if (takePhoto != null) isMenuOpen = true else pickers.onChoosePhotoClick() },
@@ -317,7 +317,7 @@ private fun PickerMenuItem(
 private fun TileColumn(
     size: TileSize,
     label: String,
-    subtitle: String,
+    subtitle: String?,
     onClickLabel: String?,
     onClick: () -> Unit,
     isEnabled: Boolean = true,
@@ -344,13 +344,15 @@ private fun TileColumn(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
