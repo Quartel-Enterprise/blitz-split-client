@@ -255,6 +255,8 @@ struct HomeShortcuts: View {
                 send(HomeUiEventOnCreateGroupClicked.shared)
             }
         }
+        // Every tile takes the tallest one's height, so a title wrapping to two lines never leaves the others shorter.
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -281,7 +283,7 @@ private struct ShortcutTile: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(maxWidth: .infinity, minHeight: 92)
+            .frame(maxWidth: .infinity, minHeight: 92, maxHeight: .infinity)
             .padding(.horizontal, 6)
             .padding(.vertical, 12)
             .background(Palette.card, in: .rect(cornerRadius: 22))
