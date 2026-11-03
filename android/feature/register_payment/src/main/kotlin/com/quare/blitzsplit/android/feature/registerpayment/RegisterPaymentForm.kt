@@ -7,20 +7,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -231,7 +234,7 @@ private fun AmountSection(
         }
         return
     }
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         AmountTextField(
             value = state.amountText,
             onValueChange = { onEvent(RegisterPaymentUiEvent.OnAmountChanged(it)) },
@@ -241,22 +244,36 @@ private fun AmountSection(
             isError = state.showsOverDebtError,
             imeAction = ImeAction.Done,
         )
-        FilterChip(
-            selected = state.isFullDebt,
+        FullDebtButton(
+            isFullDebt = state.isFullDebt,
             onClick = { onEvent(RegisterPaymentUiEvent.OnFullDebtClicked) },
-            label = { Text(stringResource(R.string.register_payment_full_debt)) },
-            leadingIcon = if (state.isFullDebt) {
-                {
-                    Icon(
-                        imageVector = Icons.Outlined.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(FilterChipDefaults.IconSize),
-                    )
-                }
-            } else {
-                null
-            },
         )
+    }
+}
+
+/*
+ * Why: a plain action, not a chip, so it doesn't compete with "Como foi pago"'s chips (beta feedback 5). It is
+ * done, with its check, while the amount already is the whole debt.
+ */
+@Composable
+private fun FullDebtButton(
+    isFullDebt: Boolean,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        onClick = onClick,
+        enabled = !isFullDebt,
+        contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
+    ) {
+        if (isFullDebt) {
+            Icon(
+                imageVector = Icons.Outlined.Check,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        }
+        Text(stringResource(R.string.register_payment_full_debt))
     }
 }
 

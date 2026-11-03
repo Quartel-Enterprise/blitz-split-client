@@ -194,9 +194,18 @@ function PaymentForm({
             {amountHelp}
           </p>
         )}
-        <Chip isSelected={state.isFullDebt} role={undefined} onClick={() => presenter.fullDebt()}>
+        {/* Why: a plain action, not a pill, so it doesn't compete with "Como foi pago" (beta feedback 5). */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={state.isFullDebt}
+          onClick={() => presenter.fullDebt()}
+          className="mt-1.5 -ml-2.5 self-start text-primary hover:text-primary disabled:opacity-60"
+        >
+          {state.isFullDebt && <Check aria-hidden />}
           {t('registerPayment_fullDebt')}
-        </Chip>
+        </Button>
       </div>
       )}
 
@@ -206,7 +215,7 @@ function PaymentForm({
         </span>
         <div role="radiogroup" aria-labelledby={methodId} className="flex flex-wrap gap-2">
           {paymentMethodCodes.map((code) => (
-            <Chip key={code} role="radio" isSelected={state.method === code} onClick={() => presenter.pickMethod(code)}>
+            <Chip key={code} isSelected={state.method === code} onClick={() => presenter.pickMethod(code)}>
               {paymentMethodLabel(code)}
             </Chip>
           ))}
@@ -241,15 +250,14 @@ function PaymentForm({
 }
 
 /**
- * A pill to pick: "Toda a dívida" (pressed while the amount is the whole debt) or a method of "Como foi pago" (a radio).
+ * A pill of "Como foi pago", a radio.
  */
-function Chip({ isSelected, role, onClick, children }: { isSelected: boolean; role: 'radio' | undefined; onClick: () => void; children: ReactNode }) {
+function Chip({ isSelected, onClick, children }: { isSelected: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
       type="button"
-      role={role}
-      aria-checked={role === 'radio' ? isSelected : undefined}
-      aria-pressed={role === 'radio' ? undefined : isSelected}
+      role="radio"
+      aria-checked={isSelected}
       onClick={onClick}
       className={cn(
         'inline-flex h-8 items-center gap-1.5 self-start rounded-full border px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',

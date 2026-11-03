@@ -463,6 +463,130 @@ class PaymentKeyViewModelTest {
         }
 
     @Test
+    fun `GIVEN a saved phone being edited WHEN picking CPF or email THEN their fields are empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        type = PaymentKeyType.PHONE,
+                        value = "+5511912345678",
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            val cpf = viewModel.uiState.value
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            val email = viewModel.uiState.value
+
+            // Then
+            assertEquals("", cpf.input)
+            assertNull(cpf.error)
+            assertFalse(cpf.canSave)
+            assertEquals("", email.input)
+            assertNull(email.error)
+            assertFalse(email.canSave)
+        }
+
+    @Test
+    fun `GIVEN a saved phone being edited WHEN picking another type and back THEN shows the phone again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        type = PaymentKeyType.PHONE,
+                        value = "+5511912345678",
+                    ),
+                ),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            assertEquals("+55 (11) 91234-5678", viewModel.uiState.value.input)
+            assertEquals(PaymentKeyFormat.PHONE, viewModel.uiState.value.format)
+            assertTrue(viewModel.uiState.value.canSave)
+        }
+
+    @Test
+    fun `GIVEN a CPF typed WHEN picking phone then typing there and going back THEN each type keeps its own`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            val phoneBeforeTyping = viewModel.uiState.value.input
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("1191234"))
+            val phoneTyped = viewModel.uiState.value.input
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            val cpf = viewModel.uiState.value.input
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            assertEquals("", phoneBeforeTyping)
+            assertEquals("123.456.789-09", cpf)
+            assertEquals(PaymentKeyType.PHONE, viewModel.uiState.value.type)
+            assertEquals(phoneTyped, viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN CPF WHEN pasting an email and going back to CPF THEN CPF keeps what it had`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("123"))
+        viewModel.onEvent(PaymentKeyUiEvent.OnPasted(EMAIL))
+
+        // When
+        viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+        // Then
+        assertEquals("123", viewModel.uiState.value.input)
+    }
+
+    @Test
+    fun `GIVEN Lightning WHEN typing a bc1 address and going back to Lightning THEN Lightning is empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(method = PaymentMethod.BITCOIN)
+            SEGWIT.indices.forEach { end ->
+                viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(SEGWIT.substring(0, end + 1)))
+            }
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.LIGHTNING))
+
+            // Then
+            assertEquals("", viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN half a CPF left with its error WHEN picking email and back THEN shows the CPF error again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("123456"))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputFocusLost)
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // Then
+            assertEquals(PaymentKeyError.INVALID_CPF, viewModel.uiState.value.error)
+        }
+
+    @Test
     fun `GIVEN phone WHEN typing 11 digits that are also a valid CPF THEN stays on phone`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
