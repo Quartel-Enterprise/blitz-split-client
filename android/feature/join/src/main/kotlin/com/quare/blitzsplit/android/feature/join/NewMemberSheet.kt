@@ -18,7 +18,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -34,6 +33,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 
@@ -56,7 +56,7 @@ internal fun NewMemberSheet(
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             // Why: Material's 640dp at most, which lying down centers it as the canvas draws.
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = rememberFullSheetState(),
         ) {
             NewMemberFormContent(
                 draft = draft,
