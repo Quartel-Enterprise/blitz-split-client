@@ -29,7 +29,7 @@ class GroupCurrencyTest {
     }
 
     @Test
-    fun `GIVEN a negative amount with cents WHEN picking the digits to show THEN it shows every digit of the currency`() {
+    fun `GIVEN a negative amount with cents WHEN picking the digits to show THEN it shows them all`() {
         // Given
         val amountMinor = -1_250L
 

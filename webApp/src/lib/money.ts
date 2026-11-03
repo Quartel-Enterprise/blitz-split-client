@@ -20,8 +20,9 @@ function moneyFormat(currency: string, fractionDigits: number): Intl.NumberForma
 
 /**
  * The decimals an amount shows: none when they are all zero ("R$ 500"), every one of the currency otherwise
- * ("R$ 12,50"), amount by amount. The shared code's `GroupCurrency.getDisplayFractionDigits`, which the Android and
- * Apple apps call. Amount fields keep the currency's own.
+ * ("R$ 12,50"), amount by amount. It mirrors `GroupCurrency.getDisplayFractionDigits` of the shared code, which
+ * the Android and Apple apps call, since this side gets the currency as a code and its digits. Amount fields keep the
+ * currency's own.
  */
 function shownDigits(minor: number, fractionDigits: number): number {
   return minor % 10 ** fractionDigits === 0 ? 0 : fractionDigits

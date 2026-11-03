@@ -21,9 +21,9 @@ class MoneyFormatter(
     private val currency: GroupCurrency,
     locale: Locale,
 ) {
-    private val format: NumberFormat = createCurrencyFormat(locale, currency.fractionDigits)
+    private val format: NumberFormat by lazy { createCurrencyFormat(locale, currency.fractionDigits) }
 
-    private val wholeFormat: NumberFormat = createCurrencyFormat(locale, fractionDigits = 0)
+    private val wholeFormat: NumberFormat by lazy { createCurrencyFormat(locale, fractionDigits = 0) }
 
     // Why: the symbol a field shows before what is typed in it.
     val symbol: String = Currency.getInstance(currency.code).getSymbol(locale)
@@ -35,9 +35,9 @@ class MoneyFormatter(
         "0" + DecimalFormatSymbols.getInstance(locale).decimalSeparator + "0".repeat(currency.fractionDigits)
     }
 
-    private val plainFormat: NumberFormat = createPlainFormat(locale, currency.fractionDigits)
+    private val plainFormat: NumberFormat by lazy { createPlainFormat(locale, currency.fractionDigits) }
 
-    private val wholePlainFormat: NumberFormat = createPlainFormat(locale, fractionDigits = 0)
+    private val wholePlainFormat: NumberFormat by lazy { createPlainFormat(locale, fractionDigits = 0) }
 
     fun toText(amountMinor: Long): String = pick(amountMinor, format, wholeFormat).format(amountMinor.toDecimal())
 
