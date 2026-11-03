@@ -47,8 +47,15 @@ internal fun TermSheet(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val form = state.termForm ?: return
-    AdaptiveSheet(onDismissRequest = { onEvent(CategoryMapUiEvent.OnTermDismissed) }) {
+    val title = stringResource(
+        if (form.isEditing) R.string.category_map_edit_term else R.string.category_map_new_term,
+    )
+    AdaptiveSheet(
+        title = title,
+        onDismissRequest = { onEvent(CategoryMapUiEvent.OnTermDismissed) },
+    ) {
         TermFormContent(
+            title = title,
             state = state,
             form = form,
             onEvent = onEvent,
@@ -58,13 +65,13 @@ internal fun TermSheet(
 
 @Composable
 private fun TermFormContent(
+    title: String,
     state: CategoryMapUiState,
     form: TermForm,
     onEvent: (CategoryMapUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(
                 start = 24.dp,
@@ -74,9 +81,7 @@ private fun TermFormContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = stringResource(
-                if (form.isEditing) R.string.category_map_edit_term else R.string.category_map_new_term,
-            ),
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.semantics { heading() },
         )

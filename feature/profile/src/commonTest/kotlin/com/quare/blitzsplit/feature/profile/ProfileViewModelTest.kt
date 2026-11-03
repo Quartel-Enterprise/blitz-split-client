@@ -1108,6 +1108,34 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the theme not read yet WHEN tapping Appearance THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN a device without dynamic colors WHEN they are toggled on THEN stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                supportsDynamicColors = false,
+                dynamicColors = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+            // Then
+            assertEquals(false, storedDynamicColors.value)
+        }
+
+    @Test
     fun `GIVEN the profile WHEN tapping the privacy policy THEN opens its page`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

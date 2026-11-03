@@ -198,7 +198,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
-            ProfileUiEvent.OnAppearanceClicked -> showDialog(ProfileDialog.APPEARANCE)
+            ProfileUiEvent.OnAppearanceClicked -> openAppearance()
             ProfileUiEvent.OnDynamicColorsInfoClicked -> openDynamicColorsInfo()
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
@@ -339,6 +339,11 @@ class ProfileViewModel(
         viewModelScope.launch { updateThemePreference(theme) }
     }
 
+    // Why: the theme picked shows only once it was read, never the default guessed.
+    private fun openAppearance() {
+        if (uiState.value.isLoaded) showDialog(ProfileDialog.APPEARANCE)
+    }
+
     // Why: only where the switch it explains shows, and over Aparência, where its button is.
     private fun openDynamicColorsInfo() {
         val state = uiState.value
@@ -347,7 +352,9 @@ class ProfileViewModel(
         }
     }
 
+    // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
     private fun toggleDynamicColors(isOn: Boolean) {
+        if (!uiState.value.showsDynamicColors) return
         viewModelScope.launch { updateDynamicColors(isOn) }
     }
 

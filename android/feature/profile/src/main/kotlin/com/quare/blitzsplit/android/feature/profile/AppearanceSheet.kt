@@ -66,7 +66,10 @@ internal fun AppearanceSheet(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    AdaptiveSheet(onDismissRequest = { onEvent(ProfileUiEvent.OnDialogDismissed) }) {
+    AdaptiveSheet(
+        title = stringResource(R.string.profile_appearance),
+        onDismissRequest = { onEvent(ProfileUiEvent.OnDialogDismissed) },
+    ) {
         AppearanceContent(
             state = state,
             onEvent = onEvent,
@@ -113,7 +116,6 @@ internal fun DynamicColorsInfoDialog(
 private fun AppearanceContent(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     // Why: the previews show the light and the dark scheme the app would draw, the wallpaper's while it is on.
     val lightScheme = blitzSplitColorScheme(
@@ -125,7 +127,7 @@ private fun AppearanceContent(
         usesDynamicColors = state.usesDynamicColors,
     )
     Column(
-        modifier = modifier
+        modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(
                 start = 24.dp,
