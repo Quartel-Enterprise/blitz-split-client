@@ -78,7 +78,7 @@ function ProfileOverList({ personKey }: { personKey: string }) {
   if (!profile.state) return null
   const homeTab = profile.state.homeTab as HomeTab
   return (
-    <PageShell selected={homeTab} phoneBars="nav">
+    <PageShell selected={homeTab} phoneBars="home">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
         <h1 className="sr-only">{homeTabLabel(homeTab)}</h1>
         {profile.presenter && profile.state.contact && (

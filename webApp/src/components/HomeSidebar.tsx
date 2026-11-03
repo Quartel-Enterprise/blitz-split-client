@@ -45,7 +45,8 @@ export function useOpenHomeTab(): (tab: HomeTab) => void {
 /**
  * The home's frame around a page outside its tabs: the home tab it was opened from selected (none on Perfil, whose
  * footer is), and the open groups on the desktop's sidebar while `groups` says which one the page is about. The
- * group's pages draw their own bars on the phone; Perfil keeps the bottom navigation.
+ * group's pages draw their own bars on the phone; Perfil keeps the bottom navigation, and a contact's profile the home's
+ * bars too.
  */
 export function PageShell({
   selected,
@@ -56,7 +57,7 @@ export function PageShell({
 }: {
   selected?: HomeTab
   groups?: { selectedId: string }
-  phoneBars: 'nav' | 'none'
+  phoneBars: 'home' | 'nav' | 'none'
   children: ReactNode
   overlays?: ReactNode
 }) {
@@ -74,6 +75,7 @@ export function PageShell({
       onProfile={() => presenter.openProfile()}
       openGroups={groups && { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) }}
       phoneBars={phoneBars}
+      isOutsideTabs
       overlays={overlays}
     >
       {children}

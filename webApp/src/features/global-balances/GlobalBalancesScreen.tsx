@@ -1,5 +1,6 @@
 import { ChevronDown, CircleCheck, Check, WifiOff } from 'lucide-react'
 import { GlobalBalancesPresenter, type JsBalanceTotal, type JsGlobalBalancesState, type JsPeopleSection, type JsPersonRow, type JsRoute } from 'blitzsplit-shared'
+import { useId } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -350,11 +351,14 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
   const note = !row.isNetOfSeveralGroups
     ? t('globalBalances_detailNoteSingle', { name })
     : t(row.owesYou ? 'globalBalances_detailNoteOwed' : 'globalBalances_detailNoteSettle', { amount })
+  const nameId = useId()
   const header = (
     <>
       <PersonFace row={row} className="size-12 text-base" />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-xl font-semibold">{name}</span>
+        <span id={nameId} className="truncate text-xl font-semibold">
+          {name}
+        </span>
         <span className="text-[13px] text-muted-foreground">{row.isGuest ? t('globalBalances_detailGuest', { groups }) : groups}</span>
       </span>
     </>
@@ -362,8 +366,11 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
   return (
     <section aria-label={t('globalBalances_detailPane', { name })} className="flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-6">
       <header className="flex items-center gap-3">
-        {/* Why: the heading holds the button, whose children a screen reader flattens; an ex-member has no profile. */}
-        <h2 className="flex min-w-0 flex-1">
+        {/*
+          Why: the heading holds the button, whose children a screen reader flattens, and is named by the name alone;
+          an ex-member has no profile.
+        */}
+        <h2 aria-labelledby={nameId} className="flex min-w-0 flex-1">
           {row.opensProfile ? (
             <button
               type="button"

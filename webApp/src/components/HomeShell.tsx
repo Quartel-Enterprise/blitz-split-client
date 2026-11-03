@@ -63,6 +63,7 @@ export function HomeShell({
   activityUnreadCount = 0,
   openGroups,
   phoneBars = 'home',
+  isOutsideTabs = phoneBars !== 'home',
   children,
   overlays,
 }: {
@@ -80,12 +81,13 @@ export function HomeShell({
   // Why: the home's tabs have the brand's bar and the bottom navigation; Perfil its own bar over the navigation, and
   // the group's pages their own bars with neither.
   phoneBars?: 'home' | 'nav' | 'none'
+  // Why: a page outside the tabs goes back to the tab it sits in, which a tab's own page never needs; a contact's
+  // profile keeps the brand's bar outside them.
+  isOutsideTabs?: boolean
   children: ReactNode
   overlays?: ReactNode
 }) {
   const account = accountLabels[profile.accountProvider as AccountProvider] ?? 'groups_noAccount'
-  // Why: a page outside the tabs goes back to the tab it sits in, which a tab's own page never needs.
-  const isOutsideTabs = phoneBars !== 'home'
   const select = (tab: HomeTab) => {
     if (tab !== selected || isOutsideTabs) onTab(tab)
   }
