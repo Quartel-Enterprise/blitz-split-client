@@ -108,6 +108,8 @@ class JsGroupDetailState(
     val isLoadingBalances: Boolean,
     // Why: what is still coming waits for the internet, said over those skeletons.
     val isWaitingForInternet: Boolean,
+    // Why: "Seu saldo neste grupo" shimmers in its place while the account's copy isn't whole.
+    val awaitsFullSync: Boolean,
     val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
@@ -146,6 +148,7 @@ class GroupDetailPresenter(
                 isLoadingBills = state.isLoadingBills,
                 isLoadingBalances = state.isLoadingBalances,
                 isWaitingForInternet = state.isWaitingForInternet,
+                awaitsFullSync = state.awaitsFullSync,
                 showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,

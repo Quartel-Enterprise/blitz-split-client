@@ -7,6 +7,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -231,6 +232,30 @@ class HomeUiStateTest {
         assertNull(onlyPersonToPay)
     }
 
+    @Test
+    fun `GIVEN Saldos com pessoas not read yet WHEN Inicio draws THEN shows no faces`() {
+        // Given
+        val state = state(peopleRead = false)
+
+        // When
+        val showsPeople = state.showsPeople
+
+        // Then
+        assertFalse(showsPeople)
+    }
+
+    @Test
+    fun `GIVEN Saldos com pessoas not read yet WHEN Inicio draws THEN Voce deve settles up with nobody`() {
+        // Given
+        val state = state(peopleRead = false)
+
+        // When
+        val onlyPersonToPay = state.onlyPersonToPay
+
+        // Then
+        assertNull(onlyPersonToPay)
+    }
+
     private fun person(
         key: String,
         netMinor: Long,
@@ -252,6 +277,7 @@ class HomeUiStateTest {
         isOnline: Boolean = true,
         syncBadge: SyncBadge? = null,
         people: List<HomePerson> = emptyList(),
+        peopleRead: Boolean = true,
     ): HomeUiState = HomeUiState(
         displayName = "Pierre",
         avatarInitial = "P",
@@ -268,8 +294,8 @@ class HomeUiStateTest {
         isOnline = isOnline,
         isLoaded = isLoaded,
         groupCount = groupCount,
-        people = people.toLoaded(),
-        summary = HomeSummary(totals = emptyList()).toLoaded(),
+        people = if (peopleRead) people.toLoaded() else Loadable.Loading,
+        summary = if (peopleRead) HomeSummary(totals = emptyList()).toLoaded() else Loadable.Loading,
         groups = emptyList(),
         billDays = emptyList(),
         showsRecoveryCodeCard = false,

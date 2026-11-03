@@ -120,6 +120,12 @@ class GlobalBalancesViewModel(
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
     init {
+        combine(observePeopleBalances(), observeFirstDownload()) { people, download ->
+            balances = people
+            isBalancesRead = true
+            firstDownload = download
+            showPeople()
+        }.launchIn(viewModelScope)
         combine(observeProfile(), observeAccount()) { profile, account ->
             val badge = UserBadge.of(profile, account.status)
             uiState.update {
@@ -131,12 +137,6 @@ class GlobalBalancesViewModel(
                     accountProvider = badge.accountProvider,
                 )
             }
-        }.launchIn(viewModelScope)
-        combine(observePeopleBalances(), observeFirstDownload()) { people, download ->
-            balances = people
-            isBalancesRead = true
-            firstDownload = download
-            showPeople()
         }.launchIn(viewModelScope)
         observePaymentKeys()
             .map(::pixKeyOrNull)
