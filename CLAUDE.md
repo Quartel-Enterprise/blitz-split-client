@@ -123,7 +123,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
     other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it), which
     open the bill's Conta; a bill's attachments and its share link show only in its Conta's Histórico, never in the
-    feed nor its badge (`ActivityKind.isInFeed`). No push notifications yet.
+    feed nor its badge (`ActivityKind.isInFeed`).
+  - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
+    event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
+    grupos" for a bill created, edited or deleted while you are its payer or in its split (before the change too) and
+    a comment on a bill you're in or a thread you wrote in; "Alguém marcou um pagamento para mim" for a payment
+    recorded or undone that you paid or received; "Lembretes de acerto" for a charge sent to you and, every Monday at
+    10:00 in Brasília, "Você tem saldo em aberto em Apê 302" (or "em 3 grupos") while you owe or are owed;
+    "Convites e novos membros" (off by default) for being added to a group and someone joining yours. No amount in
+    them. The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
+    insert), and each device words them in its language from a kind and the names (Android's channels are the four
+    toggles, Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana lançou “Jantar”
+    com você". A tap opens what the item's tap in Atividade opens, over Atividade (after a sync when its group isn't
+    on the device yet) and marks it read; a reminder opens the group's Saldos over Grupos, or Saldos. Each device
+    registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
+    it while none is, a sign out made offline once back online. Android and Apple ask for the permission the first time Início shows, the web on the toggles.
+    Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
+    Firebase service account on the server, the web's VAPID keys on both (`docs/push-notifications.md`). Muting a
+    group isn't built yet, though the footer of Notificações mentions it.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -454,8 +471,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"
     and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
-    tombstone, offline too). No
-    notifications nor Atividade yet.
+    tombstone, offline too). Whoever paid or received it, if not who recorded it, gets a push notification (below).
   - "Pagar Ana" (4.5) is what Registrar pagamento shows, in the same sheet or dialog, when this device's user pays
     someone with an account who has a Pix or Bitcoin key: every "Acertar" (the group's Saldos, "Seu saldo neste
     grupo", the global Saldos' `SettleUp`, Início's faces, Contatos' profile), never "Recebi", "Já pagou" nor Início's

@@ -664,6 +664,23 @@ export const en = {
   notifications_invites: 'Invites and new members',
   notifications_invitesDetail: 'When someone joins one of your groups',
 
+  // Atividade's push notifications, worded by the service worker: {1}, {2}… are the server's words, in order
+  push_reminderTitle: 'Settle-up reminder',
+  push_billCreated: '{1} added “{2}” with you',
+  push_billEdited: '{1} edited “{2}”',
+  push_billDeleted: '{1} deleted “{2}”',
+  push_commentAdded: '{1} commented on “{2}”: {3}',
+  push_paymentPaidYou: '{1} marked that they paid you',
+  push_paymentToYou: '{1} marked that {2} paid you',
+  push_paymentReceivedYours: '{1} marked your payment as received',
+  push_paymentFromYou: '{1} marked that you paid {2}',
+  push_paymentUndone: '{1} undid a payment with you',
+  push_chargeSent: '{1} sent you a reminder to settle up',
+  push_settleReminder: 'You have an open balance in {1}',
+  push_settleReminders: 'You have open balances in {1} groups',
+  push_addedToGroup: '{1} added you to the group',
+  push_memberJoined: '{1} joined the group',
+
   profile_title: 'Profile',
   profile_subtitle: 'Your name and keys only show to the people in your groups.',
   profile_visibility: 'Who sees your profile',

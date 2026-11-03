@@ -94,6 +94,8 @@ struct HomeView: View {
         .measuringScreenLayout($layout)
         .readingFoldDivision($division)
         .readingVerticalBar($hasVerticalBar)
+        // Atividade's push notifications: Início asks once, the first time it shows
+        .task { await PushNotifications.askPermission() }
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,

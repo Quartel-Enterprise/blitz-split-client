@@ -5,6 +5,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
+import com.quare.blitzsplit.core.profile.domain.model.PushDevice
+import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
@@ -198,6 +202,26 @@ object BlitzSplitApple : KoinComponent {
         val handleBrowserCallback = get<HandleBrowserCallback>()
         scope.launch { handleBrowserCallback(link) }
         get<LinkInbox>().receive(link)
+    }
+
+    /*
+     * Why: APNs' token for Atividade's push notifications, as hex, on every launch and whenever it changes. A debug
+     * build's token is the sandbox's.
+     */
+    fun setPushToken(
+        token: String,
+        isMac: Boolean,
+        isSandbox: Boolean,
+    ) {
+        get<SetPushDevice>().invoke(
+            PushDevice(
+                token = token,
+                platform = if (isMac) PushPlatform.MACOS else PushPlatform.IOS,
+                apnsEnvironment = if (isSandbox) ApnsEnvironment.DEVELOPMENT else ApnsEnvironment.PRODUCTION,
+                webP256dh = null,
+                webAuth = null,
+            ),
+        )
     }
 
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
