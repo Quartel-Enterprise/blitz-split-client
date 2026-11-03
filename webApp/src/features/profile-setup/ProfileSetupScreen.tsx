@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
+import { onPhotoFile } from '@/lib/photoFile'
 
 export function ProfileSetupScreen() {
   const presenter = usePresenter(() => new ProfileSetupPresenter())
@@ -65,16 +66,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
               type="file"
               accept="image/*"
               hidden
-              onChange={async (event) => {
-                const file = event.target.files?.[0]
-                event.target.value = ''
-                if (!file) return
-                try {
-                  presenter.photoPicked(new Int8Array(await file.arrayBuffer()))
-                } catch {
-                  presenter.photoUnreadable()
-                }
-              }}
+              onChange={(event) => void onPhotoFile(presenter, event)}
             />
           </div>
           {state.showsPhotoError && (

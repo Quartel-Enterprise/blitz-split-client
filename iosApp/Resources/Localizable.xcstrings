@@ -340,6 +340,28 @@
         }
       }
     },
+    "%lld of %lld groups. You can use the app meanwhile: what has arrived shows below." : {
+      "comment" : "Groups: the first download's card, the groups that came down of those coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld grupos. Pode usar o app enquanto isso: o que já chegou aparece abaixo."
+          }
+        }
+      }
+    },
+    "%lld of 1 group. You can use the app meanwhile: what has arrived shows below." : {
+      "comment" : "Groups: the first download's card, the groups that came down of the only one coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld de 1 grupo. Pode usar o app enquanto isso: o que já chegou aparece abaixo."
+          }
+        }
+      }
+    },
     "%lld of %lld photos" : {
       "localizations" : {
         "pt-BR" : {
@@ -470,6 +492,17 @@
         }
       }
     },
+    "Bringing your groups" : {
+      "comment" : "Groups: the card in the overall balance's place during a new device's first download",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trazendo seus grupos"
+          }
+        }
+      }
+    },
     "Camera or photos" : {
       "comment" : "Under the tile that adds a photo to a bill",
       "localizations" : {
@@ -477,6 +510,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Câmera ou fotos"
+          }
+        }
+      }
+    },
+    "Change icon or photo" : {
+      "comment" : "Edit group's button under the avatar, which opens the group icon sheet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar ícone ou foto"
           }
         }
       }
@@ -497,6 +541,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escolher nas fotos"
+          }
+        }
+      }
+    },
+    "Choose Photo…" : {
+      "comment" : "The Mac's edit group button that picks a file as the group's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher foto…"
+          }
+        }
+      }
+    },
+    "Circle" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Círculo"
+          }
+        }
+      }
+    },
+    "Cookie" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biscoito"
           }
         }
       }
@@ -603,6 +680,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Baixar"
+          }
+        }
+      }
+    },
+    "Group icon" : {
+      "comment" : "Title of the sheet that picks the group icon",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ícone do grupo"
           }
         }
       }
@@ -860,6 +948,17 @@
         }
       }
     },
+    "Icon color" : {
+      "comment" : "VoiceOver label of the Mac's edit group colors",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cor do ícone"
+          }
+        }
+      }
+    },
     "It already comes with %@." : {
       "comment" : "Pay with a key (4.5): the amount inside the Pix code",
       "localizations" : {
@@ -1066,12 +1165,32 @@
         }
       }
     },
+    "New photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova foto"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Próxima"
+          }
+        }
+      }
+    },
+    "No photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem foto"
           }
         }
       }
@@ -1149,6 +1268,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendente"
+          }
+        }
+      }
+    },
+    "Petal" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pétala"
+          }
+        }
+      }
+    },
+    "Photo" : {
+      "comment" : "A group's photo, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
           }
         }
       }
@@ -1466,6 +1607,50 @@
         }
       }
     },
+    "Syncing… %lld of %lld groups" : {
+      "comment" : "The sync status during a new device's first download: the groups that came down, of those coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando… %1$lld de %2$lld grupos"
+          }
+        }
+      }
+    },
+    "Syncing… %lld of 1 group" : {
+      "comment" : "The sync status during a new device's first download: the groups that came down, of the only one coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando… %lld de 1 grupo"
+          }
+        }
+      }
+    },
+    "You can use the app meanwhile: what has arrived shows below." : {
+      "comment" : "Groups: the first download's card, before the server says how many groups are coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pode usar o app enquanto isso: o que já chegou aparece abaixo."
+          }
+        }
+      }
+    },
+    "Total spent so far" : {
+      "comment" : "The group statistics: the period's total while a new device's first download still brings bills down",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total gasto até agora"
+          }
+        }
+      }
+    },
     "message sent" : {
       "comment" : "Activity: under a request to pay, after its amount",
       "localizations" : {
@@ -1763,6 +1948,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anterior"
+          }
+        }
+      }
+    },
+    "Previous photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto anterior"
           }
         }
       }
@@ -2069,6 +2264,17 @@
         }
       }
     },
+    "Shape" : {
+      "comment" : "A group icon's shape, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forma"
+          }
+        }
+      }
+    },
     "Share bill" : {
       "comment" : "Title of the sheet that shares a bill's link",
       "localizations" : {
@@ -2131,6 +2337,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ rachou %2$@"
+          }
+        }
+      }
+    },
+    "Square" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quadrado"
           }
         }
       }
@@ -2408,6 +2625,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use as setas para ver a próxima."
+          }
+        }
+      }
+    },
+    "Use this icon" : {
+      "comment" : "The group icon sheet's confirm button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar este ícone"
           }
         }
       }
@@ -4898,17 +5126,6 @@
         }
       }
     },
-    "Change color" : {
-      "comment" : "The edit group button under the avatar, which changes its color",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trocar cor"
-          }
-        }
-      }
-    },
     "Change link" : {
       "comment" : "Invite: the creator changes the group's invite link, and confirms it in the alert",
       "localizations" : {
@@ -5588,13 +5805,13 @@
         }
       }
     },
-    "No internet: the change holds on this %@ now and reaches the others once it reconnects." : {
+    "No internet: the change holds on this %@ now and reaches the others once it reconnects. A new photo goes up with it." : {
       "comment" : "The note at the end of edit group while offline; the device is iPhone, iPad or Mac",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem internet: a mudança vale neste %@ agora e chega aos outros quando ele reconectar."
+            "value" : "Sem internet: a mudança vale neste %@ agora e chega aos outros quando ele reconectar. Uma foto nova sobe junto."
           }
         }
       }
@@ -16659,10 +16876,40 @@
     "%lld items" : {
       "comment" : "How many items the bill splits by",
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items"
+                }
+              }
+            }
+          }
+        },
         "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld itens"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld itens"
+                }
+              }
+            }
           }
         }
       }
@@ -16711,6 +16958,276 @@
         }
       }
     },
+    "push.reminder.title" : {
+      "comment" : "Title of the weekly settle-up reminder (push notification)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settle-up reminder"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrete de acerto"
+          }
+        }
+      }
+    },
+    "push.bill_created" : {
+      "comment" : "Push notification: someone added a bill you're in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ added “%2$@” with you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ lançou “%2$@” com você"
+          }
+        }
+      }
+    },
+    "push.bill_edited" : {
+      "comment" : "Push notification: someone edited a bill you're in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ edited “%2$@”"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ editou “%2$@”"
+          }
+        }
+      }
+    },
+    "push.bill_deleted" : {
+      "comment" : "Push notification: someone deleted a bill you were in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ deleted “%2$@”"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou “%2$@”"
+          }
+        }
+      }
+    },
+    "push.comment_added" : {
+      "comment" : "Push notification: a comment on a bill you're in. 1: who, 2: the bill, 3: the comment",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ commented on “%2$@”: %3$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ comentou em “%2$@”: %3$@"
+          }
+        }
+      }
+    },
+    "push.payment_paid_you" : {
+      "comment" : "Push notification: someone recorded paying you. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that they paid you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que te pagou"
+          }
+        }
+      }
+    },
+    "push.payment_to_you" : {
+      "comment" : "Push notification: someone recorded a payment to you. 1: who recorded it, 2: who paid",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that %2$@ paid you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que %2$@ te pagou"
+          }
+        }
+      }
+    },
+    "push.payment_received_yours" : {
+      "comment" : "Push notification: whom you paid recorded your payment. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked your payment as received"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que recebeu seu pagamento"
+          }
+        }
+      }
+    },
+    "push.payment_from_you" : {
+      "comment" : "Push notification: someone recorded a payment of yours. 1: who recorded it, 2: whom you paid",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that you paid %2$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que você pagou %2$@"
+          }
+        }
+      }
+    },
+    "push.payment_undone" : {
+      "comment" : "Push notification: someone undid a payment you're in. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ undid a payment with you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desfez um pagamento com você"
+          }
+        }
+      }
+    },
+    "push.charge_sent" : {
+      "comment" : "Push notification: someone sent you a charge from Saldos. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sent you a reminder to settle up"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te cobrou"
+          }
+        }
+      }
+    },
+    "push.settle_reminder" : {
+      "comment" : "Weekly settle-up reminder for one group. 1: the group",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have an open balance in %1$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem saldo em aberto em %1$@"
+          }
+        }
+      }
+    },
+    "push.settle_reminders" : {
+      "comment" : "Weekly settle-up reminder for several groups. 1: how many",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have open balances in %1$@ groups"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem saldo em aberto em %1$@ grupos"
+          }
+        }
+      }
+    },
+    "push.added_to_group" : {
+      "comment" : "Push notification: someone added your account to a group. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ added you to the group"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te adicionou ao grupo"
+          }
+        }
+      }
+    },
+    "push.member_joined" : {
+      "comment" : "Push notification: someone joined one of your groups. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ joined the group"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ entrou no grupo"
+          }
+        }
+      }
+    },
     "Whoever opens this link joins straight in as %@, without picking from the list, and already sees their %@ share in the %lld bills added so far. It works once." : {
       "comment" : "Explains a member's personal invite link when bills already give them a part; the first %@ is the member, the second their parts, %lld how many bills",
       "localizations" : {
@@ -16748,6 +17265,322 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%@ from the receipt. Tap the icon to change it." : {
+      "comment" : "Split a bill: the receipt chose the category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pelo cupom fiscal. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "From the receipt" : {
+      "comment" : "Category: a suggestion the receipt gave",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelo cupom"
+          }
+        }
+      }
+    },
+    "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand." : {
+      "comment" : "Split a bill: the receipt couldn't be read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "Try again with more light and the whole receipt in the photo, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"Couldn't read the receipt\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão."
+          }
+        }
+      }
+    },
+    "Couldn't read the receipt" : {
+      "comment" : "Split a bill on the Mac: the receipt couldn't be read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para ler o cupom"
+          }
+        }
+      }
+    },
+    "Choose Another Photo…" : {
+      "comment" : "Split a bill on the Mac: picks another photo of the receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher Outra Foto…"
+          }
+        }
+      }
+    },
+    "Take another photo" : {
+      "comment" : "Split a bill: takes another photo of the receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar outra foto"
+          }
+        }
+      }
+    },
+    "Read from the receipt" : {
+      "comment" : "Split a bill: a chip under the description once a receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lido do cupom"
+          }
+        }
+      }
+    },
+    "Receipt photo" : {
+      "comment" : "Split a bill: the receipt's photo the bill attaches",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do cupom"
+          }
+        }
+      }
+    },
+    "Reading the receipt…" : {
+      "comment" : "Split a bill: while the receipt is being read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lendo o cupom…"
+          }
+        }
+      }
+    },
+    "Everyone in the group sees it" : {
+      "comment" : "Split a bill: who sees the receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo do grupo vê"
+          }
+        }
+      }
+    },
+    "Remove the receipt photo" : {
+      "comment" : "Split a bill: removes the receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar a foto do cupom"
+          }
+        }
+      }
+    },
+    "Scan receipt" : {
+      "comment" : "Split a bill: reads a receipt's photo; the receipt camera's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler cupom fiscal"
+          }
+        }
+      }
+    },
+    "Fills in the amount, date and description from the photo." : {
+      "comment" : "Split a bill: under Scan receipt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preenche valor, data e descrição pela foto."
+          }
+        }
+      }
+    },
+    "Needs internet. Fill it in by hand or scan the receipt once you reconnect." : {
+      "comment" : "Split a bill: Scan receipt while offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Precisa de internet. Preencha à mão ou leia o cupom quando reconectar."
+          }
+        }
+      }
+    },
+    "Receipt:" : {
+      "comment" : "Split a bill on the Mac: the receipt's row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cupom:"
+          }
+        }
+      }
+    },
+    "Receipt photo attached" : {
+      "comment" : "Split a bill on the Mac: the receipt's photo the bill attaches",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do cupom anexada"
+          }
+        }
+      }
+    },
+    "Reading…" : {
+      "comment" : "Split a bill on the Mac: while the receipt is being read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lendo…"
+          }
+        }
+      }
+    },
+    "· Read from the receipt, %lld items" : {
+      "comment" : "Split a bill on the Mac: the receipt was read with its items",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld items"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld itens"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "· Read from the receipt" : {
+      "comment" : "Split a bill on the Mac: the receipt was read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "· Lido do cupom"
+          }
+        }
+      }
+    },
+    "Scan Receipt…" : {
+      "comment" : "Split a bill on the Mac: picks a receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler Cupom Fiscal…"
+          }
+        }
+      }
+    },
+    "Turn on the flash" : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligar o flash"
+          }
+        }
+      }
+    },
+    "Turn off the flash" : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar o flash"
+          }
+        }
+      }
+    },
+    "Allow the camera to scan the receipt, or choose a photo of it from Photos." : {
+      "comment" : "Receipt camera: access refused",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita a câmera para ler o cupom, ou escolha uma foto dele nas fotos."
+          }
+        }
+      }
+    },
+    "The camera isn't available. Choose a photo of the receipt from Photos." : {
+      "comment" : "Receipt camera: no camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A câmera não está disponível. Escolha uma foto do cupom nas fotos."
+          }
+        }
+      }
+    },
+    "Frame the whole receipt. We fill in the amount, the date and the description; you check them before saving." : {
+      "comment" : "Receipt camera",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enquadre o cupom inteiro. A gente preenche o valor, a data e a descrição; você confere antes de salvar."
           }
         }
       }

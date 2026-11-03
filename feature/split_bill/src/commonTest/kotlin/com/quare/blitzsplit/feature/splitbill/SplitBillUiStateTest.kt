@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -551,6 +552,8 @@ class SplitBillUiStateTest {
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
+        groupShape = GroupShape.COOKIE,
+        groupPhotoUrl = null,
         groups = groups,
         groupSelection = null,
         currency = GroupCurrency.BRL,
@@ -596,6 +599,9 @@ class SplitBillUiStateTest {
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
+        receipt = null,
+        receiptCategoryId = null,
+        isReceiptCameraRequested = false,
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,

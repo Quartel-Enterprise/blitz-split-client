@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -286,6 +287,62 @@ class CreateGroupViewModelTest {
             // Then
             assertEquals(AvatarColor.BLUE, viewModel.uiState.value.color)
         }
+
+    @Test
+    fun `GIVEN a new group WHEN the form opens THEN its icon is the cookie`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(GroupShape.COOKIE, state.shape)
+    }
+
+    @Test
+    fun `GIVEN a peach cookie WHEN tapping the Android avatar THEN takes the next color and the next shape`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(avatarColor = AvatarColor.BLUE))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(AvatarColor.GREEN, state.color)
+            assertEquals(GroupShape.PETAL, state.shape)
+        }
+
+    @Test
+    fun `GIVEN the Android avatar WHEN tapping it twenty times THEN shows every color with every shape once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val seen = mutableSetOf<Pair<AvatarColor, GroupShape>>()
+
+            // When
+            repeat(AvatarColor.entries.size * GroupShape.entries.size) {
+                viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
+                seen += viewModel.uiState.value.let { it.color to it.shape }
+            }
+
+            // Then
+            assertEquals(AvatarColor.entries.size * GroupShape.entries.size, seen.size)
+        }
+
+    @Test
+    fun `GIVEN the Apple and web avatar WHEN tapping it THEN the shape stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+
+        // Then
+        assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
+    }
 
     @Test
     fun `GIVEN a trip WHEN picking home THEN the group is a home`() = runTest(testDispatcher) {
@@ -684,7 +741,7 @@ class CreateGroupViewModelTest {
                 region = "BR",
             )
             viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("  Viagem Floripa  "))
-            viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
             viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
             viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
             addMember("Ana")
@@ -698,6 +755,8 @@ class CreateGroupViewModelTest {
             assertEquals("Viagem Floripa", group.name)
             assertEquals(GroupType.HOME, group.type)
             assertEquals(AvatarColor.GREEN, group.color)
+            assertEquals(GroupShape.PETAL, group.shape)
+            assertNull(group.photo)
             assertEquals(GroupCurrency.EUR, group.currency)
             assertEquals(
                 listOf(

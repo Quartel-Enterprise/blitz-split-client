@@ -35,7 +35,7 @@ struct GroupsTable: View {
         return Table(rows, selection: $selection) {
             TableColumn("Group") { item in
                 HStack(spacing: 8) {
-                    GroupAvatar(initials: item.row.initials, color: item.row.color, size: 22)
+                    GroupAvatar(initials: item.row.initials, color: item.row.color, photoUrl: item.row.photoUrl, size: 22)
                     Text(verbatim: item.row.name)
                         .fontWeight(.medium)
                         .lineLimit(1)

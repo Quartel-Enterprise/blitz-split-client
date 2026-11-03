@@ -12,6 +12,12 @@ enum class ActivityField(
     NAME("name"),
     TYPE("type"),
     COLOR("color"),
+
+    // Why: the group icon's shape (6.4d); a group made before shapes has the square.
+    SHAPE("shape"),
+
+    // Why: the group's photo, as PHOTO_PREVIOUS before and PHOTO_NEW after, or no code for none: a URL says nothing.
+    PHOTO("photo_url"),
     CURRENCY("currency"),
     DEFAULT_SPLIT("default_split"),
     CATEGORY("category"),
@@ -21,6 +27,9 @@ enum class ActivityField(
     ;
 
     companion object {
+        const val PHOTO_PREVIOUS = "previous"
+        const val PHOTO_NEW = "new"
+
         fun fromCodeOrNull(code: String): ActivityField? = entries.firstOrNull { it.code == code }
     }
 }

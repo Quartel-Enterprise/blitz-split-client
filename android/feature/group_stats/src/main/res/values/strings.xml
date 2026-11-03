@@ -13,6 +13,7 @@
     <string name="group_stats_expenses_none">no expenses</string>
     <string name="group_stats_summary">Period summary</string>
     <string name="group_stats_total_spent">Total spent</string>
+    <string name="group_stats_total_spent_so_far">Total spent so far</string>
     <string name="group_stats_meta">%1$s · average of %2$s per person</string>
     <string name="group_stats_my_share">Your share</string>
     <string name="group_stats_of_total">%d%% of the total</string>

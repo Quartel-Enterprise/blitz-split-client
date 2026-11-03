@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.creategroup.presentation.model
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 
 data class CreateGroupUiState(
@@ -10,6 +11,8 @@ data class CreateGroupUiState(
     // Why: "VF" for "Viagem Floripa", what the group's avatar shows; empty while there is no name.
     val initials: String,
     val color: AvatarColor,
+    // Why: only Android draws it, so only its avatar changes it.
+    val shape: GroupShape,
     val type: GroupType,
     val currency: GroupCurrency,
     // Why: this device's user first, then in the order they were added. Empty until the profile is read.

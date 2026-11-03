@@ -6,9 +6,13 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.core.profile.domain.model.PushDevice
+import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
@@ -50,19 +54,48 @@ fun startBlitzSplit(sqliteWorker: Worker) {
 }
 
 /*
- * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, or of a
- * bill's link, blitzsplit.com/c/<code>, opens it once; the address goes back to the app's own. A bill's link left to
- * sign in (its "Entrar") opens again once the browser comes back.
+ * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, of a
+ * bill's link, blitzsplit.com/c/<code>, or of a notification tapped with no tab open, blitzsplit.com/n?…, opens it
+ * once; the address goes back to the app's own. A bill's link left to sign in (its "Entrar") opens again once the
+ * browser comes back.
  */
 private fun openInviteLink(launchUrl: String) {
     val inbox = KoinPlatform.getKoin().get<LinkInbox>()
     val sharedBillLeftToSignIn = takeSharedBillLeftToSignIn()
-    if (InviteLink.targetOf(launchUrl) != null || SharedBillLink.codeOf(launchUrl) != null) {
+    val isLink = InviteLink.targetOf(launchUrl) != null ||
+        SharedBillLink.codeOf(launchUrl) != null ||
+        PushLink.of(launchUrl) != null
+    if (isLink) {
         inbox.receive(launchUrl)
         window.history.replaceState(null, "", "/")
     } else {
         sharedBillLeftToSignIn?.let(inbox::receive)
     }
+}
+
+/*
+ * Why: the browser's Web Push subscription, for Atividade's push notifications: its endpoint is the device's token,
+ * and its keys are what each message is encrypted for.
+ */
+fun setPushDevice(
+    endpoint: String,
+    p256dh: String,
+    auth: String,
+) {
+    KoinPlatform.getKoin().get<SetPushDevice>().invoke(
+        PushDevice(
+            token = endpoint,
+            platform = PushPlatform.WEB,
+            apnsEnvironment = null,
+            webP256dh = p256dh,
+            webAuth = auth,
+        ),
+    )
+}
+
+// Why: a notification tapped while a tab is open, which the service worker hands to it instead of opening another.
+fun openNotificationLink(url: String) {
+    if (PushLink.of(url) != null) KoinPlatform.getKoin().get<LinkInbox>().receive(url)
 }
 
 // Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, which goes back to the bill.

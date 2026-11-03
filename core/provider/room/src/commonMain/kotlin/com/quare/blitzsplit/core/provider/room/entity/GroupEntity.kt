@@ -37,4 +37,13 @@ data class GroupEntity(
      */
     @ColumnInfo(defaultValue = "NULL")
     val splitIncomes: String?,
+    // Why: the icon's shape (6.4d) by its code; null for a group made before shapes, which draws as a square.
+    @ColumnInfo(defaultValue = "NULL")
+    val shape: String?,
+    // Why: the URL of the photo the server has, null for none.
+    @ColumnInfo(defaultValue = "NULL")
+    val photoUrl: String?,
+    // Why: a photo picked here and not uploaded yet, already a 512x512 JPEG, shown in place of photoUrl until then.
+    @ColumnInfo(defaultValue = "NULL")
+    val pendingPhoto: ByteArray?,
 )

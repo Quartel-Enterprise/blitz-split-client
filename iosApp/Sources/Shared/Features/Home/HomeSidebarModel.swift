@@ -65,7 +65,7 @@ struct SidebarOpenGroups: View {
             onOpen(group.id)
         } label: {
             HStack(spacing: 8) {
-                GroupAvatar(initials: group.initials, color: group.color, size: 20)
+                GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: 20)
                     .accessibilityHidden(true)
                 Text(verbatim: group.name)
                     .lineLimit(1)

@@ -15,6 +15,12 @@ class SupabaseSettlementRemoteDataSource(
         idOf = { it.id },
     )
 
+    override suspend fun fetchSettlements(groupId: String): List<SettlementDto> = postgrest.fetchAllById<SettlementDto>(
+        table = SETTLEMENTS,
+        idOf = { it.id },
+        groupId = groupId,
+    )
+
     private companion object {
         const val SETTLEMENTS = "settlements"
     }

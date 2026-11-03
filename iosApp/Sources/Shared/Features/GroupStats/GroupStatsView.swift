@@ -279,7 +279,7 @@ private struct StatsHeroCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Total spent")
+            Text(verbatim: GroupStatsCopy.totalLabel(state))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(verbatim: state.currency.format(state.totalMinor))
@@ -344,7 +344,7 @@ private struct StatsSummaryPanels: View {
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
             panel(
-                String(localized: "Total spent"),
+                GroupStatsCopy.totalLabel(state),
                 state.currency.format(state.totalMinor),
                 GroupStatsCopy.period(state.period, isTrip: state.isTrip),
             )

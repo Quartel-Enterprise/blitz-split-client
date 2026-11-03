@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
@@ -45,8 +46,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -55,6 +58,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
@@ -112,6 +116,7 @@ class GroupsViewModelTest {
     private var clockMillis = 0L
     private lateinit var minutes: MutableStateFlow<Int>
     private lateinit var activityUnread: MutableStateFlow<Int>
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
 
     @BeforeTest
     fun setUp() {
@@ -1027,6 +1032,8 @@ class GroupsViewModelTest {
                 name = "Viagem Floripa",
                 initials = "VF",
                 color = AvatarColor.LILAC,
+                shape = GroupShape.COOKIE,
+                photoUrl = null,
                 faces = listOf(
                     MemberFace(
                         initial = "P",
@@ -2280,6 +2287,7 @@ class GroupsViewModelTest {
                 groupId = trio().id,
                 expenseId = null,
                 picksGroupFirst = false,
+                scansReceipt = false,
             )
             navigator.navigate(splitBill)
 
@@ -2328,6 +2336,7 @@ class GroupsViewModelTest {
                         groupId = "recent",
                         expenseId = null,
                         picksGroupFirst = true,
+                        scansReceipt = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -2613,6 +2622,201 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN a first download with an unknown count WHEN the server says 7 groups and 3 came THEN counts 3 of 7`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                ),
+            )
+
+            // When
+            firstDownload.value = FirstDownloadProgress(
+                arrivedGroupCount = 3,
+                groupCount = 7,
+            )
+
+            // Then
+            assertEquals(
+                DownloadProgress(
+                    arrivedGroupCount = 3,
+                    groupCount = 7,
+                ),
+                viewModel.uiState.value.firstDownload,
+            )
+        }
+
+    @Test
+    fun `GIVEN no first download WHEN the groups open THEN shows no progress and offers Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.firstDownload)
+            assertTrue(state.showsSplitBillButton)
+            assertTrue(state.showsSummary)
+        }
+
+    @Test
+    fun `GIVEN no group and no first download WHEN the groups open THEN still offers Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN a first download with no group down yet WHEN the groups open THEN never shows the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.hasLoadedGroups)
+            assertFalse(state.showsEmptyState)
+            assertFalse(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN a first download with a group down WHEN the groups open THEN hides Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("trio"), state.groups.map(GroupRow::id))
+            assertEquals(1, state.firstDownload?.arrivedGroupCount)
+            assertFalse(state.showsSplitBillButton)
+            assertFalse(state.showsEmptyState)
+        }
+
+    @Test
+    fun `GIVEN a first download whose groups down are all settled WHEN the groups open THEN never says none is open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "gas",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Ana", "Pierre"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 3000L,
+                    ),
+                ),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.openGroups.isEmpty())
+            assertFalse(state.showsNoOpenGroups)
+        }
+
+    @Test
+    fun `GIVEN a first download with only an open group down WHEN the groups open THEN never says none is settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.settledGroups.isEmpty())
+            assertFalse(state.showsNoSettledGroups)
+        }
+
+    @Test
+    fun `GIVEN a first download with a group down WHEN it ends THEN shows Saldo geral and Rachar conta again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 1,
+                ),
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.firstDownload)
+            assertTrue(state.showsSummary)
+            assertTrue(state.showsSplitBillButton)
+            assertFalse(state.showsEmptyState)
+        }
+
+    @Test
+    fun `GIVEN a first download with no group down WHEN it ends with none THEN shows the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = 0,
+                ),
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsEmptyState)
+            assertTrue(viewModel.uiState.value.showsSplitBillButton)
+        }
+
+    @Test
     fun `GIVEN online WHEN pulling to refresh THEN syncs once and waits for it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -2656,6 +2860,8 @@ class GroupsViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
+        shape = GroupShape.COOKIE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(
@@ -2690,6 +2896,8 @@ class GroupsViewModelTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = isPending,
@@ -2796,7 +3004,9 @@ class GroupsViewModelTest {
         groupsRead: Boolean = true,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
+        downloading: FirstDownloadProgress? = null,
     ) {
+        firstDownload = MutableStateFlow(downloading)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         syncGate = null
@@ -2845,6 +3055,7 @@ class GroupsViewModelTest {
                 observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             ),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
         )
     }
 }

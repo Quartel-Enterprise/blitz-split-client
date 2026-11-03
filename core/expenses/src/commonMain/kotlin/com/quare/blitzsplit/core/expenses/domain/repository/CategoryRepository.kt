@@ -39,4 +39,7 @@ interface CategoryRepository {
 
     // Why: after the groups' download, so a category of a group that just came down has its group on the device.
     suspend fun download(userId: String): Result<Unit>
+
+    // Why: one group's categories for a first download, written by the write it returns; nothing leaves the device.
+    suspend fun fetchGroupCategories(groupId: String): Result<suspend () -> Unit>
 }

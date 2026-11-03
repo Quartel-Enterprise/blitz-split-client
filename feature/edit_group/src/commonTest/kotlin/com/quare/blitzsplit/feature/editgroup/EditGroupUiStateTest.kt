@@ -3,11 +3,15 @@ package com.quare.blitzsplit.feature.editgroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
+import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditGroupUiStateTest {
@@ -200,16 +204,103 @@ class EditGroupUiStateTest {
         assertFalse(showsNotice)
     }
 
+    @Test
+    fun `GIVEN a photo being prepared WHEN reading Salvar THEN it is disabled`() {
+        // Given
+        val state = state(isPreparingPhoto = true)
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertFalse(canSave)
+    }
+
+    @Test
+    fun `GIVEN no photo WHEN reading the colors THEN marks the form color`() {
+        // Given
+        val state = state(photo = null)
+
+        // When
+        val selected = state.selectedColor
+
+        // Then
+        assertEquals(AvatarColor.GREEN, selected)
+        assertNull(state.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a photo from the server WHEN reading the icon THEN draws its url and marks no color`() {
+        // Given
+        val state = state(photo = ProfilePhoto.Remote("https://example.com/photo.jpg?v=3"))
+
+        // When
+        val url = state.photoUrl
+
+        // Then
+        assertEquals("https://example.com/photo.jpg?v=3", url)
+        assertNull(state.selectedColor)
+    }
+
+    @Test
+    fun `GIVEN a photo picked on this device WHEN reading the icon THEN draws it as a data uri`() {
+        // Given
+        val photo = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))
+        val state = state(photo = photo)
+
+        // When
+        val url = state.photoUrl
+
+        // Then
+        assertEquals(photo.dataUri, url)
+        assertTrue(url.orEmpty().startsWith("data:image/jpeg;base64,"))
+        assertNull(state.selectedColor)
+    }
+
+    @Test
+    fun `GIVEN the form WHEN reading the colors THEN offers the whole palette`() {
+        // Given
+        val state = state()
+
+        // When
+        val colors = state.colors
+
+        // Then
+        assertEquals(AvatarColor.entries, colors)
+    }
+
+    @Test
+    fun `GIVEN Icone do grupo WHEN reading its choices THEN offers every color and shape`() {
+        // Given
+        val editor = GroupIconEditor(
+            color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+        )
+
+        // When
+        val choices = editor.colors to editor.shapes
+
+        // Then
+        assertEquals(AvatarColor.entries to GroupShape.entries, choices)
+    }
+
     private fun state(
         name: String = "Viagem Floripa",
         isLoaded: Boolean = true,
         isSaving: Boolean = false,
         isOnline: Boolean = true,
         hasChanges: Boolean = true,
+        photo: ProfilePhoto? = null,
+        isPreparingPhoto: Boolean = false,
     ): EditGroupUiState = EditGroupUiState(
         name = name,
         initials = "VF",
         color = AvatarColor.GREEN,
+        shape = GroupShape.COOKIE,
+        photo = photo,
+        isPreparingPhoto = isPreparingPhoto,
+        showsPhotoError = false,
+        iconEditor = null,
         type = GroupType.TRIP,
         currency = GroupCurrency.BRL,
         isCurrencyLocked = false,

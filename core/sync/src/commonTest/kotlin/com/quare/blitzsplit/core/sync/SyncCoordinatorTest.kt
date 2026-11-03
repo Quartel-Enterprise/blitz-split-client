@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
@@ -28,6 +29,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -36,12 +38,17 @@ import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.domain.model.PushDevice
+import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,6 +58,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -74,6 +82,7 @@ class SyncCoordinatorTest {
     private lateinit var categories: FakeCategoryRepository
     private lateinit var billComments: FakeBillCommentRepository
     private lateinit var billAttachments: FakeBillAttachmentRepository
+    private lateinit var pushDevices: FakePushDeviceRepository
     private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -81,6 +90,8 @@ class SyncCoordinatorTest {
     private lateinit var firstDownload: FirstDownload
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
+    private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
+    private val pendingAtGroupsFullDownload = mutableListOf<Boolean>()
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -618,7 +629,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isSuccess)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -635,7 +646,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -652,7 +663,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -667,7 +678,403 @@ class SyncCoordinatorTest {
         coordinator.syncNow()
 
         // Then
-        assertTrue(firstDownload.observeIsPending().value)
+        assertTrue(firstDownload.isPending)
+    }
+
+    @Test
+    fun `GIVEN a first download pending with the restored profile WHEN the device is offline THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            online = false,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertFalse(firstDownload.isPending)
+    }
+
+    @Test
+    fun `GIVEN a first download pending before the profile came WHEN the device is offline THEN it stays pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                firstDownloadPending = true,
+                online = false,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertTrue(firstDownload.isPending)
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN syncing THEN each group comes whole in server order before the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip, dinner),
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    "groups first download ids",
+                    "groups download group trip",
+                    "categories download group trip",
+                    "bills download group trip",
+                    "payments download group trip",
+                    "groups download group dinner",
+                    "categories download group dinner",
+                    "bills download group dinner",
+                    "payments download group dinner",
+                    "groups download ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                    "groups upload ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                    "bills download ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                    "bills upload ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                    "payments download ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                    "payments upload ${FakeAccountRepository.ANONYMOUS_USER_ID}",
+                ),
+                groupsBlockCalls(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN syncing THEN the groups of the server reach the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip, dinner),
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf("trip", "dinner"), groups.downloadedGroupIds)
+        assertEquals(listOf("trip", "dinner"), groups.groups.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN syncing THEN counts each group out of those coming and ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip, dinner),
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(
+            listOf(
+                FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                ),
+                FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = 2,
+                ),
+                FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 2,
+                ),
+                FirstDownloadProgress(
+                    arrivedGroupCount = 2,
+                    groupCount = 2,
+                ),
+                null,
+            ),
+            firstDownloadProgress,
+        )
+        assertFalse(firstDownload.isPending)
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN syncing THEN it ends before the full download of the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip),
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf(false), pendingAtGroupsFullDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download and no group on the server WHEN syncing THEN never counts and ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = emptyList(),
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                FirstDownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                ),
+                null,
+            ),
+            firstDownloadProgress,
+        )
+        assertTrue(groups.downloadedGroupIds.isEmpty())
+        assertTrue(categories.downloadedGroupIds.isEmpty())
+        assertTrue(expenses.downloadedGroupIds.isEmpty())
+        assertTrue(settlements.downloadedGroupIds.isEmpty())
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN no first download pending WHEN syncing THEN no group comes down one by one`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            serverGroups = listOf(trip, dinner),
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertFalse("groups first download ids" in calls)
+        assertTrue(groups.downloadedGroupIds.isEmpty())
+        assertTrue(categories.downloadedGroupIds.isEmpty())
+        assertTrue(expenses.downloadedGroupIds.isEmpty())
+        assertTrue(settlements.downloadedGroupIds.isEmpty())
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a first download done WHEN syncing again THEN no group comes down one by one`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip, dinner),
+        )
+        coordinator.syncNow()
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("trip", "dinner"), groups.downloadedGroupIds)
+        assertEquals(1, calls.count { it == "groups first download ids" })
+        assertEquals(
+            listOf(FakeAccountRepository.ANONYMOUS_USER_ID, FakeAccountRepository.ANONYMOUS_USER_ID),
+            groups.downloadedUserIds,
+        )
+    }
+
+    @Test
+    fun `GIVEN a first download pending and no profile on the device WHEN syncing THEN no group comes down`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip),
+            )
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertFalse("groups first download ids" in calls)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a first download and no list of groups from the server WHEN syncing THEN the full download runs`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip),
+            )
+            groups.firstDownloadError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertFalse(firstDownload.isPending)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.downloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN a first download and the bills of the first group failing WHEN syncing THEN none of that group lands`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip, dinner),
+            )
+            expenses.pullError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertTrue(categories.downloadedGroupIds.isEmpty())
+            assertTrue(expenses.downloadedGroupIds.isEmpty())
+            assertTrue(settlements.downloadedGroupIds.isEmpty())
+            assertFalse(firstDownload.isPending)
+        }
+
+    @Test
+    fun `GIVEN a first download and the categories of a group failing WHEN syncing THEN none of it lands`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip, dinner),
+        )
+        categories.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(groups.downloadedGroupIds.isEmpty())
+        assertTrue(categories.downloadedGroupIds.isEmpty())
+        assertTrue(expenses.downloadedGroupIds.isEmpty())
+        assertTrue(settlements.downloadedGroupIds.isEmpty())
+        assertFalse(firstDownload.isPending)
+    }
+
+    @Test
+    fun `GIVEN a first download and the payments of a group failing WHEN syncing THEN that group never counts`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip, dinner),
+            )
+            settlements.pullError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(
+                listOf(
+                    FirstDownloadProgress(
+                        arrivedGroupCount = 0,
+                        groupCount = null,
+                    ),
+                    FirstDownloadProgress(
+                        arrivedGroupCount = 0,
+                        groupCount = 2,
+                    ),
+                    null,
+                ),
+                firstDownloadProgress,
+            )
+            assertTrue(groups.downloadedGroupIds.isEmpty())
+            assertTrue(expenses.downloadedGroupIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a first download and the second group failing WHEN syncing THEN the first one counted before the end`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip, dinner),
+                failingGroupDownloadId = "dinner",
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    FirstDownloadProgress(
+                        arrivedGroupCount = 0,
+                        groupCount = null,
+                    ),
+                    FirstDownloadProgress(
+                        arrivedGroupCount = 0,
+                        groupCount = 2,
+                    ),
+                    FirstDownloadProgress(
+                        arrivedGroupCount = 1,
+                        groupCount = 2,
+                    ),
+                    null,
+                ),
+                firstDownloadProgress,
+            )
+            assertEquals(listOf("trip"), categories.downloadedGroupIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+            assertFalse(firstDownload.isPending)
+        }
+
+    @Test
+    fun `GIVEN a first download and a group failing WHEN syncing THEN the rest of the sync still runs`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+            serverGroups = listOf(trip),
+            failingGroupDownloadId = "trip",
+            logsCommentsAndActivity = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue("activity download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
+        assertTrue("comments download ${FakeAccountRepository.ANONYMOUS_USER_ID}" in calls)
     }
 
     @Test
@@ -5718,10 +6125,563 @@ class SyncCoordinatorTest {
             assertEquals(1, account.signOutCount)
         }
 
+    @Test
+    fun `GIVEN a push token and an anonymous account without a profile WHEN starting THEN registers the device`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                status = anonymous,
+                storedPushDevice = androidDevice,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token and a Google account online WHEN starting THEN registers the device for the Google user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token and no account WHEN starting online THEN unregisters it instead`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and no account WHEN starting offline THEN touches nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and an account offline WHEN starting THEN registers nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an account online and no push token yet WHEN starting THEN registers nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an account online and no push token yet WHEN the platform hands the token THEN registers the device`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            pushDevices.setDevice(androidDevice)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token offline WHEN the device comes online THEN registers the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN the push token changes THEN registers the new token`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.setDevice(androidDevice.copy(token = "fcm-token-renewed"))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+            pushDevices.registeredUserIds,
+        )
+        assertEquals("fcm-token-renewed", pushDevices.device.value?.token)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN the same push token is handed again THEN does not register again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.setDevice(androidDevice.copy())
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN a sync runs THEN does not register again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        val result = coordinator.syncNow()
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
+    fun `GIVEN a device of an anonymous user WHEN switching to another Google user THEN registers it for him`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID, OTHER_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a local only profile and a push token WHEN the first sync makes the account THEN registers it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            isOnline.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.registrationCount)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a registered device WHEN the device goes offline and comes back online THEN registers it again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+            isOnline.value = false
+            runCurrent()
+
+            // When
+            isOnline.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+                pushDevices.registeredUserIds,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server refuses the push token WHEN starting THEN the sync still succeeds`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.registerError = noConnection
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a push token the server refused WHEN a change is queued THEN syncs it without registering again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            pushDevices.registerError = noConnection
+            coordinator.start()
+            runCurrent()
+            val uploadsBefore = profile.uploadedUserIds.size
+
+            // When
+            profile.saveProfile(pierre.copy(avatarColor = AvatarColor.PEACH))
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, profile.uploadedUserIds.size)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a push token the server refused WHEN the device comes back online THEN registers it again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.registerError = noConnection
+        coordinator.start()
+        runCurrent()
+        pushDevices.registerError = null
+        isOnline.value = false
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(FakeAccountRepository.CONNECTED_USER_ID, FakeAccountRepository.CONNECTED_USER_ID),
+            pushDevices.registeredUserIds,
+        )
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN signing out THEN unregisters it once the session ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+            logsPushDevice = true,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        coordinator.signOut()
+        runCurrent()
+
+        // Then
+        assertEquals(1, pushDevices.unregisterCount)
+        assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
+    }
+
+    @Test
+    fun `GIVEN a registered device offline WHEN signing out THEN unregisters it only once back online`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+        isOnline.value = false
+        runCurrent()
+
+        // When
+        val result = coordinator.signOut()
+        runCurrent()
+        val unregisteredOffline = pushDevices.unregisterCount
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(0, unregisteredOffline)
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push token fails to unregister WHEN signing out THEN still ends the session and erases the copy`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                storedPushDevice = androidDevice,
+            )
+            pushDevices.unregisterError = noConnection
+            coordinator.start()
+            runCurrent()
+
+            // When
+            val result = coordinator.signOut()
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, pushDevices.unregisterCount)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+            assertEquals(1, profile.clearCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN the push token failed to unregister WHEN back online THEN tries again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterError = noConnection
+        coordinator.start()
+        runCurrent()
+        coordinator.signOut()
+        runCurrent()
+        pushDevices.unregisterError = null
+
+        // When
+        isOnline.value = false
+        runCurrent()
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(2, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push token unregister never answers WHEN signing out THEN still ends the session`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterHangs = true
+        coordinator.start()
+        runCurrent()
+
+        // When
+        val result = coordinator.signOut()
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN signing out THEN registers nothing for the device without an account`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            coordinator.signOut()
+            runCurrent()
+
+            // Then
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        }
+
+    @Test
+    fun `GIVEN a queued change WHEN signing out once synced THEN unregisters the device once the session ends`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                storedPushDevice = androidDevice,
+                logsPushDevice = true,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(1, pushDevices.unregisterCount)
+            assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN signing out once synced THEN keeps the device registered`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            pendingChanges = true,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a registered device WHEN deleting the account THEN does not unregister it`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(0, pushDevices.unregisterCount)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val noConnection = IllegalStateException("no connection")
+    private val androidDevice = PushDevice(
+        token = "fcm-token",
+        platform = PushPlatform.ANDROID,
+        apnsEnvironment = null,
+        webP256dh = null,
+        webAuth = null,
+    )
     private val pixKey = PaymentKey(
         id = "pix-email",
         type = PaymentKeyType.EMAIL,
@@ -5756,6 +6716,8 @@ class SyncCoordinatorTest {
         name = name,
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(
@@ -5822,6 +6784,11 @@ class SyncCoordinatorTest {
         it.startsWith("keys ") || it.startsWith("preferences ") || it.startsWith("bills ") || it.startsWith("payments ")
     }
 
+    private fun groupsBlockCalls(): List<String> = calls.filter {
+        it.startsWith("groups ") || it.startsWith("categories ") || it.startsWith("bills ") ||
+            it.startsWith("payments ")
+    }
+
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile?,
         status: AccountStatus = AccountStatus.LocalOnly,
@@ -5843,14 +6810,21 @@ class SyncCoordinatorTest {
         pendingBills: Boolean = false,
         pendingPayments: Boolean = false,
         firstDownloadPending: Boolean = false,
+        serverGroups: List<Group> = emptyList(),
+        failingGroupDownloadId: String? = null,
         storedComments: List<BillComment> = emptyList(),
         storedAttachments: List<BillAttachment> = emptyList(),
         commentQueuedDuringFirstPush: Boolean = false,
         logsCommentsAndActivity: Boolean = false,
         attachmentQueuedDuringFirstPush: Boolean = false,
         logsAttachments: Boolean = false,
+        storedPushDevice: PushDevice? = null,
+        logsPushDevice: Boolean = false,
     ) {
         firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            firstDownload.observeProgress().collect(firstDownloadProgress::add)
+        }
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
             it.signOutWhenSynced = signOutScheduled
@@ -5862,13 +6836,17 @@ class SyncCoordinatorTest {
         notificationPreferences = FakeNotificationPreferencesRepository(initialPreferences = storedPreferences).also {
             it.hasPendingChanges.value = pendingPreferences
         }
-        groups = FakeGroupRepository(initialGroups = storedGroups).also { it.hasPendingChanges.value = pendingGroups }
+        groups = FakeGroupRepository(initialGroups = storedGroups).also {
+            it.hasPendingChanges.value = pendingGroups
+            it.serverGroups = serverGroups
+        }
         expenses = FakeExpenseRepository().also { it.hasPendingChanges.value = pendingBills }
         settlements = FakeSettlementRepository().also { it.hasPendingChanges.value = pendingPayments }
         activity = FakeActivityRepository()
         categories = FakeCategoryRepository()
         billComments = FakeBillCommentRepository(initialComments = storedComments)
         billAttachments = FakeBillAttachmentRepository(initialAttachments = storedAttachments)
+        pushDevices = FakePushDeviceRepository(initialDevice = storedPushDevice)
         // Why: only the cases that assert where the comments go log them, so the others keep their exact logs.
         val commentAndActivityCalls = if (logsCommentsAndActivity) calls else mutableListOf()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
@@ -5903,13 +6881,23 @@ class SyncCoordinatorTest {
                 calls = calls,
             ),
             groupRepository = RecordingGroupRepository(
-                delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
+                delegate = when {
+                    groupQueuedDuringFirstPush -> GroupDuringFirstPushGroupRepository(groups)
+
+                    failingGroupDownloadId != null -> FailingGroupDownloadGroupRepository(
+                        delegate = groups,
+                        failingGroupId = failingGroupDownloadId,
+                    )
+
+                    else -> groups
+                },
                 calls = calls,
+                beforeDownloadGroups = { pendingAtGroupsFullDownload += firstDownload.isPending },
             ),
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
-            categoryRepository = categories,
+            categoryRepository = RecordingCategoryRepository(categories, calls),
             categoryTermRepository = categoryTerms,
             billCommentRepository = RecordingBillCommentRepository(
                 delegate = if (commentQueuedDuringFirstPush) {
@@ -5936,6 +6924,11 @@ class SyncCoordinatorTest {
             ),
             activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
+            pushDeviceRepository = RecordingPushDeviceRepository(
+                delegate = pushDevices,
+                // Why: only the cases that assert when the device leaves log it, so the others keep their exact logs.
+                calls = if (logsPushDevice) calls else mutableListOf(),
+            ),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
@@ -6077,10 +7070,25 @@ private class PreferenceDuringFirstPushNotificationPreferencesRepository(
 private class RecordingGroupRepository(
     private val delegate: GroupRepository,
     private val calls: MutableList<String>,
+    private val beforeDownloadGroups: () -> Unit = {},
 ) : GroupRepository by delegate {
     override suspend fun downloadGroups(userId: String): Result<Unit> {
         calls += "groups download $userId"
+        beforeDownloadGroups()
         return delegate.downloadGroups(userId)
+    }
+
+    override suspend fun fetchFirstDownloadGroupIds(): Result<List<String>> {
+        calls += "groups first download ids"
+        return delegate.fetchFirstDownloadGroupIds()
+    }
+
+    override suspend fun fetchGroupDownload(
+        userId: String,
+        groupId: String,
+    ): Result<suspend () -> Unit> {
+        calls += "groups download group $groupId"
+        return delegate.fetchGroupDownload(userId, groupId)
     }
 
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> {
@@ -6110,6 +7118,32 @@ private class GroupDuringFirstPushGroupRepository(
     }
 }
 
+// Why: one group of a first download that fails to come down, after the ones before it came.
+private class FailingGroupDownloadGroupRepository(
+    private val delegate: FakeGroupRepository,
+    private val failingGroupId: String,
+) : GroupRepository by delegate {
+    override suspend fun fetchGroupDownload(
+        userId: String,
+        groupId: String,
+    ): Result<suspend () -> Unit> = if (groupId == failingGroupId) {
+        Result.failure(IllegalStateException("server down"))
+    } else {
+        delegate.fetchGroupDownload(userId, groupId)
+    }
+}
+
+// Why: logs only a group's categories of a first download, so the other cases keep their exact logs.
+private class RecordingCategoryRepository(
+    private val delegate: CategoryRepository,
+    private val calls: MutableList<String>,
+) : CategoryRepository by delegate {
+    override suspend fun fetchGroupCategories(groupId: String): Result<suspend () -> Unit> {
+        calls += "categories download group $groupId"
+        return delegate.fetchGroupCategories(groupId)
+    }
+}
+
 /*
  * Why: FakeExpenseRepository keeps a bill pending after a push that succeeds, while the real repository marks it
  * synced and the coordinator syncs again until nothing is pending.
@@ -6126,6 +7160,11 @@ private class RecordingExpenseRepository(
     override suspend fun uploadPendingExpenses(userId: String): Result<Unit> {
         calls += "bills upload $userId"
         return delegate.uploadPendingExpenses(userId)
+    }
+
+    override suspend fun fetchGroupExpenses(groupId: String): Result<suspend () -> Unit> {
+        calls += "bills download group $groupId"
+        return delegate.fetchGroupExpenses(groupId)
     }
 }
 
@@ -6148,6 +7187,11 @@ private class RecordingSettlementRepository(
     override suspend fun uploadPendingSettlements(userId: String): Result<Unit> {
         calls += "payments upload $userId"
         return delegate.uploadPendingSettlements(userId)
+    }
+
+    override suspend fun fetchGroupSettlements(groupId: String): Result<suspend () -> Unit> {
+        calls += "payments download group $groupId"
+        return delegate.fetchGroupSettlements(groupId)
     }
 }
 
@@ -6217,5 +7261,20 @@ private class RecordingActivityRepository(
     override suspend fun downloadActivity(userId: String): Result<Unit> {
         calls += "activity download $userId"
         return delegate.downloadActivity(userId)
+    }
+}
+
+private class RecordingPushDeviceRepository(
+    private val delegate: PushDeviceRepository,
+    private val calls: MutableList<String>,
+) : PushDeviceRepository by delegate {
+    override suspend fun register(userId: String): Result<Unit> {
+        calls += "push register $userId"
+        return delegate.register(userId)
+    }
+
+    override suspend fun unregister(): Result<Unit> {
+        calls += "push unregister"
+        return delegate.unregister()
     }
 }

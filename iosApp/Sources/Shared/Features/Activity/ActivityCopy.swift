@@ -183,6 +183,8 @@ enum ActivityCopy {
         case .name: String(localized: "Name")
         case .type: String(localized: "Type")
         case .color: String(localized: "Color", comment: "A group's avatar color, in what an edit changed")
+        case .shape: String(localized: "Shape", comment: "A group icon's shape, in what an edit changed")
+        case .photo: String(localized: "Photo", comment: "A group's photo, in what an edit changed")
         case .currency: String(localized: "Currency")
         case .category: String(localized: "Category")
         case .visibility: String(localized: "Link", comment: "Who may open a bill's share link, in what an edit changed")
@@ -201,6 +203,13 @@ enum ActivityCopy {
         case .split: value.code.map { splitMode($0) }
         case .type: value.code.flatMap { GroupType.companion.fromCodeOrNull(code: $0) }?.typeLabel
         case .color: value.code.flatMap { AvatarColor.companion.fromCodeOrNull(code: $0) }?.label
+        case .shape: value.code.flatMap { GroupShape.companion.fromCodeOrNull(code: $0) }.map(shapeLabel)
+        // The shared code says previous and new for a photo, never its URL, and nothing for none
+        case .photo: switch value.code {
+            case ActivityField.companion.PHOTO_PREVIOUS: String(localized: "Previous photo")
+            case ActivityField.companion.PHOTO_NEW: String(localized: "New photo")
+            default: String(localized: "No photo")
+            }
         case .currency: value.code
         // Resolved in every group's categories, so a group's own is named too; none is "Other"
         case .category: value.category.map { CategoryCopy.name($0) }
@@ -215,6 +224,16 @@ enum ActivityCopy {
         default: value.text
         }
         return written.flatMap { $0.isEmpty ? nil : $0 } ?? "—"
+    }
+
+    /// "Cookie", "Petal"…: only Android draws the shape, but every feed names it.
+    private static func shapeLabel(_ shape: GroupShape) -> String {
+        switch shape {
+        case .cookie: String(localized: "Cookie", comment: "A group icon's shape")
+        case .petal: String(localized: "Petal", comment: "A group icon's shape")
+        case .circle: String(localized: "Circle", comment: "A group icon's shape")
+        default: String(localized: "Square", comment: "A group icon's shape")
+        }
     }
 
     /// "Amount R$ 612,00 → R$ 642,00".

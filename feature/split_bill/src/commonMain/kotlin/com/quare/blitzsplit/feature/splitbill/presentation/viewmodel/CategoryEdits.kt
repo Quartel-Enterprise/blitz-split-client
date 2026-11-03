@@ -20,7 +20,8 @@ internal fun SplitBillUiState.withCategoryMatched(terms: List<CategoryTerm>): Sp
         .distinctBy { CategoryMatcher.keyOf(it.term) }
     return copy(
         categoryMatches = matches,
-        categoryId = if (isCategoryPicked) categoryId else matches.firstOrNull()?.categoryId,
+        // Why: the map is the person's own, so its word wins over what a receipt suggests (7.1e).
+        categoryId = if (isCategoryPicked) categoryId else matches.firstOrNull()?.categoryId ?: receiptCategory?.id,
     )
 }
 

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -50,6 +51,8 @@ class RemoveMemberUseCaseTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(

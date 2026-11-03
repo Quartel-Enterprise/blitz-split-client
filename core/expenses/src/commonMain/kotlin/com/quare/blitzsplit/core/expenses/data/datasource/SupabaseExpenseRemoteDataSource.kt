@@ -15,6 +15,12 @@ class SupabaseExpenseRemoteDataSource(
         idOf = { it.id },
     )
 
+    override suspend fun fetchExpenses(groupId: String): List<ExpenseDto> = postgrest.fetchAllById<ExpenseDto>(
+        table = EXPENSES,
+        idOf = { it.id },
+        groupId = groupId,
+    )
+
     private companion object {
         const val EXPENSES = "expenses"
     }

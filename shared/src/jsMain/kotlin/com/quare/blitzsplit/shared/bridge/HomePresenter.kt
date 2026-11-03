@@ -96,8 +96,11 @@ class JsHomeState(
     val syncBadge: String?,
     val pendingChangeCount: Int,
     val canRetrySync: Boolean,
-    // Why: "Sincronizando…" with the bar and the skeletons, while an account's first download fills the browser.
-    val isFirstDownload: Boolean,
+    /*
+     * Why: "Sincronizando… 3 de 7 grupos" with the bar and the skeletons, while an account's first download fills the
+     * browser; null when there is none.
+     */
+    val firstDownload: JsDownloadProgress?,
     val isLoaded: Boolean,
     val showsFirstUse: Boolean,
     val showsHome: Boolean,
@@ -137,7 +140,7 @@ class HomePresenter {
                 syncBadge = state.syncBadge?.name,
                 pendingChangeCount = state.pendingChangeCount,
                 canRetrySync = state.canRetrySync,
-                isFirstDownload = state.isFirstDownload,
+                firstDownload = state.firstDownload?.toJsDownloadProgress(),
                 isLoaded = state.isLoaded,
                 showsFirstUse = state.showsFirstUse,
                 showsHome = state.showsHome,
@@ -162,11 +165,10 @@ class HomePresenter {
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" and "change-error", a toast in the page's words.
+    // Why: "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                HomeUiAction.ShowComingSoon -> "coming-soon"
                 HomeUiAction.ShowChangeError -> "change-error"
             }
         }

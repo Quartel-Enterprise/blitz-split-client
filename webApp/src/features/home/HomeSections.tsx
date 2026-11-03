@@ -6,6 +6,7 @@ import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/GroupsSearchDialog'
+import { Skeleton } from '@/features/groups/FirstDownload'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -20,11 +21,6 @@ interface SectionProps {
 const summaryHints: Record<string, MessageKey> = {
   TO_RECEIVE: 'home_summaryToReceiveHint',
   YOU_OWE: 'home_summaryToPayHint',
-}
-
-/** A gray bar where something still on its way will show, while the first download fills the browser. */
-function Skeleton({ className }: { className?: string }) {
-  return <span aria-hidden className={cn('block animate-pulse rounded-md bg-muted', className)} />
 }
 
 /**
@@ -62,7 +58,7 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
           </span>
         ))}
         <span className="text-xs text-muted-foreground">
-          {t(state.isFirstDownload ? 'home_summaryFirstDownloadHint' : isSettled ? 'home_summarySettledHint' : (summaryHints[summary.kind] ?? 'home_summarySettledHint'))}
+          {t(state.firstDownload ? 'home_summaryFirstDownloadHint' : isSettled ? 'home_summarySettledHint' : (summaryHints[summary.kind] ?? 'home_summarySettledHint'))}
         </span>
       </section>
       <SplitCard
@@ -170,7 +166,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
       document.removeEventListener('pointerdown', hide)
     }
   }, [tip])
-  if (!state.showsPeople && !state.isFirstDownload) return null
+  if (!state.showsPeople && !state.firstDownload) return null
 
   const people = Array.from(state.people)
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
@@ -362,7 +358,7 @@ function PendingDot() {
  */
 export function RecentBills({ presenter, state }: SectionProps) {
   const rows = Array.from(state.billDays).flatMap((day) => Array.from(day.bills).map((bill) => ({ bill, day: formatDayLabel(day.dayStartMillis, day.relativeDay) })))
-  if (rows.length === 0 && !state.isFirstDownload) return null
+  if (rows.length === 0 && !state.firstDownload) return null
   const open = (bill: JsHomeBill) => presenter.openBill(bill.groupId, bill.id)
   const shareClass = (bill: JsHomeBill) => cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))
   return (
@@ -502,7 +498,7 @@ function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => v
       onClick={onOpen}
       className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
-      <GroupAvatar initials={row.initials} color={row.color} className="size-9 rounded-lg text-xs" />
+      <GroupAvatar initials={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-9 rounded-lg text-xs" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex min-w-0 items-center gap-1.5 font-medium">
           <span className="truncate">{row.name}</span>

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.data
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
@@ -23,7 +24,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
@@ -51,6 +54,7 @@ class GroupRepositoryImplTest {
     private lateinit var remote: FakeGroupRemoteDataSource
     private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var profileLocal: FakeGroupOwnerProfileLocalDataSource
+    private lateinit var photoRemote: FakeGroupPhotoRemoteDataSource
     private lateinit var repository: GroupRepositoryImpl
 
     @Test
@@ -2259,6 +2263,8 @@ class GroupRepositoryImplTest {
                 name = "Casa da praia",
                 type = GroupType.HOME,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.USD,
                 updatedAt = 7_000L,
             )
@@ -2289,6 +2295,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2342,6 +2350,8 @@ class GroupRepositoryImplTest {
                 name = "Casa da praia",
                 type = GroupType.HOME,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.USD,
                 updatedAt = 7_000L,
             )
@@ -2375,6 +2385,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2394,6 +2406,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2416,6 +2430,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -3500,6 +3516,8 @@ class GroupRepositoryImplTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(
@@ -3566,7 +3584,7 @@ class GroupRepositoryImplTest {
         val serverRow = Json.decodeFromString<GroupDto>(
             """
             {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
-            "added_at":1,"updated_at":2,"invite_code":"abc",
+            "added_at":1,"updated_at":2,"invite_code":"abc","shape":"petal","photo_url":null,
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
             "rounding":[{"category":"food","mode":"equal"}]}}
             """.trimIndent(),
@@ -3923,6 +3941,1371 @@ class GroupRepositoryImplTest {
         assertTrue(local.photos.value.isEmpty())
     }
 
+    @Test
+    fun `GIVEN groups on the server WHEN listing the first download THEN returns their ids in the server order`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(id = "group-recent"),
+                    groupDto(id = "group-middle"),
+                    groupDto(id = "group-old"),
+                ),
+            )
+
+            // When
+            val result = repository.fetchFirstDownloadGroupIds()
+
+            // Then
+            assertEquals(listOf("group-recent", "group-middle", "group-old"), result.getOrNull())
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN listing the first download THEN returns the error`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.fetchFirstDownloadGroupIds()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN a group on the server WHEN only fetching it THEN nothing reaches the device until its write runs`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-1",
+                        name = "Pierre",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(local.group("group-1"))
+            assertNull(local.member("m-1"))
+        }
+
+    @Test
+    fun `GIVEN a group with members on the server WHEN downloading it THEN stores them synced and owned by the user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        createdBy = "user-2",
+                        inviteCode = "abc123",
+                    ),
+                ),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = "user-1",
+                        name = "Pierre",
+                    ),
+                    memberDto(
+                        id = "m-3",
+                        groupId = "group-1",
+                        userId = null,
+                        name = "Bruno",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+            result.getOrNull()?.invoke()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val stored = local.group("group-1")
+            assertEquals("user-1", stored?.ownerUserId)
+            assertEquals("user-2", stored?.createdBy)
+            assertEquals(false, stored?.pendingSync)
+            assertEquals("abc123", stored?.inviteCode)
+            assertEquals(listOf(false, true, false), listOf("m-1", "m-2", "m-3").map { local.member(it)?.isMe })
+            assertFalse(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN members on the server WHEN downloading their group THEN only those with an account have joined`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = null,
+                        name = "Bruno",
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            val members = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+            assertEquals(listOf(true, false), members.map { it.hasJoined })
+            assertEquals(listOf(false, false), members.map { it.isMe })
+        }
+
+    @Test
+    fun `GIVEN two groups on the server WHEN downloading one of them THEN only it and its members come down`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(id = "group-1"),
+                    groupDto(id = "group-2"),
+                ),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-2",
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            assertEquals(listOf("group-1"), local.groups.value.map { it.id })
+            assertEquals(listOf("m-1"), local.members.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN synced rows the server no longer has WHEN downloading one group THEN deletes none of them`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(id = "group-1"),
+                group(id = "group-gone"),
+                group(
+                    id = "group-other-user",
+                    ownerUserId = "user-2",
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-gone-from-group-1",
+                    groupId = "group-1",
+                ),
+                member(
+                    id = "m-of-gone-group",
+                    groupId = "group-gone",
+                ),
+                member(
+                    id = "m-of-other-user",
+                    groupId = "group-other-user",
+                ),
+            ),
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+            ),
+        )
+
+        // When
+        repository
+            .fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-1",
+            ).getOrThrow()()
+
+        // Then
+        assertEquals(
+            setOf("group-1", "group-gone", "group-other-user"),
+            local.groups.value
+                .map { it.id }
+                .toSet(),
+        )
+        assertEquals(
+            setOf("m-gone-from-group-1", "m-of-gone-group", "m-of-other-user", "m-1"),
+            local.members.value
+                .map { it.id }
+                .toSet(),
+        )
+        assertTrue(deletions.observeDeletions().first().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a newer server copy of a stored group WHEN downloading that group THEN the server copy wins`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 9L,
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("Viagem Floripa", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN an older server copy of a stored group WHEN downloading that group THEN keeps the device change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("Viagem Floripa", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(true, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a newer server copy of a stored member WHEN downloading its group THEN the server copy wins`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            val stored = local.member("m-1")
+            assertEquals("Ana Paula", stored?.name)
+            assertEquals("user-2", stored?.userId)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN an older server copy of a stored member WHEN downloading its group THEN keeps the device change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()()
+
+            // Then
+            assertEquals("Ana Paula", local.member("m-1")?.name)
+            assertEquals(true, local.member("m-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group deleted after the list was read WHEN downloading it THEN succeeds and stores nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-gone",
+                        groupId = "group-gone",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupDownload(
+                userId = "user-1",
+                groupId = "group-gone",
+            )
+            result.getOrNull()?.invoke()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(local.members.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN downloading one group THEN returns the error and stores nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    name = "Viagem",
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    name = "Viagem Floripa",
+                    updatedAt = 9L,
+                ),
+            ),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+            ),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.fetchGroupDownload(
+            userId = "user-1",
+            groupId = "group-1",
+        )
+        result.getOrNull()?.invoke()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("Viagem", local.group("group-1")?.name)
+        assertTrue(local.members.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a stored group WHEN editing its shape THEN stores the shape code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    shape = "square",
+                ),
+            ),
+        )
+
+        // When
+        editGroup(shape = GroupShape.PETAL)
+
+        // Then
+        assertEquals("petal", local.group("group-1")?.shape)
+    }
+
+    @Test
+    fun `GIVEN a server photo WHEN picking a new photo THEN keeps it on the device without the old URL`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    photoUrl = oldPhotoUrl,
+                ),
+            ),
+        )
+
+        // When
+        editGroup(photo = ProfilePhoto.Pending(photoJpeg))
+
+        // Then
+        val stored = local.group("group-1")
+        assertTrue(photoJpeg.contentEquals(stored?.pendingPhoto))
+        assertNull(stored?.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a photo not up yet WHEN saving a server photo THEN keeps the URL and drops the pending one`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+
+        // When
+        editGroup(photo = ProfilePhoto.Remote(oldPhotoUrl))
+
+        // Then
+        val stored = local.group("group-1")
+        assertEquals(oldPhotoUrl, stored?.photoUrl)
+        assertNull(stored?.pendingPhoto)
+    }
+
+    @Test
+    fun `GIVEN a group with a photo WHEN removing the photo THEN clears both the URL and the pending one`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    photoUrl = oldPhotoUrl,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+
+        // When
+        editGroup(photo = null)
+
+        // Then
+        val stored = local.group("group-1")
+        assertNull(stored?.photoUrl)
+        assertNull(stored?.pendingPhoto)
+    }
+
+    @Test
+    fun `GIVEN a photo picked offline WHEN editing the group THEN the group shows it pending and uploads nothing`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+            // When
+            editGroup(photo = ProfilePhoto.Pending(photoJpeg))
+
+            // Then
+            val shown = repository.observeGroups().first().single()
+            assertEquals(ProfilePhoto.Pending(photoJpeg), shown.photo)
+            assertTrue(shown.isPending)
+            assertTrue(photoRemote.uploads.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a photo not up yet WHEN uploading THEN pushes the row with the URL the photo will have`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+            remote.upsertedGroups
+                .single()
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo not up yet WHEN uploading THEN uploads that photo for the group`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        val (groupId, jpeg) = photoRemote.uploads.single()
+        assertEquals("group-1", groupId)
+        assertTrue(photoJpeg.contentEquals(jpeg))
+    }
+
+    @Test
+    fun `GIVEN a photo not up yet WHEN uploading THEN it goes up after the group and its members`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+        var callsBeforeUpload = emptyList<String>()
+        photoRemote.onUpload = { callsBeforeUpload = remote.calls.toList() }
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(listOf("groups", "members"), callsBeforeUpload)
+    }
+
+    @Test
+    fun `GIVEN a group already on the server with a new photo WHEN uploading THEN the photo goes up before its row`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            var callsBeforeUpload = listOf("not uploaded")
+            photoRemote.onUpload = { callsBeforeUpload = remote.calls.toList() }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(emptyList(), callsBeforeUpload)
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .photoUrl,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group on the server whose photo fails WHEN uploading THEN only that group waits for the next round`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                    group(
+                        id = "group-2",
+                        pendingSync = true,
+                        inviteCode = "DEF456",
+                    ),
+                ),
+            )
+            photoRemote.uploadError = IllegalStateException("storage down")
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(listOf("group-2"), remote.upsertedGroups.single().map { it.id })
+            assertEquals(true, local.group("group-1")?.pendingSync)
+            assertEquals(false, local.group("group-2")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group on the server whose photo is refused WHEN uploading THEN it goes up without the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.refusesUploads = true
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .photoUrl,
+            )
+            val stored = local.group("group-1")
+            assertNull(stored?.pendingPhoto)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a new group whose photo is refused WHEN uploading again THEN its row goes up without the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.refusesUploads = true
+            repository.uploadPendingGroups("user-1")
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(
+                remote.upsertedGroups
+                    .last()
+                    .single()
+                    .photoUrl,
+            )
+            assertEquals(false, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN the group edited while its photo goes up WHEN the upload ends THEN the photo still takes its URL`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.onUpload = {
+                editGroup(
+                    shape = GroupShape.CIRCLE,
+                    photo = ProfilePhoto.Pending(photoJpeg),
+                )
+            }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+                stored?.photoUrl,
+            )
+            assertNull(stored?.pendingPhoto)
+            assertEquals(true, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a photo uploaded WHEN the upload ends THEN the device keeps its URL drops the bytes and is synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5",
+                stored?.photoUrl,
+            )
+            assertNull(stored?.pendingPhoto)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a photo uploaded WHEN observing the groups THEN the group shows the server photo`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+        repository.uploadPendingGroups("user-1")
+
+        // When
+        val shown = repository.observeGroups().first().single()
+
+        // Then
+        assertEquals(
+            ProfilePhoto.Remote("https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=5"),
+            shown.photo,
+        )
+    }
+
+    @Test
+    fun `GIVEN a pending group with a server photo WHEN uploading THEN pushes its URL and uploads nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    photoUrl = oldPhotoUrl,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(
+            oldPhotoUrl,
+            remote.upsertedGroups
+                .single()
+                .single()
+                .photoUrl,
+        )
+        assertTrue(photoRemote.uploads.isEmpty())
+        assertEquals(oldPhotoUrl, local.group("group-1")?.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a pending group without a photo WHEN uploading THEN pushes no photo and uploads nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertNull(
+            remote.upsertedGroups
+                .single()
+                .single()
+                .photoUrl,
+        )
+        assertTrue(photoRemote.uploads.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a pending group with a shape WHEN uploading THEN pushes the shape code as stored`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    shape = "cookie",
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(
+            "cookie",
+            remote.upsertedGroups
+                .single()
+                .single()
+                .shape,
+        )
+    }
+
+    @Test
+    fun `GIVEN a shape a newer app wrote WHEN uploading THEN pushes that code untouched`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    shape = "star",
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(
+            "star",
+            remote.upsertedGroups
+                .single()
+                .single()
+                .shape,
+        )
+    }
+
+    @Test
+    fun `GIVEN a pending group made before shapes WHEN uploading THEN pushes no shape`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    shape = null,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertNull(
+            remote.upsertedGroups
+                .single()
+                .single()
+                .shape,
+        )
+    }
+
+    @Test
+    fun `GIVEN the photo upload fails WHEN uploading THEN returns the error and the photo stays pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+        photoRemote.uploadError = IllegalStateException("storage down")
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        val stored = local.group("group-1")
+        assertEquals(true, stored?.pendingSync)
+        assertTrue(photoJpeg.contentEquals(stored?.pendingPhoto))
+        assertNull(stored?.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN the photo upload failed once WHEN uploading again THEN uploads the photo then`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+        photoRemote.uploadError = IllegalStateException("storage down")
+        repository.uploadPendingGroups("user-1")
+        photoRemote.uploadError = null
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("group-1"), photoRemote.uploads.map { it.first })
+        assertNull(local.group("group-1")?.pendingPhoto)
+        assertEquals(false, local.group("group-1")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the server fails the groups WHEN uploading a group with a photo THEN uploads no photo`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+            upsertGroupsError = IllegalStateException("offline"),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(photoRemote.uploads.isEmpty())
+        assertTrue(photoJpeg.contentEquals(local.group("group-1")?.pendingPhoto))
+    }
+
+    @Test
+    fun `GIVEN another photo picked while the first goes up WHEN uploading THEN keeps the new photo pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.onUpload = { editGroup(photo = ProfilePhoto.Pending(newPhotoJpeg)) }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertTrue(newPhotoJpeg.contentEquals(stored?.pendingPhoto))
+            assertNull(stored?.photoUrl)
+            assertEquals(true, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN another photo picked during the upload WHEN uploading next THEN pushes it under its own version`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.onUpload = { editGroup(photo = ProfilePhoto.Pending(newPhotoJpeg)) }
+            repository.uploadPendingGroups("user-1")
+            photoRemote.onUpload = {}
+            val version = local.group("group-1")!!.updatedAt
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=$version",
+                remote.upsertedGroups
+                    .last()
+                    .single()
+                    .photoUrl,
+            )
+            assertTrue(newPhotoJpeg.contentEquals(photoRemote.uploads.last().second))
+            assertEquals(
+                "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=$version",
+                local.group("group-1")?.photoUrl,
+            )
+            assertNull(local.group("group-1")?.pendingPhoto)
+        }
+
+    @Test
+    fun `GIVEN the photo is taken off while it goes up WHEN uploading THEN the group keeps no photo`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+        photoRemote.onUpload = { editGroup(photo = null) }
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")
+        assertNull(stored?.photoUrl)
+        assertNull(stored?.pendingPhoto)
+        assertEquals(true, stored?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a photo already uploaded WHEN uploading again THEN uploads nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+        )
+        repository.uploadPendingGroups("user-1")
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(1, photoRemote.uploads.size)
+    }
+
+    @Test
+    fun `GIVEN a newer server copy with a shape and photo WHEN downloading THEN they replace the device ones`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        updatedAt = 5L,
+                        shape = "cookie",
+                        photoUrl = oldPhotoUrl,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        updatedAt = 9L,
+                        shape = "circle",
+                        photoUrl = serverPhotoUrl,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("circle", stored?.shape)
+            assertEquals(serverPhotoUrl, stored?.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN a newer server copy without a photo WHEN downloading THEN the device photo is gone`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                    photoUrl = oldPhotoUrl,
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    updatedAt = 9L,
+                    photoUrl = null,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertNull(local.group("group-1")?.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a photo not up yet WHEN a newer server copy comes down THEN shows the server photo instead`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                    pendingSync = true,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    updatedAt = 9L,
+                    photoUrl = serverPhotoUrl,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val shown = repository.observeGroups().first().single()
+        assertEquals(ProfilePhoto.Remote(serverPhotoUrl), shown.photo)
+        assertNull(local.group("group-1")?.pendingPhoto)
+        assertFalse(shown.isPending)
+    }
+
+    @Test
+    fun `GIVEN a photo and shape picked here WHEN an older server copy comes down THEN keeps them pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    shape = "petal",
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    updatedAt = 5L,
+                    shape = "circle",
+                    photoUrl = serverPhotoUrl,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")
+        assertEquals("petal", stored?.shape)
+        assertTrue(photoJpeg.contentEquals(stored?.pendingPhoto))
+        assertNull(stored?.photoUrl)
+        assertEquals(true, stored?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a group from the server without a shape WHEN downloading THEN it shows as a square`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    shape = null,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals(
+            GroupShape.SQUARE,
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .shape,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group from the server with a shape and photo WHEN downloading THEN it shows them`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    shape = "petal",
+                    photoUrl = serverPhotoUrl,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val shown = repository.observeGroups().first().single()
+        assertEquals(GroupShape.PETAL, shown.shape)
+        assertEquals(ProfilePhoto.Remote(serverPhotoUrl), shown.photo)
+    }
+
+    private val photoJpeg = byteArrayOf(1, 2, 3)
+    private val newPhotoJpeg = byteArrayOf(4, 5, 6)
+    private val oldPhotoUrl = "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=1"
+    private val serverPhotoUrl = "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=9"
+
+    private suspend fun editGroup(
+        shape: GroupShape = GroupShape.SQUARE,
+        photo: ProfilePhoto? = null,
+    ) {
+        repository.updateGroup(
+            groupId = "group-1",
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.BLUE,
+            shape = shape,
+            photo = photo,
+            currency = GroupCurrency.BRL,
+            updatedAt = 7L,
+        )
+    }
+
     private fun group(
         id: String,
         name: String = "Viagem Floripa",
@@ -3931,6 +5314,9 @@ class GroupRepositoryImplTest {
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
         inviteCode: String? = null,
+        shape: String? = null,
+        photoUrl: String? = null,
+        pendingPhoto: ByteArray? = null,
     ): GroupEntity = GroupEntity(
         id = id,
         name = name,
@@ -3945,6 +5331,9 @@ class GroupRepositoryImplTest {
         inviteCode = inviteCode,
         defaultSplit = null,
         splitIncomes = null,
+        shape = shape,
+        photoUrl = photoUrl,
+        pendingPhoto = pendingPhoto,
     )
 
     private fun member(
@@ -3990,6 +5379,8 @@ class GroupRepositoryImplTest {
         createdBy: String? = "user-1",
         updatedAt: Long = 1L,
         inviteCode: String? = null,
+        shape: String? = null,
+        photoUrl: String? = null,
     ): GroupDto = GroupDto(
         id = id,
         createdBy = createdBy,
@@ -4001,6 +5392,8 @@ class GroupRepositoryImplTest {
         updatedAt = updatedAt,
         inviteCode = inviteCode,
         defaultSplit = null,
+        shape = shape,
+        photoUrl = photoUrl,
     )
 
     private fun memberDto(
@@ -4078,9 +5471,11 @@ class GroupRepositoryImplTest {
             it.photoUrl.value = myPhotoUrl
         }
         deletions = InMemoryGroupDeletionRepository()
+        photoRemote = FakeGroupPhotoRemoteDataSource()
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
+            photoRemote = photoRemote,
             profileLocal = profileLocal,
             profileMapper = ProfileMapperImpl(),
             mapper = GroupMapperImpl(),
@@ -4185,6 +5580,9 @@ private class FakeGroupLocalDataSource(
         name: String,
         type: String,
         color: String,
+        shape: String?,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     ) {
@@ -4195,6 +5593,9 @@ private class FakeGroupLocalDataSource(
                     name = name,
                     type = type,
                     color = color,
+                    shape = shape ?: it.shape,
+                    photoUrl = photoUrl,
+                    pendingPhoto = pendingPhoto,
                     currency = currency,
                     updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
@@ -4277,6 +5678,32 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun markGroupPhotoUploaded(
+        id: String,
+        jpeg: ByteArray,
+        photoUrl: String,
+    ) {
+        groups.value = groups.value.map {
+            if (it.id == id && it.pendingPhoto?.contentEquals(jpeg) == true) {
+                it.copy(
+                    photoUrl = photoUrl,
+                    pendingPhoto = null,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    ) {
+        groups.value = groups.value.map {
+            if (it.id == id && it.pendingPhoto?.contentEquals(jpeg) == true) it.copy(pendingPhoto = null) else it
+        }
+    }
+
     override suspend fun markMemberSynced(
         id: String,
         syncedUpdatedAt: Long,
@@ -4295,6 +5722,7 @@ private class FakeGroupLocalDataSource(
                 put(
                     entity.copy(
                         pendingSync = false,
+                        pendingPhoto = null,
                         splitIncomes = current.splitIncomes,
                     ),
                 )
@@ -4394,6 +5822,32 @@ private class FakeGroupLocalDataSource(
         members.value = emptyList()
         groups.value = emptyList()
         photos.value = emptyList()
+    }
+}
+
+// Why: the URL is the bucket's public one with the version, as Supabase's; uploads are recorded in order.
+private class FakeGroupPhotoRemoteDataSource : GroupPhotoRemoteDataSource {
+    val uploads = mutableListOf<Pair<String, ByteArray>>()
+    var uploadError: Throwable? = null
+    var refusesUploads = false
+
+    // Why: runs while the photo is going up, so a test can edit the group meanwhile.
+    var onUpload: suspend () -> Unit = {}
+
+    override fun urlOf(
+        groupId: String,
+        version: Long,
+    ): String = "https://cdn.test/storage/v1/object/public/group-photos/$groupId/photo.jpg?v=$version"
+
+    override suspend fun upload(
+        groupId: String,
+        jpeg: ByteArray,
+    ): Boolean {
+        onUpload()
+        uploadError?.let { throw it }
+        if (refusesUploads) return false
+        uploads += groupId to jpeg
+        return true
     }
 }
 
@@ -4507,6 +5961,22 @@ private class FakeGroupRemoteDataSource(
     override suspend fun fetchMembers(): List<GroupMemberDto> {
         fetchError?.let { throw it }
         return members
+    }
+
+    // Why: the first download's order is the server's, so the groups come in the order given.
+    override suspend fun fetchFirstDownloadGroupIds(): List<String> {
+        fetchError?.let { throw it }
+        return groups.map { it.id }
+    }
+
+    override suspend fun fetchGroup(groupId: String): GroupDto? {
+        fetchError?.let { throw it }
+        return groups.firstOrNull { it.id == groupId }
+    }
+
+    override suspend fun fetchMembers(groupId: String): List<GroupMemberDto> {
+        fetchError?.let { throw it }
+        return members.filter { it.groupId == groupId }
     }
 
     override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> {

@@ -1,12 +1,14 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
@@ -26,6 +28,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -477,6 +480,8 @@ class ItemsViewModelTest {
         name = "Jantar",
         type = GroupType.EVENT,
         color = AvatarColor.GREEN,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             member(PIERRE, "Pierre", isMe = true),
@@ -494,9 +499,15 @@ class ItemsViewModelTest {
         GROUP_ID,
         expenseId = null,
         picksGroupFirst = false,
+        scansReceipt = false,
     )
 
-    private val editRoute = Route.SplitBill(GROUP_ID, EXPENSE_ID, picksGroupFirst = false)
+    private val editRoute = Route.SplitBill(
+        GROUP_ID,
+        EXPENSE_ID,
+        picksGroupFirst = false,
+        scansReceipt = false,
+    )
 
     private fun member(
         id: String,
@@ -548,6 +559,13 @@ class ItemsViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

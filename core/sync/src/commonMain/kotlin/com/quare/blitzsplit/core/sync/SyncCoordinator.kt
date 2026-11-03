@@ -18,13 +18,17 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -52,6 +56,7 @@ class SyncCoordinator(
     private val billAttachmentRepository: BillAttachmentRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
+    private val pushDeviceRepository: PushDeviceRepository,
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
@@ -86,6 +91,8 @@ class SyncCoordinator(
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncWhenDue() }
+        scope.launch { registerPushDevice() }
+        scope.launch { endFirstDownloadOffline() }
     }
 
     // Why: the retry outlives the screen that asked for it, like every other sync.
@@ -155,6 +162,10 @@ class SyncCoordinator(
          */
         var areGroupsSynced = false
         val groupsSynced = suspendRunCatching {
+            if (firstDownload.isPending) {
+                // Why: the count is only a nicety, so a pass that fails ends it and the full download below goes on.
+                suspendRunCatching { downloadGroupByGroup(userId) }.onFailure { firstDownload.end() }
+            }
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
             areGroupsSynced = true
@@ -421,6 +432,26 @@ class SyncCoordinator(
             }
     }
 
+    /*
+     * Why: Atividade's push notifications go to the devices of the account signed in, so this device's token goes to
+     * the server for each user it signs in as, an anonymous one included, once online. With no account signed in the
+     * token is removed instead, also once online: a sign out made offline, or one whose call failed, would otherwise
+     * leave the device getting the old account's notices, and the server forgets a token whoever holds it. A failure
+     * waits for the next change: back online, another token or another user.
+     */
+    private suspend fun registerPushDevice() {
+        combine(
+            pushDeviceRepository.observeDevice(),
+            accountRepository.observeStatus().map(::userIdOrNull),
+            connectivityObserver.observe(),
+        ) { device, userId, isOnline -> if (device != null && isOnline) device to userId else null }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .collect { (_, userId) ->
+                if (userId == null) pushDeviceRepository.unregister() else pushDeviceRepository.register(userId)
+            }
+    }
+
     private fun userIdOrNull(status: AccountStatus): String? = when (status) {
         AccountStatus.LocalOnly -> null
         is AccountStatus.Anonymous -> status.userId
@@ -437,5 +468,44 @@ class SyncCoordinator(
             RecoveryCodePrompt.REVIEW -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.SAVED)
             else -> Unit
         }
+    }
+
+    /*
+     * Why: a first download (5.1d) asks the server which groups are coming, then brings each one whole, the latest
+     * activity first, so Início and Grupos count "3 de 7 grupos" and what came is usable before the rest. A group's
+     * rows are all read first, then written in Room's foreign key order with no round trip in between, so no screen
+     * shows a group with its bills and without its payments. It ends there; the full download right after it takes
+     * off what left meanwhile and brings the rest of the account.
+     */
+    private suspend fun downloadGroupByGroup(userId: String) {
+        val groupIds = groupRepository.fetchFirstDownloadGroupIds().getOrThrow()
+        // Why: with none coming there is nothing to count, so it never reads "0 de 0 grupos".
+        if (groupIds.isNotEmpty()) firstDownload.expect(groupIds.size)
+        groupIds.forEach { groupId ->
+            val writes = coroutineScope {
+                listOf(
+                    async { groupRepository.fetchGroupDownload(userId, groupId) },
+                    async { categoryRepository.fetchGroupCategories(groupId) },
+                    async { expenseRepository.fetchGroupExpenses(groupId) },
+                    async { settlementRepository.fetchGroupSettlements(groupId) },
+                ).awaitAll()
+            }.map { it.getOrThrow() }
+            writes.forEach { write -> write() }
+            firstDownload.groupArrived()
+        }
+        firstDownload.end()
+    }
+
+    /*
+     * Why: a first download ends with a sync, which never runs offline, so offline Início and Grupos go back to what
+     * the device holds ("Rachar conta" included) rather than counting groups that can't come.
+     */
+    private suspend fun endFirstDownloadOffline() {
+        combine(
+            connectivityObserver.observe(),
+            profileRepository.observeProfile(),
+        ) { isOnline, profile -> !isOnline && profile != null }
+            .distinctUntilChanged()
+            .collect { isOfflineWithProfile -> if (isOfflineWithProfile) firstDownload.end() }
     }
 }

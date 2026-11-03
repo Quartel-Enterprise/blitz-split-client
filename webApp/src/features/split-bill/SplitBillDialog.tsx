@@ -32,6 +32,7 @@ import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryFormPane, categoryHint, categoryPane, CategoryDeleteDialog } from './CategoryPane'
+import { ReceiptFailureAlert, ReceiptField, ReceiptInput, ReceiptReadChips, useReceiptInput } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
@@ -191,6 +192,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
+  const receiptInput = useReceiptInput(presenter, state)
 
   return (
     <form
@@ -201,6 +203,8 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         presenter.save()
       }}
     >
+      <ReceiptInput presenter={presenter} input={receiptInput} />
+      <ReceiptFailureAlert state={state} input={receiptInput} />
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <SettledPairAnnouncement change={state.settledPair} money={money} />
@@ -273,6 +277,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 ))}
               </div>
             )}
+            <ReceiptReadChips receipt={state.receipt} />
           </div>
         </div>
 
@@ -297,6 +302,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               money={money}
             />
           </div>
+          <ReceiptField presenter={presenter} state={state} input={receiptInput} />
         </div>
       </div>
 
@@ -318,7 +324,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
 function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
   const content = (
     <>
-      <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-5 rounded-md text-[9px]" />
+      <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 rounded-md text-[9px]" />
       <span className="flex-1 truncate text-left">{state.groupName}</span>
     </>
   )
@@ -375,7 +381,7 @@ function GroupList({ presenter, state }: { presenter: SplitBillPresenter; state:
     <div role="radiogroup" aria-label={t('splitBill_groupTitle')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
       {state.groups.map((group) => (
         <PayerRow key={group.id} isSelected={group.id === state.groupSelection} onPick={() => presenter.pickGroup(group.id)}>
-          <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
+          <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-8 text-xs" />
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="truncate font-medium">{group.name}</span>
             <span className="text-xs text-muted-foreground">

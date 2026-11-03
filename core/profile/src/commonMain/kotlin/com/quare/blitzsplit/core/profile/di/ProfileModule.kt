@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyRemoteDataSou
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.PushDeviceRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomMemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomNotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomPaymentKeyLocalDataSource
@@ -16,18 +17,23 @@ import com.quare.blitzsplit.core.profile.data.datasource.SupabaseNotificationPre
 import com.quare.blitzsplit.core.profile.data.datasource.SupabasePaymentKeyRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfileRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.SupabasePushDeviceRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.NotificationPreferencesMapper
 import com.quare.blitzsplit.core.profile.data.mapper.NotificationPreferencesMapperImpl
 import com.quare.blitzsplit.core.profile.data.mapper.PaymentKeyMapper
 import com.quare.blitzsplit.core.profile.data.mapper.PaymentKeyMapperImpl
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
+import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapper
+import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.NotificationPreferencesRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.PaymentKeyRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.ProfileRepositoryImpl
+import com.quare.blitzsplit.core.profile.data.repository.PushDeviceRepositoryImpl
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.DetectPaymentKeyType
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
@@ -42,6 +48,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SavePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
@@ -59,6 +66,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SavePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SaveProfileUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.SetPushDeviceUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayNameUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
@@ -99,4 +107,8 @@ val profileModule = module {
     factoryOf(::ObserveNotificationPreferencesUseCase).bind<ObserveNotificationPreferences>()
     factoryOf(::ObservePendingNotificationPreferenceChangesUseCase).bind<ObservePendingNotificationPreferenceChanges>()
     factoryOf(::UpdateNotificationPreferenceUseCase).bind<UpdateNotificationPreference>()
+    singleOf(::SupabasePushDeviceRemoteDataSource).bind<PushDeviceRemoteDataSource>()
+    singleOf(::PushDeviceMapperImpl).bind<PushDeviceMapper>()
+    singleOf(::PushDeviceRepositoryImpl).bind<PushDeviceRepository>()
+    factoryOf(::SetPushDeviceUseCase).bind<SetPushDevice>()
 }

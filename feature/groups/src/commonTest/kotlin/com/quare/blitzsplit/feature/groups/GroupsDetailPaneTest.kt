@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -200,6 +202,7 @@ class GroupsDetailPaneTest {
                     groupId = "ape",
                     expenseId = null,
                     picksGroupFirst = true,
+                    scansReceipt = false,
                 ),
                 navigator.backStack.value.last(),
             )
@@ -551,6 +554,8 @@ class GroupsDetailPaneTest {
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = names.mapIndexed { index, memberName ->
             GroupMember(
@@ -628,6 +633,7 @@ class GroupsDetailPaneTest {
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
             observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
         )
     }
 }

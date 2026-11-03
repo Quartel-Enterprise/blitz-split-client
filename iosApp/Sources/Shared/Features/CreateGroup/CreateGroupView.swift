@@ -287,19 +287,40 @@ private struct MemberRow: View {
     }
 }
 
-/// A group's avatar: its initials on one of the palette's colors, in a rounded square so a group never
-/// reads as a person's circle.
+/// A group's avatar: its initials on one of the palette's colors, or its photo, in a rounded square so a
+/// group never reads as a person's circle. Only Android draws the group's shape. The initials stay under
+/// the photo, so they show while it loads or when it fails to.
 struct GroupAvatar: View {
     let initials: String
     let color: AvatarColor
+    var photoUrl: String?
     let size: CGFloat
 
+    init(initials: String, color: AvatarColor, photoUrl: String? = nil, size: CGFloat) {
+        self.initials = initials
+        self.color = color
+        self.photoUrl = photoUrl
+        self.size = size
+    }
+
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: size * 0.32)
         Text(verbatim: initials)
             .font(.system(size: size * 0.32, weight: .heavy))
             .foregroundStyle(color.content)
             .frame(width: size, height: size)
-            .background(color.container, in: .rect(cornerRadius: size * 0.32))
+            .background(color.container, in: shape)
+            .overlay {
+                if let photoUrl, let url = URL(string: photoUrl) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.renderingMode(.original).resizable().scaledToFill()
+                        }
+                    }
+                    .frame(width: size, height: size)
+                    .clipShape(shape)
+                }
+            }
     }
 }
 

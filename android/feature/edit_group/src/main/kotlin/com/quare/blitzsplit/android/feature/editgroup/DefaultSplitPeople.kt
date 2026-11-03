@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -40,7 +41,6 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPer
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitRow
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
-import java.util.Locale
 
 private const val PERCENT_POINTS = 100.0
 
@@ -282,7 +282,7 @@ private fun personSubtitleOf(
             stringResource(
                 R.string.default_split_row_equal,
                 state.includedCount,
-                String.format(Locale.getDefault(), "%.1f", percent),
+                String.format(LocalLocale.current.platformLocale, "%.1f", percent),
             )
         } else {
             stringResource(R.string.default_split_row_out)

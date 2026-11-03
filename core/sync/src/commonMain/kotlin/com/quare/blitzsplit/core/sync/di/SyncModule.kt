@@ -65,6 +65,7 @@ val syncModule = module {
             billAttachmentRepository = get(),
             activityRepository = get(),
             hiddenContactRepository = get(),
+            pushDeviceRepository = get(),
             firstDownload = get(),
             connectivityObserver = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),

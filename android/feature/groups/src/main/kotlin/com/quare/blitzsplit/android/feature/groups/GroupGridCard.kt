@@ -118,6 +118,8 @@ internal fun GroupGridCard(
                 GroupBadge(
                     initials = group.initials,
                     color = group.color,
+                    shape = group.shape,
+                    photoUrl = group.photoUrl,
                     size = metrics.badge,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
