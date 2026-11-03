@@ -779,6 +779,12 @@ export const en = {
   deleteAccount_delete: 'Delete account',
   deleteAccount_failed: "Couldn't delete your account. Try again.",
 
+  profilePhoto_title: 'Profile photo',
+  profilePhoto_description: 'Change it with the shortcuts under it.',
+  profilePhoto_camera: 'Camera',
+  profilePhoto_gallery: 'Gallery',
+  profilePhoto_remove: 'Remove',
+  profilePhoto_open: 'View photo',
   editProfile_changePhoto: 'Change photo',
   editProfile_takePhoto: 'Take photo',
   editProfile_choosePhoto: 'Choose from gallery',

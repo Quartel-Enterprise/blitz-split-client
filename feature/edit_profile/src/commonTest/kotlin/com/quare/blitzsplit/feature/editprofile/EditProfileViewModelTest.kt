@@ -952,6 +952,35 @@ class EditProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the editor inline in the profile WHEN tapping the avatar THEN opens the photo big over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = false)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.ProfilePhoto), navigator.backStack.value)
+            assertTrue(profiles.savedProfiles.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an edited name inline WHEN tapping the avatar THEN keeps the edit unsaved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = false)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+        // Then
+        assertEquals("Pierre Vieira", viewModel.uiState.value.name)
+        assertTrue(viewModel.uiState.value.hasChanges)
+        assertTrue(profiles.savedProfiles.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the editor pushed on a phone WHEN going back THEN returns to the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario(pushed = true)

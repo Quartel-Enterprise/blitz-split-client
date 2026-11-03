@@ -59,7 +59,15 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <div className="relative">
-              <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-24 text-4xl transition-colors" />
+              {/* Why: the avatar opens the photo big, as Bible Planner's; the pencil keeps the menu of the form. */}
+              <button
+                type="button"
+                aria-label={t('profilePhoto_open')}
+                onClick={() => presenter.openPhoto()}
+                className="block rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+              >
+                <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-24 text-4xl transition-colors" />
+              </button>
               {state.isPreparingPhoto && (
                 <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/60">
                   <Loader2 className="size-6 animate-spin" />

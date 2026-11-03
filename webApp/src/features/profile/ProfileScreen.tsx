@@ -28,8 +28,9 @@ const themes: { code: string; label: MessageKey }[] = [
 
 /**
  * The profile page, in the home's frame with its footer selected. Name, photo and color are edited right here, in
- * "Your profile". On desktop (1024+) the account sits in the left column under it; on tablet and phone everything is
- * one column, the phone with back on top and the home's navigation at the bottom.
+ * "Your profile". On desktop (1024+) the account sits in the left column under it, with signing out right below it
+ * (beta feedback 16); on tablet and phone everything is one column, in the same order, the phone with back on top and
+ * the home's navigation at the bottom.
  */
 export function ProfileScreen() {
   const presenter = usePresenter(() => new ProfilePresenter())
@@ -84,12 +85,27 @@ export function ProfileScreen() {
                 <EditProfileCard isPending={state.showsProfilePending} />
               </div>
               <AccountCard presenter={presenter} state={state} className="order-3" />
+              {/* Why: "Sair" or "Apagar perfil e sair" depends on the account, never guessed before it was read. */}
+              {state.isLoaded ? (
+                <Button
+                  variant="outline"
+                  className="order-4 text-destructive hover:text-destructive"
+                  disabled={!state.canSignOut}
+                  onClick={() => presenter.signOut()}
+                >
+                  <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
+                </Button>
+              ) : (
+                <LoadingRegion className="order-4">
+                  <Skeleton className="h-9 w-full" />
+                </LoadingRegion>
+              )}
             </div>
             <div className="contents lg:flex lg:flex-col lg:gap-4">
               <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
-              <AppearanceCard presenter={presenter} state={state} className="order-4" />
-              <NotificationSettingsCard className="order-5" />
-              <Card className="order-5">
+              <AppearanceCard presenter={presenter} state={state} className="order-5" />
+              <NotificationSettingsCard className="order-6" />
+              <Card className="order-6">
                 <CardHeader>
                   <CardTitle>{t('profile_categoryMap')}</CardTitle>
                   <CardDescription>{t('profile_categoryMapDetail')}</CardDescription>
@@ -100,22 +116,7 @@ export function ProfileScreen() {
                   </Button>
                 </CardContent>
               </Card>
-              <AboutCard presenter={presenter} className="order-6" />
-              {/* Why: "Sair" or "Apagar perfil e sair" depends on the account, never guessed before it was read. */}
-              {state.isLoaded ? (
-                <Button
-                  variant="outline"
-                  className="order-7 text-destructive hover:text-destructive"
-                  disabled={!state.canSignOut}
-                  onClick={() => presenter.signOut()}
-                >
-                  <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
-                </Button>
-              ) : (
-                <LoadingRegion className="order-7">
-                  <Skeleton className="h-9 w-full" />
-                </LoadingRegion>
-              )}
+              <AboutCard presenter={presenter} className="order-7" />
               {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
             </div>
           </div>

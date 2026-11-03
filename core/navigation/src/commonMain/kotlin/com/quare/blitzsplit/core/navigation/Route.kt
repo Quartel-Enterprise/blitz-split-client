@@ -39,6 +39,12 @@ sealed interface Route {
 
     data object EditProfile : Route
 
+    /*
+     * Why: the profile's avatar tapped (4.1): the photo, or the initial, big over the profile, with shortcuts that
+     * change the photo at once, as Bible Planner's.
+     */
+    data object ProfilePhoto : Route
+
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
     data object DeleteAccount : Route
 

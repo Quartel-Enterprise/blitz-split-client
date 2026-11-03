@@ -780,6 +780,12 @@ export const pt: Record<MessageKey, string> = {
   deleteAccount_delete: 'Excluir conta',
   deleteAccount_failed: 'Não deu para excluir a conta. Tente de novo.',
 
+  profilePhoto_title: 'Foto do perfil',
+  profilePhoto_description: 'Troque com os atalhos abaixo dela.',
+  profilePhoto_camera: 'Câmera',
+  profilePhoto_gallery: 'Galeria',
+  profilePhoto_remove: 'Remover',
+  profilePhoto_open: 'Ver foto',
   editProfile_changePhoto: 'Trocar foto',
   editProfile_takePhoto: 'Tirar foto',
   editProfile_choosePhoto: 'Escolher da galeria',

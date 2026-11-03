@@ -255,8 +255,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Perfil" (4.1, `Route.Profile`) opens from the avatar of each home tab (Início, Grupos…). It is one column on a
     phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
     your account and "Privacidade e sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
-    glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
-    and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
+    glass panel of a Settings split) and the keys and preferences on the right, each column scrolling on its own.
+    "Sair" (or "Apagar perfil e sair") comes right after "Conta e sincronização" on every platform and layout, one
+    column included (Pierre's call, beta feedback 16), and "Excluir conta" stays the last thing of its column; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
     Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
@@ -266,6 +267,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - The profile's avatar (Perfil's on Android and iOS, the inline form's on the web and the Mac, never Editar
+    perfil's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
+    `ProfilePhotoViewModel`), the initial on its color too when there is no photo: 200 pt/dp/px (260 from 600 wide)
+    over the dimmed, blurred profile, with its shortcuts under it, the account's photo ("Google" or "Apple", while
+    it isn't the one shown), "Câmera" where there is one, "Galeria" and "Remover" (with a photo). Each saves the
+    profile's photo at once, offline too, with no Salvar, and the viewer stays open showing the new one; a photo
+    picked opens "Ajustar foto" over it first. ✕, a tap outside, back and Esc close it. Android draws it as a dialog
+    over the whole window (a book's right half), iOS covers the screen, the Mac opens it as a sheet on Ajustes and
+    the web as a dialog over the profile.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

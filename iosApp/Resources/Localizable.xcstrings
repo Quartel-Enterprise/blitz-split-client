@@ -514,6 +514,17 @@
         }
       }
     },
+    "Camera" : {
+      "comment" : "The profile photo viewer: take a photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Câmera"
+          }
+        }
+      }
+    },
     "Camera or photos" : {
       "comment" : "Under the tile that adds a photo to a bill",
       "localizations" : {
@@ -713,6 +724,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arraste e use o zoom para enquadrar"
+          }
+        }
+      }
+    },
+    "Gallery" : {
+      "comment" : "The profile photo viewer: choose a photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Galeria"
           }
         }
       }
@@ -1695,6 +1717,17 @@
         }
       }
     },
+    "Profile photo" : {
+      "comment" : "The profile photo viewer: the photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto do perfil"
+          }
+        }
+      }
+    },
     "Rotate" : {
       "comment" : "Photo editor: turns the photo 90 degrees clockwise",
       "localizations" : {
@@ -1735,6 +1768,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vertical"
+          }
+        }
+      }
+    },
+    "View photo" : {
+      "comment" : "Profile: the avatar, which opens the photo big",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver foto"
           }
         }
       }

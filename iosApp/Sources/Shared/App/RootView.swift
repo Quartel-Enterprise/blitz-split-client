@@ -141,6 +141,7 @@ struct RootView: View {
             ProfileView()
             #endif
         case .editProfile: EditProfileView()
+        case .profilePhoto: ProfilePhotoView()
         case .deleteAccount: DeleteAccountView()
         case .notificationSettings: NotificationSettingsView()
         case .categoryMap: CategoryMapView()
