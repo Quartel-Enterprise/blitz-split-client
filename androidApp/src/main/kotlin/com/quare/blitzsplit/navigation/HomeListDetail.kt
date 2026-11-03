@@ -64,7 +64,7 @@ private object HomeDetailPaneKey : NavMetadataKey<Boolean>
 /*
  * Why: two panes side by side only where the canvas draws them, never three on the widest tablet nor stacked on a
  * tabletop; the hinge stays out of both, as the window's own directive says. The V2 window info also reports Large and
- * Extra-large widths, whose directive widens the panes (1600 dp up); the canvas keeps the same pane width at any size.
+ * Extra-large widths, whose directive widens the panes (1600 dp up); the canvas keeps Material's 360 dp pane width at any size.
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 private fun homeDirectiveOf(
@@ -75,7 +75,7 @@ private fun homeDirectiveOf(
     horizontalPartitionSpacerSize = listDetail?.paneSpacing ?: 0.dp,
     maxVerticalPartitions = 1,
     verticalPartitionSpacerSize = 0.dp,
-    defaultPanePreferredWidth = PaneScaffoldDirective.DefaultPreferredWidth,
+    defaultPanePreferredWidth = 360.dp,
 )
 
 /*
