@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
@@ -40,6 +41,7 @@ class EditGroupViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     connectivityObserver: NetworkConnectivityObserver,
+    loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<EditGroupUiState>
@@ -53,6 +55,7 @@ class EditGroupViewModel(
                 isPreparingPhoto = false,
                 showsPhotoError = false,
                 iconEditor = null,
+                photoCrop = null,
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
                 isCurrencyLocked = false,
@@ -78,10 +81,14 @@ class EditGroupViewModel(
 
     // Why: the group's photo is the same 512x512 JPEG as a profile's.
     private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
         scope = viewModelScope,
         showStatus = ::showPhotoStatus,
+        showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
+        // Why: Salvar sends the photo shown.
+        isBusy = { uiState.value.isSaving },
     )
 
     /*
@@ -135,6 +142,8 @@ class EditGroupViewModel(
             )
 
             is EditGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+
+            is EditGroupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
 
             EditGroupUiEvent.OnPhotoUnreadable -> {
                 uiState.update { it.copy(iconEditor = null) }
@@ -224,10 +233,8 @@ class EditGroupViewModel(
         }
     }
 
-    // Why: Salvar sends the photo shown, so a pick while saving is ignored.
     private fun preparePhoto(source: ByteArray) {
         uiState.update { it.copy(iconEditor = null) }
-        if (uiState.value.isSaving) return
         photoPicker.prepare(source)
     }
 

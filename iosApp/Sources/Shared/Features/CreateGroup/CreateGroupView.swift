@@ -27,6 +27,14 @@ final class CreateGroupModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    func photoPicked(_ data: Data?) {
+        guard let data else {
+            send(CreateGroupUiEventOnPhotoUnreadable.shared)
+            return
+        }
+        send(CreateGroupUiEventOnPhotoPicked(source: BlitzSplitApple.shared.toByteArray(data: data)))
+    }
+
     isolated deinit {
         holder.clear()
     }
@@ -122,6 +130,7 @@ private struct CreateGroupForm: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
+        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(CreateGroupUiEventOnPhotoCrop(event: $0)) }
     }
 
     /// The error, the avatar and the name, type and currency.
@@ -134,15 +143,9 @@ private struct CreateGroupForm: View {
             }
         }
         Section {
-            Button {
-                model.send(CreateGroupUiEventOnColorClicked.shared)
-            } label: {
-                GroupAvatar(initials: state.initials, color: state.color, size: 88)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Change the group's color")
-            .frame(maxWidth: .infinity)
-            .listRowBackground(Color.clear)
+            CreateGroupIcon(model: model)
+                .frame(maxWidth: .infinity)
+                .listRowBackground(Color.clear)
         }
         Section {
             TextField("Group name", text: nameBinding)
@@ -178,6 +181,81 @@ private struct CreateGroupForm: View {
             get: { model.state.currency },
             set: { model.send(CreateGroupUiEventOnCurrencySelected(currency: $0)) },
         )
+    }
+}
+
+/// The group's avatar, whose tap steps its color while it has no photo, and the photo's menu on its corner: take one
+/// (iOS), choose one (the library on iOS, a file on the Mac) or remove it. A photo picked opens "Adjust photo" first.
+private struct CreateGroupIcon: View {
+    let model: CreateGroupModel
+
+    @State private var showsPhotoPicker = false
+    #if os(iOS)
+    @State private var takesPhoto = false
+    #else
+    @State private var importsFile = false
+    #endif
+
+    var body: some View {
+        let state = model.state
+        VStack(spacing: 10) {
+            Button {
+                model.send(CreateGroupUiEventOnColorClicked.shared)
+            } label: {
+                GroupAvatar(initials: state.initials, color: state.color, photoUrl: state.photoUrl, size: 88)
+                    .overlay {
+                        if state.isPreparingPhoto { ProgressView() }
+                    }
+            }
+            .buttonStyle(.plain)
+            .disabled(!state.canChangeColor)
+            .accessibilityLabel("Change the group's color")
+            .overlay(alignment: .bottomTrailing) { photoMenu(hasPhoto: state.hasPhoto) }
+            if state.showsPhotoError {
+                Text("Couldn't use this photo. Try another one.")
+                    .font(.footnote)
+                    .foregroundStyle(Palette.negative)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .photoLibraryPicker(isPresented: $showsPhotoPicker) { data in model.photoPicked(data) }
+        #if os(iOS)
+        .cameraCapture(isRequested: $takesPhoto) { data in model.photoPicked(data) }
+        #else
+        .fileImporter(isPresented: $importsFile, allowedContentTypes: [.image]) { result in
+            // A cancelled panel picked nothing, so it says nothing either
+            if case let .failure(error) = result, (error as? CocoaError)?.code == .userCancelled { return }
+            model.photoPicked(readImportedPhoto(result))
+        }
+        #endif
+    }
+
+    private func photoMenu(hasPhoto: Bool) -> some View {
+        Menu {
+            #if os(iOS)
+            if CameraPicker.isAvailable {
+                Button("Take photo", systemImage: "camera") { takesPhoto = true }
+            }
+            Button("Choose photo", systemImage: "photo.on.rectangle") { showsPhotoPicker = true }
+            #else
+            Button("Choose Photo…", systemImage: "photo.on.rectangle") { importsFile = true }
+            #endif
+            if hasPhoto {
+                Button("Remove photo", systemImage: "trash", role: .destructive) {
+                    model.send(CreateGroupUiEventOnPhotoRemoved.shared)
+                }
+            }
+        } label: {
+            Image(systemName: "camera")
+                .font(.system(size: 13, weight: .semibold))
+                .frame(width: 32, height: 32)
+                .glassEffect(.regular.interactive(), in: .circle)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .offset(x: 6, y: 6)
+        .accessibilityLabel("Group photo")
     }
 }
 

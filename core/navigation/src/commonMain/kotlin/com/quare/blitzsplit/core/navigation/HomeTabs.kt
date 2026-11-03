@@ -46,6 +46,14 @@ fun List<Route>.findHomeTabUnder(route: Route): HomeTab {
     return take(index).asReversed().firstNotNullOfOrNull { it.homeTabOrNull() } ?: HomeTab.HOME
 }
 
+/*
+ * Why: "Buscar" opens over the tab it was asked from only while that tab is on top, so ⌘K over a dialog on the web
+ * or a late tap over a screen the tab opened never covers it.
+ */
+fun Navigator.openSearchOver(tab: HomeTab) {
+    if (backStack.value.lastOrNull()?.homeTabOrNull() == tab) navigate(Route.Search)
+}
+
 private val HomeTab.route: Route
     get() = when (this) {
         HomeTab.HOME -> Route.Home

@@ -84,7 +84,7 @@ export function HomeShell({
   profile: HomeProfile | null
   onTab: (tab: HomeTab) => void
   onProfile: () => void
-  // Why: "Buscar" only on the groups, and once there is a group to look in.
+  // Why: "Buscar" on the five tabs, once there is a group to look in; a group's pages (PageShell) have none.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
   // Why: Atividade's badge, in the primary color (never the destructive red), on every width.
   activityUnreadCount?: number

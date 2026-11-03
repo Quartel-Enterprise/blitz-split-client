@@ -20,6 +20,14 @@ export const en = {
   common_waitingForInternet: "No internet. Your data shows up once you're back online.",
   common_waitingForInternetGroups: "No internet. Your groups show up once you're back online.",
 
+  photoCrop_title: 'Adjust photo',
+  photoCrop_hint: 'Drag and zoom to frame',
+  photoCrop_zoom: 'Zoom',
+  photoCrop_mirrorHorizontally: 'Horizontal',
+  photoCrop_mirrorVertically: 'Vertical',
+  photoCrop_turn: 'Rotate',
+  photoCrop_confirm: 'Done',
+
   otherTab_title: 'Blitz Split is open in another tab',
   otherTab_body: 'Close that tab, or keep using it. This one opens on its own as soon as the other closes.',
 
@@ -206,6 +214,10 @@ export const en = {
   createGroup_useNickname: 'Use “{name}”',
   createGroup_noAppNotice: 'Nobody needs the app right now. You can already add expenses for everyone and send the link later.',
   createGroup_saveError: 'Couldn’t save the group. Try again.',
+  createGroup_photo: 'Group photo',
+  createGroup_choosePhoto: 'Choose photo',
+  createGroup_removePhoto: 'Remove photo',
+  createGroup_photoError: "Couldn't use this photo. Try another one.",
 
   invite_title: 'Invite to {group}',
   invite_close: 'Close',
@@ -1350,8 +1362,6 @@ export const en = {
   activity_selected: 'Selected',
 
   contacts_title: 'Contacts',
-  contacts_search: 'Search contacts',
-  contacts_clearSearch: 'Clear search',
   contacts_offline: 'Offline · contacts in this browser',
   contacts_summary: 'Your balances',
   contacts_youOwe: 'You owe',
@@ -1373,11 +1383,6 @@ export const en = {
   contacts_show: 'Show',
   contacts_showPerson: 'Show {name}',
   contacts_hiddenNote: 'Hidden people stay in the groups. They come back to the list on their own if they join a new bill with you.',
-  contacts_results: 'Search results',
-  contacts_inYourGroups: 'In your groups · {count}',
-  contacts_noAgenda: "The browser can't read your phone's contacts. To bring someone new, send them a group's link.",
-  contacts_noResultsTitle: 'Nobody named “{query}”',
-  contacts_noResultsBody: "We didn't find anyone with that name in your groups. Check the spelling or invite them with a group's link.",
   contacts_emptyTitle: 'Nobody here yet',
   contacts_emptyBody: 'Whoever shares a group with you shows up here, with their balance.',
   contacts_pane: 'Contact',

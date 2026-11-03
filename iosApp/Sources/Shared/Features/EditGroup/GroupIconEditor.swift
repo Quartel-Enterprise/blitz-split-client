@@ -73,7 +73,7 @@ struct EditGroupIconSection: View {
         .fileImporter(isPresented: $importsFile, allowedContentTypes: [.image]) { result in
             // A cancelled panel picked nothing, so it says nothing either
             if case let .failure(error) = result, (error as? CocoaError)?.code == .userCancelled { return }
-            model.photoPicked(Self.read(result))
+            model.photoPicked(readImportedPhoto(result))
         }
         #endif
     }
@@ -113,15 +113,18 @@ struct EditGroupIconSection: View {
         }
         pendingSource = nil
     }
-    #else
-    private static func read(_ result: Result<URL, any Error>) -> Data? {
-        guard case let .success(url) = result else { return nil }
-        let isScoped = url.startAccessingSecurityScopedResource()
-        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
-        return try? Data(contentsOf: url)
-    }
     #endif
 }
+
+#if os(macOS)
+/// The file "Choose Photo…" picked on the Mac, read inside its security scope; nil when it couldn't be.
+func readImportedPhoto(_ result: Result<URL, any Error>) -> Data? {
+    guard case let .success(url) = result else { return nil }
+    let isScoped = url.startAccessingSecurityScopedResource()
+    defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
+    return try? Data(contentsOf: url)
+}
+#endif
 
 #if os(iOS)
 enum PhotoSource {

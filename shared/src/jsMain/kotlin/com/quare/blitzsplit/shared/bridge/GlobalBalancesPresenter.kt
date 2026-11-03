@@ -117,6 +117,8 @@ class JsGlobalBalancesState(
     val recordedPayment: JsPaymentNotice?,
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
+    // Why: "Buscar…" and ⌘K only once there is a group to look in.
+    val canSearch: Boolean,
 )
 
 class GlobalBalancesPresenter(
@@ -161,6 +163,7 @@ class GlobalBalancesPresenter(
                 isWaitingForInternet = state.isWaitingForInternet,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
                 activityUnreadCount = state.activityUnreadCount,
+                canSearch = state.canSearch,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -275,6 +278,11 @@ class GlobalBalancesPresenter(
 
     fun openProfile() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnProfileClicked)
+    }
+
+    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
+    fun openSearch() {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
     }
 
     fun undoPayment() {

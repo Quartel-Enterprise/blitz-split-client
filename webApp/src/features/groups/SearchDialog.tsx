@@ -1,6 +1,7 @@
 import { ReceiptText, Search } from 'lucide-react'
-import type { GroupsPresenter, JsGroupsState, JsSearchBillHit, JsSearchBillPayer, JsTextMatch } from 'blitzsplit-shared'
-import { useState, type KeyboardEvent, type ReactNode } from 'react'
+import { SearchPresenter, type JsGroupsSearch, type JsSearchBillHit, type JsSearchBillPayer, type JsTextMatch } from 'blitzsplit-shared'
+import { useEffect, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react'
+import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
@@ -15,6 +16,44 @@ import { cn } from '@/lib/utils'
 
 /** "⌘K" on a Mac, iPhone or iPad, "Ctrl K" anywhere else, as the sidebar's "Buscar…" shows it. */
 export const searchShortcut = isAppleDevice() ? '⌘K' : 'Ctrl K'
+
+/** What the dialog asks of whoever holds the search: Grupos' own, or the search route over the other tabs. */
+export interface SearchActions {
+  closeSearch(): void
+  search(query: string): void
+  searchIn(scope: string): void
+  openSearchedGroup(groupId: string): void
+  openSearchedPerson(groupId: string): void
+  openSearchedBill(groupId: string, expenseId: string): void
+}
+
+/**
+ * A home tab's "Buscar", once there is a group to look in: ⌘K (Ctrl+K off Apple devices) from anywhere on the tab,
+ * and the sidebar's "Buscar… ⌘K" (the phone's magnifier), whose HomeShell prop it returns.
+ */
+export function useHomeSearch(presenter: { openSearch(): void } | null, canSearch: boolean) {
+  useEffect(() => {
+    if (!presenter || !canSearch) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        presenter.openSearch()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [presenter, canSearch])
+  if (!presenter || !canSearch) return undefined
+  return { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K', onOpen: () => presenter.openSearch() }
+}
+
+/** "Buscar" over Início, Saldos, Contatos or Atividade (`Route.Search`): what is picked opens in its place. */
+export function SearchRouteDialog() {
+  const presenter = usePresenter(() => new SearchPresenter())
+  const search = useWatch(presenter, (p, onChange: (search: JsGroupsSearch) => void) => p.observeState(onChange))
+  if (!presenter || !search) return null
+  return <SearchDialog search={search} actions={presenter} />
+}
 
 const scopes: { scope: string; label: MessageKey }[] = [
   { scope: 'ALL', label: 'groups_searchScopeAll' },
@@ -31,27 +70,21 @@ interface SearchItem {
 }
 
 /**
- * "Buscar" (⌘K): a command dialog over the home, near the top on desktop and tablet and across the top on a phone. It
+ * "Buscar" (⌘K): a command dialog over the home tab, near the top on desktop and tablet and across the top on a phone. It
  * looks in the groups, people and bills of this browser, the settled groups included, offline too, with Tudo, Grupos,
  * Pessoas and Despesas under the field. The arrows move through the results, Enter opens one, Esc closes. Picking a
- * result closes the search and opens the group, the person's members or the bill over its group.
+ * result opens the group, the person's members or the bill over its group in the search's place.
  */
-export function GroupsSearchDialog({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
-  const search = state.search
+export function SearchDialog({ search, actions }: { search: JsGroupsSearch; actions: SearchActions }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const [active, setActive] = useState(0)
   const [draft, setDraft] = useDraft(search.query, (next) => {
     setActive(0)
-    presenter.search(next)
+    actions.search(next)
   })
-  // Why: the search closes first, with the home still on top, so what opens isn't refused nor popped by the close.
-  const pick = (open: () => void) => {
-    presenter.closeSearch()
-    open()
-  }
-  const items = searchItemsOf(presenter, state, pick)
+  const items = searchItemsOf(actions, search)
   const activeIndex = Math.min(active, Math.max(items.length - 1, 0))
-  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (items.length === 0) return
     if (event.key === 'ArrowDown') {
       event.preventDefault()
@@ -65,7 +98,7 @@ export function GroupsSearchDialog({ presenter, state }: { presenter: GroupsPres
     }
   }
   return (
-    <Dialog open onOpenChange={(open) => !open && presenter.closeSearch()}>
+    <Dialog open onOpenChange={(open) => !open && actions.closeSearch()}>
       <DialogContent
         showCloseButton={false}
         className={cn(
@@ -100,7 +133,7 @@ export function GroupsSearchDialog({ presenter, state }: { presenter: GroupsPres
               aria-selected={search.scope === scope}
               onClick={() => {
                 setActive(0)
-                presenter.searchIn(scope)
+                actions.searchIn(scope)
               }}
               className={cn(
                 'h-7 rounded-md px-2.5 text-xs font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
@@ -145,12 +178,11 @@ export function GroupsSearchDialog({ presenter, state }: { presenter: GroupsPres
 }
 
 /** The results in the order the dialog lists them: the groups, the people, then the bills. */
-function searchItemsOf(presenter: GroupsPresenter, state: JsGroupsState, pick: (open: () => void) => void): SearchItem[] {
-  const search = state.search
+function searchItemsOf(actions: SearchActions, search: JsGroupsSearch): SearchItem[] {
   const groups: SearchItem[] = search.groups.map((hit) => ({
     key: `group:${hit.group.id}`,
     section: 'groups_searchSectionGroups',
-    open: () => pick(() => presenter.openGroup(hit.group.id)),
+    open: () => actions.openSearchedGroup(hit.group.id),
     content: (
       <>
         <GroupAvatar initials={hit.group.initials} color={hit.group.color} photoUrl={hit.group.photoUrl} className="size-6 shrink-0 rounded-md text-[10px]" />
@@ -176,7 +208,7 @@ function searchItemsOf(presenter: GroupsPresenter, state: JsGroupsState, pick: (
   const people: SearchItem[] = search.people.map((hit) => ({
     key: `person:${hit.groupId}:${hit.memberId}`,
     section: 'groups_searchSectionPeople',
-    open: () => pick(() => presenter.openSearchedPerson(hit.groupId)),
+    open: () => actions.openSearchedPerson(hit.groupId),
     content: (
       <>
         <Avatar initial={hit.initial} color={hit.color} photoUrl={hit.photoUrl} className="size-6 shrink-0 text-[10px]" />
@@ -190,7 +222,7 @@ function searchItemsOf(presenter: GroupsPresenter, state: JsGroupsState, pick: (
   const bills: SearchItem[] = search.bills.map((hit) => ({
     key: `bill:${hit.id}`,
     section: 'groups_searchSectionBills',
-    open: () => pick(() => presenter.openSearchedBill(hit.groupId, hit.id)),
+    open: () => actions.openSearchedBill(hit.groupId, hit.id),
     content: (
       <>
         <ReceiptText aria-hidden className="mx-1 size-4 shrink-0 text-muted-foreground" />

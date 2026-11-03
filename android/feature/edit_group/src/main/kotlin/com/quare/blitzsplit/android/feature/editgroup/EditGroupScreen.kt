@@ -11,6 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
@@ -47,6 +49,14 @@ fun EditGroupScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding(),
+        )
+    }
+    // Why: the rounded square every group's photo is drawn in, whatever the group's shape.
+    state.photoCrop?.let { editor ->
+        PhotoCropDialog(
+            editor = editor,
+            frame = PhotoCropFrame.ROUNDED_SQUARE,
+            onEvent = { event -> viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(event)) },
         )
     }
 }

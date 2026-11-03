@@ -40,6 +40,7 @@ import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
+import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -94,6 +95,12 @@ fun GlobalBalancesContent(
                     TopAppBar(
                         title = {},
                         actions = {
+                            // Why: only once there is a group to look in, as on Grupos.
+                            if (state.canSearch) {
+                                SearchActionButton(
+                                    onClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) },
+                                )
+                            }
                             ProfileAvatarButton(
                                 initial = state.avatarInitial,
                                 color = state.avatarColor,

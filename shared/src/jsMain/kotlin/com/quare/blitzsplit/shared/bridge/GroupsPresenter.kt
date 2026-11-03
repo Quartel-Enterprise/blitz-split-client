@@ -11,7 +11,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
-import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
@@ -307,31 +307,31 @@ class GroupsPresenter {
 
     // Why: Esc, a click outside, or a result picked.
     fun closeSearch() {
-        viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
     }
 
     fun search(query: String) {
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged(query))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged(query)))
     }
 
     // Why: by SearchScope's name; a name this version doesn't know does nothing.
     fun searchIn(scope: String) {
-        SearchScope.entries.firstOrNull { it.name == scope }?.let {
-            viewModel.onEvent(
-                GroupsUiEvent.OnSearchScopeChanged(it),
-            )
-        }
+        searchScopeOrNull(scope)?.let { viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(it))) }
+    }
+
+    fun openSearchedGroup(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnGroupClicked(groupId)))
     }
 
     fun openSearchedPerson(groupId: String) {
-        viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked(groupId))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnPersonClicked(groupId)))
     }
 
     fun openSearchedBill(
         groupId: String,
         expenseId: String,
     ) {
-        viewModel.onEvent(GroupsUiEvent.OnSearchBillClicked(groupId, expenseId))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked(groupId, expenseId)))
     }
 
     fun dispose() {

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 
 // Why: the part of a text the search found, which the page marks; end excluded.
@@ -83,6 +84,9 @@ internal fun toJsGroupsSearch(search: GroupsSearch): JsGroupsSearch = JsGroupsSe
         .map(::toJsSearchBillHit)
         .toTypedArray(),
 )
+
+// Why: a scope by its name; one this version doesn't know is none.
+internal fun searchScopeOrNull(name: String): SearchScope? = SearchScope.entries.firstOrNull { it.name == name }
 
 private fun toJsTextMatch(match: TextMatch): JsTextMatch = JsTextMatch(match.start, match.end)
 

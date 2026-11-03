@@ -21,6 +21,14 @@ export const pt: Record<MessageKey, string> = {
   common_waitingForInternet: 'Sem internet. Seus dados aparecem quando reconectar.',
   common_waitingForInternetGroups: 'Sem internet. Seus grupos aparecem quando reconectar.',
 
+  photoCrop_title: 'Ajustar foto',
+  photoCrop_hint: 'Arraste e use o zoom para enquadrar',
+  photoCrop_zoom: 'Zoom',
+  photoCrop_mirrorHorizontally: 'Horizontal',
+  photoCrop_mirrorVertically: 'Vertical',
+  photoCrop_turn: 'Girar',
+  photoCrop_confirm: 'Pronto',
+
   otherTab_title: 'O Bora Rachar está aberto em outra aba',
   otherTab_body: 'Feche aquela aba ou continue usando ela. Esta abre sozinha assim que a outra fechar.',
 
@@ -207,6 +215,10 @@ export const pt: Record<MessageKey, string> = {
   createGroup_useNickname: 'Usar “{name}”',
   createGroup_noAppNotice: 'Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.',
   createGroup_saveError: 'Não deu para salvar o grupo. Tente de novo.',
+  createGroup_photo: 'Foto do grupo',
+  createGroup_choosePhoto: 'Escolher foto',
+  createGroup_removePhoto: 'Remover foto',
+  createGroup_photoError: 'Não deu para usar essa foto. Tente outra.',
 
   invite_title: 'Convidar para {group}',
   invite_close: 'Fechar',
@@ -1351,8 +1363,6 @@ export const pt: Record<MessageKey, string> = {
   activity_selected: 'Selecionado',
 
   contacts_title: 'Contatos',
-  contacts_search: 'Buscar contatos',
-  contacts_clearSearch: 'Limpar busca',
   contacts_offline: 'Offline · contatos deste navegador',
   contacts_summary: 'Seus saldos',
   contacts_youOwe: 'Você deve',
@@ -1374,11 +1384,6 @@ export const pt: Record<MessageKey, string> = {
   contacts_show: 'Mostrar',
   contacts_showPerson: 'Mostrar {name}',
   contacts_hiddenNote: 'Quem está oculto continua nos grupos. Volta para a lista sozinho se entrar numa conta nova com você.',
-  contacts_results: 'Resultados da busca',
-  contacts_inYourGroups: 'Nos seus grupos · {count}',
-  contacts_noAgenda: 'O navegador não lê a agenda do celular. Para chamar alguém novo, mande o link de um grupo.',
-  contacts_noResultsTitle: 'Ninguém com “{query}”',
-  contacts_noResultsBody: 'Não achamos ninguém com esse nome nos seus grupos. Confira a grafia ou convide a pessoa com o link de um grupo.',
   contacts_emptyTitle: 'Ninguém por aqui ainda',
   contacts_emptyBody: 'Quem dividir um grupo com você aparece aqui, com o saldo de cada um.',
   contacts_pane: 'Contato',

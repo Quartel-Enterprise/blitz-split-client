@@ -46,6 +46,8 @@ data class GlobalBalancesUiState(
     val pickedPersonId: String?,
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
+    // Why: "Buscar" only once there is a group to look in, as on Grupos.
+    val canSearch: Boolean,
 ) {
     // Why: the people and the totals load together; until then nothing reads as settled or zero.
     val isLoaded: Boolean

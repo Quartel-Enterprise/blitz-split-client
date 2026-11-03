@@ -8,6 +8,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     Route.Restore -> "restore"
     Route.Home -> "home"
     Route.Groups -> "groups"
+    Route.Search -> "search"
     Route.CreateGroup -> "create-group"
     is Route.Invite -> "invite"
     is Route.GroupDetail -> "group-detail"

@@ -134,6 +134,9 @@ struct ActivityView: View {
                     .accessibilityAddTraits(.isHeader)
             }
             .sharedBackgroundVisibility(.hidden)
+            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
+                model?.send(ActivityUiEventOnSearchClicked.shared)
+            }
             ToolbarItem(placement: .primaryAction) {
                 profileButton
             }
@@ -150,6 +153,9 @@ struct ActivityView: View {
         .toolbar {
             if let model, model.state.showsTools {
                 ActivityMacToolbar(model: model, showsTitles: showsDetail)
+            }
+            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
+                model?.send(ActivityUiEventOnSearchClicked.shared)
             }
             ToolbarItem(placement: .primaryAction) {
                 profileButton

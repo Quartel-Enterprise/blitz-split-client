@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 /** A button that looks like a field: "Quem pagou", "Quando". */
 export const controlClass =
-  'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30'
+  'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30'
 
 /**
  * A large amount field with the currency's symbol before it ("R$ 312,00"), the number keyboard on phones. The
@@ -39,7 +39,7 @@ export function AmountInput({
   return (
     <div
       className={cn(
-        'flex h-14 items-center gap-2 rounded-md border bg-card px-3 focus-within:ring-[3px] dark:bg-input/30',
+        'flex h-14 items-center gap-2 rounded-md border bg-card px-3 focus-within:ring-[3px] has-[:disabled]:opacity-50 dark:bg-input/30',
         isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
       )}
     >
@@ -75,6 +75,7 @@ export function WhenField({
   latestMillis,
   onOpen,
   onChange,
+  disabled = false,
 }: {
   id: string
   label: string
@@ -83,6 +84,8 @@ export function WhenField({
   latestMillis: number
   onOpen: () => void
   onChange: (millis: number) => void
+  // Why: a form locked while the popover is open (a receipt being read) closes it, since it portals out of the fieldset.
+  disabled?: boolean
 }) {
   const [isOpen, setOpen] = useState(false)
   const [date, setDate] = useState(() => toDateInputValue(millis))
@@ -97,7 +100,7 @@ export function WhenField({
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       <Popover.Root
-        open={isOpen}
+        open={isOpen && !disabled}
         onOpenChange={(open) => {
           // Why: the inputs open on what the field says now, not on a half-typed date left from before.
           if (open) {
@@ -109,7 +112,7 @@ export function WhenField({
         }}
       >
         <Popover.Trigger asChild>
-          <button id={id} type="button" className={controlClass}>
+          <button id={id} type="button" disabled={disabled} className={controlClass}>
             <CalendarDays aria-hidden className="size-4 text-muted-foreground" />
             <span className="flex-1 truncate">{formatWhen(millis, relativeDay)}</span>
           </button>

@@ -5,9 +5,13 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCa
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.CropPhoto
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCrop
+import com.quare.blitzsplit.core.model.PhotoCropEvent
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -24,8 +28,10 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -35,6 +41,12 @@ class CreateGroupViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: CreateGroupViewModel
+    private lateinit var loadGate: CompletableDeferred<Unit>
+    private lateinit var prepareGate: CompletableDeferred<Unit>
+    private var loadError: Throwable? = null
+    private var prepareError: Throwable? = null
+    private val loadedSources = mutableListOf<ByteArray>()
+    private val preparedCrops = mutableListOf<PhotoCrop>()
 
     @BeforeTest
     fun setUp() {
@@ -959,7 +971,596 @@ class CreateGroupViewModelTest {
             assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN no photo WHEN picking a photo THEN opens Ajustar foto with the photo as picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // Then
+            val state = viewModel.uiState.value
+            val editor = assertNotNull(state.photoCrop)
+            assertContentEquals(firstPhoto, editor.photo.jpeg)
+            assertEquals(PhotoCrop.of(1200, 900), editor.crop)
+            assertFalse(state.isPreparingPhoto)
+            assertFalse(state.showsPhotoError)
+            assertNull(state.photo)
+            assertFalse(state.hasPhoto)
+        }
+
+    @Test
+    fun `GIVEN a picked photo still loading WHEN reading the state THEN shows it preparing and can not create`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isLoadHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isPreparingPhoto)
+            assertNull(state.photoCrop)
+            assertFalse(state.canCreate)
+            assertFalse(state.canChangeColor)
+        }
+
+    @Test
+    fun `GIVEN a named group with Ajustar foto open WHEN reading the state THEN can not create`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNotNull(state.photoCrop)
+            assertFalse(state.canCreate)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN dragging the photo THEN moves the crop`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // When
+        viewModel.onEvent(
+            CreateGroupUiEvent.OnPhotoCrop(
+                PhotoCropEvent.OnDragged(
+                    dx = 0.1f,
+                    dy = 0f,
+                ),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            PhotoCrop.of(1200, 900).toDragged(0.1f, 0f),
+            viewModel.uiState.value.photoCrop
+                ?.crop,
+        )
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN pinching the photo THEN zooms the crop by the pinch`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // When
+        viewModel.onEvent(
+            CreateGroupUiEvent.OnPhotoCrop(
+                PhotoCropEvent.OnPinched(
+                    zoomChange = 1.5f,
+                    focusX = 0f,
+                    focusY = 0f,
+                ),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            1.5f,
+            viewModel.uiState.value.photoCrop
+                ?.crop
+                ?.zoom,
+        )
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN moving the zoom slider THEN zooms the crop to it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(zoom = 2f)))
+
+        // Then
+        assertEquals(
+            2f,
+            viewModel.uiState.value.photoCrop
+                ?.crop
+                ?.zoom,
+        )
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN turning the photo THEN the crop takes a quarter turn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(
+                1,
+                viewModel.uiState.value.photoCrop
+                    ?.crop
+                    ?.quarterTurns,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN mirroring the photo horizontally THEN the crop is mirrored`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorHorizontallyClicked))
+
+            // Then
+            assertEquals(
+                PhotoCrop.of(1200, 900).toMirroredHorizontally(),
+                viewModel.uiState.value.photoCrop
+                    ?.crop,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN mirroring the photo vertically THEN the crop is mirrored upside down`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorVerticallyClicked))
+
+            // Then
+            assertEquals(
+                PhotoCrop.of(1200, 900).toMirroredVertically(),
+                viewModel.uiState.value.photoCrop
+                    ?.crop,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open on the first photo WHEN dismissing it THEN the group has no photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertNull(state.photo)
+            assertFalse(state.hasPhoto)
+            assertFalse(state.isPreparingPhoto)
+            assertTrue(state.canChangeColor)
+            assertTrue(preparedCrops.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a group photo and Ajustar foto open on another WHEN dismissing it THEN keeps the group photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(secondPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertEquals(ProfilePhoto.Pending(firstPhoto), state.photo)
+            assertFalse(state.isPreparingPhoto)
+        }
+
+    @Test
+    fun `GIVEN a turned photo in Ajustar foto WHEN confirming THEN shows the square prepared from that crop`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+            val framed = viewModel.uiState.value.photoCrop
+                ?.crop
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val state = viewModel.uiState.value
+            val expected = ProfilePhoto.Pending(firstPhoto)
+            assertNull(state.photoCrop)
+            assertEquals(expected, state.photo)
+            assertEquals(expected.dataUri, state.photoUrl)
+            assertTrue(state.hasPhoto)
+            assertFalse(state.isPreparingPhoto)
+            assertFalse(state.showsPhotoError)
+            assertEquals(listOf(framed), preparedCrops)
+        }
+
+    @Test
+    fun `GIVEN a named group WHEN a confirmed photo is being prepared THEN shows it preparing and can not create`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPrepareHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertTrue(state.isPreparingPhoto)
+            assertNull(state.photo)
+            assertFalse(state.canCreate)
+            assertFalse(state.canChangeColor)
+        }
+
+    @Test
+    fun `GIVEN a named group WHEN its photo is prepared THEN can create`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+        // Then
+        assertTrue(viewModel.uiState.value.canCreate)
+    }
+
+    @Test
+    fun `GIVEN a group photo WHEN the next picked photo fails to load THEN keeps the photo and shows the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+            loadError = IllegalStateException("not an image")
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(secondPhoto))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPhotoError)
+            assertFalse(state.isPreparingPhoto)
+            assertNull(state.photoCrop)
+            assertEquals(ProfilePhoto.Pending(firstPhoto), state.photo)
+        }
+
+    @Test
+    fun `GIVEN a group photo WHEN the next photo fails to prepare THEN keeps the photo and shows the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+            prepareError = IllegalStateException("encoder failed")
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(secondPhoto))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPhotoError)
+            assertFalse(state.isPreparingPhoto)
+            assertNull(state.photoCrop)
+            assertEquals(ProfilePhoto.Pending(firstPhoto), state.photo)
+        }
+
+    @Test
+    fun `GIVEN a group photo WHEN the picked file is unreadable THEN keeps the photo and shows the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoUnreadable)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPhotoError)
+            assertFalse(state.isPreparingPhoto)
+            assertEquals(ProfilePhoto.Pending(firstPhoto), state.photo)
+        }
+
+    @Test
+    fun `GIVEN a photo error WHEN picking another photo THEN hides the error`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoUnreadable)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsPhotoError)
+        assertNotNull(viewModel.uiState.value.photoCrop)
+    }
+
+    @Test
+    fun `GIVEN a first photo still loading WHEN picking a second photo THEN only the second opens in Ajustar foto`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isLoadHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(secondPhoto))
+
+            // When
+            loadGate.complete(Unit)
+
+            // Then
+            val state = viewModel.uiState.value
+            val editor = assertNotNull(state.photoCrop)
+            assertContentEquals(secondPhoto, editor.photo.jpeg)
+            assertEquals(listOf(firstPhoto, secondPhoto).map(ByteArray::toList), loadedSources.map(ByteArray::toList))
+            assertFalse(state.isPreparingPhoto)
+        }
+
+    @Test
+    fun `GIVEN a group photo and a photo error WHEN removing the photo THEN shows no photo and no error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoUnreadable)
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photo)
+            assertNull(state.photoUrl)
+            assertFalse(state.hasPhoto)
+            assertFalse(state.isPreparingPhoto)
+            assertFalse(state.showsPhotoError)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN removing the photo THEN closes Ajustar foto`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertNull(viewModel.uiState.value.photoCrop)
+        assertNull(viewModel.uiState.value.photo)
+    }
+
+    @Test
+    fun `GIVEN a picked photo still loading WHEN removing the photo THEN the late photo never opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isLoadHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+            // When
+            loadGate.complete(Unit)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertNull(state.photo)
+            assertFalse(state.isPreparingPhoto)
+            assertFalse(state.showsPhotoError)
+        }
+
+    @Test
+    fun `GIVEN a confirmed photo still being prepared WHEN removing the photo THEN the late photo never shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPrepareHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+            // When
+            prepareGate.complete(Unit)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photo)
+            assertFalse(state.isPreparingPhoto)
+            assertTrue(state.canChangeColor)
+        }
+
+    @Test
+    fun `GIVEN a group photo WHEN tapping the avatar THEN the color stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        val color = viewModel.uiState.value.color
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.canChangeColor)
+        assertEquals(color, viewModel.uiState.value.color)
+    }
+
+    @Test
+    fun `GIVEN a group photo WHEN tapping the Android avatar THEN the color and the shape stay`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickAndConfirm(firstPhoto)
+            val color = viewModel.uiState.value.color
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
+
+            // Then
+            assertEquals(color, viewModel.uiState.value.color)
+            assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
+        }
+
+    @Test
+    fun `GIVEN a confirmed photo still being prepared WHEN tapping the avatar THEN the color stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isPrepareHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+            val color = viewModel.uiState.value.color
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+
+            // Then
+            assertEquals(color, viewModel.uiState.value.color)
+        }
+
+    @Test
+    fun `GIVEN the group photo removed WHEN tapping the avatar THEN the group turns green`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.canChangeColor)
+        assertEquals(AvatarColor.GREEN, viewModel.uiState.value.color)
+    }
+
+    @Test
+    fun `GIVEN a named group with a photo WHEN creating THEN creates it with that photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        pickAndConfirm(firstPhoto)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // Then
+        assertEquals(ProfilePhoto.Pending(firstPhoto), groups.createdGroups.single().photo)
+    }
+
+    @Test
+    fun `GIVEN a group photo removed WHEN creating THEN creates it with no photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        pickAndConfirm(firstPhoto)
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // Then
+        assertNull(groups.createdGroups.single().photo)
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN picking a photo THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.createGate = CompletableDeferred()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertTrue(state.isCreating)
+        assertNull(state.photoCrop)
+        assertFalse(state.isPreparingPhoto)
+        assertTrue(loadedSources.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN confirming Ajustar foto THEN prepares nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.createGate = CompletableDeferred()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+        // Then
+        assertTrue(preparedCrops.isEmpty())
+        assertFalse(viewModel.uiState.value.isPreparingPhoto)
+        assertNull(viewModel.uiState.value.photo)
+    }
+
+    @Test
+    fun `GIVEN a save in flight with a photo WHEN removing the photo THEN keeps the photo that is being saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            pickAndConfirm(firstPhoto)
+            groups.createGate = CompletableDeferred()
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isCreating)
+            assertEquals(ProfilePhoto.Pending(firstPhoto), viewModel.uiState.value.photo)
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, null)
+
+    private val firstPhoto = byteArrayOf(1, 2, 3)
+
+    private val secondPhoto = byteArrayOf(4, 5, 6)
+
+    private fun pickAndConfirm(source: ByteArray) {
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(source))
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+    }
 
     private fun addMember(name: String) {
         viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged(name))
@@ -973,7 +1574,11 @@ class CreateGroupViewModelTest {
     private fun prepareScenario(
         profile: UserProfile? = pierre,
         region: String? = "BR",
+        isLoadHeld: Boolean = false,
+        isPrepareHeld: Boolean = false,
     ) {
+        loadGate = CompletableDeferred<Unit>().also { if (!isLoadHeld) it.complete(Unit) }
+        prepareGate = CompletableDeferred<Unit>().also { if (!isPrepareHeld) it.complete(Unit) }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.CreateGroup) }
@@ -983,6 +1588,22 @@ class CreateGroupViewModelTest {
             checkMemberName = CheckMemberNameUseCase(),
             observeProfile = ObserveProfileUseCase(profiles),
             deviceRegion = { region },
+            loadCropPhoto = { source ->
+                loadedSources += source
+                loadGate.await()
+                loadError?.let { Result.failure(it) } ?: Result.success(
+                    CropPhoto(
+                        jpeg = source,
+                        width = 1200,
+                        height = 900,
+                    ),
+                )
+            },
+            prepareProfilePhoto = { photo, crop ->
+                preparedCrops += crop
+                prepareGate.await()
+                prepareError?.let { Result.failure(it) } ?: Result.success(ProfilePhoto.Pending(photo.jpeg))
+            },
         )
     }
 }

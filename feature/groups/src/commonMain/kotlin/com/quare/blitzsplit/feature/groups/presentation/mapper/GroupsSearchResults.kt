@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupNameFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResults
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
@@ -13,6 +14,19 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
+
+// Why: the search with what its text and scope find, wherever it opens: Grupos' place or Route.Search.
+internal fun GroupsSearch.findResultsIn(
+    groups: List<GroupWithMoney>,
+    rows: List<GroupRow>,
+): GroupsSearch = copy(
+    results = searchResultsOf(
+        groups = groups,
+        rows = rows,
+        query = query,
+        scope = scope,
+    ),
+)
 
 /*
  * Why: what "Buscar" finds among what Room holds on this device, folded here rather than with a LIKE, since SQLite

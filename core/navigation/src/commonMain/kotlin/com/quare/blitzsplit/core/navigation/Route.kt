@@ -26,6 +26,12 @@ sealed interface Route {
     // Why: "Grupos", the home's second tab, right above Início.
     data object Groups : Route
 
+    /*
+     * Why: "Buscar" (5.2) opened from Início, Saldos, Contatos or Atividade, over that tab: the groups, people and bills
+     * on the device. Grupos opens the same search in its own place instead, beside its list where there is room.
+     */
+    data object Search : Route
+
     data object Profile : Route
 
     // Why: "Novo grupo", a sheet over the groups on iOS, macOS and the web, a screen of its own on Android phones.

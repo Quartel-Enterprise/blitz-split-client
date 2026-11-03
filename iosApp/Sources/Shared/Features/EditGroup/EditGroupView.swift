@@ -202,6 +202,7 @@ private struct EditGroupForm: View {
             }
         }
         .formStyle(.grouped)
+        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(EditGroupUiEventOnPhotoCrop(event: $0)) }
     }
 
     private var nameErrorText: LocalizedStringKey {

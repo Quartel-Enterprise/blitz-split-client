@@ -178,7 +178,7 @@ data class SplitBillUiState(
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
         get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
-            !isDeleting && !isReadingReceipt
+            !isDeleting && !isFormLocked
 
     // Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e).
     val showsScanReceipt: Boolean
@@ -197,6 +197,14 @@ data class SplitBillUiState(
 
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING
+
+    /*
+     * Why: while "Lendo o cupom…" every other field of the form shows disabled (valor, descrição, categoria, grupo, quem
+     * pagou, quando, divisão) and any editor open closes, so nothing typed is overwritten by what the read fills; × on
+     * "Foto do cupom" still cancels it.
+     */
+    val isFormLocked: Boolean
+        get() = isReadingReceipt
 
     /*
      * Why: why the receipt read nothing (7.1g), each worded its own way: "Não deu para ler o cupom…" with "Tirar outra
@@ -218,7 +226,7 @@ data class SplitBillUiState(
      * while a receipt is being read, whose amounts come back in the currency it was sent with.
      */
     val canChangeGroup: Boolean
-        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isReadingReceipt
+        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isFormLocked
 
     // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
     val splitFollowsDefault: Boolean

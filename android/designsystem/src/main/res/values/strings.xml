@@ -198,6 +198,17 @@
         <item quantity="one">%d unread</item>
         <item quantity="other">%d unread</item>
     </plurals>
+    <!-- "Ajustar foto", the editor a picked photo opens in. -->
+    <string name="designsystem_photo_crop_title">Adjust photo</string>
+    <string name="designsystem_photo_crop_close">Close</string>
+    <string name="designsystem_photo_crop_hint">Drag and zoom to frame</string>
+    <string name="designsystem_photo_crop_zoom">Zoom</string>
+    <string name="designsystem_photo_crop_mirror_horizontally">Horizontal</string>
+    <string name="designsystem_photo_crop_mirror_vertically">Vertical</string>
+    <string name="designsystem_photo_crop_turn">Rotate</string>
+    <string name="designsystem_photo_crop_cancel">Cancel</string>
+    <string name="designsystem_photo_crop_confirm">Done</string>
+    <string name="designsystem_search">Search</string>
     <string name="designsystem_loading">Loading</string>
     <string name="designsystem_waiting_for_internet">No internet. Your data shows up once you\'re back online.</string>
 </resources>

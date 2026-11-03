@@ -135,6 +135,8 @@ class JsActivityState(
     // Why: "3 novas" and the tab's badge, whatever the filter.
     val unreadCount: Int,
     val canMarkAllRead: Boolean,
+    // Why: "Buscar…" and ⌘K only once there is a group to look in.
+    val canSearch: Boolean,
     val filter: JsActivityFilter,
     val isFilterActive: Boolean,
     // Why: "Filtrar" open with what is being picked; null while closed.
@@ -200,6 +202,7 @@ class ActivityPresenter(
                     }.toTypedArray(),
                 unreadCount = state.unreadCount,
                 canMarkAllRead = state.canMarkAllRead,
+                canSearch = state.canSearch,
                 filter = toJsActivityFilter(state.filter),
                 isFilterActive = state.filter.isActive,
                 filterDraft = state.filterDraft?.let(::toJsActivityFilter),
@@ -326,6 +329,11 @@ class ActivityPresenter(
 
     fun openProfile() {
         viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
+    }
+
+    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
+    fun openSearch() {
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
     }
 
     fun openHome() {

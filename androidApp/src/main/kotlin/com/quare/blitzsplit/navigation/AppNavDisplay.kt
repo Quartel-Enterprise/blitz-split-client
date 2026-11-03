@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
+import com.quare.blitzsplit.android.feature.groups.SearchScreen
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
@@ -215,6 +216,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     onEmptyChanged = { isGroupsScreenEmpty = it },
                 )
             }
+            // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
+            entry<Route.Search> { SearchScreen() }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }

@@ -16,25 +16,26 @@ internal actual fun createBillImageEncoder(): BillImageEncoder = BrowserBillImag
 
 /*
  * Why: the browser decodes every format it shows (HEIC only on Safari) and createImageBitmap
- * applies the EXIF rotation, so a canvas does the crop and the JPEG encoding.
+ * applies the EXIF rotation, so a canvas does the crop, through the editor's transform, and the JPEG encoding.
  */
 internal class BrowserAvatarImageEncoder : AvatarImageEncoder {
-    override suspend fun invoke(source: ByteArray): ByteArray {
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+    ): ByteArray {
         val bitmap = decode(source)
-        val width = bitmap.width.unsafeCast<Int>()
-        val height = bitmap.height.unsafeCast<Int>()
-        val side = minOf(width, height)
-        val canvas = createOnWhite(
-            bitmap = bitmap,
-            from = Area(
-                x = (width - side) / 2,
-                y = (height - side) / 2,
-                width = side,
-                height = side,
-            ),
-            width = AVATAR_SIZE_PX,
-            height = AVATAR_SIZE_PX,
+        val canvas = createCanvas(AVATAR_SIZE_PX, AVATAR_SIZE_PX)
+        val context: dynamic = canvas.getContext("2d")
+        context.setTransform(
+            transform.scaleX,
+            transform.skewY,
+            transform.skewX,
+            transform.scaleY,
+            transform.translateX,
+            transform.translateY,
         )
+        context.drawImage(bitmap, 0, 0)
+        bitmap.close()
         return toJpeg(canvas, AVATAR_JPEG_QUALITY)
     }
 }
@@ -86,6 +87,17 @@ private fun createOnWhite(
     width: Int,
     height: Int,
 ): dynamic {
+    val canvas = createCanvas(width, height)
+    canvas.getContext("2d").drawImage(bitmap, from.x, from.y, from.width, from.height, 0, 0, width, height)
+    bitmap.close()
+    return canvas
+}
+
+// Why: JPEG has no alpha, so the canvas starts white.
+private fun createCanvas(
+    width: Int,
+    height: Int,
+): dynamic {
     val global: dynamic = js("globalThis")
     val canvas: dynamic = global.document.createElement("canvas")
     canvas.width = width
@@ -94,8 +106,6 @@ private fun createOnWhite(
     context.imageSmoothingQuality = "high"
     context.fillStyle = BACKGROUND_COLOR
     context.fillRect(0, 0, width, height)
-    context.drawImage(bitmap, from.x, from.y, from.width, from.height, 0, 0, width, height)
-    bitmap.close()
     return canvas
 }
 

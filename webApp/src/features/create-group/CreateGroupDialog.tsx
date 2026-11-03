@@ -1,7 +1,9 @@
-import { Check, ChevronDown, CircleAlert, Loader2, Plus, X } from 'lucide-react'
+import { Camera, Check, ChevronDown, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { useRef } from 'react'
 import { CreateGroupPresenter, type JsCreateGroupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -15,6 +17,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
+import { onPhotoFile } from '@/lib/photoFile'
 
 const formId = 'create-group-form'
 const nameId = 'create-group-name'
@@ -51,6 +54,7 @@ export function CreateGroupDialog() {
     </Button>
   )
   const form = <CreateGroupForm presenter={presenter} state={state} />
+  const photoCrop = state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="rounded-square" />
 
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
@@ -63,6 +67,7 @@ export function CreateGroupDialog() {
           {cancel}
           {create}
         </DialogFooter>
+        {photoCrop}
       </DialogContent>
     </Dialog>
   ) : (
@@ -76,6 +81,7 @@ export function CreateGroupDialog() {
           {create}
           {cancel}
         </DrawerFooter>
+        {photoCrop}
       </DrawerContent>
     </Drawer>
   )
@@ -92,6 +98,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
     return presenter.getDraft()
   })
   const members = state.members.length
+  const photoInput = useRef<HTMLInputElement>(null)
   return (
     <form
       id={formId}
@@ -108,19 +115,54 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         </p>
       )}
       <div className="flex items-end gap-4">
-        <button
-          type="button"
-          aria-label={t('createGroup_changeColor')}
-          onClick={() => presenter.changeColor()}
-          className="rounded-2xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
-        >
-          <GroupAvatar initials={state.initials} color={state.color} className="size-16 text-xl" />
-        </button>
+        {/* Why: the avatar steps its color while no photo covers it; the corner's button picks or removes the photo. */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            aria-label={t('createGroup_changeColor')}
+            disabled={!state.canChangeColor}
+            onClick={() => presenter.changeColor()}
+            className="block rounded-2xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          >
+            <GroupAvatar initials={state.initials} color={state.color} photoUrl={state.photoUrl} className="size-16 text-xl" />
+          </button>
+          {state.isPreparingPhoto && <Loader2 aria-hidden className="absolute inset-0 m-auto size-6 animate-spin text-foreground" />}
+          <input ref={photoInput} type="file" accept="image/*" hidden onChange={(event) => void onPhotoFile(presenter, event)} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                aria-label={t('createGroup_photo')}
+                disabled={state.isCreating}
+                className="absolute -right-1.5 -bottom-1.5 size-7 rounded-full border-2 border-background"
+              >
+                <Camera className="size-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={() => photoInput.current?.click()}>
+                <ImageIcon /> {t('createGroup_choosePhoto')}
+              </DropdownMenuItem>
+              {state.hasPhoto && (
+                <DropdownMenuItem variant="destructive" onSelect={() => presenter.removePhoto()}>
+                  <Trash2 /> {t('createGroup_removePhoto')}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <Label htmlFor={nameId}>{t('createGroup_nameLabel')}</Label>
           <Input id={nameId} value={name} onChange={(event) => setName(event.target.value)} autoComplete="off" />
         </div>
       </div>
+      {state.showsPhotoError && (
+        <p role="alert" className="-mt-2 text-[13px] text-destructive">
+          {t('createGroup_photoError')}
+        </p>
+      )}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <GroupTypePicker label={t('createGroup_typeLabel')} types={state.types} selected={state.type} onSelect={(type) => presenter.selectType(type)} />

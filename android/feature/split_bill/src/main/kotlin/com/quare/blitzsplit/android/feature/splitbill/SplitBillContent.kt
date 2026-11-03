@@ -67,7 +67,6 @@ fun SplitBillContent(
                     money = money,
                     onEvent = onEvent,
                 )
-                ReceiptReadRow(state)
             } else {
                 ShimmerFormSkeleton(fieldCount = 2)
             }

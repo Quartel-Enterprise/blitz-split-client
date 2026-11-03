@@ -6,6 +6,7 @@ import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
+import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -32,6 +33,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>
 export function ActivityScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new ActivityPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsActivityState) => void) => p.observeState(onChange))
+  const search = useHomeSearch(presenter, state?.canSearch ?? false)
   // Why: the canvas' desktop (from 1024 px) splits the feed and the item picked; narrower, one column.
   const isWide = useMediaQuery('(min-width: 1024px)')
   const isPhone = !useMediaQuery('(min-width: 768px)')
@@ -48,6 +50,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
       activityUnreadCount={state.unreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      search={search}
     >
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
         <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>

@@ -6,12 +6,14 @@ import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
@@ -35,6 +37,7 @@ class EditProfileViewModel(
     private val validateDisplayName: ValidateDisplayName,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
+    loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
     getSessionUser: GetSessionUser,
@@ -49,6 +52,7 @@ class EditProfileViewModel(
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
+                photoCrop = null,
                 nameError = null,
                 isNameValid = false,
                 hasChanges = false,
@@ -64,10 +68,14 @@ class EditProfileViewModel(
     private var isAccountRead = false
 
     private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
         scope = viewModelScope,
         showStatus = ::showPhotoStatus,
+        showEditor = ::showPhotoCrop,
         onPrepared = ::showPhoto,
+        // Why: Save sends the photo shown.
+        isBusy = { uiState.value.isSaving },
     )
 
     val stateWatcher: FlowWatcher<EditProfileUiState> = FlowWatcher(uiState)
@@ -108,7 +116,8 @@ class EditProfileViewModel(
         when (event) {
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
-            is EditProfileUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+            is EditProfileUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+            is EditProfileUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
             EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
@@ -174,10 +183,8 @@ class EditProfileViewModel(
         }
     }
 
-    // Why: Save sends the photo shown, so a pick while saving is ignored.
-    private fun preparePhoto(source: ByteArray) {
-        if (uiState.value.isSaving) return
-        photoPicker.prepare(source)
+    private fun showPhotoCrop(editor: PhotoCropEditor?) {
+        uiState.update { it.copy(photoCrop = editor) }
     }
 
     private fun showPhotoStatus(

@@ -37,8 +37,10 @@ internal class ReceiptScanning(
     private val attachBillImage: AttachBillImage,
     // Why: the person's map terms as the form has them, which the read may choose by with the group's categories.
     private val categoryTerms: () -> List<CategoryTerm>,
-    private val onRead: (reading: ReceiptReading, beforeRead: SplitBillUiState) -> Unit,
+    private val onRead: (reading: ReceiptReading) -> Unit,
     private val onRemoved: () -> Unit,
+    // Why: the form locks while it reads and its open editors close (`withEditorsClosed`), Itens' draft with them.
+    private val onReadStarted: () -> Unit,
 ) {
     // Why: the photo of a receipt read, which the bill attaches as it was read; held here, never in the state.
     private var photo: BillImage? = null
@@ -102,7 +104,7 @@ internal class ReceiptScanning(
         items = null
         unansweredSource = null
         uiState.update {
-            it.copy(
+            it.withEditorsClosed().copy(
                 isReceiptCameraRequested = false,
                 receipt = BillReceipt(
                     status = ReceiptStatus.READING,
@@ -112,6 +114,7 @@ internal class ReceiptScanning(
                 ),
             )
         }
+        onReadStarted()
         reading = scope.launch {
             val scan = readReceipt(source, state.currency, ReceiptCategoryHints.of(state.categories, categoryTerms()))
             // Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g).
@@ -142,7 +145,7 @@ internal class ReceiptScanning(
                     ),
                 )
             }
-            onRead(read, state)
+            onRead(read)
         }
     }
 

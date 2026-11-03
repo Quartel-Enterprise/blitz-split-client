@@ -16,15 +16,18 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -68,6 +71,7 @@ class GlobalBalancesViewModel(
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeHasGroups: ObserveHasGroups,
 ) : ViewModel() {
     val uiState: StateFlow<GlobalBalancesUiState>
         field = MutableStateFlow(
@@ -87,6 +91,7 @@ class GlobalBalancesViewModel(
                 recordedPayment = null,
                 pickedPersonId = null,
                 activityUnreadCount = 0,
+                canSearch = false,
             ),
         )
 
@@ -151,6 +156,9 @@ class GlobalBalancesViewModel(
             }.launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -224,6 +232,13 @@ class GlobalBalancesViewModel(
                 if (isOnTop()) navigator.openHomeTab(Route.Activity(personKey = null))
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
+
+            // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
+            GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
+                navigator.openSearchOver(
+                    HomeTab.BALANCES,
+                )
+            }
 
             GlobalBalancesUiEvent.OnUndoPaymentClicked -> undoSettledUp()
 
