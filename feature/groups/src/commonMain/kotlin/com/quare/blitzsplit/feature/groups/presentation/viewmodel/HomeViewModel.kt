@@ -50,6 +50,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.homePeopleOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.latestExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
@@ -110,7 +111,7 @@ class HomeViewModel(
                 accountProvider = null,
                 syncBadge = null,
                 pendingChangeCount = 0,
-                isFirstDownload = false,
+                firstDownload = null,
                 isOnline = true,
                 isLoaded = false,
                 groupCount = 0,
@@ -146,9 +147,6 @@ class HomeViewModel(
 
     // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
-
-    // Why: a first download shows only while the device has no group yet; whatever came down already shows.
-    private var isFirstDownloadPending = false
 
     // Why: the group of the Registrar pagamento opened right over Início, whose notice Início shows once it closes.
     private val paymentGroupId = MutableStateFlow<String?>(null)
@@ -214,7 +212,6 @@ class HomeViewModel(
                         groups = homeGroupsOf(rows, pinnedIds),
                         billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,
-                        isFirstDownload = isFirstDownload(),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -222,9 +219,8 @@ class HomeViewModel(
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observeFirstDownload()
-            .onEach { isPending ->
-                isFirstDownloadPending = isPending
-                uiState.update { it.copy(isFirstDownload = isFirstDownload()) }
+            .onEach { progress ->
+                uiState.update { it.copy(firstDownload = progress?.toDownloadProgress()) }
             }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
@@ -361,8 +357,6 @@ class HomeViewModel(
             }
         }
     }
-
-    private fun isFirstDownload(): Boolean = isFirstDownloadPending && rows.isEmpty()
 
     // Why: only from Início on top, so a late tap never opens a screen over another one.
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Home

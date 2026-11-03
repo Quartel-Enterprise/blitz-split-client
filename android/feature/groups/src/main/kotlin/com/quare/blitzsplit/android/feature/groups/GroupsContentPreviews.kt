@@ -49,6 +49,7 @@ private fun GroupsOfflinePreview() {
                 showsRecoveryCodePrompt = false,
                 groups = emptyList(),
                 hasLoadedGroups = true,
+                firstDownload = null,
                 summary = GroupsSummary(totals = emptyList()),
                 showsSettledGroups = false,
                 filterQuery = "",
@@ -215,6 +216,7 @@ private fun buildPreviewState(
         showsRecoveryCodePrompt = false,
         groups = rows,
         hasLoadedGroups = true,
+        firstDownload = null,
         summary = GroupsSummary(
             totals = listOf(
                 BalanceTotal(

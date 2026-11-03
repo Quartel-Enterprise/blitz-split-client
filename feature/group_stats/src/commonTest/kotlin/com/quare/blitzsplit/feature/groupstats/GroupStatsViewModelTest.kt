@@ -25,6 +25,8 @@ import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
@@ -51,6 +53,7 @@ import kotlin.time.Instant
 class GroupStatsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
+    private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -594,6 +597,91 @@ class GroupStatsViewModelTest {
         }
 
     @Test
+    fun `GIVEN no first download WHEN the statistics open THEN say Total gasto`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.isFirstDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN the statistics open THEN say Total gasto ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isFirstDownload)
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN it ends THEN the statistics say Total gasto`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            downloading = FirstDownloadProgress(
+                arrivedGroupCount = 1,
+                groupCount = 7,
+            ),
+        )
+
+        // When
+        firstDownload.value = null
+
+        // Then
+        assertFalse(viewModel.uiState.value.isFirstDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN another bill comes down THEN the statistics still say ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = null,
+                ),
+            )
+
+            // When
+            expenses.expenses.value = tripBills + expense("taxi", 1_000, spentAt = today)
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.expenseCount)
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN picking another period THEN the statistics still say ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            assertEquals(StatsPeriod.THIS_MONTH, viewModel.uiState.value.period)
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+        }
+
+    @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -833,7 +921,9 @@ class GroupStatsViewModelTest {
         stored: List<Expense> = tripBills,
         keptChart: StatsChartPreferences = StatsChartPreferences.initial,
         groupCategories: List<GroupCategory> = emptyList(),
+        downloading: FirstDownloadProgress? = null,
     ) {
+        firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
@@ -863,6 +953,7 @@ class GroupStatsViewModelTest {
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
         )
     }
 

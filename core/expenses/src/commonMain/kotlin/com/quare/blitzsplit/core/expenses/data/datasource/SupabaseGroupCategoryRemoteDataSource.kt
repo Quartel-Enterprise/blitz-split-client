@@ -15,6 +15,13 @@ class SupabaseGroupCategoryRemoteDataSource(
         idOf = { it.id },
     )
 
+    override suspend fun fetchCategories(groupId: String): List<GroupCategoryDto> =
+        postgrest.fetchAllById<GroupCategoryDto>(
+            table = GROUP_CATEGORIES,
+            idOf = { it.id },
+            groupId = groupId,
+        )
+
     private companion object {
         const val GROUP_CATEGORIES = "group_categories"
     }

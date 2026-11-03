@@ -337,6 +337,79 @@ class SettlementRepositoryImplTest {
         assertEquals(listOf("payment-1"), local.entities.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN payments of two groups on the server WHEN downloading one group THEN only its payments come down`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverRows = listOf(
+                    dto(id = "payment-1"),
+                    dto(
+                        id = "payment-other",
+                        groupId = OTHER_GROUP_ID,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupSettlements(GROUP_ID)
+            result.getOrNull()?.invoke()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val settlements = repository.observeSettlements(GROUP_ID).first()
+            assertEquals(listOf("payment-1"), settlements.map { it.id })
+            assertTrue(settlements.none { it.isPending })
+            assertEquals(listOf("payment-1"), local.entities.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN synced payments the server no longer has WHEN downloading one group THEN only applies its payments`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(id = "payment-gone"),
+                    entity(
+                        id = "payment-of-other-group",
+                        groupId = OTHER_GROUP_ID,
+                    ),
+                ),
+                serverRows = listOf(dto(id = "payment-1")),
+            )
+
+            // When
+            repository.fetchGroupSettlements(GROUP_ID).getOrThrow()()
+
+            // Then
+            assertEquals(listOf("apply payment-1"), local.calls)
+            assertEquals(
+                setOf("payment-gone", "payment-of-other-group", "payment-1"),
+                local.entities.value
+                    .map { it.id }
+                    .toSet(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN downloading one group THEN fails and changes nothing on the device`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "payment-1")),
+            serverRows = listOf(dto(id = "payment-2")),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.fetchGroupSettlements(GROUP_ID)
+        result.getOrNull()?.invoke()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(local.calls.isEmpty())
+        assertEquals(listOf("payment-1"), local.entities.value.map { it.id })
+    }
+
     private val newSettlement = Settlement(
         id = "payment-new",
         groupId = GROUP_ID,
@@ -356,9 +429,10 @@ class SettlementRepositoryImplTest {
         isDeleted: Boolean = false,
         pendingSync: Boolean = false,
         updatedAt: Long = 1L,
+        groupId: String = GROUP_ID,
     ): SettlementEntity = SettlementEntity(
         id = id,
-        groupId = GROUP_ID,
+        groupId = groupId,
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
@@ -371,9 +445,12 @@ class SettlementRepositoryImplTest {
         pendingSync = pendingSync,
     )
 
-    private fun dto(id: String): SettlementDto = SettlementDto(
+    private fun dto(
+        id: String,
+        groupId: String = GROUP_ID,
+    ): SettlementDto = SettlementDto(
         id = id,
-        groupId = GROUP_ID,
+        groupId = groupId,
         createdBy = "user-2",
         fromMemberId = "bruno",
         toMemberId = "ana",
@@ -403,6 +480,7 @@ class SettlementRepositoryImplTest {
 
     private companion object {
         const val GROUP_ID = "group-1"
+        const val OTHER_GROUP_ID = "group-2"
     }
 }
 
@@ -500,5 +578,10 @@ private class FakeSettlementRemoteDataSource(
     override suspend fun fetchSettlements(): List<SettlementDto> {
         fetchError?.let { throw it }
         return rows
+    }
+
+    override suspend fun fetchSettlements(groupId: String): List<SettlementDto> {
+        fetchError?.let { throw it }
+        return rows.filter { it.groupId == groupId }
     }
 }

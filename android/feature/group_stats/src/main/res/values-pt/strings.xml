@@ -13,6 +13,7 @@
     <string name="group_stats_expenses_none">nenhuma despesa</string>
     <string name="group_stats_summary">Resumo do período</string>
     <string name="group_stats_total_spent">Total gasto</string>
+    <string name="group_stats_total_spent_so_far">Total gasto até agora</string>
     <string name="group_stats_meta">%1$s · média de %2$s por pessoa</string>
     <string name="group_stats_my_share">Sua parte</string>
     <string name="group_stats_of_total">%d%% do total</string>

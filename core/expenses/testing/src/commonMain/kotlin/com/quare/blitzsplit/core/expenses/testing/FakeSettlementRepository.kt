@@ -28,6 +28,7 @@ class FakeSettlementRepository(
     val deleteCalls = mutableListOf<List<String>>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var recordError: Throwable? = null
     var deleteError: Throwable? = null
     var pushError: Throwable? = null
@@ -95,4 +96,8 @@ class FakeSettlementRepository(
         downloadedUserIds += userId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
+
+    // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
+    override suspend fun fetchGroupSettlements(groupId: String): Result<suspend () -> Unit> =
+        pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
 }

@@ -93,9 +93,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
     on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
-    first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)
-    shows "Sincronizando…" with skeletons and "até agora · chegando o resto" while no group came down yet (no "3 de 7
-    grupos": the sync can't tell how many are coming), never on a relaunch; the sync chip as Grupos'; an account with
+    first download (an account restored on a device with no profile, until its groups came down or the device is
+    offline, `FirstDownload`)
+    shows "Sincronizando… 3 de 7 grupos" with its bar filling (the server says first how many are coming,
+    `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
+    "Sincronizando…" and a bar that runs), what already came with skeletons under it and "até agora · chegando o
+    resto", never on a relaunch (Mac: the window's subtitle); the sync chip as Grupos'; an account with
     neither Google nor Apple shows "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕
     hiding it until the next launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
   - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each
@@ -137,8 +140,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group, and
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
-    (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
-    progress (5.1d) yet: the sync can't tell how many groups are still to come. A phone lying down (Android and
+    (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. A new device's first download
+    (5.1d) puts "Trazendo seus grupos" in Saldo geral's place, with its bar and "3 de 7 grupos. Pode usar o app
+    enquanto isso: o que já chegou aparece abaixo.", the groups that came over grey rows for up to three still coming,
+    and no "Rachar conta" (`GroupsUiState.firstDownload`); the web draws the same, since its board has none, and the
+    Mac says "Sincronizando… 3 de 7 grupos" in the window's subtitle over the groups that came. A phone lying down (Android and
     iPhone) splits in two: the sync status and "Saldo geral" (its buttons side by side under the amount) stay still on
     the left, 320 dp / 300 pt (Android's QR, Buscar and profile at its top, iOS's stay in the bar), and the list
     scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
@@ -370,7 +376,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
     category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
     to 100), a bill without a category counted in Outros and one of a deleted category in its parent or Outros.
-    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone, a tablet and a foldable upright
+    While a new device's first download still brings bills down it counts what came, as "Total gasto até agora"
+    (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
     categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
     tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"

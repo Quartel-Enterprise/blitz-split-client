@@ -25,7 +25,6 @@ import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
@@ -467,7 +466,7 @@ internal fun BottomClearanceSpacer(height: Dp) {
     Spacer(modifier = Modifier.height(height))
 }
 
-// Why: the chip, and under it the first download's bar, which can't count the groups still to come.
+// Why: the chip, and under it the first download's bar, which fills as the groups come ("3 de 7 grupos").
 @Composable
 internal fun HomeSyncStatusIndicator(
     state: HomeUiState,
@@ -484,9 +483,8 @@ internal fun HomeSyncStatusIndicator(
             pendingChangeCount = state.pendingChangeCount,
             canRetry = state.canRetrySync,
             onRetry = { onEvent(HomeUiEvent.OnRetrySyncClicked) },
+            downloadProgress = state.firstDownload,
         )
-        if (state.isFirstDownload) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
+        state.firstDownload?.let { DownloadProgressBar(progress = it) }
     }
 }

@@ -26,6 +26,14 @@ interface GroupRemoteDataSource {
 
     suspend fun fetchMembers(): List<GroupMemberDto>
 
+    // Why: the first download's groups, the latest activity first, before any of them comes down (5.1d).
+    suspend fun fetchFirstDownloadGroupIds(): List<String>
+
+    // Why: one group of a first download; null once it is gone or no longer the user's.
+    suspend fun fetchGroup(groupId: String): GroupDto?
+
+    suspend fun fetchMembers(groupId: String): List<GroupMemberDto>
+
     // Why: the photos of the user and of everyone they share a group with, as the server's row level security decides.
     suspend fun fetchMemberPhotos(): List<MemberPhotoDto>
 

@@ -7,4 +7,7 @@ interface SettlementRemoteDataSource {
 
     // Why: every payment of every group the user may see, which the server's row level security decides.
     suspend fun fetchSettlements(): List<SettlementDto>
+
+    // Why: every payment of one group, deleted ones included, for a first download that brings each group whole.
+    suspend fun fetchSettlements(groupId: String): List<SettlementDto>
 }

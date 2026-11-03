@@ -26,6 +26,8 @@ data class GroupStatsUiState(
     val allRangeStyle: StatsRangeStyle,
     // Why: "Total gasto": the period's bills, never the payments recorded in Saldos.
     val totalMinor: Long,
+    // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
+    val isFirstDownload: Boolean,
     val expenseCount: Int,
     // Why: "7 despesas, 1 na fila", with the orange dot.
     val pendingCount: Int,

@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -55,6 +56,7 @@ class GroupStatsViewModel(
     observeStatsChartPreferences: ObserveStatsChartPreferences,
     observeCategoryTree: ObserveCategoryTree,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeFirstDownload: ObserveFirstDownload,
 ) : ViewModel() {
     val uiState: StateFlow<GroupStatsUiState>
         field = MutableStateFlow(
@@ -71,6 +73,7 @@ class GroupStatsViewModel(
                 allEndMillis = null,
                 allRangeStyle = StatsRangeStyle.DAYS,
                 totalMinor = 0L,
+                isFirstDownload = false,
                 expenseCount = 0,
                 pendingCount = 0,
                 memberCount = 0,
@@ -133,6 +136,9 @@ class GroupStatsViewModel(
             .launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
+        observeFirstDownload()
+            .onEach { progress -> uiState.update { it.copy(isFirstDownload = progress != null) } }
             .launchIn(viewModelScope)
     }
 
@@ -258,6 +264,7 @@ class GroupStatsViewModel(
             allEndMillis = SpentDay.startOf(calculator.allSpan.end, timeZone).takeIf { expenses.isNotEmpty() },
             allRangeStyle = calculator.toRangeStyle(StatsPeriod.ALL, calculator.allSpan),
             totalMinor = spending.totalMinor,
+            isFirstDownload = uiState.value.isFirstDownload,
             expenseCount = spending.expenses.size,
             pendingCount = spending.pendingCount,
             memberCount = memberCount,

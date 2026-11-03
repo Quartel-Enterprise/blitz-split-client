@@ -7,4 +7,7 @@ interface ExpenseRemoteDataSource {
 
     // Why: every bill of every group the user may see, which the server's row level security decides.
     suspend fun fetchExpenses(): List<ExpenseDto>
+
+    // Why: every bill of one group, deleted ones included, for a first download that brings each group whole.
+    suspend fun fetchExpenses(groupId: String): List<ExpenseDto>
 }
