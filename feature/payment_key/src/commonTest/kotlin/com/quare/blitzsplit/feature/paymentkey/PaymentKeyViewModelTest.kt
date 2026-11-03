@@ -21,7 +21,9 @@ import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEv
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -600,6 +602,35 @@ class PaymentKeyViewModelTest {
             // Then
             assertEquals("123.456", viewModel.uiState.value.input)
             assertNull(viewModel.uiState.value.error)
+        }
+
+    @Test
+    fun `GIVEN a type picked and typed in before the saved key loads WHEN going back to it THEN it is empty`() =
+        runTest(testDispatcher) {
+            // Given
+            val keysGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        type = PaymentKeyType.PHONE,
+                        value = "+5511912345678",
+                    ),
+                ),
+                keysGate = keysGate,
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("pierre@"))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+            keysGate.complete(Unit)
+            runCurrent()
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+
+            // Then
+            assertEquals("", viewModel.uiState.value.input)
         }
 
     @Test
@@ -1503,6 +1534,7 @@ class PaymentKeyViewModelTest {
         storedKeys: List<PaymentKey> = emptyList(),
         keysRead: Boolean = true,
         saveGate: CompletableDeferred<Unit>? = null,
+        keysGate: CompletableDeferred<Unit>? = null,
     ) {
         val route = Route.PaymentKey(
             method = method,
@@ -1528,9 +1560,13 @@ class PaymentKeyViewModelTest {
             },
             deletePaymentKey = DeletePaymentKeyUseCase(repository),
             observePaymentKeys = if (keysRead) {
-                ObservePaymentKeysUseCase(
-                    repository,
-                )
+                val observe = ObservePaymentKeysUseCase(repository)
+                ObservePaymentKeys {
+                    flow {
+                        keysGate?.await()
+                        emitAll(observe())
+                    }
+                }
             } else {
                 ObservePaymentKeys { emptyFlow() }
             },

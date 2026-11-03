@@ -121,6 +121,8 @@ class PaymentKeyViewModel(
         val ofMethod = otherKeys.filter { it.type.method == route.method }
         val state = uiState.value
         if (!state.isLoaded && edited != null) {
+            // Why: the saved key replaces whatever a type picked before it loaded held, so no draft outlives it.
+            drafts.clear()
             isErrorRevealed = true
             uiState.update {
                 it.copy(
