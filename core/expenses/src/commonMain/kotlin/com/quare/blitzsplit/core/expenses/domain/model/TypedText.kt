@@ -66,13 +66,19 @@ object TypedText {
     fun amountSeparatorOf(decimalSeparator: Char): Char =
         decimalSeparator.takeIf { it in amountSeparators } ?: FALLBACK_SEPARATOR
 
-    // Why: one key, a character more or less than the field held, or the field selected whole and one key typed.
+    /*
+     * Why: one key, a digit more or less than the field held, or the field selected whole and one key typed. Digits,
+     * not the text, since a field may still show a separator or letter refused before (a Mac's keyboard).
+     */
     private fun isKeystroke(
         previous: String,
         typed: String,
     ): Boolean {
-        if (typed.length <= 1 || typed == previous) return true
-        val (longer, shorter) = if (typed.length > previous.length) typed to previous else previous to typed
+        if (typed.length <= 1) return true
+        val before = previous.filter { it.isDigit() }
+        val after = typed.filter { it.isDigit() }
+        if (after == before) return true
+        val (longer, shorter) = if (after.length > before.length) after to before else before to after
         if (longer.length - shorter.length != 1) return false
         val firstDifference = shorter.indices.firstOrNull { longer[it] != shorter[it] } ?: shorter.length
         return longer.removeRange(firstDifference, firstDifference + 1) == shorter

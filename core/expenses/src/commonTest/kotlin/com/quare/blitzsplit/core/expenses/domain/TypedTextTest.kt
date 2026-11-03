@@ -571,4 +571,16 @@ class TypedTextTest {
         // Then
         assertEquals("0,07", kept)
     }
+
+    @Test
+    fun `GIVEN a refused comma still shown WHEN typing a digit after it THEN the digit comes in from the right`() {
+        // Given
+        val previous = "0,05"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "0,05,1", GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("0,51", kept)
+    }
 }

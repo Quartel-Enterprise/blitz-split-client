@@ -154,7 +154,7 @@ internal fun SplitBillUiState.withGroupShown(
     decimalSeparator: Char,
 ): SplitBillUiState {
     val severalPayers = severalPayers
-        ?.withPeople(people, group.currency, keepsFormer = isEditing)
+        ?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator)
         ?.takeIf { it.payers.isNotEmpty() }
     val payerId = if (severalPayers != null) {
         ""
@@ -180,7 +180,7 @@ internal fun SplitBillUiState.withGroupShown(
         payerSelection = payerSelection?.takeIf { selection ->
             selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
         },
-        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing),
+        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator),
         isLoaded = true,
     )
 }

@@ -178,6 +178,23 @@ class SeveralPayersViewModelTest {
         }
 
     @Test
+    fun `GIVEN Varias pessoas open WHEN the group changes currency THEN each amount keeps its number`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "12,50"))
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.JPY))
+
+            // Then
+            assertEquals("12", sheet().textByMember().getValue(ANA))
+            assertEquals("312", sheet().textByMember().getValue(PIERRE))
+        }
+
+    @Test
     fun `GIVEN Varias pessoas open WHEN pasting a currency symbol and letters THEN reads the amount among them`() =
         runTest(testDispatcher) {
             // Given
