@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import type { JsFeeEditor, JsItemEditor, JsItemPersonLine, JsItemsEditor, JsSplitBillState, SplitItemsPresenter } from 'blitzsplit-shared'
-import { Avatar } from '@/components/common'
+import { Avatar, segmentClass } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -255,7 +255,7 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
             onClick={() => presenter.changeMode(mode)}
             className={cn(
               'flex items-center justify-center rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              editor.mode === mode ? 'bg-background text-foreground shadow-sm dark:bg-input/30' : 'hover:text-foreground',
+              segmentClass(editor.mode === mode),
             )}
           >
             {t(itemModeLabels[mode] ?? 'item_modeEqual')}

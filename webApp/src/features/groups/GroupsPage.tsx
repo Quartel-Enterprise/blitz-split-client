@@ -2,7 +2,7 @@ import { ChevronRight, CloudOff, ListFilter, QrCode, RefreshCw, SquarePlus } fro
 import type { GroupsPresenter, JsBalanceTotal, JsDownloadProgress, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
-import { SplitBillIcon } from '@/components/common'
+import { segmentClass, SplitBillIcon } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -274,7 +274,7 @@ function StatusTab({ isSelected, count, onSelect, children }: { isSelected: bool
       onClick={onSelect}
       className={cn(
         'flex h-[30px] items-center gap-1.5 rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-        isSelected ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground',
+        segmentClass(isSelected),
       )}
     >
       {children} <span className="font-normal text-muted-foreground">{count}</span>

@@ -788,7 +788,6 @@ export const en = {
   editProfile_avatarColor: 'Avatar color',
   editProfile_avatarColorHint: 'Shows when you have no photo.',
   editProfile_nameLabel: 'Your name',
-  editProfile_nameHint: 'From {min} to {max} characters',
   editProfile_nameTooShort: 'Type at least {min} letters.',
   editProfile_nameTooLong: 'Use up to {max} characters.',
   editProfile_accountNotice: "Name and photo came from your {provider} account. Changing them here only applies to Blitz Split and doesn't change your {provider} account.",

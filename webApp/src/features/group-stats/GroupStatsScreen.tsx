@@ -2,7 +2,7 @@ import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, L
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
 import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
@@ -355,7 +355,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
               onClick={tab.onClick}
               className={cn(
                 'rounded-md px-3 text-[13px] font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                tab.selected ? 'bg-background text-foreground shadow-sm dark:bg-input/30' : 'text-muted-foreground hover:text-foreground',
+                segmentClass(tab.selected),
               )}
             >
               {tab.label}
@@ -431,11 +431,10 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
             }}
             className={cn(
               'min-w-0 rounded-md text-[13px] font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              state.grain === option.grain
-                ? 'bg-background text-foreground shadow-sm dark:bg-input/30'
-                : option.isEnabled
-                  ? 'text-muted-foreground hover:text-foreground'
-                  : 'cursor-default text-muted-foreground opacity-40',
+              // Why: the grain kept stays marked even when the period no longer fits it.
+              !option.isEnabled && state.grain !== option.grain
+                ? 'cursor-default text-muted-foreground opacity-40'
+                : segmentClass(state.grain === option.grain),
             )}
           >
             {t(grainLabels[option.grain] ?? 'stats_grainDay')}

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -352,7 +353,7 @@ private fun NameSection(
             singleLine = true,
             supportingText = {
                 Row {
-                    val hint = when (state.nameError) {
+                    val error = when (state.nameError) {
                         EditProfileNameError.TOO_SHORT -> stringResource(
                             R.string.edit_profile_name_too_short,
                             state.nameMinLength,
@@ -363,16 +364,16 @@ private fun NameSection(
                             state.nameMaxLength,
                         )
 
-                        null -> stringResource(
-                            R.string.edit_profile_name_hint,
-                            state.nameMinLength,
-                            state.nameMaxLength,
+                        null -> null
+                    }
+                    if (error == null) {
+                        Spacer(Modifier.weight(1f))
+                    } else {
+                        Text(
+                            text = error,
+                            modifier = Modifier.weight(1f),
                         )
                     }
-                    Text(
-                        text = hint,
-                        modifier = Modifier.weight(1f),
-                    )
                     Text(stringResource(R.string.edit_profile_name_count, state.nameLength, state.nameMaxLength))
                 }
             },
