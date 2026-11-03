@@ -33,14 +33,23 @@ object AmountInput {
         return wholeMinor + fractionMinor
     }
 
-    // Why: an amount the app fills in a field, as the person would type it: "62,40" with the separator they use.
+    /*
+     * Why: an amount as an amount field shows it, "1.234,56" with the separator of the device's language and the
+     * other one grouping thousands, which parse reads back.
+     */
     fun format(
         amountMinor: Long,
         currency: GroupCurrency,
         decimalSeparator: Char,
     ): String {
+        if (amountMinor < 0) return "-" + format(-amountMinor, currency, decimalSeparator)
         val factor = ExpenseRules.minorPerMajorFor(currency)
-        val whole = (amountMinor / factor).toString()
+        val whole = (amountMinor / factor)
+            .toString()
+            .reversed()
+            .chunked(THOUSANDS)
+            .joinToString(groupingSeparatorOf(decimalSeparator).toString())
+            .reversed()
         if (currency.fractionDigits == 0) return whole
         val fraction = (amountMinor % factor).toString().padStart(currency.fractionDigits, '0')
         return whole + decimalSeparator + fraction
@@ -52,7 +61,10 @@ object AmountInput {
         .takeIf { it.isNotEmpty() && it.length <= MAX_DIGITS && it.all(Char::isDigit) }
         ?.toLong()
 
+    private fun groupingSeparatorOf(decimalSeparator: Char): Char = if (decimalSeparator == ',') '.' else ','
+
     private val SEPARATORS = setOf(',', '.')
 
     private const val MAX_DIGITS = 12
+    private const val THOUSANDS = 3
 }

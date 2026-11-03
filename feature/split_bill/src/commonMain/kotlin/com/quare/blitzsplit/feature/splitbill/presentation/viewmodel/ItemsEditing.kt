@@ -124,7 +124,8 @@ internal class ItemsEditing(
             is SplitBillUiEvent.OnItemQuantityChanged -> changeQuantity { AmountInput.parseWhole(event.text) ?: it }
 
             is SplitBillUiEvent.OnItemPriceChanged -> editItem {
-                it.withTotal(it.quantity, TypedText.toAmountText(event.text), separator())
+                val unitPriceText = TypedText.toAmountText(it.unitPriceText, event.text, it.currency, separator())
+                it.withTotal(it.quantity, unitPriceText, separator())
             }
 
             is SplitBillUiEvent.OnItemModeClicked -> editItem { it.toMode(event.mode, separator()) }
@@ -160,7 +161,7 @@ internal class ItemsEditing(
                 val text = if (editor.fee == ItemsFee.SERVICE) {
                     TypedText.toPercentText(event.text)
                 } else {
-                    TypedText.toAmountText(event.text)
+                    TypedText.toAmountText(editor.valueText, event.text, editor.currency, separator())
                 }
                 state.copy(feeEditor = editor.copy(valueText = text))
             }
@@ -282,9 +283,11 @@ internal class ItemsEditing(
         memberId: String,
         text: String,
     ) {
-        val mode = uiState.value.itemEditor?.mode ?: return
-        when (mode) {
-            ItemSplitMode.AMOUNT -> editPerson(memberId) { it.copy(valueText = TypedText.toAmountText(text)) }
+        val editor = uiState.value.itemEditor ?: return
+        when (editor.mode) {
+            ItemSplitMode.AMOUNT -> editPerson(memberId) {
+                it.copy(valueText = TypedText.toAmountText(it.valueText, text, editor.currency, separator()))
+            }
 
             ItemSplitMode.PERCENT -> editPerson(memberId) { it.copy(valueText = TypedText.toPercentText(text)) }
 

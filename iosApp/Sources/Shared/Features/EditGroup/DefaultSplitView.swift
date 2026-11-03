@@ -354,7 +354,7 @@ private struct DefaultSplitPersonRow: View {
         let title = label()
         return KeptTextField(text: text, prompt: Text(verbatim: prompt)) { title }
             #if os(iOS)
-            .keyboardType(mode == .income ? .decimalPad : .numberPad)
+            .keyboardType(.numberPad)
             #endif
             .inlineValueFieldStyle(width: width, isError: isError)
     }

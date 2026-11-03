@@ -1,7 +1,7 @@
 import Shared
 import SwiftUI
 
-/// The amount of a bill or of a payment, with the group currency's symbol in front: large, on the decimal pad, on
+/// The amount of a bill or of a payment, with the group currency's symbol in front: large, on the number pad, on
 /// iPhone and iPad; a plain field on the Mac. Every keystroke goes to the ViewModel, which hands the text back.
 struct AmountField: View {
     let currency: GroupCurrency
@@ -20,7 +20,7 @@ struct AmountField: View {
             }
             .font(.system(size: 34, weight: .bold))
             .monospacedDigit()
-            .keyboardType(.decimalPad)
+            .keyboardType(.numberPad)
         }
         #else
         HStack(spacing: 6) {

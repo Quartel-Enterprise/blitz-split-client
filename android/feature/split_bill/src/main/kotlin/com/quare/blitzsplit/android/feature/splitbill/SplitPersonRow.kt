@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -166,7 +167,6 @@ internal fun SplitPersonRow(
                     placeholder = money.zeroPlaceholder,
                     prefix = money.symbol,
                     suffix = null,
-                    keyboardType = KeyboardType.Decimal,
                     isError = isWithoutValue,
                     width = amountFieldWidth,
                 )
@@ -178,7 +178,6 @@ internal fun SplitPersonRow(
                     placeholder = "0",
                     prefix = null,
                     suffix = PERCENT_SUFFIX,
-                    keyboardType = KeyboardType.Number,
                     isError = false,
                     width = percentFieldWidth,
                 )
@@ -232,7 +231,6 @@ internal fun CompactNumberField(
     placeholder: String,
     prefix: String?,
     suffix: String?,
-    keyboardType: KeyboardType,
     isError: Boolean,
     width: Dp,
 ) {
@@ -248,15 +246,16 @@ internal fun CompactNumberField(
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.End,
     )
+    val field = rememberNumberField(value, onValueChange)
     BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = field.value,
+        onValueChange = field.onValueChange,
         modifier = Modifier
             .width(width)
             .semantics { contentDescription = label },
         textStyle = textStyle,
         keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
+            keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Next,
         ),
         singleLine = true,

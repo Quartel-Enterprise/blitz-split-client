@@ -121,7 +121,14 @@ class DefaultSplitViewModel(
             }
 
             is DefaultSplitUiEvent.OnIncomeChanged -> updatePerson(event.memberId) {
-                it.copy(incomeText = TypedText.toAmountText(event.text))
+                it.copy(
+                    incomeText = TypedText.toAmountText(
+                        previous = it.incomeText,
+                        typed = event.text,
+                        currency = uiState.value.currency,
+                        decimalSeparator = decimalSeparator(),
+                    ),
+                )
             }
 
             DefaultSplitUiEvent.OnSaveClicked -> save()
@@ -170,7 +177,18 @@ class DefaultSplitViewModel(
         }
         // Why: the form keeps what is typed; someone who joined since comes in as the split being typed starts them.
         updateForm { state ->
-            val byId = state.people.associateBy { it.id }
+            // Why: a group now in another currency keeps each income's number, as Rachar conta keeps the bill's.
+            val byId = state.people
+                .map { person ->
+                    person.copy(
+                        incomeText = TypedText.toCurrency(
+                            text = person.incomeText,
+                            from = state.currency,
+                            to = group.currency,
+                            decimalSeparator = decimalSeparator(),
+                        ),
+                    )
+                }.associateBy { it.id }
             state.copy(
                 groupName = group.name,
                 currency = group.currency,

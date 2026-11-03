@@ -320,7 +320,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
         </span>
       )}
       <input
-        inputMode={suffix === '%' ? 'numeric' : 'decimal'}
+        inputMode="numeric"
         autoComplete="off"
         value={value}
         placeholder={placeholder}

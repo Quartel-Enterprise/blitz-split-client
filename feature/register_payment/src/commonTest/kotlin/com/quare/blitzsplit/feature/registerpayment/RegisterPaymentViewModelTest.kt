@@ -227,7 +227,7 @@ class RegisterPaymentViewModelTest {
 
         // Then
         assertEquals(GroupCurrency.JPY, state.currency)
-        assertEquals("16230", state.amountText)
+        assertEquals("16.230", state.amountText)
         assertTrue(state.isFullDebt)
     }
 
@@ -460,7 +460,7 @@ class RegisterPaymentViewModelTest {
         // Then
         val state = viewModel.uiState.value
         assertEquals(17_230L, state.debtMinor)
-        assertEquals("50", state.amountText)
+        assertEquals("50,00", state.amountText)
         assertEquals(12_230L, state.remainingMinor)
     }
 
@@ -526,7 +526,7 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
-    fun `GIVEN letters and symbols WHEN typing the amount THEN keeps only digits commas and dots`() =
+    fun `GIVEN letters and symbols WHEN pasting the amount THEN reads the amount among them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -536,21 +536,23 @@ class RegisterPaymentViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("12.05,0", state.amountText)
+            assertEquals("1.205,00", state.amountText)
             assertTrue(state.hasEditedAmount)
         }
 
     @Test
-    fun `GIVEN a long text WHEN typing the amount THEN keeps its first 16 characters`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the most digits an amount has WHEN typing one more THEN keeps the field as it was`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("999999999,99")
 
-        // When
-        typeAmount("12345678901234567890")
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("999.999.999,999"))
 
-        // Then
-        assertEquals("1234567890123456", viewModel.uiState.value.amountText)
-    }
+            // Then
+            assertEquals("999.999.999,99", viewModel.uiState.value.amountText)
+        }
 
     @Test
     fun `GIVEN a debt of 162 30 WHEN typing more than it THEN shows the over debt error and cannot confirm`() =
@@ -1594,7 +1596,9 @@ class RegisterPaymentViewModelTest {
         )
     }
 
+    // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged(""))
         viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged(text))
     }
 

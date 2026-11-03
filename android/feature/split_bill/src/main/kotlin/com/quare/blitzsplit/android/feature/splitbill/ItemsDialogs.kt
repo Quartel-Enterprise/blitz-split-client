@@ -10,6 +10,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.splitbill.presentation.model.FeeEditor
@@ -50,9 +51,10 @@ internal fun FeeDialog(
             if (isService) R.string.split_bill_fee_service_title else R.string.split_bill_fee_couvert_title,
         ),
         text = {
+            val feeField = rememberNumberField(editor.valueText) { onEvent(SplitBillUiEvent.OnFeeValueChanged(it)) }
             OutlinedTextField(
-                value = editor.valueText,
-                onValueChange = { onEvent(SplitBillUiEvent.OnFeeValueChanged(it)) },
+                value = feeField.value,
+                onValueChange = feeField.onValueChange,
                 label = { Text(stringResource(fieldLabel)) },
                 prefix = if (isService) null else ({ Text(money.symbol + " ") }),
                 suffix = if (isService) ({ Text("%") }) else null,
@@ -61,7 +63,7 @@ internal fun FeeDialog(
                 isError = !editor.canSave,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = if (isService) KeyboardType.Number else KeyboardType.Decimal,
+                    keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done,
                 ),
             )

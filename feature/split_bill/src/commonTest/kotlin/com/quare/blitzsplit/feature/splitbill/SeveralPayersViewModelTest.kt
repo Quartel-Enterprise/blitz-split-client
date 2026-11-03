@@ -116,7 +116,7 @@ class SeveralPayersViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
 
             // Then
-            assertEquals("3120", sheet().textByMember().getValue(PIERRE))
+            assertEquals("3.120", sheet().textByMember().getValue(PIERRE))
             assertTrue(sheet().addsUp)
         }
 
@@ -168,7 +168,7 @@ class SeveralPayersViewModelTest {
 
             // Then
             val amounts = sheet()
-            assertEquals("100", amounts.textByMember().getValue(ANA))
+            assertEquals("100,00", amounts.textByMember().getValue(ANA))
             assertEquals(41_200L, amounts.paidMinor)
             assertEquals(-10_000L, amounts.remainingMinor)
             assertTrue(amounts.showsMismatch)
@@ -178,7 +178,24 @@ class SeveralPayersViewModelTest {
         }
 
     @Test
-    fun `GIVEN Varias pessoas open WHEN typing a currency symbol and letters THEN keeps only digits and separators`() =
+    fun `GIVEN Varias pessoas open WHEN the group changes currency THEN each amount keeps its number`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "12,50"))
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.JPY))
+
+            // Then
+            assertEquals("12", sheet().textByMember().getValue(ANA))
+            assertEquals("312", sheet().textByMember().getValue(PIERRE))
+        }
+
+    @Test
+    fun `GIVEN Varias pessoas open WHEN pasting a currency symbol and letters THEN reads the amount among them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -189,11 +206,11 @@ class SeveralPayersViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "R$ 1.200,5a"))
 
             // Then
-            assertEquals("1.200,5", sheet().textByMember().getValue(ANA))
+            assertEquals("1.200,50", sheet().textByMember().getValue(ANA))
         }
 
     @Test
-    fun `GIVEN Varias pessoas open WHEN typing more than 16 characters THEN keeps the first 16`() =
+    fun `GIVEN Varias pessoas open WHEN pasting more digits than an amount has THEN keeps the field as it was`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -203,7 +220,7 @@ class SeveralPayersViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "12345678901234567890"))
 
             // Then
-            assertEquals("1234567890123456", sheet().textByMember().getValue(ANA))
+            assertEquals("", sheet().textByMember().getValue(ANA))
         }
 
     @Test
@@ -739,7 +756,9 @@ class SeveralPayersViewModelTest {
             assertTrue(state.canSave)
         }
 
+    // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(text))
     }
 

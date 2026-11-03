@@ -284,7 +284,7 @@ class AmountInputTest {
     }
 
     @Test
-    fun `GIVEN an amount in cents WHEN formatting with a comma THEN writes the cents after it`() {
+    fun `GIVEN an amount in cents WHEN formatting with a comma THEN groups with the dot and ends in the cents`() {
         // Given
         val amountMinor = 123_456L
 
@@ -292,7 +292,7 @@ class AmountInputTest {
         val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
 
         // Then
-        assertEquals("1234,56", text)
+        assertEquals("1.234,56", text)
     }
 
     @Test
@@ -308,7 +308,7 @@ class AmountInputTest {
     }
 
     @Test
-    fun `GIVEN yen WHEN formatting THEN writes no separator`() {
+    fun `GIVEN yen WHEN formatting THEN groups thousands and writes no decimals`() {
         // Given
         val amountMinor = 1_500L
 
@@ -316,7 +316,7 @@ class AmountInputTest {
         val text = AmountInput.format(amountMinor, GroupCurrency.JPY, ',')
 
         // Then
-        assertEquals("1500", text)
+        assertEquals("1.500", text)
     }
 
     @Test
@@ -329,6 +329,18 @@ class AmountInputTest {
 
         // Then
         assertEquals(624_000L, amount)
+    }
+
+    @Test
+    fun `GIVEN a negative amount WHEN formatting THEN puts the minus before the grouped number`() {
+        // Given
+        val amountMinor = -123_456L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("-1.234,56", text)
     }
 
     @Test
@@ -414,4 +426,119 @@ class AmountInputTest {
         // Then
         assertEquals(999_999_999_999L, value)
     }
+
+    @Test
+    fun `GIVEN millions in cents WHEN formatting with a comma THEN groups every thousand with the dot`() {
+        // Given
+        val amountMinor = 123_456_789L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("1.234.567,89", text)
+    }
+
+    @Test
+    fun `GIVEN millions in cents WHEN formatting with a dot THEN groups every thousand with the comma`() {
+        // Given
+        val amountMinor = 123_456_789L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.USD, '.')
+
+        // Then
+        assertEquals("1,234,567.89", text)
+    }
+
+    @Test
+    fun `GIVEN yen WHEN formatting with a dot THEN groups thousands with the comma`() {
+        // Given
+        val amountMinor = 1_500L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.JPY, '.')
+
+        // Then
+        assertEquals("1,500", text)
+    }
+
+    @Test
+    fun `GIVEN less than a thousand WHEN formatting THEN writes no grouping`() {
+        // Given
+        val amountMinor = 99_999L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("999,99", text)
+    }
+
+    @Test
+    fun `GIVEN zero WHEN formatting reais and yen THEN writes zero with the currency decimals`() {
+        // Given
+        val amountMinor = 0L
+
+        // When
+        val reais = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+        val yen = AmountInput.format(amountMinor, GroupCurrency.JPY, ',')
+
+        // Then
+        assertEquals("0,00", reais)
+        assertEquals("0", yen)
+    }
+
+    @Test
+    fun `GIVEN reais formatted with a comma WHEN parsing them back THEN reads the same amounts`() {
+        // Given
+        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.BRL, ',') }
+
+        // When
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.BRL) }
+
+        // Then
+        assertEquals(centAmounts, amounts)
+    }
+
+    @Test
+    fun `GIVEN dollars formatted with a dot WHEN parsing them back THEN reads the same amounts`() {
+        // Given
+        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.USD, '.') }
+
+        // When
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.USD) }
+
+        // Then
+        assertEquals(centAmounts, amounts)
+    }
+
+    @Test
+    fun `GIVEN yen formatted with a comma WHEN parsing them back THEN reads the same amounts`() {
+        // Given
+        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, ',') }
+
+        // When
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY) }
+
+        // Then
+        assertEquals(yenAmounts, amounts)
+    }
+
+    @Test
+    fun `GIVEN yen formatted with a dot WHEN parsing them back THEN reads the same amounts`() {
+        // Given
+        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, '.') }
+
+        // When
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY) }
+
+        // Then
+        assertEquals(yenAmounts, amounts)
+    }
+
+    private val centAmounts: List<Long> =
+        listOf(0L, 1L, 99L, 100L, 99_999L, 100_000L, 123_456_789L, 10_000_000_000L, 99_999_999_999L)
+
+    private val yenAmounts: List<Long> = listOf(0L, 1L, 999L, 1_000L, 1_234_567L, 100_000_000L, 999_999_999L)
 }

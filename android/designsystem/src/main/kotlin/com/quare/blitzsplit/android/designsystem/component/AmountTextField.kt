@@ -17,7 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 /*
- * Why: the large amount of Rachar conta and Registrar pagamento, the currency's symbol before it, the decimal
+ * Why: the large amount of Rachar conta and Registrar pagamento, the currency's symbol before it, the number
  * keyboard, and what it means under it, read out as it changes.
  */
 @Composable
@@ -31,9 +31,10 @@ fun AmountTextField(
     modifier: Modifier = Modifier,
     imeAction: ImeAction = ImeAction.Next,
 ) {
+    val amountField = rememberNumberField(value, onValueChange)
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = amountField.value,
+        onValueChange = amountField.onValueChange,
         modifier = modifier.fillMaxWidth(),
         textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
         label = { Text(label) },
@@ -57,7 +58,7 @@ fun AmountTextField(
         isError = isError,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Decimal,
+            keyboardType = KeyboardType.Number,
             imeAction = imeAction,
         ),
     )

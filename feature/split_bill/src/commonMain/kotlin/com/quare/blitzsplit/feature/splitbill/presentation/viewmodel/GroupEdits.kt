@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -150,9 +151,10 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
 internal fun SplitBillUiState.withGroupShown(
     group: Group,
     people: List<BillPerson>,
+    decimalSeparator: Char,
 ): SplitBillUiState {
     val severalPayers = severalPayers
-        ?.withPeople(people, group.currency, keepsFormer = isEditing)
+        ?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator)
         ?.takeIf { it.payers.isNotEmpty() }
     val payerId = if (severalPayers != null) {
         ""
@@ -169,6 +171,8 @@ internal fun SplitBillUiState.withGroupShown(
         groupShape = group.shape,
         groupPhotoUrl = group.photo?.toImageUrl(),
         currency = group.currency,
+        // Why: moved to a group of another currency, the bill keeps the number typed, not its digits.
+        amountText = TypedText.toCurrency(amountText, currency, group.currency, decimalSeparator),
         people = people,
         payerId = payerId,
         severalPayers = severalPayers,
@@ -176,7 +180,7 @@ internal fun SplitBillUiState.withGroupShown(
         payerSelection = payerSelection?.takeIf { selection ->
             selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
         },
-        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing),
+        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator),
         isLoaded = true,
     )
 }

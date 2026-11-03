@@ -375,7 +375,7 @@ function NumberField({
         </span>
       )}
       <input
-        inputMode={prefix ? 'decimal' : 'numeric'}
+        inputMode="numeric"
         autoComplete="off"
         value={draft}
         placeholder={placeholder}

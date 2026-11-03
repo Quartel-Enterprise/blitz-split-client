@@ -230,7 +230,7 @@ private struct SplitPersonRow: View {
             }
         }
         #if os(iOS)
-        .keyboardType(editor.mode == .amount ? .decimalPad : .numberPad)
+        .keyboardType(.numberPad)
         #endif
         .inlineValueFieldStyle(width: width, isError: isError)
     }

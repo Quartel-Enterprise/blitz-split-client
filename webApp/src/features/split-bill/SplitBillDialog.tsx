@@ -717,7 +717,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
         {currencySymbol(currency)}
       </span>
       <input
-        inputMode="decimal"
+        inputMode="numeric"
         autoComplete="off"
         value={value}
         placeholder={amountPlaceholder(fractionDigits)}

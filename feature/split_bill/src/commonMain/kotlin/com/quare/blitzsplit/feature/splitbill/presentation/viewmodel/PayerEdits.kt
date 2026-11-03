@@ -78,13 +78,18 @@ internal fun SplitBillUiState.toPayerAmounts(decimalSeparator: Char): PayerAmoun
 
 /*
  * Why: the people of the group as they are now, a new member with nothing paid. A bill being edited keeps what
- * someone who left paid, as "Ex-membro", so saving it never changes who paid unasked; a new bill drops them.
+ * someone who left paid, as "Ex-membro", so saving it never changes who paid unasked; a new bill drops them. A group
+ * now in another currency keeps each amount's number, as the bill's total does.
  */
 internal fun PayerAmounts.withPeople(
     people: List<BillPerson>,
     currency: GroupCurrency,
     keepsFormer: Boolean,
+    decimalSeparator: Char,
 ): PayerAmounts {
+    val rows = rows.map { row ->
+        row.copy(amountText = TypedText.toCurrency(row.amountText, this.currency, currency, decimalSeparator))
+    }
     val byId = rows.associateBy { it.memberId }
     val memberRows = people.map { person ->
         byId[person.id]?.copy(person = person) ?: PayerAmountRow(
@@ -166,7 +171,16 @@ internal fun SplitBillUiState.withSeveralPayersOpened(decimalSeparator: Char): S
 internal fun SplitBillUiState.withPayerAmount(
     memberId: String,
     text: String,
-): SplitBillUiState = copy(payerAmounts = payerAmounts?.withAmountText(memberId, TypedText.toAmountText(text)))
+    decimalSeparator: Char,
+): SplitBillUiState {
+    val amounts = payerAmounts ?: return this
+    val previous = amounts.rows
+        .firstOrNull { it.memberId == memberId }
+        ?.amountText
+        .orEmpty()
+    val amountText = TypedText.toAmountText(previous, text, amounts.currency, decimalSeparator)
+    return copy(payerAmounts = amounts.withAmountText(memberId, amountText))
+}
 
 // Why: "Quem pagou" marks one person until Pronto; someone no longer in the group can't be marked.
 internal fun SplitBillUiState.withPayerPicked(memberId: String): SplitBillUiState =

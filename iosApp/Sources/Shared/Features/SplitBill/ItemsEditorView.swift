@@ -414,7 +414,7 @@ private struct ItemPersonRowView: View {
             label
         }
         #if os(iOS)
-        .keyboardType(editor.mode == .amount ? .decimalPad : .numberPad)
+        .keyboardType(.numberPad)
         #endif
         .inlineValueFieldStyle(width: width, isError: line.isError)
     }
@@ -434,7 +434,7 @@ private struct ItemsAlerts: ViewModifier {
                     Text(verbatim: model.state.feeEditor.map { ItemsCopy.feeField($0.fee) } ?? "")
                 }
                 #if os(iOS)
-                .keyboardType(model.state.feeEditor?.fee == .service ? .numberPad : .decimalPad)
+                .keyboardType(.numberPad)
                 #endif
                 Button("Done") {
                     model.send(SplitBillUiEventOnFeeDone.shared)
@@ -682,7 +682,7 @@ struct PhoneItemEditor: View {
                 KeptTextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
                     Text("Price of each")
                 }
-                .keyboardType(.decimalPad)
+                .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .monospacedDigit()
                 .frame(maxWidth: 120)
