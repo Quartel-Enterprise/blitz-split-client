@@ -116,8 +116,8 @@ private fun WelcomeSingleColumn(
             if (layout.isTablet) {
                 // Why: upright on a tablet the pitch panel sits on top and the actions below it.
                 WelcomePitchPanel(
-                    modifier = Modifier.padding(horizontal = 24.dp),
                     isScrollable = false,
+                    modifier = Modifier.padding(horizontal = 24.dp),
                 )
             } else {
                 ShapeClusterHero(modifier = Modifier.padding(horizontal = 16.dp))
@@ -221,7 +221,10 @@ private fun WelcomeTabletLandscapeLayout(
             modifier = Modifier.widthIn(max = twoColumnsMaxWidth).fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(48.dp),
         ) {
-            WelcomePitchPanel(modifier = Modifier.weight(1f).fillMaxHeight())
+            WelcomePitchPanel(
+                isScrollable = true,
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -252,6 +255,7 @@ private fun WelcomeBookLayout(
     TwoHalvesLayout(
         start = {
             WelcomePitchPanel(
+                isScrollable = true,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(start = 16.dp),
@@ -290,9 +294,9 @@ private fun WelcomeBookLayout(
  */
 @Composable
 private fun WelcomePitchPanel(
+    isScrollable: Boolean,
     modifier: Modifier = Modifier,
     isCompact: Boolean = false,
-    isScrollable: Boolean = true,
 ) {
     val scrollState = rememberScrollState()
     Surface(
