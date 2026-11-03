@@ -58,7 +58,7 @@ enum class GroupCurrency(
     CHF("CHF", setOf("CH", "LI")),
     ;
 
-    private val minorPerMajor: Long = (1..fractionDigits).fold(1L) { units, _ -> units * 10 }
+    val minorPerMajor: Long = (1..fractionDigits).fold(1L) { units, _ -> units * 10 }
 
     /*
      * Why: an amount shown on screen drops its decimals when they are all zero ("R$ 500", never "R$ 500,00"), and

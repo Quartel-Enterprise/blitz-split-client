@@ -18,14 +18,12 @@ import java.util.Locale
  */
 @Stable
 class MoneyFormatter(
-    currency: GroupCurrency,
+    private val currency: GroupCurrency,
     locale: Locale,
 ) {
-    private val groupCurrency = currency
+    private val format: NumberFormat = createCurrencyFormat(locale, currency.fractionDigits)
 
-    private val format: NumberFormat = createCurrencyFormat(currency, locale, currency.fractionDigits)
-
-    private val wholeFormat: NumberFormat = createCurrencyFormat(currency, locale, fractionDigits = 0)
+    private val wholeFormat: NumberFormat = createCurrencyFormat(locale, fractionDigits = 0)
 
     // Why: the symbol a field shows before what is typed in it.
     val symbol: String = Currency.getInstance(currency.code).getSymbol(locale)
@@ -58,31 +56,30 @@ class MoneyFormatter(
         amountMinor: Long,
         withDecimals: NumberFormat,
         whole: NumberFormat,
-    ): NumberFormat = if (groupCurrency.getDisplayFractionDigits(amountMinor) == 0) whole else withDecimals
+    ): NumberFormat = if (currency.getDisplayFractionDigits(amountMinor) == 0) whole else withDecimals
 
-    private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, groupCurrency.fractionDigits)
+    private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, currency.fractionDigits)
+
+    private fun createCurrencyFormat(
+        locale: Locale,
+        fractionDigits: Int,
+    ): NumberFormat = NumberFormat.getCurrencyInstance(locale).apply {
+        currency = Currency.getInstance(this@MoneyFormatter.currency.code)
+        minimumFractionDigits = fractionDigits
+        maximumFractionDigits = fractionDigits
+    }
+
+    private fun createPlainFormat(
+        locale: Locale,
+        fractionDigits: Int,
+    ): NumberFormat = NumberFormat.getNumberInstance(locale).apply {
+        minimumFractionDigits = fractionDigits
+        maximumFractionDigits = fractionDigits
+    }
 
     private companion object {
         const val MINUS_SIGN = "\u2212"
         const val PLUS_SIGN = "+"
-
-        fun createCurrencyFormat(
-            currency: GroupCurrency,
-            locale: Locale,
-            fractionDigits: Int,
-        ): NumberFormat = NumberFormat.getCurrencyInstance(locale).apply {
-            this.currency = Currency.getInstance(currency.code)
-            minimumFractionDigits = fractionDigits
-            maximumFractionDigits = fractionDigits
-        }
-
-        fun createPlainFormat(
-            locale: Locale,
-            fractionDigits: Int,
-        ): NumberFormat = NumberFormat.getNumberInstance(locale).apply {
-            minimumFractionDigits = fractionDigits
-            maximumFractionDigits = fractionDigits
-        }
     }
 }
 
