@@ -236,7 +236,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 placeholder={t('splitBill_descriptionPlaceholder')}
                 aria-invalid={state.showsDescriptionError}
                 aria-describedby={descriptionHelpId}
-                autoFocus
+                autoFocus={!state.isEditing}
                 onChange={(event) => setDescription(event.target.value)}
               />
             </div>
@@ -294,6 +294,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               latestMillis={state.latestSpentAt}
               onOpen={() => presenter.openSpentAt()}
               onChange={(millis) => presenter.changeSpentAt(millis)}
+              disabled={state.isFormLocked}
             />
             <div className="flex flex-col gap-1.5">
               <span className="text-sm font-medium">{t('splitBill_split')}</span>

@@ -1147,8 +1147,12 @@ private struct MacBillForm: View {
             .controlSize(.large)
         }
         .padding(20)
-        // The description comes first, before the amount (beta feedback 10)
-        .onAppear { isDescriptionFocused = !state.isFormLocked }
+        // A new bill opens on the description, which comes before the amount (beta feedback 10)
+        .onAppear {
+            if !state.isEditing, state.description_.isEmpty, state.amountText.isEmpty, !state.isFormLocked {
+                isDescriptionFocused = true
+            }
+        }
         .task {
             try? await Task.sleep(for: SheetPresentation.settle)
             if !Task.isCancelled { isSettled = true }

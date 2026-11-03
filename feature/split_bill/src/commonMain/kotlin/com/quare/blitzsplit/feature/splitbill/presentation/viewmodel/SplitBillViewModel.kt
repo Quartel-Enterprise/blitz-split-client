@@ -150,7 +150,7 @@ class SplitBillViewModel(
     )
 
     // Why: "Ler cupom fiscal" (7.1e): what it reads fills the bill, and the category follows it unless the map's words say.
-    private val receipt = ReceiptScanning(
+    private val receipt: ReceiptScanning = ReceiptScanning(
         uiState = uiState,
         scope = viewModelScope,
         readReceipt = readReceipt,
@@ -162,6 +162,7 @@ class SplitBillViewModel(
             }
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
+        onReadStarted = items::forget,
     )
 
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
@@ -220,7 +221,7 @@ class SplitBillViewModel(
     }
 
     private fun handleEvent(event: SplitBillUiEvent) {
-        if (uiState.value.isFormLocked && event.isLockedWhileReading()) return
+        if (uiState.value.isFormLocked && !event.isAllowedWhileReading()) return
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 

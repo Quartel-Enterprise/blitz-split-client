@@ -186,6 +186,50 @@ class ReceiptLockViewModelTest {
     }
 
     @Test
+    fun `GIVEN Dividir open WHEN a receipt photo is being read THEN Dividir closes`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        assertNotNull(viewModel.uiState.value.splitEditor)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+        // Then
+        assertNull(viewModel.uiState.value.splitEditor)
+    }
+
+    @Test
+    fun `GIVEN the category picker open WHEN a receipt photo is being read THEN the picker closes`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            assertNotNull(viewModel.uiState.value.categoryPicker)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertNull(viewModel.uiState.value.categoryPicker)
+        }
+
+    @Test
+    fun `GIVEN Quem pagou open WHEN a receipt photo is being read THEN the payer sheet closes and picks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            val payerId = viewModel.uiState.value.payerId
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnPayerDone)
+
+            // Then
+            assertNull(viewModel.uiState.value.payerSelection)
+            assertEquals(payerId, viewModel.uiState.value.payerId)
+        }
+
+    @Test
     fun `GIVEN a receipt being read WHEN tapping Quem pagou THEN the payer sheet stays closed`() =
         runTest(testDispatcher) {
             // Given

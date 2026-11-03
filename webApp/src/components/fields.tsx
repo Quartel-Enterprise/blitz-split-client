@@ -75,6 +75,7 @@ export function WhenField({
   latestMillis,
   onOpen,
   onChange,
+  disabled = false,
 }: {
   id: string
   label: string
@@ -83,6 +84,8 @@ export function WhenField({
   latestMillis: number
   onOpen: () => void
   onChange: (millis: number) => void
+  // Why: a form locked while the popover is open (a receipt being read) closes it, since it portals out of the fieldset.
+  disabled?: boolean
 }) {
   const [isOpen, setOpen] = useState(false)
   const [date, setDate] = useState(() => toDateInputValue(millis))
@@ -97,7 +100,7 @@ export function WhenField({
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       <Popover.Root
-        open={isOpen}
+        open={isOpen && !disabled}
         onOpenChange={(open) => {
           // Why: the inputs open on what the field says now, not on a half-typed date left from before.
           if (open) {
@@ -109,7 +112,7 @@ export function WhenField({
         }}
       >
         <Popover.Trigger asChild>
-          <button id={id} type="button" className={controlClass}>
+          <button id={id} type="button" disabled={disabled} className={controlClass}>
             <CalendarDays aria-hidden className="size-4 text-muted-foreground" />
             <span className="flex-1 truncate">{formatWhen(millis, relativeDay)}</span>
           </button>
