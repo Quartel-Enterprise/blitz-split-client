@@ -35,10 +35,22 @@ data class ActivityUiState(
     val isSyncing: Boolean,
     // Why: the feed came down at least once; before that a new device shows placeholders, one with no account a note.
     val hasDownloaded: Boolean,
-    // Why: nothing is drawn until Room is read, so the empty state never flashes.
+    /*
+     * Why: the account restored or switched to on this device awaits its first full sync, also before that sync starts
+     * and across relaunches, so a feed never downloaded shows placeholders rather than "Nada por aqui ainda".
+     */
+    val awaitsFullSync: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the placeholders while that sync waits offline.
+    val isWaitingForInternet: Boolean,
+    /*
+     * Why: nothing is drawn until Room is read and the sync state and the account's copy are known, so neither the
+     * empty state nor the not-synced notice flashes before the placeholders.
+     */
     val isLoaded: Boolean,
     // Why: "Carregando mais…" while the page older than the device's comes.
     val isLoadingMore: Boolean,
+    // Why: the last page older than the device's failed to come; an empty list waits for "Tentar de novo" instead.
+    val hasLoadOlderFailed: Boolean,
     // Why: pulling down, or "Tentar de novo", until the sync it started ends.
     val isRefreshing: Boolean,
     // Why: more items below the last one shown, on the device or on the server.
@@ -70,7 +82,18 @@ data class ActivityUiState(
 
     // Why: placeholders and "Sincronizando…" while a new device waits for the first page.
     val showsPlaceholders: Boolean
-        get() = isLoaded && !hasDownloaded && isSyncing && days.isEmpty()
+        get() = isLoaded && !hasDownloaded && (isSyncing || awaitsFullSync) && days.isEmpty()
+
+    /*
+     * Why: nothing here matches (a filter, a contact's "Ver tudo"), but older pages than the 90 days the device keeps may:
+     * they load one after the other rather than saying "Nada com esses filtros", since no end of list is reached.
+     */
+    val awaitsOlderItems: Boolean
+        get() = isLoaded && !showsPlaceholders && hasDownloaded && days.isEmpty() && hasMore
+
+    // Why: the loading rows in the empty list's place while those older pages come.
+    val isLoadingOlderItems: Boolean
+        get() = awaitsOlderItems && isOnline && !hasLoadOlderFailed
 
     // Why: never synced (offline since installed, or a sync that never got through): only what was done here.
     val showsNotSyncedNotice: Boolean
@@ -79,7 +102,7 @@ data class ActivityUiState(
     val status: ActivityStatus?
         get() = when {
             !isOnline -> ActivityStatus.OFFLINE
-            hasSyncFailed -> ActivityStatus.SERVER_ERROR
+            hasSyncFailed || (awaitsOlderItems && hasLoadOlderFailed) -> ActivityStatus.SERVER_ERROR
             showsPlaceholders -> ActivityStatus.SYNCING
             else -> null
         }
@@ -93,14 +116,14 @@ data class ActivityUiState(
 
     val emptyState: ActivityEmptyState?
         get() = when {
-            !isLoaded || showsPlaceholders || days.isNotEmpty() -> null
+            !isLoaded || showsPlaceholders || days.isNotEmpty() || awaitsOlderItems -> null
             filter.isActive -> ActivityEmptyState.NO_RESULTS
             else -> ActivityEmptyState.NOTHING_YET
         }
 
-    // Why: at the end of the list offline, the older items only come with the internet.
+    // Why: at the end of the list offline (or in its place, while nothing here matches), older items need the internet.
     val showsOfflineEnd: Boolean
-        get() = !isOnline && days.isNotEmpty() && hasDownloaded
+        get() = !isOnline && hasDownloaded && (days.isNotEmpty() || awaitsOlderItems)
 
     val isFilterOpen: Boolean
         get() = filterDraft != null

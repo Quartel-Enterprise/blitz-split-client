@@ -100,7 +100,9 @@ enum GroupsCopy {
         pendingChangeCount: Int32,
         downloadProgress: DownloadProgress? = nil,
     ) -> String? {
-        switch badge {
+        // Offline while the account's first download waits: what still comes says so, in the badge's place
+        if downloadProgress?.isWaitingForInternet == true { return syncing(downloadProgress) }
+        return switch badge {
         case nil: nil
         case .offline:
             pendingChangeCount > 0

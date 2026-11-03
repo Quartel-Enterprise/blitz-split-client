@@ -155,7 +155,7 @@ struct ContactsView: View {
                         }
                     }
                     if state.isLoading {
-                        ContactsSkeleton()
+                        ContactsSkeleton(isWaitingForInternet: state.isWaitingForInternet)
                     } else {
                         ContactsSections(model: model, showsDetail: showsDetail)
                     }
@@ -182,18 +182,9 @@ struct ContactsView: View {
             #endif
             SearchToolbarItem(canSearch: state.canSearch) { model.send(ContactsUiEventOnSearchClicked.shared) }
             ToolbarItem(placement: .primaryAction) {
-                Button {
+                ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
                     model.send(ContactsUiEventOnProfileClicked.shared)
-                } label: {
-                    AvatarPhoto(
-                        initial: state.avatarInitial,
-                        color: state.avatarColor,
-                        photoUrl: state.photoUrl,
-                        size: 32,
-                        font: .subheadline.weight(.semibold),
-                    )
                 }
-                .accessibilityLabel("Profile")
             }
             .prefersVerticalBar()
         }
@@ -212,9 +203,15 @@ private struct ContactsSections: View {
         let state = model.state
         if state.showsSummary {
             Section {
-                ContactsSummaryCard(model: model, total: state.total)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
+                // The totals are read apart from the people: they shimmer rather than say R$ 0,00 before it
+                if let total = state.total.loaded(as: PeopleTotal.self) {
+                    ContactsSummaryCard(model: model, total: total)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                } else {
+                    ShimmerCard()
+                        .shimmering()
+                }
             }
         }
         Section {
@@ -500,26 +497,20 @@ struct AgendaContactRow: View {
     }
 }
 
-/// Rows standing in for the people until the device's data is read, so the empty state never flashes.
+/// Rows shimmering in the people's place until the device's data is read and the account's copy is whole, so the
+/// empty state never flashes; offline while that copy waits, the note under them says so.
 private struct ContactsSkeleton: View {
+    let isWaitingForInternet: Bool
+
     var body: some View {
         Section {
-            ForEach(0..<6, id: \.self) { _ in
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(.fill.tertiary)
-                        .frame(width: 40, height: 40)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(verbatim: "Placeholder name")
-                        Text(verbatim: "Placeholder group")
-                            .font(.footnote)
-                    }
-                    Spacer()
-                }
-                .redacted(reason: .placeholder)
+            ShimmerList(count: 6)
+                .shimmering()
+        } footer: {
+            if isWaitingForInternet {
+                WaitingForInternetNote()
             }
         }
-        .accessibilityHidden(true)
     }
 }
 

@@ -37,6 +37,10 @@
   --camera-error: #ffb599;
   --camera-error-container: #71361c;
   --camera-error-container-foreground: #ffdbce;
+  /* The shimmer of what is still loading (components/ui/skeleton.tsx): a block a step darker than muted, so it shows on
+     a card and on the page alike, and the band that sweeps across it. */
+  --skeleton: #ececef;
+  --skeleton-highlight: rgba(255, 255, 255, 0.75);
 }
 
 /* The .dark class comes from src/lib/theme.ts: the profile's theme, or the system's while it says System. */
@@ -67,6 +71,8 @@
   --brand-panel: #004b6f;
   --brand-panel-foreground: #c9e6ff;
   --brand-shape: #71361c;
+  --skeleton: #222225;
+  --skeleton-highlight: rgba(255, 255, 255, 0.07);
 }
 
 @theme inline {
@@ -140,4 +146,33 @@
 
 .dark .avatar-stroke {
   stroke: var(--avatar-bg-dark);
+}
+
+/* A placeholder block: the band sweeps left to right, and stays still under reduced motion. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--skeleton);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--skeleton-highlight), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    display: none;
+    animation: none;
+  }
 }

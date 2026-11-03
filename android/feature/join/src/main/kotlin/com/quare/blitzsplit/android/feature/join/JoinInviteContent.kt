@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -152,7 +153,7 @@ private fun JoinInviteBodyContent(
     onEvent: (JoinInviteUiEvent) -> Unit,
 ) {
     when (state.status) {
-        JoinInviteStatus.LOADING -> LoadingBox()
+        JoinInviteStatus.LOADING -> JoinInviteSkeleton(layout)
 
         JoinInviteStatus.READY -> InviteContent(
             state = state,
@@ -187,18 +188,17 @@ private fun JoinInviteBodyContent(
             layout = layout,
             onEvent = onEvent,
         )
-    }
-}
 
-@Composable
-private fun LoadingBox() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 160.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
+        JoinInviteStatus.FAILED -> ProblemContent(
+            icon = Icons.Outlined.ErrorOutline,
+            title = stringResource(R.string.join_failed_title),
+            message = stringResource(R.string.join_failed_message),
+            displayLink = state.displayLink,
+            onRetry = { onEvent(JoinInviteUiEvent.OnRetryClicked) },
+            onScanAnother = null,
+            layout = layout,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -506,6 +506,30 @@ private fun JoinInviteOfflinePreview() {
     BlitzSplitTheme {
         JoinInviteContent(
             state = createPreviewState(JoinInviteStatus.OFFLINE),
+            snackbarHostState = remember { SnackbarHostState() },
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun JoinInviteLoadingPreview() {
+    BlitzSplitTheme {
+        JoinInviteContent(
+            state = createPreviewState(JoinInviteStatus.LOADING),
+            snackbarHostState = remember { SnackbarHostState() },
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun JoinInviteFailedPreview() {
+    BlitzSplitTheme {
+        JoinInviteContent(
+            state = createPreviewState(JoinInviteStatus.FAILED),
             snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )

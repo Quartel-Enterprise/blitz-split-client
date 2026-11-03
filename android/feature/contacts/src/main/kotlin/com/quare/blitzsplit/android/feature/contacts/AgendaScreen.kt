@@ -59,6 +59,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewMo
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val AGENDA_SKELETON_ROWS = 8
 private val columnMaxWidth = 640.dp
 
 /*
@@ -222,7 +223,16 @@ private fun LazyListScope.contactItems(
             ),
         )
     }
-    if (state.contacts.isEmpty()) {
+    if (state.isLoadingContacts) {
+        item(key = "skeleton") {
+            ContactRowsSkeleton(
+                count = AGENDA_SKELETON_ROWS,
+                modifier = contactsSkeletonPadding.padding(top = 8.dp),
+            )
+        }
+        return
+    }
+    if (state.showsEmptyAgenda) {
         item(key = "empty") {
             Text(
                 text = stringResource(R.string.contacts_agenda_empty),

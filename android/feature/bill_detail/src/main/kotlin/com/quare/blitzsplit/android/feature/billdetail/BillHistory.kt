@@ -49,6 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -57,15 +58,17 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiSt
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
+import software.quare.loadable.valueOrNull
 
 // Why: the rail runs from under one avatar to the next entry's, down the avatar's middle.
 private val railTop = 38.dp
+private const val SKELETON_ENTRIES = 3
 private val railWidth = 2.dp
 private val actorAvatarSize = 32.dp
 
 /*
  * Why: "Histórico" (7.3f), by day, the most recent first: who did what, what changed, and "Desfazer" on the latest
- * edit while the bill is still as it left it. Hidden while there is nothing in it.
+ * edit while the bill is still as it left it. Shimmering while read, hidden while there is nothing in it.
  */
 @Composable
 internal fun BillHistorySection(
@@ -74,10 +77,22 @@ internal fun BillHistorySection(
     dates: DateTimeTextFormatter,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
-    if (state.history.isEmpty()) return
+    val history = state.history.valueOrNull()
+    if (history?.isEmpty() == true) return
     val locale = LocalLocale.current.platformLocale
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         BillSectionTitle(text = stringResource(R.string.bill_detail_history))
+        // Why: online, the server's history is on its way; its lines shimmer meanwhile.
+        if (history == null) {
+            ShimmerListSkeleton(
+                count = SKELETON_ENTRIES,
+                leadingSize = actorAvatarSize,
+                trailingWidth = null,
+                containerShapeOf = { index -> groupedRowShapeOf(index, SKELETON_ENTRIES) },
+                spacing = 2.dp,
+            )
+            return@Column
+        }
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = groupedRowShapeOf(
@@ -92,7 +107,7 @@ internal fun BillHistorySection(
                     vertical = 4.dp,
                 ),
             ) {
-                state.history.forEach { day ->
+                history.forEach { day ->
                     Text(
                         text = historyDayTitleOf(day, dates).uppercase(locale),
                         modifier = Modifier

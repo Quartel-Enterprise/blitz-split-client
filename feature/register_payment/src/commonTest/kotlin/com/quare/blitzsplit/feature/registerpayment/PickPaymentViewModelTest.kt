@@ -21,12 +21,15 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentGroup
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.PickPaymentViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -296,6 +299,28 @@ class PickPaymentViewModelTest {
 
             // Then
             assertEquals(listOf(TRIP), groupIds)
+        }
+
+    @Test
+    fun `GIVEN no pair and the copy not whole WHEN the picker opens THEN waits instead of saying nobody owes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = emptyList(),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 4,
+                    isWaitingForInternet = true,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.showsEmpty)
+            assertTrue(state.isWaitingForInternet)
         }
 
     @Test
@@ -647,6 +672,7 @@ class PickPaymentViewModelTest {
         storedExpenses: List<Expense> = tripBills,
         storedSettlements: List<Settlement> = emptyList(),
         isRoomRead: Boolean = true,
+        downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -662,6 +688,7 @@ class PickPaymentViewModelTest {
                 ObserveGroupsByActivity { roomNeverAnswers }
             },
             observeGroupsMoney = money,
+            observeFirstDownload = ObserveFirstDownload { flowOf(downloading) },
         )
     }
 

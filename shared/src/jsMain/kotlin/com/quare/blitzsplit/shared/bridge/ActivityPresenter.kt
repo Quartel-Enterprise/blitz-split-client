@@ -156,6 +156,8 @@ class JsActivityState(
     // Why: "Offline · 2 alterações na fila".
     val queuedCount: Int,
     val showsPlaceholders: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the placeholders.
+    val isWaitingForInternet: Boolean,
     val showsNotSyncedNotice: Boolean,
     val showsOfflineEnd: Boolean,
     val showsTools: Boolean,
@@ -163,6 +165,8 @@ class JsActivityState(
     val emptyState: String?,
     val isLoaded: Boolean,
     val isLoadingMore: Boolean,
+    // Why: nothing here matches the filter yet and older pages load on their own: loading rows, not the empty state.
+    val isLoadingOlderItems: Boolean,
     val hasMore: Boolean,
     val isRefreshing: Boolean,
     // Why: the item tapped whose bill or group is gone, a toast; null once shown.
@@ -217,6 +221,7 @@ class ActivityPresenter(
                 },
                 queuedCount = state.queuedCount,
                 showsPlaceholders = state.showsPlaceholders,
+                isWaitingForInternet = state.isWaitingForInternet,
                 showsNotSyncedNotice = state.showsNotSyncedNotice,
                 showsOfflineEnd = state.showsOfflineEnd,
                 showsTools = state.showsTools,
@@ -227,6 +232,7 @@ class ActivityPresenter(
                 },
                 isLoaded = state.isLoaded,
                 isLoadingMore = state.isLoadingMore,
+                isLoadingOlderItems = state.isLoadingOlderItems,
                 hasMore = state.hasMore,
                 isRefreshing = state.isRefreshing,
                 deletedNotice = state.deletedNotice?.let(::toJsActivityDeletion),

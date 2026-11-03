@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -66,6 +68,8 @@ fun SplitBillContent(
                     onEvent = onEvent,
                 )
                 ReceiptReadRow(state)
+            } else {
+                ShimmerFormSkeleton(fieldCount = 2)
             }
         },
         second = {
@@ -89,6 +93,8 @@ fun SplitBillContent(
                         onEvent = onEvent,
                     )
                 }
+            } else {
+                ShimmerFormSkeleton(fieldCount = 3)
             }
         },
         modifier = modifier,
@@ -168,6 +174,7 @@ private fun SplitBillContentReceiptReadingPreview() {
                 status = ReceiptStatus.READING,
                 itemCount = 0,
                 hasPhoto = true,
+                error = null,
             ),
         ),
     )
@@ -182,6 +189,7 @@ private fun SplitBillContentReceiptReadPreview() {
                 status = ReceiptStatus.READ,
                 itemCount = PREVIEW_RECEIPT_ITEMS,
                 hasPhoto = true,
+                error = null,
             ),
         ),
     )
@@ -193,9 +201,10 @@ private fun SplitBillContentReceiptFailedPreview() {
     PreviewSplitBillContent(
         createPreviewBillState(
             receipt = BillReceipt(
-                status = ReceiptStatus.UNREADABLE,
+                status = ReceiptStatus.FAILED,
                 itemCount = 0,
-                hasPhoto = true,
+                hasPhoto = false,
+                error = ReceiptError.READER_UNAVAILABLE,
             ),
         ),
     )

@@ -1,34 +1,35 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerCardSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
+import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 
+private const val READING_PLACEHOLDERS = 4
+
 /*
  * Why: "Trazendo seus grupos" (5.1d) in Saldo geral's place while a new device's first download brings the groups down
- * one by one, with "3 de 7 grupos" and its bar once the server said how many are coming.
+ * one by one, with "3 de 7 grupos" and its bar once the server said how many are coming. Offline nothing comes, so it
+ * says so instead, with no count nor bar.
  */
 @Composable
 internal fun GroupsFirstDownloadCard(
@@ -45,6 +46,10 @@ internal fun GroupsFirstDownloadCard(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            if (progress.isWaitingForInternet) {
+                WaitingForInternetMessage(text = stringResource(R.string.groups_waiting_for_internet))
+                return@Column
+            }
             Text(
                 text = stringResource(R.string.groups_first_download_title),
                 style = MaterialTheme.typography.titleMedium,
@@ -56,6 +61,25 @@ internal fun GroupsFirstDownloadCard(
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+    }
+}
+
+// Why: the bar under the sync chip, or "Sem internet. Seus grupos aparecem quando reconectar." while nothing can come.
+@Composable
+internal fun DownloadStatusLine(
+    progress: DownloadProgress,
+    modifier: Modifier = Modifier,
+) {
+    if (progress.isWaitingForInternet) {
+        WaitingForInternetMessage(
+            text = stringResource(R.string.groups_waiting_for_internet),
+            modifier = modifier,
+        )
+    } else {
+        DownloadProgressBar(
+            progress = progress,
+            modifier = modifier,
+        )
     }
 }
 
@@ -87,80 +111,63 @@ private fun firstDownloadHintOf(progress: DownloadProgress): String {
     )
 }
 
-// Why: grey rows under the groups that came, holding the place of a few still coming.
+// Why: shimmering rows under the groups that came, holding the place of a few still coming.
 internal fun LazyGridScope.groupSkeletonItems(count: Int) {
-    items(
-        count = count,
-        key = { index -> "group-skeleton-$index" },
-        span = { fullLine() },
-        contentType = { "group-skeleton" },
-    ) { index ->
-        GroupSkeletonRow(
-            index = index,
-            count = count,
+    item(
+        key = "group-skeleton",
+        span = { GridItemSpan(maxLineSpan) },
+        contentType = "group-skeleton",
+    ) {
+        GroupsListSkeleton(count = count)
+    }
+}
+
+// Why: "Saldo geral" and the rows while the groups are read, never the empty home before them.
+internal fun LazyGridScope.groupsSkeletonItems(showsSummary: Boolean) {
+    if (showsSummary) {
+        item(
+            key = "summary-skeleton",
+            span = { GridItemSpan(maxLineSpan) },
+            contentType = "summary",
+        ) {
+            GroupsSummarySkeleton(modifier = Modifier.padding(bottom = 8.dp))
+        }
+    }
+    item(
+        key = "groups-skeleton",
+        span = { GridItemSpan(maxLineSpan) },
+        contentType = "group-skeleton",
+    ) {
+        GroupsListSkeleton(
+            count = READING_PLACEHOLDERS,
+            modifier = Modifier.padding(top = 48.dp),
         )
     }
 }
 
 @Composable
-private fun GroupSkeletonRow(
-    index: Int,
-    count: Int,
-) {
-    // Why: the group badge's size and corners, as the row that will take its place.
-    SkeletonListRow(
-        shape = groupedRowShapeOf(index, count),
-        leadingSize = 48.dp,
-        leadingShape = groupShapeOf(48.dp),
-        verticalPadding = 14.dp,
-        spacing = 16.dp,
-        modifier = Modifier.padding(bottom = 2.dp),
-    )
+internal fun GroupsSummarySkeleton(modifier: Modifier = Modifier) {
+    ShimmerBox(modifier = modifier) {
+        ShimmerCardSkeleton(height = 148.dp)
+    }
 }
 
-// Why: a list row in grey (a badge, two lines and an amount) while the first download brings what it stands for.
+// Why: the group badge's size and corners, as the rows that will take their place.
 @Composable
-internal fun SkeletonListRow(
-    shape: Shape,
-    leadingSize: Dp,
-    leadingShape: Shape,
-    verticalPadding: Dp,
-    spacing: Dp,
+internal fun GroupsListSkeleton(
+    count: Int,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
-            .padding(
-                horizontal = 16.dp,
-                vertical = verticalPadding,
-            ).clearAndSetSemantics {},
-        horizontalArrangement = Arrangement.spacedBy(spacing),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SkeletonBox(
-            width = leadingSize,
-            height = leadingSize,
-            shape = leadingShape,
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            SkeletonBox(
-                width = null,
-                height = 12.dp,
-                modifier = Modifier.fillMaxWidth(0.6f),
-            )
-            SkeletonBox(
-                width = null,
-                modifier = Modifier.fillMaxWidth(0.4f),
-            )
+    ShimmerBox(modifier = modifier) {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            repeat(count) { index ->
+                ShimmerRowSkeleton(
+                    leadingSize = 48.dp,
+                    leadingShape = groupShapeOf(48.dp),
+                    containerShape = groupedRowShapeOf(index, count),
+                    verticalPadding = 14.dp,
+                )
+            }
         }
-        SkeletonBox(
-            width = 64.dp,
-            height = 14.dp,
-        )
     }
 }

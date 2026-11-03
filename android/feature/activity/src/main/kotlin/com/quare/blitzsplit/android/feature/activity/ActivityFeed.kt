@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EmptyStateColumn
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
+import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityEmptyState
@@ -263,7 +264,8 @@ private fun RemovableChip(
 
 /*
  * Why: the feed itself, day by day, with what its end says: "Carregando mais…" while an older page comes, the offline
- * note about the 90 days, the empty states, or the placeholders of a new device's first sync.
+ * note about the 90 days, the empty states, or a shimmer while Room is read, a new device's first sync comes, or the
+ * older pages a filter waits for load.
  */
 internal fun LazyListScope.feedItems(
     state: ActivityUiState,
@@ -271,16 +273,22 @@ internal fun LazyListScope.feedItems(
     selectedId: String?,
     onEvent: (ActivityUiEvent) -> Unit,
 ) {
-    if (state.showsPlaceholders) {
-        items(PLACEHOLDER_COUNT) { index ->
-            PlaceholderRow(
-                index = index,
+    if (!state.isLoaded || state.showsPlaceholders || state.isLoadingOlderItems) {
+        item(key = "placeholders") {
+            ActivityFeedSkeleton(
                 count = PLACEHOLDER_COUNT,
-                modifier = Modifier.padding(
-                    horizontal = 16.dp,
-                    vertical = 1.dp,
-                ),
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
+        }
+        if (state.showsPlaceholders && state.isWaitingForInternet) {
+            item(key = "waiting-for-internet") {
+                WaitingForInternetMessage(
+                    modifier = Modifier.padding(
+                        horizontal = 20.dp,
+                        vertical = 16.dp,
+                    ),
+                )
+            }
         }
         return
     }

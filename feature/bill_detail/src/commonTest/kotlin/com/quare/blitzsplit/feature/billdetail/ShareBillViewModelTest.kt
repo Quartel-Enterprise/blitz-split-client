@@ -30,6 +30,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillV
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -239,6 +240,39 @@ class ShareBillViewModelTest {
             assertFalse(state.canChangeLink)
             assertTrue(links.loadedLinkIds.isEmpty())
             assertTrue(links.updatedLinks.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the connectivity not known yet WHEN the sheet opens THEN it is loading rather than without a link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsConnectivity = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoading)
+            assertFalse(state.hasFailed)
+            assertNull(state.link)
+            assertTrue(links.loadedLinkIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the link being read WHEN the internet goes THEN keeps loading until the read ends`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(loadGate = gate)
+
+            // When
+            isOnline.value = false
+            val whileReading = viewModel.uiState.value
+            gate.complete(Unit)
+
+            // Then
+            assertTrue(whileReading.isLoading)
+            assertFalse(viewModel.uiState.value.isLoading)
         }
 
     @Test
@@ -691,6 +725,7 @@ class ShareBillViewModelTest {
         updateError: Throwable? = null,
         isGoneFromServer: Boolean = false,
         loadGate: CompletableDeferred<Unit>? = null,
+        holdsConnectivity: Boolean = false,
     ) {
         isOnline.value = online
         groups = FakeGroupRepository(initialGroups = listOf(trip))
@@ -714,7 +749,7 @@ class ShareBillViewModelTest {
             disableBillShareLink = DisableBillShareLinkUseCase(links),
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
-            connectivityObserver = NetworkConnectivityObserver { isOnline },
+            connectivityObserver = NetworkConnectivityObserver { if (holdsConnectivity) emptyFlow() else isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

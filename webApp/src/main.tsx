@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from '@/app/App'
+import { AppSkeleton } from '@/components/PageSkeletons'
 import { OpenInAnotherTabScreen } from '@/app/OpenInAnotherTabScreen'
 import { startShared } from '@/bridge/shared'
 import { applyDocumentLocale } from '@/i18n'
@@ -12,6 +13,8 @@ applyDocumentLocale()
 applyTheme(lastTheme())
 
 const root = createRoot(document.getElementById('root')!)
+// Why: opening the browser's database takes a moment; the page is never blank meanwhile.
+root.render(<AppSkeleton />)
 void startShared(() => root.render(<OpenInAnotherTabScreen />)).then(() => {
   root.render(
     <StrictMode>

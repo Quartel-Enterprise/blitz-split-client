@@ -21,6 +21,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
+import software.quare.loadable.toLoaded
 
 private const val PREVIEW_SPENT_AT = 1_761_683_400_000L
 private const val PREVIEW_TOTAL_MINOR = 64_200L
@@ -81,7 +82,7 @@ internal fun createPreviewBillDetailState(
         deletion = null,
         isDeleting = false,
         isLoaded = true,
-        threads = if (isPending) emptyList() else createPreviewThreads(isReplyingOffline),
+        threads = (if (isPending) emptyList() else createPreviewThreads(isReplyingOffline)).toLoaded(),
         commentDraft = if (isReplyingOffline) "Sem pressa, Diego!" else "",
         replyTarget = if (isReplyingOffline) {
             BillReplyTarget(
@@ -93,10 +94,11 @@ internal fun createPreviewBillDetailState(
         } else {
             null
         },
-        history = if (isPending) createPendingPreviewHistory() else createPreviewHistory(),
+        history = (if (isPending) createPendingPreviewHistory() else createPreviewHistory()).toLoaded(),
+        isHistoryFromDeviceOnly = isReplyingOffline,
         isOnline = !isReplyingOffline,
         isUndoing = false,
-        attachments = if (isPending) createPendingPreviewAttachments() else createPreviewAttachments(),
+        attachments = (if (isPending) createPendingPreviewAttachments() else createPreviewAttachments()).toLoaded(),
         viewedAttachmentId = null,
         isAddingPhoto = false,
     )

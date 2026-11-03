@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.historyOf
@@ -68,6 +69,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 class BillDetailViewModel(
     private val route: Route.BillDetail,
@@ -83,6 +88,7 @@ class BillDetailViewModel(
     private val loadBillAttachmentImage: LoadBillAttachmentImage,
     loadBillAttachmentUrls: LoadBillAttachmentUrls,
     loadBillHistory: LoadBillHistory,
+    observeFirstDownload: ObserveFirstDownload,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
     observeExpenses: ObserveExpenses,
@@ -114,13 +120,14 @@ class BillDetailViewModel(
                 deletion = null,
                 isDeleting = false,
                 isLoaded = false,
-                threads = emptyList(),
+                threads = Loadable.Loading,
                 commentDraft = "",
                 replyTarget = null,
-                history = emptyList(),
+                history = Loadable.Loading,
+                isHistoryFromDeviceOnly = false,
                 isOnline = true,
                 isUndoing = false,
-                attachments = emptyList(),
+                attachments = Loadable.Loading,
                 viewedAttachmentId = null,
                 isAddingPhoto = false,
             ),
@@ -139,6 +146,16 @@ class BillDetailViewModel(
     private var events: List<ActivityEvent> = emptyList()
     private var attachments: List<BillAttachment> = emptyList()
     private var imageUrls: Map<String, String> = emptyMap()
+
+    // Why: a restored account's comments and photos only come with its first full sync, so online they load until then.
+    private var isCopyWhole = false
+
+    private val historyRead = BillHistoryRead(
+        loadBillHistory = loadBillHistory,
+        billId = route.expenseId,
+        scope = viewModelScope,
+        onChanged = ::showHistory,
+    )
 
     /*
      * Why: the JPEG of each photo added here, read once, and kept once it is up: the screen draws it until it closes
@@ -176,6 +193,15 @@ class BillDetailViewModel(
         deletionSettledPair
             .onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
+        observeFirstDownload()
+            // Why: offline nothing more is coming, so the device's comments and photos show and take new ones.
+            .map { download -> download == null || download.isWaitingForInternet }
+            .distinctUntilChanged()
+            .onEach { isWhole ->
+                isCopyWhole = isWhole
+                showThreads()
+                showAttachments()
+            }.launchIn(viewModelScope)
         observeBillComments(route.expenseId)
             .onEach { comments ->
                 this.comments = comments
@@ -215,7 +241,7 @@ class BillDetailViewModel(
             .distinctUntilChanged()
             .onEach { isOnline ->
                 uiState.update { it.copy(isOnline = isOnline) }
-                if (isOnline) viewModelScope.launch { loadBillHistory(route.expenseId) }
+                historyRead.onConnectivityChanged(isOnline)
             }.launchIn(viewModelScope)
         // Why: "Hoje" becomes "Ontem" at midnight on a bill left open.
         minuteTicks()
@@ -347,18 +373,15 @@ class BillDetailViewModel(
 
     private fun showAttachments() {
         val group = shownGroup ?: return
-        uiState.update {
-            it.copy(
-                attachments = tilesOf(
-                    attachments = attachments,
-                    imageUrls = imageUrls,
-                    localImages = localImages,
-                    group = group,
-                    nowMillis = currentTimeMillis(),
-                    timeZone = currentTimeZone(),
-                ),
-            )
-        }
+        val tiles = tilesOf(
+            attachments = attachments,
+            imageUrls = imageUrls,
+            localImages = localImages,
+            group = group,
+            nowMillis = currentTimeMillis(),
+            timeZone = currentTimeZone(),
+        )
+        uiState.update { it.copy(attachments = if (isCopyWhole) tiles.toLoaded() else Loadable.Loading) }
     }
 
     private suspend fun loadLocalImages(attachments: List<BillAttachment>): Map<String, ByteArray> = attachments
@@ -367,7 +390,7 @@ class BillDetailViewModel(
         .toMap()
 
     private fun view(attachmentId: String) {
-        if (uiState.value.attachments.none { it.id == attachmentId }) return
+        if (!uiState.value.hasAttachment(attachmentId)) return
         uiState.update { it.copy(viewedAttachmentId = attachmentId) }
     }
 
@@ -401,10 +424,11 @@ class BillDetailViewModel(
     // Why: the viewer goes on to the next attachment, else the one before, and closes after the last.
     private fun removeAttachment(attachmentId: String) {
         val state = uiState.value
-        val index = state.attachments.indexOfFirst { it.id == attachmentId }
-        val tile = state.attachments.getOrNull(index) ?: return
+        val tiles = state.attachments.valueOrNull() ?: return
+        val index = tiles.indexOfFirst { it.id == attachmentId }
+        val tile = tiles.getOrNull(index) ?: return
         if (!tile.canRemove || !state.areActionsEnabled) return
-        val next = state.attachments.getOrNull(index + 1) ?: state.attachments.getOrNull(index - 1)
+        val next = tiles.getOrNull(index + 1) ?: tiles.getOrNull(index - 1)
         if (state.viewedAttachmentId == attachmentId) uiState.update { it.copy(viewedAttachmentId = next?.id) }
         viewModelScope.launch {
             removeBillAttachment(attachmentId).onFailure {
@@ -415,16 +439,19 @@ class BillDetailViewModel(
 
     private fun showThreads() {
         val group = shownGroup ?: return
-        uiState.update {
-            it.copy(threads = threadsOf(comments, group, currentTimeMillis(), currentTimeZone()))
-        }
+        val threads = threadsOf(comments, group, currentTimeMillis(), currentTimeZone())
+        uiState.update { it.copy(threads = if (isCopyWhole) threads.toLoaded() else Loadable.Loading) }
     }
 
     private fun showHistory() {
         val group = shownGroup ?: return
         val expense = expense ?: return
+        val history = historyOf(events, expense, group, currentTimeMillis(), currentTimeZone())
         uiState.update {
-            it.copy(history = historyOf(events, expense, group, currentTimeMillis(), currentTimeZone()))
+            it.copy(
+                history = if (historyRead.isLoading) Loadable.Loading else history.toLoaded(),
+                isHistoryFromDeviceOnly = !historyRead.hasServerAnswered,
+            )
         }
     }
 
@@ -440,7 +467,8 @@ class BillDetailViewModel(
     }
 
     private fun replyTo(commentId: String) {
-        val target = replyTargetOf(uiState.value.threads, commentId) ?: return
+        val threads = uiState.value.threads.valueOrNull() ?: return
+        val target = replyTargetOf(threads, commentId) ?: return
         uiState.update { it.copy(replyTarget = target) }
     }
 
@@ -487,7 +515,8 @@ class BillDetailViewModel(
         val expense = expense ?: return
         val group = shownGroup ?: return
         val event = events.firstOrNull() ?: return
-        if (state.isUndoing || !state.areActionsEnabled) return
+        // Why: the latest line is the server's to say; while its history loads, an older edit could look latest.
+        if (state.isUndoing || !state.areActionsEnabled || state.history.isLoading()) return
         val undo = undoOf(event, expense, group) ?: return
         uiState.update { it.copy(isUndoing = true) }
         viewModelScope.launch {

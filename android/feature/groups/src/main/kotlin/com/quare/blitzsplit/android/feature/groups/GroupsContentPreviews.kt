@@ -67,6 +67,20 @@ private fun GroupsOfflinePreview() {
 
 @DevicePreviews
 @Composable
+private fun GroupsLoadingPreview() {
+    BlitzSplitTheme {
+        GroupsContent(
+            state = buildPreviewState(GroupsLayout.initial).copy(
+                groups = emptyList(),
+                hasLoadedGroups = false,
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
 private fun GroupsListPreview() {
     BlitzSplitTheme {
         GroupsContent(

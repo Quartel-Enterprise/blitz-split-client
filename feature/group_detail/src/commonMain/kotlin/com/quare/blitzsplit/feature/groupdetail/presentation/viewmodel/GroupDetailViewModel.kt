@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
@@ -54,6 +55,7 @@ class GroupDetailViewModel(
     observeCategoryTree: ObserveCategoryTree,
     teachUseCases: CategoryTeachUseCases,
     observeAccount: ObserveAccount,
+    observeFirstDownload: ObserveFirstDownload,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
@@ -70,6 +72,9 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                // Why: not whole until ObserveFirstDownload says so, so nothing empty or settled shows before it.
+                awaitsFullSync = true,
+                isWaitingForInternet = false,
                 teach = null,
                 homeTab = useCases.navigator.backStack.value
                     .findHomeTabUnder(route),
@@ -120,6 +125,17 @@ class GroupDetailViewModel(
                 if (!screen.isGroupGone) showAgain?.invoke()
             }.launchIn(viewModelScope)
         teaching.watch(observeCategoryTree(route.groupId))
+        observeFirstDownload()
+            .onEach { download ->
+                uiState.update {
+                    it.copy(
+                        awaitsFullSync = download != null,
+                        isWaitingForInternet = download?.isWaitingForInternet == true,
+                    )
+                }
+                // Why: the header's "Todo mundo acertou" follows the copy becoming whole.
+                if (!screen.isGroupGone) showAgain?.invoke()
+            }.launchIn(viewModelScope)
         screen.watch(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
@@ -242,6 +258,7 @@ class GroupDetailViewModel(
                     totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
                     balances = balances,
                     isPinned = screen.isPinned,
+                    isCopyWhole = !it.awaitsFullSync,
                 ),
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.

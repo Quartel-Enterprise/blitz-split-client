@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 /*
  * Why: "Convidar da agenda" (11.3). The platform reads the agenda and asks for it; the shared code decides what each
@@ -28,7 +31,7 @@ class AgendaViewModel(
         field = MutableStateFlow(
             AgendaUiState(
                 access = AgendaAccess.UNKNOWN,
-                contacts = emptyList(),
+                contacts = Loadable.Loading,
                 query = "",
             ),
         )
@@ -43,14 +46,15 @@ class AgendaViewModel(
         when (event) {
             is AgendaUiEvent.OnAccessChanged -> uiState.update { state ->
                 val canRead = event.access == AgendaAccess.GRANTED || event.access == AgendaAccess.LIMITED
+                // Why: an agenda read with this access stays until the next read; a new access waits for its own.
                 state.copy(
                     access = event.access,
-                    contacts = if (canRead) state.contacts else emptyList(),
+                    contacts = if (canRead && state.showsContacts) state.contacts else Loadable.Loading,
                 )
             }
 
             is AgendaUiEvent.OnContactsLoaded -> uiState.update { state ->
-                if (state.showsContacts) state.copy(contacts = event.contacts) else state
+                if (state.showsContacts) state.copy(contacts = event.contacts.toLoaded()) else state
             }
 
             is AgendaUiEvent.OnQueryChanged -> uiState.update { it.copy(query = event.query) }
@@ -60,7 +64,9 @@ class AgendaViewModel(
             AgendaUiEvent.OnOpenSettingsClicked -> if (uiState.value.showsDenied) emit(AgendaUiAction.OpenSettings)
 
             is AgendaUiEvent.OnInviteClicked -> {
-                val contact = uiState.value.contacts.firstOrNull { it.id == event.contactId } ?: return
+                val contact = uiState.value.contacts
+                    .valueOrNull()
+                    ?.firstOrNull { it.id == event.contactId } ?: return
                 navigate(
                     Route.ContactInvite(
                         personKey = null,

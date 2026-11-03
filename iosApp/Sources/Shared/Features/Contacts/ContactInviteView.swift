@@ -52,7 +52,17 @@ struct ContactInviteView: View {
             if let model, model.state.isLoaded {
                 ContactInviteContent(model: model)
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The groups not read yet: their chips, the QR code and the link shimmer, never "Create a group first"
+                ShimmerScreen(isWaitingForInternet: model?.state.isWaitingForInternet == true) {
+                    HStack(spacing: 8) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            ShimmerBlock(width: 96, height: 32, cornerRadius: 16)
+                        }
+                    }
+                    ShimmerBlock(height: 240, cornerRadius: 24)
+                    ShimmerBlock(height: 44, cornerRadius: 22)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .navigationTitle(title)

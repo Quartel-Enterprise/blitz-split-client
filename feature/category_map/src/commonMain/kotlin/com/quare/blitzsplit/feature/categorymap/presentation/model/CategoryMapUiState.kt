@@ -12,6 +12,11 @@ import com.quare.blitzsplit.core.utils.TextFolding
  * search, "Novo termo" and "Editar termo" (9.2), the removed term's "Desfazer" and "Restaurar padrão".
  */
 data class CategoryMapUiState(
+    /*
+     * Why: the terms, every group's categories, the groups' names and the account were each read, and the account's
+     * copy is whole (a restored account's own terms only come with its first full sync). Until then the map
+     * shimmers and takes no change, never "Nenhum termo" nor "Seu mapa fica só neste aparelho" before its time.
+     */
     val isLoaded: Boolean,
     val map: CategoryMap,
     // Why: the app's categories with those of every group on the device among them.
@@ -41,6 +46,7 @@ data class CategoryMapUiState(
 
     // Why: once per state, since the list, selectedSection and each platform's layout all read it.
     val sections: List<MapSection> by lazy {
+        if (!isLoaded) return@lazy emptyList()
         categories.branches.mapNotNull { branch ->
             val main = branch.category
             val rows = (branch.subcategories.map { it to false } + (main to true))
@@ -71,7 +77,7 @@ data class CategoryMapUiState(
     // Why: "2 termos com “uber”": each term with a word starting with what is typed, ignoring case and accents.
     val searchResults: List<MapSearchResult> by lazy {
         val folded = CategoryMatcher.keyOf(query)
-        if (folded.isEmpty()) {
+        if (folded.isEmpty() || !isLoaded) {
             emptyList()
         } else {
             terms.mapNotNull { term ->
@@ -90,7 +96,7 @@ data class CategoryMapUiState(
     }
 
     val showsNoResult: Boolean
-        get() = isSearching && searchResults.isEmpty()
+        get() = isLoaded && isSearching && searchResults.isEmpty()
 
     val isEmpty: Boolean
         get() = isLoaded && terms.isEmpty()
@@ -100,6 +106,10 @@ data class CategoryMapUiState(
 
     val showsDeviceOnlyNotice: Boolean
         get() = isLoaded && !isConnected
+
+    // Why: a change before the account's own terms came down could go up over them; Restaurar padrão too.
+    val canEditMap: Boolean
+        get() = isLoaded
 
     // Why: "O termo que você criou, “picanha”, continua." in "Restaurar o mapa padrão?" (9.1f).
     val ownTerms: List<MapTerm>

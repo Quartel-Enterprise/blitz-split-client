@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
+import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
@@ -56,6 +57,8 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -80,6 +83,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -101,6 +105,7 @@ class BillDetailViewModelTest {
     private lateinit var attachments: FakeBillAttachmentRepository
     private lateinit var activity: FakeActivityRepository
     private val isOnline = MutableStateFlow(true)
+    private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private val minutes = MutableSharedFlow<Unit>()
     private lateinit var viewModel: BillDetailViewModel
     private val actions = mutableListOf<BillDetailUiAction>()
@@ -1647,7 +1652,10 @@ class BillDetailViewModelTest {
             val state = viewModel.uiState.value
             assertEquals("", state.commentDraft)
             assertNull(state.replyTarget)
-            val row = state.threads.single().comment
+            val row = state.threads
+                .loadedItems()
+                .single()
+                .comment
             assertTrue(row.isPending)
             assertTrue(row.isMe)
             assertEquals("Paguei no Pix", row.body)
@@ -1700,6 +1708,7 @@ class BillDetailViewModelTest {
             assertEquals(
                 RelativeDay.TODAY,
                 viewModel.uiState.value.threads
+                    .loadedItems()
                     .single()
                     .comment.postedDay,
             )
@@ -1712,6 +1721,7 @@ class BillDetailViewModelTest {
             assertEquals(
                 RelativeDay.YESTERDAY,
                 viewModel.uiState.value.threads
+                    .loadedItems()
                     .single()
                     .comment.postedDay,
             )
@@ -1762,6 +1772,7 @@ class BillDetailViewModelTest {
 
         // Then
         val row = viewModel.uiState.value.threads
+            .loadedItems()
             .single()
             .comment
         assertEquals("Bruno", row.authorName)
@@ -1800,10 +1811,11 @@ class BillDetailViewModelTest {
             // Then
             assertEquals(3, state.commentCount)
             assertFalse(state.showsNoComments)
-            assertEquals(listOf("c1", "c2"), state.threads.map { it.comment.id })
+            assertEquals(listOf("c1", "c2"), state.threads.loadedItems().map { it.comment.id })
             assertEquals(
                 listOf("r1"),
                 state.threads
+                    .loadedItems()
                     .first()
                     .replies
                     .map { it.id },
@@ -1844,6 +1856,7 @@ class BillDetailViewModelTest {
             assertEquals(
                 "Ana Paula",
                 viewModel.uiState.value.threads
+                    .loadedItems()
                     .single()
                     .comment.authorName,
             )
@@ -1941,6 +1954,7 @@ class BillDetailViewModelTest {
             assertEquals(
                 listOf("r1", sent.id),
                 state.threads
+                    .loadedItems()
                     .single()
                     .replies
                     .map { it.id },
@@ -2006,6 +2020,7 @@ class BillDetailViewModelTest {
 
             // When
             val history = viewModel.uiState.value.history
+                .loadedItems()
 
             // Then
             val day = history.single()
@@ -2017,12 +2032,128 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN online and the server history not answered yet WHEN the bill opens THEN the history loads`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(created),
+                historyGate = CompletableDeferred(),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.history)
+        }
+
+    @Test
+    fun `GIVEN the server history loading WHEN it answers THEN shows the whole history`() = runTest(testDispatcher) {
+        // Given
+        val gate = CompletableDeferred<Unit>()
+        prepareScenario(
+            storedEvents = listOf(created),
+            serverHistory = listOf(totalEdit),
+            historyGate = gate,
+        )
+
+        // When
+        gate.complete(Unit)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(2, state.history.loadedItems().sumOf { it.entries.size })
+        assertFalse(state.isHistoryFromDeviceOnly)
+    }
+
+    @Test
+    fun `GIVEN the server history fails WHEN the bill opens THEN shows the device lines as all there is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(created),
+                historyError = IllegalStateException("server"),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(1, state.history.loadedItems().sumOf { it.entries.size })
+            assertTrue(state.isHistoryFromDeviceOnly)
+        }
+
+    @Test
+    fun `GIVEN offline WHEN the bill opens THEN shows the device lines as all there is`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(created),
+            online = false,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(1, state.history.loadedItems().sumOf { it.entries.size })
+        assertTrue(state.isHistoryFromDeviceOnly)
+    }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN the bill opens THEN its comments and photos load`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.threads)
+            assertEquals(Loadable.Loading, state.attachments)
+            assertFalse(state.showsNoComments)
+            assertNull(state.commentCount)
+            assertFalse(state.canAddPhoto)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN offline THEN shows the comments and photos of the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload.copy(isWaitingForInternet = true))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(0, state.commentCount)
+            assertTrue(state.canAddPhoto)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN its first full sync ends THEN says there is no comment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload)
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsNoComments)
+            assertEquals(0, state.commentCount)
+            assertTrue(state.canAddPhoto)
+        }
+
+    @Test
     fun `GIVEN Ana edited the bill last WHEN it opens THEN her edit can be undone`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedEvents = listOf(totalEdit, created))
 
         // When
         val entries = viewModel.uiState.value.history
+            .loadedItems()
             .flatMap { it.entries }
 
         // Then
@@ -2183,6 +2314,7 @@ class BillDetailViewModelTest {
 
         // When
         val entries = viewModel.uiState.value.history
+            .loadedItems()
             .flatMap { it.entries }
 
         // Then
@@ -2203,7 +2335,7 @@ class BillDetailViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state.isPending)
             assertEquals("Feira", state.description)
-            val entries = state.history.flatMap { it.entries }
+            val entries = state.history.loadedItems().flatMap { it.entries }
             assertTrue(entries.none { it.canUndo })
             assertEquals(BillHistoryKind.EDITED, entries.first().kind)
             assertTrue(entries.first().isPending)
@@ -2302,6 +2434,7 @@ class BillDetailViewModelTest {
 
             // When
             val history = viewModel.uiState.value.history
+                .loadedItems()
 
             // Then
             assertEquals(listOf(RelativeDay.TODAY, RelativeDay.OTHER), history.map { it.relativeDay })
@@ -2566,6 +2699,12 @@ class BillDetailViewModelTest {
         created,
     )
 
+    private val pendingDownload = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
+
     private fun TestScope.prepareScenario(
         storedExpense: Expense? = expense(),
         isRoomRead: Boolean = true,
@@ -2581,8 +2720,12 @@ class BillDetailViewModelTest {
         commentGate: CompletableDeferred<Unit>? = null,
         updateError: Throwable? = null,
         updateGate: CompletableDeferred<Unit>? = null,
+        historyGate: CompletableDeferred<Unit>? = null,
+        historyError: Throwable? = null,
+        firstDownload: FirstDownloadProgress? = null,
     ) {
         isOnline.value = online
+        this@BillDetailViewModelTest.firstDownload.value = firstDownload
         groups = FakeGroupRepository(initialGroups = listOf(trip))
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense)).also {
@@ -2600,7 +2743,10 @@ class BillDetailViewModelTest {
             it.addError = commentError
             it.addGate = commentGate
         }
-        activity = FakeActivityRepository(initialEvents = storedEvents).also { it.historyPage = serverHistory }
+        activity = FakeActivityRepository(initialEvents = storedEvents).also {
+            it.historyPage = serverHistory
+            it.loadHistoryError = historyError
+        }
         attachments = FakeBillAttachmentRepository()
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
@@ -2624,7 +2770,11 @@ class BillDetailViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
-            loadBillHistory = LoadBillHistoryUseCase(activity),
+            loadBillHistory = LoadBillHistory { billId ->
+                historyGate?.await()
+                LoadBillHistoryUseCase(activity)(billId)
+            },
+            observeFirstDownload = ObserveFirstDownload { this@BillDetailViewModelTest.firstDownload },
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
             addBillAttachment = AddBillAttachment { expenseId, groupId, kind, source, memberId ->

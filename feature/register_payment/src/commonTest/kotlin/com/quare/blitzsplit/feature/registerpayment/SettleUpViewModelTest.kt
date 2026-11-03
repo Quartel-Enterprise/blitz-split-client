@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
@@ -51,6 +52,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -303,7 +305,7 @@ class SettleUpViewModelTest {
         // Then
         assertTrue(state.isLoaded)
         assertEquals(PaymentKind.PAID, state.kind)
-        assertTrue(state.receiverKeys.isEmpty())
+        assertEquals(emptyList(), state.receiverKeys.valueOrNull())
         assertFalse(state.showsReceiverKeys)
     }
 
@@ -504,6 +506,7 @@ class SettleUpViewModelTest {
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

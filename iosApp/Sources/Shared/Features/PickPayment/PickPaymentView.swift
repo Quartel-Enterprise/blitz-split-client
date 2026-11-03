@@ -38,7 +38,12 @@ struct PickPaymentView: View {
             if let model, model.state.isLoaded {
                 PickPaymentList(model: model)
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The pairs not read yet: never "Nobody owes anything" before them
+                ShimmerScreen(isWaitingForInternet: model?.state.isWaitingForInternet == true) {
+                    ShimmerLine(width: 160, height: 20)
+                    ShimmerList(count: 4)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         #if os(macOS)

@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -44,6 +45,7 @@ import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggestionReason
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
@@ -82,6 +84,7 @@ class ReceiptViewModelTest {
     private lateinit var categories: FakeCategoryRepository
     private lateinit var terms: FakeCategoryTermRepository
     private lateinit var viewModel: SplitBillViewModel
+    private lateinit var isOnline: MutableStateFlow<Boolean>
     private val readSources = mutableListOf<List<Byte>>()
     private val readCurrencies = mutableListOf<GroupCurrency>()
     private val readHints = mutableListOf<ReceiptCategoryHints>()
@@ -312,6 +315,7 @@ class ReceiptViewModelTest {
                     ReceiptStatus.READING,
                     itemCount = 0,
                     hasPhoto = true,
+                    error = null,
                 ),
                 state.receipt,
             )
@@ -367,6 +371,7 @@ class ReceiptViewModelTest {
                     ReceiptStatus.READ,
                     itemCount = 2,
                     hasPhoto = true,
+                    error = null,
                 ),
                 state.receipt,
             )
@@ -630,10 +635,7 @@ class ReceiptViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                scan = ReceiptScan(
-                    photo = encodedPhoto,
-                    reading = null,
-                ),
+                scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
             )
             viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
 
@@ -644,13 +646,14 @@ class ReceiptViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(
                 BillReceipt(
-                    ReceiptStatus.UNREADABLE,
+                    ReceiptStatus.FAILED,
                     itemCount = 0,
                     hasPhoto = false,
+                    error = ReceiptError.UNREADABLE,
                 ),
                 state.receipt,
             )
-            assertTrue(state.showsReceiptFailure)
+            assertEquals(ReceiptError.UNREADABLE, state.receiptError)
             assertFalse(state.isReadingReceipt)
             assertEquals("", state.amountText)
             assertFalse(state.hasEditedAmount)
@@ -665,10 +668,7 @@ class ReceiptViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                scan = ReceiptScan(
-                    photo = null,
-                    reading = null,
-                ),
+                scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
             )
 
             // When
@@ -677,9 +677,10 @@ class ReceiptViewModelTest {
             // Then
             assertEquals(
                 BillReceipt(
-                    ReceiptStatus.UNREADABLE,
+                    ReceiptStatus.FAILED,
                     itemCount = 0,
                     hasPhoto = false,
+                    error = ReceiptError.UNREADABLE,
                 ),
                 viewModel.uiState.value.receipt,
             )
@@ -690,10 +691,7 @@ class ReceiptViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                scan = ReceiptScan(
-                    photo = encodedPhoto,
-                    reading = null,
-                ),
+                scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
             )
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
 
@@ -712,10 +710,7 @@ class ReceiptViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
             answerRead(
                 0,
-                ReceiptScan(
-                    photo = encodedPhoto,
-                    reading = null,
-                ),
+                ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
             )
             viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(otherSource))
@@ -726,8 +721,473 @@ class ReceiptViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(ReceiptStatus.READ, state.receipt?.status)
-            assertFalse(state.showsReceiptFailure)
+            assertNull(state.receiptError)
             assertEquals("259,90", state.amountText)
+        }
+
+    @Test
+    fun `GIVEN a photo nothing could be read from WHEN the reading comes back THEN offers Tirar outra foto only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.offersReceiptRetake)
+            assertFalse(state.offersReceiptRetry)
+        }
+
+    @Test
+    fun `GIVEN the reader does not answer WHEN the read comes back THEN offers Tentar de novo and keeps the fields`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.FAILED,
+                    itemCount = 0,
+                    hasPhoto = false,
+                    error = ReceiptError.READER_UNAVAILABLE,
+                ),
+                state.receipt,
+            )
+            assertEquals(ReceiptError.READER_UNAVAILABLE, state.receiptError)
+            assertTrue(state.offersReceiptRetry)
+            assertFalse(state.offersReceiptRetake)
+            assertFalse(state.isReadingReceipt)
+            assertEquals("100,00", state.amountText)
+            assertEquals("Jantar", state.description)
+            assertEquals(NOW_MILLIS, state.spentAt)
+            assertNull(state.receiptCategoryId)
+        }
+
+    @Test
+    fun `GIVEN the photo never reached the server WHEN the reading comes back THEN offers Tentar de novo only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.OFFLINE))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.FAILED,
+                    itemCount = 0,
+                    hasPhoto = false,
+                    error = ReceiptError.OFFLINE,
+                ),
+                state.receipt,
+            )
+            assertEquals(ReceiptError.OFFLINE, state.receiptError)
+            assertTrue(state.offersReceiptRetry)
+            assertFalse(state.offersReceiptRetake)
+            assertEquals("", state.amountText)
+            assertEquals("Jantar", state.description)
+        }
+
+    @Test
+    fun `GIVEN the day limit of reads WHEN the reading comes back THEN offers neither another photo nor a retry`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.LIMIT_REACHED))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.FAILED,
+                    itemCount = 0,
+                    hasPhoto = false,
+                    error = ReceiptError.LIMIT_REACHED,
+                ),
+                state.receipt,
+            )
+            assertEquals(ReceiptError.LIMIT_REACHED, state.receiptError)
+            assertFalse(state.offersReceiptRetry)
+            assertFalse(state.offersReceiptRetake)
+            assertEquals("", state.amountText)
+            assertEquals("Jantar", state.description)
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN a sync moves the bill to another currency THEN reads it again in that one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            groups.groups.value = listOf(dinner.copy(currency = GroupCurrency.USD))
+
+            // When
+            answerRead(0, scanOf(reading()))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.READING,
+                    itemCount = 0,
+                    hasPhoto = true,
+                    error = null,
+                ),
+                state.receipt,
+            )
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), readCurrencies)
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
+            assertEquals("", state.amountText)
+            assertEquals("", state.description)
+        }
+
+    @Test
+    fun `GIVEN the reader did not answer WHEN saving the bill typed by hand THEN its photo is not kept`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, expenses.createdExpenses.size)
+            assertTrue(attachments.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the reader did not answer WHEN tapping Tentar de novo THEN the same photo is being read again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.READING,
+                    itemCount = 0,
+                    hasPhoto = true,
+                    error = null,
+                ),
+                state.receipt,
+            )
+            assertTrue(state.isReadingReceipt)
+            assertNull(state.receiptError)
+            assertFalse(state.offersReceiptRetry)
+            assertFalse(state.canSave)
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.BRL), readCurrencies)
+        }
+
+    @Test
+    fun `GIVEN the photo never reached the server WHEN Tentar de novo reads it THEN it fills the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.OFFLINE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // When
+            answerRead(1, scanOf(reading()))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.READ,
+                    itemCount = 2,
+                    hasPhoto = true,
+                    error = null,
+                ),
+                state.receipt,
+            )
+            assertNull(state.receiptError)
+            assertFalse(state.offersReceiptRetry)
+            assertEquals("259,90", state.amountText)
+            assertEquals("Bom Preço", state.description)
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN a retried receipt read WHEN saving THEN attaches the photo of that read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsReads = true)
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+        answerRead(1, scanOf(reading()))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        val created = expenses.createdExpenses.single()
+        assertEquals(listOf(encodedPhoto.jpeg.toList()), attachments.map { it.source })
+        assertEquals(listOf(created.id), attachments.map { it.expenseId })
+    }
+
+    @Test
+    fun `GIVEN a failed read and a sync to another currency WHEN tapping Tentar de novo THEN reads in that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            groups.groups.value = listOf(dinner.copy(currency = GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), readCurrencies)
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN a retry the reader did not answer either WHEN tapping Tentar de novo again THEN reads it once more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(List(3) { source.toList() }, readSources)
+            assertTrue(viewModel.uiState.value.offersReceiptRetry)
+        }
+
+    @Test
+    fun `GIVEN a retry answered with the day limit WHEN the reading comes back THEN offers no retry`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // When
+            answerRead(1, ReceiptScan.Failed(ReceiptReadFailure.LIMIT_REACHED))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(ReceiptError.LIMIT_REACHED, state.receiptError)
+            assertFalse(state.offersReceiptRetry)
+            assertFalse(state.offersReceiptRetake)
+        }
+
+    @Test
+    fun `GIVEN a retry answered with the day limit WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+            answerRead(1, ReceiptScan.Failed(ReceiptReadFailure.LIMIT_REACHED))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(2, readSources.size)
+            assertEquals(ReceiptError.LIMIT_REACHED, viewModel.uiState.value.receiptError)
+        }
+
+    @Test
+    fun `GIVEN a photo nothing could be read from WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(1, readSources.size)
+            assertEquals(ReceiptError.UNREADABLE, viewModel.uiState.value.receiptError)
+        }
+
+    @Test
+    fun `GIVEN the day limit of reads WHEN tapping Tentar de novo THEN nothing is read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.LIMIT_REACHED))
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+        // Then
+        assertEquals(1, readSources.size)
+        assertEquals(ReceiptError.LIMIT_REACHED, viewModel.uiState.value.receiptError)
+    }
+
+    @Test
+    fun `GIVEN no receipt WHEN tapping Tentar de novo THEN nothing is read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+        // Then
+        assertTrue(readSources.isEmpty())
+        assertNull(viewModel.uiState.value.receipt)
+    }
+
+    @Test
+    fun `GIVEN a failed read and the device offline WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(1, readSources.size)
+            assertEquals(ReceiptError.READER_UNAVAILABLE, viewModel.uiState.value.receiptError)
+            assertFalse(viewModel.uiState.value.canScanReceipt)
+        }
+
+    @Test
+    fun `GIVEN a failed read and the bill saving WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(1, readSources.size)
+            assertEquals(ReceiptError.READER_UNAVAILABLE, viewModel.uiState.value.receiptError)
+        }
+
+    @Test
+    fun `GIVEN a failed read and the receipt removed WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(1, readSources.size)
+            assertNull(viewModel.uiState.value.receipt)
+            assertTrue(viewModel.uiState.value.showsScanReceipt)
+        }
+
+    @Test
+    fun `GIVEN a failed read and a newer photo that read nothing WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(otherSource))
+            answerRead(1, ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(listOf(source.toList(), otherSource.toList()), readSources)
+            assertEquals(ReceiptError.UNREADABLE, viewModel.uiState.value.receiptError)
+        }
+
+    @Test
+    fun `GIVEN a newer photo the reader did not answer either WHEN tapping Tentar de novo THEN sends that photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.OFFLINE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(otherSource))
+            answerRead(1, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(listOf(source.toList(), otherSource.toList(), otherSource.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN a failed read and a newer photo being read WHEN tapping Tentar de novo THEN nothing more is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(otherSource))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(listOf(source.toList(), otherSource.toList()), readSources)
+            assertTrue(viewModel.uiState.value.isReadingReceipt)
+        }
+
+    @Test
+    fun `GIVEN a retry that read the receipt WHEN tapping Tentar de novo THEN nothing is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            answerRead(0, ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+            answerRead(1, scanOf(reading()))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(2, readSources.size)
+            assertEquals(
+                ReceiptStatus.READ,
+                viewModel.uiState.value.receipt
+                    ?.status,
+            )
+            assertEquals("259,90", viewModel.uiState.value.amountText)
         }
 
     @Test
@@ -960,10 +1420,7 @@ class ReceiptViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                scan = ReceiptScan(
-                    photo = encodedPhoto,
-                    reading = null,
-                ),
+                scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
             )
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
@@ -1307,7 +1764,7 @@ class ReceiptViewModelTest {
         minute: Int,
     ): Long = LocalDateTime(year, month, day, hour, minute).toInstant(TimeZone.UTC).toEpochMilliseconds()
 
-    private fun scanOf(reading: ReceiptReading): ReceiptScan = ReceiptScan(
+    private fun scanOf(reading: ReceiptReading): ReceiptScan = ReceiptScan.Read(
         photo = encodedPhoto,
         reading = reading,
     )
@@ -1512,15 +1969,13 @@ class ReceiptViewModelTest {
         route: Route.SplitBill = newRoute(),
         storedGroups: List<Group> = listOf(dinner),
         online: Boolean = true,
-        scan: ReceiptScan = ReceiptScan(
-            photo = encodedPhoto,
-            reading = null,
-        ),
+        scan: ReceiptScan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE),
         holdsReads: Boolean = false,
         attachResult: Result<BillAttachmentAddition> = Result.success(BillAttachmentAddition.ADDED),
         groupCategories: List<GroupCategory> = emptyList(),
         termChanges: List<CategoryTermChange> = emptyList(),
     ) {
+        isOnline = MutableStateFlow(online)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         terms = FakeCategoryTermRepository(initialChanges = termChanges)
@@ -1572,7 +2027,7 @@ class ReceiptViewModelTest {
             },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
-            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
+            connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
     }
 

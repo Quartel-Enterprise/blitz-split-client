@@ -131,7 +131,6 @@ fun ActivityContent(
                     WindowInsets.safeDrawing
                 },
             ) { padding ->
-                if (!state.isLoaded) return@Scaffold
                 PullToRefreshBox(
                     isRefreshing = state.isRefreshing,
                     onRefresh = { onEvent(ActivityUiEvent.OnRefresh) },

@@ -61,7 +61,7 @@ private val tabletCardWidth = 420.dp
 private val tabletopCardWidth = 600.dp
 
 // Why: how the canvas lays the invite out at each size (2.2), full screen at every one of them (decision 1).
-private enum class InviteLayout {
+internal enum class InviteLayout {
     // Why: a phone upright: one column, the QR card under the title.
     PHONE,
 
@@ -123,7 +123,10 @@ fun InviteContent(
                 .padding(padding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (!state.isLoaded) return@Box
+            if (!state.isLoaded) {
+                InviteSkeleton(layout)
+                return@Box
+            }
             when (layout) {
                 InviteLayout.PHONE -> PhoneInviteColumn(state, onEvent)
 

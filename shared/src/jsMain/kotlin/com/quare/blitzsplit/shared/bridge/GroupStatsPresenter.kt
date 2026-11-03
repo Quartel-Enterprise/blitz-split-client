@@ -95,6 +95,8 @@ class JsGroupStatsState(
     val totalMinor: Double,
     // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
     val isFirstDownload: Boolean,
+    // Why: the bills still coming wait for the internet, said over the skeletons.
+    val isWaitingForInternet: Boolean,
     val expenseCount: Int,
     val pendingCount: Int,
     val memberCount: Int,
@@ -116,6 +118,8 @@ class JsGroupStatsState(
     val categories: Array<JsStatsCategory>,
     val isGroupEmpty: Boolean,
     val isPeriodEmpty: Boolean,
+    // Why: skeletons in place of either empty state while a first download may still bring the period's bills.
+    val isLoadingBills: Boolean,
     val showsStats: Boolean,
     val showsPeriodPicker: Boolean,
     val isLoaded: Boolean,
@@ -219,6 +223,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     allRangeStyle = state.allRangeStyle.name.lowercase(),
     totalMinor = state.totalMinor.toDouble(),
     isFirstDownload = state.isFirstDownload,
+    isWaitingForInternet = state.isWaitingForInternet,
     expenseCount = state.expenseCount,
     pendingCount = state.pendingCount,
     memberCount = state.memberCount,
@@ -259,6 +264,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
         }.toTypedArray(),
     isGroupEmpty = state.isGroupEmpty,
     isPeriodEmpty = state.isPeriodEmpty,
+    isLoadingBills = state.isLoadingBills,
     showsStats = state.showsStats,
     showsPeriodPicker = state.showsPeriodPicker,
     isLoaded = state.isLoaded,

@@ -4,22 +4,23 @@ import Shared
 /// Amounts arrive in the group currency's minor unit (cents, or whole yen) and dates as epoch millis: each is
 /// written here the way the device's language writes it.
 extension GroupCurrency {
-    /// "R$ 312,00" in Portuguese, "R$312.00" in English: 31200 cents in the group's currency.
+    /// "R$ 312,50" in Portuguese, "R$312.50" in English: 31250 cents in the group's currency. Decimals that are all
+    /// zero don't show ("R$ 312"), as `getDisplayFractionDigits` decides for each amount.
     func format(_ minor: Int64) -> String {
-        decimal(of: minor).formatted(.currency(code: code).precision(.fractionLength(Int(fractionDigits))))
+        decimal(of: minor).formatted(.currency(code: code).precision(.fractionLength(shownDigits(of: minor))))
     }
 
-    /// "+R$ 600,00" or "−R$ 118,00", with a true minus sign: what a bill does to a balance. Zero takes no sign.
+    /// "+R$ 600" or "−R$ 118,50", with a true minus sign: what a bill does to a balance. Zero takes no sign.
     func formatSigned(_ minor: Int64) -> String {
         let amount = format(minor == .min ? .max : abs(minor))
         if minor == 0 { return amount }
         return minor < 0 ? "−\(amount)" : "+\(amount)"
     }
 
-    /// "120,00" or "120.00", with no symbol: where the currency is already on the same line ("you get 120.00 and
-    /// owe 218.00").
+    /// "120,50" or "120.50", with no symbol: where the currency is already on the same line ("you get 120 and owe
+    /// 218.50").
     func formatPlain(_ minor: Int64) -> String {
-        decimal(of: minor).formatted(.number.precision(.fractionLength(Int(fractionDigits))))
+        decimal(of: minor).formatted(.number.precision(.fractionLength(shownDigits(of: minor))))
     }
 
     /// "0,00" or "0.00": the placeholder of an amount field, with the currency's digits.
@@ -37,6 +38,10 @@ extension GroupCurrency {
         let symbol = formatter.currencySymbol ?? code
         Self.symbols[code] = symbol
         return symbol
+    }
+
+    private func shownDigits(of minor: Int64) -> Int {
+        Int(getDisplayFractionDigits(amountMinor: minor))
     }
 
     private func decimal(of minor: Int64) -> Decimal {

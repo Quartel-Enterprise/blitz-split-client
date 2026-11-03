@@ -74,6 +74,7 @@ class GroupStatsViewModel(
                 allRangeStyle = StatsRangeStyle.DAYS,
                 totalMinor = 0L,
                 isFirstDownload = false,
+                isWaitingForInternet = false,
                 expenseCount = 0,
                 pendingCount = 0,
                 memberCount = 0,
@@ -113,6 +114,9 @@ class GroupStatsViewModel(
     // Why: the group went while a bill covered this screen, which then leaves as soon as it is on top again.
     private var isGone = false
 
+    // Why: whether the account's copy is whole is known, so an empty group or period is never said before it.
+    private var isDownloadRead = false
+
     init {
         combine(
             observeGroup(route.groupId),
@@ -138,8 +142,16 @@ class GroupStatsViewModel(
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observeFirstDownload()
-            .onEach { progress -> uiState.update { it.copy(isFirstDownload = progress != null) } }
-            .launchIn(viewModelScope)
+            .onEach { progress ->
+                isDownloadRead = true
+                uiState.update {
+                    it.copy(
+                        isFirstDownload = progress != null,
+                        isWaitingForInternet = progress?.isWaitingForInternet == true,
+                    )
+                }
+                if (!isGone) render()
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupStatsUiEvent) {
@@ -265,6 +277,7 @@ class GroupStatsViewModel(
             allRangeStyle = calculator.toRangeStyle(StatsPeriod.ALL, calculator.allSpan),
             totalMinor = spending.totalMinor,
             isFirstDownload = uiState.value.isFirstDownload,
+            isWaitingForInternet = uiState.value.isWaitingForInternet,
             expenseCount = spending.expenses.size,
             pendingCount = spending.pendingCount,
             memberCount = memberCount,
@@ -286,7 +299,7 @@ class GroupStatsViewModel(
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
             categories = calculator.createCategories(spending),
-            isLoaded = true,
+            isLoaded = isDownloadRead,
             homeTab = uiState.value.homeTab,
             activityUnreadCount = uiState.value.activityUnreadCount,
         )

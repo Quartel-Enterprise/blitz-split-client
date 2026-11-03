@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 // Why: one amount in the currency's minor unit, as a number JavaScript reads exactly, with its ISO 4217 code.
 class JsCurrencyAmount(
@@ -90,8 +91,8 @@ class JsGlobalBalancesState(
     val accountProvider: String?,
     // Why: "all", "you-owe" or "owes-you".
     val filter: String,
-    // Why: the home's money type, one per currency.
-    val totals: Array<JsBalanceTotal>,
+    // Why: the home's money type, one per currency; null while the balances load, which draws the shimmer.
+    val totals: Array<JsBalanceTotal>?,
     // Why: "1 pessoa" and "4 pessoas" under the filter's totals, each person once over every currency.
     val toPayPeopleCount: Int,
     val toReceivePeopleCount: Int,
@@ -100,8 +101,8 @@ class JsGlobalBalancesState(
     val selectedPerson: JsPersonRow?,
     // Why: "settled", "nothing-to-pay" or "nothing-to-receive", null while there are rows.
     val emptyState: String?,
-    // Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open.
-    val emptyStateTotal: JsBalanceTotal,
+    // Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open; null without one.
+    val emptyStateTotal: JsBalanceTotal?,
     // Why: how many people that amount is from or to.
     val emptyStatePeopleCount: Int,
     // Why: the PaymentKeyType's name ("EMAIL") and the value of the Pix key Cobrar offers, null without one.
@@ -109,7 +110,10 @@ class JsGlobalBalancesState(
     val pixKeyValue: String?,
     val charge: JsChargeDraft?,
     val showsOfflineNotice: Boolean,
+    // Why: false while the people and totals load (Room, or the account's copy not whole yet): the shimmer.
     val isLoaded: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
+    val isWaitingForInternet: Boolean,
     val recordedPayment: JsPaymentNotice?,
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
@@ -135,7 +139,10 @@ class GlobalBalancesPresenter(
                 photoUrl = state.photoUrl,
                 accountProvider = state.accountProvider?.code,
                 filter = toFilterCode(state.filter),
-                totals = state.totals.map(::toJsPeopleTotal).toTypedArray(),
+                totals = state.totals
+                    .valueOrNull()
+                    ?.map(::toJsPeopleTotal)
+                    ?.toTypedArray(),
                 toPayPeopleCount = state.toPayPeopleCount,
                 toReceivePeopleCount = state.toReceivePeopleCount,
                 sections = state.sections.map(::toJsPeopleSection).toTypedArray(),
@@ -146,13 +153,14 @@ class GlobalBalancesPresenter(
                     BalancesEmptyState.NOTHING_TO_RECEIVE -> "nothing-to-receive"
                     null -> null
                 },
-                emptyStateTotal = toJsPeopleTotal(state.emptyStateTotal),
+                emptyStateTotal = state.emptyStateTotal?.let(::toJsPeopleTotal),
                 emptyStatePeopleCount = state.emptyStatePeopleCount,
                 pixKeyType = state.pixKey?.type?.name,
                 pixKeyValue = state.pixKey?.value,
                 charge = state.charge?.let(::toJsChargeDraft),
                 showsOfflineNotice = state.showsOfflineNotice,
                 isLoaded = state.isLoaded,
+                isWaitingForInternet = state.isWaitingForInternet,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
                 activityUnreadCount = state.activityUnreadCount,
                 canSearch = state.canSearch,

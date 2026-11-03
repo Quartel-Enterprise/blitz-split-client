@@ -22,9 +22,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
-import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -71,6 +69,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -85,7 +84,7 @@ class GroupsViewModel(
     private val syncNow: SyncNow,
     private val navigator: Navigator,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
-    private val updateGroupsLayout: UpdateGroupsLayout,
+    updateGroupsLayout: UpdateGroupsLayout,
     leaveGroup: LeaveGroup,
     deleteGroup: DeleteGroup,
     observeRecordedPayment: ObserveRecordedPayment,
@@ -188,6 +187,14 @@ class GroupsViewModel(
         },
     )
 
+    private val layoutPicker = GroupsLayoutPicker(
+        updateGroupsLayout = updateGroupsLayout,
+        scope = viewModelScope,
+        current = { uiState.value.layout },
+        canPickGridSize = { uiState.value.canPickGridSize },
+        show = { layout -> uiState.update { it.copy(layout = layout) } },
+    )
+
     init {
         combine(
             observeProfile(),
@@ -243,6 +250,8 @@ class GroupsViewModel(
             }
             // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
             .combine(minuteTicks()) { home, _ -> home.copy(rows = agedRowsOf(home.rows, activityClock())) }
+            // Why: the groups wait for "Lista" or "Grade" too, so a grid picked here never shows as a list first.
+            .combine(layoutPicker.isRead.filter { it }) { home, _ -> home }
             .onEach { home ->
                 uiState.update {
                     it.copy(
@@ -262,9 +271,7 @@ class GroupsViewModel(
         exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
-        observeGroupsLayout()
-            .onEach { layout -> uiState.update { it.copy(layout = layout) } }
-            .launchIn(viewModelScope)
+        layoutPicker.watch(observeGroupsLayout())
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -364,9 +371,9 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnFilterChanged -> uiState.update { it.copy(filterQuery = event.query) }
 
-            is GroupsUiEvent.OnDisplayChanged -> changeDisplay(event.display)
+            is GroupsUiEvent.OnDisplayChanged -> layoutPicker.changeDisplay(event.display)
 
-            is GroupsUiEvent.OnGridSizeChanged -> changeGridSize(event.size)
+            is GroupsUiEvent.OnGridSizeChanged -> layoutPicker.changeGridSize(event.size)
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
@@ -450,26 +457,6 @@ class GroupsViewModel(
         if (!isListShown()) return
         detailPane.openGroup(groupId, GroupTab.EXPENSES)
         navigator.navigate(Route.BillDetail(groupId, expenseId))
-    }
-
-    private fun changeDisplay(display: GroupsDisplay) {
-        saveLayout(uiState.value.layout.copy(display = display))
-    }
-
-    // Why: the size is disabled while the list is picked, so a late tap on it doesn't change the grid unseen.
-    private fun changeGridSize(size: GroupGridSize) {
-        if (!uiState.value.canPickGridSize) return
-        saveLayout(uiState.value.layout.copy(gridSize = size))
-    }
-
-    /*
-     * Why: the state takes the pick at once, so a second pick before the device stored the first (the Mac's slider
-     * dragged back and forth) builds on it instead of on the stale layout; the stored layout then confirms it.
-     */
-    private fun saveLayout(layout: GroupsLayout) {
-        if (layout == uiState.value.layout) return
-        uiState.update { it.copy(layout = layout) }
-        viewModelScope.launch { updateGroupsLayout(layout) }
     }
 
     /*

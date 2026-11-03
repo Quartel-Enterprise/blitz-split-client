@@ -72,7 +72,13 @@ struct InviteView: View {
                 InviteContent(model: model)
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The group and its link not read yet: the QR code and the link shimmer in place
+                ShimmerScreen {
+                    ShimmerLine(width: 200, height: 24)
+                    ShimmerBlock(height: 260, cornerRadius: 24)
+                    ShimmerBlock(height: 44, cornerRadius: 22)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         #if os(iOS)

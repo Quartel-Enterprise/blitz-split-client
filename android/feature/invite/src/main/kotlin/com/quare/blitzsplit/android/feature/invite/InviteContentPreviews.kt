@@ -85,6 +85,18 @@ private fun InviteContentPreview() {
 
 @DevicePreviews
 @Composable
+private fun InviteContentLoadingPreview() {
+    BlitzSplitTheme {
+        InviteContent(
+            state = createPreviewState().copy(isLoaded = false),
+            snackbarHostState = SnackbarHostState(),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
 private fun InviteContentChangeLinkPreview() {
     BlitzSplitTheme {
         InviteContent(

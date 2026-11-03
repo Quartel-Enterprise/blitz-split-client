@@ -2,6 +2,7 @@ import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeSidebarProvider } from '@/components/HomeSidebar'
+import { AppSkeleton } from '@/components/PageSkeletons'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
@@ -50,7 +51,7 @@ export function App() {
   }, [isReady, theme])
   useBrowserHistory(app, backStack)
 
-  if (!isReady || !backStack) return null
+  if (!isReady || !backStack) return <AppSkeleton />
   return (
     <>
       <HomeSidebarProvider isActive={backStack.some((route) => SHELL_PAGES.has(route.name))}>

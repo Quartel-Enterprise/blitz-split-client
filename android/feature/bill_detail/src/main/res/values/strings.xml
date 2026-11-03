@@ -152,7 +152,6 @@
     <string name="share_bill_close">Close</string>
     <string name="share_bill_copy">Copy</string>
     <string name="share_bill_copied">Copied</string>
-    <string name="share_bill_loading">Making the link</string>
     <string name="share_bill_failed">Couldn\'t make the link.</string>
     <string name="share_bill_retry">Try again</string>
     <string name="share_bill_who_can_open">Who can open it</string>

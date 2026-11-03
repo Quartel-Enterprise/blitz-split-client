@@ -2,6 +2,7 @@ import { ArrowRight, CircleCheck, Scale } from 'lucide-react'
 import type { GroupDetailPresenter, JsDebtRow, JsGroupDetailState, JsGroupFace } from 'blitzsplit-shared'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -34,7 +35,12 @@ export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresen
   }
   return (
     <>
-      {state.isBalancesEmpty ? (
+      {state.isLoadingBalances ? (
+        // Why: a restored account's bills may still be coming, so never "Ninguém deve nada" before they did.
+        <LoadingRegion isDelayed={false} isWaitingForInternet={state.isWaitingForInternet}>
+          <SkeletonRows count={3} className="rounded-xl border bg-card" />
+        </LoadingRegion>
+      ) : state.isBalancesEmpty ? (
         <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
           <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Scale className="size-5" />

@@ -53,6 +53,8 @@ internal class GroupTabFrame(
     // Why: "nenhuma despesa ainda" in the bar before the first bill.
     val hasBills: Boolean,
     val isLoaded: Boolean,
+    // Why: "Seu saldo neste grupo" shimmers while the account's copy isn't whole, rather than hiding as if settled.
+    val isMyBalanceLoading: Boolean,
     // Why: "Sair do grupo" and "Apagar grupo" need the internet, which the ⋮ menu says.
     val isOnline: Boolean,
     val money: MoneyFormatter,
@@ -120,6 +122,8 @@ private fun GroupTabScaffoldContent(
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,
                 )
+            } else {
+                GroupLoadingTopBar(onAction)
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -141,7 +145,6 @@ private fun GroupTabScaffoldContent(
                 .padding(padding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (!frame.isLoaded) return@Box
             if (layout.usesTwoColumns) {
                 Row(
                     modifier = Modifier
@@ -194,7 +197,7 @@ private fun GroupTabScaffoldContent(
     }
 }
 
-// Why: the faces, "Seu saldo neste grupo" while there is a balance, and the tabs under them.
+// Why: the faces, "Seu saldo neste grupo" while there is a balance, and the tabs under them; shimmering until read.
 @Composable
 private fun GroupSideHeader(
     frame: GroupTabFrame,
@@ -202,23 +205,32 @@ private fun GroupSideHeader(
     horizontalPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
+    if (!frame.isLoaded) {
+        GroupHeaderSkeleton(horizontalPadding = horizontalPadding)
+        return
+    }
+    val balancePadding = Modifier.padding(
+        start = horizontalPadding,
+        end = horizontalPadding,
+        top = 12.dp,
+    )
     Column {
         GroupFacesRow(
             header = frame.header,
             onAction = onAction,
             modifier = modifier,
         )
-        frame.header.myBalance?.let { balance ->
+        val balance = frame.header.myBalance
+        if (frame.isMyBalanceLoading) {
+            MyBalanceSkeleton(modifier = balancePadding)
+        }
+        balance?.let {
             MyBalanceCard(
-                balance = balance,
+                balance = it,
                 isEveryoneSettled = frame.header.isEveryoneSettled,
                 money = frame.money,
                 onSettleClick = { onAction(GroupAction.SETTLE) },
-                modifier = Modifier.padding(
-                    start = horizontalPadding,
-                    end = horizontalPadding,
-                    top = 12.dp,
-                ),
+                modifier = balancePadding,
             )
         }
         GroupTabsRow(

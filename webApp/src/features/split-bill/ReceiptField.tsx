@@ -2,7 +2,7 @@ import { CircleAlert, Loader2, ScanText, X } from 'lucide-react'
 import type { JsBillReceipt, JsSplitBillState, SplitBillPresenter } from 'blitzsplit-shared'
 import { useEffect, useRef, type ChangeEvent, type RefObject } from 'react'
 import { Button } from '@/components/ui/button'
-import { t } from '@/i18n'
+import { t, type MessageKey } from '@/i18n'
 
 /*
  * "Ler cupom fiscal" (7.1e to 7.1g) on the web: the browser has no camera of the app's own, so a file input picks the
@@ -81,21 +81,51 @@ export function ReceiptReadChips({ receipt }: { receipt: JsBillReceipt | null | 
   )
 }
 
-/** "Não deu para ler o cupom" (7.1g): the fields stay as they were, to fill in by hand, or another photo. */
-export function ReceiptFailureAlert({ state, input }: { state: JsSplitBillState; input: RefObject<HTMLInputElement | null> }) {
-  if (!state.showsReceiptFailure) return null
+/**
+ * Why the receipt read nothing (7.1g): the fields stay as they were, to fill in by hand. "Enviar outra foto" for a photo
+ * nothing could be read from, "Tentar de novo" sends the same photo when the reader didn't answer or the connection
+ * dropped, and the day's limit offers neither.
+ */
+export function ReceiptFailureAlert({
+  state,
+  presenter,
+  input,
+}: {
+  state: JsSplitBillState
+  presenter: Pick<SplitBillPresenter, 'retryReceipt'>
+  input: RefObject<HTMLInputElement | null>
+}) {
+  const error = state.receiptError
+  if (!error) return null
+  const copy = ERROR_COPY[error] ?? UNREADABLE_COPY
   return (
     <div role="alert" className="flex gap-3 rounded-lg border border-destructive px-4 py-3 text-sm leading-5 text-destructive">
       <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
       <div className="flex flex-col items-start gap-1">
-        <strong className="font-semibold">{t('splitBill_receiptFailedTitle')}</strong>
-        <span>{t('splitBill_receiptFailedBody')}</span>
-        <Button type="button" variant="link" className="h-auto p-0 text-destructive" disabled={!state.canScanReceipt} onClick={() => input.current?.click()}>
-          {t('splitBill_receiptRetake')}
-        </Button>
+        <strong className="font-semibold">{t(copy.title)}</strong>
+        <span>{t(copy.body)}</span>
+        {state.offersReceiptRetake && (
+          <Button type="button" variant="link" className="h-auto p-0 text-destructive" disabled={!state.canScanReceipt} onClick={() => input.current?.click()}>
+            {t('splitBill_receiptRetake')}
+          </Button>
+        )}
+        {state.offersReceiptRetry && (
+          <Button type="button" variant="link" className="h-auto p-0 text-destructive" disabled={!state.canScanReceipt} onClick={() => presenter.retryReceipt()}>
+            {t('splitBill_receiptRetry')}
+          </Button>
+        )}
       </div>
     </div>
   )
+}
+
+const UNREADABLE_COPY = { title: 'splitBill_receiptFailedTitle', body: 'splitBill_receiptFailedBody' } as const
+
+const ERROR_COPY: Record<string, { title: MessageKey; body: MessageKey } | undefined> = {
+  unreadable: UNREADABLE_COPY,
+  reader_unavailable: { title: 'splitBill_receiptUnavailableTitle', body: 'splitBill_receiptUnavailableBody' },
+  limit_reached: { title: 'splitBill_receiptLimitTitle', body: 'splitBill_receiptLimitBody' },
+  offline: { title: 'splitBill_receiptOfflineTitle', body: 'splitBill_receiptOfflineBody' },
 }
 
 function ReceiptThumbnail() {

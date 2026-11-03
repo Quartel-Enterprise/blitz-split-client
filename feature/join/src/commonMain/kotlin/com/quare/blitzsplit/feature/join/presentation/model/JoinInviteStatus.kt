@@ -13,8 +13,11 @@ enum class JoinInviteStatus {
     INVALID,
 
     /*
-     * Why: "Sem internet para abrir o convite". The link stays on screen and the invite opens by itself once the
-     * device is online; a server that can't be reached reads the same, with "Tentar de novo".
+     * Why: "Sem internet para abrir o convite", only while the device says it is offline. The link stays on screen
+     * and the invite opens by itself once the device is online.
      */
     OFFLINE,
+
+    // Why: "Não deu para abrir o convite. Tente de novo.": online, the server failed, with "Tentar de novo".
+    FAILED,
 }

@@ -22,6 +22,8 @@ class JsNotificationSettingsState(
     val items: Array<JsNotificationItem>,
     val showsPermissionDenied: Boolean,
     val areTogglesEnabled: Boolean,
+    // Why: the toggles shimmer while the choices load or the browser's permission wasn't reported yet.
+    val showsTogglesLoading: Boolean,
 )
 
 class JsNotificationSettingsAction(
@@ -45,6 +47,7 @@ class NotificationSettingsPresenter {
                     }.toTypedArray(),
                 showsPermissionDenied = state.showsPermissionDenied,
                 areTogglesEnabled = state.areTogglesEnabled,
+                showsTogglesLoading = state.showsTogglesLoading,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

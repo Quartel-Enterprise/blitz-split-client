@@ -33,6 +33,8 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -52,6 +54,7 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPer
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
 
+private const val SKELETON_PEOPLE = 4
 private val outer = 20.dp
 private val inner = 6.dp
 
@@ -93,6 +96,8 @@ fun DefaultSplitContent(
                     state = state,
                     onEvent = onEvent,
                 )
+            } else {
+                ShimmerFormSkeleton(fieldCount = 2)
             }
         },
         second = {
@@ -115,6 +120,11 @@ fun DefaultSplitContent(
                     modifier = Modifier.padding(horizontal = 4.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                ShimmerListSkeleton(
+                    count = SKELETON_PEOPLE,
+                    trailingWidth = 72.dp,
                 )
             }
         },

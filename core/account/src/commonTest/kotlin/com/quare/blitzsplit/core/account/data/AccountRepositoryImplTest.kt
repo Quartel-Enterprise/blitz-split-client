@@ -184,6 +184,7 @@ class AccountRepositoryImplTest {
                 recoveryCodePrompt = RecoveryCodePrompt.DUE,
                 email = null,
                 signOutWhenSynced = false,
+                awaitsFullSync = false,
             ),
             account,
         )
@@ -1973,6 +1974,56 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a Google account WHEN the session switches to another user THEN the account awaits its full sync`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(googleUserWithEmail)
+            runCurrent()
+
+            // When
+            sessions.emit(appleUserWithEmail)
+            runCurrent()
+
+            // Then
+            assertTrue(repository.observeAccount().first().awaitsFullSync)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN its session refreshes THEN the account awaits no full sync`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        sessions.emit(googleUserWithEmail)
+        runCurrent()
+
+        // When
+        sessions.emit(googleUserWithEmail.copy(displayName = "Pierre Vieira"))
+        runCurrent()
+
+        // Then
+        assertFalse(repository.observeAccount().first().awaitsFullSync)
+    }
+
+    @Test
+    fun `GIVEN an account awaiting its full sync WHEN the session ends THEN it awaits no more`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        sessions.emit(googleUserWithEmail)
+        runCurrent()
+        repository.updateAwaitsFullSync(true)
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        assertFalse(repository.observeAccount().first().awaitsFullSync)
+    }
+
+    @Test
     fun `GIVEN a Google account with a scheduled sign out WHEN its session refreshes THEN keeps it`() = runTest {
         // Given
         prepareScenario(currentUser = null)
@@ -2621,6 +2672,7 @@ private class FakeAccountLocalDataSource(
             browserSignInFromProfile = browserSignInFromProfile,
             email = null,
             signOutWhenSynced = false,
+            awaitsFullSync = false,
         ),
     )
 

@@ -2,6 +2,7 @@ import { ArrowLeft, CircleAlert, Loader2, Lock, Minus, Plus, UserPlus } from 'lu
 import { DefaultSplitPresenter, type JsDefaultSplitRow, type JsDefaultSplitState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -31,7 +32,8 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsDefaultSplitState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const isWide = useMediaQuery('(min-width: 1024px)')
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} title={t('defaultSplit_title')} onClose={() => presenter.back()} className="sm:max-w-[560px]" />
 
   const editor = state.exceptionEditor
   const onOpenChange = (open: boolean) => {

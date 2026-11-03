@@ -162,4 +162,5 @@
     <string name="groups_home_cover_title">Bora Rachar · Início</string>
     <string name="groups_home_cover_totals">te devem %1$s · você deve %2$s</string>
     <string name="groups_home_cover_hint">Abra o celular para ver tudo</string>
+    <string name="groups_waiting_for_internet">Sem internet. Seus grupos aparecem quando reconectar.</string>
 </resources>

@@ -107,7 +107,7 @@ class JsBillConflict(
 )
 
 /*
- * Why: "Ler cupom fiscal" (7.1e to 7.1g). status is "reading", "read" or "unreadable"; itemCount is "14 itens";
+ * Why: "Ler cupom fiscal" (7.1e to 7.1g). status is "reading", "read" or "failed"; itemCount is "14 itens";
  * hasPhoto is "Foto do cupom", false when the file couldn't be opened as an image.
  */
 class JsBillReceipt(
@@ -185,7 +185,10 @@ class JsSplitBillState(
     val isOnline: Boolean,
     // Why: the file picker to open, from Início's "Ler cupom fiscal", once "Rachar em qual grupo?" was answered.
     val showsReceiptCamera: Boolean,
-    val showsReceiptFailure: Boolean,
+    // Why: why the receipt read nothing (7.1g): "unreadable", "reader_unavailable", "limit_reached" or "offline".
+    val receiptError: String?,
+    val offersReceiptRetake: Boolean,
+    val offersReceiptRetry: Boolean,
 )
 
 class SplitBillPresenter(
@@ -293,7 +296,9 @@ class SplitBillPresenter(
                 canScanReceipt = state.canScanReceipt,
                 isOnline = state.isOnline,
                 showsReceiptCamera = state.showsReceiptCamera,
-                showsReceiptFailure = state.showsReceiptFailure,
+                receiptError = state.receiptError?.name?.lowercase(),
+                offersReceiptRetake = state.offersReceiptRetake,
+                offersReceiptRetry = state.offersReceiptRetry,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -322,6 +327,11 @@ class SplitBillPresenter(
     // Why: the file picker closed without a file.
     fun dismissReceiptCamera() {
         viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed)
+    }
+
+    // Why: "Tentar de novo", the same photo sent again.
+    fun retryReceipt() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
     }
 
     fun removeReceipt() {

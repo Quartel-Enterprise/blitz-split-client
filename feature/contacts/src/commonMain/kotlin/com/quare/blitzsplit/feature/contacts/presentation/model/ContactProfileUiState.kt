@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.contacts.domain.model.ContactHistoryItem
 import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.HomeTab
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
 
 data class ContactProfileUiState(
     // Why: null until Room is read, and once a sync took the person away (they left every group shared).
@@ -20,8 +22,14 @@ data class ContactProfileUiState(
     val addToGroup: AddToGroupDraft?,
     // Why: "Juntar Diego com a conta dele" (11.2h) is open.
     val merge: GuestMergeSheet?,
-    // Why: "Aguardando Diego aceitar", as the server last said; null offline or when nothing waits.
-    val pendingMerge: GuestMerge?,
+    /*
+     * Why: "Aguardando Diego aceitar", as the server last said; Loaded(null) when nothing waits. Loading until the
+     * server answered for this guest, which only it knows: offline or after a failed ask it stays so, and is asked
+     * again once back online.
+     */
+    val pendingMerge: Loadable<GuestMerge?>,
+    // Why: the last ask for the waiting request failed online; it is asked again once the connection comes back.
+    val hasMergeStatusFailed: Boolean,
     // Why: Cancelar was tapped and the server hasn't answered yet.
     val isCancellingMerge: Boolean,
     /*
@@ -54,16 +62,33 @@ data class ContactProfileUiState(
     val canShow: Boolean
         get() = contact?.isHidden == true
 
-    // Why: "Diego ainda não usa o Bora Rachar", with Juntar and Convidar, until a request waits for him.
+    private val knownPendingMerge: GuestMerge?
+        get() = (pendingMerge as? Loadable.Loaded)?.value
+
+    /*
+     * Why: "Diego ainda não usa o Bora Rachar", with Juntar and Convidar, unless a request is known to wait for him;
+     * while the server hasn't answered, the merge row draws isMergeStatusLoading or isMergeStatusUnavailable instead.
+     */
     val showsGuestCard: Boolean
-        get() = contact?.isGuest == true && pendingMerge == null
+        get() = contact?.isGuest == true && knownPendingMerge == null
 
     val showsPendingMerge: Boolean
-        get() = contact?.isGuest == true && pendingMerge != null
+        get() = contact?.isGuest == true && knownPendingMerge != null
 
-    // Why: "Juntar com a conta dele" in the menu, disabled offline with "Precisa de internet".
+    // Why: online and the server not answered yet: the merge row shimmers rather than offering Juntar.
+    val isMergeStatusLoading: Boolean
+        get() = contact?.isGuest == true && pendingMerge.isLoading() && isOnline && !hasMergeStatusFailed
+
+    /*
+     * Why: offline (or the ask failed) before the server ever answered: whether a request waits is unknown, so the
+     * row claims neither Juntar nor "Aguardando"; it says the merge needs the internet.
+     */
+    val isMergeStatusUnavailable: Boolean
+        get() = contact?.isGuest == true && pendingMerge.isLoading() && (!isOnline || hasMergeStatusFailed)
+
+    // Why: "Juntar com a conta dele" in the menu, disabled offline with "Precisa de internet", and until it is known.
     val canMerge: Boolean
-        get() = contact?.isGuest == true && isOnline
+        get() = contact?.isGuest == true && isOnline && !pendingMerge.isLoading()
 
     // Why: "Já compensado entre 3 grupos" under the net; one group says its name.
     val isNetOfSeveralGroups: Boolean

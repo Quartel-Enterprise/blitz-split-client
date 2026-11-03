@@ -7,6 +7,11 @@ import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
 
 data class EditProfileUiState(
+    /*
+     * Why: the saved profile and the account were read. Until then the form shimmers and takes no edit, so nothing
+     * typed is replaced by the saved name once Room answers, and the avatar never shows "?" on the default color.
+     */
+    val isLoaded: Boolean,
     val name: String,
     val avatarColor: AvatarColor,
     val photo: ProfilePhoto?,
@@ -62,7 +67,7 @@ data class EditProfileUiState(
         get() = accountProvider.takeIf { showsUseAccountPhoto }
 
     val canSave: Boolean
-        get() = isNameValid && hasChanges && !isSaving && !isPreparingPhoto
+        get() = isLoaded && isNameValid && hasChanges && !isSaving && !isPreparingPhoto
 
     val showsAccountNotice: Boolean
         get() = accountProvider != null

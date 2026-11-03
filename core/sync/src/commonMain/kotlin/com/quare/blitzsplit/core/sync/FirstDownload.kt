@@ -10,11 +10,17 @@ import kotlinx.coroutines.flow.update
  * Why: a first download is the sync that fills a device right after an account already on the server was restored on
  * it (a sign in, the recovery code), which Início and Grupos draw as "Sincronizando… 3 de 7 grupos". It starts before
  * the restored profile reaches Room, so every sync that runs with that profile began after it, and ends once its
- * groups came down, or the first of those syncs settles, failed or not. In memory (a Koin single): a relaunch, or
- * Início made again (the web's tabs), is never one.
+ * groups came down, or the first of those syncs settles, failed or not. In memory (a Koin single), for the count: the
+ * account's awaitsFullSync is what outlives a relaunch, until a sync settles (see ObserveFirstDownload).
  */
 class FirstDownload {
     private val progress = MutableStateFlow<FirstDownloadProgress?>(null)
+
+    /*
+     * Why: a sync of this launch failed, which may happen on every try (a change the server keeps refusing), so the
+     * screens stop waiting for a copy that may not come and show what the device holds, under the failed sync's badge.
+     */
+    private val hasSyncFailed = MutableStateFlow(false)
 
     val isPending: Boolean
         get() = progress.value != null
@@ -22,10 +28,13 @@ class FirstDownload {
     // Why: null when there is no first download.
     fun observeProgress(): StateFlow<FirstDownloadProgress?> = progress.asStateFlow()
 
+    // Why: a sync that failed before this account was restored says nothing about its copy.
     fun start() {
+        hasSyncFailed.value = false
         progress.value = FirstDownloadProgress(
             arrivedGroupCount = 0,
             groupCount = null,
+            isWaitingForInternet = false,
         )
     }
 
@@ -39,5 +48,16 @@ class FirstDownload {
 
     fun end() {
         progress.value = null
+    }
+
+    fun observeHasSyncFailed(): StateFlow<Boolean> = hasSyncFailed.asStateFlow()
+
+    fun syncFailed() {
+        hasSyncFailed.value = true
+    }
+
+    // Why: a later sync got through, so a switch to another user afterwards waits for its copy again.
+    fun syncSucceeded() {
+        hasSyncFailed.value = false
     }
 }

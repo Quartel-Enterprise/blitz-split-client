@@ -75,6 +75,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 class HomeViewModel(
     private val navigator: Navigator,
@@ -117,8 +120,8 @@ class HomeViewModel(
                 isOnline = true,
                 isLoaded = false,
                 groupCount = 0,
-                people = emptyList(),
-                summary = HomeSummary(totals = emptyList()),
+                people = Loadable.Loading,
+                summary = Loadable.Loading,
                 groups = emptyList(),
                 billDays = emptyList(),
                 showsRecoveryCodeCard = false,
@@ -229,8 +232,8 @@ class HomeViewModel(
                 peopleBalances = people
                 uiState.update {
                     it.copy(
-                        people = homePeopleOf(people),
-                        summary = HomeSummary(totals = people.totals),
+                        people = homePeopleOf(people).toLoaded(),
+                        summary = HomeSummary(totals = people.totals).toLoaded(),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -289,11 +292,20 @@ class HomeViewModel(
 
             HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
-            HomeUiEvent.OnToReceiveClicked -> if (isOnTop() && uiState.value.summary.canOpenToReceive) {
+            HomeUiEvent.OnToReceiveClicked -> if (isOnTop() &&
+                uiState.value.summary
+                    .valueOrNull()
+                    ?.canOpenToReceive == true
+            ) {
                 openBalancesTab(BalancesFilter.OWES_YOU)
             }
 
-            HomeUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) openToPay()
+            HomeUiEvent.OnToPayClicked -> if (uiState.value.summary
+                    .valueOrNull()
+                    ?.canOpenToPay == true
+            ) {
+                openToPay()
+            }
 
             HomeUiEvent.OnSplitBillClicked -> openSplitBill(scansReceipt = false)
 

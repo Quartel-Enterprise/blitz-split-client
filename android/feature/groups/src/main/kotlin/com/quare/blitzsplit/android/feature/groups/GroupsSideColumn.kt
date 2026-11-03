@@ -111,6 +111,8 @@ internal fun GroupsSideColumnLayout(
                 val firstDownload = state.firstDownload
                 if (firstDownload != null) {
                     GroupsFirstDownloadCard(progress = firstDownload)
+                } else if (state.isReadingGroups) {
+                    GroupsSummarySkeleton()
                 } else {
                     GroupsSummaryCard(
                         summary = state.summary,

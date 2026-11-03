@@ -18,13 +18,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
@@ -39,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -61,12 +58,13 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
+import software.quare.loadable.valueOrNull
 import kotlin.math.abs
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-private const val SKELETON_FACES = 5
+import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton as DesignProfileAvatarButton
 
 // Why: "Saldos com pessoas", "Seus grupos" and "Últimas despesas", each with the link that opens all of it.
 @Composable
@@ -96,8 +94,8 @@ internal fun HomeSectionHeader(
 
 /*
  * Why: "Saldos com pessoas", each person once per currency, netted across the groups; the count joins the title once
- * the row scrolls. While the first download fills the device, grey faces hold their place; with everyone settled the
- * row goes, leaving no gap.
+ * the row scrolls. While it is read, or the first download fills the device, a shimmer holds its place; with everyone
+ * settled the row goes, leaving no gap.
  */
 @Composable
 internal fun HomePeopleSection(
@@ -105,16 +103,18 @@ internal fun HomePeopleSection(
     onEvent: (HomeUiEvent) -> Unit,
     metrics: HomeMetrics,
 ) {
-    if (!state.showsPeople) {
-        if (state.isFirstDownload) PeopleSkeletonRow(metrics)
+    if (state.isLoadingPeople) {
+        HomePeopleSkeleton(metrics)
         return
     }
+    val people = state.people.valueOrNull().orEmpty()
+    if (people.isEmpty()) return
     val listState = rememberLazyListState()
     val scrolls = listState.canScrollForward || listState.canScrollBackward
     Column {
         HomeSectionHeader(
             title = if (scrolls) {
-                stringResource(R.string.groups_home_people_title_count, state.people.size)
+                stringResource(R.string.groups_home_people_title_count, people.size)
             } else {
                 stringResource(R.string.groups_home_people_title)
             },
@@ -128,7 +128,7 @@ internal fun HomePeopleSection(
             horizontalArrangement = Arrangement.spacedBy(if (metrics.isCompact) 6.dp else 8.dp),
         ) {
             items(
-                state.people,
+                people,
                 key = { person -> person.key + person.currency.code },
             ) { person ->
                 PersonFaceItem(
@@ -254,50 +254,6 @@ private fun GuestBadge(modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-private fun PeopleSkeletonRow(metrics: HomeMetrics) {
-    Row(
-        modifier = Modifier
-            .padding(
-                horizontal = metrics.gutter,
-                vertical = 12.dp,
-            ).clearAndSetSemantics {},
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        repeat(SKELETON_FACES) {
-            Column(
-                modifier = Modifier.width(metrics.faceSize + 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                SkeletonBox(
-                    width = metrics.faceSize,
-                    height = metrics.faceSize,
-                    shape = CircleShape,
-                )
-                SkeletonBox(width = 48.dp)
-                SkeletonBox(width = 60.dp)
-            }
-        }
-    }
-}
-
-// Why: the grey shape something takes while the first download brings it.
-@Composable
-internal fun SkeletonBox(
-    width: Dp?,
-    height: Dp = 10.dp,
-    shape: Shape = RoundedCornerShape(height / 2),
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .then(if (width != null) Modifier.width(width) else Modifier.fillMaxWidth())
-            .height(height)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh, shape),
-    )
-}
-
 /*
  * Why: "Saldo geral", the net already netted across the people (Grupos' Saldo geral), big in the first currency with a
  * net and a line for each other one. "Te devem" and "Você deve" open Saldos filtered, disabled at zero.
@@ -309,7 +265,13 @@ internal fun HomeSummaryCard(
     metrics: HomeMetrics,
     modifier: Modifier = Modifier,
 ) {
-    val summary = state.summary
+    val summary = state.summary.valueOrNull() ?: run {
+        HomeSummarySkeleton(
+            metrics = metrics,
+            modifier = modifier,
+        )
+        return
+    }
     val main = summary.main
     val currency = main?.currency ?: rememberRegionCurrency()
     val money = rememberMoneyFormatter(currency)
@@ -359,7 +321,7 @@ internal fun HomeSummaryCard(
                 )
                 ExtraCurrencyText(totals = summary.others)
                 Text(
-                    text = stringResource(summaryHintOf(state)),
+                    text = stringResource(summaryHintOf(state, summary)),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -424,10 +386,13 @@ private fun ExtraCurrencyText(totals: List<PeopleTotal>) {
     }
 }
 
-private fun summaryHintOf(state: HomeUiState): Int = when {
+private fun summaryHintOf(
+    state: HomeUiState,
+    summary: HomeSummary,
+): Int = when {
     state.isFirstDownload -> R.string.groups_home_summary_first_download
-    state.summary.kind == GroupBalanceKind.TO_RECEIVE -> R.string.groups_home_summary_to_receive_hint
-    state.summary.kind == GroupBalanceKind.YOU_OWE -> R.string.groups_home_summary_to_pay_hint
+    summary.kind == GroupBalanceKind.TO_RECEIVE -> R.string.groups_home_summary_to_receive_hint
+    summary.kind == GroupBalanceKind.YOU_OWE -> R.string.groups_home_summary_to_pay_hint
     else -> R.string.groups_home_summary_settled_hint
 }
 
@@ -446,18 +411,13 @@ internal fun ProfileAvatarButton(
     photoUrl: String?,
     onClick: () -> Unit,
 ) {
-    IconButton(
+    DesignProfileAvatarButton(
+        initial = initial,
+        color = color,
+        photoUrl = photoUrl,
+        contentDescription = stringResource(R.string.groups_profile),
         onClick = onClick,
-        modifier = Modifier.size(48.dp),
-    ) {
-        val profileLabel = stringResource(R.string.groups_profile)
-        AvatarBadge(
-            initial = initial,
-            color = color,
-            modifier = Modifier.semantics { contentDescription = profileLabel },
-            photoUrl = photoUrl,
-        )
-    }
+    )
 }
 
 // Why: room under the last row for what floats over it (the FAB), or the pane's own bottom margin.
@@ -485,6 +445,6 @@ internal fun HomeSyncStatusIndicator(
             onRetry = { onEvent(HomeUiEvent.OnRetrySyncClicked) },
             downloadProgress = state.firstDownload,
         )
-        state.firstDownload?.let { DownloadProgressBar(progress = it) }
+        state.firstDownload?.let { DownloadStatusLine(progress = it) }
     }
 }

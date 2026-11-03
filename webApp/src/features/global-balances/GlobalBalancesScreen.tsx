@@ -4,9 +4,11 @@ import { useId } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { PersonGroupsList } from '@/components/PersonGroupsList'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, SkeletonCard, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
@@ -72,7 +74,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
     <HomeShell
       activityUnreadCount={state.activityUnreadCount}
       selected="balances"
-      profile={state}
+      profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
       search={search}
@@ -86,13 +88,14 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
             {t('globalBalances_offline')}
           </span>
         )}
+        {!state.isLoaded && <BalancesSkeleton isWide={isWide} isWaitingForInternet={state.isWaitingForInternet} />}
         {state.isLoaded && (
           <>
             <FilterCards presenter={presenter} state={state} />
             {isWide ? (
               <BalancesListDetail presenter={presenter} state={state} />
             ) : state.emptyState ? (
-              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal} count={state.emptyStatePeopleCount} />
+              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal ?? undefined} count={state.emptyStatePeopleCount} />
             ) : (
               <section aria-label={t('globalBalances_title')} className="overflow-hidden rounded-xl border bg-card">
                 {state.sections.map((section, index) => (
@@ -104,6 +107,31 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
         )}
       </main>
     </HomeShell>
+  )
+}
+
+/**
+ * Saldos while the balances are read (or a restored account's first full sync brings them): the three filter cards
+ * and the people, with the one picked beside them on the desktop.
+ */
+function BalancesSkeleton({ isWide, isWaitingForInternet }: { isWide: boolean; isWaitingForInternet: boolean }) {
+  const people = <SkeletonRows count={5} className="overflow-hidden rounded-xl border bg-card" />
+  return (
+    <LoadingRegion isWaitingForInternet={isWaitingForInternet} className="flex flex-col gap-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <SummaryCardSkeleton />
+        <SummaryCardSkeleton />
+        <SummaryCardSkeleton />
+      </div>
+      {isWide ? (
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] items-start gap-5">
+          {people}
+          <SkeletonCard lines={4} className="p-6" />
+        </div>
+      ) : (
+        people
+      )}
+    </LoadingRegion>
   )
 }
 
@@ -122,7 +150,7 @@ function BalancesListDetail({ presenter, state }: { presenter: GlobalBalancesPre
         </section>
       )}
       {state.emptyState ? (
-        <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal} count={state.emptyStatePeopleCount} />
+        <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal ?? undefined} count={state.emptyStatePeopleCount} />
       ) : (
         selected && <PersonDetail presenter={presenter} row={selected} />
       )}
@@ -150,7 +178,7 @@ function FilterCards({ presenter, state }: { presenter: GlobalBalancesPresenter;
               {t(filterLabels[filter])}
               {isOn && <Check aria-hidden className="size-3.5 text-primary" />}
             </span>
-            {state.totals.map((total) => (
+            {(state.totals ?? []).map((total) => (
               <span key={total.currency} className={cn('text-xl font-semibold tabular-nums', amountTone(filter, total))}>
                 {totalText(filter, total)}
               </span>

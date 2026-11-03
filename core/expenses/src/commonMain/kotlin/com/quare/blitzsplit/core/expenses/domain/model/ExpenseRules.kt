@@ -64,9 +64,5 @@ object ExpenseRules {
         return if (capped.lastOrNull()?.isHighSurrogate() == true) capped.dropLast(1) else capped
     }
 
-    fun minorPerMajorFor(currency: GroupCurrency): Long {
-        var factor = 1L
-        repeat(currency.fractionDigits) { factor *= 10 }
-        return factor
-    }
+    fun minorPerMajorFor(currency: GroupCurrency): Long = currency.minorPerMajor
 }

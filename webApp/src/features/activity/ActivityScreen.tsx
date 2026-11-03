@@ -4,9 +4,10 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
-import { HomeShell, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
+import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
@@ -45,7 +46,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
   return (
     <HomeShell
       selected="activity"
-      profile={state}
+      profile={loadedProfile(state)}
       activityUnreadCount={state.unreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
@@ -53,6 +54,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
     >
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
         <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>
+        {!state.isLoaded && <Placeholders isDelayed />}
         {state.isLoaded && (
           <>
             <Toolbar presenter={presenter} state={state} isPhone={isPhone} />
@@ -152,7 +154,11 @@ function StatusChip({ presenter, state }: { presenter: ActivityPresenter; state:
 function Feed({ presenter, state, isWide }: { presenter: ActivityPresenter; state: JsActivityState; isWide: boolean }) {
   const itemCount = state.days.reduce((count, day) => count + day.items.length, 0)
   const end = useEndReached(state.hasMore && !state.isLoadingMore, itemCount, () => presenter.endReached())
-  if (state.showsPlaceholders) return <Placeholders />
+  // Why: a new device's first page is the server's, so its rows show at once; older pages still loading for a filter
+  // that matches nothing yet are rows too, never "Nada com esses filtros" before they came.
+  if (state.showsPlaceholders || (state.days.length === 0 && state.isLoadingOlderItems)) {
+    return <Placeholders isWaitingForInternet={state.isWaitingForInternet} />
+  }
   if (state.days.length === 0) {
     // Why: on the desktop the empty state takes the detail's place, as the canvas draws it.
     return isWide ? <span /> : state.emptyState ? <EmptyActivity presenter={presenter} emptyState={state.emptyState} /> : null
@@ -365,28 +371,20 @@ function ActorFace({ item, className, badgeClassName }: { item: JsActivityItem; 
   )
 }
 
-/** A new device waiting for its first page: grey rows under "Sincronizando…". */
-function Placeholders() {
-  const widths = [
-    ['88%', '60%'],
-    ['72%', '48%'],
-    ['80%', '66%'],
-    ['64%', '52%'],
-    ['76%', '40%'],
-  ]
+/**
+ * The feed's rows still on their way: a day's header over shimmering rows, after 150 ms for the browser's own read,
+ * at once for a new device's first page from the server, which offline says it waits for the internet.
+ */
+function Placeholders({ isDelayed = false, isWaitingForInternet = false }: { isDelayed?: boolean; isWaitingForInternet?: boolean }) {
   return (
-    <div role="status" aria-label={t('activity_loading')} className="overflow-hidden rounded-xl border bg-card">
-      <span className="block h-9 border-b bg-muted" />
-      {widths.map(([first, second], index) => (
-        <span key={index} className="flex gap-3 border-b px-4 py-3.5 last:border-b-0">
-          <span className="size-8 shrink-0 animate-pulse rounded-full bg-muted" />
-          <span className="flex flex-1 flex-col gap-2 pt-1">
-            <span className="h-3 animate-pulse rounded bg-muted" style={{ width: first }} />
-            <span className="h-2.5 animate-pulse rounded bg-muted" style={{ width: second }} />
-          </span>
+    <LoadingRegion isDelayed={isDelayed} isWaitingForInternet={isWaitingForInternet} label={t('activity_loading')}>
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <span className="flex h-9 items-center border-b bg-muted px-4">
+          <SkeletonLine className="h-2.5 w-16" />
         </span>
-      ))}
-    </div>
+        <SkeletonRows count={5} hasTrailing={false} rowClassName="items-start py-3.5" />
+      </div>
+    </LoadingRegion>
   )
 }
 

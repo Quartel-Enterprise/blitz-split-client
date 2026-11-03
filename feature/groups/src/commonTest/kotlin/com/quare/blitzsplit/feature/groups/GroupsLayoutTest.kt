@@ -11,13 +11,18 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
+import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupShape
+import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
@@ -230,12 +235,127 @@ class GroupsLayoutTest {
             assertEquals(GroupGridSize.STANDARD, viewModel.uiState.value.layout.gridSize)
         }
 
+    @Test
+    fun `GIVEN the stored layout not read yet WHEN the groups open with no group THEN never shows the empty home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(observeGroupsLayout = ObserveGroupsLayout { MutableSharedFlow() })
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasLoadedGroups)
+            assertFalse(state.showsEmptyState)
+            assertFalse(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN the stored layout not read yet WHEN the groups open with a group THEN holds the rows back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                observeGroupsLayout = ObserveGroupsLayout { MutableSharedFlow() },
+                storedGroups = listOf(apartment),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasLoadedGroups)
+            assertTrue(state.groups.isEmpty())
+            assertFalse(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN the groups read and the stored layout not yet WHEN the large grid is read THEN shows the rows in it`() =
+        runTest(testDispatcher) {
+            // Given
+            val notReadYet = MutableSharedFlow<GroupsLayout>()
+            prepareScenario(
+                observeGroupsLayout = ObserveGroupsLayout { notReadYet },
+                storedGroups = listOf(apartment),
+            )
+
+            // When
+            notReadYet.emit(largeGrid)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.hasLoadedGroups)
+            assertEquals(listOf("ape"), state.groups.map { it.id })
+            assertTrue(state.showsGrid)
+            assertEquals(largeGrid, state.layout)
+            assertTrue(state.showsSplitBillButton)
+        }
+
+    @Test
+    fun `GIVEN the list and a slow store WHEN picking the grid and then the large size THEN stores the large grid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storesAtOnce = false)
+            viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(GroupsDisplay.GRID))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+            // Then
+            assertEquals(
+                listOf(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD), largeGrid),
+                savedLayouts,
+            )
+            assertEquals(largeGrid, viewModel.uiState.value.layout)
+        }
+
+    @Test
+    fun `GIVEN the list and a slow store WHEN picking the grid THEN shows the grid before the store confirms it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storesAtOnce = false)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(GroupsDisplay.GRID))
+
+            // Then
+            assertEquals(GroupsLayout.initial, storedLayout.value)
+            assertTrue(viewModel.uiState.value.showsGrid)
+        }
+
     private val largeGrid = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)
+
+    private val apartment = Group(
+        id = "ape",
+        name = "Apê 302",
+        type = GroupType.OTHER,
+        color = AvatarColor.BLUE,
+        shape = GroupShape.SQUARE,
+        photo = null,
+        currency = GroupCurrency.BRL,
+        members = listOf(
+            GroupMember(
+                id = "member-Pierre",
+                name = "Pierre",
+                avatarColor = AvatarColor.GREEN,
+                isMe = true,
+                hasJoined = false,
+                userId = null,
+                inviteCode = null,
+                photoUrl = null,
+            ),
+        ),
+        isPending = false,
+        inviteCode = null,
+        isCreatedByMe = true,
+        defaultSplit = null,
+        updatedAt = 0L,
+    )
 
     private fun prepareScenario(
         stored: GroupsLayout = GroupsLayout.initial,
         observeGroupsLayout: ObserveGroupsLayout? = null,
         storesAtOnce: Boolean = true,
+        storedGroups: List<Group> = emptyList(),
     ) {
         storedLayout = MutableStateFlow(stored)
         savedLayouts = mutableListOf()
@@ -246,7 +366,7 @@ class GroupsLayoutTest {
             ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
             observeSyncState = ObserveSyncState { MutableStateFlow(SyncState.SYNCED) },
-            observeGroups = ObserveGroupsUseCase(FakeGroupRepository(initialGroups = emptyList())),
+            observeGroups = ObserveGroupsUseCase(FakeGroupRepository(initialGroups = storedGroups)),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
             retrySync = RetrySync {},
             syncNow = SyncNow { Result.success(Unit) },

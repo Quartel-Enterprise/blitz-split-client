@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
@@ -24,7 +25,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,6 +44,7 @@ class CategoryMapViewModel(
     observeMapCategories: ObserveMapCategories,
     observeGroups: ObserveGroups,
     observeAccount: ObserveAccount,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<CategoryMapUiState>
@@ -66,31 +71,24 @@ class CategoryMapViewModel(
     val actionWatcher: FlowWatcher<CategoryMapUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeCategoryMap()
-            .onEach { map ->
-                uiState.update {
-                    it.copy(
-                        map = map,
-                        isLoaded = true,
-                    )
-                }
-            }.launchIn(viewModelScope)
-        observeMapCategories()
-            .onEach { tree -> uiState.update { it.copy(categories = tree) } }
-            .launchIn(viewModelScope)
-        observeGroups()
-            .onEach { groups ->
-                uiState.update {
-                    it.copy(
-                        groupNames = groups.associate { group ->
-                            group.id to group.name
-                        },
-                    )
-                }
-            }.launchIn(viewModelScope)
-        observeAccount()
-            .onEach { account -> uiState.update { it.copy(isConnected = account.status is AccountStatus.Connected) } }
-            .launchIn(viewModelScope)
+        // Why: one read, so the terms never show against the app's categories alone, nor without the account.
+        combine(
+            observeCategoryMap(),
+            observeMapCategories(),
+            observeGroups(),
+            observeAccount().map { account -> account.status is AccountStatus.Connected }.distinctUntilChanged(),
+            observeFirstDownload().map { it == null }.distinctUntilChanged(),
+        ) { map, tree, groups, isConnected, isWhole ->
+            uiState.update {
+                it.copy(
+                    isLoaded = isWhole,
+                    map = map,
+                    categories = tree,
+                    groupNames = groups.associate { group -> group.id to group.name },
+                    isConnected = isConnected,
+                )
+            }
+        }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -98,6 +96,7 @@ class CategoryMapViewModel(
     }
 
     fun onEvent(event: CategoryMapUiEvent) {
+        if (!uiState.value.canEditMap && event.isMapChange()) return
         when (event) {
             CategoryMapUiEvent.OnBackClicked -> leave()
 
@@ -154,6 +153,12 @@ class CategoryMapViewModel(
             CategoryMapUiEvent.OnRestoreDismissed -> uiState.update { it.copy(isRestoreConfirmOpen = false) }
         }
     }
+
+    private fun CategoryMapUiEvent.isMapChange(): Boolean = this is CategoryMapUiEvent.OnAddTermClicked ||
+        this is CategoryMapUiEvent.OnTermClicked ||
+        this == CategoryMapUiEvent.OnUndoRemoveClicked ||
+        this == CategoryMapUiEvent.OnRestoreClicked ||
+        this == CategoryMapUiEvent.OnRestoreConfirmed
 
     // Why: the Mac draws it in Ajustes, where the back stack doesn't end on this screen.
     private fun leave() {

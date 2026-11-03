@@ -9,16 +9,22 @@ struct ProfileToolbarButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            AvatarPhoto(
-                initial: initial,
-                color: color,
-                photoUrl: photoUrl,
-                size: 32,
-                font: .subheadline.weight(.semibold),
-            )
+        // A name always has an initial, so an empty one is a profile not read yet: a shimmer, never an empty badge
+        // in the default color
+        if initial.isEmpty, photoUrl == nil {
+            ShimmerCircle(size: 32).shimmering()
+        } else {
+            Button(action: action) {
+                AvatarPhoto(
+                    initial: initial,
+                    color: color,
+                    photoUrl: photoUrl,
+                    size: 32,
+                    font: .subheadline.weight(.semibold),
+                )
+            }
+            .accessibilityLabel("Profile")
         }
-        .accessibilityLabel("Profile")
     }
 }
 

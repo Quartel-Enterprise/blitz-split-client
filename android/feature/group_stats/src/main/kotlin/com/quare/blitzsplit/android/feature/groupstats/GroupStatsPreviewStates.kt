@@ -55,6 +55,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
         allRangeStyle = StatsRangeStyle.DAYS,
         totalMinor = if (hasBills) 241_860L else 0L,
         isFirstDownload = false,
+        isWaitingForInternet = false,
         expenseCount = if (hasBills) 7 else 0,
         pendingCount = if (hasBills) 1 else 0,
         memberCount = 6,

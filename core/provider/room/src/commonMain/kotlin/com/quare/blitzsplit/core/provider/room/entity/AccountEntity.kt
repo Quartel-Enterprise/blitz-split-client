@@ -29,4 +29,10 @@ data class AccountEntity(
     // Why: "Sair ao sincronizar" waits for the queued changes to go up before the session ends.
     @ColumnInfo(defaultValue = "0")
     val signOutWhenSynced: Boolean,
+    /*
+     * Why: an account restored or switched to on this device holds only part of its copy until a sync settles, so
+     * an empty list there is no answer yet. Kept in Room, so a relaunch midway still knows.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val awaitsFullSync: Boolean,
 )

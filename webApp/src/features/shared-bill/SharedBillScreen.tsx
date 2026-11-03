@@ -1,10 +1,11 @@
-import { CloudOff, Info, Link2Off, Loader2, Lock } from 'lucide-react'
+import { CloudOff, Info, Link2Off, Lock } from 'lucide-react'
 import { SharedBillPresenter, type JsRoute, type JsSharedBillState } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from '@/features/bill-detail/BillAttachments'
 import { BillComments, CommentComposer } from '@/features/bill-detail/BillComments'
 import { BillBody, type Money } from '@/features/bill-detail/BillDetailSheet'
@@ -50,9 +51,18 @@ export function SharedBillScreen({ route }: { route: JsRoute }) {
       </header>
       <main className="mx-auto flex w-full max-w-[720px] flex-col gap-6 px-4 pt-6 pb-12">
         {state.status === 'loading' && (
-          <div role="status" aria-label={t('sharedBill_loading')} className="flex justify-center pt-32">
-            <Loader2 aria-hidden className="size-8 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingRegion isDelayed={false} label={t('sharedBill_loading')} className="flex flex-col gap-6">
+            <SkeletonLine className="h-4 w-1/2" />
+            <span className="flex items-center gap-3">
+              <Skeleton className="size-10 rounded-xl" />
+              <span className="flex flex-1 flex-col gap-2">
+                <SkeletonLine className="h-4 w-1/2" />
+                <SkeletonLine className="h-2.5 w-1/4" />
+              </span>
+            </span>
+            <Skeleton className="h-9 w-40" />
+            <SkeletonRows count={3} className="rounded-lg border" />
+          </LoadingRegion>
         )}
         {state.status === 'open' && <OpenBill presenter={presenter} state={state} />}
         {state.status === 'not-found' && (

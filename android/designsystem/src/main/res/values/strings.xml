@@ -199,4 +199,6 @@
         <item quantity="other">%d unread</item>
     </plurals>
     <string name="designsystem_search">Search</string>
+    <string name="designsystem_loading">Loading</string>
+    <string name="designsystem_waiting_for_internet">No internet. Your data shows up once you\'re back online.</string>
 </resources>

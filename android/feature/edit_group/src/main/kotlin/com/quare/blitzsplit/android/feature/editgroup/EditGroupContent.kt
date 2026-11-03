@@ -58,17 +58,13 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.DefaultSplitMode
-import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
-import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 
@@ -114,12 +110,16 @@ fun EditGroupContent(
             )
         },
         modifier = modifier,
-        secondColumn = if (usesTwoColumns && state.isLoaded) {
+        secondColumn = if (usesTwoColumns) {
             {
-                EditGroupFieldsColumn(
-                    state = state,
-                    onEvent = onEvent,
-                )
+                if (state.isLoaded) {
+                    EditGroupFieldsColumn(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                } else {
+                    ShimmerFormSkeleton()
+                }
             }
         } else {
             null
@@ -140,6 +140,15 @@ fun EditGroupContent(
                     avatarSize = if (isDialog) wideAvatarSize else phoneAvatarSize,
                 )
             }
+        } else {
+            // Why: the group's icon and fields shimmer until Room is read, never an empty name or a default color.
+            ShimmerBox(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                ShimmerAvatarSkeleton(
+                    size = if (usesTwoColumns || isDialog) wideAvatarSize else phoneAvatarSize,
+                    shape = RoundedCornerShape(28.dp),
+                )
+            }
+            if (!usesTwoColumns) ShimmerFormSkeleton()
         }
     }
 }
@@ -535,56 +544,3 @@ private fun SettingRow(
         }
     }
 }
-
-@DevicePreviews
-@Composable
-private fun EditGroupPreview() {
-    BlitzSplitTheme {
-        EditGroupContent(
-            state = buildPreviewState(
-                name = "Viagem Floripa",
-                isOnline = true,
-            ),
-            isDialog = rememberUsesEditGroupDialog(),
-            onEvent = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun EditGroupEmptyNameOfflinePreview() {
-    BlitzSplitTheme {
-        EditGroupContent(
-            state = buildPreviewState(
-                name = "",
-                isOnline = false,
-            ),
-            isDialog = rememberUsesEditGroupDialog(),
-            onEvent = {},
-        )
-    }
-}
-
-private fun buildPreviewState(
-    name: String,
-    isOnline: Boolean,
-): EditGroupUiState = EditGroupUiState(
-    name = name,
-    initials = if (name.isEmpty()) "" else "VF",
-    color = AvatarColor.PEACH,
-    shape = GroupShape.COOKIE,
-    photo = null,
-    isPreparingPhoto = false,
-    showsPhotoError = false,
-    iconEditor = null,
-    type = GroupType.TRIP,
-    currency = GroupCurrency.BRL,
-    isCurrencyLocked = true,
-    defaultSplitMode = DefaultSplitMode.SHARES,
-    isOnline = isOnline,
-    isLoaded = true,
-    isSaving = false,
-    showsSaveError = false,
-    hasChanges = true,
-)

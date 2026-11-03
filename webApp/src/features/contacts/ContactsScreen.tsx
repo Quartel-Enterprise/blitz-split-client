@@ -4,16 +4,17 @@ import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
-import { HomeShell, homeTabLabel, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, homeTabLabel, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
-import { ContactProfileView, useContactProfile } from './ContactProfile'
+import { ContactProfileSkeleton, ContactProfileView, useContactProfile } from './ContactProfile'
 import { netWord, rowMeta } from './contactWords'
 
 // Início, Grupos, Saldos and Atividade take Contatos' place above Início.
@@ -49,7 +50,7 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   return (
     <HomeShell
       selected="contacts"
-      profile={state}
+      profile={loadedProfile(state)}
       activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
@@ -82,6 +83,7 @@ function ProfileOverList({ personKey }: { personKey: string }) {
     <PageShell selected={homeTab} phoneBars="home">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
         <h1 className="sr-only">{homeTabLabel(homeTab)}</h1>
+        {!profile.state.isLoaded && <ContactProfileSkeleton />}
         {profile.presenter && profile.state.contact && (
           <ContactProfileView
             presenter={profile.presenter}
@@ -102,6 +104,9 @@ function DetailPane({ state }: { state: JsContactsState }) {
     <div className="sticky top-8 flex max-h-[calc(100dvh-4rem)] min-h-[480px] min-w-0 flex-col overflow-y-auto rounded-xl border bg-card p-6">
       {state.selectedKey ? (
         <ContactPanel key={state.selectedKey} personKey={state.selectedKey} />
+      ) : state.isLoading ? (
+        // Why: before the people are read nothing says yet whether there is anyone to pick.
+        <ContactProfileSkeleton />
       ) : (
         <section aria-label={t('contacts_pane')} className="my-auto flex flex-col items-center gap-3 text-center">
           <span aria-hidden className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -116,6 +121,7 @@ function DetailPane({ state }: { state: JsContactsState }) {
 
 function ContactPanel({ personKey }: { personKey: string }) {
   const profile = useContactProfile(personKey)
+  if (profile.state && !profile.state.isLoaded) return <ContactProfileSkeleton />
   if (!profile.presenter || !profile.state?.contact) return null
   return <ContactProfileView presenter={profile.presenter} state={profile.state} contact={profile.state.contact} />
 }
@@ -135,7 +141,7 @@ function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresent
         </span>
       )}
       {state.showsSummary && <SummaryCard presenter={presenter} state={state} />}
-      {state.isLoading && <SkeletonRows />}
+      {state.isLoading && <ContactSkeletonRows isWaitingForInternet={state.isWaitingForInternet} />}
       {showsPeople && state.contacts.length > 0 && (
         <section aria-label={t('contacts_peopleLabel')} className="overflow-hidden rounded-xl border bg-card">
           <h2 className="flex h-9 items-center border-b bg-muted px-4 text-xs font-medium text-muted-foreground">
@@ -164,6 +170,7 @@ function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresent
 /** "Você deve" and "Te devem", Saldos' totals: each opens Saldos on its filter, "Ver Saldos" on all of it. */
 function SummaryCard({ presenter, state }: { presenter: ContactsPresenter; state: JsContactsState }) {
   const { total } = state
+  if (!total) return <SummarySkeleton />
   const amount = (minor: number) => formatMoney(minor, total.currency, total.fractionDigits)
   const totals = [
     { label: t('contacts_youOwe'), minor: total.toPayMinor, tone: 'text-destructive', onClick: () => presenter.openYouOwe() },
@@ -292,29 +299,37 @@ function HiddenSection({ presenter, state }: { presenter: ContactsPresenter; sta
   )
 }
 
-/** Only until the device's data is read, so the empty state never flashes. */
-function SkeletonRows() {
-  const widths = [
-    ['w-24', 'w-36'],
-    ['w-16', 'w-28'],
-    ['w-28', 'w-24'],
-    ['w-14', 'w-40'],
-    ['w-20', 'w-28'],
-    ['w-20', 'w-32'],
-  ]
+/** The card of "Você deve" and "Te devem" while Saldos' totals are read: two amounts' places and "Ver Saldos". */
+function SummarySkeleton() {
   return (
-    <section aria-label={t('contacts_loading')} aria-busy className="overflow-hidden rounded-xl border bg-card">
-      <h2 className="flex h-9 items-center border-b bg-muted px-4 text-xs font-medium text-muted-foreground">{t('contacts_peopleLabel')}</h2>
-      {widths.map(([name, meta], index) => (
-        <div key={index} style={{ opacity: 1 - index * 0.12 }} className="flex items-center gap-3 border-b px-4 py-2.5 last:border-b-0">
-          <span className="size-8 shrink-0 rounded-full bg-muted" />
-          <span className="flex flex-1 flex-col gap-1.5">
-            <span className={cn('h-3 rounded bg-muted', name)} />
-            <span className={cn('h-2.5 rounded bg-muted', meta)} />
+    <LoadingRegion className="flex items-center gap-2 rounded-xl border bg-card p-2">
+      <span className="grid flex-1 grid-cols-2 gap-1">
+        {[0, 1].map((index) => (
+          <span key={index} className="flex flex-col gap-2 px-2.5 py-1.5">
+            <SkeletonLine className="h-2.5 w-16" />
+            <Skeleton className="h-5 w-24" />
           </span>
-        </div>
-      ))}
-    </section>
+        ))}
+      </span>
+      <Skeleton className="mr-2 h-5 w-20" />
+    </LoadingRegion>
+  )
+}
+
+/**
+ * The people's rows until the browser's data (and a restored account's first full sync) is read, so the empty state
+ * never flashes; offline before that sync, it says the data comes once the browser reconnects.
+ */
+function ContactSkeletonRows({ isWaitingForInternet }: { isWaitingForInternet: boolean }) {
+  return (
+    <LoadingRegion isWaitingForInternet={isWaitingForInternet} label={t('contacts_loading')}>
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <span className="flex h-9 items-center border-b bg-muted px-4">
+          <SkeletonLine className="h-2.5 w-20" />
+        </span>
+        <SkeletonRows count={6} />
+      </div>
+    </LoadingRegion>
   )
 }
 
