@@ -1253,6 +1253,26 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN the receipt chose a group subcategory WHEN a sync deletes it THEN the bill reads as its parent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupCategories = listOf(pet, petFood),
+                scan = scanOf(reading(categoryId = PET_FOOD_ID)),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            categories.groupCategories.update { listOf(pet, petFood.copy(isDeleted = true)) }
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PET_ID, state.receiptCategory?.id)
+            assertEquals(PET_ID, state.category.id)
+            assertEquals(CategoryHint.BY_RECEIPT, state.categoryHint)
+        }
+
+    @Test
     fun `GIVEN a reading with another group category WHEN it comes back THEN the bill stays in Outros`() =
         runTest(testDispatcher) {
             // Given

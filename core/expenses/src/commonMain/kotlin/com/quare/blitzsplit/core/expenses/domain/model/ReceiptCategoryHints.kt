@@ -23,15 +23,20 @@ data class ReceiptCategoryHints(
         fun of(
             tree: CategoryTree,
             terms: List<CategoryTerm>,
-        ): ReceiptCategoryHints = ReceiptCategoryHints(
-            groupCategories = tree.all.filter { it.isGroupCategory }.take(MAX_CATEGORIES),
-            terms = terms
-                .mapNotNull { term ->
-                    tree
-                        .readAsOrNull(term.categoryId)
-                        ?.takeIf { !it.isOther }
-                        ?.let { term.copy(categoryId = it.id) }
-                }.takeLast(MAX_TERMS),
-        )
+        ): ReceiptCategoryHints {
+            val groupCategories = tree.all.filter { it.isGroupCategory }.take(MAX_CATEGORIES)
+            // Why: a term of a group category past the limit would point the reader to one it was never sent.
+            val listedIds = groupCategories.mapTo(mutableSetOf()) { it.id }
+            return ReceiptCategoryHints(
+                groupCategories = groupCategories,
+                terms = terms
+                    .mapNotNull { term ->
+                        tree
+                            .readAsOrNull(term.categoryId)
+                            ?.takeIf { !it.isOther && (!it.isGroupCategory || it.id in listedIds) }
+                            ?.let { term.copy(categoryId = it.id) }
+                    }.takeLast(MAX_TERMS),
+            )
+        }
     }
 }

@@ -246,6 +246,28 @@ class ReceiptCategoryHintsTest {
     }
 
     @Test
+    fun `GIVEN a term of a group category past the limit WHEN building the hints THEN drops it`() {
+        // Given
+        val many = (1..ReceiptCategoryHints.MAX_CATEGORIES + 1).map { index ->
+            pet.copy(
+                id = "c$index",
+                name = "Categoria $index",
+            )
+        }
+        val lastId = "c${ReceiptCategoryHints.MAX_CATEGORIES + 1}"
+        val terms = listOf(
+            CategoryTerm("primeira", "c1"),
+            CategoryTerm("ultima", lastId),
+        )
+
+        // When
+        val hints = ReceiptCategoryHints.of(CategoryTree.of(many), terms)
+
+        // Then
+        assertEquals(listOf(CategoryTerm("primeira", "c1")), hints.terms)
+    }
+
+    @Test
     fun `GIVEN more terms than the reader takes WHEN building the hints THEN keeps the last ones as the newest`() {
         // Given
         val terms = (1..ReceiptCategoryHints.MAX_TERMS + 5).map { index ->
