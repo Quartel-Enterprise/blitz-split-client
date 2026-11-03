@@ -408,7 +408,7 @@ private struct NetCard: View {
                         }
                     }
                     if state.canReceive {
-                        action("Got paid", systemImage: "arrow.down.to.line", isProminent: false) {
+                        action("Got paid", systemImage: "checkmark", isProminent: false) {
                             model.send(ContactProfileUiEventOnReceivedClicked.shared)
                         }
                     }
