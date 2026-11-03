@@ -55,8 +55,9 @@ fun startBlitzSplit(sqliteWorker: Worker) {
 
 /*
  * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, of a
- * bill's link, blitzsplit.com/c/<code>, or of a notification tapped with no tab open, blitzsplit.com/n?…, opens it once; the address goes back to the app's own. A bill's link left to
- * sign in (its "Entrar") opens again once the browser comes back.
+ * bill's link, blitzsplit.com/c/<code>, or of a notification tapped with no tab open, blitzsplit.com/n?…, opens it
+ * once; the address goes back to the app's own. A bill's link left to sign in (its "Entrar") opens again once the
+ * browser comes back.
  */
 private fun openInviteLink(launchUrl: String) {
     val inbox = KoinPlatform.getKoin().get<LinkInbox>()

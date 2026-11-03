@@ -14,8 +14,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
-import com.quare.blitzsplit.core.profile.domain.model.PushDevice
-import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import org.json.JSONArray
 import org.koin.android.ext.android.inject
@@ -28,15 +26,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
 
     override fun onNewToken(token: String) {
-        setPushDevice(
-            PushDevice(
-                token = token,
-                platform = PushPlatform.ANDROID,
-                apnsEnvironment = null,
-                webP256dh = null,
-                webAuth = null,
-            ),
-        )
+        PushSetup.handOver(setPushDevice, token)
     }
 
     @SuppressLint("MissingPermission") // Why: canNotify() checks it, on the versions that have it.
@@ -45,7 +35,13 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         val kind = PushMessage.ofKind(data[KIND]) ?: return
         // Why: words that don't fit this version's sentence (a newer server's) drop the notification, never the app.
         val text = runCatching { buildText(kind, data[ARGS]) }.getOrNull() ?: return
-        val title = data[TITLE].orEmpty().ifEmpty { getString(R.string.push_reminder_title) }
+        // Why: only a reminder comes without a group to name; anything else missing one still names the app.
+        val fallbackTitle = if (kind.channel == PushChannel.SETTLE_REMINDERS) {
+            R.string.push_reminder_title
+        } else {
+            R.string.app_name
+        }
+        val title = data[TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
         val tag = data[EVENT_ID] ?: kind.kind
         val link = data[LINK]
         if (!canNotify()) return

@@ -77,6 +77,7 @@ export function listenToNotificationTaps(): void {
  */
 async function storeWords(): Promise<void> {
   const words = {
+    appName: t('appName'),
     reminderTitle: t('push_reminderTitle'),
     kinds: Object.fromEntries(Object.entries(kinds).map(([kind, key]) => [kind, t(key)])),
   }

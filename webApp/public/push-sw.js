@@ -28,7 +28,9 @@ self.addEventListener('push', (event) => {
       const template = words?.kinds?.[message.kind]
       // A kind this version doesn't know, or no words yet: the group's name at least, as a push must show something
       const body = template ? fill(template, message.args ?? []) : ''
-      const title = message.title || words?.reminderTitle || 'Blitz Split'
+      // Only a reminder comes without a group to name; anything else missing one still names the app
+      const isReminder = message.kind === 'settle_reminder' || message.kind === 'settle_reminders'
+      const title = message.title || (isReminder ? words?.reminderTitle : words?.appName) || 'Blitz Split'
       await self.registration.showNotification(title, {
         body,
         tag: message.tag,

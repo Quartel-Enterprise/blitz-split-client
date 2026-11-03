@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.profile.testing
 
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -15,6 +16,9 @@ class FakePushDeviceRepository(
     var unregisterCount = 0
     var registerError: Throwable? = null
     var unregisterError: Throwable? = null
+
+    // Never answers, like a call stuck on a slow network.
+    var unregisterHangs = false
 
     override fun observeDevice(): Flow<PushDevice?> = device
 
@@ -30,6 +34,7 @@ class FakePushDeviceRepository(
 
     override suspend fun unregister(): Result<Unit> {
         unregisterCount++
+        if (unregisterHangs) awaitCancellation()
         unregisterError?.let { return Result.failure(it) }
         return Result.success(Unit)
     }

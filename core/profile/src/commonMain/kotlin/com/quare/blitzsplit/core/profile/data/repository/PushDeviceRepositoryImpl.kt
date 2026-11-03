@@ -37,11 +37,13 @@ class PushDeviceRepositoryImpl(
 
     /*
      * Why: also a token an earlier launch left registered, which this one didn't register again. The server only
-     * removes it from the caller, so it is harmless when another user holds it now.
+     * removes it from the caller, so it is harmless when another user holds it now. Forgotten here even when the
+     * call fails, since the server may have removed it anyway (an answer lost on the way), so the next sign in
+     * registers it again rather than trusting a registration that may be gone.
      */
     override suspend fun unregister(): Result<Unit> = lock.withLock {
+        registered = null
         val current = device.value ?: return@withLock Result.success(Unit)
         suspendRunCatching { remoteDataSource.unregister(current.token) }
-            .onSuccess { registered = null }
     }
 }

@@ -34,7 +34,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import software.quare.connectivity.NetworkConnectivityObserver
+import kotlin.time.Duration.Companion.seconds
+
+// Why: how long a sign out waits for the server to forget this device's push token before ending the session anyway.
+private val pushUnregisterTimeout = 5.seconds
 
 /*
  * Why: offline first. Room is what every screen observes; this reconciles it with Supabase
@@ -361,10 +366,13 @@ class SyncCoordinator(
      */
     private suspend fun clearSession() {
         /*
-         * Why: while the session still says whose token it is. Offline it isn't tried, so a sign out never waits on
-         * the network; the token stays theirs until someone registers it.
+         * Why: while the session still says whose token it is. Offline it isn't tried, and online it waits a few
+         * seconds at most, so a sign out never hangs on a slow network; the token stays theirs until someone
+         * registers it.
          */
-        if (connectivityObserver.observe().first()) pushDeviceRepository.unregister()
+        if (connectivityObserver.observe().first()) {
+            withTimeoutOrNull(pushUnregisterTimeout) { pushDeviceRepository.unregister() }
+        }
         accountRepository.signOut()
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()

@@ -54,9 +54,13 @@ export function NotificationSettingsCard({ className }: { className?: string }) 
   // Why: read again whenever the tab comes back, since the person may allow or block it in the site settings.
   useEffect(() => {
     if (!presenter) return
+    let lastPermission = readPermission()
     const check = () => {
       const permission = readPermission()
       if (permission) presenter.permissionChecked(permission)
+      // Allowed in the site settings meanwhile: subscribe now rather than on the next load
+      if (permission === 'GRANTED' && lastPermission !== 'GRANTED') void startWebPush()
+      lastPermission = permission
     }
     check()
     window.addEventListener('focus', check)

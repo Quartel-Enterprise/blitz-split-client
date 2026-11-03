@@ -39,16 +39,22 @@ object PushSetup {
                 .build()
             FirebaseApp.initializeApp(context, options)
         }
-        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-            setPushDevice(
-                PushDevice(
-                    token = token,
-                    platform = PushPlatform.ANDROID,
-                    apnsEnvironment = null,
-                    webP256dh = null,
-                    webAuth = null,
-                ),
-            )
-        }
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token -> handOver(setPushDevice, token) }
+    }
+
+    // Why: the one place an FCM token becomes this device's PushDevice, at launch and when FCM renews it.
+    fun handOver(
+        setPushDevice: SetPushDevice,
+        token: String,
+    ) {
+        setPushDevice(
+            PushDevice(
+                token = token,
+                platform = PushPlatform.ANDROID,
+                apnsEnvironment = null,
+                webP256dh = null,
+                webAuth = null,
+            ),
+        )
     }
 }

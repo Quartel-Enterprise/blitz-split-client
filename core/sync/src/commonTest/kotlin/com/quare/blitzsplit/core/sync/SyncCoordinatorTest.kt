@@ -6511,6 +6511,27 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN the push token unregister never answers WHEN signing out THEN still ends the session`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterHangs = true
+
+        // When
+        val result = coordinator.signOut()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, pushDevices.unregisterCount)
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
     fun `GIVEN a registered device WHEN signing out THEN registers nothing for the device without an account`() =
         runTest {
             // Given

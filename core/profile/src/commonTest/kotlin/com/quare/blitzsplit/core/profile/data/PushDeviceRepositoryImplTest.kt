@@ -316,6 +316,25 @@ class PushDeviceRepositoryImplTest {
         assertEquals(2, remote.registered.size)
     }
 
+    @Test
+    fun `GIVEN a failed unregister after registering WHEN the same user signs in again THEN sends the device again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                device = device(token = "fcm-1"),
+                unregisterError = IllegalStateException("answer lost"),
+            )
+            repository.register(userId = "user-1")
+            repository.unregister()
+
+            // When
+            val result = repository.register(userId = "user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(2, remote.registered.size)
+        }
+
     private fun device(
         token: String,
         platform: PushPlatform = PushPlatform.ANDROID,
