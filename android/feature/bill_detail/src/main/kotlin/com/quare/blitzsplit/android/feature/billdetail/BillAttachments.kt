@@ -238,7 +238,7 @@ private fun AddPhotoTile(
         TileColumn(
             size = size,
             label = stringResource(R.string.bill_detail_add_photo),
-            onClickLabel = null,
+            onClickLabel = if (takePhoto != null) stringResource(R.string.bill_detail_add_photo_menu) else null,
             isEnabled = isEnabled,
             onClick = { if (takePhoto != null) isMenuOpen = true else pickers.onChoosePhotoClick() },
         ) {

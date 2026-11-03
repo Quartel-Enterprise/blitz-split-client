@@ -85,6 +85,7 @@
     <string name="bill_detail_attachment_yesterday">ontem</string>
     <string name="bill_detail_attachment_open">Abrir</string>
     <string name="bill_detail_add_photo">Adicionar foto</string>
+    <string name="bill_detail_add_photo_menu">Câmera ou galeria</string>
     <string name="bill_detail_take_photo">Tirar foto</string>
     <string name="bill_detail_choose_photo">Escolher da galeria</string>
     <string name="bill_detail_photo_unreadable">Não deu para abrir essa imagem. Escolha outra.</string>
