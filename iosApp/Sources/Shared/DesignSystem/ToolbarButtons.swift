@@ -30,7 +30,12 @@ struct SplitBillButton: View {
     let action: () -> Void
 
     var body: some View {
-        ProminentBarButton(title: "Split a bill", image: Image(decorative: "SplitBill"), showsTitle: showsTitle, action: action)
+        ProminentBarButton(
+            title: "Split a bill",
+            image: Image(decorative: "SplitBill"),
+            showsTitle: showsTitle,
+            action: action,
+        )
     }
 }
 

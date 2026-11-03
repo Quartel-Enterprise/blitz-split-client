@@ -92,7 +92,7 @@ function AppleLogo() {
 /** "Split a bill"'s icon: a receipt with a plus, the legacy Blitz Split app's, in place of lucide's bare `Plus`. */
 export function SplitBillIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="currentColor">
+    <svg aria-hidden width={24} height={24} viewBox="0 0 24 24" fill="currentColor">
       <path
         fillRule="evenodd"
         d="M7 12.833V11.167H19.5V3.667L18.25 4.917 17 3.667 15.75 4.917 14.5 3.667 13.25 4.917 12 3.667 10.75 4.917 9.5 3.667 8.25 4.917 7 3.667 5.75 4.917 4.5 3.667V20.333L5.75 19.083 7 20.333 8.25 19.083 9.5 20.333 10.75 19.083 12 20.333 13.25 19.083H12V15H15.75V12.833H7ZM7 9.5H17V7.833H7V9.5ZM14.5 20.333 13.25 19.083H15.75L14.5 20.333Z"

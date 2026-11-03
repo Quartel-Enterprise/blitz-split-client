@@ -154,7 +154,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     two, the currency with the most groups first (`GroupsSummary`); "A receber" and "A pagar" sum the positive and the
     negative nets, are disabled at zero and open Saldos (flow 8) on Te devem and Você deve; "A pagar" goes straight to
     settling up when only one person is in Você deve. "Rachar conta"
-    (Android's FAB, iOS's bar item, the main button on the web and the Mac) opens Novo grupo while there's no group, and
+    (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group, and
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. A new device's first download
@@ -744,7 +744,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
   - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
-    buttons, the avatar and "Rachar conta" (only its icon, the group's Adicionar pessoa too) over the tabs
+    buttons, the avatar and "Rachar conta" (only its +, the group's Adicionar pessoa too) over the tabs
     (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.
     Open lying down, every two-column screen
     splits on the fold with nothing in its band (Grupos' and Contatos' lists end at it, Saldos, Estatísticas with
@@ -760,7 +760,4 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
-  - Every "Rachar conta" with an icon draws the legacy app's receipt with a plus at its corner (Android's
-    `ic_split_bill`, Apple's `SplitBill` symbol, the web's `SplitBillIcon`), never a bare plus; every other add action
-    (Novo grupo, Adicionar pessoa, Adicionar item…) keeps the plus.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.
