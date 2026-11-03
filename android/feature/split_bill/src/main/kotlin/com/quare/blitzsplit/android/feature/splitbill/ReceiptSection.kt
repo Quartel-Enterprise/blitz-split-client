@@ -173,6 +173,7 @@ private fun ColumnScope.ReceiptFailureAction(
     }
 }
 
+@StringRes
 private fun ReceiptError.toMessageRes(): Int = when (this) {
     ReceiptError.UNREADABLE -> R.string.split_bill_receipt_failed
     ReceiptError.READER_UNAVAILABLE -> R.string.split_bill_receipt_reader_unavailable

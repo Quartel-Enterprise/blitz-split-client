@@ -107,7 +107,7 @@ class JsBillConflict(
 )
 
 /*
- * Why: "Ler cupom fiscal" (7.1e to 7.1g). status is "reading", "read" or "unreadable"; itemCount is "14 itens";
+ * Why: "Ler cupom fiscal" (7.1e to 7.1g). status is "reading", "read" or "failed"; itemCount is "14 itens";
  * hasPhoto is "Foto do cupom", false when the file couldn't be opened as an image.
  */
 class JsBillReceipt(
