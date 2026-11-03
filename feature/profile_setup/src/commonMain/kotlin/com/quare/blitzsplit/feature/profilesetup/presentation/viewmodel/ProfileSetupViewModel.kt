@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
@@ -30,6 +32,7 @@ class ProfileSetupViewModel(
     private val validateDisplayName: ValidateDisplayName,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
+    loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<ProfileSetupUiState>
@@ -40,6 +43,7 @@ class ProfileSetupViewModel(
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
+                photoCrop = null,
                 nameError = null,
                 canContinue = false,
                 isSaving = false,
@@ -47,9 +51,11 @@ class ProfileSetupViewModel(
         )
 
     private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
         scope = viewModelScope,
         showStatus = ::showPhotoStatus,
+        showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
     )
 
@@ -64,6 +70,7 @@ class ProfileSetupViewModel(
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }
             is ProfileSetupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+            is ProfileSetupUiEvent.OnPhotoCrop -> cropPhoto(event.event)
             ProfileSetupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             ProfileSetupUiEvent.OnContinueClicked -> save()
             ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
@@ -117,6 +124,11 @@ class ProfileSetupViewModel(
         photoPicker.prepare(source)
     }
 
+    private fun cropPhoto(event: PhotoCropEvent) {
+        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
+        photoPicker.onEvent(event)
+    }
+
     private fun showPhotoStatus(
         isPreparing: Boolean,
         hasFailed: Boolean,
@@ -139,16 +151,17 @@ class ProfileSetupViewModel(
     }
 
     /*
-     * Why: Continue right after a pick waits for the photo instead of saving the profile without it.
-     * If that pick fails, the screen stays so the error is seen; a later Continue saves without it.
+     * Why: Continue right after "Usar foto" waits for the photo instead of saving the profile without it. If that
+     * fails, or the pick it waited on opened "Ajustar foto", the screen stays so the error or the editor is seen; a
+     * later Continue saves without it.
      */
     private fun save() {
-        if (!uiState.value.canContinue || uiState.value.isSaving) return
+        if (!uiState.value.canContinue || uiState.value.isSaving || uiState.value.photoCrop != null) return
         uiState.update { it.copy(isSaving = true) }
         val pickInProgress = photoPicker.pickInProgress
         viewModelScope.launch {
             pickInProgress?.join()
-            if (pickInProgress != null && uiState.value.showsPhotoError) {
+            if (pickInProgress != null && (uiState.value.showsPhotoError || uiState.value.photoCrop != null)) {
                 uiState.update { it.copy(isSaving = false) }
                 return@launch
             }

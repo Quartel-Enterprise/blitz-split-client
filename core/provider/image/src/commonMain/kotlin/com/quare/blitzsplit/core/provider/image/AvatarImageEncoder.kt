@@ -1,12 +1,15 @@
 package com.quare.blitzsplit.core.provider.image
 
 /*
- * Why: whatever the picker returns (HEIC, PNG, a 12 MP JPEG with EXIF rotation) becomes the one
- * format the `avatars` bucket accepts: the centered square, upright, at 512x512, as a JPEG.
- * JPEG has no alpha, so transparent pixels land on white instead of black.
+ * Why: the photo editor's photo (upright, at most 1600 px, `BillImageEncoder`) becomes the one format the `avatars`
+ * and `group-photos` buckets accept: the square the editor framed, drawn through its transform at 512x512, as a JPEG.
+ * JPEG has no alpha, so transparent pixels and any corner the transform leaves uncovered land on white.
  */
 fun interface AvatarImageEncoder {
-    suspend operator fun invoke(source: ByteArray): ByteArray
+    suspend operator fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+    ): ByteArray
 }
 
 const val AVATAR_SIZE_PX = 512

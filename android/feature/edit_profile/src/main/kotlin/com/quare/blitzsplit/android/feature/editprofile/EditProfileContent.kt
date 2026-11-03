@@ -476,6 +476,7 @@ private fun createPreviewState(): EditProfileUiState = EditProfileUiState(
     photo = null,
     isPreparingPhoto = false,
     showsPhotoError = false,
+    photoCrop = null,
     nameError = null,
     isNameValid = true,
     hasChanges = true,

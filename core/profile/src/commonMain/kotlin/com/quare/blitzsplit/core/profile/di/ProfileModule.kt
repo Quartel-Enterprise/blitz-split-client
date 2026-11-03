@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.DetectPaymentKeyType
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKeyInput
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -56,6 +57,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.DeletePaymentKeyUse
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.DetectPaymentKeyTypeUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyInputUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.LoadCropPhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
@@ -84,6 +86,7 @@ val profileModule = module {
     factoryOf(::ObserveProfileUseCase).bind<ObserveProfile>()
     factoryOf(::ObservePendingProfileChangesUseCase).bind<ObservePendingProfileChanges>()
     factoryOf(::SaveProfileUseCase).bind<SaveProfile>()
+    factoryOf(::LoadCropPhotoUseCase).bind<LoadCropPhoto>()
     factoryOf(::PrepareProfilePhotoUseCase).bind<PrepareProfilePhoto>()
     factoryOf(::ValidateDisplayNameUseCase).bind<ValidateDisplayName>()
     singleOf(::RoomPaymentKeyLocalDataSource).bind<PaymentKeyLocalDataSource>()

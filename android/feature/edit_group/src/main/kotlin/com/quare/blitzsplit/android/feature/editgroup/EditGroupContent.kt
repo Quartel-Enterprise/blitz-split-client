@@ -578,6 +578,7 @@ private fun buildPreviewState(
     isPreparingPhoto = false,
     showsPhotoError = false,
     iconEditor = null,
+    photoCrop = null,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     isCurrencyLocked = true,

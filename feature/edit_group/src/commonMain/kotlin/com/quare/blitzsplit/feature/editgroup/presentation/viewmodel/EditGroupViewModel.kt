@@ -13,10 +13,12 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
@@ -40,6 +42,7 @@ class EditGroupViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     connectivityObserver: NetworkConnectivityObserver,
+    loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<EditGroupUiState>
@@ -53,6 +56,7 @@ class EditGroupViewModel(
                 isPreparingPhoto = false,
                 showsPhotoError = false,
                 iconEditor = null,
+                photoCrop = null,
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
                 isCurrencyLocked = false,
@@ -78,9 +82,11 @@ class EditGroupViewModel(
 
     // Why: the group's photo is the same 512x512 JPEG as a profile's.
     private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
         scope = viewModelScope,
         showStatus = ::showPhotoStatus,
+        showEditor = { editor -> uiState.update { it.copy(photoCrop = editor) } },
         onPrepared = ::showPhoto,
     )
 
@@ -135,6 +141,8 @@ class EditGroupViewModel(
             )
 
             is EditGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+
+            is EditGroupUiEvent.OnPhotoCrop -> cropPhoto(event.event)
 
             EditGroupUiEvent.OnPhotoUnreadable -> {
                 uiState.update { it.copy(iconEditor = null) }
@@ -229,6 +237,12 @@ class EditGroupViewModel(
         uiState.update { it.copy(iconEditor = null) }
         if (uiState.value.isSaving) return
         photoPicker.prepare(source)
+    }
+
+    // Why: "Usar foto" brings the photo to the form, so it is ignored while saving, as a pick is.
+    private fun cropPhoto(event: PhotoCropEvent) {
+        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
+        photoPicker.onEvent(event)
     }
 
     private fun showPhotoStatus(

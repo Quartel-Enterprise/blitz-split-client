@@ -305,6 +305,7 @@ private struct IdentitySection: View {
     var body: some View {
         #if os(macOS)
         EditProfileSections(model: editModel, isInline: true)
+            .photoCrop(editModel.state.photoCrop, frame: .circle) { editModel.send(EditProfileUiEventOnPhotoCrop(event: $0)) }
         #else
         let state = model.state
         Section {

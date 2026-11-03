@@ -8,17 +8,22 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCrop
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.LoadCropPhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayNameUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.provider.image.AvatarImageEncoder
+import com.quare.blitzsplit.core.provider.image.BillImage
+import com.quare.blitzsplit.core.provider.image.BillImageEncoder
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
@@ -32,6 +37,7 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -294,7 +300,7 @@ class EditProfileViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // Then
         val state = viewModel.uiState.value
@@ -315,7 +321,7 @@ class EditProfileViewModelTest {
             viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             val state = viewModel.uiState.value
@@ -330,8 +336,8 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(otherPhotoSource))
+            pickAndConfirmPhoto(photoSource)
+            pickAndConfirmPhoto(otherPhotoSource)
             heldPhotos[1].complete(Unit)
 
             // When
@@ -348,8 +354,8 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(otherPhotoSource))
+            pickAndConfirmPhoto(photoSource)
+            pickAndConfirmPhoto(otherPhotoSource)
 
             // When
             heldPhotos[0].complete(Unit)
@@ -367,7 +373,7 @@ class EditProfileViewModelTest {
             prepareScenario()
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(notAnImage))
+            pickAndConfirmPhoto(notAnImage)
 
             // Then
             val state = viewModel.uiState.value
@@ -382,11 +388,11 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             val tooLarge = ByteArray(30 * 1024 * 1024 + 1)
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(tooLarge))
+            pickAndConfirmPhoto(tooLarge)
 
             // Then
             val state = viewModel.uiState.value
@@ -418,7 +424,7 @@ class EditProfileViewModelTest {
             viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             assertFalse(viewModel.uiState.value.showsPhotoError)
@@ -433,7 +439,7 @@ class EditProfileViewModelTest {
         viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
 
         // When
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // Then
         val state = viewModel.uiState.value
@@ -448,7 +454,7 @@ class EditProfileViewModelTest {
             prepareScenario(holdsSave = true)
             viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
             viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // When
             heldSave.complete(Unit)
@@ -561,7 +567,7 @@ class EditProfileViewModelTest {
                 sessionUser = googleUser,
                 holdsPhotos = true,
             )
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // When
             viewModel.onEvent(EditProfileUiEvent.OnAccountPhotoSelected)
@@ -628,7 +634,7 @@ class EditProfileViewModelTest {
     fun `GIVEN no saved photo and a picked one WHEN removing it THEN it has no changes`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedProfile = pierreWithoutPhoto)
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
@@ -645,7 +651,7 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // When
             viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
@@ -662,7 +668,7 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
 
             // When
@@ -707,7 +713,7 @@ class EditProfileViewModelTest {
         prepareScenario()
         viewModel.onEvent(EditProfileUiEvent.OnNameChanged("  Pierre Vieira  "))
         viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
@@ -801,7 +807,7 @@ class EditProfileViewModelTest {
         // Given
         prepareScenario(holdsPhotos = true)
         viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
@@ -848,7 +854,7 @@ class EditProfileViewModelTest {
         prepareScenario(pushed = false)
         viewModel.onEvent(EditProfileUiEvent.OnNameChanged("P"))
         viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
@@ -868,7 +874,7 @@ class EditProfileViewModelTest {
     fun `GIVEN the photo error WHEN discarding THEN hides the error`() = runTest(testDispatcher) {
         // Given
         prepareScenario(pushed = false)
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(notAnImage))
+        pickAndConfirmPhoto(notAnImage)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
@@ -884,7 +890,7 @@ class EditProfileViewModelTest {
             pushed = false,
             holdsPhotos = true,
         )
-        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
@@ -903,7 +909,7 @@ class EditProfileViewModelTest {
                 pushed = false,
                 holdsPhotos = true,
             )
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
 
             // When
@@ -1071,7 +1077,7 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
 
             // When
@@ -1438,7 +1444,7 @@ class EditProfileViewModelTest {
             )
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             assertFalse(viewModel.uiState.value.showsAvatarColors)
@@ -1451,7 +1457,7 @@ class EditProfileViewModelTest {
             prepareScenario(storedProfile = pierreWithoutPhoto)
 
             // When
-            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(notAnImage))
+            pickAndConfirmPhoto(notAnImage)
 
             // Then
             assertTrue(viewModel.uiState.value.showsAvatarColors)
@@ -1494,6 +1500,52 @@ class EditProfileViewModelTest {
     // Why: a JPEG header in front of the source, so the state shows the encoder's output, not what was picked.
     private fun jpegOf(source: ByteArray): ByteArray = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte()) + source
 
+    @Test
+    fun `GIVEN the editor WHEN picking a photo THEN frames it in Ajustar foto and keeps the saved photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertContentEquals(photoSource, state.photoCrop?.photo?.jpeg)
+            assertEquals(
+                PhotoCrop.of(
+                    photoWidth = 1200,
+                    photoHeight = 900,
+                ),
+                state.photoCrop?.crop,
+            )
+            assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), state.photo)
+            assertFalse(state.hasChanges)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN dismissing it THEN keeps the saved photo with nothing to save`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), state.photo)
+            assertFalse(state.hasChanges)
+        }
+
+    // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
+    private fun pickAndConfirmPhoto(source: ByteArray) {
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(source))
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+    }
+
     private fun prepareScenario(
         storedProfile: UserProfile? = pierre,
         status: AccountStatus = AccountStatus.LocalOnly,
@@ -1517,10 +1569,19 @@ class EditProfileViewModelTest {
         sessionReads = 0
         viewModel = EditProfileViewModel(
             validateDisplayName = ValidateDisplayNameUseCase(),
-            prepareProfilePhoto = PrepareProfilePhotoUseCase(
-                encodeAvatar = AvatarImageEncoder { source ->
-                    if (holdsPhotos) CompletableDeferred<Unit>().also(heldPhotos::add).await()
+            loadCropPhoto = LoadCropPhotoUseCase(
+                encodeImage = BillImageEncoder { source ->
                     if (source.contentEquals(notAnImage)) throw UnsupportedImageException()
+                    BillImage(
+                        jpeg = source,
+                        width = 1200,
+                        height = 900,
+                    )
+                },
+            ),
+            prepareProfilePhoto = PrepareProfilePhotoUseCase(
+                encodeAvatar = AvatarImageEncoder { source, _ ->
+                    if (holdsPhotos) CompletableDeferred<Unit>().also(heldPhotos::add).await()
                     jpegOf(source)
                 },
             ),

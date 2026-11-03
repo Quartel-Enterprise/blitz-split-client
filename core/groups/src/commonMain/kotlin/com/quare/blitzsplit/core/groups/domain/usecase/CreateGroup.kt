@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 
 fun interface CreateGroup {
     // Why: the new group's id. The members go in the order given, this device's user first.
@@ -13,6 +14,8 @@ fun interface CreateGroup {
         type: GroupType,
         color: AvatarColor,
         shape: GroupShape,
+        // Why: a photo picked in "Novo grupo", which goes up with the group's first sync.
+        photo: ProfilePhoto.Pending?,
         currency: GroupCurrency,
         members: List<NewGroupMember>,
     ): Result<String>

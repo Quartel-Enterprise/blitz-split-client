@@ -17,6 +17,14 @@ export const en = {
   common_close: 'Close',
   common_cancel: 'Cancel',
 
+  photoCrop_title: 'Adjust photo',
+  photoCrop_hint: 'Drag and zoom to frame',
+  photoCrop_zoom: 'Zoom',
+  photoCrop_mirrorHorizontally: 'Horizontal',
+  photoCrop_mirrorVertically: 'Vertical',
+  photoCrop_turn: 'Rotate',
+  photoCrop_confirm: 'Done',
+
   otherTab_title: 'Blitz Split is open in another tab',
   otherTab_body: 'Close that tab, or keep using it. This one opens on its own as soon as the other closes.',
 
@@ -203,6 +211,10 @@ export const en = {
   createGroup_useNickname: 'Use “{name}”',
   createGroup_noAppNotice: 'Nobody needs the app right now. You can already add expenses for everyone and send the link later.',
   createGroup_saveError: 'Couldn’t save the group. Try again.',
+  createGroup_photo: 'Group photo',
+  createGroup_choosePhoto: 'Choose photo',
+  createGroup_removePhoto: 'Remove photo',
+  createGroup_photoError: "Couldn't use this photo. Try another one.",
 
   invite_title: 'Invite to {group}',
   invite_close: 'Close',

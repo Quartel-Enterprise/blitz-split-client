@@ -5,16 +5,20 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCa
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.LoadCropPhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SaveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayNameUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.provider.image.AvatarImageEncoder
+import com.quare.blitzsplit.core.provider.image.BillImage
+import com.quare.blitzsplit.core.provider.image.BillImageEncoder
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
@@ -304,7 +308,7 @@ class ProfileSetupViewModelTest {
                 sessionUser = googleUser,
                 sessionArrival = sessionArrival,
             )
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // When
             sessionArrival.complete(Unit)
@@ -321,7 +325,7 @@ class ProfileSetupViewModelTest {
             prepareScenario(sessionUser = googleUser)
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             val state = viewModel.uiState.value
@@ -341,7 +345,7 @@ class ProfileSetupViewModelTest {
             )
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             val state = viewModel.uiState.value
@@ -356,7 +360,7 @@ class ProfileSetupViewModelTest {
             prepareScenario(sessionUser = googleUser)
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(notAnImage))
+            pickAndConfirmPhoto(notAnImage)
 
             // Then
             val state = viewModel.uiState.value
@@ -371,11 +375,11 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             val tooLarge = ByteArray(30 * 1024 * 1024 + 1)
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(tooLarge))
+            pickAndConfirmPhoto(tooLarge)
 
             // Then
             val state = viewModel.uiState.value
@@ -389,11 +393,10 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(notAnImage))
-            heldPhotos[0].complete(Unit)
+            pickAndConfirmPhoto(notAnImage)
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // Then
             assertFalse(viewModel.uiState.value.showsPhotoError)
@@ -405,8 +408,8 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(otherPhotoSource))
+            pickAndConfirmPhoto(photoSource)
+            pickAndConfirmPhoto(otherPhotoSource)
             heldPhotos[1].complete(Unit)
 
             // When
@@ -423,8 +426,8 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsPhotos = true)
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(otherPhotoSource))
+            pickAndConfirmPhoto(photoSource)
+            pickAndConfirmPhoto(otherPhotoSource)
 
             // When
             heldPhotos[0].complete(Unit)
@@ -441,7 +444,7 @@ class ProfileSetupViewModelTest {
             // Given
             prepareScenario(holdsPhotos = true)
             viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
 
             // When
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
@@ -459,7 +462,7 @@ class ProfileSetupViewModelTest {
             prepareScenario(holdsPhotos = true)
             viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
             viewModel.onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(AvatarColor.SAND))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
 
             // When
@@ -479,7 +482,7 @@ class ProfileSetupViewModelTest {
                 sessionUser = googleUser,
                 holdsPhotos = true,
             )
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(notAnImage))
+            pickAndConfirmPhoto(unencodable)
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
 
             // When
@@ -498,7 +501,7 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(sessionUser = googleUser)
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(notAnImage))
+            pickAndConfirmPhoto(notAnImage)
 
             // When
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
@@ -531,7 +534,7 @@ class ProfileSetupViewModelTest {
                 sessionUser = googleUser,
                 holdsPhotos = true,
             )
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(ProfileSetupUiEvent.OnPhotoUnreadable)
 
             // When
@@ -549,7 +552,7 @@ class ProfileSetupViewModelTest {
         // Given
         prepareScenario()
         viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
-        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
@@ -579,7 +582,7 @@ class ProfileSetupViewModelTest {
         // Given
         prepareScenario()
         viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("P"))
-        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+        pickAndConfirmPhoto(photoSource)
 
         // When
         viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
@@ -596,7 +599,7 @@ class ProfileSetupViewModelTest {
             // Given
             prepareScenario(holdsPhotos = true)
             viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
 
@@ -613,11 +616,11 @@ class ProfileSetupViewModelTest {
             // Given
             prepareScenario(holdsPhotos = true)
             viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            pickAndConfirmPhoto(photoSource)
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
 
             // When
-            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(otherPhotoSource))
+            pickAndConfirmPhoto(otherPhotoSource)
             heldPhotos.forEach { it.complete(Unit) }
 
             // Then
@@ -631,8 +634,50 @@ class ProfileSetupViewModelTest {
     private val otherPhotoSource = byteArrayOf(4, 5, 6)
     private val notAnImage = "not an image".encodeToByteArray()
 
+    // Why: an image the editor opens but the avatar can't be made of, so the pick fails only once it is confirmed.
+    private val unencodable = "unencodable".encodeToByteArray()
+
     // Why: a JPEG header in front of the source, so the state shows the encoder's output, not what was picked.
     private fun jpegOf(source: ByteArray): ByteArray = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte()) + source
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN continuing THEN saves nothing until it is confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
+
+            // Then
+            assertTrue(profiles.savedProfiles.isEmpty())
+            assertFalse(viewModel.uiState.value.isSaving)
+            assertEquals(listOf(Route.Welcome, Route.ProfileSetup), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN dismissing it THEN keeps no photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertNull(state.photoCrop)
+        assertNull(state.photo)
+        assertFalse(state.isPreparingPhoto)
+    }
+
+    // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
+    private fun pickAndConfirmPhoto(source: ByteArray) {
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(source))
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+    }
 
     private fun prepareScenario(
         sessionUser: SessionUser? = null,
@@ -652,10 +697,20 @@ class ProfileSetupViewModelTest {
                 getSessionUser()
             },
             validateDisplayName = ValidateDisplayNameUseCase(),
-            prepareProfilePhoto = PrepareProfilePhotoUseCase(
-                encodeAvatar = AvatarImageEncoder { source ->
-                    if (holdsPhotos) CompletableDeferred<Unit>().also(heldPhotos::add).await()
+            loadCropPhoto = LoadCropPhotoUseCase(
+                encodeImage = BillImageEncoder { source ->
                     if (source.contentEquals(notAnImage)) throw UnsupportedImageException()
+                    BillImage(
+                        jpeg = source,
+                        width = 1200,
+                        height = 900,
+                    )
+                },
+            ),
+            prepareProfilePhoto = PrepareProfilePhotoUseCase(
+                encodeAvatar = AvatarImageEncoder { source, _ ->
+                    if (holdsPhotos) CompletableDeferred<Unit>().also(heldPhotos::add).await()
+                    if (source.contentEquals(unencodable)) throw UnsupportedImageException()
                     jpegOf(source)
                 },
             ),

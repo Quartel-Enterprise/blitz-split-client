@@ -301,6 +301,7 @@ class EditGroupUiStateTest {
         isPreparingPhoto = isPreparingPhoto,
         showsPhotoError = false,
         iconEditor = null,
+        photoCrop = null,
         type = GroupType.TRIP,
         currency = GroupCurrency.BRL,
         isCurrencyLocked = false,

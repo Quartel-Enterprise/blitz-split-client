@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker } from '@/components/common'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -52,6 +53,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
     </Button>
   )
   const form = <EditGroupForm presenter={presenter} state={state} />
+  const photoCrop = state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="rounded-square" />
 
   return isDesktop ? (
     <Dialog open={!isCovered} onOpenChange={onOpenChange}>
@@ -65,6 +67,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
           {cancel}
           {save}
         </DialogFooter>
+        {photoCrop}
       </DialogContent>
     </Dialog>
   ) : (
@@ -79,6 +82,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
           {save}
           {cancel}
         </DrawerFooter>
+        {photoCrop}
       </DrawerContent>
     </Drawer>
   )

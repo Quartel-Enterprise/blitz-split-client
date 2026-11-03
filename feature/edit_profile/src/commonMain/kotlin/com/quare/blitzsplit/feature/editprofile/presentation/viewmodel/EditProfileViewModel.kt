@@ -6,12 +6,15 @@ import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEditor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
@@ -35,6 +38,7 @@ class EditProfileViewModel(
     private val validateDisplayName: ValidateDisplayName,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
+    loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
     getSessionUser: GetSessionUser,
@@ -48,6 +52,7 @@ class EditProfileViewModel(
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
+                photoCrop = null,
                 nameError = null,
                 isNameValid = false,
                 hasChanges = false,
@@ -61,9 +66,11 @@ class EditProfileViewModel(
     private var saved: UserProfile? = null
 
     private val photoPicker = ProfilePhotoPicker(
+        loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
         scope = viewModelScope,
         showStatus = ::showPhotoStatus,
+        showEditor = ::showPhotoCrop,
         onPrepared = ::showPhoto,
     )
 
@@ -102,6 +109,7 @@ class EditProfileViewModel(
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
             is EditProfileUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+            is EditProfileUiEvent.OnPhotoCrop -> cropPhoto(event.event)
             EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
@@ -171,6 +179,16 @@ class EditProfileViewModel(
     private fun preparePhoto(source: ByteArray) {
         if (uiState.value.isSaving) return
         photoPicker.prepare(source)
+    }
+
+    // Why: "Usar foto" brings the photo to the form, so it is ignored while saving, as a pick is.
+    private fun cropPhoto(event: PhotoCropEvent) {
+        if (event == PhotoCropEvent.OnConfirmClicked && uiState.value.isSaving) return
+        photoPicker.onEvent(event)
+    }
+
+    private fun showPhotoCrop(editor: PhotoCropEditor?) {
+        uiState.update { it.copy(photoCrop = editor) }
     }
 
     private fun showPhotoStatus(

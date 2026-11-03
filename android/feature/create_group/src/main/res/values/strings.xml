@@ -20,4 +20,9 @@
     <string name="create_group_no_app_notice">Nobody needs the app right now. You can already add expenses for everyone and send the link later.</string>
     <string name="create_group_currency">Currency</string>
     <string name="create_group_save_error">Couldn’t save the group. Try again.</string>
+    <string name="create_group_photo">Group photo</string>
+    <string name="create_group_take_photo">Take photo</string>
+    <string name="create_group_choose_photo">Choose from gallery</string>
+    <string name="create_group_remove_photo">Remove photo</string>
+    <string name="create_group_photo_error">Couldn\'t use this photo. Try another one.</string>
 </resources>

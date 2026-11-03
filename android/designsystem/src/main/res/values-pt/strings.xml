@@ -200,4 +200,12 @@
         <item quantity="one">%d não lida</item>
         <item quantity="other">%d não lidas</item>
     </plurals>
+    <string name="designsystem_photo_crop_title">Ajustar foto</string>
+    <string name="designsystem_photo_crop_close">Fechar</string>
+    <string name="designsystem_photo_crop_hint">Arraste e use o zoom para enquadrar</string>
+    <string name="designsystem_photo_crop_mirror_horizontally">Horizontal</string>
+    <string name="designsystem_photo_crop_mirror_vertically">Vertical</string>
+    <string name="designsystem_photo_crop_turn">Girar</string>
+    <string name="designsystem_photo_crop_cancel">Cancelar</string>
+    <string name="designsystem_photo_crop_confirm">Pronto</string>
 </resources>

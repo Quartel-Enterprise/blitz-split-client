@@ -9,6 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
 import com.quare.blitzsplit.android.platform.readPhotoBytes
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
@@ -38,4 +40,11 @@ fun ProfileSetupScreen(viewModel: ProfileSetupViewModel = koinViewModel()) {
             photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         },
     )
+    state.photoCrop?.let { editor ->
+        PhotoCropDialog(
+            editor = editor,
+            frame = PhotoCropFrame.CIRCLE,
+            onEvent = { event -> viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(event)) },
+        )
+    }
 }
