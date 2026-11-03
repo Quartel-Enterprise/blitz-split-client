@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -376,6 +378,7 @@ class DefaultSplitBillViewModelTest {
             GROUP_ID,
             expenseId = expenseId,
             picksGroupFirst = false,
+            scansReceipt = false,
         )
         val navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(
@@ -406,6 +409,13 @@ class DefaultSplitBillViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

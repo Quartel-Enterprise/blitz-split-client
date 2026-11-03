@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBillDay
@@ -83,7 +84,10 @@ private fun HomeFirstDownloadPreview() {
     BlitzSplitTheme {
         HomeContent(
             state = buildHomePreviewState().copy(
-                isFirstDownload = true,
+                firstDownload = DownloadProgress(
+                    arrivedGroupCount = 3,
+                    groupCount = 7,
+                ),
                 syncBadge = SyncBadge.SYNCING,
                 people = emptyList(),
                 billDays = emptyList(),
@@ -150,7 +154,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     accountProvider = null,
     syncBadge = null,
     pendingChangeCount = 0,
-    isFirstDownload = false,
+    firstDownload = null,
     isOnline = true,
     isLoaded = true,
     groupCount = 4,

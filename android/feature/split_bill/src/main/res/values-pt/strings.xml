@@ -347,4 +347,31 @@
     <string name="split_bill_category_map">Mapa de categorias</string>
     <string name="split_bill_category_map_by_term">%1$s veio da palavra “%2$s”. Veja e edite as palavras que escolhem a categoria.</string>
     <string name="split_bill_category_map_detail">Veja e edite as palavras que escolhem a categoria pelo título da conta.</string>
+    <string name="split_bill_category_by_receipt">%1$s pelo cupom fiscal. Toque no ícone para trocar.</string>
+    <string name="split_bill_category_reason_receipt">Pelo cupom</string>
+    <string name="split_bill_scan_receipt">Ler cupom fiscal</string>
+    <string name="split_bill_scan_receipt_help">Preenche valor, data e descrição pela foto.</string>
+    <string name="split_bill_scan_receipt_offline">Precisa de internet. Preencha à mão ou leia o cupom quando reconectar.</string>
+    <string name="split_bill_receipt_read">Lido do cupom</string>
+    <plurals name="split_bill_receipt_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d itens</item>
+    </plurals>
+    <string name="split_bill_receipt_photo">Foto do cupom</string>
+    <string name="split_bill_receipt_photo_visibility">Todo mundo do grupo vê</string>
+    <string name="split_bill_receipt_reading">Lendo o cupom…</string>
+    <string name="split_bill_receipt_remove">Tirar a foto do cupom</string>
+    <string name="split_bill_receipt_failed">Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão.</string>
+    <string name="split_bill_receipt_retake">Tirar outra foto</string>
+    <string name="split_bill_receipt_camera_title">Ler cupom fiscal</string>
+    <string name="split_bill_receipt_camera_close">Fechar</string>
+    <string name="split_bill_receipt_camera_flash_on">Ligar o flash</string>
+    <string name="split_bill_receipt_camera_flash_off">Desligar o flash</string>
+    <string name="split_bill_receipt_camera_hint">Enquadre o cupom inteiro. A gente preenche o valor, a data e a descrição; você confere antes de salvar.</string>
+    <string name="split_bill_receipt_camera_gallery">Escolher da galeria</string>
+    <string name="split_bill_receipt_camera_shutter">Tirar foto</string>
+    <string name="split_bill_receipt_camera_unavailable">A câmera não está disponível. Escolha uma foto do cupom na galeria.</string>
+    <string name="split_bill_receipt_camera_permission">Permita a câmera para ler o cupom, ou escolha uma foto da galeria.</string>
+    <string name="split_bill_receipt_camera_allow">Permitir câmera</string>
+    <string name="split_bill_receipt_camera_settings">Abrir configurações</string>
 </resources>

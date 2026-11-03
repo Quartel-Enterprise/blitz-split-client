@@ -37,6 +37,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -54,6 +55,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCoun
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.summaryOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
@@ -101,6 +103,7 @@ class GroupsViewModel(
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeFirstDownload: ObserveFirstDownload,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -115,6 +118,7 @@ class GroupsViewModel(
                 showsRecoveryCodePrompt = false,
                 groups = emptyList(),
                 hasLoadedGroups = false,
+                firstDownload = null,
                 summary = GroupsSummary(totals = emptyList()),
                 showsSettledGroups = false,
                 filterQuery = "",
@@ -210,6 +214,10 @@ class GroupsViewModel(
             update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
+        observeFirstDownload()
+            .onEach { progress ->
+                uiState.update { it.copy(firstDownload = progress?.toDownloadProgress()) }
+            }.launchIn(viewModelScope)
         val activityClock = {
             ActivityClock(
                 nowMillis = currentTimeMillis(),
@@ -513,6 +521,7 @@ class GroupsViewModel(
                     groupId = recent.id,
                     expenseId = null,
                     picksGroupFirst = true,
+                    scansReceipt = false,
                 ),
             )
         }

@@ -90,6 +90,8 @@ sealed interface Route {
         val expenseId: String?,
         // Why: from the home's "Rachar conta" (7.1i), which asks "Rachar em qual grupo?" first, groupId marked.
         val picksGroupFirst: Boolean,
+        // Why: from Início's "Ler cupom fiscal" (7.1e), which opens the camera (a file on the Mac and the web) at once.
+        val scansReceipt: Boolean,
     ) : Route
 
     // Why: "Conta", one bill of the group: what it was, who paid and how it splits.

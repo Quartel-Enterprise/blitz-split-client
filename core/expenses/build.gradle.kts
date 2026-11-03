@@ -8,10 +8,11 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             api(libs.kotlinx.datetime)
+            // Why: a receipt read (ReceiptScan) hands its encoded photo to AttachBillImage as the feature got it.
+            api(projects.core.provider.image)
             // Why: Saldos and the exit dialogs name a debt's members as the group has them (debtRowOf, faceOf).
             implementation(projects.core.groups)
             implementation(projects.core.utils)
-            implementation(projects.core.provider.image)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(libs.kotlinx.serialization.json)

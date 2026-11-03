@@ -15,6 +15,8 @@ enum CategoryPickerCopy {
         switch state.categoryHint {
         case .byTerm:
             return String(localized: "\(path) by the word “\(term)” in your map. Tap the icon to change it.")
+        case .byReceipt:
+            return String(localized: "\(path) from the receipt. Tap the icon to change it.")
         case .byLongestTerm:
             return String(localized: "\(state.categoryMatches.count) words of the map matched. “\(term)” wins, the longest: \(path).")
         case .noTerm:
@@ -32,6 +34,7 @@ enum CategoryPickerCopy {
         case .description_: String(localized: "From the description")
         case .mostUsed: String(localized: "Most used in the group")
         case .group: String(localized: "From the group")
+        case .receipt: String(localized: "From the receipt")
         default: nil
         }
     }

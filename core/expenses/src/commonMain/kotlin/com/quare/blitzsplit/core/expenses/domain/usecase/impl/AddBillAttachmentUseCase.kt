@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
+import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.core.provider.image.BillImageEncoder
 import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
@@ -17,7 +19,8 @@ class AddBillAttachmentUseCase(
     private val repository: BillAttachmentRepository,
     private val encodeImage: BillImageEncoder,
     private val currentTimeMillis: CurrentTimeMillis,
-) : AddBillAttachment {
+) : AddBillAttachment,
+    AttachBillImage {
     override suspend fun invoke(
         expenseId: String,
         groupId: String,
@@ -32,6 +35,16 @@ class AddBillAttachmentUseCase(
                 else -> Result.failure(error)
             }
         }
+        return invoke(expenseId, groupId, kind, image, addedByMemberId)
+    }
+
+    override suspend fun invoke(
+        expenseId: String,
+        groupId: String,
+        kind: BillAttachmentKind,
+        image: BillImage,
+        addedByMemberId: String?,
+    ): Result<BillAttachmentAddition> {
         val now = currentTimeMillis()
         val attachment = BillAttachment(
             id = Uuid.random().toString(),

@@ -82,8 +82,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     app…". "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
-    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal" ("Em breve" for now; offline disabled
-    with "Precisa de internet"),
+    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal", which opens Rachar conta as
+    "Rachar conta" does (asking the group first) and its camera at once (7.1e, `Route.SplitBill.scansReceipt`;
+    offline disabled with "Precisa de internet"),
     "Registrar pagamento", which asks "Quem pagou a quem?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Registrar pagamento in its place), and
     "Novo grupo". "Seus grupos": up to three open groups, the pinned first, then the latest activity, as Grupos draws
@@ -92,9 +93,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
     on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
-    first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)
-    shows "Sincronizando…" with skeletons and "até agora · chegando o resto" while no group came down yet (no "3 de 7
-    grupos": the sync can't tell how many are coming), never on a relaunch; the sync chip as Grupos'; an account with
+    first download (an account restored on a device with no profile, until its groups came down or the device is
+    offline, `FirstDownload`)
+    shows "Sincronizando… 3 de 7 grupos" with its bar filling (the server says first how many are coming,
+    `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
+    "Sincronizando…" and a bar that runs), what already came with skeletons under it and "até agora · chegando o
+    resto", never on a relaunch (Mac: the window's subtitle); the sync chip as Grupos'; an account with
     neither Google nor Apple shows "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕
     hiding it until the next launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
   - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each
@@ -153,8 +157,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group, and
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
-    (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
-    progress (5.1d) yet: the sync can't tell how many groups are still to come. A phone lying down (Android and
+    (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. A new device's first download
+    (5.1d) puts "Trazendo seus grupos" in Saldo geral's place, with its bar and "3 de 7 grupos. Pode usar o app
+    enquanto isso: o que já chegou aparece abaixo.", the groups that came over grey rows for up to three still coming,
+    and no "Rachar conta" (`GroupsUiState.firstDownload`); the web draws the same, since its board has none, and the
+    Mac says "Sincronizando… 3 de 7 grupos" in the window's subtitle over the groups that came. A phone lying down (Android and
     iPhone) splits in two: the sync status and "Saldo geral" (its buttons side by side under the amount) stay still on
     the left, 320 dp / 300 pt (Android's QR, Buscar and profile at its top, iOS's stay in the bar), and the list
     scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
@@ -386,7 +393,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
     category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
     to 100), a bill without a category counted in Outros and one of a deleted category in its parent or Outros.
-    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone, a tablet and a foldable upright
+    While a new device's first download still brings bills down it counts what came, as "Total gasto até agora"
+    (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
     categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
     tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
@@ -424,9 +432,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Membros" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Convidar's "Ver quem já
     entrou". Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
     but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined),
-    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" answers "Em
-    breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open balance can't be
-    removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's creator sees
+    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal para Carla" (the
+    menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their
+    single use personal link with Copiar and "Compartilhar com Carla", and says what whoever joins through it already
+    finds: "e já vê a parte de R$ 300,00 na despesa lançada" ("nas 3 despesas lançadas", their parts summed;
+    nothing while no bill gives them a part, `PersonalInvite.billCount`). Each member shows their balance ("+R$
+    223,50 a receber"), and someone with an open balance can't be removed either ("Carla tem saldo em aberto",
+    `MembersMember.hasOpenBalance`). Only the group's creator sees
     "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
     the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
@@ -578,8 +590,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`expenses.items`, stamped with the bill's `updated_at`) beside shares holding each one's total, stored as
     "amount": an older version reads it by Valores, and items another version saved the bill without are dropped,
     on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
-    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
-    receipt read (7.1e) come later.
+    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. A receipt read
+    (7.1e) opens Itens with its items, nobody marked in any ("14 itens sem ninguém"), its service percentage and
+    no couvert (a couvert printed is one of the items), checked against the total it read ("o cupom diz").
   - "Categoria" (7.7): every bill has one, the icon beside "Descrição" (a menu with a submenu per main category on
     the Mac). Until it is picked by hand, the description's words choose it (the 60 default terms of flow 9, whole
     words ignoring case and accents, the longest term winning, ties to the first in the text, `CategoryMatcher`), else
@@ -639,6 +652,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     in the map; where a word goes now is the whole map's, every group's categories as Mapa de categorias reads them,
     so a word of another group's category says "Sai de Praia" and teaching moves it (one category per term). The
     bills already saved don't change.
+  - "Ler cupom fiscal" (7.1e to 7.1g, `ReadReceipt`, the server's `read-receipt`): a new bill's form offers it under
+    "Divisão" (never on "Editar conta", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
+    leave it out there; Início's shortcut still opens it), online only ("Precisa de internet. Preencha à mão ou leia
+    o cupom quando reconectar."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
+    the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
+    photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
+    the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
+    a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…" and
+    Salvar waits. Once read it fills the total, the description (the place) and Quando (the day printed, with its
+    time or the form's, never after now), each only while nobody typed in it during the read, shows "Lido do cupom" and "14 itens" under the description, and its items
+    wait for Dividir's Itens; the split stays the group's default until Itens or another mode is picked. Its category
+    counts only while the description's words choose none and none was picked: "Alimentação › Restaurante pelo cupom
+    fiscal", and "Pelo cupom" in the picker's Sugeridas. A receipt that can't be read (no receipt in it, no total, a
+    server error, the reader not set up, a photo the camera failed to take) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
+    na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were and keeping no photo (it may
+    be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
+    items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Conta's
+    "Anexos", badge "Cupom").
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones

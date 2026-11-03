@@ -93,9 +93,13 @@ enum GroupsCopy {
         }
     }
 
-    /// The sync status, only when it asks for attention: "Offline · 1 change queued", "Syncing…" or "No response
-    /// from the server".
-    static func sync(_ badge: SyncBadge?, pendingChangeCount: Int32) -> String? {
+    /// The sync status, only when it asks for attention: "Offline · 1 change queued", "Syncing…" ("Syncing… 3 of 7
+    /// groups" while a first download knows how many are coming) or "No response from the server".
+    static func sync(
+        _ badge: SyncBadge?,
+        pendingChangeCount: Int32,
+        downloadProgress: DownloadProgress? = nil,
+    ) -> String? {
         switch badge {
         case nil: nil
         case .offline:
@@ -103,7 +107,7 @@ enum GroupsCopy {
                 ? String(localized: "Offline · \(Int(pendingChangeCount)) changes queued")
                 : String(localized: "Offline · everything is saved on your \(DeviceName.current)")
         case .failed: String(localized: "No response from the server")
-        default: String(localized: "Syncing…")
+        default: syncing(downloadProgress)
         }
     }
 

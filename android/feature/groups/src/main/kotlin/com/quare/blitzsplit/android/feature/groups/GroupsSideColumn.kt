@@ -115,11 +115,16 @@ internal fun GroupsSideColumnLayout(
                     canRetry = state.canRetrySync,
                     onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
                 )
-                GroupsSummaryCard(
-                    summary = state.summary,
-                    onEvent = onEvent,
-                    isStacked = true,
-                )
+                val firstDownload = state.firstDownload
+                if (firstDownload != null) {
+                    GroupsFirstDownloadCard(progress = firstDownload)
+                } else {
+                    GroupsSummaryCard(
+                        summary = state.summary,
+                        onEvent = onEvent,
+                        isStacked = true,
+                    )
+                }
             }
         }
         if (state.isSearching) {

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.ReceiptRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
@@ -25,6 +26,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillShareLinkR
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCategoryTermRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseGroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseReceiptRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseSettlementRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapperImpl
@@ -36,6 +38,8 @@ import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapperImpl
+import com.quare.blitzsplit.core.expenses.data.mapper.ReceiptMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.ReceiptMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.SharedBillMapper
@@ -49,6 +53,7 @@ import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.data.repository.ReceiptRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
@@ -59,10 +64,12 @@ import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.ReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.CommentOnSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -94,6 +101,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
+import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
@@ -136,6 +144,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPay
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ReadReceiptUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTermUseCase
@@ -149,6 +158,7 @@ import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val expenseModule = module {
@@ -217,7 +227,7 @@ val expenseModule = module {
     singleOf(::BillAttachmentMapperImpl).bind<BillAttachmentMapper>()
     singleOf(::BillAttachmentRepositoryImpl).bind<BillAttachmentRepository>()
     factoryOf(::ObserveBillAttachmentsUseCase).bind<ObserveBillAttachments>()
-    factoryOf(::AddBillAttachmentUseCase).bind<AddBillAttachment>()
+    factoryOf(::AddBillAttachmentUseCase).binds(arrayOf(AddBillAttachment::class, AttachBillImage::class))
     factoryOf(::RemoveBillAttachmentUseCase).bind<RemoveBillAttachment>()
     factoryOf(::LoadBillAttachmentUrlsUseCase).bind<LoadBillAttachmentUrls>()
     factoryOf(::LoadBillAttachmentImageUseCase).bind<LoadBillAttachmentImage>()
@@ -229,4 +239,8 @@ val expenseModule = module {
     factoryOf(::DisableBillShareLinkUseCase).bind<DisableBillShareLink>()
     factoryOf(::LoadSharedBillUseCase).bind<LoadSharedBill>()
     factoryOf(::CommentOnSharedBillUseCase).bind<CommentOnSharedBill>()
+    singleOf(::SupabaseReceiptRemoteDataSource).bind<ReceiptRemoteDataSource>()
+    singleOf(::ReceiptMapperImpl).bind<ReceiptMapper>()
+    singleOf(::ReceiptRepositoryImpl).bind<ReceiptRepository>()
+    factoryOf(::ReadReceiptUseCase).bind<ReadReceipt>()
 }

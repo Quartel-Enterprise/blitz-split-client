@@ -32,6 +32,7 @@ const reasons: Record<string, MessageKey | null> = {
   description: 'splitBill_categoryReasonDescription',
   'most-used': 'splitBill_categoryReasonMostUsed',
   group: 'splitBill_categoryReasonGroup',
+  receipt: 'splitBill_categoryReasonReceipt',
   used: null,
 }
 
@@ -49,6 +50,8 @@ export function categoryHint(state: JsSplitBillState): string {
   switch (categories.hint) {
     case 'by-term':
       return t('splitBill_categoryByTerm', { path, term })
+    case 'by-receipt':
+      return t('splitBill_categoryByReceipt', { path })
     case 'by-longest-term':
       return t('splitBill_categoryByLongest', { count: categories.matches.length, term, path })
     case 'no-term':

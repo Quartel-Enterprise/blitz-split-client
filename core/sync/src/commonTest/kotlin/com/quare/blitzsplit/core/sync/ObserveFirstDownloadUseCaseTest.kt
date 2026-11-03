@@ -1,26 +1,33 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class ObserveFirstDownloadUseCaseTest {
     private val firstDownload = FirstDownload()
     private val useCase = ObserveFirstDownloadUseCase(firstDownload)
 
     @Test
-    fun `GIVEN a first download started WHEN observing THEN it is pending`() = runTest {
+    fun `GIVEN a first download started WHEN observing THEN no group came down yet`() = runTest {
         // Given
         firstDownload.start()
 
         // When
-        val isPending = useCase().first()
+        val progress = useCase().first()
 
         // Then
-        assertTrue(isPending)
+        assertEquals(
+            FirstDownloadProgress(
+                arrivedGroupCount = 0,
+                groupCount = null,
+            ),
+            progress,
+        )
     }
 
     @Test
@@ -30,10 +37,10 @@ class ObserveFirstDownloadUseCaseTest {
         firstDownload.end()
 
         // When
-        val isPending = useCase().first()
+        val progress = useCase().first()
 
         // Then
-        assertFalse(isPending)
+        assertNull(progress)
     }
 
     @Test
@@ -42,9 +49,9 @@ class ObserveFirstDownloadUseCaseTest {
         val freshFirstDownload = FirstDownload()
 
         // When
-        val isPending = ObserveFirstDownloadUseCase(freshFirstDownload)().first()
+        val progress = ObserveFirstDownloadUseCase(freshFirstDownload)().first()
 
         // Then
-        assertFalse(isPending)
+        assertNull(progress)
     }
 }

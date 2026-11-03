@@ -28,6 +28,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
@@ -44,6 +46,7 @@ import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
@@ -57,6 +60,7 @@ import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 internal fun PersonalInviteSheet(
     invite: PersonalInvite,
     groupName: String,
+    currency: GroupCurrency,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
     val onDismiss = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) }
@@ -75,6 +79,7 @@ internal fun PersonalInviteSheet(
                 PersonalInviteColumn(
                     invite = invite,
                     groupName = groupName,
+                    currency = currency,
                     onEvent = onEvent,
                     modifier = Modifier.padding(top = 24.dp),
                 )
@@ -89,6 +94,7 @@ internal fun PersonalInviteSheet(
         PersonalInviteColumn(
             invite = invite,
             groupName = groupName,
+            currency = currency,
             onEvent = onEvent,
         )
     }
@@ -98,6 +104,7 @@ internal fun PersonalInviteSheet(
 private fun PersonalInviteColumn(
     invite: PersonalInvite,
     groupName: String,
+    currency: GroupCurrency,
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -136,7 +143,7 @@ private fun PersonalInviteColumn(
             }
         }
         Text(
-            text = stringResource(R.string.members_personal_message, invite.member.name),
+            text = personalMessage(invite, currency),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -160,6 +167,22 @@ private fun PersonalInviteColumn(
                 modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
             )
         }
+    }
+}
+
+// Why: the bills that already give the member a part, which whoever joins through the link finds in their name.
+@Composable
+private fun personalMessage(
+    invite: PersonalInvite,
+    currency: GroupCurrency,
+): String {
+    val name = invite.member.name
+    val share = rememberMoneyFormatter(currency).toText(invite.billShareMinor)
+    val count = invite.billCount
+    return if (count == 0) {
+        stringResource(R.string.members_personal_message, name)
+    } else {
+        pluralStringResource(R.plurals.members_personal_message_bills, count, name, share, count)
     }
 }
 
@@ -229,7 +252,10 @@ private fun PersonalLinkPill(
     }
 }
 
-private fun createPreviewInvite(isLinkCopied: Boolean): PersonalInvite = PersonalInvite(
+private fun createPreviewInvite(
+    isLinkCopied: Boolean,
+    billCount: Int = 0,
+): PersonalInvite = PersonalInvite(
     member = MembersMember(
         id = "4",
         name = "Carla",
@@ -245,6 +271,8 @@ private fun createPreviewInvite(isLinkCopied: Boolean): PersonalInvite = Persona
     link = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",
     displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
     isLinkCopied = isLinkCopied,
+    billCount = billCount,
+    billShareMinor = if (billCount == 0) 0 else 30_000,
 )
 
 @DevicePreviews
@@ -253,8 +281,12 @@ private fun PersonalInviteColumnPreview() {
     BlitzSplitTheme {
         Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
             PersonalInviteColumn(
-                invite = createPreviewInvite(isLinkCopied = false),
+                invite = createPreviewInvite(
+                    isLinkCopied = false,
+                    billCount = 1,
+                ),
                 groupName = "Viagem Floripa",
+                currency = GroupCurrency.BRL,
                 onEvent = {},
             )
         }
@@ -269,6 +301,7 @@ private fun PersonalInviteColumnCopiedPreview() {
             PersonalInviteColumn(
                 invite = createPreviewInvite(isLinkCopied = true),
                 groupName = "Viagem Floripa",
+                currency = GroupCurrency.BRL,
                 onEvent = {},
             )
         }

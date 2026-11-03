@@ -347,4 +347,31 @@
     <string name="split_bill_category_map">Category map</string>
     <string name="split_bill_category_map_by_term">%1$s came from the word “%2$s”. See and edit the words that pick the category.</string>
     <string name="split_bill_category_map_detail">See and edit the words that pick a bill\'s category from its title.</string>
+    <string name="split_bill_category_by_receipt">%1$s from the receipt. Tap the icon to change it.</string>
+    <string name="split_bill_category_reason_receipt">From the receipt</string>
+    <string name="split_bill_scan_receipt">Scan receipt</string>
+    <string name="split_bill_scan_receipt_help">Fills in the amount, date and description from the photo.</string>
+    <string name="split_bill_scan_receipt_offline">Needs internet. Fill it in by hand or scan the receipt once you\'re back online.</string>
+    <string name="split_bill_receipt_read">Read from the receipt</string>
+    <plurals name="split_bill_receipt_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="split_bill_receipt_photo">Receipt photo</string>
+    <string name="split_bill_receipt_photo_visibility">Everyone in the group sees it</string>
+    <string name="split_bill_receipt_reading">Reading the receipt…</string>
+    <string name="split_bill_receipt_remove">Remove the receipt photo</string>
+    <string name="split_bill_receipt_failed">Couldn\'t read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand.</string>
+    <string name="split_bill_receipt_retake">Take another photo</string>
+    <string name="split_bill_receipt_camera_title">Scan receipt</string>
+    <string name="split_bill_receipt_camera_close">Close</string>
+    <string name="split_bill_receipt_camera_flash_on">Turn on the flash</string>
+    <string name="split_bill_receipt_camera_flash_off">Turn off the flash</string>
+    <string name="split_bill_receipt_camera_hint">Fit the whole receipt in the frame. We fill in the amount, date and description; you check before saving.</string>
+    <string name="split_bill_receipt_camera_gallery">Choose from gallery</string>
+    <string name="split_bill_receipt_camera_shutter">Take photo</string>
+    <string name="split_bill_receipt_camera_unavailable">The camera isn\'t available. Choose a photo of the receipt from the gallery.</string>
+    <string name="split_bill_receipt_camera_permission">Allow the camera to scan the receipt, or choose a photo from the gallery.</string>
+    <string name="split_bill_receipt_camera_allow">Allow camera</string>
+    <string name="split_bill_receipt_camera_settings">Open settings</string>
 </resources>

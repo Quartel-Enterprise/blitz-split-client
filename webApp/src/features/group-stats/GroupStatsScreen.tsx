@@ -253,7 +253,7 @@ function PeriodMenu({ state, onPick }: { state: JsGroupStatsState; onPick: (opti
 function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (minor: number) => string }) {
   const people = t(state.memberCount === 1 ? 'stats_peopleOne' : 'stats_peopleOther', { count: state.memberCount })
   const cards: { label: string; value: string; hint: string; isPending?: boolean }[] = [
-    { label: t('stats_totalSpent'), value: money(state.totalMinor), hint: periodLabel(state.period, state.isTrip) },
+    { label: t(state.isFirstDownload ? 'stats_totalSpentSoFar' : 'stats_totalSpent'), value: money(state.totalMinor), hint: periodLabel(state.period, state.isTrip) },
     {
       label: t('stats_expenses'),
       value: String(state.expenseCount),

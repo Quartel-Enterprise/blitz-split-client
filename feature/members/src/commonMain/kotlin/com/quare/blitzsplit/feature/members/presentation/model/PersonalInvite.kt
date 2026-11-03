@@ -9,4 +9,11 @@ data class PersonalInvite(
     val displayLink: String,
     // Why: "Copiado" for two seconds after "Copiar".
     val isLinkCopied: Boolean,
+    /*
+     * Why: "e já vê a parte de R$ 300,00 na despesa lançada": the group's bills that already give the member a part,
+     * which whoever joins through the link finds in their name. Zero leaves the sentence out.
+     */
+    val billCount: Int,
+    // Why: the member's parts in those bills, in the group's currency.
+    val billShareMinor: Long,
 )

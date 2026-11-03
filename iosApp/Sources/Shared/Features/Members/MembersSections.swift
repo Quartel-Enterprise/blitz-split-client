@@ -398,9 +398,9 @@ private struct PersonalInviteSheet: View {
     var body: some View {
         if let invite = model.state.personalInvite {
             #if os(macOS)
-            MacPersonalInvite(invite: invite, groupName: model.state.groupName) { model.send($0) }
+            MacPersonalInvite(invite: invite, groupName: model.state.groupName, currency: model.state.currency) { model.send($0) }
             #else
-            PhonePersonalInvite(invite: invite, groupName: model.state.groupName) { model.send($0) }
+            PhonePersonalInvite(invite: invite, groupName: model.state.groupName, currency: model.state.currency) { model.send($0) }
             #endif
         }
     }
@@ -411,14 +411,22 @@ private func personalShareMessage(groupName: String, memberName: String) -> Text
     Text("Join \(groupName) as \(memberName) on Blitz Split:")
 }
 
-private func personalInviteText(memberName: String) -> Text {
-    Text("Whoever opens this link joins straight in as \(memberName), without picking from the list. It works once.")
+/// The bills that already give the member a part, which whoever joins through the link finds in their name.
+private func personalInviteText(invite: PersonalInvite, currency: GroupCurrency) -> Text {
+    let name = invite.member.name
+    let share = currency.format(invite.billShareMinor)
+    let count = Int(invite.billCount)
+    if count == 0 {
+        return Text("Whoever opens this link joins straight in as \(name), without picking from the list. It works once.")
+    }
+    return Text("Whoever opens this link joins straight in as \(name), without picking from the list, and already sees their \(share) share in the \(count) bills added so far. It works once.")
 }
 
 #if os(iOS)
 private struct PhonePersonalInvite: View {
     let invite: PersonalInvite
     let groupName: String
+    let currency: GroupCurrency
     let send: (any MembersUiEvent) -> Void
 
     private var member: MembersMember {
@@ -433,7 +441,7 @@ private struct PhonePersonalInvite: View {
                         AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 60)
                         Text(verbatim: member.name)
                             .font(.title2.bold())
-                        personalInviteText(memberName: member.name)
+                        personalInviteText(invite: invite, currency: currency)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -492,6 +500,7 @@ private struct PhonePersonalInvite: View {
 private struct MacPersonalInvite: View {
     let invite: PersonalInvite
     let groupName: String
+    let currency: GroupCurrency
     let send: (any MembersUiEvent) -> Void
 
     private var member: MembersMember {
@@ -510,7 +519,7 @@ private struct MacPersonalInvite: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            personalInviteText(memberName: member.name)
+            personalInviteText(invite: invite, currency: currency)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Text(verbatim: invite.displayLink)

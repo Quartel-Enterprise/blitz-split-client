@@ -77,17 +77,26 @@ internal fun LazyGridScope.groupsListItems(
     // Why: a phone lying down keeps "Saldo geral" still in the column beside the list (GroupsSideColumn).
     showsSummary: Boolean = true,
 ) {
+    val firstDownload = state.firstDownload
+    // Why: "Trazendo seus grupos" takes Saldo geral's place while the first download brings the groups down.
     if (showsSummary) {
         item(
-            key = "summary",
+            key = if (firstDownload != null) "first-download" else "summary",
             span = fullLine,
             contentType = "summary",
         ) {
-            GroupsSummaryCard(
-                summary = state.summary,
-                onEvent = onEvent,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
+            if (firstDownload != null) {
+                GroupsFirstDownloadCard(
+                    progress = firstDownload,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            } else {
+                GroupsSummaryCard(
+                    summary = state.summary,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
         }
     }
     val open = state.openGroups
@@ -153,6 +162,7 @@ internal fun LazyGridScope.groupsListItems(
             )
         }
     }
+    firstDownload?.let { groupSkeletonItems(it.placeholderCount) }
     val settled = state.settledGroups
     if (settled.isEmpty()) return
     item(

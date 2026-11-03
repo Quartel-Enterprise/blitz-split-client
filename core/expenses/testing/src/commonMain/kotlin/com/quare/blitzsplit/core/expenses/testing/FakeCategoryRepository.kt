@@ -17,6 +17,7 @@ class FakeCategoryRepository(
     val pendingVersions = MutableStateFlow(emptyList<Long>())
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var saveError: Throwable? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
@@ -94,4 +95,8 @@ class FakeCategoryRepository(
         downloadedUserIds += userId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
+
+    // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
+    override suspend fun fetchGroupCategories(groupId: String): Result<suspend () -> Unit> =
+        pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
 }
