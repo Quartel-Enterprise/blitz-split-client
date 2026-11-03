@@ -114,6 +114,8 @@ class JsContactProfileState(
     val isHideConfirmOpen: Boolean,
     val addToGroup: JsAddToGroup?,
     val merge: JsGuestMergeSheet?,
+    // Why: HomeTab's name in lowercase, the tab the frame selects and the back names.
+    val homeTab: String,
 )
 
 /*
@@ -190,6 +192,10 @@ class ContactProfilePresenter(
 
     fun settle() {
         viewModel.onEvent(ContactProfileUiEvent.OnSettleClicked)
+    }
+
+    fun openGroup(groupId: String) {
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(groupId))
     }
 
     fun addToGroup() {
@@ -293,6 +299,7 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     isHideConfirmOpen = state.isHideConfirmOpen,
     addToGroup = state.addToGroup?.let(::toJsAddToGroup),
     merge = state.merge?.let(::toJsGuestMergeSheet),
+    homeTab = toJsHomeTab(state.homeTab),
 )
 
 private fun toJsContact(

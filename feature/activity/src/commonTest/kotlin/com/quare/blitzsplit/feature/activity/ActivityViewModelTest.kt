@@ -743,6 +743,234 @@ class ActivityViewModelTest {
 
     // endregion
 
+    // region The group of the detail
+
+    @Test
+    fun `GIVEN a bill picked beside the list WHEN tapping its group THEN opens the group without the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(EDIT_JANTAR))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment picked beside the list WHEN tapping its group THEN opens the Despesas of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a member added picked WHEN tapping its group THEN opens the Despesas instead of Membros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(DIEGO_ADDED))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(DIEGO_ADDED))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a charge picked beside the list WHEN tapping its group THEN opens the Despesas instead of Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(CHARGE_CARLA))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(CHARGE_CARLA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a change waiting to be sent WHEN tapping its group THEN opens the Despesas of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedQueued = listOf(queued(id = "queued-bill")))
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked("queued-bill"))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill someone deleted WHEN tapping its group THEN opens the group without the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(pastelDeleted, pastelCreated) + defaultEvents)
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PASTEL_CREATED))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+            assertNull(viewModel.uiState.value.deletedNotice)
+        }
+
+    @Test
+    fun `GIVEN an unread item WHEN tapping its group THEN marks nothing read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked(EDIT_JANTAR))
+
+        // Then
+        assertTrue(
+            activity.readState.value.readEventIds
+                .isEmpty(),
+        )
+        assertEquals(0L, activity.readState.value.readThroughSeq)
+    }
+
+    @Test
+    fun `GIVEN an item picked beside the list WHEN tapping the group of another item THEN keeps the item picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(DIEGO_ADDED))
+
+            // Then
+            assertEquals(PAYMENT_ANA, viewModel.uiState.value.pickedItemId)
+        }
+
+    @Test
+    fun `GIVEN an item of a group no longer on the device WHEN tapping its group THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    event(
+                        id = "praia-bill",
+                        groupId = PRAIA,
+                        groupName = "Praia",
+                        targetId = "bill-praia",
+                    ),
+                ) + defaultEvents,
+            )
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked("praia-bill"))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN an id not in the feed WHEN tapping its group THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked("unknown"))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping a group THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the group already opened from the detail WHEN tapping it again late THEN opens it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a filter hiding the item WHEN tapping its group THEN still opens the group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+        applyFilter(APE)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked(DIEGO_ADDED))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.EXPENSES)),
+            navigator.backStack.value,
+        )
+    }
+
+    // endregion
+
     // region Filtrar
 
     @Test

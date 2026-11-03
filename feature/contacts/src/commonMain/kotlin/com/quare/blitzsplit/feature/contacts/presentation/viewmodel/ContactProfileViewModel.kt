@@ -12,9 +12,11 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
@@ -63,6 +65,7 @@ class ContactProfileViewModel(
                 merge = null,
                 pendingMerge = null,
                 isCancellingMerge = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
             ),
         )
 
@@ -113,6 +116,11 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let(::openSettleUp)
 
             ContactProfileUiEvent.OnSettleClicked -> findContactIf { uiState.value.canSettle }?.let(::openSettleUp)
+
+            // Why: only a group the person is still in, so a stale tap never opens one a sync just took away.
+            is ContactProfileUiEvent.OnGroupClicked -> findContactIf { contact ->
+                contact.groups.any { it.groupId == event.groupId }
+            }?.let { openGroup(event.groupId) }
 
             ContactProfileUiEvent.OnAddToGroupClicked -> openAddToGroup()
 
@@ -227,6 +235,16 @@ class ContactProfileViewModel(
             Route.SettleUp(
                 personKey = contact.key,
                 currency = contact.net.currency,
+            ),
+        )
+    }
+
+    private fun openGroup(groupId: String) {
+        navigate(
+            Route.GroupDetail(
+                groupId,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
             ),
         )
     }

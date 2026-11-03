@@ -59,17 +59,19 @@ function onProfileAction(action: JsContactProfileAction) {
 /**
  * "Perfil do contato": who the person is, the net with them and what to do about it, the groups in common with what
  * each adds, and the latest bills and payments between you. Beside Contatos on the desktop, in its place elsewhere
- * (with `onBack`).
+ * (with `onBack`, named by `backLabel`).
  */
 export function ContactProfileView({
   presenter,
   state,
   contact,
+  backLabel,
   onBack,
 }: {
   presenter: ContactProfilePresenter
   state: JsContactProfileState
   contact: JsContact
+  backLabel?: string
   onBack?: () => void
 }) {
   const name = contact.name
@@ -79,7 +81,7 @@ export function ContactProfileView({
       {onBack && (
         <Button variant="ghost" size="sm" onClick={onBack} className="-mb-1 -ml-2 self-start">
           <ChevronLeft />
-          {t('contacts_title')}
+          {backLabel ?? t('contacts_title')}
         </Button>
       )}
       <header className="flex items-center gap-3.5">
@@ -138,7 +140,7 @@ export function ContactProfileView({
         </div>
       )}
       <BalanceSection presenter={presenter} state={state} contact={contact} />
-      <GroupsInCommon contact={contact} isNetOfSeveralGroups={state.isNetOfSeveralGroups} />
+      <GroupsInCommon presenter={presenter} contact={contact} isNetOfSeveralGroups={state.isNetOfSeveralGroups} />
       {state.history.length > 0 && (
         <section aria-label={t('contactProfile_history', { name })} className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
@@ -265,8 +267,11 @@ function BalanceSection({ presenter, state, contact }: { presenter: ContactProfi
   )
 }
 
-/** "Grupos em comum": a table from the tablet up, rows with the word under the name on a phone, then the net. */
-function GroupsInCommon({ contact, isNetOfSeveralGroups }: { contact: JsContact; isNetOfSeveralGroups: boolean }) {
+/**
+ * "Grupos em comum": a table from the tablet up, rows with the word under the name on a phone, then the net. A click on
+ * a group opens it.
+ */
+function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presenter: ContactProfilePresenter; contact: JsContact; isNetOfSeveralGroups: boolean }) {
   const columns = '@md:grid @md:grid-cols-[minmax(0,1fr)_120px_120px]'
   return (
     <section aria-label={t('contactProfile_groups', { count: contact.groups.length })} className="flex flex-col gap-2.5">
@@ -279,18 +284,27 @@ function GroupsInCommon({ contact, isNetOfSeveralGroups }: { contact: JsContact;
         </div>
         <ul>
           {contact.groups.map((group) => (
-            <li key={group.groupId} className={cn('flex min-h-13 items-center gap-3 border-b px-3.5 py-2 text-sm @md:h-12 @md:min-h-0 @md:px-4 @md:py-0', columns)}>
-              <span className="flex min-w-0 flex-1 items-center gap-2.5">
-                <GroupAvatar initials={group.initials} color={group.color} className="size-6 rounded-md text-[10px]" />
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate">{group.name}</span>
-                  <span className="text-xs text-muted-foreground @md:hidden">{netWord(group.amountMinor)}</span>
+            <li key={group.groupId} className="border-b">
+              <button
+                type="button"
+                onClick={() => presenter.openGroup(group.groupId)}
+                className={cn(
+                  'flex min-h-13 w-full items-center gap-3 px-3.5 py-2 text-left text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50 @md:h-12 @md:min-h-0 @md:px-4 @md:py-0',
+                  columns,
+                )}
+              >
+                <span className="flex min-w-0 flex-1 items-center gap-2.5">
+                  <GroupAvatar initials={group.initials} color={group.color} className="size-6 rounded-md text-[10px]" />
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate">{group.name}</span>
+                    <span className="text-xs text-muted-foreground @md:hidden">{netWord(group.amountMinor)}</span>
+                  </span>
                 </span>
-              </span>
-              <span className="hidden text-muted-foreground @md:block">{netWord(group.amountMinor)}</span>
-              <span className={cn('text-right font-semibold whitespace-nowrap tabular-nums', balanceTone(group.amountMinor))}>
-                {formatSignedMoney(group.amountMinor, group.currency, group.fractionDigits)}
-              </span>
+                <span className="hidden text-muted-foreground @md:block">{netWord(group.amountMinor)}</span>
+                <span className={cn('text-right font-semibold whitespace-nowrap tabular-nums', balanceTone(group.amountMinor))}>
+                  {formatSignedMoney(group.amountMinor, group.currency, group.fractionDigits)}
+                </span>
+              </button>
             </li>
           ))}
         </ul>

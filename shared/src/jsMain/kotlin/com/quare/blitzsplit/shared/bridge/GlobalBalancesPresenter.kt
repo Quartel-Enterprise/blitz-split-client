@@ -53,6 +53,7 @@ class JsPersonRow(
     val isExpanded: Boolean,
     val owesYou: Boolean,
     val isNetOfSeveralGroups: Boolean,
+    val opensProfile: Boolean,
 )
 
 class JsPeopleSection(
@@ -199,6 +200,14 @@ class GlobalBalancesPresenter(
         viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(personId))
     }
 
+    fun openPerson(personId: String) {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(personId))
+    }
+
+    fun openGroup(groupId: String) {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnGroupClicked(groupId))
+    }
+
     fun settle(personId: String) {
         viewModel.onEvent(GlobalBalancesUiEvent.OnSettleClicked(personId))
     }
@@ -321,6 +330,7 @@ private fun toJsPersonRow(row: PersonRow): JsPersonRow = JsPersonRow(
     isExpanded = row.isExpanded,
     owesYou = row.owesYou,
     isNetOfSeveralGroups = row.isNetOfSeveralGroups,
+    opensProfile = row.opensProfile,
 )
 
 private fun toJsChargeDraft(charge: ChargeDraft): JsChargeDraft = JsChargeDraft(

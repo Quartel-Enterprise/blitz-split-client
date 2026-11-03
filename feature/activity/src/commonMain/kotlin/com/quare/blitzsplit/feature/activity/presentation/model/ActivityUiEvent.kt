@@ -17,6 +17,11 @@ sealed interface ActivityUiEvent : UiEvent {
         val itemId: String,
     ) : ActivityUiEvent
 
+    // Why: the group's name in the detail beside the list, which opens the group.
+    data class OnGroupClicked(
+        val itemId: String,
+    ) : ActivityUiEvent
+
     // Why: "Abrir conta", "Abrir grupo"… of the detail beside the list and of the open changes.
     data class OnOpenTargetClicked(
         val itemId: String,

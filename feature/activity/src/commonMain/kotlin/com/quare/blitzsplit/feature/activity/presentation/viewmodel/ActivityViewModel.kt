@@ -165,6 +165,13 @@ class ActivityViewModel(
 
             is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let(::openTarget)
 
+            // Why: only a group still on the device; one deleted or left keeps its name, with nothing to open.
+            is ActivityUiEvent.OnGroupClicked -> itemOrNull(event.itemId)
+                ?.takeIf { it.isGroupOnDevice && isOnTop() }
+                ?.let { item ->
+                    navigator.navigate(Route.GroupDetail(item.groupId, joinedAs = null, GroupTab.EXPENSES))
+                }
+
             is ActivityUiEvent.OnChangesToggled -> uiState.update {
                 it.copy(expandedItemId = event.itemId.takeIf { id -> id != it.expandedItemId })
             }

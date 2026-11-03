@@ -17,6 +17,8 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
@@ -201,6 +203,218 @@ class ContactProfileViewModelTest {
         // Then
         assertEquals(Route.ContactProfile(BRUNO_KEY), navigator.backStack.value.last())
     }
+
+    @Test
+    fun `GIVEN her own profile WHEN a group in common is tapped THEN opens its Despesas over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Contacts,
+                    Route.ContactProfile(CARLA_KEY),
+                    floripaExpenses,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla in two groups WHEN the second group in common is tapped THEN opens that one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(APE))
+
+            // Then
+            assertEquals(
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                navigator.backStack.value.last(),
+            )
+            assertEquals(4, navigator.backStack.value.size)
+        }
+
+    @Test
+    fun `GIVEN Carla in the pane beside Contatos WHEN a group in common is tapped THEN opens it over Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                inPane = true,
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, floripaExpenses),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN her profile opened from Saldos WHEN a group in common is tapped THEN opens it over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                openedFrom = Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.ContactProfile(CARLA_KEY),
+                    floripaExpenses,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla in Saldos WHEN her profile opens over it THEN its home tab is Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            openedFrom = Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null),
+        )
+
+        // When
+        val homeTab = viewModel.uiState.value.homeTab
+
+        // Then
+        assertEquals(HomeTab.BALANCES, homeTab)
+    }
+
+    @Test
+    fun `GIVEN Carla in Contatos WHEN her profile opens beside the list THEN its home tab is Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                inPane = true,
+            )
+
+            // When
+            val homeTab = viewModel.uiState.value.homeTab
+
+            // Then
+            assertEquals(HomeTab.CONTACTS, homeTab)
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN a group in common is tapped THEN opens it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+        // Then
+        assertEquals(floripaExpenses, navigator.backStack.value.last())
+        assertEquals(4, navigator.backStack.value.size)
+    }
+
+    @Test
+    fun `GIVEN the device offline WHEN a group in common is tapped THEN still opens it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            online = false,
+        )
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+        // Then
+        assertEquals(floripaExpenses, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN a group Carla is not in WHEN it is tapped THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FUTEBOL))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a sync took Ape 302 away WHEN a stale tap on it arrives THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+        groups.groups.value = listOf(floripa(), futebol())
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(APE))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the profile WHEN a late group tap arrives THEN stacks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+            // Then
+            assertEquals(Route.SettleUp(CARLA_KEY, GroupCurrency.BRL), navigator.backStack.value.last())
+            assertEquals(4, navigator.backStack.value.size)
+        }
+
+    @Test
+    fun `GIVEN the group already opened from the profile WHEN a second tap arrives THEN stacks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(APE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Contacts,
+                    Route.ContactProfile(CARLA_KEY),
+                    floripaExpenses,
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN Carla in the pane beside Contatos WHEN Cobrar is tapped THEN opens the message over Contatos`() =
@@ -953,6 +1167,12 @@ class ContactProfileViewModelTest {
             assertTrue(merges.pendingLookups.isEmpty())
         }
 
+    private val floripaExpenses = Route.GroupDetail(
+        FLORIPA,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+    )
+
     private val waitingMerge = GuestMerge(
         id = "merge-9",
         memberIds = listOf(memberId("diego", FLORIPA)),
@@ -963,6 +1183,7 @@ class ContactProfileViewModelTest {
     private fun TestScope.prepareScenario(
         personKey: String,
         inPane: Boolean = false,
+        openedFrom: Route = Route.Contacts,
         storedGroups: List<Group> = defaultGroups(),
         bills: List<Expense> = defaultBills(),
         storedHidden: List<HiddenContact> = emptyList(),
@@ -980,7 +1201,7 @@ class ContactProfileViewModelTest {
         isOnline = MutableStateFlow(online)
         val route = Route.ContactProfile(personKey)
         navigator = BackStackNavigator(startRoute = Route.Home).also {
-            it.navigate(Route.Contacts)
+            it.navigate(openedFrom)
             if (!inPane) it.navigate(route)
         }
         viewModel = ContactProfileViewModel(

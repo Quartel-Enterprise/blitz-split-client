@@ -298,6 +298,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
     column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
     and the filter stay still in a 300 pt column on the left while the people scroll on the right).
+  - A group's badge or name drawn as a reference to it opens the group's Despesas (`Route.GroupDetail`): Saldos' "Por
+    grupo" (in the row and beside the list), the profile's "Grupos em comum" and the group and time of Atividade's
+    detail beside the list (while the group is on the device); a picker, and a row whose tap already opens something,
+    keep their tap. A person's face or name in Saldos (the row and beside the list) opens their profile
+    (`Route.ContactProfile`, never for an ex-member), the web's frame selecting and its back naming the tab it was
+    opened from (`ContactProfileUiState.homeTab`).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's

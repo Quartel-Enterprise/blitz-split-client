@@ -30,6 +30,10 @@ data class PersonRow(
     val owesYou: Boolean
         get() = netMinor > 0
 
+    // Why: the face and the name open the profile, which has nobody to show for someone no longer in the group.
+    val opensProfile: Boolean
+        get() = name != null
+
     // Why: "Viagem Floripa" for one group, "3 grupos" for more.
     val groupCount: Int
         get() = groups.size

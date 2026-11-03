@@ -14,6 +14,11 @@ sealed interface ContactProfileUiEvent : UiEvent {
     // Why: "Acertar" (4.5), Registrar pagamento for the whole net, the other way.
     data object OnSettleClicked : ContactProfileUiEvent
 
+    // Why: a group's badge or name in "Grupos em comum", which opens the group.
+    data class OnGroupClicked(
+        val groupId: String,
+    ) : ContactProfileUiEvent
+
     data object OnAddToGroupClicked : ContactProfileUiEvent
 
     data class OnAddGroupPicked(

@@ -428,6 +428,7 @@ function whenText(item: JsActivityItem): string {
  * who deleted it, and the other events of the same bill.
  */
 function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter; item: JsActivityItem; related: JsActivityItem[] }) {
+  const meta = [item.groupName, whenText(item)].filter(Boolean).join(' · ')
   return (
     <section aria-label={headlineText(item)} className="sticky top-8 flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-6">
       <header className="flex items-start gap-3">
@@ -436,7 +437,17 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
           <h2 className="text-lg leading-snug">
             <HeadlineLine item={item} isBold={false} />
           </h2>
-          <span className="text-[13px] text-muted-foreground">{[item.groupName, whenText(item)].filter(Boolean).join(' · ')}</span>
+          {item.isGroupOnDevice ? (
+            <button
+              type="button"
+              onClick={() => presenter.openGroup(item.id)}
+              className="self-start rounded-sm text-left text-[13px] text-muted-foreground outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              {meta}
+            </button>
+          ) : (
+            <span className="text-[13px] text-muted-foreground">{meta}</span>
+          )}
         </span>
         {!item.deletion && (
           <Button variant="outline" size="sm" onClick={() => presenter.openTarget(item.id)}>

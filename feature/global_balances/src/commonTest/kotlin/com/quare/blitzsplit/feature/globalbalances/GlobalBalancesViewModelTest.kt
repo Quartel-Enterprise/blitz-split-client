@@ -35,6 +35,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -545,6 +546,183 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(route, navigator.backStack.value.last())
     }
+
+    @Test
+    fun `GIVEN Carla WHEN tapping her face THEN opens her profile over Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carla = viewModel.uiState.value.people
+            .single { it.name == "Carla" }
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carla.id))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, route, Route.ContactProfile("user:carla")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a guest WHEN tapping their name THEN opens their profile by their name`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val diego = viewModel.uiState.value.people
+            .single { it.name == "Diego" }
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(diego.id))
+
+        // Then
+        assertTrue(diego.opensProfile)
+        assertEquals(Route.ContactProfile("name:diego"), navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN Carla owes you in two currencies WHEN tapping her dollar row THEN opens the same profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+            )
+            val carlaInDollars = viewModel.uiState.value.people
+                .single { it.name == "Carla" && it.currency == GroupCurrency.USD }
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carlaInDollars.id))
+
+            // Then
+            assertEquals(Route.ContactProfile("user:carla"), navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN someone no longer in the group WHEN Saldos opens THEN their row opens no profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = defaultBills + exMemberBill)
+
+            // When
+            val exMember = viewModel.uiState.value.people
+                .single { it.name == null }
+
+            // Then
+            assertFalse(exMember.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN someone no longer in the group WHEN tapping their face THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(bills = defaultBills + exMemberBill)
+        val exMember = viewModel.uiState.value.people
+            .single { it.name == null }
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(exMember.id))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a sync took someone away WHEN a late tap on their face arrives THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            expenses.expenses.update { bills -> bills.filterNot { it.id in setOf("e3", "e4", "e5") } }
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carla.id))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN something opened over Saldos WHEN a late tap on a face arrives THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carla.id))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carla.id))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.ContactProfile("user:carla")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla across three groups WHEN tapping a group in Por grupo THEN opens its Despesas over Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val apeOfCarla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+                .groups
+                .single { it.groupName == "Apê 302" }
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnGroupClicked(apeOfCarla.groupId))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group no Por grupo lists WHEN a late tap on it arrives THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnGroupClicked("gone"))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN something opened over Saldos WHEN a late tap on a group arrives THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.SettleUp("user:carla", GroupCurrency.BRL))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnGroupClicked(FLORIPA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.SettleUp("user:carla", GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN someone who owes you WHEN tapping Cobrar THEN builds the message from the debt and your Pix key`() =
@@ -1230,6 +1408,9 @@ class GlobalBalancesViewModelTest {
             description = "Carne",
         ),
     )
+
+    // Why: you owe someone the group no longer has, whom Saldos calls "Ex-membro".
+    private val exMemberBill = owes(FLORIPA, ME_FLORIPA, "gone-floripa", 2_000L, id = "e8")
 
     private val defaultGroups = listOf(
         group(

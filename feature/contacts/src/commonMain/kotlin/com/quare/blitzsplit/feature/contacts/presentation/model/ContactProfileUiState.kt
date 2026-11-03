@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.ContactHistoryItem
 import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.HomeTab
 
 data class ContactProfileUiState(
     // Why: null until Room is read, and once a sync took the person away (they left every group shared).
@@ -23,6 +24,11 @@ data class ContactProfileUiState(
     val pendingMerge: GuestMerge?,
     // Why: Cancelar was tapped and the server hasn't answered yet.
     val isCancellingMerge: Boolean,
+    /*
+     * Why: the home tab the profile was opened from (Contatos, or Saldos for a face tapped there), which the web's frame
+     * selects and its back names.
+     */
+    val homeTab: HomeTab,
 ) {
     val initials: String
         get() = contact?.name?.let(Initials::of).orEmpty()

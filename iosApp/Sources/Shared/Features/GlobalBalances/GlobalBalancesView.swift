@@ -349,11 +349,16 @@ private struct PersonRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            PersonSummary(row: row, name: name)
+            PersonSummary(row: row, name: name) {
+                model.send(GlobalBalancesUiEventOnPersonClicked(personId: row.id))
+            }
             if row.isExpanded {
-                PersonGroupsList(groups: row.groups, currency: row.currency)
-                    .padding(.leading, 52)
-                    .accessibilityLabel(Text("\(name) by group"))
+                PersonGroupsList(groups: row.groups, currency: row.currency) { groupId in
+                    model.send(GlobalBalancesUiEventOnGroupClicked(groupId: groupId))
+                }
+                .padding(.leading, 52)
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(Text("\(name) by group"))
             }
             HStack(spacing: 8) {
                 Button {
@@ -377,10 +382,12 @@ private struct PersonRowView: View {
     }
 }
 
-/// The face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick.
+/// The face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick. In the
+/// row the face and the name open the profile; the list's pick takes the whole row's tap.
 private struct PersonSummary: View {
     let row: PersonRow
     let name: String
+    var onPersonTap: (() -> Void)?
 
     private var direction: LocalizedStringKey {
         row.owesYou ? "owes you" : "you owe"
@@ -388,14 +395,14 @@ private struct PersonSummary: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            PersonFace(row: row, size: 40)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(verbatim: name)
-                    .lineLimit(1)
-                Text(verbatim: GlobalBalancesCopy.meta(row))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+            if let onPersonTap, row.opensProfile {
+                Button(action: onPersonTap) {
+                    face
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+            } else {
+                face
             }
             Spacer(minLength: 8)
             VStack(alignment: .trailing, spacing: 0) {
@@ -406,6 +413,20 @@ private struct PersonSummary: View {
                 Text(direction)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var face: some View {
+        HStack(spacing: 12) {
+            PersonFace(row: row, size: 40)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: name)
+                    .lineLimit(1)
+                Text(verbatim: GlobalBalancesCopy.meta(row))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
         }
     }
@@ -534,19 +555,35 @@ private struct PersonDetail: View {
             : String(localized: "The net already offsets the groups: Settle up uses \(amount). The app records a payment in each group.")
     }
 
+    private var header: some View {
+        HStack(spacing: 14) {
+            PersonFace(row: row, size: 56)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: name)
+                    .font(.title2.weight(.bold))
+                    .lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
+                Text(verbatim: row.isGuest ? String(localized: "\(groups) · guest without the app") : groups)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 14) {
-                PersonFace(row: row, size: 56)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: name)
-                        .font(.title2.weight(.bold))
-                        .lineLimit(1)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(verbatim: row.isGuest ? String(localized: "\(groups) · guest without the app") : groups)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            // A tap opens the profile, which someone no longer in the group doesn't have
+            if row.opensProfile {
+                Button {
+                    model.send(GlobalBalancesUiEventOnPersonClicked(personId: row.id))
+                } label: {
+                    header
+                        .contentShape(.rect)
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(.isHeader)
+            } else {
+                header
             }
             VStack(alignment: .leading, spacing: 10) {
                 Text(verbatim: direction)
@@ -567,9 +604,11 @@ private struct PersonDetail: View {
             Text("By group")
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
-            PersonGroupsList(groups: row.groups, currency: row.currency)
-                .padding(.horizontal, 12)
-                .background(Palette.card, in: .rect(cornerRadius: 16))
+            PersonGroupsList(groups: row.groups, currency: row.currency) { groupId in
+                model.send(GlobalBalancesUiEventOnGroupClicked(groupId: groupId))
+            }
+            .padding(.horizontal, 12)
+            .background(Palette.card, in: .rect(cornerRadius: 16))
             Text(verbatim: note)
                 .font(.footnote)
                 .foregroundStyle(.secondary)

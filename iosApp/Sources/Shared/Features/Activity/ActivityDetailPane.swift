@@ -96,6 +96,12 @@ private struct ActivityItemDetail: View {
         .accessibilityElement(children: .contain)
     }
 
+    private var meta: some View {
+        Text(verbatim: ActivityCopy.meta(item, days: model.state.days))
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+    }
+
     private var header: some View {
         HStack(alignment: .top, spacing: 14) {
             ActivityFace(item: item, size: Self.faceSize)
@@ -104,9 +110,17 @@ private struct ActivityItemDetail: View {
                     .font(.title3)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityAddTraits(.isHeader)
-                Text(verbatim: ActivityCopy.meta(item, days: model.state.days))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                // The group and when; a tap opens the group while it is still on the device
+                if item.isGroupOnDevice {
+                    Button {
+                        model.send(ActivityUiEventOnGroupClicked(itemId: item.id))
+                    } label: {
+                        meta
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    meta
+                }
             }
             #if os(macOS)
             Spacer(minLength: 8)

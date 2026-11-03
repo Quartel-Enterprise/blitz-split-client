@@ -19,6 +19,8 @@ data class ActivityItem(
     val groupName: String?,
     val groupColor: AvatarColor?,
     val groupType: GroupType?,
+    // Why: the group is still on the device, so its name in the detail beside the list opens it.
+    val isGroupOnDevice: Boolean,
     val occurredAt: Long,
     // Why: the bill's description, or the group's or member's name.
     val subject: String?,

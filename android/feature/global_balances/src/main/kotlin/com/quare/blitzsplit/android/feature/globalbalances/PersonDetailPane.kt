@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
+import com.quare.blitzsplit.android.designsystem.component.clickableWhen
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
@@ -54,6 +56,7 @@ internal fun PersonDetailPane(
         PersonDetailHeader(
             person = person,
             name = name,
+            onPersonClick = { onEvent(GlobalBalancesUiEvent.OnPersonClicked(person.id)) },
         )
         PersonDetailAmountCard(
             person = person,
@@ -75,6 +78,7 @@ internal fun PersonDetailPane(
             netMinor = person.netMinor,
             money = money,
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            onGroupClick = { groupId -> onEvent(GlobalBalancesUiEvent.OnGroupClicked(groupId)) },
         )
         Text(
             text = noteOf(person, name, money),
@@ -85,14 +89,21 @@ internal fun PersonDetailPane(
     }
 }
 
-// Why: the face, the name and the groups by name, "· convidado sem app" for a guest.
+// Why: the face, the name and the groups by name, "· convidado sem app" for a guest; a tap opens the profile.
 @Composable
 private fun PersonDetailHeader(
     person: PersonRow,
     name: String,
+    onPersonClick: () -> Unit,
 ) {
     val groups = person.groups.joinToString(", ") { it.groupName }
     Row(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickableWhen(
+                isClickable = person.opensProfile,
+                onClick = onPersonClick,
+            ),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

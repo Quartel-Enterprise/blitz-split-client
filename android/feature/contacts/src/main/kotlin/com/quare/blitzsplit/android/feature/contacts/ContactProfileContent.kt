@@ -204,6 +204,7 @@ private fun LazyListScope.profileItems(
             group = group,
             index = index,
             count = contact.groups.size,
+            onClick = { onEvent(ContactProfileUiEvent.OnGroupClicked(group.groupId)) },
         )
     }
     if (state.history.isNotEmpty()) {

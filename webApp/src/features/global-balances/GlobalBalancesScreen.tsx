@@ -224,7 +224,7 @@ function PersonRowItem({ presenter, row }: { presenter: GlobalBalancesPresenter;
   const name = nameOrFormer(row.name)
   return (
     <div className="flex flex-col gap-2 border-b px-4 py-3 last:border-b-0">
-      <PersonSummary row={row} name={name} />
+      <PersonSummary row={row} name={name} onPersonClick={() => presenter.openPerson(row.id)} />
       {row.isExpanded && (
         <PersonGroupsList
           groups={row.groups}
@@ -233,6 +233,7 @@ function PersonRowItem({ presenter, row }: { presenter: GlobalBalancesPresenter;
           fractionDigits={row.fractionDigits}
           label={`${name} · ${t('globalBalances_byGroup')}`}
           className="ml-12"
+          onGroupClick={(groupId) => presenter.openGroup(groupId)}
         />
       )}
       <div className="ml-12 flex items-center gap-2">
@@ -254,17 +255,35 @@ function PersonRowItem({ presenter, row }: { presenter: GlobalBalancesPresenter;
   )
 }
 
-/** The face, the name with its groups, and the net with whose way it goes, alike in the row and the desktop's pick. */
-function PersonSummary({ row, name }: { row: JsPersonRow; name: string }) {
+/**
+ * The face, the name with its groups, and the net with whose way it goes, alike in the row and the desktop's pick. In
+ * the row the face and the name open the profile; the desktop's pick takes the whole row's click.
+ */
+function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: string; onPersonClick?: () => void }) {
   const groups = row.groups.length > 1 ? t('globalBalances_groups', { count: row.groups.length }) : (row.groups[0]?.name ?? '')
   const meta = row.isGuest ? t('globalBalances_guest', { groups }) : groups
-  return (
-    <div className="flex items-center gap-3">
+  const face = (
+    <>
       <PersonFace row={row} className="size-9 text-sm" />
       <span className="flex min-w-0 flex-1 flex-col text-left">
         <span className="truncate font-medium">{name}</span>
         <span className="truncate text-xs text-muted-foreground">{meta}</span>
       </span>
+    </>
+  )
+  return (
+    <div className="flex items-center gap-3">
+      {onPersonClick && row.opensProfile ? (
+        <button
+          type="button"
+          onClick={onPersonClick}
+          className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          {face}
+        </button>
+      ) : (
+        <span className="flex min-w-0 flex-1 items-center gap-3">{face}</span>
+      )}
       <span className="flex flex-col items-end">
         <span className={cn('font-semibold tabular-nums', balanceTone(row.netMinor))}>
           {formatSignedMoney(row.netMinor, row.currency, row.fractionDigits)}
@@ -331,14 +350,32 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
   const note = !row.isNetOfSeveralGroups
     ? t('globalBalances_detailNoteSingle', { name })
     : t(row.owesYou ? 'globalBalances_detailNoteOwed' : 'globalBalances_detailNoteSettle', { amount })
+  const header = (
+    <>
+      <PersonFace row={row} className="size-12 text-base" />
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-xl font-semibold">{name}</span>
+        <span className="text-[13px] text-muted-foreground">{row.isGuest ? t('globalBalances_detailGuest', { groups }) : groups}</span>
+      </span>
+    </>
+  )
   return (
     <section aria-label={t('globalBalances_detailPane', { name })} className="flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-6">
       <header className="flex items-center gap-3">
-        <PersonFace row={row} className="size-12 text-base" />
-        <span className="flex min-w-0 flex-1 flex-col">
-          <h2 className="truncate text-xl font-semibold">{name}</h2>
-          <span className="text-[13px] text-muted-foreground">{row.isGuest ? t('globalBalances_detailGuest', { groups }) : groups}</span>
-        </span>
+        {/* Why: the heading holds the button, whose children a screen reader flattens; an ex-member has no profile. */}
+        <h2 className="flex min-w-0 flex-1">
+          {row.opensProfile ? (
+            <button
+              type="button"
+              onClick={() => presenter.openPerson(row.id)}
+              className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              {header}
+            </button>
+          ) : (
+            <span className="flex min-w-0 flex-1 items-center gap-3">{header}</span>
+          )}
+        </h2>
         <span className="flex items-center gap-2">
           <PersonActions presenter={presenter} row={row} name={name} size="default" />
         </span>
@@ -360,10 +397,14 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
           {row.groups.map((group) => (
             <tr key={group.groupId} className="h-12 border-b">
               <td className="px-4">
-                <span className="flex min-w-0 items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => presenter.openGroup(group.groupId)}
+                  className="-mx-1 flex min-w-0 items-center gap-2.5 rounded-md px-1 py-1 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
                   <GroupAvatar initials={group.initials} color={group.color} className="size-6 shrink-0 rounded-md text-[10px]" />
                   <span className="truncate">{group.name}</span>
-                </span>
+                </button>
               </td>
               <td className="px-4 text-muted-foreground">{t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}</td>
               <td className={cn('px-4 text-right tabular-nums', balanceTone(group.amountMinor))}>{signed(group.amountMinor)}</td>
