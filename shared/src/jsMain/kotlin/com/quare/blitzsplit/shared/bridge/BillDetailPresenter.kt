@@ -25,6 +25,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetail
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 // Why: name null for "Ex-membro".
 class JsBillPayer(
@@ -201,20 +202,23 @@ class JsBillDetailState(
     val isDeleting: Boolean,
     val areActionsEnabled: Boolean,
     val isLoaded: Boolean,
-    // Why: "Comentários", in the order they were written, each with its replies.
-    val threads: Array<JsBillCommentThread>,
+    // Why: "Comentários", in the order they were written, each with its replies; null while they load (shimmer).
+    val threads: Array<JsBillCommentThread>?,
     val commentDraft: String,
     val replyTarget: JsBillReplyTarget?,
-    // Why: "Histórico", the most recent first; empty hides it.
-    val history: Array<JsBillHistoryDay>,
+    // Why: "Histórico", the most recent first; empty hides it, null while the server's history loads (shimmer).
+    val history: Array<JsBillHistoryDay>?,
+    // Why: the history shows only the device's lines: offline, or the server's read failed.
+    val isHistoryFromDeviceOnly: Boolean,
     val isOnline: Boolean,
     val isUndoing: Boolean,
-    val commentCount: Int,
+    // Why: null while the comments load.
+    val commentCount: Int?,
     val canSendComment: Boolean,
     val showsNoComments: Boolean,
-    // Why: "Anexos", the receipt first.
-    val attachments: Array<JsBillAttachment>,
-    val photoCount: Int,
+    // Why: "Anexos", the receipt first; null while they load (shimmer).
+    val attachments: Array<JsBillAttachment>?,
+    val photoCount: Int?,
     val photoLimit: Int,
     val showsAddPhoto: Boolean,
     val canAddPhoto: Boolean,
@@ -256,16 +260,26 @@ class BillDetailPresenter(
                 isDeleting = state.isDeleting,
                 areActionsEnabled = state.areActionsEnabled,
                 isLoaded = state.isLoaded,
-                threads = state.threads.map(::toJsBillCommentThread).toTypedArray(),
+                threads = state.threads
+                    .valueOrNull()
+                    ?.map(::toJsBillCommentThread)
+                    ?.toTypedArray(),
                 commentDraft = state.commentDraft,
                 replyTarget = state.replyTarget?.let(::toJsBillReplyTarget),
-                history = state.history.map { toJsBillHistoryDay(it, state.categories) }.toTypedArray(),
+                history = state.history
+                    .valueOrNull()
+                    ?.map { toJsBillHistoryDay(it, state.categories) }
+                    ?.toTypedArray(),
+                isHistoryFromDeviceOnly = state.isHistoryFromDeviceOnly,
                 isOnline = state.isOnline,
                 isUndoing = state.isUndoing,
                 commentCount = state.commentCount,
                 canSendComment = state.canSendComment,
                 showsNoComments = state.showsNoComments,
-                attachments = state.attachments.map(::toJsBillAttachment).toTypedArray(),
+                attachments = state.attachments
+                    .valueOrNull()
+                    ?.map(::toJsBillAttachment)
+                    ?.toTypedArray(),
                 photoCount = state.photoCount,
                 photoLimit = state.photoLimit,
                 showsAddPhoto = state.showsAddPhoto,

@@ -7,17 +7,22 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,6 +35,7 @@ class NotificationSettingsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var preferences: FakeNotificationPreferencesRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var viewModel: NotificationSettingsViewModel
     private val actions = mutableListOf<NotificationSettingsUiAction>()
 
@@ -65,18 +71,66 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the permission not read yet WHEN the screen opens THEN enables the toggles with no denied notice`() =
+    fun `GIVEN the permission not read yet WHEN the screen opens THEN shimmers the toggles with no denied notice`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
+            prepareScenario(permission = null)
 
             // When
             val state = viewModel.uiState.value
 
             // Then
             assertNull(state.permission)
-            assertTrue(state.areTogglesEnabled)
+            assertTrue(state.showsTogglesLoading)
+            assertFalse(state.areTogglesEnabled)
             assertFalse(state.showsPermissionDenied)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN the screen opens THEN its choices load`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.enabledTypes)
+            assertTrue(state.showsTogglesLoading)
+            assertFalse(state.isEnabled(NotificationType.NEW_EXPENSE))
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN a notice is turned on THEN saves nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload)
+            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN its first full sync ends THEN shows the server choices`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = setOf(NotificationType.INVITES),
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsTogglesLoading)
+            assertEquals(listOf(NotificationType.INVITES), state.types.filter(state::isEnabled))
         }
 
     @Test
@@ -101,13 +155,17 @@ class NotificationSettingsViewModelTest {
         preferences.preferences.value = synced
 
         // Then
-        assertEquals(synced.enabledTypes, viewModel.uiState.value.enabledTypes)
+        assertEquals(
+            synced.enabledTypes,
+            viewModel.uiState.value.enabledTypes
+                .valueOrNull(),
+        )
     }
 
     @Test
     fun `GIVEN the screen open WHEN the system permission is reported THEN keeps it`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(permission = null)
         val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
 
         // When
@@ -181,17 +239,17 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the permission not read yet WHEN a notice is turned on THEN saves it and asks nothing`() =
+    fun `GIVEN the permission not read yet WHEN a notice is turned on THEN saves nothing and asks nothing`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
+            prepareScenario(permission = null)
             val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
 
             // When
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(NotificationType.INVITES to true), preferences.updates)
+            assertTrue(preferences.updates.isEmpty())
             assertTrue(actions.isEmpty())
         }
 
@@ -210,7 +268,7 @@ class NotificationSettingsViewModelTest {
             assertTrue(state.showsPermissionDenied)
             assertFalse(state.areTogglesEnabled)
             assertTrue(state.types.none(state::isEnabled))
-            assertEquals(NotificationPreferences.DEFAULT.enabledTypes, state.enabledTypes)
+            assertEquals(NotificationPreferences.DEFAULT.enabledTypes, state.enabledTypes.valueOrNull())
             assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
             assertTrue(preferences.updates.isEmpty())
         }
@@ -314,11 +372,19 @@ class NotificationSettingsViewModelTest {
             assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
         }
 
+    private val pendingDownload = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
+
     private fun TestScope.prepareScenario(
         saved: Set<NotificationType> = NotificationPreferences.DEFAULT.enabledTypes,
-        permission: NotificationPermission? = null,
+        permission: NotificationPermission? = NotificationPermission.GRANTED,
         insideProfile: Boolean = false,
+        firstDownload: FirstDownloadProgress? = null,
     ) {
+        this@NotificationSettingsViewModelTest.firstDownload = MutableStateFlow(firstDownload)
         preferences = FakeNotificationPreferencesRepository(initialPreferences = NotificationPreferences(saved))
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.Profile)
@@ -328,6 +394,7 @@ class NotificationSettingsViewModelTest {
             navigator = navigator,
             updateNotificationPreference = UpdateNotificationPreferenceUseCase(preferences),
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
+            observeFirstDownload = ObserveFirstDownload { this@NotificationSettingsViewModelTest.firstDownload },
         )
         permission?.let { viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(it)) }
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

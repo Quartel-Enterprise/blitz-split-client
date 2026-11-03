@@ -25,6 +25,8 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 @DevicePreviews
 @Composable
@@ -59,7 +61,7 @@ private fun HomeSettledPreview() {
     BlitzSplitTheme {
         HomeContent(
             state = buildHomePreviewState().copy(
-                people = emptyList(),
+                people = emptyList<HomePerson>().toLoaded(),
                 summary = HomeSummary(
                     totals = listOf(
                         PeopleTotal(
@@ -71,7 +73,7 @@ private fun HomeSettledPreview() {
                             toPayCount = 0,
                         ),
                     ),
-                ),
+                ).toLoaded(),
             ),
             onEvent = {},
         )
@@ -87,9 +89,50 @@ private fun HomeFirstDownloadPreview() {
                 firstDownload = DownloadProgress(
                     arrivedGroupCount = 3,
                     groupCount = 7,
+                    isWaitingForInternet = false,
                 ),
                 syncBadge = SyncBadge.SYNCING,
-                people = emptyList(),
+                people = emptyList<HomePerson>().toLoaded(),
+                billDays = emptyList(),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun HomeFirstDownloadOfflinePreview() {
+    BlitzSplitTheme {
+        HomeContent(
+            state = buildHomePreviewState().copy(
+                firstDownload = DownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                    isWaitingForInternet = true,
+                ),
+                syncBadge = SyncBadge.OFFLINE,
+                people = emptyList<HomePerson>().toLoaded(),
+                groups = emptyList(),
+                billDays = emptyList(),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun HomeLoadingPreview() {
+    BlitzSplitTheme {
+        HomeContent(
+            state = buildHomePreviewState().copy(
+                avatarInitial = "",
+                isLoaded = false,
+                groupCount = 0,
+                people = Loadable.Loading,
+                summary = Loadable.Loading,
+                groups = emptyList(),
                 billDays = emptyList(),
             ),
             onEvent = {},
@@ -104,7 +147,7 @@ private fun HomeFirstUsePreview() {
         HomeContent(
             state = buildHomePreviewState().copy(
                 groupCount = 0,
-                people = emptyList(),
+                people = emptyList<HomePerson>().toLoaded(),
                 groups = emptyList(),
                 billDays = emptyList(),
             ),
@@ -177,7 +220,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
             netMinor = 3_290L,
             isGuest = true,
         ),
-    ),
+    ).toLoaded(),
     summary = HomeSummary(
         totals = listOf(
             PeopleTotal(
@@ -189,7 +232,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
                 toPayCount = 1,
             ),
         ),
-    ),
+    ).toLoaded(),
     groups = listOf(
         HomeGroup(
             row = buildPreviewRow(

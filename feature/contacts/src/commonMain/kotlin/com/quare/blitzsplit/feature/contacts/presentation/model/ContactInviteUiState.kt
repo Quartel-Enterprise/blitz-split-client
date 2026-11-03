@@ -20,13 +20,19 @@ data class ContactInviteUiState(
     val qrCode: QrCode?,
     val isOnline: Boolean,
     val isLinkCopied: Boolean,
+    /*
+     * Why: Room is read and, while no group came, the account's copy on this device is whole too, so "no group yet"
+     * is concrete; the groups that already came show while the rest comes down.
+     */
     val isLoaded: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer while the copy waits offline.
+    val isWaitingForInternet: Boolean,
 ) {
     val selectedGroup: InviteGroupOption? get() = groups.firstOrNull { it.groupId == selectedGroupId }
 
     val displayLink: String? get() = link?.let(InviteLink::displayOf)
 
-    // Why: no group yet, only "Novo grupo".
+    // Why: no group yet, only "Novo grupo"; never while the account's first full sync may still bring some.
     val hasNoGroups: Boolean get() = isLoaded && groups.isEmpty()
 
     // Why: "Offline · o link já existe, dá para copiar e compartilhar."

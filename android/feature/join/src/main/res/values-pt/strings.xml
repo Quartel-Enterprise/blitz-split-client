@@ -30,6 +30,8 @@
     <string name="join_scan_another">Escanear outro QR</string>
     <string name="join_offline_title">Sem internet para abrir o convite</string>
     <string name="join_offline_message">Guardamos o link. Assim que o aparelho conectar, o convite abre sozinho.</string>
+    <string name="join_failed_title">Não deu para abrir o convite</string>
+    <string name="join_failed_message">Tente de novo.</string>
     <string name="join_retry">Tentar de novo</string>
     <string name="join_pick_back">Voltar</string>
     <string name="join_pick_title">Quem é você no grupo?</string>

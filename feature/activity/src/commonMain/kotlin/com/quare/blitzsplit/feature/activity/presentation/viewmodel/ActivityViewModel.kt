@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -65,6 +66,7 @@ class ActivityViewModel(
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
+    observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     minuteTicks: MinuteTicks,
 ) : ViewModel() {
@@ -90,8 +92,11 @@ class ActivityViewModel(
                 hasSyncFailed = false,
                 isSyncing = false,
                 hasDownloaded = false,
+                awaitsFullSync = false,
+                isWaitingForInternet = false,
                 isLoaded = false,
                 isLoadingMore = false,
+                hasLoadOlderFailed = false,
                 isRefreshing = false,
                 hasMore = false,
                 deletedNotice = null,
@@ -121,6 +126,14 @@ class ActivityViewModel(
     // Why: the window draws the item beside the list, where a tap picks it instead of opening it.
     private var isDetailPaneShown = false
 
+    // Why: the screen waits for Room and for the sync state, which come from different flows.
+    private var isFeedRead = false
+
+    private var isSyncStateRead = false
+
+    // Why: counts Room's answers, so a page that came tells whether the feed already shows it.
+    private var feedVersion = 0
+
     init {
         combine(observeProfile(), observeAccount()) { profile, account ->
             val badge = UserBadge.of(profile, account.status)
@@ -139,21 +152,31 @@ class ActivityViewModel(
                 feed = newFeed
                 groups = newGroups
                 entries = entriesOf(newFeed, newGroups, categories)
+                isFeedRead = true
+                feedVersion++
                 show()
             }.launchIn(viewModelScope)
-        combine(observeSyncState(), connectivityObserver.observe()) { syncState, isOnline ->
+        combine(
+            observeSyncState(),
+            connectivityObserver.observe(),
+            observeFirstDownload(),
+        ) { syncState, isOnline, download ->
             uiState.update {
                 it.copy(
                     isOnline = isOnline,
                     hasSyncFailed = syncState == SyncState.FAILED,
                     isSyncing = isOnline && syncState == SyncState.SYNCING,
+                    awaitsFullSync = download != null,
+                    isWaitingForInternet = download?.isWaitingForInternet == true,
                 )
             }
+            isSyncStateRead = true
+            if (isFeedRead) show()
         }.launchIn(viewModelScope)
         // Why: "Hoje" becomes "Ontem" at midnight on a feed left open.
         minuteTicks()
             .onStart { emit(Unit) }
-            .onEach { if (uiState.value.isLoaded) show() }
+            .onEach { if (isFeedRead) show() }
             .launchIn(viewModelScope)
     }
 
@@ -225,7 +248,7 @@ class ActivityViewModel(
         }
     }
 
-    private fun show() {
+    private fun show(isOlderLoadDue: Boolean = true) {
         val state = uiState.value
         val filtered = entries.filter { it.matches(state.filter) }.map { it.item }
         val shown = filtered.take(visibleCount)
@@ -247,9 +270,15 @@ class ActivityViewModel(
                 queuedCount = feed.queued.size + feed.events.count { event -> event.isPending },
                 hasDownloaded = feed.readState.hasDownloaded,
                 hasMore = filtered.size > shown.size || feed.hasOlder,
-                isLoaded = true,
+                isLoaded = isSyncStateRead,
             )
         }
+        if (isOlderLoadDue) loadOlderIfAwaited()
+    }
+
+    // Why: an empty list never reaches its end, so the older pages its filter waits for load on their own.
+    private fun loadOlderIfAwaited() {
+        if (uiState.value.isLoadingOlderItems) showMore()
     }
 
     private fun countOf(filter: ActivityFilter): Int = entries.count { it.matches(filter) }
@@ -358,9 +387,16 @@ class ActivityViewModel(
         uiState.update { it.copy(isLoadingMore = true) }
         viewModelScope.launch {
             visibleCount += PAGE_SIZE
-            loadOlderActivity()
-            uiState.update { it.copy(isLoadingMore = false) }
-            show()
+            val versionBefore = feedVersion
+            val result = loadOlderActivity()
+            uiState.update {
+                it.copy(
+                    isLoadingMore = false,
+                    hasLoadOlderFailed = result.isFailure,
+                )
+            }
+            // Why: the next page waits for Room to show this one, or it would ask again with what it had before.
+            show(isOlderLoadDue = feedVersion != versionBefore)
         }
     }
 
@@ -368,11 +404,17 @@ class ActivityViewModel(
         val state = uiState.value
         // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
         if (state.isRefreshing || !state.isOnline) return
-        uiState.update { it.copy(isRefreshing = true) }
+        uiState.update {
+            it.copy(
+                isRefreshing = true,
+                hasLoadOlderFailed = false,
+            )
+        }
         viewModelScope.launch {
             // Why: a failure shows as "Sem resposta do servidor", so the result is not read here.
             syncNow()
             uiState.update { it.copy(isRefreshing = false) }
+            loadOlderIfAwaited()
         }
     }
 

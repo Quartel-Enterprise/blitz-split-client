@@ -29,7 +29,6 @@ import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerCardSkeleton
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -277,7 +278,7 @@ private fun ShareHeader(
 }
 
 /*
- * Why: the link in a field with "Copiar", a progress while it is read or made, "Tentar de novo" once that failed, and
+ * Why: the link in a field with "Copiar", shimmering while it is read or made, "Tentar de novo" once that failed, and
  * nothing while it was never read (offline from the start), which the offline notice explains.
  */
 @Composable
@@ -288,18 +289,10 @@ private fun LinkSection(
     val link = state.displayLink
     Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
         when {
-            state.isLoading -> LinkField {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                )
-                Text(
-                    text = stringResource(R.string.share_bill_loading),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 12.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            state.isLoading -> ShimmerBox {
+                ShimmerCardSkeleton(
+                    height = 56.dp,
+                    shape = MaterialTheme.shapes.large,
                 )
             }
 

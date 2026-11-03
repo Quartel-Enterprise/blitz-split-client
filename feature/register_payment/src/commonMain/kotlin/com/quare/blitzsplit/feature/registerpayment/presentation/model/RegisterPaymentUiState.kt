@@ -8,6 +8,9 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoading
+import software.quare.loadable.valueOrNull
 
 data class RegisterPaymentUiState(
     val currency: GroupCurrency,
@@ -37,9 +40,11 @@ data class RegisterPaymentUiState(
     val isLoaded: Boolean,
     /*
      * Why: "Pagar Ana" (4.5), the receiver's keys as the last sync cached them, each method's default first, Pix
-     * first; empty for a guest, someone no longer in the group, or someone with no key.
+     * first; empty for a guest, someone no longer in the group, or someone with no key. Loading while none is cached
+     * and the account's copy on this device is not whole yet, since only its full sync brings the members' keys; never
+     * offline, when the form opens at once, since a payment is recorded offline too.
      */
-    val receiverKeys: List<ReceiverKey>,
+    val receiverKeys: Loadable<List<ReceiverKey>>,
     // Why: "Apê 302 · você deve" under "Pagar Ana"; null across several groups ("3 grupos · você deve").
     val groupName: String?,
     // Why: Pix or Bitcoin, the method picked in "Forma de pagamento"; one the receiver has no key of reads as the other.
@@ -48,7 +53,7 @@ data class RegisterPaymentUiState(
     val offersReceiverKeys: Boolean,
     /*
      * Why: the form stays once shown: "Paguei outro valor ou de outro jeito" picked it (a part of the debt, cash, a
-     * past day), or it opened with no key, so a sync bringing the first one never swaps it mid-typing.
+     * past day), or the keys were first known with none, so a sync bringing the first one never swaps it mid-typing.
      */
     val prefersForm: Boolean,
     /*
@@ -63,11 +68,18 @@ data class RegisterPaymentUiState(
      * or the wallet, and "Marcar como pago" records the whole debt.
      */
     val showsReceiverKeys: Boolean
-        get() = offersReceiverKeys && !prefersForm && kind == PaymentKind.PAID && receiverKeys.isNotEmpty()
+        get() = offersReceiverKeys && !prefersForm && kind == PaymentKind.PAID && loadedKeys.isNotEmpty()
+
+    // Why: neither "Pagar Ana" nor the form yet: the keys shimmer until the account's full sync says if there are any.
+    val isLoadingReceiverKeys: Boolean
+        get() = offersReceiverKeys && !prefersForm && kind == PaymentKind.PAID && receiverKeys.isLoading()
+
+    private val loadedKeys: List<ReceiverKey>
+        get() = receiverKeys.valueOrNull().orEmpty()
 
     // Why: the methods the receiver has a key of, Pix first; "Forma de pagamento" only shows with both.
     val keyMethods: List<PaymentMethod>
-        get() = PaymentMethod.entries.filter { method -> receiverKeys.any { it.type.method == method } }
+        get() = PaymentMethod.entries.filter { method -> loadedKeys.any { it.type.method == method } }
 
     val showsKeyMethodPicker: Boolean
         get() = keyMethods.size > 1
@@ -77,12 +89,12 @@ data class RegisterPaymentUiState(
 
     // Why: "Chave padrão de Ana", the one the payer sees first.
     val defaultKey: ReceiverKey?
-        get() = receiverKeys.firstOrNull { it.type.method == shownKeyMethod && it.isDefault }
-            ?: receiverKeys.firstOrNull { it.type.method == shownKeyMethod }
+        get() = loadedKeys.firstOrNull { it.type.method == shownKeyMethod && it.isDefault }
+            ?: loadedKeys.firstOrNull { it.type.method == shownKeyMethod }
 
     // Why: "Outras chaves de Ana", in the order she added them.
     val otherKeys: List<ReceiverKey>
-        get() = receiverKeys.filter { it.type.method == shownKeyMethod && it.id != defaultKey?.id }
+        get() = loadedKeys.filter { it.type.method == shownKeyMethod && it.id != defaultKey?.id }
 
     /*
      * Why: the code pixCode should hold now, which the ViewModel encodes as a QR code once it changes; none while the
@@ -142,5 +154,5 @@ data class RegisterPaymentUiState(
         get() = !isOnline
 
     val canConfirm: Boolean
-        get() = isLoaded && isAmountValid && !isSaving
+        get() = isLoaded && isAmountValid && !isSaving && !isLoadingReceiverKeys
 }

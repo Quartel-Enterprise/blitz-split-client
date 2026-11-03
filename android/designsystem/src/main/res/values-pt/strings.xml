@@ -200,4 +200,6 @@
         <item quantity="one">%d não lida</item>
         <item quantity="other">%d não lidas</item>
     </plurals>
+    <string name="designsystem_loading">Carregando</string>
+    <string name="designsystem_waiting_for_internet">Sem internet. Seus dados aparecem quando reconectar.</string>
 </resources>

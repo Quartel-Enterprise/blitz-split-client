@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentGroup
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentPair
@@ -32,11 +33,13 @@ class PickPaymentViewModel(
     private val navigator: Navigator,
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeGroupsMoney: ObserveGroupsMoney,
+    observeFirstDownload: ObserveFirstDownload,
 ) : ViewModel() {
     val uiState: StateFlow<PickPaymentUiState>
         field = MutableStateFlow(
             PickPaymentUiState(
                 isLoaded = false,
+                isWaitingForInternet = false,
                 groups = emptyList(),
             ),
         )
@@ -44,14 +47,15 @@ class PickPaymentViewModel(
     val stateWatcher: FlowWatcher<PickPaymentUiState> = FlowWatcher(uiState)
 
     init {
-        combine(observeGroupsByActivity(), observeGroupsMoney()) { groups, money ->
-            groups.mapNotNull { group -> pickGroupOrNull(group, money[group.id] ?: GroupMoney.NONE) }
-        }.onEach { groups ->
-            uiState.value = PickPaymentUiState(
-                isLoaded = true,
-                groups = groups,
+        combine(observeGroupsByActivity(), observeGroupsMoney(), observeFirstDownload()) { groups, money, download ->
+            val picks = groups.mapNotNull { group -> pickGroupOrNull(group, money[group.id] ?: GroupMoney.NONE) }
+            PickPaymentUiState(
+                isLoaded = download == null || picks.isNotEmpty(),
+                isWaitingForInternet = download?.isWaitingForInternet == true,
+                groups = picks,
             )
-        }.launchIn(viewModelScope)
+        }.onEach { state -> uiState.value = state }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: PickPaymentUiEvent) {

@@ -12,8 +12,11 @@ import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewMo
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
+import software.quare.loadable.valueOrNull
 
 class JsProfileState(
+    // Why: false until the profile, the account and the theme were read, which draws the shimmer.
+    val isLoaded: Boolean,
     val displayName: String,
     val avatarInitial: String,
     val avatarColor: String,
@@ -35,7 +38,8 @@ class JsProfileState(
     val canRetrySync: Boolean,
     val isSignOutScheduled: Boolean,
     val theme: String,
-    val activeNotificationCount: Int,
+    // Why: null while it loads, also while a restored account's choices haven't come down.
+    val activeNotificationCount: Int?,
     // Why: the ProfileDialog's name, null while none is open.
     val dialog: String?,
     val hasConfirmedCodeSaved: Boolean,
@@ -53,8 +57,9 @@ class JsProfileState(
     val hasUnlinkFailed: Boolean,
     val canUnlink: Boolean,
     val showsDeleteAccount: Boolean,
-    // Why: Pix first, each method's default first.
-    val paymentKeys: Array<JsPaymentKeyItem>,
+    // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
+    val paymentKeys: Array<JsPaymentKeyItem>?,
+    val canAddPaymentKey: Boolean,
 )
 
 class JsPaymentKeyItem(
@@ -79,6 +84,7 @@ class ProfilePresenter {
     fun observeState(onChange: (JsProfileState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsProfileState(
+                isLoaded = state.isLoaded,
                 displayName = state.displayName,
                 avatarInitial = state.avatarInitial,
                 avatarColor = state.avatarColor.code,
@@ -98,7 +104,7 @@ class ProfilePresenter {
                 canRetrySync = state.canRetrySync,
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
-                activeNotificationCount = state.activeNotificationCount,
+                activeNotificationCount = state.activeNotificationCount.valueOrNull(),
                 dialog = state.dialog?.name,
                 hasConfirmedCodeSaved = state.hasConfirmedCodeSaved,
                 canErase = state.canErase,
@@ -116,7 +122,8 @@ class ProfilePresenter {
                 canUnlink = state.canUnlink,
                 showsDeleteAccount = state.showsDeleteAccount,
                 paymentKeys = state.paymentKeys
-                    .map { key ->
+                    .valueOrNull()
+                    ?.map { key ->
                         JsPaymentKeyItem(
                             id = key.id,
                             type = key.type.name,
@@ -124,7 +131,8 @@ class ProfilePresenter {
                             maskedValue = key.maskedValue,
                             isDefault = key.isDefault,
                         )
-                    }.toTypedArray(),
+                    }?.toTypedArray(),
+                canAddPaymentKey = state.canAddPaymentKey,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

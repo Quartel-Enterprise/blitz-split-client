@@ -74,7 +74,8 @@ fun CategoryMapContent(
                         )
                     }
                 },
-                actions = { MapActionsMenu(onEvent = onEvent) },
+                // Why: adding and restoring take no change until the map is read (canEditMap).
+                actions = { if (state.canEditMap) MapActionsMenu(onEvent = onEvent) },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -250,6 +251,8 @@ private fun MapListColumn(
                 onEvent = onEvent,
             )
 
+            !state.isLoaded -> item(key = "skeleton") { CategoryMapSkeleton(showsCards = showsCards) }
+
             state.isEmpty -> item(key = "empty") { EmptyMapContent(onEvent = onEvent) }
 
             showsCards -> mapCards(
@@ -274,6 +277,8 @@ private fun MapDetailColumn(
     val section = state.selectedSection
     Column(modifier = modifier.fillMaxSize()) {
         when {
+            !state.isLoaded -> CategoryMapSkeleton(showsCards = true)
+
             state.isEmpty -> EmptyMapContent(onEvent = onEvent)
 
             section != null -> SectionDetailPane(
@@ -295,7 +300,7 @@ private fun LazyListScope.mapNotices(
     if (state.showsDeviceOnlyNotice && !state.isSearching) {
         item(key = "device-only") { DeviceOnlyCard(onEvent = onEvent) }
     }
-    if (!state.isSearching && !state.isEmpty) {
+    if (state.isLoaded && !state.isSearching && !state.isEmpty) {
         item(key = "intro") { MapIntroText(isOffline = !state.isOnline) }
     }
 }

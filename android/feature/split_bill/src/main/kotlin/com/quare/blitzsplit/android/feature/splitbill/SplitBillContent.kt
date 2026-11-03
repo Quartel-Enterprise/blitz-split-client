@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
@@ -67,6 +68,8 @@ fun SplitBillContent(
                     onEvent = onEvent,
                 )
                 ReceiptReadRow(state)
+            } else {
+                ShimmerFormSkeleton(fieldCount = 2)
             }
         },
         second = {
@@ -90,6 +93,8 @@ fun SplitBillContent(
                         onEvent = onEvent,
                     )
                 }
+            } else {
+                ShimmerFormSkeleton(fieldCount = 3)
             }
         },
         modifier = modifier,

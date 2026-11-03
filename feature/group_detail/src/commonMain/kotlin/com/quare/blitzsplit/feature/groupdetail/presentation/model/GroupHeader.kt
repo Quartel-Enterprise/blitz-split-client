@@ -24,9 +24,9 @@ data class GroupHeader(
     val notJoinedCount: Int,
     // Why: "R$ 2.418,60 no total", the bills only, not the payments.
     val totalSpentMinor: Long,
-    // Why: "Seu saldo neste grupo", null while there is no bill to owe anything for.
+    // Why: "Seu saldo neste grupo", null while there is no bill to owe anything for, and while the copy isn't whole.
     val myBalance: MemberBalance?,
-    // Why: "Todo mundo acertou", the card that offers "Apagar grupo".
+    // Why: "Todo mundo acertou", the card that offers "Apagar grupo"; false while the account's copy isn't whole.
     val isEveryoneSettled: Boolean,
     // Why: the ⋮ menu's "Fixar na Início" or "Desafixar da Início": this device's user's pin, synced with the account.
     val isPinned: Boolean,

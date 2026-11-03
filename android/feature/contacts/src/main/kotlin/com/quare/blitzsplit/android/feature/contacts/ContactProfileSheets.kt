@@ -91,7 +91,7 @@ internal fun ContactProfileMenu(
                 label = stringResource(R.string.contacts_menu_merge),
                 note = stringResource(
                     DesignR.string.designsystem_group_exit_needs_internet,
-                ).takeUnless { state.canMerge },
+                ).takeIf { !state.canMerge && !state.isMergeStatusLoading },
                 isEnabled = state.canMerge,
                 onClick = { pick(ContactProfileUiEvent.OnMergeClicked) },
             )

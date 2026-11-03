@@ -13,10 +13,16 @@ struct QRScannerView: View {
         VStack(spacing: 16) {
             Text("Scan the QR code with the camera").font(.headline)
             Group {
-                if scanner.isAuthorized {
+                switch scanner.isAuthorized {
+                case true:
                     CameraPreview(session: scanner.session)
                         .clipShape(.rect(cornerRadius: 16))
-                } else {
+                case nil:
+                    // The system hasn't answered yet: the camera's frame, black, never "Camera unavailable" before it
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(.black)
+                        .accessibilityLabel(Text("Loading"))
+                case false:
                     ContentUnavailableView(
                         "Camera unavailable",
                         systemImage: "camera.badge.ellipsis",
@@ -49,7 +55,8 @@ struct QRScannerView: View {
 /// reads continuously (the invite reader, which shows a wrong QR's warning and keeps reading).
 @Observable
 final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
-    private(set) var isAuthorized = false
+    /// Nil until the system answers whether the app may use the camera.
+    private(set) var isAuthorized: Bool?
     @ObservationIgnored let session = AVCaptureSession()
     @ObservationIgnored private let readsContinuously: Bool
     @ObservationIgnored private let queue = DispatchQueue(label: "com.quare.blitzsplit.qr")
@@ -64,7 +71,8 @@ final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
 
     func start(onScanned: @escaping (String) -> Void) async {
         self.onScanned = onScanned
-        isAuthorized = await AVCaptureDevice.requestAccess(for: .video)
+        let isAuthorized = await AVCaptureDevice.requestAccess(for: .video)
+        self.isAuthorized = isAuthorized
         guard isAuthorized,
               let camera = AVCaptureDevice.default(for: .video),
               let input = try? AVCaptureDeviceInput(device: camera) else { return }

@@ -2,13 +2,13 @@ package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
@@ -17,10 +17,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
 
 /*
  * Why: only the choices and the system permission. Nothing sends a push or registers the device yet; that comes
@@ -30,11 +33,12 @@ class NotificationSettingsViewModel(
     private val navigator: Navigator,
     private val updateNotificationPreference: UpdateNotificationPreference,
     observeNotificationPreferences: ObserveNotificationPreferences,
+    observeFirstDownload: ObserveFirstDownload,
 ) : ViewModel() {
     val uiState: StateFlow<NotificationSettingsUiState>
         field = MutableStateFlow(
             NotificationSettingsUiState(
-                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes,
+                enabledTypes = Loadable.Loading,
                 permission = null,
             ),
         )
@@ -46,8 +50,9 @@ class NotificationSettingsViewModel(
     val actionWatcher: FlowWatcher<NotificationSettingsUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeNotificationPreferences()
-            .onEach { preferences -> uiState.update { it.copy(enabledTypes = preferences.enabledTypes) } }
+        combine(observeNotificationPreferences(), observeFirstDownload()) { preferences, firstDownload ->
+            if (firstDownload != null) Loadable.Loading else preferences.enabledTypes.toLoaded()
+        }.onEach { enabledTypes -> uiState.update { it.copy(enabledTypes = enabledTypes) } }
             .launchIn(viewModelScope)
     }
 
@@ -74,7 +79,8 @@ class NotificationSettingsViewModel(
 
     /*
      * Why: the system is asked only once a notice is turned on, and only if it never was. With the permission
-     * denied the toggles are off and disabled, so a tap that still arrives changes nothing.
+     * denied or unknown, or the choices still loading, the toggles are disabled, so a tap that still arrives changes
+     * nothing.
      */
     private fun toggle(
         type: NotificationType,

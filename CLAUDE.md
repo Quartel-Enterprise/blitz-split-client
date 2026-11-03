@@ -106,13 +106,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     your share and its category's badge exactly as the group's Despesas rows draw it (Pierre's call, the category as
     it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
-    on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
-    first download (an account restored on a device with no profile, until its groups came down or the device is
-    offline, `FirstDownload`)
+    on Grupos). States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
+    once the account's copy is whole; a new device's first download (an account restored on a device with no profile,
+    or a sign in that switched to another user, until a sync settled, also across relaunches, `FirstDownload`,
+    `AccountSnapshot.awaitsFullSync`)
     shows "Sincronizando… 3 de 7 grupos" with its bar filling (the server says first how many are coming,
     `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
-    "Sincronizando…" and a bar that runs), what already came with skeletons under it and "até agora · chegando o
-    resto", never on a relaunch (Mac: the window's subtitle); the sync chip as Grupos'; an account with
+    and after a relaunch midway, "Sincronizando…" and a bar that runs), what already came with skeletons under it and
+    "até agora · chegando o resto"; offline the skeletons stay with "Sem internet. Seus grupos aparecem quando
+    reconectar." (Mac: the window's subtitle); the sync chip as Grupos'; an account with
     neither Google nor Apple shows "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕
     hiding it until the next launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
   - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each
@@ -174,8 +176,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. A new device's first download
     (5.1d) puts "Trazendo seus grupos" in Saldo geral's place, with its bar and "3 de 7 grupos. Pode usar o app
     enquanto isso: o que já chegou aparece abaixo.", the groups that came over grey rows for up to three still coming,
-    and no "Rachar conta" (`GroupsUiState.firstDownload`); the web draws the same, since its board has none, and the
-    Mac says "Sincronizando… 3 de 7 grupos" in the window's subtitle over the groups that came. A phone lying down (Android and
+    and no "Rachar conta" (`GroupsUiState.firstDownload`), until the account's first full sync ends, across relaunches
+    too; offline it says "Sem internet. Seus grupos aparecem quando reconectar." in the count's place. The web draws the
+    same, since its board has none, and the Mac says "Sincronizando… 3 de 7 grupos" in the window's subtitle over the
+    groups that came. A phone lying down (Android and
     iPhone) splits in two: the sync status and "Saldo geral" (its buttons side by side under the amount) stay still on
     the left, 320 dp / 300 pt (Android's QR, Buscar and profile at its top, iOS's stay in the bar), and the list
     scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
@@ -777,4 +781,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
+  - Nothing is guessed while loading (Pierre's call): a section with no concrete answer yet (Room not read, the
+    server not answered, or data only the account's first full sync brings while `AccountSnapshot.awaitsFullSync`)
+    shows a shimmer in the shape of what comes, never an empty state, a zero, a default or a disabled guess. A read
+    of the device only shows it after 150 ms, so a fast one never flashes. Offline while the account's copy is still
+    partial, Início and Grupos say "Sem internet. Seus grupos aparecem quando reconectar." and the other screens
+    "Sem internet. Seus dados aparecem quando reconectar." under it. The shared state models such a section as a
+    `Loadable<T>` (`software.quare:loadable`); each platform draws it with its one shimmer component. A sync that
+    fails online ends the wait until a later one gets through or another account is restored (`FirstDownload`): the
+    screens show what the device holds under the failed sync's badge, since a change the server keeps refusing fails
+    every try. Offline, Conta shows the device's comments and photos and takes new ones. Registrar
+    pagamento never waits offline for the receiver's keys: the form opens, so a payment is recorded offline too.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.

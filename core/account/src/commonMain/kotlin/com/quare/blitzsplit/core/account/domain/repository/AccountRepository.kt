@@ -57,6 +57,8 @@ interface AccountRepository {
 
     suspend fun updateSignOutWhenSynced(isScheduled: Boolean)
 
+    suspend fun updateAwaitsFullSync(awaits: Boolean)
+
     suspend fun signOut()
 
     // Why: the Google or Apple account goes and a new recovery code comes, which the prompt then shows.

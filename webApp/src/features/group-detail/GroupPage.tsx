@@ -5,6 +5,7 @@ import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/co
 import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +45,7 @@ export function GroupPage({
   header,
   tab,
   hasExpenses,
+  isBalanceLoading,
   showsSplitBillButton,
   onAddPerson,
   exit,
@@ -57,6 +59,8 @@ export function GroupPage({
   header: JsGroupHeader
   tab: GroupTab
   hasExpenses: boolean
+  // Why: "Seu saldo neste grupo" shimmers while a restored account's copy isn't whole, instead of hiding.
+  isBalanceLoading: boolean
   showsSplitBillButton: boolean
   // Why: Membros' "Adicionar pessoa", in the place the other tabs give "Rachar conta"; undefined on them.
   onAddPerson?: () => void
@@ -156,6 +160,7 @@ export function GroupPage({
             </div>
           </div>
 
+          {!header.myBalance && isBalanceLoading && <BalanceCardSkeleton />}
           {header.myBalance && (
             <BalanceCard
               balance={header.myBalance}
@@ -182,6 +187,66 @@ export function GroupPage({
         <GroupExitDialog exit={exit} currency={header.currency} fractionDigits={header.fractionDigits} events={events} />
       </div>
     </PageShell>
+  )
+}
+
+/** "Seu saldo neste grupo" while it can't be told yet: its title, the amount and Acertar's place. */
+function BalanceCardSkeleton() {
+  return (
+    <LoadingRegion isDelayed={false} className="flex items-center gap-4 rounded-xl border bg-card p-4">
+      <span className="flex flex-1 flex-col gap-2.5">
+        <SkeletonLine className="w-32" />
+        <Skeleton className="h-6 w-28" />
+      </span>
+      <Skeleton className="h-9 w-24" />
+    </LoadingRegion>
+  )
+}
+
+/**
+ * The group's page until the group was read, in the same frame: back on the phone's bar, the breadcrumb, the group's
+ * avatar and lines, the balance card, the tabs and a few rows, after 150 ms. Estatísticas gives its own `children`.
+ */
+export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { groupId: string; homeTab: HomeTab; onBack: () => void; children?: ReactNode }) {
+  return (
+    <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
+      <div className="flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur md:hidden">
+          <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={onBack}>
+            <ArrowLeft />
+          </Button>
+        </header>
+        <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col p-4 md:px-8 md:py-7 lg:px-10 lg:py-8">
+          <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
+            <SkeletonLine className="hidden w-40 md:block" />
+            {children ?? <GroupHeaderSkeleton />}
+          </LoadingRegion>
+        </main>
+      </div>
+    </PageShell>
+  )
+}
+
+/** The group's avatar, name, meta and faces, the balance card, the tabs and a few bills. */
+function GroupHeaderSkeleton() {
+  return (
+    <>
+      <div className="flex items-start gap-4">
+        <Skeleton className="size-12 rounded-xl md:size-14" />
+        <span className="flex flex-1 flex-col gap-2.5">
+          <SkeletonLine className="h-5 w-48" />
+          <SkeletonLine className="w-36" />
+          <span className="flex">
+            {[0, 1, 2].map((index) => (
+              <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
+            ))}
+          </span>
+        </span>
+      </div>
+      <Skeleton className="h-[72px] w-full rounded-xl" />
+      <Skeleton className="h-9 w-full max-w-sm rounded-lg" />
+      <SkeletonRows count={4} leading="square" className="rounded-xl border bg-card" />
+    </>
   )
 }
 

@@ -74,9 +74,12 @@ struct JoinPickView: View {
                         joinButton(model.state)
                     }
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Palette.groupedBackground)
+                // The group's names not read yet: they shimmer in place
+                ShimmerScreen {
+                    ShimmerLine(width: 220, height: 22)
+                    ShimmerList(count: 5, showsTrailing: false)
+                }
+                .background(Palette.groupedBackground)
             }
         }
         .navigationTitle("Who are you in the group?")

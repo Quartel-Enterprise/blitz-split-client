@@ -36,6 +36,8 @@ final class ContactsModel {
     /// The search also looks in the agenda, but only with the access already given: it never asks from here.
     func loadAgendaIfAllowed() {
         guard AgendaReader.canRead else { return }
+        // The search shimmers until the agenda is read, rather than saying nobody was found
+        send(ContactsUiEventOnAgendaReadStarted.shared)
         Task { [weak self] in
             let contacts = await AgendaReader.load()
             self?.send(ContactsUiEventOnAgendaLoaded(contacts: contacts))
@@ -187,7 +189,7 @@ struct ContactsView: View {
                         }
                     }
                     if state.isLoading {
-                        ContactsSkeleton()
+                        ContactsSkeleton(isWaitingForInternet: state.isWaitingForInternet)
                     } else if state.isSearching {
                         ContactsSearchResults(model: model)
                     } else {
@@ -219,18 +221,9 @@ struct ContactsView: View {
             }
             #endif
             ToolbarItem(placement: .primaryAction) {
-                Button {
+                ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
                     model.send(ContactsUiEventOnProfileClicked.shared)
-                } label: {
-                    AvatarPhoto(
-                        initial: state.avatarInitial,
-                        color: state.avatarColor,
-                        photoUrl: state.photoUrl,
-                        size: 32,
-                        font: .subheadline.weight(.semibold),
-                    )
                 }
-                .accessibilityLabel("Profile")
             }
             .prefersVerticalBar()
         }
@@ -269,9 +262,15 @@ private struct ContactsSections: View {
         let state = model.state
         if state.showsSummary {
             Section {
-                ContactsSummaryCard(model: model, total: state.total)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
+                // The totals are read apart from the people: they shimmer rather than say R$ 0,00 before it
+                if let total = state.total.loaded(as: PeopleTotal.self) {
+                    ContactsSummaryCard(model: model, total: total)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                } else {
+                    ShimmerCard()
+                        .shimmering()
+                }
             }
         }
         Section {
@@ -525,7 +524,13 @@ private struct ContactsSearchResults: View {
 
     var body: some View {
         let state = model.state
-        if state.showsNoResults {
+        if state.isSearchLoading {
+            // The people or the agenda it also looks in aren't read yet: never "Nobody named" before them
+            Section {
+                ShimmerList(count: 4, showsTrailing: false)
+                    .shimmering()
+            }
+        } else if state.showsNoResults {
             Section {
                 ContentUnavailableView {
                     Label {
@@ -607,26 +612,20 @@ struct AgendaContactRow: View {
     }
 }
 
-/// Rows standing in for the people until the device's data is read, so the empty state never flashes.
+/// Rows shimmering in the people's place until the device's data is read and the account's copy is whole, so the
+/// empty state never flashes; offline while that copy waits, the note under them says so.
 private struct ContactsSkeleton: View {
+    let isWaitingForInternet: Bool
+
     var body: some View {
         Section {
-            ForEach(0..<6, id: \.self) { _ in
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(.fill.tertiary)
-                        .frame(width: 40, height: 40)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(verbatim: "Placeholder name")
-                        Text(verbatim: "Placeholder group")
-                            .font(.footnote)
-                    }
-                    Spacer()
-                }
-                .redacted(reason: .placeholder)
+            ShimmerList(count: 6)
+                .shimmering()
+        } footer: {
+            if isWaitingForInternet {
+                WaitingForInternetNote()
             }
         }
-        .accessibilityHidden(true)
     }
 }
 

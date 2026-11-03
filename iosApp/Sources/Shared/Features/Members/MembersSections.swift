@@ -95,6 +95,12 @@ struct MembersSections: View {
                     ) { model.send($0) }
                 }
             }
+        } else {
+            // The people not read yet: their rows shimmer under the tabs
+            Section {
+                ShimmerList(count: 4)
+                    .shimmering()
+            }
         }
     }
 }

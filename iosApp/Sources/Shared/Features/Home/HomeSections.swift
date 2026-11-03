@@ -23,9 +23,10 @@ struct HomeSectionHeader: View {
 
 /// "Balances with people": a row of faces, whom you owe first, then who owes you. A face settles up with them, or
 /// records what they paid you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover
-/// on the Mac. While the first download fills the device, grey faces stand in.
+/// on the Mac. Until they are read (nil), and while the first download fills the device, faces shimmer in their place.
 struct HomePeopleSection: View {
-    let people: [HomePerson]
+    let people: [HomePerson]?
+    /// Nobody to show yet: still read, or the first download may bring them.
     let isLoading: Bool
     let faceSize: CGFloat
     let send: (any HomeUiEvent) -> Void
@@ -36,19 +37,18 @@ struct HomePeopleSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
-                title: HomeCopy.peopleTitle(count: people.count, isCounted: isCounted),
+                title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: isCounted && people != nil),
                 action: String(localized: "See balances"),
             ) {
                 send(HomeUiEventOnSeeBalancesClicked.shared)
             }
             ScrollView(.horizontal) {
                 HStack(alignment: .top, spacing: 8) {
-                    if people.isEmpty, isLoading {
-                        ForEach(0..<5, id: \.self) { _ in
-                            SkeletonFace(size: faceSize)
-                        }
+                    if isLoading {
+                        HomeFacesPlaceholder(faceSize: faceSize)
+                            .shimmering()
                     }
-                    ForEach(people, id: \.self) { person in
+                    ForEach(people ?? [], id: \.self) { person in
                         PersonFace(person: person, size: faceSize) {
                             send(HomeUiEventOnPersonClicked(key: person.key, currency: person.currency))
                         }
@@ -137,24 +137,22 @@ private struct PersonFace: View {
     }
 }
 
-private struct SkeletonFace: View {
-    let size: CGFloat
+/// Five faces still coming, as "Balances with people" draws them; the caller makes them shimmer.
+struct HomeFacesPlaceholder: View {
+    let faceSize: CGFloat
 
     var body: some View {
-        VStack(spacing: 6) {
-            Circle()
-                .fill(.fill.tertiary)
-                .frame(width: size, height: size)
-            Capsule()
-                .fill(.fill.tertiary)
-                .frame(width: 44, height: 10)
-            Capsule()
-                .fill(.fill.quaternary)
-                .frame(width: 52, height: 10)
+        HStack(alignment: .top, spacing: 8) {
+            ForEach(0..<5, id: \.self) { _ in
+                VStack(spacing: 6) {
+                    ShimmerCircle(size: faceSize)
+                    ShimmerLine(width: 44, height: 10)
+                    ShimmerLine(width: 52, height: 10)
+                }
+                .frame(width: 76)
+                .padding(.vertical, 6)
+            }
         }
-        .frame(width: 76)
-        .padding(.vertical, 6)
-        .accessibilityHidden(true)
     }
 }
 
@@ -515,8 +513,8 @@ private struct GroupBalanceLines: View {
 }
 
 /// "Latest expenses": the five latest bills you paid or take part in, by day, the most recent first. A bill opens its
-/// Bill over its group; "See everything" is Activity, not built yet. While the first download fills the device, grey
-/// rows stand in.
+/// Bill over its group; "See everything" is Activity, not built yet. While the first download fills the device, rows
+/// shimmer in their place.
 struct HomeBillsSection: View {
     let days: [HomeBillDay]
     let isLoading: Bool
@@ -539,7 +537,11 @@ struct HomeBillsSection: View {
                 rows(day.bills.map { bill in AnyView(billRow(bill)) })
             }
             if days.isEmpty, isLoading {
-                rows((0..<3).map { _ in AnyView(SkeletonBillRow()) })
+                ShimmerList(count: 3, leading: .badge)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
+                    .shimmering()
+                    .background(Palette.card, in: .rect(cornerRadius: 26))
                     .padding(.top, 8)
             }
         }
@@ -599,26 +601,6 @@ struct HomeBillsSection: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-    }
-}
-
-private struct SkeletonBillRow: View {
-    var body: some View {
-        HStack(spacing: 12) {
-            // The category badge's size and corners
-            RoundedRectangle(cornerRadius: 38 * 0.3)
-                .fill(.fill.tertiary)
-                .frame(width: 38, height: 38)
-            VStack(alignment: .leading, spacing: 6) {
-                Capsule().fill(.fill.tertiary).frame(width: 120, height: 12)
-                Capsule().fill(.fill.quaternary).frame(width: 180, height: 10)
-            }
-            Spacer()
-            Capsule().fill(.fill.tertiary).frame(width: 60, height: 12)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .accessibilityHidden(true)
     }
 }
 

@@ -59,6 +59,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -66,6 +68,8 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactBalanceNote
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiState
+import software.quare.loadable.valueOrNull
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val columnMaxWidth = 640.dp
 private val tabletColumnMaxWidth = 560.dp
@@ -115,7 +119,17 @@ internal fun ContactProfileContent(
         containerColor = MaterialTheme.colorScheme.surface,
         contentWindowInsets = if (isInPane) WindowInsets(0) else ScaffoldDefaults.contentWindowInsets,
     ) { padding ->
-        if (contact == null) return@Scaffold
+        if (contact == null) {
+            if (!state.isLoaded) {
+                ContactProfileSkeleton(
+                    modifier = Modifier
+                        .padding(padding)
+                        .consumeWindowInsets(padding),
+                    maxWidth = if (layout.isTablet || isInPane) tabletColumnMaxWidth else columnMaxWidth,
+                )
+            }
+            return@Scaffold
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -172,12 +186,12 @@ private fun LazyListScope.profileItems(
         item(key = "guest") {
             GuestCard(
                 name = contact.name,
-                canMerge = state.canMerge,
+                state = state,
                 onEvent = onEvent,
             )
         }
     }
-    val pending = state.pendingMerge
+    val pending = state.pendingMerge.valueOrNull()
     if (state.showsPendingMerge && pending != null) {
         item(key = "pending") {
             PendingMergeCard(
@@ -271,11 +285,15 @@ private fun ProfileHeader(
     }
 }
 
-// Why: "Diego ainda não usa o Bora Rachar", with Juntar (online only) and his personal invite.
+/*
+ * Why: "Diego ainda não usa o Bora Rachar", with Juntar (online only) and his personal invite. Whether a request
+ * already waits is the server's to say: Juntar shimmers until it answered, and offline (or after a failed ask) shows
+ * disabled with "Precisa de internet", claiming neither.
+ */
 @Composable
 private fun GuestCard(
     name: String,
-    canMerge: Boolean,
+    state: ContactProfileUiState,
     onEvent: (ContactProfileUiEvent) -> Unit,
 ) {
     Surface(
@@ -301,12 +319,30 @@ private fun GuestCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            if (state.isMergeStatusUnavailable) {
+                Text(
+                    text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Row(
                 modifier = Modifier.align(Alignment.End),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (canMerge) {
-                    TextButton(onClick = { onEvent(ContactProfileUiEvent.OnMergeClicked) }) {
+                when {
+                    state.isMergeStatusLoading -> ShimmerBox {
+                        ShimmerLine(
+                            width = 96.dp,
+                            height = 36.dp,
+                        )
+                    }
+
+                    state.canMerge || state.isMergeStatusUnavailable -> TextButton(
+                        onClick = { onEvent(ContactProfileUiEvent.OnMergeClicked) },
+                        enabled = state.canMerge,
+                    ) {
                         Text(stringResource(R.string.contacts_guest_merge))
                     }
                 }

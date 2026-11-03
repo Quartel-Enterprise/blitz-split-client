@@ -25,7 +25,7 @@ class JsJoinMember(
 )
 
 class JsJoinInviteState(
-    // Why: "loading", "ready", "invalid" or "offline".
+    // Why: "loading", "ready", "invalid", "offline" or "failed" (online, the server could not be read).
     val status: String,
     val groupName: String,
     val groupInitials: String,

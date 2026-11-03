@@ -633,6 +633,47 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN an account awaiting its full sync WHEN a sync succeeds THEN it awaits no more`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        account.awaitsFullSync = true
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertFalse(account.awaitsFullSync)
+    }
+
+    @Test
+    fun `GIVEN an account awaiting its full sync WHEN the groups fail to come down THEN it still awaits it`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            account.awaitsFullSync = true
+            groups.pullError = IllegalStateException("offline")
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertTrue(account.awaitsFullSync)
+        }
+
+    @Test
+    fun `GIVEN a profile WHEN a sync fails THEN the first download knows it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pushError = IllegalStateException("refused")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(firstDownload.observeHasSyncFailed().value)
+    }
+
+    @Test
     fun `GIVEN a first download pending and the groups fail to come down WHEN syncing THEN it ends`() = runTest {
         // Given
         prepareScenario(
@@ -788,18 +829,22 @@ class SyncCoordinatorTest {
                 FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
                 FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = 2,
+                    isWaitingForInternet = false,
                 ),
                 FirstDownloadProgress(
                     arrivedGroupCount = 1,
                     groupCount = 2,
+                    isWaitingForInternet = false,
                 ),
                 FirstDownloadProgress(
                     arrivedGroupCount = 2,
                     groupCount = 2,
+                    isWaitingForInternet = false,
                 ),
                 null,
             ),
@@ -809,20 +854,22 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a first download pending WHEN syncing THEN it ends before the full download of the groups`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            firstDownloadPending = true,
-            serverGroups = listOf(trip),
-        )
+    fun `GIVEN a first download pending WHEN syncing THEN keeps its count through the full download and ends after`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip),
+            )
 
-        // When
-        coordinator.syncNow()
+            // When
+            coordinator.syncNow()
 
-        // Then
-        assertEquals(listOf(false), pendingAtGroupsFullDownload)
-    }
+            // Then
+            assertEquals(listOf(true), pendingAtGroupsFullDownload)
+            assertFalse(firstDownload.isPending)
+        }
 
     @Test
     fun `GIVEN a first download and no group on the server WHEN syncing THEN never counts and ends`() = runTest {
@@ -843,6 +890,7 @@ class SyncCoordinatorTest {
                 FirstDownloadProgress(
                     arrivedGroupCount = 0,
                     groupCount = null,
+                    isWaitingForInternet = false,
                 ),
                 null,
             ),
@@ -1005,10 +1053,12 @@ class SyncCoordinatorTest {
                     FirstDownloadProgress(
                         arrivedGroupCount = 0,
                         groupCount = null,
+                        isWaitingForInternet = false,
                     ),
                     FirstDownloadProgress(
                         arrivedGroupCount = 0,
                         groupCount = 2,
+                        isWaitingForInternet = false,
                     ),
                     null,
                 ),
@@ -1039,14 +1089,17 @@ class SyncCoordinatorTest {
                     FirstDownloadProgress(
                         arrivedGroupCount = 0,
                         groupCount = null,
+                        isWaitingForInternet = false,
                     ),
                     FirstDownloadProgress(
                         arrivedGroupCount = 0,
                         groupCount = 2,
+                        isWaitingForInternet = false,
                     ),
                     FirstDownloadProgress(
                         arrivedGroupCount = 1,
                         groupCount = 2,
+                        isWaitingForInternet = false,
                     ),
                     null,
                 ),

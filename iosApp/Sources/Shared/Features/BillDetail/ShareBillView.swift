@@ -145,7 +145,7 @@ private struct ShareBillContent: View {
     }
 }
 
-/// The link in a field-like row with Copy; a progress while it is read or made, and Try again once that failed.
+/// The link in a field-like row with Copy; a shimmer while it is read or made, and Try again once that failed.
 private struct ShareBillLinkRow: View {
     let model: ShareBillModel
 
@@ -156,8 +156,12 @@ private struct ShareBillLinkRow: View {
     var body: some View {
         HStack(spacing: 12) {
             if state.isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                // The link read or made: its shape shimmers, with Copy's place beside it
+                HStack(spacing: 12) {
+                    ShimmerLine(height: 12)
+                    ShimmerBlock(width: 84, height: 34, cornerRadius: 17)
+                }
+                .shimmering()
             } else if state.hasFailed {
                 Text("Couldn't make the link.")
                     .font(.subheadline)

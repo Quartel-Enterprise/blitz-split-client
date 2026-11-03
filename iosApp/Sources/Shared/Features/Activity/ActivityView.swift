@@ -106,7 +106,12 @@ struct ActivityView: View {
             if let model, model.state.isLoaded {
                 content(model)
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The feed not read yet: its rows shimmer, never "Nothing here yet" before it
+                ShimmerScreen {
+                    ShimmerLine(width: 80, height: 10)
+                    ShimmerList(count: 6, showsTrailing: false)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .measuringScreenLayout($layout)
@@ -198,18 +203,13 @@ struct ActivityView: View {
     }
 
     private var profileButton: some View {
-        Button {
+        ProfileToolbarButton(
+            initial: model?.state.avatarInitial ?? "",
+            color: model?.state.avatarColor ?? .blue,
+            photoUrl: model?.state.photoUrl,
+        ) {
             model?.send(ActivityUiEventOnProfileClicked.shared)
-        } label: {
-            AvatarPhoto(
-                initial: model?.state.avatarInitial ?? "",
-                color: model?.state.avatarColor ?? .blue,
-                photoUrl: model?.state.photoUrl,
-                size: 32,
-                font: .subheadline.weight(.semibold),
-            )
         }
-        .accessibilityLabel("Profile")
     }
 }
 
@@ -385,9 +385,14 @@ private struct ActivityFeed: View {
                     .listRowSeparator(.hidden)
             }
         }
-        if state.showsPlaceholders {
+        // A new device's first sync, or older pages a filter waits for: the rows shimmer, never "Nothing here yet"
+        if state.showsPlaceholders || state.isLoadingOlderItems {
             Section {
                 ActivityPlaceholders()
+            } footer: {
+                if state.showsPlaceholders, state.isWaitingForInternet {
+                    WaitingForInternetNote()
+                }
             }
         }
         // Beside the list, the empty state takes the detail's column instead
@@ -665,29 +670,14 @@ struct ActivityFace: View {
     }
 }
 
-/// A new device waiting for the first page: the rows' shapes, with "Syncing…" in the status above.
+/// A new device waiting for the first page (with "Syncing…" in the status above), or the older pages a filter waits
+/// for: the rows' shapes, shimmering.
 private struct ActivityPlaceholders: View {
-    private static let widths: [(CGFloat, CGFloat)] = [(0.88, 0.6), (0.72, 0.48), (0.8, 0.66), (0.64, 0.52), (0.76, 0.4)]
+    var count = 5
 
     var body: some View {
-        ForEach(Array(Self.widths.enumerated()), id: \.offset) { _, width in
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(.fill.tertiary)
-                    .frame(width: 40, height: 40)
-                GeometryReader { proxy in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Capsule().fill(.fill.tertiary).frame(width: proxy.size.width * width.0, height: 14)
-                        Capsule().fill(.fill.tertiary).frame(width: proxy.size.width * width.1, height: 12)
-                    }
-                    .frame(maxHeight: .infinity)
-                }
-                .frame(height: 40)
-            }
-            .padding(.vertical, 4)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Loading activity"))
+        ShimmerList(count: count, showsTrailing: false)
+            .shimmering(label: Text("Loading activity"))
     }
 }
 

@@ -55,8 +55,10 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
@@ -99,6 +101,7 @@ class GroupDetailBalancesViewModelTest {
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
     private val isRoomRead = MutableStateFlow(true)
+    private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private val deletions = InMemoryGroupDeletionRepository()
     private val deletedBills = InMemoryDeletedBillRepository()
 
@@ -169,6 +172,162 @@ class GroupDetailBalancesViewModelTest {
         assertNull(state.header.myBalance)
         assertFalse(state.header.isEveryoneSettled)
     }
+
+    @Test
+    fun `GIVEN the copy not whole and no bill yet WHEN Despesas opens THEN skeletons instead of no bills yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.EXPENSES))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            assertTrue(state.isLoadingBills)
+            assertFalse(state.isEmpty)
+            assertFalse(state.isWaitingForInternet)
+        }
+
+    @Test
+    fun `GIVEN the account copy not whole and no bill yet WHEN Saldos opens THEN skeletons instead of nobody owes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoadingBalances)
+            assertFalse(state.isBalancesEmpty)
+        }
+
+    @Test
+    fun `GIVEN the account copy not whole and every bill paid back WHEN Saldos opens THEN no everyone settled card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        "hotel",
+                        paidBy = BRUNO,
+                        amountMinor = 6_000,
+                        PIERRE,
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        id = "pay-1",
+                        from = PIERRE,
+                        to = BRUNO,
+                        amountMinor = 3_000,
+                    ),
+                ),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.header.isEveryoneSettled)
+            assertFalse(state.isLoadingBalances)
+        }
+
+    @Test
+    fun `GIVEN the account copy not whole and every bill paid back WHEN the group opens THEN no own balance yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        "hotel",
+                        paidBy = BRUNO,
+                        amountMinor = 6_000,
+                        PIERRE,
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        id = "pay-1",
+                        from = PIERRE,
+                        to = BRUNO,
+                        amountMinor = 3_000,
+                    ),
+                ),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.header.myBalance)
+        }
+
+    @Test
+    fun `GIVEN every bill paid back while the copy comes WHEN the copy becomes whole THEN everyone settled shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        "hotel",
+                        paidBy = BRUNO,
+                        amountMinor = 6_000,
+                        PIERRE,
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        id = "pay-1",
+                        from = PIERRE,
+                        to = BRUNO,
+                        amountMinor = 3_000,
+                    ),
+                ),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertTrue(viewModel.uiState.value.header.isEveryoneSettled)
+        }
+
+    @Test
+    fun `GIVEN the copy waits for the internet WHEN Despesas opens with no bill THEN skeletons say it waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline.copy(isWaitingForInternet = true))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isWaitingForInternet)
+            assertTrue(state.isLoadingBalances)
+            assertFalse(state.isBalancesEmpty)
+        }
+
+    @Test
+    fun `GIVEN no bill while the copy comes WHEN the copy becomes whole THEN says nobody owes anything yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline)
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isBalancesEmpty)
+            assertFalse(state.isLoadingBalances)
+            assertFalse(state.isWaitingForInternet)
+        }
 
     @Test
     fun `GIVEN this device user owes Bruno WHEN Saldos opens THEN shows the pair with you owe`() =
@@ -906,6 +1065,12 @@ class GroupDetailBalancesViewModelTest {
         updatedAt = 0L,
     )
 
+    private val downloadingOnline = FirstDownloadProgress(
+        arrivedGroupCount = 1,
+        groupCount = 3,
+        isWaitingForInternet = false,
+    )
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -914,7 +1079,9 @@ class GroupDetailBalancesViewModelTest {
         exitError: Throwable? = null,
         pinnedGroupIds: Set<String> = emptySet(),
         routesBelow: List<Route> = listOf(Route.Groups),
+        downloading: FirstDownloadProgress? = null,
     ) {
+        firstDownload.value = downloading
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also { it.exitError = exitError }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
@@ -942,6 +1109,7 @@ class GroupDetailBalancesViewModelTest {
                 saveTerm = SaveCategoryTermUseCase(terms) { nowMillis },
             ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository(initialStatus = AccountStatus.LocalOnly)),
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

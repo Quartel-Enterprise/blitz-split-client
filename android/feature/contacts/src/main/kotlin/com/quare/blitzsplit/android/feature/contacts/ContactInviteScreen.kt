@@ -58,6 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
+import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.component.ShimmerCardSkeleton
+import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
+import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.platform.copyLink
@@ -70,6 +74,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInvit
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val GROUP_CHIP_SKELETONS = 3
 private val dialogWidth = 560.dp
 private val qrMaxSize = 200.dp
 
@@ -245,7 +250,22 @@ private fun GroupChipsSection(
     state: ContactInviteUiState,
     onEvent: (ContactInviteUiEvent) -> Unit,
 ) {
-    if (!state.isLoaded) return
+    if (!state.isLoaded) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            ShimmerBox {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    repeat(GROUP_CHIP_SKELETONS) {
+                        ShimmerLine(
+                            width = 96.dp,
+                            height = 32.dp,
+                        )
+                    }
+                }
+            }
+            if (state.isWaitingForInternet) WaitingForInternetMessage()
+        }
+        return
+    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.contacts_invite_group_label),
@@ -301,7 +321,17 @@ private fun GroupChipsSection(
 // Why: the QR with the group's name and the link, "O link chega quando o grupo sincronizar" until it has one.
 @Composable
 private fun LinkCard(state: ContactInviteUiState) {
-    val group = state.selectedGroup ?: return
+    val group = state.selectedGroup ?: run {
+        if (!state.isLoaded) {
+            ShimmerBox {
+                ShimmerCardSkeleton(
+                    height = 300.dp,
+                    shape = RoundedCornerShape(28.dp),
+                )
+            }
+        }
+        return
+    }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),

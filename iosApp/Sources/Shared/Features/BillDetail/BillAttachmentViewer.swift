@@ -71,7 +71,7 @@ struct BillAttachmentViewer: View {
         .padding(.top, 8)
         #endif
         .overlay {
-            Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount))
+            Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0))
                 .font(.headline)
                 .lineLimit(1)
                 .accessibilityAddTraits(.isHeader)
@@ -98,7 +98,7 @@ struct BillAttachmentViewer: View {
                 defaultFilename: file.fileName,
             ) { _ in }
             #else
-            ShareLink(item: file, preview: SharePreview(BillCopy.viewerTitle(attachment, photoCount: state.photoCount))) {
+            ShareLink(item: file, preview: SharePreview(BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0))) {
                 label
             }
             #endif
@@ -126,7 +126,7 @@ struct BillAttachmentViewer: View {
         }
         #else
         TabView(selection: model.viewedAttachmentId) {
-            ForEach(state.attachments, id: \.id) { attachment in
+            ForEach(state.loadedAttachments ?? [], id: \.id) { attachment in
                 page(attachment)
                     .tag(attachment.id)
             }
@@ -153,7 +153,7 @@ struct BillAttachmentViewer: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount)))
+        .accessibilityLabel(Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0)))
         .accessibilityAddTraits(.isImage)
     }
 
@@ -182,7 +182,7 @@ struct BillAttachmentViewer: View {
     private func hint(_ attachment: BillAttachmentTile) -> String? {
         var parts: [String] = []
         if attachment.canRemove { parts.append(String(localized: "Anyone in the group can remove it.")) }
-        if state.attachments.count > 1 {
+        if (state.loadedAttachments?.count ?? 0) > 1 {
             #if os(macOS)
             parts.append(String(localized: "Use the arrow keys to see the next one."))
             #else
@@ -219,7 +219,8 @@ struct BillAttachmentViewer: View {
     private func targetId(by offset: Int) -> String? {
         guard let index = state.viewedAttachmentIndex?.intValue else { return nil }
         let target = index + offset
-        return state.attachments.indices.contains(target) ? state.attachments[target].id : nil
+        let attachments = state.loadedAttachments ?? []
+        return attachments.indices.contains(target) ? attachments[target].id : nil
     }
     #endif
 }

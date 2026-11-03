@@ -118,8 +118,13 @@ struct GroupsView: View {
                     }
                     #endif
             } else {
-                // Nothing until the groups are read, so the empty state never flashes before the list
-                Color.clear
+                // The groups not read yet (or, on the Mac, a first download before its first group): their shape
+                // shimmers, so the empty state never flashes before the list
+                ShimmerScreen(isWaitingForInternet: state.firstDownload?.isWaitingForInternet == true, isAboutGroups: true) {
+                    ShimmerCard()
+                        .background(Palette.card, in: .rect(cornerRadius: 28))
+                    ShimmerList(count: 4, leading: .badge)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

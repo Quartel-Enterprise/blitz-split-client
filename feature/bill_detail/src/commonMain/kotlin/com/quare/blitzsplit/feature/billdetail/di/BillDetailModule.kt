@@ -27,6 +27,7 @@ val billDetailModule = module {
             loadBillAttachmentImage = get(),
             loadBillAttachmentUrls = get(),
             loadBillHistory = get(),
+            observeFirstDownload = get(),
             observeGroup = get(),
             observeExpense = get(),
             observeExpenses = get(),

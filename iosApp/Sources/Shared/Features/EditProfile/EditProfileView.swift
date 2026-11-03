@@ -124,10 +124,18 @@ private struct EditProfileAvatarSections: View {
     var body: some View {
         let state = model.state
         Section {
-            PhotoEditor(model: model)
+            if state.isLoaded {
+                PhotoEditor(model: model)
+            } else {
+                // The saved profile not read yet: never "?" on the default color
+                ShimmerCircle(size: 96)
+                    .shimmering()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
         }
         // Why: the color only shows behind the initial, so it is offered while there is no photo.
-        if state.showsAvatarColors {
+        if state.isLoaded, state.showsAvatarColors {
             Section {
                 HStack {
                     ForEach(state.avatarColors, id: \.self) { color in
@@ -154,7 +162,21 @@ private struct EditProfileNameSections: View {
     let model: EditProfileModel
     let isInline: Bool
 
+    @ViewBuilder
     var body: some View {
+        if model.state.isLoaded {
+            sections
+        } else {
+            // The saved name not read yet: no empty field that the name would then replace under what was typed
+            Section {
+                ShimmerBlock(height: 22, cornerRadius: 6)
+                    .shimmering()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var sections: some View {
         let state = model.state
         Section {
             TextField(

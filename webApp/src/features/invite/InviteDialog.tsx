@@ -4,6 +4,8 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { LoadingDialog } from '@/components/LoadingDialog'
+import { QrCardSkeleton } from '@/components/PageSkeletons'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -39,7 +41,14 @@ export function InviteDialog({ route }: { route: JsRoute }) {
       toast(t('invite_changeLinkFailed'))
     }
   })
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) {
+    return (
+      <LoadingDialog isDesktop={isDesktop} onClose={() => presenter.close()} className="sm:max-w-[480px]">
+        <QrCardSkeleton />
+      </LoadingDialog>
+    )
+  }
 
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.close()

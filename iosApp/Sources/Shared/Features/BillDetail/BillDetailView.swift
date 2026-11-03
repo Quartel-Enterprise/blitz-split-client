@@ -128,7 +128,19 @@ struct BillDetailView: View {
                 PhoneBillDetail(model: model)
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The bill not read yet: its title, amount and split shimmer in place
+                ShimmerScreen {
+                    HStack(spacing: 12) {
+                        ShimmerBlock(width: 40, height: 40, cornerRadius: 12)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ShimmerLine(width: 120, height: 10)
+                            ShimmerLine(width: 200, height: 20)
+                        }
+                    }
+                    ShimmerLine(width: 140, height: 28)
+                    ShimmerList(count: 4)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         #if os(iOS)
@@ -475,9 +487,12 @@ private struct PhoneBillDetail: View {
                 BillNoComments()
                     .padding(.vertical, 4)
             }
-            ForEach(state.threads, id: \.comment.id) { thread in
+            if state.threads.isLoading {
+                BillTalkPlaceholder()
+            }
+            ForEach(state.loadedThreads ?? [], id: \.comment.id) { thread in
                 // The section's last row draws no line under the card
-                let isLastThread = thread.comment.id == state.threads.last?.comment.id
+                let isLastThread = thread.comment.id == state.loadedThreads?.last?.comment.id
                 commentRow(thread.comment, isReply: false, endsThread: thread.replies.isEmpty && !isLastThread)
                 ForEach(Array(thread.replies.enumerated()), id: \.element.id) { index, reply in
                     commentRow(reply, isReply: true, endsThread: index == thread.replies.count - 1 && !isLastThread)
@@ -486,9 +501,15 @@ private struct PhoneBillDetail: View {
         } header: {
             Text(verbatim: BillCopy.commentsHeader(state.commentCount))
         }
-        if !state.history.isEmpty {
+        if state.history.isLoading {
             Section {
-                ForEach(state.history, id: \.dayStartMillis) { day in
+                BillTalkPlaceholder()
+            } header: {
+                Text("History", comment: "The bill's history section")
+            }
+        } else if let history = state.loadedHistory, !history.isEmpty {
+            Section {
+                ForEach(history, id: \.dayStartMillis) { day in
                     ForEach(Array(day.entries.enumerated()), id: \.element.id) { index, entry in
                         // The day heads its first line, in the same row, so it takes no row's height of its own
                         VStack(alignment: .leading, spacing: 8) {
@@ -579,8 +600,8 @@ private struct MacBillDetail: View {
                 Picker(selection: $tab) {
                     Text("Bill", comment: "The narrow Mac sheet's segment with the bill itself").tag(MacBillTab.bill)
                     Text(verbatim: BillCopy.commentsHeader(state.commentCount)).tag(MacBillTab.comments)
-                    // History hides while there is none, as everywhere else
-                    if !state.history.isEmpty {
+                    // History hides while there is none, as everywhere else (it shimmers while it loads)
+                    if state.showsHistory {
                         Text("History", comment: "The bill's history section").tag(MacBillTab.history)
                     }
                 } label: {
@@ -624,7 +645,7 @@ private struct MacBillDetail: View {
 
     @ViewBuilder
     private var narrowContent: some View {
-        switch tab == .history && state.history.isEmpty ? MacBillTab.bill : tab {
+        switch tab == .history && !state.showsHistory ? MacBillTab.bill : tab {
         case .bill:
             ScrollView {
                 billContent
@@ -768,7 +789,10 @@ private struct MacBillDetail: View {
             if state.showsNoComments {
                 BillNoComments()
             }
-            ForEach(state.threads, id: \.comment.id) { thread in
+            if state.threads.isLoading {
+                BillTalkPlaceholder()
+            }
+            ForEach(state.loadedThreads ?? [], id: \.comment.id) { thread in
                 VStack(alignment: .leading, spacing: 2) {
                     commentRow(thread.comment, isReply: false)
                     ForEach(thread.replies, id: \.id) { reply in
@@ -793,13 +817,16 @@ private struct MacBillDetail: View {
 
     @ViewBuilder
     private var history: some View {
-        if !state.history.isEmpty {
+        if state.showsHistory {
             VStack(alignment: .leading, spacing: 10) {
                 if !isNarrow {
                     Text("History", comment: "The bill's history section")
                         .font(.headline)
                 }
-                ForEach(state.history, id: \.dayStartMillis) { day in
+                if state.history.isLoading {
+                    BillTalkPlaceholder()
+                }
+                ForEach(state.loadedHistory ?? [], id: \.dayStartMillis) { day in
                     Text(verbatim: BillCopy.historyDay(day))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)

@@ -125,7 +125,13 @@ struct GlobalBalancesView: View {
                 }
                 .background(Palette.groupedBackground.ignoresSafeArea())
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The people and the totals shimmer until both are read, never "All settled" nor R$ 0,00 before them
+                ShimmerScreen(isWaitingForInternet: model?.state.isWaitingForInternet == true) {
+                    ShimmerCard()
+                        .background(Palette.card, in: .rect(cornerRadius: 26))
+                    ShimmerList(count: 4)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .measuringScreenLayout($layout)
@@ -145,18 +151,13 @@ struct GlobalBalancesView: View {
             }
             #endif
             ToolbarItem(placement: .primaryAction) {
-                Button {
+                ProfileToolbarButton(
+                    initial: model?.state.avatarInitial ?? "",
+                    color: model?.state.avatarColor ?? .blue,
+                    photoUrl: model?.state.photoUrl,
+                ) {
                     model?.send(GlobalBalancesUiEventOnProfileClicked.shared)
-                } label: {
-                    AvatarPhoto(
-                        initial: model?.state.avatarInitial ?? "",
-                        color: model?.state.avatarColor ?? .blue,
-                        photoUrl: model?.state.photoUrl,
-                        size: 32,
-                        font: .subheadline.weight(.semibold),
-                    )
                 }
-                .accessibilityLabel("Profile")
             }
             .prefersVerticalBar()
         }
@@ -226,7 +227,7 @@ private struct BalancesSummary: View {
                 Text("Overall balance")
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)
-                ForEach(state.totals, id: \.currency) { total in
+                ForEach(state.totals.loaded(as: [PeopleTotal].self) ?? [], id: \.currency) { total in
                     Text(verbatim: total.currency.formatSigned(total.netMinor))
                         .font(.system(size: amountSize, weight: .bold))
                         .monospacedDigit()
@@ -307,9 +308,9 @@ private struct GlobalBalancesList: View {
             }
             #endif
             // Beside the list, the empty state takes the detail's column instead
-            if let emptyState = state.emptyState, !showsDetail {
+            if let emptyState = state.emptyState, let total = state.emptyStateTotal, !showsDetail {
                 Section {
-                    EmptyBalances(model: model, emptyState: emptyState, total: state.emptyStateTotal)
+                    EmptyBalances(model: model, emptyState: emptyState, total: total)
                 }
                 .listRowBackground(Color.clear)
             }
@@ -512,8 +513,8 @@ private struct PersonInspector: View {
 
     var body: some View {
         ScrollView {
-            if let emptyState = model.state.emptyState {
-                EmptyBalances(model: model, emptyState: emptyState, total: model.state.emptyStateTotal)
+            if let emptyState = model.state.emptyState, let total = model.state.emptyStateTotal {
+                EmptyBalances(model: model, emptyState: emptyState, total: total)
                     .padding(.top, 40)
             } else if let person = model.state.selectedPerson {
                 PersonDetail(model: model, row: person)
@@ -684,7 +685,8 @@ enum GlobalBalancesCopy {
 
     /// "Overall balance +R$ 186,40 · already offset across groups", under the Mac's title.
     static func macSubtitle(_ state: GlobalBalancesUiState) -> String {
-        let net = state.primaryTotal.currency.formatSigned(state.primaryTotal.netMinor)
+        guard let total = state.primaryTotal.loaded(as: PeopleTotal.self) else { return "" }
+        let net = total.currency.formatSigned(total.netMinor)
         return state.emptyState == nil
             ? String(localized: "Overall balance \(net) · already offset across groups")
             : String(localized: "Overall balance \(net) · adding up every group")

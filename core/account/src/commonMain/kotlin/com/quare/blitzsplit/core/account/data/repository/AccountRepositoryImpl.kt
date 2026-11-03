@@ -244,6 +244,10 @@ class AccountRepositoryImpl(
         local.update { account -> account.copy(signOutWhenSynced = isScheduled) }
     }
 
+    override suspend fun updateAwaitsFullSync(awaits: Boolean) {
+        local.update { account -> account.copy(awaitsFullSync = awaits) }
+    }
+
     // Why: the anonymous user stays on the server, where its recovery code still brings it back.
     override suspend fun signOut() {
         remote.signOut()
@@ -388,6 +392,7 @@ class AccountRepositoryImpl(
             ?: RecoveryCodePrompt.NOT_DUE,
         email = account.email,
         signOutWhenSynced = account.signOutWhenSynced,
+        awaitsFullSync = account.awaitsFullSync,
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
@@ -404,7 +409,8 @@ class AccountRepositoryImpl(
      * Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good. A
      * session that ends on its own, or switches to another user, drops a scheduled sign out, which was for
      * that account: the changes it waited on stay on the device. Dropped in the same write as the switch,
-     * so no sync can sign out the new user in between.
+     * so no sync can sign out the new user in between. A switch to another user replaces the device's copy with
+     * theirs, which only a sync completes, so it awaits one in that same write.
      */
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
         user == null -> copy(
@@ -413,6 +419,7 @@ class AccountRepositoryImpl(
             pendingLinkProvider = null,
             email = null,
             signOutWhenSynced = false,
+            awaitsFullSync = false,
         )
 
         user.socialProvider != null -> copy(
@@ -423,6 +430,7 @@ class AccountRepositoryImpl(
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
+            awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
         )
 
         else -> copy(
@@ -439,6 +447,7 @@ class AccountRepositoryImpl(
             },
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
+            awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
         )
     }
 

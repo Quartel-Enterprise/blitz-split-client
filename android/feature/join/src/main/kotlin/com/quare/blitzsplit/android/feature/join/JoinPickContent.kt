@@ -45,6 +45,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -52,6 +53,7 @@ import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
 
+private const val PICK_SKELETON_ROWS = 5
 private val maxContentWidth = 560.dp
 
 /*
@@ -159,16 +161,16 @@ private fun BackButton(
     }
 }
 
+// Why: the names in the list's shape while the group's members are read, never a spinner over nothing.
 @Composable
 private fun LoadingBox() {
-    Box(
+    ShimmerListSkeleton(
+        count = PICK_SKELETON_ROWS,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 160.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
+            .padding(16.dp),
+        trailingWidth = null,
+    )
 }
 
 @Composable

@@ -4,6 +4,7 @@ import type { KeyboardEvent, Ref } from 'react'
 import { Avatar } from '@/components/common'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
@@ -24,11 +25,12 @@ export function BillComments({ state, onReply }: { state: CommentsState; onReply
     <section aria-labelledby="bill-comments-title" className="flex flex-col">
       <h3 id="bill-comments-title" className="flex justify-between text-sm font-medium">
         <span>{t('billDetail_comments')}</span>
-        {state.commentCount > 0 && <span className="font-normal text-muted-foreground tabular-nums">{state.commentCount}</span>}
+        {state.commentCount != null && state.commentCount > 0 && <span className="font-normal text-muted-foreground tabular-nums">{state.commentCount}</span>}
       </h3>
       {state.showsNoComments && <p className="mt-1 text-[13px] text-muted-foreground">{t('billDetail_commentsEmpty')}</p>}
+      {!state.threads && <CommentsSkeleton />}
       <ul className="flex flex-col">
-        {state.threads.map((thread) => (
+        {state.threads?.map((thread) => (
           <li key={thread.comment.id} className="mt-1.5 border-t first:mt-0 first:border-t-0">
             <Comment row={thread.comment} onReply={onReply} />
             {thread.replies.length > 0 && (
@@ -44,6 +46,23 @@ export function BillComments({ state, onReply }: { state: CommentsState; onReply
         ))}
       </ul>
     </section>
+  )
+}
+
+/** Two comments' places while they are read: the face, the name and a line of text each. */
+function CommentsSkeleton() {
+  return (
+    <LoadingRegion className="flex flex-col gap-4 pt-2">
+      {[0, 1].map((index) => (
+        <span key={index} className="flex gap-2.5">
+          <SkeletonCircle className="size-7" />
+          <span className="flex flex-1 flex-col gap-2 pt-1">
+            <SkeletonLine className="w-1/4" />
+            <SkeletonLine className={index === 0 ? 'w-4/5' : 'w-3/5'} />
+          </span>
+        </span>
+      ))}
+    </LoadingRegion>
   )
 }
 

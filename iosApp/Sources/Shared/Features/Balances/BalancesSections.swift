@@ -16,6 +16,9 @@ struct BalancesSections: View {
     }
 
     var body: some View {
+        if state.isLoadingBalances {
+            GroupLoadingRows(isWaitingForInternet: state.isWaitingForInternet, leading: .circle)
+        }
         if state.isBalancesEmpty {
             Section {
                 ContentUnavailableView(

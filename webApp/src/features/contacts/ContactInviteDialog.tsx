@@ -1,10 +1,13 @@
-import { Check, Copy, Loader2, Plus, Share2, WifiOff } from 'lucide-react'
+import { Check, Copy, Plus, Share2, WifiOff } from 'lucide-react'
 import { ContactInvitePresenter, type JsContactInviteAction, type JsContactInviteState, type JsRoute } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { LoadingDialog } from '@/components/LoadingDialog'
+import { QrCardSkeleton } from '@/components/PageSkeletons'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { QrCode } from '@/features/invite/InviteDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -33,7 +36,14 @@ export function ContactInviteDialog({ route }: { route: JsRoute }) {
       : t('invite_shareMessage', { group, link: action.link })
     shareOrCopy(text, action.link)
   })
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) {
+    return (
+      <LoadingDialog isDesktop={isDesktop} isWaitingForInternet={state.isWaitingForInternet} onClose={() => presenter.close()} className="sm:max-w-[480px]">
+        <QrCardSkeleton hasChips />
+      </LoadingDialog>
+    )
+  }
 
   const hasLink = !state.isLinkPending && state.link != null
   return (
@@ -109,12 +119,7 @@ function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInviteP
         <>
           <div className="flex items-center gap-4">
             {state.isLinkPending ? (
-              <span
-                aria-hidden
-                className={cn('flex shrink-0 items-center justify-center rounded-xl border border-dashed text-muted-foreground', isDesktop ? 'size-34' : 'size-28')}
-              >
-                <Loader2 className="size-5 animate-spin" />
-              </span>
+              <Skeleton className={cn('rounded-xl', isDesktop ? 'size-34' : 'size-28')} />
             ) : (
               <QrCode size={state.qrSize} modules={state.qrModules} className={cn('shrink-0 border', isDesktop ? 'size-34' : 'size-28')} />
             )}

@@ -51,6 +51,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import software.quare.loadable.valueOrNull
 
 private val segmentOuterCorner = 20.dp
 private val segmentInnerCorner = 6.dp
@@ -62,7 +63,8 @@ internal fun PaymentKeysSection(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    val count = state.paymentKeys.size + 1
+    val keys = state.paymentKeys.valueOrNull()
+    val count = (keys?.size ?: 0) + 1
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -79,8 +81,12 @@ internal fun PaymentKeysSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        if (keys == null || !state.canAddPaymentKey) {
+            PaymentKeysSkeleton()
+            return@Column
+        }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            state.paymentKeys.forEachIndexed { index, key ->
+            keys.forEachIndexed { index, key ->
                 PaymentKeyItemRow(
                     key = key,
                     shape = segmentShapeOf(

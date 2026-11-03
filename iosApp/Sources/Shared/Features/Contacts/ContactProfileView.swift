@@ -98,7 +98,19 @@ struct ContactProfileView: View {
             if let model, model.state.isLoaded, let contact = model.state.contact {
                 ContactProfileContent(model: model, contact: contact, isInPane: isInPane)
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                // The person not read yet: their face, the net and the groups shimmer in place
+                ShimmerScreen {
+                    VStack(spacing: 10) {
+                        ShimmerCircle(size: 88)
+                        ShimmerLine(width: 160, height: 20)
+                        ShimmerLine(width: 100, height: 12)
+                    }
+                    .frame(maxWidth: .infinity)
+                    ShimmerCard()
+                        .background(Palette.card, in: .rect(cornerRadius: 24))
+                    ShimmerList(count: 3, leading: .badge)
+                }
+                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
         .navigationTitle(Text(verbatim: model?.state.contact?.name ?? ""))
@@ -170,7 +182,7 @@ private struct ContactProfileMenu: View {
                 } label: {
                     Label {
                         Text(mergeTitle)
-                        if !state.isOnline {
+                        if !state.isOnline || state.isMergeStatusUnavailable {
                             Text("Needs internet")
                         }
                     } icon: {
@@ -240,10 +252,13 @@ private struct ContactProfileContent: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                if state.showsGuestCard {
+                if state.isMergeStatusLoading {
+                    // Whether a merge waits for them only the server knows: never Merge before it answered
+                    GuestCardPlaceholder()
+                } else if state.showsGuestCard || state.isMergeStatusUnavailable {
                     GuestCard(model: model, contact: contact)
                 }
-                if let pending = state.pendingMerge, state.showsPendingMerge {
+                if let pending = state.pendingMerge.loaded(as: GuestMerge.self), state.showsPendingMerge {
                     PendingMergeCard(model: model, contact: contact, pending: pending)
                 }
                 NetCard(model: model, contact: contact)
@@ -323,8 +338,15 @@ private struct GuestCard: View {
         Button {
             model.send(ContactProfileUiEventOnMergeClicked.shared)
         } label: {
-            Text("Merge with an account")
-                .frame(maxWidth: .infinity)
+            VStack(spacing: 0) {
+                Text("Merge with an account")
+                // Offline, or the server never said whether a merge waits: no status is claimed
+                if !model.state.isOnline || model.state.isMergeStatusUnavailable {
+                    Text("Needs internet")
+                        .font(.caption)
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)
         .disabled(!model.state.canMerge)
@@ -335,6 +357,24 @@ private struct GuestCard: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+    }
+}
+
+/// The guest card's place while the server says whether a merge waits for them.
+private struct GuestCardPlaceholder: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ShimmerLine(width: 220, height: 16)
+            ShimmerLine(height: 10)
+            ShimmerLine(width: 180, height: 10)
+            HStack(spacing: 10) {
+                ShimmerBlock(height: 44, cornerRadius: 22)
+                ShimmerBlock(height: 44, cornerRadius: 22)
+            }
+        }
+        .shimmering()
+        .padding(16)
+        .background(Palette.card, in: .rect(cornerRadius: 24))
     }
 }
 

@@ -43,6 +43,7 @@ kotlin {
             baseName = "Shared"
             isStatic = true
             exportedToApple.forEach { export(it) }
+            export(libs.quare.loadable)
         }
     }
 
@@ -55,6 +56,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             exportedToApple.forEach { api(it) }
+            api(libs.quare.loadable)
             implementation(projects.core.utils)
             implementation(projects.core.account)
             implementation(projects.core.profile)

@@ -3,8 +3,15 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import software.quare.loadable.Loadable
+import software.quare.loadable.isLoaded
 
 data class ProfileUiState(
+    /*
+     * Why: the profile, the account, the theme and what waits to go up are read apart; until each answered, the
+     * screen shimmers rather than draw "Sem conta" with Conectar, no name or the default theme.
+     */
+    val isLoaded: Boolean,
     val displayName: String,
     val avatarColor: AvatarColor,
     // Why: a photo picked offline is a data URI until its upload.
@@ -21,12 +28,18 @@ data class ProfileUiState(
     val isOnline: Boolean,
     val syncStatus: ProfileSyncStatus?,
     val pendingChanges: List<PendingChange>,
-    // Why: Pix first, each method's default first, as the settle screen offers them.
-    val paymentKeys: List<PaymentKeyItem>,
+    /*
+     * Why: Pix first, each method's default first, as the settle screen offers them. Loading until read and while a
+     * restored account's copy is not whole, since its keys only come with that sync: never "no key" before it.
+     */
+    val paymentKeys: Loadable<List<PaymentKeyItem>>,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
-    // Why: "3 ativas" under "Notificações"; the toggles themselves live on their own screen or section.
-    val activeNotificationCount: Int,
+    /*
+     * Why: "3 ativas" under "Notificações"; the toggles themselves live on their own screen or section. Loading like
+     * the keys, since a restored account's choices only come with its first full sync.
+     */
+    val activeNotificationCount: Loadable<Int>,
     val dialog: ProfileDialog?,
     // Why: "Apagar e sair" only unlocks once the person says the recovery code is kept.
     val hasConfirmedCodeSaved: Boolean,
@@ -53,7 +66,7 @@ data class ProfileUiState(
 
     // Why: only an anonymous user that synced has a code; a local only one has nothing to recover with.
     val showsRecoveryCodeRow: Boolean
-        get() = !hasAccount && hasRecoveryCode
+        get() = isLoaded && !hasAccount && hasRecoveryCode
 
     val showsOfflineNotice: Boolean
         get() = !isOnline
@@ -75,18 +88,21 @@ data class ProfileUiState(
         get() = syncStatus == ProfileSyncStatus.FAILED
 
     val areAccountButtonsEnabled: Boolean
-        get() = isOnline && connectingProvider == null && !isSigningOut
+        get() = isLoaded && isOnline && connectingProvider == null && !isSigningOut
 
     // Why: "Conectar" and "Conectar Google ou Apple em vez disso" only open the provider buttons, which need the internet.
     val canConnect: Boolean
-        get() = isOnline && !isSigningOut
+        get() = isLoaded && isOnline && !isSigningOut
 
     val showsConnectButtons: Boolean
-        get() = !hasAccount && isConnectExpanded
+        get() = isLoaded && !hasAccount && isConnectExpanded
 
-    // Why: a link half done would land on a device whose session and profile are already gone.
+    /*
+     * Why: a link half done would land on a device whose session and profile are already gone, and before the read
+     * the dialog would be picked from no account and no pending change.
+     */
     val canSignOut: Boolean
-        get() = !isSigningOut && !isSignOutScheduled && connectingProvider == null && !isUnlinking
+        get() = isLoaded && !isSigningOut && !isSignOutScheduled && connectingProvider == null && !isUnlinking
 
     // Why: the dialog opens offline too, to say why "Desconectar" waits for the internet.
     val canUnlink: Boolean
@@ -97,7 +113,11 @@ data class ProfileUiState(
      * profile only lives here and "Apagar perfil e sair" already erases it.
      */
     val showsDeleteAccount: Boolean
-        get() = hasAccount
+        get() = isLoaded && hasAccount
+
+    // Why: a key added before the account's own came down could take the default the server already gave another.
+    val canAddPaymentKey: Boolean
+        get() = paymentKeys.isLoaded()
 
     val canErase: Boolean
         get() = hasConfirmedCodeSaved && !isSigningOut

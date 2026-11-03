@@ -2,11 +2,13 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 /*
  * Why: "Sincronizando… 3 de 7 grupos" (5.1d) while a new device's first download brings the groups down one by one;
- * groupCount is null until the server said how many are coming.
+ * groupCount is null until the server said how many are coming, and after a relaunch midway.
  */
 data class DownloadProgress(
     val arrivedGroupCount: Int,
     val groupCount: Int?,
+    // Why: "Sem internet. Seus grupos aparecem quando reconectar.": offline nothing comes, so nothing is counted.
+    val isWaitingForInternet: Boolean,
 ) {
     // Why: the bar's share; null draws a bar that runs, until the count is known.
     val fraction: Float?

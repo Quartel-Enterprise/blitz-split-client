@@ -39,9 +39,11 @@ import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -66,6 +68,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -81,6 +85,7 @@ class ProfileViewModelTest {
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
+    private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var navigator: BackStackNavigator
@@ -2321,7 +2326,7 @@ class ProfileViewModelTest {
                         false,
                     ),
                 ),
-                state.paymentKeys,
+                state.paymentKeys.valueOrNull(),
             )
         }
 
@@ -2339,7 +2344,7 @@ class ProfileViewModelTest {
                 PaymentKeyItem("phone", PaymentKeyType.PHONE, PaymentKeyFormat.PHONE, "+55 (11) 9••••-5678", false),
                 PaymentKeyItem("random", PaymentKeyType.RANDOM, PaymentKeyFormat.RANDOM, "7d9f3c2a…4d1a37", false),
             ),
-            state.paymentKeys,
+            state.paymentKeys.valueOrNull(),
         )
     }
 
@@ -2356,7 +2361,7 @@ class ProfileViewModelTest {
             listOf(
                 PaymentKeyItem("taproot", PaymentKeyType.ONCHAIN, PaymentKeyFormat.TAPROOT, "bc1p5d7r…sxg3297", false),
             ),
-            state.paymentKeys,
+            state.paymentKeys.valueOrNull(),
         )
     }
 
@@ -2373,7 +2378,7 @@ class ProfileViewModelTest {
             listOf(
                 PaymentKeyItem("lnurl", PaymentKeyType.LIGHTNING, PaymentKeyFormat.LNURL, "lnurl1dp68…fq5fns", false),
             ),
-            state.paymentKeys,
+            state.paymentKeys.valueOrNull(),
         )
     }
 
@@ -2386,7 +2391,7 @@ class ProfileViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(emptyList(), state.paymentKeys)
+        assertEquals(emptyList(), state.paymentKeys.valueOrNull())
     }
 
     @Test
@@ -2399,7 +2404,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf("email"), state.paymentKeys.map { it.id })
+            assertEquals(listOf("email"), state.paymentKeys.valueOrNull()?.map { it.id })
         }
 
     @Test
@@ -2414,8 +2419,99 @@ class ProfileViewModelTest {
         assertEquals(
             listOf("cpf", "email"),
             viewModel.uiState.value.paymentKeys
-                .map { it.id },
+                .valueOrNull()
+                ?.map { it.id },
         )
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN the profile opens THEN offers neither sign out nor Excluir conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                theme = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.showsDeleteAccount)
+            assertFalse(state.canSignOut)
+        }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN it is read THEN the profile is loaded with the account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                theme = null,
+            )
+
+            // When
+            storedTheme.value = ThemePreference.DARK
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoaded)
+            assertTrue(state.showsDeleteAccount)
+            assertEquals(ThemePreference.DARK, state.theme)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN the profile opens THEN its keys and notification count load`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                keys = listOf(cpfKey),
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.paymentKeys)
+            assertEquals(Loadable.Loading, state.activeNotificationCount)
+            assertFalse(state.canAddPaymentKey)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN its first full sync ends THEN lists its keys and count`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                keys = listOf(cpfKey),
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf("cpf"), state.paymentKeys.valueOrNull()?.map { it.id })
+            assertEquals(3, state.activeNotificationCount.valueOrNull())
+        }
+
+    @Test
+    fun `GIVEN the keys still loading WHEN adding a Pix key THEN stays on the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            firstDownload = pendingDownload,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.PIX))
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -3287,7 +3383,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(3, state.activeNotificationCount)
+            assertEquals(3, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
@@ -3300,7 +3396,11 @@ class ProfileViewModelTest {
             notificationPreferences.updatePreference(NotificationType.INVITES, isEnabled = true)
 
             // Then
-            assertEquals(4, viewModel.uiState.value.activeNotificationCount)
+            assertEquals(
+                4,
+                viewModel.uiState.value.activeNotificationCount
+                    .valueOrNull(),
+            )
         }
 
     @Test
@@ -3313,7 +3413,11 @@ class ProfileViewModelTest {
             notificationPreferences.updatePreference(NotificationType.SETTLE_REMINDERS, isEnabled = false)
 
             // Then
-            assertEquals(2, viewModel.uiState.value.activeNotificationCount)
+            assertEquals(
+                2,
+                viewModel.uiState.value.activeNotificationCount
+                    .valueOrNull(),
+            )
         }
 
     @Test
@@ -3326,7 +3430,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(0, state.activeNotificationCount)
+            assertEquals(0, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
@@ -3339,7 +3443,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(4, state.activeNotificationCount)
+            assertEquals(4, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
@@ -3621,6 +3725,12 @@ class ProfileViewModelTest {
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
 
+    private val pendingDownload = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
+
     private val recoveryCode = "K7QM4XPA9TRE"
 
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
@@ -3653,6 +3763,7 @@ class ProfileViewModelTest {
         unlinkError: Throwable? = null,
         unlinkHangs: Boolean = false,
         exportJson: String = "{}",
+        firstDownload: FirstDownloadProgress? = null,
     ) {
         syncRetries = 0
         signOutCalls = 0
@@ -3677,6 +3788,7 @@ class ProfileViewModelTest {
             it.hasPendingChanges.value = hasPendingPreferences
         }
         isOnline = MutableStateFlow(online)
+        this@ProfileViewModelTest.firstDownload = MutableStateFlow(firstDownload)
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
@@ -3722,6 +3834,7 @@ class ProfileViewModelTest {
             observePendingNotificationPreferenceChanges = ObservePendingNotificationPreferenceChanges {
                 notificationPreferences.hasPendingChanges
             },
+            observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

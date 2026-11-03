@@ -1,10 +1,11 @@
-import { Link2, Link2Off, Loader2, ScanQrCode, WifiOff, X } from 'lucide-react'
+import { CircleAlert, Link2, Link2Off, Loader2, ScanQrCode, WifiOff, X } from 'lucide-react'
 import { JoinInvitePresenter, type JsJoinInviteState, type JsJoinMember, type JsRoute } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { locale, t } from '@/i18n'
 
@@ -30,7 +31,7 @@ export function JoinInviteScreen({ route }: { route: JsRoute }) {
         </Button>
       </header>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 pb-8 sm:px-8">
-        {state.status === 'loading' && <Loader2 aria-hidden className="mt-40 size-8 animate-spin self-center text-muted-foreground" />}
+        {state.status === 'loading' && <InviteSkeleton />}
         {state.status === 'ready' && <Invite presenter={presenter} state={state} />}
         {state.status === 'invalid' && (
           <Problem icon={<Link2Off className="size-10" />} title={t('join_invalidTitle')} message={t(state.isPersonal ? 'join_invalidPersonalMessage' : 'join_invalidMessage')}>
@@ -42,19 +43,33 @@ export function JoinInviteScreen({ route }: { route: JsRoute }) {
             </Button>
           </Problem>
         )}
+        {state.status === 'failed' && (
+          <Problem icon={<CircleAlert className="size-10" />} title={t('join_failedTitle')}>
+            <RetryOrGoHome presenter={presenter} />
+          </Problem>
+        )}
         {state.status === 'offline' && (
           <Problem icon={<WifiOff className="size-10" />} title={t('join_offlineTitle')} message={t('join_offlineMessage')}>
             <p className="self-center rounded-md bg-card px-3 py-2 font-mono text-sm">{state.displayLink}</p>
-            <Button size="lg" onClick={() => presenter.retry()}>
-              {t('join_retry')}
-            </Button>
-            <Button variant="outline" size="lg" onClick={() => presenter.goHome()}>
-              {t('join_goHome')}
-            </Button>
+            <RetryOrGoHome presenter={presenter} />
           </Problem>
         )}
       </main>
     </div>
+  )
+}
+
+/** "Tentar de novo" over "Ir para o início", for an invite that couldn't be read (offline or a failed read). */
+function RetryOrGoHome({ presenter }: { presenter: JoinInvitePresenter }) {
+  return (
+    <>
+      <Button size="lg" onClick={() => presenter.retry()}>
+        {t('join_retry')}
+      </Button>
+      <Button variant="outline" size="lg" onClick={() => presenter.goHome()}>
+        {t('join_goHome')}
+      </Button>
+    </>
   )
 }
 
@@ -125,12 +140,41 @@ function Faces({ members }: { members: JsJoinMember[] }) {
   )
 }
 
-function Problem({ icon, title, message, children }: { icon: ReactNode; title: string; message: string; children: ReactNode }) {
+/** The invite's chip, title, group card and buttons, while the server is asked what the link opens. */
+function InviteSkeleton() {
+  return (
+    <LoadingRegion isDelayed={false} className="flex flex-col gap-6">
+      <Skeleton className="h-7 w-24 rounded-full" />
+      <span className="flex flex-col gap-3">
+        <SkeletonLine className="h-7 w-4/5" />
+        <SkeletonLine className="h-7 w-1/2" />
+      </span>
+      <div className="flex items-center gap-4 rounded-2xl border bg-card p-5">
+        <Skeleton className="size-14 rounded-xl" />
+        <span className="flex flex-1 flex-col gap-2.5">
+          <SkeletonLine className="h-4 w-1/2" />
+          <SkeletonLine className="w-2/3" />
+        </span>
+      </div>
+      <span className="flex items-center gap-3">
+        <SkeletonCircle className="size-9" />
+        <SkeletonLine className="w-1/2" />
+      </span>
+      <span className="flex flex-col gap-2">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </span>
+    </LoadingRegion>
+  )
+}
+
+// Why: "Não deu para abrir o convite. Tente de novo." says it all in its title, with no message under it.
+function Problem({ icon, title, message, children }: { icon: ReactNode; title: string; message?: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-4 pt-12 text-center">
       <div className="self-center text-primary">{icon}</div>
       <h1 className="text-2xl font-bold">{title}</h1>
-      <p className="text-muted-foreground">{message}</p>
+      {message && <p className="text-muted-foreground">{message}</p>}
       <div className="mt-2 flex flex-col gap-2">{children}</div>
     </section>
   )

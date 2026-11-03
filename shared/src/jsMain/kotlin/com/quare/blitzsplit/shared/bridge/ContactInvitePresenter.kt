@@ -34,7 +34,10 @@ class JsContactInviteState(
     val qrSize: Int,
     val qrModules: Array<Boolean>,
     val isLinkCopied: Boolean,
+    // Why: false draws the shimmer, also while no group came and the account's first full sync is still due.
     val isLoaded: Boolean,
+    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
+    val isWaitingForInternet: Boolean,
     val hasNoGroups: Boolean,
     val showsOfflineNotice: Boolean,
     val isLinkPending: Boolean,
@@ -74,6 +77,7 @@ class ContactInvitePresenter(
                     .toTypedArray(),
                 isLinkCopied = state.isLinkCopied,
                 isLoaded = state.isLoaded,
+                isWaitingForInternet = state.isWaitingForInternet,
                 hasNoGroups = state.hasNoGroups,
                 showsOfflineNotice = state.showsOfflineNotice,
                 isLinkPending = state.isLinkPending,

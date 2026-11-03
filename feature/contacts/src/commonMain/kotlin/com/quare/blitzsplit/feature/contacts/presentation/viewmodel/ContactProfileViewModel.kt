@@ -35,6 +35,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
+import software.quare.loadable.Loadable
+import software.quare.loadable.toLoaded
+import software.quare.loadable.valueOrNull
 
 /*
  * Why: "Perfil do contato" (11.2), over Contatos on a phone and beside it in a wide window (the same route, drawn in
@@ -63,7 +66,8 @@ class ContactProfileViewModel(
                 isHideConfirmOpen = false,
                 addToGroup = null,
                 merge = null,
-                pendingMerge = null,
+                pendingMerge = Loadable.Loading,
+                hasMergeStatusFailed = false,
                 isCancellingMerge = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
             ),
@@ -194,7 +198,7 @@ class ContactProfileViewModel(
                 // Why: a request made while the sheet was open waits for the guest from now on.
                 state.copy(
                     merge = null,
-                    pendingMerge = state.merge?.merge ?: state.pendingMerge,
+                    pendingMerge = state.merge?.merge?.toLoaded() ?: state.pendingMerge,
                 )
             }
 
@@ -219,7 +223,8 @@ class ContactProfileViewModel(
                     draftOf(contact!!, snapshot, draft.selectedGroupId)
                 },
                 merge = state.merge?.takeIf { contact?.isGuest == true },
-                pendingMerge = state.pendingMerge?.takeIf { contact?.isGuest == true },
+                // Why: someone with an account has no merge to wait for; a guest keeps what the server said.
+                pendingMerge = if (contact?.isGuest == true) state.pendingMerge else null.toLoaded(),
             )
         }
         // Why: a person a sync took away closes their profile; beside Contatos, the pane goes back to its placeholder.
@@ -311,7 +316,7 @@ class ContactProfileViewModel(
         uiState.update { state ->
             state.copy(
                 merge = GuestMergeSheet(
-                    merge = state.pendingMerge,
+                    merge = state.pendingMerge.valueOrNull(),
                     isRequesting = false,
                     hasFailed = false,
                 ),
@@ -332,7 +337,9 @@ class ContactProfileViewModel(
             uiState.update { current ->
                 val open =
                     current.merge
-                        ?: return@update current.copy(pendingMerge = result.getOrNull() ?: current.pendingMerge)
+                        ?: return@update current.copy(
+                            pendingMerge = result.getOrNull()?.toLoaded() ?: current.pendingMerge,
+                        )
                 current.copy(
                     merge = open.copy(
                         merge = result.getOrNull(),
@@ -348,16 +355,18 @@ class ContactProfileViewModel(
         val state = uiState.value
         val contact = state.contact?.takeIf { it.isGuest } ?: return
         if (!state.isOnline) return
+        uiState.update { it.copy(hasMergeStatusFailed = false) }
         viewModelScope.launch {
-            findPendingGuestMerge(contact).onSuccess { pending ->
-                uiState.update { it.copy(pendingMerge = pending) }
-            }
+            findPendingGuestMerge(contact)
+                .onSuccess { pending -> uiState.update { it.copy(pendingMerge = pending.toLoaded()) } }
+                // Why: a failure keeps the status unknown, and the next time the connection comes back asks again.
+                .onFailure { uiState.update { it.copy(hasMergeStatusFailed = true) } }
         }
     }
 
     private fun cancelMerge() {
         val state = uiState.value
-        val pending = state.pendingMerge ?: return
+        val pending = state.pendingMerge.valueOrNull() ?: return
         if (state.isCancellingMerge) return
         uiState.update { it.copy(isCancellingMerge = true) }
         viewModelScope.launch {
@@ -365,7 +374,7 @@ class ContactProfileViewModel(
             uiState.update {
                 it.copy(
                     isCancellingMerge = false,
-                    pendingMerge = if (result.isSuccess) null else it.pendingMerge,
+                    pendingMerge = if (result.isSuccess) null.toLoaded() else it.pendingMerge,
                 )
             }
             result.onFailure { uiAction.emit(ContactProfileUiAction.ShowCancelMergeError) }

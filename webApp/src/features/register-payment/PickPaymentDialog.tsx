@@ -1,8 +1,10 @@
 import { ArrowRight, ChevronRight, CircleCheck } from 'lucide-react'
 import { PickPaymentPresenter, type JsPickPaymentGroup, type JsPickPaymentPair, type JsPickPaymentState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
+import { SkeletonRows } from '@/components/ui/skeleton'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { PersonFace } from '@/features/register-payment/RegisterPaymentDialog'
@@ -19,7 +21,20 @@ export function PickPaymentDialog() {
   const presenter = usePresenter(() => new PickPaymentPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsPickPaymentState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) {
+    return (
+      <LoadingDialog
+        isDesktop={isDesktop}
+        title={t('pickPayment_title')}
+        isWaitingForInternet={state.isWaitingForInternet}
+        onClose={() => presenter.close()}
+        className="sm:max-w-[480px]"
+      >
+        <SkeletonRows count={4} className="rounded-lg border" />
+      </LoadingDialog>
+    )
+  }
 
   return (
     <ResponsiveDialog

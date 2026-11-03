@@ -43,7 +43,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 
-private const val SKELETON_BILLS = 3
 private val groupCardShape = RoundedCornerShape(24.dp)
 
 // Why: "Seus grupos", up to three cards in a row: the pinned first, then the latest activity.
@@ -53,6 +52,10 @@ internal fun HomeGroupsSection(
     onEvent: (HomeUiEvent) -> Unit,
     metrics: HomeMetrics,
 ) {
+    if (!state.isLoaded || (state.groups.isEmpty() && state.isFirstDownload)) {
+        HomeGroupsSkeleton(metrics)
+        return
+    }
     if (state.groups.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         HomeSectionHeader(
@@ -191,7 +194,7 @@ private fun HomeGroupCard(
 
 /*
  * Why: "Últimas despesas", the five latest bills you paid or take part in, by day, the payments left to Atividade.
- * While the first download fills the device, grey rows hold their place.
+ * While Room is read, or the first download fills the device, a shimmer holds their place.
  */
 @Composable
 internal fun HomeBillsSection(
@@ -199,6 +202,10 @@ internal fun HomeBillsSection(
     onEvent: (HomeUiEvent) -> Unit,
     metrics: HomeMetrics,
 ) {
+    if (!state.isLoaded) {
+        HomeBillsSkeleton(modifier = Modifier.padding(horizontal = metrics.gutter))
+        return
+    }
     if (state.billDays.isEmpty() && !state.isFirstDownload) return
     Column(modifier = Modifier.padding(horizontal = metrics.gutter)) {
         HomeSectionHeader(
@@ -213,7 +220,7 @@ internal fun HomeBillsSection(
                 onEvent = onEvent,
             )
         }
-        if (state.isFirstDownload) BillSkeletonColumn()
+        if (state.isFirstDownload) HomeBillsSkeleton()
     }
 }
 
@@ -354,26 +361,5 @@ internal fun HomeBillRow(
             color = color,
             content = content,
         )
-    }
-}
-
-@Composable
-private fun BillSkeletonColumn() {
-    Column(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .clearAndSetSemantics {},
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        repeat(SKELETON_BILLS) { index ->
-            // Why: the category badge's size and corners, so the rows don't jump once the bills come down.
-            SkeletonListRow(
-                shape = groupedRowShapeOf(index, SKELETON_BILLS),
-                leadingSize = 40.dp,
-                leadingShape = RoundedCornerShape(12.dp),
-                verticalPadding = 12.dp,
-                spacing = 14.dp,
-            )
-        }
     }
 }
