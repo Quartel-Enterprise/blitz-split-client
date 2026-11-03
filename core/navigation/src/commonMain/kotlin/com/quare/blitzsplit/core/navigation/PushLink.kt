@@ -63,11 +63,11 @@ data class PushLink(
         private const val SETTLE_REMINDERS = "settle_reminders"
 
         // Why: any host, as an invite's, since the web serves the path wherever it is hosted.
-        private val linkPattern = Regex("^https?://[^/?#]+/n/?\\?([^#]*)(#.*)?$")
+        private const val LINK_PATTERN = "^https?://[^/?#]+/n/?\\?([^#]*)(#.*)?$"
 
         // Why: null for any other URL, and for a link without its kind.
         fun of(url: String): PushLink? {
-            val query = linkPattern.matchEntire(url.trim())?.groupValues?.get(1) ?: return null
+            val query = Regex(LINK_PATTERN).matchEntire(url.trim())?.groupValues?.get(1) ?: return null
             val parameters = query
                 .split('&')
                 .mapNotNull { pair -> pair.split('=', limit = 2).takeIf { it.size == 2 } }

@@ -36,8 +36,8 @@ class PushDeviceRepositoryImpl(
     }
 
     /*
-     * Why: also a token an earlier launch left registered, which this one didn't register again. The server only
-     * removes it from the caller, so it is harmless when another user holds it now. Forgotten here even when the
+     * Why: also a token an earlier launch left registered, which this one didn't register again. The server removes
+     * it whoever holds it, since only this device knows it, so no session is needed. Forgotten here even when the
      * call fails, since the server may have removed it anyway (an answer lost on the way), so the next sign in
      * registers it again rather than trusting a registration that may be gone.
      */

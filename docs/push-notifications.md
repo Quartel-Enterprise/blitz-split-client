@@ -17,7 +17,9 @@ and words what arrives. Who gets what, and how the `push` edge function talks to
    `https://blitzsplit.com/n?k=<kind>&e=<event>&g=<group>&t=<target>`, is what a tap opens (`PushLink`).
 
 Each app hands its token to the shared code (`SetPushDevice`), and `SyncCoordinator` registers it for the account
-signed in, once online (`register_push_device`), and removes it on sign out (`unregister_push_device`).
+signed in, once online (`register_push_device`), and removes it whenever no account is signed in, once online
+(`unregister_push_device`, which the server runs for whoever holds the token), so a sign out made offline ends the
+notices as soon as the device is back.
 
 | Platform | Token | Wording | Tap |
 | --- | --- | --- | --- |
@@ -69,8 +71,9 @@ Until all four are set, the app never starts Firebase nor asks for the notificat
 
 The entitlements already ask for push (`aps-environment`, `com.apple.developer.aps-environment` in
 `iosApp/project.yml`). Xcode's automatic signing adds Push Notifications to the App ID `com.quare.blitzsplit` the
-first time it signs a build with them; if it doesn't, turn it on in Apple Developer › Identifiers. A debug build's
-token goes to APNs' sandbox and a release build's to production, which the server tells apart.
+first time it signs a build with them; if it doesn't, turn it on in Apple Developer › Identifiers. A build signed
+for development registers its token for APNs' sandbox and any other for production, as its provisioning profile says
+(a build without one, from the App Store or the simulator, by its configuration), which the server tells apart.
 
 ### Web
 

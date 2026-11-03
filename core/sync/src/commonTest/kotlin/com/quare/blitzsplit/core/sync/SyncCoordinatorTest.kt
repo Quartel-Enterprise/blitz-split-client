@@ -6161,7 +6161,7 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a push token and no account WHEN starting online THEN registers nothing`() = runTest {
+    fun `GIVEN a push token and no account WHEN starting online THEN unregisters it instead`() = runTest {
         // Given
         prepareScenario(
             storedProfile = null,
@@ -6174,6 +6174,25 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and no account WHEN starting offline THEN touches nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            online = false,
+            storedPushDevice = androidDevice,
+        )
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertTrue(pushDevices.registeredUserIds.isEmpty())
+        assertEquals(0, pushDevices.unregisterCount)
     }
 
     @Test
@@ -6448,7 +6467,7 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a registered device WHEN signing out THEN unregisters it before the session ends`() = runTest {
+    fun `GIVEN a registered device WHEN signing out THEN unregisters it once the session ends`() = runTest {
         // Given
         prepareScenario(
             storedProfile = pierre,
@@ -6456,34 +6475,44 @@ class SyncCoordinatorTest {
             storedPushDevice = androidDevice,
             logsPushDevice = true,
         )
+        coordinator.start()
+        runCurrent()
 
         // When
         coordinator.signOut()
+        runCurrent()
 
         // Then
         assertEquals(1, pushDevices.unregisterCount)
-        assertEquals(listOf("push unregister", "account sign out"), calls.take(2))
+        assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
     }
 
     @Test
-    fun `GIVEN a registered device offline WHEN signing out THEN ends the session without trying to unregister`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedProfile = pierre,
-                status = google,
-                storedPushDevice = androidDevice,
-            )
-            isOnline.value = false
+    fun `GIVEN a registered device offline WHEN signing out THEN unregisters it only once back online`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+        isOnline.value = false
+        runCurrent()
 
-            // When
-            val result = coordinator.signOut()
+        // When
+        val result = coordinator.signOut()
+        runCurrent()
+        val unregisteredOffline = pushDevices.unregisterCount
+        isOnline.value = true
+        runCurrent()
 
-            // Then
-            assertTrue(result.isSuccess)
-            assertEquals(0, pushDevices.unregisterCount)
-            assertEquals(AccountStatus.LocalOnly, account.status)
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(0, unregisteredOffline)
+        assertEquals(1, pushDevices.unregisterCount)
+    }
 
     @Test
     fun `GIVEN the push token fails to unregister WHEN signing out THEN still ends the session and erases the copy`() =
@@ -6496,9 +6525,12 @@ class SyncCoordinatorTest {
                 storedPushDevice = androidDevice,
             )
             pushDevices.unregisterError = noConnection
+            coordinator.start()
+            runCurrent()
 
             // When
             val result = coordinator.signOut()
+            runCurrent()
 
             // Then
             assertTrue(result.isSuccess)
@@ -6511,6 +6543,31 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN the push token failed to unregister WHEN back online THEN tries again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.unregisterError = noConnection
+        coordinator.start()
+        runCurrent()
+        coordinator.signOut()
+        runCurrent()
+        pushDevices.unregisterError = null
+
+        // When
+        isOnline.value = false
+        runCurrent()
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(2, pushDevices.unregisterCount)
+    }
+
+    @Test
     fun `GIVEN the push token unregister never answers WHEN signing out THEN still ends the session`() = runTest {
         // Given
         prepareScenario(
@@ -6519,13 +6576,15 @@ class SyncCoordinatorTest {
             storedPushDevice = androidDevice,
         )
         pushDevices.unregisterHangs = true
+        coordinator.start()
+        runCurrent()
 
         // When
         val result = coordinator.signOut()
+        runCurrent()
 
         // Then
         assertTrue(result.isSuccess)
-        assertEquals(1, pushDevices.unregisterCount)
         assertEquals(1, account.signOutCount)
         assertEquals(AccountStatus.LocalOnly, account.status)
         assertNull(profile.profile.value)
@@ -6553,7 +6612,7 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a queued change WHEN signing out once synced THEN unregisters the device before the session ends`() =
+    fun `GIVEN a queued change WHEN signing out once synced THEN unregisters the device once the session ends`() =
         runTest {
             // Given
             prepareScenario(
@@ -6563,6 +6622,8 @@ class SyncCoordinatorTest {
                 storedPushDevice = androidDevice,
                 logsPushDevice = true,
             )
+            coordinator.start()
+            runCurrent()
 
             // When
             coordinator.signOutWhenSynced()
@@ -6570,32 +6631,9 @@ class SyncCoordinatorTest {
 
             // Then
             assertEquals(1, pushDevices.unregisterCount)
-            assertEquals(calls.indexOf("account sign out") - 1, calls.indexOf("push unregister"))
+            assertTrue(calls.indexOf("account sign out") < calls.indexOf("push unregister"))
             assertEquals(AccountStatus.LocalOnly, account.status)
         }
-
-    @Test
-    fun `GIVEN the push token fails to unregister WHEN signing out once synced THEN still signs out`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = google,
-            pendingChanges = true,
-            storedPushDevice = androidDevice,
-        )
-        pushDevices.unregisterError = noConnection
-
-        // When
-        coordinator.signOutWhenSynced()
-        runCurrent()
-
-        // Then
-        assertEquals(1, pushDevices.unregisterCount)
-        assertEquals(1, account.signOutCount)
-        assertEquals(AccountStatus.LocalOnly, account.status)
-        assertNull(profile.profile.value)
-        assertFalse(account.signOutWhenSynced)
-    }
 
     @Test
     fun `GIVEN an anonymous account WHEN signing out once synced THEN keeps the device registered`() = runTest {
