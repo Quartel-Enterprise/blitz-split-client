@@ -5,10 +5,12 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { AmountInput, WhenField } from '@/components/fields'
+import { LoadingDialog } from '@/components/LoadingDialog'
 import { PersonGroupsList } from '@/components/PersonGroupsList'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { nameOrFormer, paymentMethodCodes, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -58,7 +60,19 @@ export function RegisterPaymentDialog({ route }: { route: JsRoute }) {
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'save-error') toast(t('registerPayment_saveError'))
   })
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} onClose={() => presenter.close()} className="sm:max-w-[480px]" />
+  // Why: whether "Pagar Ana" or the form opens waits for Ana's keys, which a restored account's full sync brings.
+  if (state.isLoadingReceiverKeys) {
+    return (
+      <LoadingDialog isDesktop={isDesktop} isWaitingForInternet={state.isWaitingForInternet} onClose={() => presenter.close()} className="sm:max-w-[480px]">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="mx-auto size-48 rounded-xl" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </LoadingDialog>
+    )
+  }
 
   const words = sentences[state.kind] ?? sentences['between-others']
   const from = personName(state.from)

@@ -17,6 +17,9 @@ export const pt: Record<MessageKey, string> = {
   common_signInFailed: 'Não deu para entrar agora. Tente de novo.',
   common_close: 'Fechar',
   common_cancel: 'Cancelar',
+  common_loading: 'Carregando',
+  common_waitingForInternet: 'Sem internet. Seus dados aparecem quando reconectar.',
+  common_waitingForInternetGroups: 'Sem internet. Seus grupos aparecem quando reconectar.',
 
   otherTab_title: 'O Bora Rachar está aberto em outra aba',
   otherTab_body: 'Feche aquela aba ou continue usando ela. Esta abre sozinha assim que a outra fechar.',
@@ -607,6 +610,7 @@ export const pt: Record<MessageKey, string> = {
   join_offlineTitle: 'Sem internet para abrir o convite',
   join_offlineMessage: 'Guardamos o link. Assim que este navegador conectar, o convite abre sozinho.',
   join_retry: 'Tentar de novo',
+  join_failedTitle: 'Não deu para abrir o convite. Tente de novo.',
   join_personalChip: 'Convite pessoal',
   join_personalTitle: '{inviter} te chamou como {name}',
   join_personalTitleNoInviter: 'Você entra como {name}',

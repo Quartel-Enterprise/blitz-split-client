@@ -13,6 +13,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
@@ -108,6 +109,18 @@ export function ContactProfileView({
             <span className="text-sm font-medium">{t('contactProfile_guestTitle', { name })}</span>
             <span className="text-[13px] text-muted-foreground">{t('contactProfile_guestBody', { name })}</span>
             <div className="mt-1.5 flex flex-wrap gap-2">
+              {/* Why: until the server says whether a request waits, neither Juntar nor "Aguardando" is claimed. */}
+              {state.isMergeStatusLoading && (
+                <LoadingRegion isDelayed={false}>
+                  <Skeleton className="h-8 w-36" />
+                </LoadingRegion>
+              )}
+              {state.isMergeStatusUnavailable && (
+                <Button variant="outline" size="sm" disabled title={t('contactProfile_needsInternet')}>
+                  {t('contactProfile_mergeButton')}
+                  <span className="text-xs font-normal text-muted-foreground">· {t('contactProfile_needsInternet')}</span>
+                </Button>
+              )}
               {state.canMerge && (
                 <Button variant="outline" size="sm" onClick={() => presenter.merge()}>
                   {t('contactProfile_mergeButton')}
@@ -174,6 +187,33 @@ export function ContactProfileView({
   )
 }
 
+/**
+ * The profile while the person is still read: the face and name, the net's card with its buttons, then the groups in
+ * common as rows, after 150 ms.
+ */
+export function ContactProfileSkeleton() {
+  return (
+    <LoadingRegion className="flex flex-col gap-5">
+      <div className="flex items-center gap-3.5">
+        <SkeletonCircle className="size-12" />
+        <span className="flex flex-1 flex-col gap-2.5">
+          <SkeletonLine className="h-5 w-40" />
+          <SkeletonLine className="w-28" />
+        </span>
+      </div>
+      <div className="flex flex-col gap-3 rounded-lg border p-4">
+        <SkeletonLine className="w-24" />
+        <Skeleton className="h-8 w-36" />
+        <span className="flex gap-2">
+          <Skeleton className="h-9 flex-1" />
+          <Skeleton className="h-9 flex-1" />
+        </span>
+      </div>
+      <SkeletonRows count={3} leading="square" className="rounded-lg border" />
+    </LoadingRegion>
+  )
+}
+
 /** ⋯: Juntar (a guest's, online only), "Ver em Saldos", then Ocultar at zero or Mostrar for someone hidden. */
 function ProfileMenu({ presenter, state, contact }: { presenter: ContactProfilePresenter; state: JsContactProfileState; contact: JsContact }) {
   return (
@@ -187,7 +227,7 @@ function ProfileMenu({ presenter, state, contact }: { presenter: ContactProfileP
         {contact.isGuest && (
           <DropdownMenuItem disabled={!state.canMerge} onSelect={() => presenter.merge()} className="items-start">
             <Merge className="mt-0.5" />
-            <MenuLabel label={t('contactProfile_merge', { name: contact.name })} note={state.isOnline ? null : t('contactProfile_needsInternet')} />
+            <MenuLabel label={t('contactProfile_merge', { name: contact.name })} note={state.isOnline && !state.isMergeStatusUnavailable ? null : t('contactProfile_needsInternet')} />
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onSelect={() => presenter.viewBalances()}>

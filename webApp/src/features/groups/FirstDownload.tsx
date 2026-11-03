@@ -1,13 +1,12 @@
 import type { JsDownloadProgress } from 'blitzsplit-shared'
+import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 
-/** A gray bar where something still on its way will show, while the first download fills the browser. */
-export function Skeleton({ className }: { className?: string }) {
-  return <span aria-hidden className={cn('block animate-pulse rounded-md bg-muted', className)} />
-}
-
-/** The first download's bar (5.1d): it fills as the groups come, and pulses until the server said how many are coming. */
+/**
+ * The first download's bar (5.1d): it fills as the groups come, and pulses until the server said how many are coming.
+ * Offline it stops where it was, since nothing comes until the browser reconnects.
+ */
 export function DownloadProgressBar({ progress, className }: { progress: JsDownloadProgress; className?: string }) {
   const fraction = progress.fraction
   return (
@@ -20,7 +19,7 @@ export function DownloadProgressBar({ progress, className }: { progress: JsDownl
       className={cn('block h-1 overflow-hidden rounded-full bg-muted', className)}
     >
       {fraction == null ? (
-        <span className="block h-full w-full animate-pulse rounded-full bg-primary/60" />
+        <span className={cn('block h-full w-full rounded-full', progress.isWaitingForInternet ? 'bg-primary/30' : 'animate-pulse bg-primary/60')} />
       ) : (
         <span className="block h-full rounded-full bg-primary transition-[width]" style={{ width: `${fraction * 100}%` }} />
       )}
@@ -28,8 +27,12 @@ export function DownloadProgressBar({ progress, className }: { progress: JsDownl
   )
 }
 
-/** "Sincronizando… 3 de 7 grupos" once the first download knows how many groups are coming, else "Sincronizando…". */
+/**
+ * "Sincronizando… 3 de 7 grupos" once the first download knows how many groups are coming, else "Sincronizando…";
+ * offline "Sem internet. Seus grupos aparecem quando reconectar." instead of the count.
+ */
 export function syncingLabel(progress: JsDownloadProgress | null | undefined): string {
+  if (progress?.isWaitingForInternet) return t('common_waitingForInternetGroups')
   const groupCount = progress?.groupCount
   if (progress == null || groupCount == null) return t('groups_syncSyncing')
   return t(groupCount === 1 ? 'groups_syncSyncingGroupsOne' : 'groups_syncSyncingGroupsOther', {
@@ -40,7 +43,8 @@ export function syncingLabel(progress: JsDownloadProgress | null | undefined): s
 
 /**
  * "Trazendo seus grupos" in Saldo geral's place while the first download brings the groups down one by one, with
- * "3 de 7 grupos" and its bar once the server said how many are coming (5.1d).
+ * "3 de 7 grupos" and its bar once the server said how many are coming (5.1d); offline the bar stops and the card
+ * says the groups come once the browser reconnects.
  */
 export function GroupsFirstDownloadCard({ progress }: { progress: JsDownloadProgress }) {
   const groupCount = progress.groupCount
@@ -51,29 +55,22 @@ export function GroupsFirstDownloadCard({ progress }: { progress: JsDownloadProg
           arrived: progress.arrivedGroupCount,
           count: groupCount,
         })
+  // Why: offline, "Sem internet. Seus grupos aparecem quando reconectar." takes the title's and the count's place.
   return (
     <section className="flex flex-col gap-3 rounded-xl border bg-card p-4 md:p-5">
-      <h2 className="text-base font-semibold">{t('groups_firstDownloadTitle')}</h2>
+      <h2 className="text-base font-semibold">{t(progress.isWaitingForInternet ? 'common_waitingForInternetGroups' : 'groups_firstDownloadTitle')}</h2>
       <DownloadProgressBar progress={progress} />
-      <p className="text-sm text-muted-foreground">{hint}</p>
+      {!progress.isWaitingForInternet && <p className="text-sm text-muted-foreground">{hint}</p>}
     </section>
   )
 }
 
-/** Gray rows under the groups that came, holding the place of a few still coming. */
+/** Shimmering rows under the groups that came, holding the place of a few still coming. */
 export function GroupSkeletonRows({ count }: { count: number }) {
+  // Why: the server is what brings them, never a fast read, so they show at once.
   return (
-    <ul aria-hidden className="flex flex-col divide-y rounded-xl border bg-card">
-      {Array.from({ length: count }, (_, index) => (
-        <li key={index} className="flex min-h-[60px] items-center gap-3 px-3 py-2.5">
-          <Skeleton className="size-8 rounded-lg" />
-          <span className="flex flex-1 flex-col gap-1.5">
-            <Skeleton className="h-3 w-2/5" />
-            <Skeleton className="h-2.5 w-1/4" />
-          </span>
-          <Skeleton className="h-3 w-16" />
-        </li>
-      ))}
-    </ul>
+    <LoadingRegion isDelayed={false}>
+      <SkeletonRows count={count} leading="square" className="rounded-xl border bg-card" rowClassName="px-3" />
+    </LoadingRegion>
   )
 }

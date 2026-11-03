@@ -2,11 +2,12 @@ import { ChevronRight, Pin } from 'lucide-react'
 import type { HomePresenter, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type RefObject } from 'react'
 import { Avatar } from '@/components/common'
+import { SummaryCardSkeleton } from '@/components/PageSkeletons'
+import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/GroupsSearchDialog'
-import { Skeleton } from '@/features/groups/FirstDownload'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -30,6 +31,7 @@ const summaryHints: Record<string, MessageKey> = {
  */
 export function HomeSummaryCards({ presenter, state }: SectionProps) {
   const summary = state.summary
+  if (!summary) return <HomeSummarySkeleton />
   const main = summary.main
   const net = main ? formatSignedMoney(main.netMinor, main.currency, main.fractionDigits) : null
   const otherNets = Array.from(summary.others, (total) => formatSignedMoney(total.netMinor, total.currency, total.fractionDigits))
@@ -82,6 +84,17 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
         onClick={() => presenter.openToPay()}
       />
     </div>
+  )
+}
+
+/** The three summary cards while the balances are still read, in the cards' own grid. */
+function HomeSummarySkeleton() {
+  return (
+    <LoadingRegion className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <SummaryCardSkeleton isLarge className="col-span-2 rounded-lg md:col-span-1" />
+      <SummaryCardSkeleton className="rounded-lg" />
+      <SummaryCardSkeleton className="rounded-lg" />
+    </LoadingRegion>
   )
 }
 
@@ -155,7 +168,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const tipId = useId()
   const [tip, setTip] = useState<GuestTip | null>(null)
-  const isScrolling = useOverflows(rowRef, state.people.length)
+  const isScrolling = useOverflows(rowRef, state.people?.length ?? 0)
   // Why: a long press shows the tip until the next touch anywhere, which a touch screen has instead of hover's end.
   useEffect(() => {
     if (!tip?.isTouch) return
@@ -166,9 +179,10 @@ export function PeopleCard({ presenter, state }: SectionProps) {
       document.removeEventListener('pointerdown', hide)
     }
   }, [tip])
-  if (!state.showsPeople && !state.firstDownload) return null
+  // Why: while the balances are read nothing says yet whether anybody owes anybody, so the faces shimmer.
+  if (state.people && !state.showsPeople && !state.firstDownload) return null
 
-  const people = Array.from(state.people)
+  const people = Array.from(state.people ?? [])
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
     const card = cardRef.current
     if (!card) return
@@ -184,15 +198,10 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         onAction={() => presenter.seeBalances()}
       />
       <div ref={rowRef} className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2" onScroll={() => tip && setTip(null)}>
-        {people.length === 0
-          ? [0, 1, 2, 3, 4].map((index) => (
-              <span key={index} aria-hidden className="flex w-[72px] shrink-0 flex-col items-center gap-2 py-1.5 md:w-[88px]">
-                <Skeleton className="size-12 rounded-full md:size-14" />
-                <Skeleton className="h-3 w-12" />
-                <Skeleton className="h-3 w-14" />
-              </span>
-            ))
-          : people.map((person) => (
+        {people.length === 0 ? (
+          <FacesSkeleton />
+        ) : (
+          people.map((person) => (
               <PersonFace
                 key={`${person.key}/${person.currency}`}
                 person={person}
@@ -200,7 +209,8 @@ export function PeopleCard({ presenter, state }: SectionProps) {
                 onOpen={() => presenter.openPerson(person.key, person.currency)}
                 onTip={(face, isTouch) => (face ? showTip(person, face, isTouch) : setTip(null))}
               />
-            ))}
+            ))
+        )}
       </div>
       {tip && (
         <div
@@ -218,6 +228,21 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         </div>
       )}
     </section>
+  )
+}
+
+/** Five faces' places, each with its name and amount, while the people are read or the first download brings them. */
+function FacesSkeleton() {
+  return (
+    <LoadingRegion className="flex gap-1.5 md:gap-2">
+      {[0, 1, 2, 3, 4].map((index) => (
+        <span key={index} className="flex w-[72px] shrink-0 flex-col items-center gap-2 py-1.5 md:w-[88px]">
+          <SkeletonCircle className="size-12 md:size-14" />
+          <SkeletonLine className="w-12" />
+          <SkeletonLine className="w-14" />
+        </span>
+      ))}
+    </LoadingRegion>
   )
 }
 
@@ -445,18 +470,9 @@ export function RecentBills({ presenter, state }: SectionProps) {
         </>
       )}
       {rows.length === 0 && (
-        <div aria-hidden className="divide-y border-t">
-          {[0, 1, 2].map((index) => (
-            <div key={index} className="flex items-center gap-3 px-4 py-3">
-              <Skeleton className="size-9 rounded-lg" />
-              <span className="flex flex-1 flex-col gap-2">
-                <Skeleton className="h-3 w-2/5" />
-                <Skeleton className="h-2.5 w-1/4" />
-              </span>
-              <Skeleton className="h-3 w-18" />
-            </div>
-          ))}
-        </div>
+        <LoadingRegion isDelayed={false}>
+          <SkeletonRows count={3} leading="square" className="border-t" />
+        </LoadingRegion>
       )}
     </section>
   )

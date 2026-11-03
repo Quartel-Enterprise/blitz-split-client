@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
@@ -101,14 +102,25 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
     <section aria-labelledby="bill-attachments-title" className="flex min-w-0 flex-col gap-2">
       <h3 id="bill-attachments-title" className="flex justify-between text-sm font-medium">
         <span>{t('billDetail_attachments')}</span>
-        {state.photoLimit != null && (
+        {state.photoLimit != null && state.photoCount != null && (
           <span className="font-normal text-muted-foreground tabular-nums">{t('billDetail_photoCount', { count: state.photoCount, limit: state.photoLimit })}</span>
         )}
       </h3>
+      {!state.attachments && (
+        <LoadingRegion className="flex gap-2">
+          <Skeleton className="h-[66px] w-[88px] rounded-lg" />
+          <Skeleton className="h-[66px] w-[88px] rounded-lg" />
+        </LoadingRegion>
+      )}
       <ul className="flex flex-wrap gap-2">
-        {state.attachments.map((attachment) => (
+        {state.attachments?.map((attachment) => (
           <li key={attachment.id}>
-            <AttachmentTile attachment={attachment} src={sourceOf(attachment, localUrls)} onClick={() => presenter.openAttachment(attachment.id)} />
+            <AttachmentTile
+              attachment={attachment}
+              src={sourceOf(attachment, localUrls)}
+              isOnline={state.isOnline}
+              onClick={() => presenter.openAttachment(attachment.id)}
+            />
           </li>
         ))}
         {state.showsAddPhoto && (
@@ -135,13 +147,16 @@ const tileClass =
   'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
 /** A photo or the receipt, cropped to fill, with "Cupom" or "Na fila" in its corner; its name and who added it on hover. */
-function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttachment; src: string | undefined; onClick: () => void }) {
+function AttachmentTile({ attachment, src, isOnline, onClick }: { attachment: JsBillAttachment; src: string | undefined; isOnline: boolean; onClick: () => void }) {
   const title = `${labelOf(attachment)} · ${adderText(attachment)} · ${postedText(attachment.addedAt, attachment.addedDay)}`
   const badge = attachment.isPending ? t('billDetail_attachmentQueued') : attachment.isReceipt ? t('billDetail_receiptBadge') : null
   return (
     <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, 'bg-muted hover:opacity-90')}>
+      {/* Why: online its signed URL is on its way; offline it can't come, which the neutral icon says. */}
       {src ? (
         <img src={src} alt="" className="size-full object-cover" />
+      ) : isOnline ? (
+        <Skeleton className="absolute inset-0 rounded-none" />
       ) : (
         <ImageOff aria-hidden className="size-5 text-muted-foreground" />
       )}
@@ -207,11 +222,12 @@ const lightButton = 'text-white hover:bg-white/10 hover:text-white disabled:text
  */
 export function AttachmentViewer({ presenter, state, localUrls }: { presenter: AttachmentsPresenter; state: AttachmentsState; localUrls: LocalPhotoUrls }) {
   const index = state.viewedAttachmentIndex
-  const attachment = index != null ? state.attachments[index] : undefined
+  const attachments = state.attachments ?? []
+  const attachment = index != null ? attachments[index] : undefined
   const src = attachment && sourceOf(attachment, localUrls)
-  const previous = index != null ? state.attachments[index - 1] : undefined
-  const next = index != null ? state.attachments[index + 1] : undefined
-  const pages = state.attachments.length
+  const previous = index != null ? attachments[index - 1] : undefined
+  const next = index != null ? attachments[index + 1] : undefined
+  const pages = attachments.length
   const onKeyDown = (event: KeyboardEvent) => {
     const target = event.key === 'ArrowLeft' ? previous : event.key === 'ArrowRight' ? next : undefined
     if (!target) return
@@ -232,7 +248,7 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
           <>
             <header className="flex h-14 shrink-0 items-center gap-1 px-2 sm:px-4">
               <DialogTitle className="mr-auto truncate pl-2 text-base font-medium">
-                {attachment.photoNumber != null ? t('billDetail_viewerPhotoTitle', { number: attachment.photoNumber, count: state.photoCount }) : t('billDetail_receipt')}
+                {attachment.photoNumber != null ? t('billDetail_viewerPhotoTitle', { number: attachment.photoNumber, count: state.photoCount ?? pages }) : t('billDetail_receipt')}
               </DialogTitle>
               <Button variant="ghost" size="sm" className={lightButton} disabled={!attachment.localImage && !attachment.imageUrl} onClick={() => download(attachment)}>
                 <Download />

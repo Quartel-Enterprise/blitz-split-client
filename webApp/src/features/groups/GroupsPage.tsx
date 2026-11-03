@@ -145,15 +145,19 @@ export function SyncStatus({
   presenter: { retrySync(): void }
   downloadProgress?: JsDownloadProgress | null
 }) {
-  if (!state.syncBadge) return null
-  const isOffline = state.syncBadge === 'OFFLINE'
-  const label = isOffline
-    ? state.pendingChangeCount > 0
-      ? t(state.pendingChangeCount === 1 ? 'groups_syncOfflineQueuedOne' : 'groups_syncOfflineQueuedOther', { count: state.pendingChangeCount })
-      : t('groups_syncOffline')
-    : state.syncBadge === 'FAILED'
-      ? t('groups_syncNoResponse')
-      : syncingLabel(downloadProgress)
+  const isWaitingForInternet = downloadProgress?.isWaitingForInternet ?? false
+  if (!state.syncBadge && !isWaitingForInternet) return null
+  const isOffline = state.syncBadge === 'OFFLINE' || isWaitingForInternet
+  // Why: offline midway through Início's first download, what is missing only comes once the browser reconnects.
+  const label = isWaitingForInternet
+    ? syncingLabel(downloadProgress)
+    : isOffline
+      ? state.pendingChangeCount > 0
+        ? t(state.pendingChangeCount === 1 ? 'groups_syncOfflineQueuedOne' : 'groups_syncOfflineQueuedOther', { count: state.pendingChangeCount })
+        : t('groups_syncOffline')
+      : state.syncBadge === 'FAILED'
+        ? t('groups_syncNoResponse')
+        : syncingLabel(downloadProgress)
   return (
     <>
       <span

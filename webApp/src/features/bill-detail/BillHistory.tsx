@@ -3,6 +3,7 @@ import type { JsBillHistoryEntry, JsBillHistoryDay } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { historyActor, historyDiffs, historyNote, historyVerb, type HistoryDiff } from './billHistoryText'
@@ -11,9 +12,11 @@ type Money = (minor: number) => string
 
 /**
  * "Histórico", by day, the most recent first: who did what to the bill and what changed, with "Desfazer" on the
- * latest edit while the bill is still as it left it. Hidden while there is nothing in it.
+ * latest edit while the bill is still as it left it. Hidden while there is nothing in it; null shimmers while the
+ * server's history is on its way.
  */
-export function BillHistory({ history, isUndoing, money, onUndo }: { history: JsBillHistoryDay[]; isUndoing: boolean; money: Money; onUndo: () => void }) {
+export function BillHistory({ history, isUndoing, money, onUndo }: { history: JsBillHistoryDay[] | null | undefined; isUndoing: boolean; money: Money; onUndo: () => void }) {
+  if (!history) return <HistorySkeleton />
   if (history.length === 0) return null
   return (
     <section aria-labelledby="bill-history-title" className="flex flex-col">
@@ -30,6 +33,28 @@ export function BillHistory({ history, isUndoing, money, onUndo }: { history: Js
           </ol>
         </div>
       ))}
+    </section>
+  )
+}
+
+/** The section's title over two lines' places: the face, the line and when, under a day. */
+function HistorySkeleton() {
+  return (
+    <section aria-labelledby="bill-history-title" className="flex flex-col gap-3">
+      <h3 id="bill-history-title" className="text-sm font-medium">
+        {t('billDetail_history')}
+      </h3>
+      <LoadingRegion isDelayed={false} className="flex flex-col gap-3">
+        {[0, 1].map((index) => (
+          <span key={index} className="flex gap-2.5">
+            <SkeletonCircle className="size-7" />
+            <span className="flex flex-1 flex-col gap-2 pt-1">
+              <SkeletonLine className={index === 0 ? 'w-3/5' : 'w-1/2'} />
+              <SkeletonLine className="h-2.5 w-1/4" />
+            </span>
+          </span>
+        ))}
+      </LoadingRegion>
     </section>
   )
 }

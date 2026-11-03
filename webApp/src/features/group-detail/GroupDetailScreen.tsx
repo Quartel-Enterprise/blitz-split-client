@@ -11,9 +11,10 @@ import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
-import type { HomeTab } from '@/components/HomeShell'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import type { HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
+import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { BalancesTab } from '@/features/balances/BalancesTab'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
@@ -25,7 +26,7 @@ import { CategoryBadge } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
-import { GroupPage } from './GroupPage'
+import { GroupPage, GroupPageSkeleton } from './GroupPage'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
 const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
@@ -50,7 +51,8 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   }, [presenter, showsBillDeletedNotice])
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   useCategoryTeachNotice(presenter, state?.teach)
-  if (!presenter || !state?.isLoaded) return null
+  if (!presenter || !state) return null
+  if (!state.isLoaded) return <GroupPageSkeleton groupId={route.groupId ?? ''} homeTab={state.homeTab as HomeTab} onBack={() => presenter.back()} />
 
   const tab = state.tab as GroupTab
   const membersPresenter = members.presenter
@@ -62,6 +64,8 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       header={state.header}
       tab={tab}
       hasExpenses={state.hasBills}
+      // Why: with a bill, your balance in it is known once the account's copy is whole; null till then.
+      isBalanceLoading={state.awaitsFullSync}
       showsSplitBillButton={state.showsSplitBillButton}
       onAddPerson={tab === 'members' && membersPresenter && membersState ? () => membersPresenter.add() : undefined}
       exit={state.exit}
@@ -70,7 +74,14 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
     >
       {tab === 'expenses' && <ExpensesTab presenter={presenter} state={state} />}
       {tab === 'balances' && <BalancesTab presenter={presenter} state={state} />}
-      {tab === 'members' && membersPresenter && membersState && <MembersTab presenter={membersPresenter} state={membersState} />}
+      {tab === 'members' &&
+        (membersPresenter && membersState ? (
+          <MembersTab presenter={membersPresenter} state={membersState} />
+        ) : (
+          <LoadingRegion>
+            <SkeletonRows count={4} className="rounded-xl border bg-card" />
+          </LoadingRegion>
+        ))}
       {state.paymentToDelete && (
         <ConfirmDialog
           title={t('payment_deleteTitle')}
@@ -91,7 +102,12 @@ function ExpensesTab({ presenter, state }: { presenter: GroupDetailPresenter; st
   return (
     <>
       {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
-      {state.isEmpty ? (
+      {state.isLoadingBills ? (
+        // Why: a restored account's bills may still be coming, so never "Nenhuma despesa ainda" before they did.
+        <LoadingRegion isDelayed={false} isWaitingForInternet={state.isWaitingForInternet}>
+          <SkeletonRows count={5} leading="square" className="rounded-xl border bg-card" />
+        </LoadingRegion>
+      ) : state.isEmpty ? (
         <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
           <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <ReceiptText className="size-5" />
