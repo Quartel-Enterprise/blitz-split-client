@@ -85,9 +85,9 @@ extension View {
     /// with what it opened over in the other one (iOS 27's `presentationPlacement`), no wider than that half: the
     /// form sheet's size where it fits (`isForm`), a bill's (`isBill`, `ScreenLayout.billSheetSize`), else the
     /// system's. Everywhere else, the iPhone Duo upright and closed included, the system places it and it keeps that
-    /// size. A sheet's sizing is decided once, here: the root's sheet picks `isForm` and `isBill` from the route
-    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), a screen's own sheet from what it draws. Put it on the sheet's
-    /// content, as a detent.
+    /// size. A sheet's sizing is decided here: the root's sheet picks `isForm` and `isBill` from the route in front
+    /// (`AppRoute.usesFormSheet`, `usesBillSheet`), so it changes as Divisão padrão is pushed and popped, a screen's
+    /// own sheet from what it draws. Put it on the sheet's content, as a detent.
     func foldSheetPlacement(isForm: Bool = false, isBill: Bool = false) -> some View {
         modifier(FoldSheetPlacement(isForm: isForm, isBill: isBill))
     }

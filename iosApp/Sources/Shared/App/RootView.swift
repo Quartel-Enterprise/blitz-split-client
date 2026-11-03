@@ -61,10 +61,11 @@ struct RootView: View {
                             screen(for: route)
                         }
                 }
-                .foldSheetPlacement(isForm: route.usesFormSheet, isBill: route.usesBillSheet)
+                .foldSheetPlacement(sizedBy: route, pushed: app.stackedSheetPath)
             }
-            // The front half of an iPhone Duo open, with what it opened over in the other one
-            .foldSheetPlacement(isForm: route.usesFormSheet, isBill: route.usesBillSheet)
+            // The front half of an iPhone Duo open, with what it opened over in the other one; pushing Divisão padrão
+            // grows Editar grupo's form sheet to a bill's, and popping it shrinks it back
+            .foldSheetPlacement(sizedBy: route, pushed: app.sheetPath)
         }
         #if os(iOS)
         .fullScreenCover(item: $app.cover) { route in
@@ -144,5 +145,14 @@ struct RootView: View {
         case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
+    }
+}
+
+private extension View {
+    /// The sheet sized by the last route pushed inside it that asks for a size of its own (Divisão padrão), else by
+    /// the sheet's own route (Mapa de categorias keeps its bill's), so it follows each push and pop.
+    func foldSheetPlacement(sizedBy route: AppRoute, pushed: [AppRoute]) -> some View {
+        let sizing = pushed.last { $0.usesFormSheet || $0.usesBillSheet } ?? route
+        return foldSheetPlacement(isForm: sizing.usesFormSheet, isBill: sizing.usesBillSheet)
     }
 }

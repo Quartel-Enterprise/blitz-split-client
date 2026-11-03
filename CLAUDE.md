@@ -480,8 +480,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
     under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
   - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
-    Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
-    dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
+    Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), which
+    grows from the form sheet to a bill's with an iPad's room (820×640 lying down, 620×860 upright) and shrinks back
+    once it is popped, in its dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
     dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (off
     the hinge as every dialog). It sets
     how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem

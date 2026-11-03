@@ -187,10 +187,11 @@ enum AppRoute: Hashable, Identifiable {
     }
 
     /// A bill's screen (Rachar conta, Conta), which the root's sheet keeps at the bill's size with an iPad's room
-    /// (`billSheetSizing(in:)`), the iPhone Duo's fold included (`foldSheetPlacement(isBill:)`).
+    /// (`billSheetSizing(in:)`), the iPhone Duo's fold included (`foldSheetPlacement(isBill:)`); and Divisão padrão,
+    /// which the boards draw at that size too, so Editar grupo's sheet grows while it is pushed inside it.
     var usesBillSheet: Bool {
         switch self {
-        case .splitBill, .billDetail: true
+        case .splitBill, .billDetail, .defaultSplit: true
         default: false
         }
     }
