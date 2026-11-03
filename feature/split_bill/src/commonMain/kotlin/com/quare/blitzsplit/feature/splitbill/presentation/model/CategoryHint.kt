@@ -11,6 +11,9 @@ enum class CategoryHint {
     // Why: "Nenhuma palavra do seu mapa. A conta fica em Outros; toque no ícone para escolher."
     NO_TERM,
 
+    // Why: "Alimentação › Mercado pelo cupom fiscal. Toque no ícone para trocar.", no word of the map in the description.
+    BY_RECEIPT,
+
     // Why: "Você escolheu Lazer › Esportes. Pelo mapa seria Casa › Aluguel (“aluguel”)."
     CHANGED,
 

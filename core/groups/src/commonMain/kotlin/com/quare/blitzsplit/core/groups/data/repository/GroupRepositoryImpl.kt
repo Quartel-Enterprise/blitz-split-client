@@ -363,6 +363,28 @@ class GroupRepositoryImpl(
         remotePhotos?.let { photos -> local.replaceMemberPhotos(photos.mapNotNull(mapper::toEntity)) }
     }
 
+    override suspend fun fetchFirstDownloadGroupIds(): Result<List<String>> = suspendRunCatching {
+        remote.fetchFirstDownloadGroupIds()
+    }
+
+    override suspend fun fetchGroupDownload(
+        userId: String,
+        groupId: String,
+    ): Result<suspend () -> Unit> = suspendRunCatching {
+        val (group, members) = coroutineScope {
+            val group = async { remote.fetchGroup(groupId) }
+            val members = async { remote.fetchMembers(groupId) }
+            group.await() to members.await()
+        }
+        return@suspendRunCatching {
+            // Why: a group gone since the server listed it brings nothing; its members would have no group to go in.
+            if (group != null) {
+                local.applyRemoteGroup(mapper.toEntity(group, ownerUserId = userId))
+                members.forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
+            }
+        }
+    }
+
     /*
      * Why: the gone groups leave with deleteGoneFromServer right after; one someone else deleted is posted first, so
      * the screen showing it says "Grupo apagado" with who did it instead of just closing. Only a nicety, so a failed

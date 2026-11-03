@@ -45,6 +45,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -582,6 +583,7 @@ class GroupsRowActionsTest {
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
             observePeopleBalances = { emptyFlow() },
             observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
         )
     }
 }

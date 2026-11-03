@@ -559,6 +559,78 @@ class ExpenseRepositoryImplTest {
         assertEquals(listOf("bill-1"), local.entities.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN bills of two groups on the server WHEN downloading one group THEN only its bills come down synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverRows = listOf(
+                    dto(id = "bill-1"),
+                    dto(
+                        id = "bill-other",
+                        groupId = OTHER_GROUP_ID,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchGroupExpenses(GROUP_ID)
+            result.getOrNull()?.invoke()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val expenses = repository.observeExpenses(GROUP_ID).first()
+            assertEquals(listOf("bill-1"), expenses.map { it.id })
+            assertTrue(expenses.none { it.isPending })
+            assertEquals(listOf("bill-1"), local.entities.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN synced bills the server no longer has WHEN downloading one group THEN removes none of them`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "bill-gone"),
+                entity(
+                    id = "bill-of-other-group",
+                    groupId = OTHER_GROUP_ID,
+                ),
+            ),
+            serverRows = listOf(dto(id = "bill-1")),
+        )
+
+        // When
+        repository.fetchGroupExpenses(GROUP_ID).getOrThrow()()
+
+        // Then
+        assertTrue(local.goneFromServerCalls.isEmpty())
+        assertEquals(
+            setOf("bill-gone", "bill-of-other-group", "bill-1"),
+            local.entities.value
+                .map { it.id }
+                .toSet(),
+        )
+    }
+
+    @Test
+    fun `GIVEN the server fails WHEN downloading one group THEN fails and changes nothing on the device`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "bill-1")),
+            serverRows = listOf(dto(id = "bill-2")),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.fetchGroupExpenses(GROUP_ID)
+        result.getOrNull()?.invoke()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(local.goneFromServerCalls.isEmpty())
+        assertEquals(listOf("bill-1"), local.entities.value.map { it.id })
+    }
+
     private val newExpense = Expense(
         id = "bill-new",
         groupId = GROUP_ID,
@@ -600,9 +672,10 @@ class ExpenseRepositoryImplTest {
         updatedAt: Long = 1L,
         isDeleted: Boolean = false,
         updatedBy: String? = null,
+        groupId: String = GROUP_ID,
     ): ExpenseEntity = ExpenseEntity(
         id = id,
-        groupId = GROUP_ID,
+        groupId = groupId,
         createdBy = createdBy,
         description = "Mercado",
         amountMinor = 1_000L,
@@ -622,9 +695,10 @@ class ExpenseRepositoryImplTest {
     private fun dto(
         id: String,
         splitMode: String = "amount",
+        groupId: String = GROUP_ID,
     ): ExpenseDto = ExpenseDto(
         id = id,
-        groupId = GROUP_ID,
+        groupId = groupId,
         createdBy = "user-2",
         description = "Pizza",
         amountMinor = 9_000L,
@@ -670,6 +744,7 @@ class ExpenseRepositoryImplTest {
 
     private companion object {
         const val GROUP_ID = "group-1"
+        const val OTHER_GROUP_ID = "group-2"
     }
 }
 
@@ -785,5 +860,10 @@ private class FakeExpenseRemoteDataSource(
     override suspend fun fetchExpenses(): List<ExpenseDto> {
         fetchError?.let { throw it }
         return rows
+    }
+
+    override suspend fun fetchExpenses(groupId: String): List<ExpenseDto> {
+        fetchError?.let { throw it }
+        return rows.filter { it.groupId == groupId }
     }
 }

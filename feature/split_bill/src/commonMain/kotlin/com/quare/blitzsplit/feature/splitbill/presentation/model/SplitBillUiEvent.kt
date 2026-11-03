@@ -264,6 +264,23 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     data object OnCategoryDeleteDismissed : Categories
 
+    // Why: what "Ler cupom fiscal" (7.1e to 7.1g) sends, which ReceiptScanning handles.
+    sealed interface Receipt : SplitBillUiEvent
+
+    // Why: "Ler cupom fiscal", and "Tirar outra foto" once it couldn't be read (7.1g): the camera or a file.
+    data object OnScanReceiptClicked : Receipt
+
+    // Why: the receipt's photo, from the camera, the gallery or a file, as it came.
+    class OnReceiptPhotoPicked(
+        val photo: ByteArray,
+    ) : Receipt
+
+    // Why: the camera or the file picker closed without a photo.
+    data object OnReceiptCameraDismissed : Receipt
+
+    // Why: "Tirar a foto do cupom": the bill keeps what was filled in, without the photo nor the receipt's items.
+    data object OnReceiptRemoved : Receipt
+
     data object OnSaveClicked : SplitBillUiEvent
 
     // Why: "Apagar conta" under the form of "Editar conta", which asks first.

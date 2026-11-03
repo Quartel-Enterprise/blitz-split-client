@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
@@ -2351,6 +2353,7 @@ class SplitBillViewModelTest {
         GROUP_ID,
         expenseId = null,
         picksGroupFirst = false,
+        scansReceipt = false,
     )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
@@ -2454,6 +2457,13 @@ class SplitBillViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },

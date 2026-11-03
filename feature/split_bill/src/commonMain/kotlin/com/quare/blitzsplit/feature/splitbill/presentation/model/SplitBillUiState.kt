@@ -84,6 +84,12 @@ data class SplitBillUiState(
     val itemDeletion: ItemDeletion?,
     // Why: the service's percentage or the couvert per person, open over "Itens da conta" while not null.
     val feeEditor: FeeEditor?,
+    // Why: "Ler cupom fiscal" (7.1e to 7.1g), null until a receipt's photo is picked.
+    val receipt: BillReceipt?,
+    // Why: the receipt's category, which the bill takes while the description's words choose none and none is picked.
+    val receiptCategoryId: String?,
+    // Why: the camera (Android, iOS) or the file picker (the Mac, the web), asked for until a photo comes or it closes.
+    val isReceiptCameraRequested: Boolean,
     // Why: someone else saved the bill while it was being edited here.
     val conflict: BillConflict?,
     // Why: a payment made after the bill whose pair's balance the change being typed moves (7.4b), said before saving.
@@ -172,11 +178,36 @@ data class SplitBillUiState(
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
         get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
-            !isDeleting
+            !isDeleting && !isReadingReceipt
 
-    // Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays.
+    // Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e).
+    val showsScanReceipt: Boolean
+        get() = !isEditing && receipt == null
+
+    // Why: reading needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
+    val canScanReceipt: Boolean
+        get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt
+
+    /*
+     * Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
+     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open.
+     */
+    val showsReceiptCamera: Boolean
+        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving
+
+    val isReadingReceipt: Boolean
+        get() = receipt?.status == ReceiptStatus.READING
+
+    // Why: "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão." (7.1g)
+    val showsReceiptFailure: Boolean
+        get() = receipt?.status == ReceiptStatus.UNREADABLE
+
+    /*
+     * Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays. Not
+     * while a receipt is being read, whose amounts come back in the currency it was sent with.
+     */
     val canChangeGroup: Boolean
-        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving
+        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isReadingReceipt
 
     // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
     val splitFollowsDefault: Boolean
@@ -204,6 +235,10 @@ data class SplitBillUiState(
     // Why: "Alimentação › Mercado": the main category above a subcategory, null for a main one.
     val categoryParent: Category?
         get() = category.parentId?.let { categories.findOrNull(it) }
+
+    // Why: the category the receipt suggests (7.1e), null without a receipt read or one this tree doesn't have.
+    val receiptCategory: Category?
+        get() = receiptCategoryId?.let { categories.findOrNull(it) }?.takeIf { !it.isOther }
 
     // Why: the category the map's term chooses, null when no term is in the description.
     val mapCategory: Category?
@@ -234,6 +269,7 @@ data class SplitBillUiState(
                 isCategoryPicked && mapCategory == null -> CategoryHint.PICKED
                 categoryMatches.size > 1 -> CategoryHint.BY_LONGEST_TERM
                 categoryMatches.size == 1 -> CategoryHint.BY_TERM
+                receiptCategory != null && receiptCategory?.id == category.id -> CategoryHint.BY_RECEIPT
                 else -> CategoryHint.NO_TERM
             }
         }
@@ -249,6 +285,7 @@ data class SplitBillUiState(
     val categorySuggestions: List<CategorySuggestion>
         get() {
             val fromMap = mapCategory?.let { listOf(it to CategorySuggestionReason.DESCRIPTION) }.orEmpty()
+            val fromReceipt = receiptCategory?.let { listOf(it to CategorySuggestionReason.RECEIPT) }.orEmpty()
             val used = categoryUsage.entries
                 .filter { (id, _) -> categories.findOrNull(id)?.isOther == false }
                 .sortedByDescending { it.value }
@@ -261,7 +298,7 @@ data class SplitBillUiState(
                     }
                 }
             val ofGroup = categories.all.filter { it.isGroupCategory }.map { it to CategorySuggestionReason.GROUP }
-            return (fromMap + used + ofGroup)
+            return (fromMap + fromReceipt + used + ofGroup)
                 .distinctBy { it.first.id }
                 .take(MAX_SUGGESTIONS)
                 .map { (suggested, reason) ->

@@ -2,6 +2,7 @@ import Accessibility
 import Observation
 import Shared
 import SwiftUI
+import UniformTypeIdentifiers
 
 @Observable
 final class SplitBillModel {
@@ -288,6 +289,7 @@ private struct PhoneSplitBill: View {
                     Form { whatSections }
                     Form {
                         detailsSection
+                        ReceiptSection(model: model)
                         settledPairSection
                         deleteSection
                     }
@@ -299,6 +301,8 @@ private struct PhoneSplitBill: View {
                 } bottom: {
                     Form {
                         detailsSection
+                        // The board leaves "Ler cupom fiscal" out here; Início's shortcut still opens the camera
+                        ReceiptSection(model: model, showsScanButton: false)
                         settledPairSection
                         deleteSection
                     }
@@ -306,6 +310,7 @@ private struct PhoneSplitBill: View {
                     Form {
                         whatSections
                         detailsSection
+                        ReceiptSection(model: model)
                         settledPairSection
                         deleteSection
                     }
@@ -341,6 +346,12 @@ private struct PhoneSplitBill: View {
             GroupSheet(model: model)
                 .foldSheetPlacement()
         }
+        .fullScreenCover(isPresented: model.receiptCameraShown(isSettled: isSettled)) {
+            ReceiptCameraView(
+                onPhoto: { data in model.receiptPicked(data) },
+                onDismiss: { model.send(SplitBillUiEventOnReceiptCameraDismissed.shared) },
+            )
+        }
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
@@ -368,6 +379,13 @@ private struct PhoneSplitBill: View {
                     .font(.subheadline)
             }
             .listRowBackground(Palette.accent.opacity(0.12))
+        }
+        if state.showsReceiptFailure {
+            Section {
+                ReceiptFailureText(model: model)
+                    .font(.subheadline)
+            }
+            .listRowBackground(Palette.negative.opacity(0.12))
         }
         Section {
             AmountField(currency: state.currency, text: model.amount, label: "Amount")
@@ -403,6 +421,9 @@ private struct PhoneSplitBill: View {
                     Text(verbatim: CategoryPickerCopy.hint(state))
                     if !state.isEditing, state.categoryMatches.count > 1 {
                         MatchedTerms(matches: state.categoryMatches)
+                    }
+                    if let receipt = state.receipt, receipt.status == .read {
+                        ReceiptReadChips(receipt: receipt)
                     }
                 }
             }
@@ -955,6 +976,18 @@ private struct MacBillForm: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
+            if state.showsReceiptFailure {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Couldn't read the receipt")
+                        .fontWeight(.semibold)
+                    ReceiptFailureText(model: model)
+                }
+                .font(.callout)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.negative.opacity(0.12), in: .rect(cornerRadius: 10))
+            }
             if let settledPair = state.settledPair {
                 SettledPairText(change: settledPair, currency: state.currency)
                     .font(.callout)
@@ -1065,6 +1098,7 @@ private struct MacBillForm: View {
                         }
                     }
                 }
+                MacReceiptRow(model: model)
             }
             .formStyle(.columns)
             if state.showsOfflineNotice {
@@ -1109,6 +1143,13 @@ private struct MacBillForm: View {
         .sheet(isPresented: severalPayersShown) {
             MacSeveralPayers(model: model)
         }
+        // "Ler Cupom Fiscal…" picks the receipt's photo from a file, as the Mac has no camera to frame it (7.1e)
+        .fileImporter(isPresented: model.receiptCameraShown(isSettled: isSettled), allowedContentTypes: [.image]) { result in
+            guard case let .success(url) = result else { return }
+            Task {
+                model.receiptPicked(await Self.readFile(url))
+            }
+        }
         .sheet(isPresented: groupShown) {
             MacGroupPicker(model: model)
         }
@@ -1119,6 +1160,15 @@ private struct MacBillForm: View {
             }
             .frame(width: 480, height: 560)
         }
+    }
+
+    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while
+    /// (@concurrent: with approachable concurrency a nonisolated async function runs on its caller's actor).
+    @concurrent
+    private nonisolated static func readFile(_ url: URL) async -> Data? {
+        let isScoped = url.startAccessingSecurityScopedResource()
+        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
+        return try? Data(contentsOf: url)
     }
 
     private var categoryFormShown: Binding<Bool> {

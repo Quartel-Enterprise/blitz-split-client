@@ -32,6 +32,7 @@ import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryFormPane, categoryHint, categoryPane, CategoryDeleteDialog } from './CategoryPane'
+import { ReceiptFailureAlert, ReceiptField, ReceiptInput, ReceiptReadChips, useReceiptInput } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
@@ -191,6 +192,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
+  const receiptInput = useReceiptInput(presenter, state)
 
   return (
     <form
@@ -201,6 +203,8 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         presenter.save()
       }}
     >
+      <ReceiptInput presenter={presenter} input={receiptInput} />
+      <ReceiptFailureAlert state={state} input={receiptInput} />
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <SettledPairAnnouncement change={state.settledPair} money={money} />
@@ -273,6 +277,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 ))}
               </div>
             )}
+            <ReceiptReadChips receipt={state.receipt} />
           </div>
         </div>
 
@@ -297,6 +302,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               money={money}
             />
           </div>
+          <ReceiptField presenter={presenter} state={state} input={receiptInput} />
         </div>
       </div>
 

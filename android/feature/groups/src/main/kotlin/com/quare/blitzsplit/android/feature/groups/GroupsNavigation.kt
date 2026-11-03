@@ -37,13 +37,14 @@ internal fun GroupsNavigationBar(
 @Composable
 internal fun GroupsNavigationRail(
     activityBadgeCount: Int,
+    showsSplitBill: Boolean,
     onEvent: (GroupsUiEvent) -> Unit,
 ) {
     SplitBillNavigationRail(
         selected = HomeTab.GROUPS,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
         activityBadgeCount = activityBadgeCount,
-        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
+        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { showsSplitBill },
     )
 }
 

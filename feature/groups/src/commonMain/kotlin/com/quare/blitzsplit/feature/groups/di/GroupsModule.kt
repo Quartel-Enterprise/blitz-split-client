@@ -36,6 +36,7 @@ val groupsModule = module {
             observeGroupsLayout = get(),
             observePeopleBalances = get(),
             observeActivityUnreadCount = get(),
+            observeFirstDownload = get(),
         )
     }
     viewModel {

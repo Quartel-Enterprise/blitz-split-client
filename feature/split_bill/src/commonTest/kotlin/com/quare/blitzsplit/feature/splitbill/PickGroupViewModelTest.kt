@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -342,7 +344,14 @@ class PickGroupViewModelTest {
     @Test
     fun `GIVEN a bill being edited WHEN tapping its group THEN nothing opens`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(screen = Route.SplitBill(TRIP_ID, "bill-1", picksGroupFirst = false))
+        prepareScenario(
+            screen = Route.SplitBill(
+                TRIP_ID,
+                "bill-1",
+                picksGroupFirst = false,
+                scansReceipt = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
@@ -452,12 +461,14 @@ class PickGroupViewModelTest {
         TRIP_ID,
         expenseId = null,
         picksGroupFirst = true,
+        scansReceipt = false,
     )
 
     private val fromGroup = Route.SplitBill(
         TRIP_ID,
         expenseId = null,
         picksGroupFirst = false,
+        scansReceipt = false,
     )
 
     private val trip = group(
@@ -565,6 +576,13 @@ class PickGroupViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

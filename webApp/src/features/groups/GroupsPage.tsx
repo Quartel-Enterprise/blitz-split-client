@@ -1,11 +1,12 @@
 import { ChevronRight, CloudOff, ListFilter, Plus, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
-import type { GroupsPresenter, JsBalanceTotal, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
+import type { GroupsPresenter, JsBalanceTotal, JsDownloadProgress, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupExitDialog } from '@/features/group-detail/GroupExitDialog'
+import { GroupSkeletonRows, GroupsFirstDownloadCard, syncingLabel } from '@/features/groups/FirstDownload'
 import { Faces, GroupBalance, QueuedBadge, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { GroupRowMenu } from '@/features/groups/GroupRowMenu'
 import { GroupsDisplayControls, GroupsGrid } from '@/features/groups/GroupsGrid'
@@ -53,9 +54,11 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
           <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.createGroup()}>
             <SquarePlus /> {t('groups_newGroup')}
           </Button>
-          <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
-            <Plus /> {t('groups_splitBill')}
-          </Button>
+          {state.showsSplitBillButton && (
+            <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
+              <Plus /> {t('groups_splitBill')}
+            </Button>
+          )}
           <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
             <SquarePlus />
           </Button>
@@ -65,7 +68,7 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         </div>
       </div>
 
-      <SummaryCards presenter={presenter} state={state} />
+      {state.firstDownload ? <GroupsFirstDownloadCard progress={state.firstDownload} /> : <SummaryCards presenter={presenter} state={state} />}
 
       <div className="flex flex-wrap items-center gap-3">
         <div role="tablist" aria-label={t('groups_status')} className="inline-flex h-9 items-center rounded-lg bg-muted p-[3px]">
@@ -107,6 +110,8 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         </>
       )}
 
+      {state.firstDownload && !state.showsSettledGroups && <GroupSkeletonRows count={state.firstDownload.placeholderCount} />}
+
       {exitGroup && (
         <GroupExitDialog
           exit={state.exit}
@@ -125,8 +130,20 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
 /** What the sync status reads, the same on Grupos and Início. */
 export type SyncState = Pick<JsGroupsState, 'syncBadge' | 'pendingChangeCount' | 'canRetrySync'>
 
-/** The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" or "Sem resposta do servidor" with "Tentar de novo". */
-export function SyncStatus({ state, presenter }: { state: SyncState; presenter: { retrySync(): void } }) {
+/**
+ * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…
+ * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
+ * de novo".
+ */
+export function SyncStatus({
+  state,
+  presenter,
+  downloadProgress,
+}: {
+  state: SyncState
+  presenter: { retrySync(): void }
+  downloadProgress?: JsDownloadProgress | null
+}) {
   if (!state.syncBadge) return null
   const isOffline = state.syncBadge === 'OFFLINE'
   const label = isOffline
@@ -135,7 +152,7 @@ export function SyncStatus({ state, presenter }: { state: SyncState; presenter: 
       : t('groups_syncOffline')
     : state.syncBadge === 'FAILED'
       ? t('groups_syncNoResponse')
-      : t('groups_syncSyncing')
+      : syncingLabel(downloadProgress)
   return (
     <>
       <span

@@ -12,6 +12,8 @@ import io.github.jan.supabase.postgrest.query.Order
 internal suspend inline fun <reified T : Any> Postgrest.fetchAllById(
     table: String,
     idOf: (T) -> String,
+    // Why: one group's rows, for a first download that brings each group whole; null for every group's.
+    groupId: String? = null,
     pageSize: Long = 1_000L,
 ): List<T> {
     val rows = mutableListOf<T>()
@@ -19,7 +21,10 @@ internal suspend inline fun <reified T : Any> Postgrest.fetchAllById(
         val lastId = rows.lastOrNull()?.let(idOf)
         val page = from(table)
             .select {
-                if (lastId != null) filter { gt("id", lastId) }
+                filter {
+                    if (groupId != null) eq("group_id", groupId)
+                    if (lastId != null) gt("id", lastId)
+                }
                 order(
                     column = "id",
                     order = Order.ASCENDING,

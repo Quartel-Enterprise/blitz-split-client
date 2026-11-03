@@ -69,6 +69,7 @@ import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
@@ -105,8 +106,12 @@ fun GroupsContent(
         return
     }
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
-        // Why: with no group yet the empty home keeps its top bar and its one card.
-        val usesSideColumn = layout == DeviceLayout.PhoneLandscape && state.groups.isNotEmpty()
+        /*
+         * Why: with no group yet the empty home keeps its top bar and its one card; a first download draws the list
+         * from the start, so the first group arriving doesn't move "Trazendo seus grupos" to the side column.
+         */
+        val usesSideColumn = layout == DeviceLayout.PhoneLandscape &&
+            (state.groups.isNotEmpty() || state.firstDownload != null)
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
          * the rail already takes.
@@ -115,6 +120,7 @@ fun GroupsContent(
             if (layout.usesNavigationRail) {
                 GroupsNavigationRail(
                     activityBadgeCount = state.activityUnreadCount,
+                    showsSplitBill = state.showsSplitBillButton,
                     onEvent = onEvent,
                 )
             }
@@ -139,7 +145,7 @@ fun GroupsContent(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
-                    if (!layout.usesNavigationRail && !state.isSearching) {
+                    if (!layout.usesNavigationRail && !state.isSearching && state.showsSplitBillButton) {
                         ExtendedFloatingActionButton(
                             onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
                             icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
@@ -194,7 +200,7 @@ fun GroupsContent(
                         .padding(padding)
                         .consumeWindowInsets(padding),
                 ) {
-                    if (state.groups.isEmpty()) {
+                    if (state.groups.isEmpty() && state.firstDownload == null) {
                         EmptyGroupsPane(
                             layout = layout,
                             showsCard = state.showsEmptyState,
@@ -429,6 +435,17 @@ private fun EmptyGroupsColumn(
     }
 }
 
+@Composable
+private fun syncingLabelOf(progress: DownloadProgress?): String {
+    val groupCount = progress?.groupCount ?: return stringResource(R.string.groups_sync_syncing)
+    return pluralStringResource(
+        R.plurals.groups_sync_syncing_groups,
+        groupCount,
+        progress.arrivedGroupCount,
+        groupCount,
+    )
+}
+
 // Why: the chip only shows while the sync asks for attention; Grupos and Início draw it alike.
 @Composable
 internal fun SyncBadgeChip(
@@ -436,6 +453,8 @@ internal fun SyncBadgeChip(
     pendingChangeCount: Int,
     canRetry: Boolean,
     onRetry: () -> Unit,
+    // Why: "Sincronizando… 3 de 7 grupos" while a first download knows how many groups are coming.
+    downloadProgress: DownloadProgress? = null,
 ) {
     val (icon, label) = when (badge) {
         null -> return
@@ -446,7 +465,7 @@ internal fun SyncBadgeChip(
             stringResource(R.string.groups_sync_offline)
         }
 
-        SyncBadge.SYNCING -> Icons.Outlined.CloudSync to stringResource(R.string.groups_sync_syncing)
+        SyncBadge.SYNCING -> Icons.Outlined.CloudSync to syncingLabelOf(downloadProgress)
 
         SyncBadge.FAILED -> Icons.Outlined.Refresh to stringResource(R.string.groups_sync_failed)
     }

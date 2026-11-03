@@ -35,6 +35,8 @@ internal fun categoryHintOf(state: SplitBillUiState): String {
             path,
         )
 
+        CategoryHint.BY_RECEIPT -> stringResource(R.string.split_bill_category_by_receipt, path)
+
         CategoryHint.NO_TERM -> stringResource(R.string.split_bill_category_no_term)
 
         CategoryHint.CHANGED -> stringResource(

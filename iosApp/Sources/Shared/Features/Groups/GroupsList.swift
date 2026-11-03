@@ -43,7 +43,11 @@ struct GroupsList: View {
                 if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
                     syncStatusRow(status)
                 }
-                GroupsSummaryCard(summary: state.summary, isStacked: true, send: { model.send($0) })
+                if let progress = state.firstDownload {
+                    GroupsFirstDownloadCard(progress: progress)
+                } else {
+                    GroupsSummaryCard(summary: state.summary, isStacked: true, send: { model.send($0) })
+                }
             }
             .padding(.leading, 20)
             .padding(.vertical, 12)
@@ -69,9 +73,15 @@ struct GroupsList: View {
                     }
                 }
                 Section {
-                    GroupsSummaryCard(summary: state.summary, isStacked: false, send: { model.send($0) })
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
+                    if let progress = state.firstDownload {
+                        GroupsFirstDownloadCard(progress: progress)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                    } else {
+                        GroupsSummaryCard(summary: state.summary, isStacked: false, send: { model.send($0) })
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                    }
                 }
             }
             Section {
@@ -97,6 +107,12 @@ struct GroupsList: View {
                 } else {
                     ForEach(state.openGroups, id: \.id) { group in
                         row(group)
+                    }
+                }
+                // The groups still coming down hold their place under those that came
+                if let progress = state.firstDownload {
+                    ForEach(0..<Int(progress.placeholderCount), id: \.self) { _ in
+                        GroupSkeletonRow()
                     }
                 }
             } header: {

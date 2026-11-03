@@ -223,6 +223,12 @@ fun SplitBillScreen(
             onDismiss = { viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed) },
         )
     }
+    if (state.showsReceiptCamera) {
+        ReceiptCameraDialog(
+            onPhoto = { photo -> viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(photo)) },
+            onDismiss = { viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed) },
+        )
+    }
     if (isPickingSpentAt) {
         DateTimePickerDialog(
             epochMillis = state.spentAt,

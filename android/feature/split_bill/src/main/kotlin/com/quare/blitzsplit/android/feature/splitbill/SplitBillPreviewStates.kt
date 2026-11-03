@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemPersonRow
@@ -138,6 +139,7 @@ internal fun createPreviewBillState(
     conflict: BillConflict? = null,
     settledPair: SettledPairChange? = null,
     groupSelection: GroupSelection? = null,
+    receipt: BillReceipt? = null,
 ): SplitBillUiState = SplitBillUiState(
     isEditing = isEditing,
     groupId = PREVIEW_TRIP_ID,
@@ -186,6 +188,9 @@ internal fun createPreviewBillState(
     categoryPicker = null,
     categoryForm = null,
     categoryDeletion = null,
+    receipt = receipt,
+    receiptCategoryId = null,
+    isReceiptCameraRequested = false,
     conflict = conflict,
     settledPair = settledPair,
     deletion = null,

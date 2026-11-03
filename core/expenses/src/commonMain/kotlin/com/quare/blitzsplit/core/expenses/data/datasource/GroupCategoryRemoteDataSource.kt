@@ -7,4 +7,7 @@ interface GroupCategoryRemoteDataSource {
 
     // Why: every category of the user's groups, deleted ones included, page by page.
     suspend fun fetchCategories(): List<GroupCategoryDto>
+
+    // Why: every category of one group, deleted ones included, for a first download that brings each group whole.
+    suspend fun fetchCategories(groupId: String): List<GroupCategoryDto>
 }

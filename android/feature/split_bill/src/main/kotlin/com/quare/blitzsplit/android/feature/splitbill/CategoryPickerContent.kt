@@ -206,6 +206,8 @@ private fun SuggestedCategoriesSection(
                         R.string.split_bill_category_reason_description,
                     )
 
+                    CategorySuggestionReason.RECEIPT -> stringResource(R.string.split_bill_category_reason_receipt)
+
                     CategorySuggestionReason.MOST_USED -> stringResource(R.string.split_bill_category_reason_most_used)
 
                     CategorySuggestionReason.GROUP -> stringResource(R.string.split_bill_category_reason_group)

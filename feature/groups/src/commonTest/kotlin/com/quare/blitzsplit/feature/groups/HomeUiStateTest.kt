@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
@@ -65,6 +66,35 @@ class HomeUiStateTest {
 
         // Then
         assertEquals(listOf(true, false, false), shown)
+    }
+
+    @Test
+    fun `GIVEN a first download with groups already down WHEN Inicio draws THEN shows the home not the first use`() {
+        // Given
+        val state = state(groupCount = 3).copy(
+            firstDownload = DownloadProgress(
+                arrivedGroupCount = 3,
+                groupCount = 7,
+            ),
+        )
+
+        // When
+        val shown = listOf(state.isFirstDownload, state.showsHome, state.showsFirstUse)
+
+        // Then
+        assertEquals(listOf(true, true, false), shown)
+    }
+
+    @Test
+    fun `GIVEN no first download WHEN Inicio draws THEN it is no first download`() {
+        // Given
+        val state = state(groupCount = 0)
+
+        // When
+        val isFirstDownload = state.isFirstDownload
+
+        // Then
+        assertFalse(isFirstDownload)
     }
 
     @Test
@@ -228,7 +258,10 @@ class HomeUiStateTest {
         accountProvider = null,
         syncBadge = syncBadge,
         pendingChangeCount = 0,
-        isFirstDownload = isFirstDownload,
+        firstDownload = DownloadProgress(
+            arrivedGroupCount = 0,
+            groupCount = null,
+        ).takeIf { isFirstDownload },
         isOnline = isOnline,
         isLoaded = isLoaded,
         groupCount = groupCount,

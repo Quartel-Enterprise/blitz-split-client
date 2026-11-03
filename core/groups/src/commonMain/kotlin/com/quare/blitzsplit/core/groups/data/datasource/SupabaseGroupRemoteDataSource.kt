@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
+import com.quare.blitzsplit.core.groups.data.dto.FirstDownloadGroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupIdParamsDto
@@ -45,6 +46,22 @@ class SupabaseGroupRemoteDataSource(
     override suspend fun fetchGroups(): List<GroupDto> = fetchAll(GROUPS)
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
+
+    override suspend fun fetchFirstDownloadGroupIds(): List<String> = postgrest
+        .rpc(FIRST_DOWNLOAD_GROUPS)
+        .decodeList<FirstDownloadGroupDto>()
+        .map { it.groupId }
+
+    override suspend fun fetchGroup(groupId: String): GroupDto? = postgrest
+        .from(GROUPS)
+        .select { filter { eq("id", groupId) } }
+        .decodeSingleOrNull<GroupDto>()
+
+    // Why: a group's members fit in one page, far under the API's max_rows.
+    override suspend fun fetchMembers(groupId: String): List<GroupMemberDto> = postgrest
+        .from(MEMBERS)
+        .select { filter { eq("group_id", groupId) } }
+        .decodeList<GroupMemberDto>()
 
     // Why: only the id and the photo, never the rest of someone else's profile.
     override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> = fetchAll(
@@ -153,6 +170,7 @@ class SupabaseGroupRemoteDataSource(
         const val LEAVE_GROUP = "leave_group"
         const val DELETE_GROUP = "delete_group"
         const val REMOVED_GROUPS = "removed_groups"
+        const val FIRST_DOWNLOAD_GROUPS = "first_download_groups"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

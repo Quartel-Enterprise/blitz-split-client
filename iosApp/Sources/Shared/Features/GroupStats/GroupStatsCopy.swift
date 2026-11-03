@@ -4,6 +4,11 @@ import Shared
 /// The words of "Statistics", the same on iPhone, iPad and the Mac. Days arrive as the first instant of each day in
 /// epoch millis; each is written in the device's language ("Oct 24 – 29", "September 2026", "Jul", "2025").
 enum GroupStatsCopy {
+    /// "Total spent so far" (5.1d) while a new device's first download still brings bills down, else "Total spent".
+    static func totalLabel(_ state: GroupStatsUiState) -> String {
+        state.isFirstDownload ? String(localized: "Total spent so far") : String(localized: "Total spent")
+    }
+
     /// "The whole trip" in a trip, "All time" in any other group, and the other periods by name.
     static func period(_ period: StatsPeriod, isTrip: Bool) -> String {
         if period == .all {

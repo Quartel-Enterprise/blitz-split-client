@@ -12,15 +12,19 @@ import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 private const val PREVIEW_TWO_MINUTES_MILLIS = 120_000L
 private const val PREVIEW_SETTLED_PAIR_MINOR = 2_000L
+private const val PREVIEW_RECEIPT_ITEMS = 14
 
 @Composable
 fun SplitBillContent(
@@ -34,6 +38,8 @@ fun SplitBillContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
+    // Why: the tabletop's halves leave "Ler cupom fiscal" out of the form; Início's shortcut still opens the camera.
+    val usesTabletopHalves = rememberUsesTabletopHalves(isDialog)
     ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(if (state.isEditing) R.string.split_bill_edit_title else R.string.split_bill_title),
@@ -52,12 +58,14 @@ fun SplitBillContent(
         snackbarHostState = snackbarHostState,
         first = {
             state.conflict?.let { BillConflictBanner(it) }
+            ReceiptFailureBanner(state, onEvent)
             if (state.isLoaded) {
                 BillFieldsSection(
                     state = state,
                     money = money,
                     onEvent = onEvent,
                 )
+                ReceiptReadRow(state)
             }
         },
         second = {
@@ -67,6 +75,11 @@ fun SplitBillContent(
                     money = money,
                     dates = dates,
                     onWhenClick = onWhenClick,
+                    onEvent = onEvent,
+                )
+                ReceiptSection(
+                    state = state,
+                    showsScanButton = !usesTabletopHalves,
                     onEvent = onEvent,
                 )
                 if (state.isEditing) {
@@ -141,6 +154,48 @@ private fun SplitBillContentSettledPairPreview() {
                 outcome = SettledPairOutcome.OWES_AGAIN,
                 debtorIsPayer = true,
                 amountMinor = PREVIEW_SETTLED_PAIR_MINOR,
+            ),
+        ),
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentReceiptReadingPreview() {
+    PreviewSplitBillContent(
+        createPreviewBillState(
+            receipt = BillReceipt(
+                status = ReceiptStatus.READING,
+                itemCount = 0,
+                hasPhoto = true,
+            ),
+        ),
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentReceiptReadPreview() {
+    PreviewSplitBillContent(
+        createPreviewBillState(
+            receipt = BillReceipt(
+                status = ReceiptStatus.READ,
+                itemCount = PREVIEW_RECEIPT_ITEMS,
+                hasPhoto = true,
+            ),
+        ),
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentReceiptFailedPreview() {
+    PreviewSplitBillContent(
+        createPreviewBillState(
+            receipt = BillReceipt(
+                status = ReceiptStatus.UNREADABLE,
+                itemCount = 0,
+                hasPhoto = true,
             ),
         ),
     )

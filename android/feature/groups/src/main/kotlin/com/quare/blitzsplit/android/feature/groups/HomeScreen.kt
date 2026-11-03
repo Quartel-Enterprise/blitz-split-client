@@ -22,7 +22,6 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
-            HomeUiAction.ShowComingSoon -> R.string.groups_coming_soon
             HomeUiAction.ShowChangeError -> R.string.groups_change_error
         }
     }

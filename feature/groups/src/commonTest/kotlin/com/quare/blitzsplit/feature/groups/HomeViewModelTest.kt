@@ -62,6 +62,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUs
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
@@ -352,17 +353,28 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN says it is coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
+    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN opens Rachar conta on the camera asking the group first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
 
-        // When
-        viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
 
-        // Then
-        assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Home), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.SplitBill(
+                        groupId = trio().id,
+                        expenseId = null,
+                        picksGroupFirst = true,
+                        scansReceipt = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN no internet WHEN tapping Ler cupom fiscal THEN does nothing`() = runTest(testDispatcher) {
@@ -376,7 +388,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
 
         // Then
-        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
         assertFalse(viewModel.uiState.value.canScanReceipt)
     }
 
@@ -480,6 +492,7 @@ class HomeViewModelTest {
                         groupId = "old",
                         expenseId = null,
                         picksGroupFirst = true,
+                        scansReceipt = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1095,16 +1108,6 @@ class HomeViewModelTest {
     fun `GIVEN a bill of a group category WHEN someone renames it THEN its row on Inicio follows`() =
         runTest(testDispatcher) {
             // Given
-            val barbecue = GroupCategory(
-                id = "barbecue",
-                groupId = "trio",
-                parentId = null,
-                name = "Churrasco",
-                icon = CategoryIcon.GIFT,
-                createdByMemberId = "member-Ana",
-                isDeleted = false,
-                isPending = false,
-            )
             prepareScenario(
                 storedGroups = listOf(trio()),
                 storedExpenses = listOf(bill("meat", categoryId = "barbecue")),
@@ -1122,6 +1125,28 @@ class HomeViewModelTest {
                 .category
             assertEquals("Churras", category.name)
             assertEquals(CategoryIcon.GIFT, category.icon)
+        }
+
+    @Test
+    fun `GIVEN a bill of a group category WHEN someone deletes it THEN its row on Inicio reads Outros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("meat", categoryId = "barbecue")),
+                storedCategories = listOf(barbecue),
+            )
+
+            // When
+            categories.groupCategories.value = listOf(barbecue.copy(isDeleted = true))
+
+            // Then
+            val category = viewModel.uiState.value.billDays
+                .single()
+                .bills
+                .single()
+                .category
+            assertTrue(category.isOther)
         }
 
     @Test
@@ -1257,7 +1282,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a first download with groups already down WHEN Inicio opens THEN is no first download`() =
+    fun `GIVEN a first download with groups already down WHEN Inicio opens THEN shows them as still downloading`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1271,7 +1296,7 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertFalse(state.isFirstDownload)
+            assertTrue(state.isFirstDownload)
             assertTrue(state.showsHome)
         }
 
@@ -1324,8 +1349,97 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state.showsHome)
             assertFalse(state.showsFirstUse)
-            assertFalse(state.isFirstDownload)
+            assertTrue(state.isFirstDownload)
             assertEquals(1, state.groupCount)
+        }
+
+    @Test
+    fun `GIVEN a first download just started WHEN Inicio opens THEN counts no group out of an unknown number`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                DownloadProgress(
+                    arrivedGroupCount = 0,
+                    groupCount = null,
+                ),
+                state.firstDownload,
+            )
+        }
+
+    @Test
+    fun `GIVEN 2 of 7 groups down WHEN the third one arrives THEN counts 3 of 7`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+            syncState = SyncState.SYNCING,
+            isFirstDownloadPending = true,
+        )
+        firstDownload.expect(7)
+        firstDownload.groupArrived()
+        firstDownload.groupArrived()
+
+        // When
+        firstDownload.groupArrived()
+
+        // Then
+        assertEquals(
+            DownloadProgress(
+                arrivedGroupCount = 3,
+                groupCount = 7,
+            ),
+            viewModel.uiState.value.firstDownload,
+        )
+        assertTrue(viewModel.uiState.value.isFirstDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download with groups already down WHEN it ends THEN shows the home without the progress`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                syncState = SyncState.SYNCING,
+                storedGroups = listOf(trio()),
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            firstDownload.end()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.firstDownload)
+            assertFalse(state.isFirstDownload)
+            assertTrue(state.showsHome)
+            assertFalse(state.showsFirstUse)
+        }
+
+    @Test
+    fun `GIVEN an account relaunched with its groups WHEN Inicio opens THEN shows no first download`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                syncState = SyncState.SYNCING,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.firstDownload)
+            assertTrue(state.showsHome)
         }
 
     @Test
@@ -1871,6 +1985,17 @@ class HomeViewModelTest {
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
 
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
+
+    private val barbecue = GroupCategory(
+        id = "barbecue",
+        groupId = "trio",
+        parentId = null,
+        name = "Churrasco",
+        icon = CategoryIcon.GIFT,
+        createdByMemberId = "member-Ana",
+        isDeleted = false,
+        isPending = false,
+    )
 
     private val registerPayment = Route.RegisterPayment(
         groupId = "trio",

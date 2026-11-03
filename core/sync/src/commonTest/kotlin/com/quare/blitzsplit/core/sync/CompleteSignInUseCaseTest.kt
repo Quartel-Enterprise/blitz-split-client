@@ -110,7 +110,7 @@ class CompleteSignInUseCaseTest {
 
             // Then
             assertEquals(Result.success(SignInOutcome.PROFILE_RESTORED), outcome)
-            assertTrue(firstDownload.observeIsPending().value)
+            assertTrue(firstDownload.isPending)
         }
 
     @Test
@@ -125,7 +125,7 @@ class CompleteSignInUseCaseTest {
             val pendingWhenProfileArrived = mutableListOf<Boolean>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 profile.profile.filterNotNull().collect {
-                    pendingWhenProfileArrived += firstDownload.observeIsPending().value
+                    pendingWhenProfileArrived += firstDownload.isPending
                 }
             }
 
@@ -150,7 +150,7 @@ class CompleteSignInUseCaseTest {
 
             // Then
             assertEquals(Result.success(SignInOutcome.NEEDS_PROFILE), outcome)
-            assertFalse(firstDownload.observeIsPending().value)
+            assertFalse(firstDownload.isPending)
         }
 
     @Test
@@ -167,7 +167,7 @@ class CompleteSignInUseCaseTest {
 
         // Then
         assertEquals(Result.success(SignInOutcome.PROFILE_RESTORED), outcome)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -186,7 +186,7 @@ class CompleteSignInUseCaseTest {
 
         // Then
         assertEquals(Result.failure(error), outcome)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -202,7 +202,7 @@ class CompleteSignInUseCaseTest {
 
         // Then
         assertEquals(Result.success(SignInOutcome.NEEDS_PROFILE), outcome)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     private fun prepareScenario(

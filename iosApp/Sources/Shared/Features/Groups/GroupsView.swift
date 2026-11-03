@@ -76,7 +76,13 @@ struct GroupsView: View {
     var body: some View {
         let state = model.state
         Group {
-            if !state.groups.isEmpty {
+            #if os(iOS)
+            // The first download draws the list before its first group, with what is still coming in grey
+            let showsList = !state.groups.isEmpty || state.firstDownload != nil
+            #else
+            let showsList = !state.groups.isEmpty
+            #endif
+            if showsList {
                 #if os(iOS)
                 GroupsList(model: model)
                 #else
@@ -149,14 +155,16 @@ struct GroupsView: View {
                 profileButton
             }
             .prefersVerticalBar()
-            ToolbarSpacer(.fixed, placement: .primaryAction)
-            ToolbarItem(placement: .primaryAction) {
-                Button("Split a bill", systemImage: "plus") {
-                    model.send(GroupsUiEventOnSplitBillClicked.shared)
+            if state.showsSplitBillButton {
+                ToolbarSpacer(.fixed, placement: .primaryAction)
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Split a bill", systemImage: "plus") {
+                        model.send(GroupsUiEventOnSplitBillClicked.shared)
+                    }
+                    .buttonStyle(.glassProminent)
                 }
-                .buttonStyle(.glassProminent)
+                .prefersVerticalBar()
             }
-            .prefersVerticalBar()
         }
         #else
         .navigationSubtitle(macSubtitle)
@@ -198,9 +206,11 @@ struct GroupsView: View {
                 }
                 profileButton
             }
-            ToolbarItem(placement: .primaryAction) {
-                SplitBillButton {
-                    model.send(GroupsUiEventOnSplitBillClicked.shared)
+            if state.showsSplitBillButton {
+                ToolbarItem(placement: .primaryAction) {
+                    SplitBillButton {
+                        model.send(GroupsUiEventOnSplitBillClicked.shared)
+                    }
                 }
             }
         }
@@ -248,19 +258,25 @@ struct GroupsView: View {
         )
     }
 
-    /// "Offline · 1 change queued · 4 open", "4 open", "1 settled up", or "Searching groups, people and expenses".
+    /// "Offline · 1 change queued · 4 open", "4 open", "1 settled up", or "Searching groups, people and expenses"; a
+    /// first download's "Syncing… 3 of 7 groups" in front, the Mac's place for it, as Home's.
     private var macSubtitle: Text {
         let state = model.state
         if state.isSearching, state.search.hasQuery {
             return Text("Searching groups, people and expenses")
         }
+        let sync = GroupsCopy.sync(
+            state.syncBadge,
+            pendingChangeCount: state.pendingChangeCount,
+            downloadProgress: state.firstDownload,
+        )
         guard !state.groups.isEmpty else {
-            return Text(verbatim: GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) ?? "")
+            return Text(verbatim: sync ?? "")
         }
         let count = state.showsSettledGroups
             ? String(localized: "\(state.settledGroups.count) settled up")
             : String(localized: "\(state.openGroups.count) open")
-        guard let sync = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) else {
+        guard let sync else {
             return Text(verbatim: count)
         }
         return Text(verbatim: "\(sync) · \(count)")
