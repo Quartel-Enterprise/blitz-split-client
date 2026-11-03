@@ -58,6 +58,14 @@ enum class GroupCurrency(
     CHF("CHF", setOf("CH", "LI")),
     ;
 
+    private val minorPerMajor: Long = (1..fractionDigits).fold(1L) { units, _ -> units * 10 }
+
+    /*
+     * Why: an amount shown on screen drops its decimals when they are all zero ("R$ 500", never "R$ 500,00"), and
+     * keeps every one otherwise ("R$ 12,50"), amount by amount, so a list may mix both. Fields keep the currency's.
+     */
+    fun getDisplayFractionDigits(amountMinor: Long): Int = if (amountMinor % minorPerMajor == 0L) 0 else fractionDigits
+
     companion object {
         // Why: a region without a currency of the list, or no region at all, splits in dollars.
         val fallback: GroupCurrency = USD

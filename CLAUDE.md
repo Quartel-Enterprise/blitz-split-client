@@ -58,6 +58,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     paste reads as an amount ("12,5", "R$ 1.234,56"), and a bill moved to a group of another currency keeps its number
     with the decimals cut (`TypedText.toAmountText`, `toCurrency`). Percentages, parts and quantities stay whole
     numbers.
+  - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
+    "+R$ 125 a receber", "você recebe 120 e deve 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
+    decided amount by amount, so one list may mix "R$ 125" and "R$ 12,50" (`GroupCurrency.getDisplayFractionDigits`,
+    which Android's `MoneyFormatter`, Apple's `GroupCurrency.format` and the web's `formatMoney` apply), Cobrar's
+    message included. Amount fields and their placeholders keep the currency's decimals, and what a machine reads
+    (the Pix BR Code) keeps its exact format.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
@@ -149,8 +155,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
     Firebase service account on the server, the web's VAPID keys on both (`docs/push-notifications.md`). Muting a
     group isn't built yet, though the footer of Notificações mentions it.
-  - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
-    deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
+  - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98 você
+    deve", "R$ 0 · você está quitado" while others still owe, "sem despesas"), "você recebe 120 e deve 218"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
     the group itself, of its bills and of its payments, not the "Quando" they are dated ("hoje", "ontem", "3 dias", "1
     semana" up to four weeks, then the date), counted again each minute so a home left open past midnight says "ontem"
@@ -185,7 +191,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     opens Registrar pagamento and "Ver saldos" the group's Saldos over it. Once that Registrar pagamento closes, the
     home shows "Pagamento de Ana registrado." with "Desfazer", as the group's screens do, and consumes it, so the
     group never shows it later (`GroupsUiState.recordedPayment`). Offline both show disabled with "Precisa de
-    internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98,00 antes" (what
+    internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98 antes" (what
     you owe, else what you're owed, `GroupRow.settleBeforeLeavingMinor`) and "Só quando todos tiverem acertado"
     (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
     On Android their dialogs (`GroupExitAlertDialog`, the group's too) take a book's right half and a tabletop's top
@@ -308,7 +314,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and the filter stay still in a 300 pt column on the left while the people scroll on the right).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
-    net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's
+    net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0 · quitado") and "3 grupos" or the group's
     name, under the card "Você deve / Te devem / Ver Saldos" (Saldos' totals). It all works offline on the device's
     data ("Offline · contatos deste aparelho"). "Buscar" looks in the people (hidden ones too) and, on Android and
     Apple, in the device's agenda when access was already given ("Na agenda", with Convidar). "Ocultos" holds whoever
@@ -351,7 +357,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     deleted. "Enviar comentário" stays disabled until something is typed (1 to 1000 letters); the composer is pinned
     at the bottom on a phone and under the comments in two columns. Offline, a banner says "Sem internet.
     Comentários e fotos ficam na fila e saem ao reconectar.". "Histórico" lists what was done to the bill, by day,
-    the most recent first, never the comments: created ("Igual entre 5 · R$ 312,00", "criou a conta sem internet"
+    the most recent first, never the comments: created ("Igual entre 5 · R$ 312", "criou a conta sem internet"
     while it waits to go up), each edit's first change with the others under it ("trocou a categoria", "mudou a
     divisão" with each part that moved), photos added in a row as one line, a photo removed and the share link
     changed. It reads the device's 90 days of Atividade and, online, the bill's whole history from the server
@@ -429,8 +435,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     While the change typed in "Editar conta" moves the balance of a pair with a payment dated at or after the
     "Quando" being typed (the saved one for "Apagar"), the form says so before saving, live as it is typed, so moving
     Quando past a payment or before it changes what it says: "Elisa já acertou com Bruno depois desta conta. O acerto
-    continua valendo e o saldo é refeito: com a mudança, Elisa volta a dever R$ 20,00 a Bruno." ("passa a dever" the
-    other way round or for more of what was still owed, "fica devendo R$ 30,00 a Bruno" for less of it, the same way
+    continua valendo e o saldo é refeito: com a mudança, Elisa volta a dever R$ 20 a Bruno." ("passa a dever" the
+    other way round or for more of what was still owed, "fica devendo R$ 30 a Bruno" for less of it, the same way
     round, "ficam quitados" when they end up even; "você fica devendo R$ X a Bruno" and "Bruno fica te devendo R$ X"
     with this device's user), naming only the latest such payment (`SettledPairChange`, the group's `GroupBalances`
     with the saved bill and with the change). It takes the place of "Qualquer pessoa do grupo pode editar ou
@@ -445,7 +451,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal para Carla" (the
     menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their
     single use personal link with Copiar and "Compartilhar com Carla", and says what whoever joins through it already
-    finds: "e já vê a parte de R$ 300,00 na despesa lançada" ("nas 3 despesas lançadas", their parts summed;
+    finds: "e já vê a parte de R$ 300 na despesa lançada" ("nas 3 despesas lançadas", their parts summed;
     nothing while no bill gives them a part, `PersonalInvite.billCount`). Each member shows their balance ("+R$
     223,50 a receber"), and someone with an open balance can't be removed either ("Carla tem saldo em aberto",
     `MembersMember.hasOpenBalance`). Only the group's creator sees
@@ -462,7 +468,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     mundo acertou" offers "Apagar grupo". An Android tabletop (6.2) draws Saldos alone, full screen, even where its
     other tabs stay beside Grupos' list lying down: a one-line bar, the tabs and "Seu saldo neste grupo" above the
     hinge, and the pairs under it, "Com você" beside "Entre os outros" while both have one, with no "Rachar conta".
-  - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0,00 ·
+  - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0 ·
     você está quitado" when settled, and its "Acertar" opens Registrar pagamento with whoever you owe the most, hidden
     when you owe nobody.
   - "Registrar pagamento" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
@@ -500,7 +506,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Copiado" toast; Android keeps the copied key out of the clipboard's preview. A phone's sheet
     is one column, two lying down (who, how and the default key, then the code, the other keys and the buttons);
     the tablet's dialog (a book's right half) and the iPad's form sheet one column; an Android tabletop full screen
-    as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
+    as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
     grupo" (`Route.EditGroup`) has Novo grupo's fields, the icon being a shape and a color or a photo (6.4d): on
@@ -537,9 +543,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
-    percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar
+    percentages they give (`IncomePercents`). "Numa conta de R$ 100: Pierre R$ 75 · Ana R$ 25" with the bar
     in each one's color is always in sight, the cents as Rachar conta shares them (Igual's example is the first round
-    bill everyone gets the same of, R$ 120,00 among six). It is one field of the group row (`groups.default_split`,
+    bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
@@ -572,7 +578,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     one shared queue); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",
     which opens "Várias pessoas pagaram" in its place: each person's amount, adding up to the total exactly ("R$
-    312,00 de R$ 312,00. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
+    312 de R$ 312. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
     (`SplitBillUiState.severalPayers`, `payerAmounts`). A new total keeps what each one paid, and Salvar waits until
     someone makes it add up again; one person holding the whole total is one payer again. "Quando"
     picks date and time, never after now. A bill is 0.01 to 100 million in the group's currency with a
@@ -608,8 +614,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     percentage of the items (10% to start, 0 for none) shared in proportion to what each one consumed, and the
     "Couvert" a value per person (none to start) for everyone in the group when the items were split
     (`BillItems.couvertMemberIds`); tapping either row opens its field. Pronto waits until every item has someone
-    ("2 itens sem ninguém", in red) and the items, service and couvert close with the total ("Faltam R$ 15,00" or
-    "Passou", "o cupom diz" for items a receipt gave), offering "Adicionar item de R$ 15,00" (a new item at that price)
+    ("2 itens sem ninguém", in red) and the items, service and couvert close with the total ("Faltam R$ 15" or
+    "Passou", "o cupom diz" for items a receipt gave), offering "Adicionar item de R$ 15" (a new item at that price)
     and "Dividir a diferença" (shared in proportion to what each one consumed, a "Diferença" row that can be taken
     off). Apagar item asks first, saying what is left to split once it goes. Back keeps the items typed for Itens to
     open with again until Dividir closes or another mode's Pronto. The bill keeps its items inside its row
