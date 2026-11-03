@@ -85,7 +85,7 @@
     <string name="bill_detail_attachment_yesterday">yesterday</string>
     <string name="bill_detail_attachment_open">Open</string>
     <string name="bill_detail_add_photo">Add photo</string>
-    <string name="bill_detail_add_photo_sub">Camera or gallery</string>
+    <string name="bill_detail_add_photo_menu">Camera or gallery</string>
     <string name="bill_detail_take_photo">Take photo</string>
     <string name="bill_detail_choose_photo">Choose from gallery</string>
     <string name="bill_detail_photo_unreadable">Couldn\'t open that image. Pick another one.</string>
