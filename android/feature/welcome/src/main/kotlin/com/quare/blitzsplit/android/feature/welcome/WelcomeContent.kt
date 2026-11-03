@@ -115,7 +115,10 @@ private fun WelcomeSingleColumn(
         ) {
             if (layout.isTablet) {
                 // Why: upright on a tablet the pitch panel sits on top and the actions below it.
-                WelcomePitchPanel(modifier = Modifier.padding(horizontal = 24.dp))
+                WelcomePitchPanel(
+                    isScrollable = false,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
             } else {
                 ShapeClusterHero(modifier = Modifier.padding(horizontal = 16.dp))
                 Text(
@@ -218,7 +221,10 @@ private fun WelcomeTabletLandscapeLayout(
             modifier = Modifier.widthIn(max = twoColumnsMaxWidth).fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(48.dp),
         ) {
-            WelcomePitchPanel(modifier = Modifier.weight(1f).fillMaxHeight())
+            WelcomePitchPanel(
+                isScrollable = true,
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -249,6 +255,7 @@ private fun WelcomeBookLayout(
     TwoHalvesLayout(
         start = {
             WelcomePitchPanel(
+                isScrollable = true,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(start = 16.dp),
@@ -280,12 +287,18 @@ private fun WelcomeBookLayout(
     )
 }
 
-// Why: compact in a book's half, which is narrower and shorter than a tablet's column.
+/*
+ * Why: compact in a book's half, which is narrower and shorter than a tablet's column. It scrolls inside its own
+ * corners where it fills a bounded height (a half, a column lying down); upright it sits in the column's scroll,
+ * where a second vertical scroll is measured with an unbounded height and throws.
+ */
 @Composable
 private fun WelcomePitchPanel(
+    isScrollable: Boolean,
     modifier: Modifier = Modifier,
     isCompact: Boolean = false,
 ) {
+    val scrollState = rememberScrollState()
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -301,7 +314,7 @@ private fun WelcomePitchPanel(
             )
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .then(if (isScrollable) Modifier.verticalScroll(scrollState) else Modifier)
                     .padding(
                         horizontal = if (isCompact) 28.dp else 48.dp,
                         vertical = if (isCompact) 32.dp else 40.dp,
