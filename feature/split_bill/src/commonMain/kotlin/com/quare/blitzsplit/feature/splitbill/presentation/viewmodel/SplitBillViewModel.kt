@@ -126,7 +126,7 @@ class SplitBillViewModel(
     private val items = ItemsEditing(
         uiState = uiState,
         separator = { separator },
-        receiptItems = { receipt.items },
+        receiptItems = { currency -> receipt.itemsIn(currency) },
         onItemsDone = {
             hasPickedSplit = true
             amountAnchor = null

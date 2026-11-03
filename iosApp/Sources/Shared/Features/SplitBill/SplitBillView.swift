@@ -1147,7 +1147,9 @@ private struct MacBillForm: View {
         }
     }
 
-    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while.
+    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while
+    /// (@concurrent: with approachable concurrency a nonisolated async function runs on its caller's actor).
+    @concurrent
     private nonisolated static func readFile(_ url: URL) async -> Data? {
         let isScoped = url.startAccessingSecurityScopedResource()
         defer { if isScoped { url.stopAccessingSecurityScopedResource() } }

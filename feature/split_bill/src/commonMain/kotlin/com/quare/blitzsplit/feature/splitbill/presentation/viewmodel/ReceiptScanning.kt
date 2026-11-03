@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
@@ -42,8 +43,13 @@ internal class ReceiptScanning(
      * Why: the receipt's items with nobody marked yet (7.5b), which "Itens" opens with until the bill has its own
      * items; null without a receipt that lists any.
      */
-    var items: BillItems? = null
-        private set
+    private var items: BillItems? = null
+
+    // Why: the currency the receipt was read in, whose minor unit its items' prices are in.
+    private var itemsCurrency: GroupCurrency? = null
+
+    // Why: none once the bill moved to a group of another currency, whose minor unit would misread the prices.
+    fun itemsIn(currency: GroupCurrency): BillItems? = items?.takeIf { itemsCurrency == currency }
 
     fun onEvent(event: SplitBillUiEvent.Receipt) {
         when (event) {
@@ -92,8 +98,12 @@ internal class ReceiptScanning(
         }
         reading = scope.launch {
             val scan = readReceipt(source, state.currency)
-            val read = scan.reading
-            // Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g).
+            /*
+             * Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g). A sync
+             * that moved the bill to a group of another currency meanwhile reads the same, so the amounts never land
+             * in a minor unit they weren't read in.
+             */
+            val read = scan.reading?.takeIf { uiState.value.currency == state.currency }
             if (read == null) {
                 uiState.update {
                     it.copy(
@@ -108,6 +118,7 @@ internal class ReceiptScanning(
             }
             photo = scan.photo
             items = read.toBillItems()
+            itemsCurrency = state.currency
             uiState.update {
                 it.copy(
                     receipt = BillReceipt(

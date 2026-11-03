@@ -16815,6 +16815,17 @@
         }
       }
     },
+    "Try again with more light and the whole receipt in the photo, or fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: under \"Couldn't read the receipt\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão."
+          }
+        }
+      }
+    },
     "Couldn't read the receipt" : {
       "comment" : "Split a bill on the Mac: the receipt couldn't be read",
       "localizations" : {

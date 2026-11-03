@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillItemsSplit
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemPersonRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
@@ -23,8 +24,8 @@ import kotlin.uuid.Uuid
 internal class ItemsEditing(
     private val uiState: MutableStateFlow<SplitBillUiState>,
     private val separator: () -> Char,
-    // Why: a receipt read's items (7.1e), which Itens opens with until the bill has items of its own.
-    private val receiptItems: () -> BillItems?,
+    // Why: a receipt read's items (7.1e) in the bill's currency, which Itens opens with until the bill has its own.
+    private val receiptItems: (GroupCurrency) -> BillItems?,
     private val onItemsDone: () -> Unit,
 ) {
     // Why: the items as "Voltar" left them, until another mode's "Pronto" or Dividir closing forgets them.
@@ -38,7 +39,7 @@ internal class ItemsEditing(
             val split = draft
                 ?: editor.items
                 ?: state.split.items
-                ?: receiptItems()
+                ?: receiptItems(state.currency)
                 ?: emptyItemsOf(people)
             state.copy(
                 itemsEditor = ItemsEditor(

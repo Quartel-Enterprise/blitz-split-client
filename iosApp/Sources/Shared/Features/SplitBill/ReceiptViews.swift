@@ -28,13 +28,22 @@ struct ReceiptFailureText: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand.")
+            Text(message)
                 .fixedSize(horizontal: false, vertical: true)
             Button(retakeLabel) {
                 model.send(SplitBillUiEventOnScanReceiptClicked.shared)
             }
             .disabled(!model.state.canScanReceipt)
         }
+    }
+
+    /// The Mac's banner already heads it with "Couldn't read the receipt", so its text goes on from there.
+    private var message: LocalizedStringKey {
+        #if os(macOS)
+        "Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        #else
+        "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand."
+        #endif
     }
 
     private var retakeLabel: LocalizedStringKey {

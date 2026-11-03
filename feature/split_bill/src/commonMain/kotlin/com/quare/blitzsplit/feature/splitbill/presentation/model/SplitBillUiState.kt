@@ -183,9 +183,12 @@ data class SplitBillUiState(
     val canScanReceipt: Boolean
         get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt
 
-    // Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
+    /*
+     * Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
+     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open.
+     */
     val showsReceiptCamera: Boolean
-        get() = isReceiptCameraRequested && isLoaded && groupSelection == null && !isSaving
+        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving
 
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING
@@ -194,9 +197,12 @@ data class SplitBillUiState(
     val showsReceiptFailure: Boolean
         get() = receipt?.status == ReceiptStatus.UNREADABLE
 
-    // Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays.
+    /*
+     * Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays. Not
+     * while a receipt is being read, whose amounts come back in the currency it was sent with.
+     */
     val canChangeGroup: Boolean
-        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving
+        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isReadingReceipt
 
     // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
     val splitFollowsDefault: Boolean
