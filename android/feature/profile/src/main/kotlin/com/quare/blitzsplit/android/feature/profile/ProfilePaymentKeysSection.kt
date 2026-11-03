@@ -20,8 +20,6 @@ import androidx.compose.material.icons.outlined.Pix
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,6 +44,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.core.model.PaymentKeyFormat
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
@@ -115,7 +114,7 @@ private fun PaymentKeyItemRow(
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        ListItem(
+        FlatListItem(
             headlineContent = {
                 Text(
                     text = stringResource(key.type.rowTitleRes),
@@ -148,7 +147,7 @@ private fun PaymentKeyItemRow(
             } else {
                 null
             },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         )
     }
 }

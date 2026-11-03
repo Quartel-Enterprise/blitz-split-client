@@ -21,8 +21,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -39,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -425,7 +424,7 @@ internal fun SectionRow(
     supporting: String? = null,
     trailing: @Composable (() -> Unit)? = null,
 ) {
-    ListItem(
+    FlatListItem(
         headlineContent = { Text(headline) },
         modifier = modifier,
         supportingContent = supporting?.let { { Text(it) } },
@@ -436,7 +435,7 @@ internal fun SectionRow(
             )
         },
         trailingContent = trailing,
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     )
 }
 

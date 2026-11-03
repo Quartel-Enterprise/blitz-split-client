@@ -18,8 +18,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -122,7 +121,7 @@ internal fun RegisterPaymentDetailsColumn(
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
-            ListItem(
+            FlatListItem(
                 overlineContent = { Text(stringResource(DesignR.string.designsystem_when)) },
                 headlineContent = {
                     Text(
@@ -134,7 +133,7 @@ internal fun RegisterPaymentDetailsColumn(
                     )
                 },
                 leadingContent = { Icon(Icons.Outlined.Event, contentDescription = null) },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             )
         }
         InfoLine(state)
