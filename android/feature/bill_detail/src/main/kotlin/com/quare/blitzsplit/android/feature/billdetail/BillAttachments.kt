@@ -238,7 +238,6 @@ private fun AddPhotoTile(
         TileColumn(
             size = size,
             label = stringResource(R.string.bill_detail_add_photo),
-            subtitle = null,
             onClickLabel = null,
             isEnabled = isEnabled,
             onClick = { if (takePhoto != null) isMenuOpen = true else pickers.onChoosePhotoClick() },
@@ -317,9 +316,9 @@ private fun PickerMenuItem(
 private fun TileColumn(
     size: TileSize,
     label: String,
-    subtitle: String?,
     onClickLabel: String?,
     onClick: () -> Unit,
+    subtitle: String? = null,
     isEnabled: Boolean = true,
     thumb: @Composable () -> Unit,
 ) {
