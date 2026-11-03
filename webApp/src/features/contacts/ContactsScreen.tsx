@@ -42,10 +42,10 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   useEffect(() => {
     presenter?.setDetailPaneShown(isWide)
   }, [presenter, isWide])
-  if (!presenter || !state) return null
-
+  // Why: the profile reads only its own state, so it never waits for Contatos' (unread when opened from Saldos).
   const personKey = profileRoute?.personKey
   if (personKey) return <ProfileOverList key={personKey} personKey={personKey} />
+  if (!presenter || !state) return null
   return (
     <HomeShell
       selected="contacts"

@@ -38,7 +38,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 
 /*
  * Why: "Perfil do contato" (11.2), over Contatos on a phone and beside it in a wide window (the same route, drawn in
- * Contatos' pane). Everything but Juntar works offline on the device's data; Juntar and its waiting request need the
+ * Contatos' pane), and over Saldos for a face tapped there. Everything but Juntar works offline on the device's data; Juntar and its waiting request need the
  * server.
  */
 class ContactProfileViewModel(

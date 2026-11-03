@@ -17,10 +17,9 @@ data class ActivityItem(
     val groupId: String,
     // Why: as the group is called now, or was when it was deleted.
     val groupName: String?,
+    // Why: null once the group is gone from the device.
     val groupColor: AvatarColor?,
     val groupType: GroupType?,
-    // Why: the group is still on the device, so its name in the detail beside the list opens it.
-    val isGroupOnDevice: Boolean,
     val occurredAt: Long,
     // Why: the bill's description, or the group's or member's name.
     val subject: String?,
@@ -55,4 +54,8 @@ data class ActivityItem(
 
     val isTargetDeleted: Boolean
         get() = deletion != null
+
+    // Why: the group is still on the device, so its name in the detail beside the list opens it.
+    val isGroupOnDevice: Boolean
+        get() = groupColor != null
 }

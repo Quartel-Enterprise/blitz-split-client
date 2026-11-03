@@ -50,6 +50,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad); Google comes first on Android and in any other browser.
   - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
+  - Every amount field (Rachar conta's total, "Várias pessoas pagaram", Valores, an item's price and Valor, the
+    couvert, Registrar pagamento, Pela renda's incomes) types as a cash machine does (Pierre's call): the number
+    keyboard, digits coming in from the right with the group currency's decimals fixed (`GroupCurrency.fractionDigits`:
+    "0,01", "0,12", "1,23"; yen "1", "12", "1.234"), the caret at the end, a comma or a dot typed changing nothing,
+    and the device language's separators whatever the currency ("1.234,56" in Portuguese, "1,234.56" in English). A
+    paste reads as an amount ("12,5", "R$ 1.234,56"), and a bill moved to a group of another currency keeps its number
+    with the decimals cut (`TypedText.toAmountText`, `toCurrency`). Percentages, parts and quantities stay whole
+    numbers.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
@@ -298,12 +306,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
     column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
     and the filter stay still in a 300 pt column on the left while the people scroll on the right).
-  - A group's badge or name drawn as a reference to it opens the group's Despesas (`Route.GroupDetail`): Saldos' "Por
-    grupo" (in the row and beside the list), the profile's "Grupos em comum" and the group and time of Atividade's
-    detail beside the list (while the group is on the device); a picker, and a row whose tap already opens something,
-    keep their tap. A person's face or name in Saldos (the row and beside the list) opens their profile
-    (`Route.ContactProfile`, never for an ex-member), the web's frame selecting and its back naming the tab it was
-    opened from (`ContactProfileUiState.homeTab`).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's

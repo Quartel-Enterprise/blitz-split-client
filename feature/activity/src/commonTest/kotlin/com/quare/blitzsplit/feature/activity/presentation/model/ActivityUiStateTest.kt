@@ -514,7 +514,6 @@ class ActivityUiStateTest {
         groupName = "Apê 302",
         groupColor = AvatarColor.PEACH,
         groupType = GroupType.HOME,
-        isGroupOnDevice = true,
         occurredAt = 0L,
         subject = "Mercado",
         amountMinor = 10_000L,
