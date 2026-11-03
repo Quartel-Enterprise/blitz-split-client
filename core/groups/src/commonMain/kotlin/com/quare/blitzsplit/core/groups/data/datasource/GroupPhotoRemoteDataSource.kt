@@ -8,8 +8,9 @@ interface GroupPhotoRemoteDataSource {
         version: Long,
     ): String
 
+    // Why: false when Storage refuses this photo for good, so it is never tried again.
     suspend fun upload(
         groupId: String,
         jpeg: ByteArray,
-    )
+    ): Boolean
 }

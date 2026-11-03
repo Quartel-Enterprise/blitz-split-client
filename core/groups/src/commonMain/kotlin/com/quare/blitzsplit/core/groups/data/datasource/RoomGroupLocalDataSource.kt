@@ -122,6 +122,16 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    ) {
+        dao.dropRefusedGroupPhoto(
+            id = id,
+            jpeg = jpeg,
+        )
+    }
+
     override suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,

@@ -222,19 +222,23 @@ class GroupRepositoryImpl(
      * holds the photo it replaces and caches that one under it. Only a group's members may upload its photo, so a new
      * group's goes up once the group and its members did, its row naming the URL ahead: there is no older photo to
      * show meanwhile. A photo that fails holds its group, and only it, for the next round, so the bills still go up,
-     * and its error comes back once the rest did.
+     * and its error comes back once the rest did. A photo Storage refuses for good is dropped instead, so the group's
+     * other fields still reach the server.
      */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
         val pendingMembers = local.getPendingMembers(userId)
         val removedMemberIds = local.getRemovedMemberIds(userId)
         val heldGroupIds = mutableSetOf<String>()
         val photoErrors = mutableListOf<Throwable>()
+        val refusedPhotoGroupIds = mutableSetOf<String>()
         val pendingGroups = local.getPendingGroups(userId)
         pendingGroups.filter { it.isOnServer() }.forEach { group ->
-            uploadPhotoOf(group)?.onFailure {
-                heldGroupIds += group.id
-                photoErrors += it
-            }
+            uploadPhotoOf(group)
+                ?.onSuccess { if (it == PhotoUpload.REFUSED) refusedPhotoGroupIds += group.id }
+                ?.onFailure {
+                    heldGroupIds += group.id
+                    photoErrors += it
+                }
         }
         val groupsToPush = pendingGroups.filterNot { it.id in heldGroupIds }
         if (groupsToPush.isNotEmpty()) {
@@ -245,7 +249,7 @@ class GroupRepositoryImpl(
                             entity = it,
                             userId = userId,
                             // Why: the snapshot read above, so an uploaded photo's URL is the one it went up under.
-                            photoUrl = photoUrlOf(it),
+                            photoUrl = if (it.id in refusedPhotoGroupIds) it.photoUrl else photoUrlOf(it),
                         )
                     },
                 ).forEach { dto ->
@@ -265,10 +269,13 @@ class GroupRepositoryImpl(
             if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
         }
         groupsToPush.filterNot { it.isOnServer() }.forEach { group ->
-            uploadPhotoOf(group)?.onFailure {
-                heldGroupIds += group.id
-                photoErrors += it
-            }
+            uploadPhotoOf(group)
+                // Why: its row named the refused photo, so the next round pushes it again without one.
+                ?.onSuccess { if (it == PhotoUpload.REFUSED) heldGroupIds += group.id }
+                ?.onFailure {
+                    heldGroupIds += group.id
+                    photoErrors += it
+                }
         }
         // Why: before the deletes, so one that fails doesn't push again what the server already took.
         pendingGroups.filterNot { it.id in heldGroupIds }.forEach {
@@ -294,18 +301,27 @@ class GroupRepositoryImpl(
     private fun GroupEntity.isOnServer(): Boolean = inviteCode != null
 
     // Why: null for a group with no photo waiting; once it is up, the device keeps the URL its row goes up with.
-    private suspend fun uploadPhotoOf(group: GroupEntity): Result<Unit>? {
+    private suspend fun uploadPhotoOf(group: GroupEntity): Result<PhotoUpload>? {
         val jpeg = group.pendingPhoto ?: return null
         return suspendRunCatching {
-            photoRemote.upload(
+            val isUploaded = photoRemote.upload(
                 groupId = group.id,
                 jpeg = jpeg,
             )
-            local.markGroupPhotoUploaded(
-                id = group.id,
-                jpeg = jpeg,
-                photoUrl = pendingPhotoUrlOf(group),
-            )
+            if (isUploaded) {
+                local.markGroupPhotoUploaded(
+                    id = group.id,
+                    jpeg = jpeg,
+                    photoUrl = pendingPhotoUrlOf(group),
+                )
+                PhotoUpload.UPLOADED
+            } else {
+                local.dropRefusedGroupPhoto(
+                    id = group.id,
+                    jpeg = jpeg,
+                )
+                PhotoUpload.REFUSED
+            }
         }
     }
 

@@ -233,8 +233,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
     participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
-    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar cycles its
-    color through the palette (no shapes yet), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar steps
+    its color through the palette, and on Android its shape too, both at once ("Trocar forma e cor do grupo": five
+    colors over four shapes go through all twenty), starting as a peach Biscoito (a new group has no photo; Editar
+    grupo adds it), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
@@ -477,13 +479,28 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
-    grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
-    the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
-    stays editable. Moeda locks once the group has a bill on the device ("Não muda
+    grupo" (`Route.EditGroup`) has Novo grupo's fields, the icon being a shape and a color or a photo (6.4d): on
+    Android and iOS the avatar or "Trocar ícone ou foto" opens "Ícone do grupo" (Android's bottom sheet: Forma, Cor,
+    "Escolher foto", "Tirar foto" and "Usar este ícone", a 480 dp dialog where Editar grupo is one, in a book's right
+    half; iOS's medium sheet: the colors as tiles, the photo's two
+    sources and ✓), the shape and color picked there reaching the form only on "Usar este ícone"; the web ("Cor do
+    ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
+    Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
+    made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
+    The photo is the profile's 512x512 JPEG (`PrepareProfilePhoto`), drawn in place of the color and initials in the
+    group's shape, and picking a color or a shape takes it off. A new photo waits on the device and goes up with
+    the group's next sync, offline too ("Uma foto nova sobe junto."), to the public `group-photos` bucket
+    (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the shape and the photo are fields of the
+    group row like the color, saved only when this person changed them, and Atividade says "Forma" and "Foto"
+    ("Foto anterior", "Nova foto", "Sem foto"). The photo and the shape show wherever the group's own badge does:
+    Grupos' rows and cards, Início, the search, Despesas' header, Rachar conta and "Rachar em qual grupo?", and the
+    web's and the Mac's "Em aberto"; Convite (the invite, read before joining), Atividade's dot, "Quem pagou a
+    quem?" and the groups listed under a person (Saldos, Contatos) keep the color. The name has 1 to 40 letters and
+    the type stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
-    with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
+    with an iPad's room, the avatar beside "Trocar ícone ou foto" on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
     under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).

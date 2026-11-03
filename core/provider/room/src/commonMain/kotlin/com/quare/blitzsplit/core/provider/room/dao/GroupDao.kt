@@ -220,6 +220,13 @@ interface GroupDao {
         photoUrl: String,
     )
 
+    // Why: the server refused this photo for good, so the group goes up without it; a newer photo keeps waiting.
+    @Query("UPDATE split_group SET pendingPhoto = NULL WHERE id = :id AND pendingPhoto = :jpeg")
+    suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    )
+
     // Why: a change made while the push was in flight keeps the group pending.
     @Query("UPDATE split_group SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
     suspend fun markGroupSynced(

@@ -80,6 +80,11 @@ interface GroupLocalDataSource {
         photoUrl: String,
     )
 
+    suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    )
+
     suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,

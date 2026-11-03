@@ -4647,6 +4647,70 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a group on the server whose photo is refused WHEN uploading THEN it goes up without the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = "ABC123",
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.refusesUploads = true
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .photoUrl,
+            )
+            val stored = local.group("group-1")
+            assertNull(stored?.pendingPhoto)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a new group whose photo is refused WHEN uploading again THEN its row goes up without the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            photoRemote.refusesUploads = true
+            repository.uploadPendingGroups("user-1")
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(
+                remote.upsertedGroups
+                    .last()
+                    .single()
+                    .photoUrl,
+            )
+            assertEquals(false, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
     fun `GIVEN the group edited while its photo goes up WHEN the upload ends THEN the photo still takes its URL`() =
         runTest {
             // Given
@@ -5631,6 +5695,15 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    ) {
+        groups.value = groups.value.map {
+            if (it.id == id && it.pendingPhoto?.contentEquals(jpeg) == true) it.copy(pendingPhoto = null) else it
+        }
+    }
+
     override suspend fun markMemberSynced(
         id: String,
         syncedUpdatedAt: Long,
@@ -5756,6 +5829,7 @@ private class FakeGroupLocalDataSource(
 private class FakeGroupPhotoRemoteDataSource : GroupPhotoRemoteDataSource {
     val uploads = mutableListOf<Pair<String, ByteArray>>()
     var uploadError: Throwable? = null
+    var refusesUploads = false
 
     // Why: runs while the photo is going up, so a test can edit the group meanwhile.
     var onUpload: suspend () -> Unit = {}
@@ -5768,10 +5842,12 @@ private class FakeGroupPhotoRemoteDataSource : GroupPhotoRemoteDataSource {
     override suspend fun upload(
         groupId: String,
         jpeg: ByteArray,
-    ) {
+    ): Boolean {
         onUpload()
         uploadError?.let { throw it }
+        if (refusesUploads) return false
         uploads += groupId to jpeg
+        return true
     }
 }
 
