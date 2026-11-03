@@ -64,6 +64,13 @@ data class HomeUiState(
     val showsHome: Boolean
         get() = (isLoaded && groupCount > 0) || isFirstDownload
 
+    /*
+     * Why: "Saldos com pessoas" shimmers while the balances are read, and while the first download brought nobody yet,
+     * whom the rest of the groups may still bring; the faces that came show.
+     */
+    val isLoadingPeople: Boolean
+        get() = people.valueOrNull()?.takeIf { it.isNotEmpty() || !isFirstDownload } == null
+
     // Why: everyone settled: the row of faces goes without leaving a gap, and the card says "tudo acertado".
     val showsPeople: Boolean
         get() = people.valueOrNull()?.isNotEmpty() == true

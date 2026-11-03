@@ -238,7 +238,7 @@ private struct GroupScreenBars: ViewModifier {
 /// so the card shimmers in its slot.
 struct GroupBalanceSlot: View {
     let header: GroupHeader
-    let awaitsFullSync: Bool
+    let isMyBalanceLoading: Bool
     let onSettle: () -> Void
 
     var body: some View {
@@ -249,7 +249,7 @@ struct GroupBalanceSlot: View {
                 isEveryoneSettled: header.isEveryoneSettled,
                 onSettle: onSettle,
             )
-        } else if awaitsFullSync {
+        } else if isMyBalanceLoading {
             ShimmerCard(showsButtons: false)
                 .shimmering()
                 .background(Palette.card, in: .rect(cornerRadius: 26))
@@ -422,7 +422,7 @@ struct BalanceCard: View {
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     /// The account's copy isn't whole: "Your balance in this group" shimmers in its place rather than leaving it out.
-    let awaitsFullSync: Bool
+    let isMyBalanceLoading: Bool
     let hasExpenses: Bool
     let tab: GroupTab
     let usesTwoColumns: Bool
@@ -496,7 +496,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
     }
 
     private var balanceCard: some View {
-        GroupBalanceSlot(header: header, awaitsFullSync: awaitsFullSync, onSettle: actions.settle)
+        GroupBalanceSlot(header: header, isMyBalanceLoading: isMyBalanceLoading, onSettle: actions.settle)
     }
 
     private func list(withHeader: Bool) -> some View {
@@ -530,7 +530,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
 /// A narrow window puts the tabs above them, below the toolbar.
 struct MacGroupTop: View {
     let header: GroupHeader
-    let awaitsFullSync: Bool
+    let isMyBalanceLoading: Bool
     let tab: GroupTab
     let actions: GroupScreenActions
 
@@ -553,7 +553,7 @@ struct MacGroupTop: View {
                 GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }
-            GroupBalanceSlot(header: header, awaitsFullSync: awaitsFullSync, onSettle: actions.settle)
+            GroupBalanceSlot(header: header, isMyBalanceLoading: isMyBalanceLoading, onSettle: actions.settle)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

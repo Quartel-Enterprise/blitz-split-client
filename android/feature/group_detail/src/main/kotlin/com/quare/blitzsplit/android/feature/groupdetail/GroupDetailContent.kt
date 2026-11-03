@@ -63,7 +63,7 @@ fun GroupDetailContent(
             selectedTab = state.tab,
             hasBills = state.hasBills,
             isLoaded = state.isLoaded,
-            awaitsFullSync = state.awaitsFullSync,
+            isMyBalanceLoading = state.isMyBalanceLoading,
             isOnline = state.exit.isOnline,
             money = money,
         ),

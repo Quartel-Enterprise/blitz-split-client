@@ -312,7 +312,7 @@ class PayReceiverViewModelTest {
         }
 
     @Test
-    fun `GIVEN the copy waiting offline WHEN the screen opens without the key of Bruno THEN says it waits`() =
+    fun `GIVEN the copy waiting offline WHEN opening without the key of Bruno THEN shows the form to record`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -325,8 +325,9 @@ class PayReceiverViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertTrue(state.isLoadingReceiverKeys)
-            assertTrue(state.isWaitingForInternet)
+            assertFalse(state.isLoadingReceiverKeys)
+            assertTrue(state.prefersForm)
+            assertTrue(state.canConfirm)
         }
 
     @Test

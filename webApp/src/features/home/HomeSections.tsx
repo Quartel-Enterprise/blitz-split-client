@@ -180,7 +180,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
     }
   }, [tip])
   // Why: while the balances are read nothing says yet whether anybody owes anybody, so the faces shimmer.
-  if (state.people && !state.showsPeople && !state.firstDownload) return null
+  if (!state.showsPeople && !state.isLoadingPeople) return null
 
   const people = Array.from(state.people ?? [])
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
@@ -198,7 +198,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         onAction={() => presenter.seeBalances()}
       />
       <div ref={rowRef} className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2" onScroll={() => tip && setTip(null)}>
-        {people.length === 0 ? (
+        {state.isLoadingPeople ? (
           <FacesSkeleton />
         ) : (
           people.map((person) => (

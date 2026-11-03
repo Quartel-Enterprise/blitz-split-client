@@ -69,7 +69,7 @@ internal fun BalancesTabletopContent(
                         onAction = onAction,
                     )
                     val myBalance = state.header.myBalance
-                    if (myBalance == null && (!state.isLoaded || state.awaitsFullSync)) MyBalanceSkeleton()
+                    if (state.isMyBalanceLoading) MyBalanceSkeleton()
                     myBalance?.let { balance ->
                         MyBalanceCard(
                             balance = balance,

@@ -117,7 +117,7 @@ struct GroupDetailView: View {
                 #else
                 PhoneGroupScaffold(
                     header: model.state.header,
-                    awaitsFullSync: model.state.awaitsFullSync,
+                    isMyBalanceLoading: model.state.isMyBalanceLoading,
                     hasExpenses: model.state.hasBills,
                     tab: model.tab,
                     usesTwoColumns: verticalSizeClass == .compact,
@@ -518,7 +518,7 @@ private struct MacGroupScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             MacGroupTop(
                 header: model.state.header,
-                awaitsFullSync: model.state.awaitsFullSync,
+                isMyBalanceLoading: model.state.isMyBalanceLoading,
                 tab: model.tab,
                 actions: model.actions,
             )

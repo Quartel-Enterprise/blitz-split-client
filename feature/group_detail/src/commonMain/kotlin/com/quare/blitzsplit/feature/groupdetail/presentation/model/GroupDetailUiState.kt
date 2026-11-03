@@ -69,6 +69,10 @@ data class GroupDetailUiState(
     val isLoadingBalances: Boolean
         get() = isLoaded && awaitsFullSync && hasNoBalances
 
+    // Why: "Seu saldo neste grupo" shimmers in its slot, rather than going, until Room is read and the copy is whole.
+    val isMyBalanceLoading: Boolean
+        get() = header.myBalance == null && (!isLoaded || awaitsFullSync)
+
     private val hasNoBalances: Boolean
         get() = !hasBills && myDebts.isEmpty() && otherDebts.isEmpty()
 

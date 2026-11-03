@@ -65,7 +65,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       tab={tab}
       hasExpenses={state.hasBills}
       // Why: with a bill, your balance in it is known once the account's copy is whole; null till then.
-      isBalanceLoading={state.awaitsFullSync}
+      isBalanceLoading={state.isMyBalanceLoading}
       showsSplitBillButton={state.showsSplitBillButton}
       onAddPerson={tab === 'members' && membersPresenter && membersState ? () => membersPresenter.add() : undefined}
       exit={state.exit}

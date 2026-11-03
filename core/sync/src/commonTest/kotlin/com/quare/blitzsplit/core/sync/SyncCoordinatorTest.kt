@@ -661,6 +661,19 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a profile WHEN a sync fails THEN the first download knows it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pushError = IllegalStateException("refused")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(firstDownload.observeHasSyncFailed().value)
+    }
+
+    @Test
     fun `GIVEN a first download pending and the groups fail to come down WHEN syncing THEN it ends`() = runTest {
         // Given
         prepareScenario(

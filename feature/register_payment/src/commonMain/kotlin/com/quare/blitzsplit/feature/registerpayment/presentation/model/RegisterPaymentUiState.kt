@@ -41,11 +41,10 @@ data class RegisterPaymentUiState(
     /*
      * Why: "Pagar Ana" (4.5), the receiver's keys as the last sync cached them, each method's default first, Pix
      * first; empty for a guest, someone no longer in the group, or someone with no key. Loading while none is cached
-     * and the account's copy on this device is not whole yet, since only its full sync brings the members' keys.
+     * and the account's copy on this device is not whole yet, since only its full sync brings the members' keys; never
+     * offline, when the form opens at once, since a payment is recorded offline too.
      */
     val receiverKeys: Loadable<List<ReceiverKey>>,
-    // Why: "Sem internet. Seus dados aparecem quando reconectar." under the keys' shimmer while that sync waits offline.
-    val isWaitingForInternet: Boolean,
     // Why: "Apê 302 · você deve" under "Pagar Ana"; null across several groups ("3 grupos · você deve").
     val groupName: String?,
     // Why: Pix or Bitcoin, the method picked in "Forma de pagamento"; one the receiver has no key of reads as the other.

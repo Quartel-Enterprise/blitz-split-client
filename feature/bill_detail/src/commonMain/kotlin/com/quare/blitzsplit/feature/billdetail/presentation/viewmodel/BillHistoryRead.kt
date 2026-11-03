@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /*
@@ -22,12 +23,16 @@ internal class BillHistoryRead(
     var hasServerAnswered: Boolean = false
         private set
 
+    // Why: the connection coming and going twice reads once, so an older read never ends the newer one's wait.
+    private var read: Job? = null
+
     // Why: read again each time the device comes back online, as a bill left open may have changed elsewhere.
     fun onConnectivityChanged(isOnline: Boolean) {
+        read?.cancel()
         isLoading = isOnline && !hasServerAnswered
         onChanged()
         if (!isOnline) return
-        scope.launch {
+        read = scope.launch {
             val result = loadBillHistory(billId)
             if (result.isSuccess) hasServerAnswered = true
             isLoading = false

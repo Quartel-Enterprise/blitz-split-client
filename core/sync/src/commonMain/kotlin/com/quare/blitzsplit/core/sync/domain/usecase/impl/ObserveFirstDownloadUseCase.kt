@@ -18,17 +18,21 @@ class ObserveFirstDownloadUseCase(
     /*
      * Why: the count while this launch downloads group by group; otherwise, while the account still awaits its first
      * full sync (a relaunch midway, a pass that failed, a switch to another user), a download whose count is unknown.
+     * Online, a sync of this launch that failed ends that wait: it may fail on every try, and the screens then show
+     * what the device holds; offline, the wait goes on until the internet is back.
      */
     override fun invoke(): Flow<FirstDownloadProgress?> = combine(
         firstDownload.observeProgress(),
         accountRepository.observeAccount().map { it.awaitsFullSync }.distinctUntilChanged(),
+        firstDownload.observeHasSyncFailed(),
         connectivityObserver.observe(),
-    ) { progress, awaitsFullSync, isOnline ->
+    ) { progress, awaitsFullSync, hasSyncFailed, isOnline ->
+        val awaitsCopy = awaitsFullSync && !(hasSyncFailed && isOnline)
         val pending = progress ?: FirstDownloadProgress(
             arrivedGroupCount = 0,
             groupCount = null,
             isWaitingForInternet = false,
-        ).takeIf { awaitsFullSync }
+        ).takeIf { awaitsCopy }
         pending?.copy(isWaitingForInternet = !isOnline)
     }.distinctUntilChanged()
 }

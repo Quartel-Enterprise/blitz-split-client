@@ -106,6 +106,8 @@ class JsHomeState(
     val showsFirstUse: Boolean,
     val showsHome: Boolean,
     val showsPeople: Boolean,
+    // Why: the faces shimmer while read, and while the first download brought nobody yet.
+    val isLoadingPeople: Boolean,
     // Why: null while the balances are still being read, which draws the shimmer.
     val people: Array<JsHomePerson>?,
     val summary: JsHomeSummary?,
@@ -147,6 +149,7 @@ class HomePresenter {
                 showsFirstUse = state.showsFirstUse,
                 showsHome = state.showsHome,
                 showsPeople = state.showsPeople,
+                isLoadingPeople = state.isLoadingPeople,
                 people = state.people
                     .valueOrNull()
                     ?.map(::toJsHomePerson)

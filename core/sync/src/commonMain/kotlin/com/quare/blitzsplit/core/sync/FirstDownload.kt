@@ -16,6 +16,12 @@ import kotlinx.coroutines.flow.update
 class FirstDownload {
     private val progress = MutableStateFlow<FirstDownloadProgress?>(null)
 
+    /*
+     * Why: a sync of this launch failed, which may happen on every try (a change the server keeps refusing), so the
+     * screens stop waiting for a copy that may not come and show what the device holds, under the failed sync's badge.
+     */
+    private val hasSyncFailed = MutableStateFlow(false)
+
     val isPending: Boolean
         get() = progress.value != null
 
@@ -40,5 +46,11 @@ class FirstDownload {
 
     fun end() {
         progress.value = null
+    }
+
+    fun observeHasSyncFailed(): StateFlow<Boolean> = hasSyncFailed.asStateFlow()
+
+    fun syncFailed() {
+        hasSyncFailed.value = true
     }
 }

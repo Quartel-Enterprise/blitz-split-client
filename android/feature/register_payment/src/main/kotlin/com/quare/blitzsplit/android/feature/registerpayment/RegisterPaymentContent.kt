@@ -438,7 +438,6 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     isSaving = false,
     isLoaded = true,
     receiverKeys = emptyList<ReceiverKey>().toLoaded(),
-    isWaitingForInternet = false,
     groupName = "Apê 302",
     keyMethod = PaymentMethod.PIX,
     offersReceiverKeys = true,
@@ -529,10 +528,7 @@ private fun PayWithKeyContentPreview() {
 private fun PayWithKeyContentLoadingPreview() {
     BlitzSplitTheme {
         RegisterPaymentContent(
-            state = createPayPreviewState(isOnline = false).copy(
-                receiverKeys = Loadable.Loading,
-                isWaitingForInternet = true,
-            ),
+            state = createPayPreviewState(isOnline = true).copy(receiverKeys = Loadable.Loading),
             presentation = FormPresentation.BottomSheet,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},

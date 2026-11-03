@@ -103,11 +103,11 @@ internal fun HomePeopleSection(
     onEvent: (HomeUiEvent) -> Unit,
     metrics: HomeMetrics,
 ) {
-    val people = state.people.valueOrNull()
-    if (people == null || (people.isEmpty() && state.isFirstDownload)) {
+    if (state.isLoadingPeople) {
         HomePeopleSkeleton(metrics)
         return
     }
+    val people = state.people.valueOrNull().orEmpty()
     if (people.isEmpty()) return
     val listState = rememberLazyListState()
     val scrolls = listState.canScrollForward || listState.canScrollBackward

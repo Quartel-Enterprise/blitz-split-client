@@ -54,7 +54,7 @@ internal class GroupTabFrame(
     val hasBills: Boolean,
     val isLoaded: Boolean,
     // Why: "Seu saldo neste grupo" shimmers while the account's copy isn't whole, rather than hiding as if settled.
-    val awaitsFullSync: Boolean,
+    val isMyBalanceLoading: Boolean,
     // Why: "Sair do grupo" and "Apagar grupo" need the internet, which the ⋮ menu says.
     val isOnline: Boolean,
     val money: MoneyFormatter,
@@ -221,7 +221,7 @@ private fun GroupSideHeader(
             modifier = modifier,
         )
         val balance = frame.header.myBalance
-        if (balance == null && frame.awaitsFullSync) {
+        if (frame.isMyBalanceLoading) {
             MyBalanceSkeleton(modifier = balancePadding)
         }
         balance?.let {

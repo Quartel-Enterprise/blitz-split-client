@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.android.feature.registerpayment
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -18,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
-import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
@@ -27,7 +24,7 @@ private const val SKELETON_FIELDS = 4
 
 /*
  * Why: neither the form nor "Pagar Ana" while Room is read, or while the account's first full sync may still bring
- * the receiver's keys: the sheet, the dialog or the tabletop's frame with fields shimmering, and why it waits offline.
+ * the receiver's keys: the sheet, the dialog or the tabletop's frame with fields shimmering.
  */
 @Composable
 internal fun RegisterPaymentLoadingPane(
@@ -55,11 +52,10 @@ internal fun RegisterPaymentLoadingPane(
                     )
                 }
             }
-            RegisterPaymentSkeleton(state.isWaitingForInternet)
+            RegisterPaymentSkeleton()
         }
 
         FormPresentation.BottomSheet -> RegisterPaymentSkeleton(
-            isWaitingForInternet = state.isWaitingForInternet,
             modifier = modifier
                 .navigationBarsPadding()
                 .padding(
@@ -75,24 +71,15 @@ internal fun RegisterPaymentLoadingPane(
             onEvent = onEvent,
             modifier = modifier,
         ) {
-            RegisterPaymentSkeleton(
-                isWaitingForInternet = state.isWaitingForInternet,
-                modifier = Modifier.padding(horizontal = 48.dp),
-            )
+            RegisterPaymentSkeleton(modifier = Modifier.padding(horizontal = 48.dp))
         }
     }
 }
 
 @Composable
-private fun RegisterPaymentSkeleton(
-    isWaitingForInternet: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(
+private fun RegisterPaymentSkeleton(modifier: Modifier = Modifier) {
+    ShimmerFormSkeleton(
+        fieldCount = SKELETON_FIELDS,
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        ShimmerFormSkeleton(fieldCount = SKELETON_FIELDS)
-        if (isWaitingForInternet) WaitingForInternetMessage()
-    }
+    )
 }

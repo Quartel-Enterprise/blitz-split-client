@@ -306,15 +306,15 @@ struct HomeView: View {
         )
     }
 
-    /// The faces shimmer until they are read (nil), and while the first download may still bring more.
+    /// The faces shimmer until they are read, and while the first download brought nobody yet.
     @ViewBuilder
     private var people: some View {
         let people = state.people.loaded(as: [HomePerson].self)
-        if state.showsPeople || people == nil || state.isFirstDownload {
+        if state.showsPeople || state.isLoadingPeople {
             #if os(macOS)
-            HomePeopleSection(people: people, isLoading: state.isFirstDownload, faceSize: 44, send: model.send)
+            HomePeopleSection(people: people, isLoading: state.isLoadingPeople, faceSize: 44, send: model.send)
             #else
-            HomePeopleSection(people: people, isLoading: state.isFirstDownload, faceSize: 56, send: model.send)
+            HomePeopleSection(people: people, isLoading: state.isLoadingPeople, faceSize: 56, send: model.send)
             #endif
         }
     }

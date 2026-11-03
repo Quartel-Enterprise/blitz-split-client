@@ -65,7 +65,7 @@ export function RegisterPaymentDialog({ route }: { route: JsRoute }) {
   // Why: whether "Pagar Ana" or the form opens waits for Ana's keys, which a restored account's full sync brings.
   if (state.isLoadingReceiverKeys) {
     return (
-      <LoadingDialog isDesktop={isDesktop} isWaitingForInternet={state.isWaitingForInternet} onClose={() => presenter.close()} className="sm:max-w-[480px]">
+      <LoadingDialog isDesktop={isDesktop} onClose={() => presenter.close()} className="sm:max-w-[480px]">
         <Skeleton className="h-8 w-40" />
         <Skeleton className="mx-auto size-48 rounded-xl" />
         <Skeleton className="h-10 w-full" />

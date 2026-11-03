@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
-import software.quare.loadable.isLoading
 import software.quare.loadable.toLoaded
 import kotlin.math.abs
 
@@ -217,7 +216,6 @@ class RegisterPaymentViewModel(
             isSaving = false,
             isLoaded = false,
             receiverKeys = Loadable.Loading,
-            isWaitingForInternet = false,
             groupName = null,
             keyMethod = PaymentMethod.PIX,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
@@ -325,8 +323,14 @@ class RegisterPaymentViewModel(
             return
         }
         val download = firstDownload
-        // Why: someone with no account has no key to wait for; one with keys cached already shows them.
-        val awaitsKeys = download != null && target.toUserId != null && receiverKeys.isEmpty()
+        /*
+         * Why: someone with no account has no key to wait for; one with keys cached already shows them. Offline nothing
+         * is coming, so the form opens rather than a wait that blocks recording the payment.
+         */
+        val awaitsKeys = download != null &&
+            !download.isWaitingForInternet &&
+            target.toUserId != null &&
+            receiverKeys.isEmpty()
         uiState.update {
             // Why: once known, the keys never go back to loading.
             val wereKeysKnown = it.receiverKeys.isLoaded()
@@ -338,7 +342,6 @@ class RegisterPaymentViewModel(
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
                 receiverKeys = keys,
-                isWaitingForInternet = keys.isLoading() && download?.isWaitingForInternet == true,
                 /*
                  * Why: keys first known as none make the form stay, so a sync bringing the first never swaps it
                  * mid-typing; while they load, nothing is decided yet.

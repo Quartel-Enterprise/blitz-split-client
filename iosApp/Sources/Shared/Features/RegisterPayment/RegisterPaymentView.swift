@@ -97,7 +97,7 @@ struct RegisterPaymentView: View {
                     #endif
                 } else if model.state.isLoadingReceiverKeys {
                     // Whether Ana has a key only the account's full sync says: neither "Pay Ana" nor the form yet
-                    ShimmerScreen(isWaitingForInternet: model.state.isWaitingForInternet) {
+                    ShimmerScreen {
                         ShimmerRow(showsTrailing: true)
                         ShimmerBlock(height: 72, cornerRadius: 20)
                         ShimmerBlock(width: 180, height: 180, cornerRadius: 20)

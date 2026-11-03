@@ -26,7 +26,7 @@ struct HomeSectionHeader: View {
 /// on the Mac. Until they are read (nil), and while the first download fills the device, faces shimmer in their place.
 struct HomePeopleSection: View {
     let people: [HomePerson]?
-    /// The first download may still bring more people.
+    /// Nobody to show yet: still read, or the first download may bring them.
     let isLoading: Bool
     let faceSize: CGFloat
     let send: (any HomeUiEvent) -> Void
@@ -44,7 +44,7 @@ struct HomePeopleSection: View {
             }
             ScrollView(.horizontal) {
                 HStack(alignment: .top, spacing: 8) {
-                    if people?.isEmpty ?? true, people == nil || isLoading {
+                    if isLoading {
                         HomeFacesPlaceholder(faceSize: faceSize)
                             .shimmering()
                     }

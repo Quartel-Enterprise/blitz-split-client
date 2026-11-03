@@ -133,7 +133,10 @@ class SyncCoordinator(
         }
         // Why: only a sync that brought every part down completes the account's copy; one that failed leaves it awaited.
         if (accountRepository.observeAccount().first().awaitsFullSync) accountRepository.updateAwaitsFullSync(false)
-    }.also { result -> lastSyncFailed.value = result.isFailure }
+    }.also { result ->
+        lastSyncFailed.value = result.isFailure
+        if (result.isFailure) firstDownload.syncFailed()
+    }
 
     private suspend fun syncSteps() {
         val userId = accountRepository.ensureRegistered().getOrThrow()

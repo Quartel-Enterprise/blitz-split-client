@@ -602,7 +602,6 @@ class RegisterPaymentUiStateTest {
         isSaving = isSaving,
         isLoaded = isLoaded,
         receiverKeys = receiverKeys.toLoaded(),
-        isWaitingForInternet = false,
         groupName = null,
         keyMethod = keyMethod,
         offersReceiverKeys = offersReceiverKeys,

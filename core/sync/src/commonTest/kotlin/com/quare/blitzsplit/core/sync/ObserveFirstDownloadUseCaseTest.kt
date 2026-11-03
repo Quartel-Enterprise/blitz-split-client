@@ -119,4 +119,38 @@ class ObserveFirstDownloadUseCaseTest {
             progress,
         )
     }
+
+    @Test
+    fun `GIVEN the copy awaited WHEN a sync of this launch failed online THEN the wait ends`() = runTest {
+        // Given
+        account.awaitsFullSync = true
+        firstDownload.syncFailed()
+
+        // When
+        val progress = useCase().first()
+
+        // Then
+        assertNull(progress)
+    }
+
+    @Test
+    fun `GIVEN the copy awaited and a sync that failed WHEN offline THEN it waits for the internet`() = runTest {
+        // Given
+        account.awaitsFullSync = true
+        firstDownload.syncFailed()
+        isOnline.value = false
+
+        // When
+        val progress = useCase().first()
+
+        // Then
+        assertEquals(
+            FirstDownloadProgress(
+                arrivedGroupCount = 0,
+                groupCount = null,
+                isWaitingForInternet = true,
+            ),
+            progress,
+        )
+    }
 }
