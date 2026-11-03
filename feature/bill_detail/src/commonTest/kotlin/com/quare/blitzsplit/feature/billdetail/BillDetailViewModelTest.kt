@@ -2117,6 +2117,20 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a restored account not whole yet WHEN offline THEN shows the comments and photos of the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload.copy(isWaitingForInternet = true))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(0, state.commentCount)
+            assertTrue(state.canAddPhoto)
+        }
+
+    @Test
     fun `GIVEN a restored account not whole yet WHEN its first full sync ends THEN says there is no comment`() =
         runTest(testDispatcher) {
             // Given

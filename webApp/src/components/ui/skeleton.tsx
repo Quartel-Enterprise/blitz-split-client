@@ -17,7 +17,10 @@ export function Skeleton({ className, ...props }: ComponentProps<'span'>) {
 export function useAppearsAfter(delayMillis: number = APPEARS_AFTER_MILLIS): boolean {
   const [appears, setAppears] = useState(delayMillis <= 0)
   useEffect(() => {
-    if (delayMillis <= 0) return
+    if (delayMillis <= 0) {
+      setAppears(true)
+      return
+    }
     const timer = window.setTimeout(() => setAppears(true), delayMillis)
     return () => window.clearTimeout(timer)
   }, [delayMillis])

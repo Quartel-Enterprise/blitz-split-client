@@ -854,20 +854,22 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a first download pending WHEN syncing THEN it ends before the full download of the groups`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            firstDownloadPending = true,
-            serverGroups = listOf(trip),
-        )
+    fun `GIVEN a first download pending WHEN syncing THEN keeps its count through the full download and ends after`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                firstDownloadPending = true,
+                serverGroups = listOf(trip),
+            )
 
-        // When
-        coordinator.syncNow()
+            // When
+            coordinator.syncNow()
 
-        // Then
-        assertEquals(listOf(false), pendingAtGroupsFullDownload)
-    }
+            // Then
+            assertEquals(listOf(true), pendingAtGroupsFullDownload)
+            assertFalse(firstDownload.isPending)
+        }
 
     @Test
     fun `GIVEN a first download and no group on the server WHEN syncing THEN never counts and ends`() = runTest {

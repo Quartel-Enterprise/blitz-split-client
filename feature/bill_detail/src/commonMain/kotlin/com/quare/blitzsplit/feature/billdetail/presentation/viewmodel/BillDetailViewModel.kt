@@ -147,7 +147,7 @@ class BillDetailViewModel(
     private var attachments: List<BillAttachment> = emptyList()
     private var imageUrls: Map<String, String> = emptyMap()
 
-    // Why: a restored account's comments and photos only come with its first full sync, so until then they load.
+    // Why: a restored account's comments and photos only come with its first full sync, so online they load until then.
     private var isCopyWhole = false
 
     private val historyRead = BillHistoryRead(
@@ -194,7 +194,8 @@ class BillDetailViewModel(
             .onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
         observeFirstDownload()
-            .map { it == null }
+            // Why: offline nothing more is coming, so the device's comments and photos show and take new ones.
+            .map { download -> download == null || download.isWaitingForInternet }
             .distinctUntilChanged()
             .onEach { isWhole ->
                 isCopyWhole = isWhole
