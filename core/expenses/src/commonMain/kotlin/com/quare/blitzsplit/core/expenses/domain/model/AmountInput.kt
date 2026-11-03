@@ -42,6 +42,7 @@ object AmountInput {
         currency: GroupCurrency,
         decimalSeparator: Char,
     ): String {
+        if (amountMinor < 0) return "-" + format(-amountMinor, currency, decimalSeparator)
         val factor = ExpenseRules.minorPerMajorFor(currency)
         val whole = (amountMinor / factor)
             .toString()

@@ -31,9 +31,10 @@ fun AmountTextField(
     modifier: Modifier = Modifier,
     imeAction: ImeAction = ImeAction.Next,
 ) {
+    val amountField = rememberNumberField(value, onValueChange)
     OutlinedTextField(
-        value = numberFieldValueOf(value),
-        onValueChange = { onValueChange(it.text) },
+        value = amountField.value,
+        onValueChange = amountField.onValueChange,
         modifier = modifier.fillMaxWidth(),
         textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
         label = { Text(label) },

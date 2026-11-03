@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.numberFieldValueOf
+import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
@@ -250,9 +250,10 @@ internal fun NumberField(
     isWide: Boolean,
     onChange: (String) -> Unit,
 ) {
+    val field = rememberNumberField(value, onChange)
     OutlinedTextField(
-        value = numberFieldValueOf(value),
-        onValueChange = { onChange(it.text) },
+        value = field.value,
+        onValueChange = field.onValueChange,
         modifier = Modifier
             .width(if (isWide) 148.dp else 96.dp)
             .semantics { contentDescription = description },

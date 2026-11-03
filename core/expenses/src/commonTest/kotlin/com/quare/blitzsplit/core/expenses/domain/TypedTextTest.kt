@@ -538,28 +538,6 @@ class TypedTextTest {
         assertEquals("", converted)
     }
 
-    // Why: what the field holds after each key, as the ViewModel stores it and hands it back as the previous text.
-    private fun typeOneByOne(
-        keys: String,
-        currency: GroupCurrency,
-        decimalSeparator: Char,
-    ): List<String> = keys
-        .runningFold("") { previous, key ->
-            TypedText.toAmountText(previous, previous + key, currency, decimalSeparator)
-        }.drop(1)
-
-    @Test
-    fun `GIVEN a long amount WHEN pasting a shorter one over it THEN reads the pasted amount`() {
-        // Given
-        val previous = "1.234,56"
-
-        // When
-        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, ',')
-
-        // Then
-        assertEquals("12,50", kept)
-    }
-
     @Test
     fun `GIVEN an amount WHEN the field is selected whole and one digit typed THEN starts over from it`() {
         // Given
@@ -619,4 +597,26 @@ class TypedTextTest {
         // Then
         assertEquals("0,50", kept)
     }
+
+    @Test
+    fun `GIVEN a long amount WHEN pasting a shorter one over it THEN reads the pasted amount`() {
+        // Given
+        val previous = "1.234,56"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("12,50", kept)
+    }
+
+    // Why: what the field holds after each key, as the ViewModel stores it and hands it back as the previous text.
+    private fun typeOneByOne(
+        keys: String,
+        currency: GroupCurrency,
+        decimalSeparator: Char,
+    ): List<String> = keys
+        .runningFold("") { previous, key ->
+            TypedText.toAmountText(previous, previous + key, currency, decimalSeparator)
+        }.drop(1)
 }

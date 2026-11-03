@@ -449,6 +449,7 @@ class SplitBillViewModel(
                 people = people,
                 defaultSplit = group.defaultSplit,
                 followsDefault = !state.isEditing && !hasPickedSplit,
+                decimalSeparator = separator,
             )
             // Why: another currency converts the typed amount to its own minor unit, which the split must add up to.
             withSplit.withItemsAmong(people).withBillTotal()

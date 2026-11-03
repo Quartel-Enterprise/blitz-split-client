@@ -332,6 +332,18 @@ class AmountInputTest {
     }
 
     @Test
+    fun `GIVEN a negative amount WHEN formatting THEN puts the minus before the grouped number`() {
+        // Given
+        val amountMinor = -123_456L
+
+        // When
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+
+        // Then
+        assertEquals("-1.234,56", text)
+    }
+
+    @Test
     fun `GIVEN a whole percentage WHEN parsing a whole number THEN reads it`() {
         // Given
         val text = "50"

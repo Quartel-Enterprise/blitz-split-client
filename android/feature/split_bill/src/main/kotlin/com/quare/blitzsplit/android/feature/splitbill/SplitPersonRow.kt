@@ -49,7 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.numberFieldValueOf
+import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -246,9 +246,10 @@ internal fun CompactNumberField(
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.End,
     )
+    val field = rememberNumberField(value, onValueChange)
     BasicTextField(
-        value = numberFieldValueOf(value),
-        onValueChange = { onValueChange(it.text) },
+        value = field.value,
+        onValueChange = field.onValueChange,
         modifier = Modifier
             .width(width)
             .semantics { contentDescription = label },

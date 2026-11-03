@@ -1687,6 +1687,23 @@ class SplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Valores open WHEN the group changes currency THEN each part keeps its number`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("50,00")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            switchTo(SplitMode.AMOUNT)
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "12,50"))
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.JPY))
+
+            // Then
+            assertEquals("12", editor().row(ANA).valueText)
+        }
+
+    @Test
     fun `GIVEN Dividir open WHEN a member leaves the group THEN they leave Dividir too`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
