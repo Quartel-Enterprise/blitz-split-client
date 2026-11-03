@@ -10,7 +10,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
@@ -432,6 +434,9 @@ class GroupMapperImplTest {
                 inviteCode = null,
                 defaultSplit = null,
                 splitIncomes = null,
+                shape = "square",
+                photoUrl = null,
+                pendingPhoto = null,
             ),
             entity,
         )
@@ -520,7 +525,11 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
 
         // Then
         assertEquals("user-2", dto.createdBy)
@@ -535,7 +544,11 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
 
         // Then
         assertEquals("user-1", dto.createdBy)
@@ -554,7 +567,11 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
 
         // Then
         assertEquals(
@@ -569,6 +586,8 @@ class GroupMapperImplTest {
                 updatedAt = 9L,
                 inviteCode = null,
                 defaultSplit = null,
+                shape = null,
+                photoUrl = null,
             ),
             dto,
         )
@@ -632,6 +651,9 @@ class GroupMapperImplTest {
                 inviteCode = null,
                 defaultSplit = null,
                 splitIncomes = null,
+                shape = null,
+                photoUrl = null,
+                pendingPhoto = null,
             ),
             entity,
         )
@@ -797,7 +819,11 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
 
         // Then
         assertNull(dto.inviteCode)
@@ -1221,6 +1247,8 @@ class GroupMapperImplTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.PEACH,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(
             GroupMember(
@@ -1332,7 +1360,11 @@ class GroupMapperImplTest {
         val entity = mapper.toEntity(serverGroup(dto), ownerUserId = "user-1")
 
         // When
-        val pushed = mapper.toDto(entity, userId = "user-1")
+        val pushed = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
 
         // Then
         assertEquals(dto, pushed.defaultSplit)
@@ -1634,6 +1666,243 @@ class GroupMapperImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN a known shape code WHEN mapping to the domain THEN reads that shape`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                shape = "petal",
+            ),
+        )
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertEquals(GroupShape.PETAL, mapped.shape)
+    }
+
+    @Test
+    fun `GIVEN a shape this version does not know WHEN mapping to the domain THEN reads it as a square`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                shape = "star",
+            ),
+        )
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertEquals(GroupShape.SQUARE, mapped.shape)
+    }
+
+    @Test
+    fun `GIVEN a group made before shapes WHEN mapping to the domain THEN reads it as a square`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                shape = null,
+            ),
+        )
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertEquals(GroupShape.SQUARE, mapped.shape)
+    }
+
+    @Test
+    fun `GIVEN a photo not up yet and an older server photo WHEN mapping to the domain THEN shows the pending one`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                photoUrl = groupPhotoUrl,
+                pendingPhoto = photoJpeg,
+            ),
+        )
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertEquals(ProfilePhoto.Pending(photoJpeg), mapped.photo)
+    }
+
+    @Test
+    fun `GIVEN only a server photo WHEN mapping to the domain THEN shows that photo`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                photoUrl = groupPhotoUrl,
+            ),
+        )
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertEquals(ProfilePhoto.Remote(groupPhotoUrl), mapped.photo)
+    }
+
+    @Test
+    fun `GIVEN a group without a photo WHEN mapping to the domain THEN has no photo`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+
+        // When
+        val mapped = toDomain(groups)
+
+        // Then
+        assertNull(mapped.photo)
+    }
+
+    @Test
+    fun `GIVEN a new group with a shape WHEN mapping it to an entity THEN stores its code and no photo`() {
+        // Given
+        val group = newGroup.copy(shape = GroupShape.COOKIE)
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertEquals("cookie", entity.shape)
+        assertNull(entity.photoUrl)
+        assertNull(entity.pendingPhoto)
+    }
+
+    @Test
+    fun `GIVEN a group with a photo not up yet WHEN mapping it to an entity THEN keeps the bytes without a URL`() {
+        // Given
+        val group = newGroup.copy(photo = ProfilePhoto.Pending(photoJpeg))
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertTrue(photoJpeg.contentEquals(entity.pendingPhoto))
+        assertNull(entity.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a group with a server photo WHEN mapping it to an entity THEN keeps the URL without bytes`() {
+        // Given
+        val group = newGroup.copy(photo = ProfilePhoto.Remote(groupPhotoUrl))
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertEquals(groupPhotoUrl, entity.photoUrl)
+        assertNull(entity.pendingPhoto)
+    }
+
+    @Test
+    fun `GIVEN a stored group with a shape WHEN mapping it to a DTO THEN sends the shape code as stored`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            shape = "star",
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals("star", dto.shape)
+    }
+
+    @Test
+    fun `GIVEN the URL a photo will have WHEN mapping the group to a DTO THEN sends that URL over the stored one`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            photoUrl = groupPhotoUrl,
+            pendingPhoto = photoJpeg,
+        )
+        val nextUrl = "https://cdn.test/group-photos/group-1/photo.jpg?v=9"
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = nextUrl,
+        )
+
+        // Then
+        assertEquals(nextUrl, dto.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a server group with a shape and photo WHEN mapping it to an entity THEN keeps both and no bytes`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-1",
+        ).copy(
+            shape = "circle",
+            photoUrl = groupPhotoUrl,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertEquals("circle", entity.shape)
+        assertEquals(groupPhotoUrl, entity.photoUrl)
+        assertNull(entity.pendingPhoto)
+    }
+
+    @Test
+    fun `GIVEN a group from the server without a shape WHEN mapping it to an entity THEN stores no shape`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-1",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertNull(entity.shape)
+        assertNull(entity.photoUrl)
+    }
+
+    private val photoJpeg = byteArrayOf(1, 2, 3)
+    private val groupPhotoUrl = "https://cdn.test/group-photos/group-1/photo.jpg?v=1"
+
+    private fun toDomain(groups: List<GroupEntity>): Group = mapper
+        .toDomain(
+            groups,
+            members = emptyList(),
+            photos = emptyList(),
+            myPhotoUrl = null,
+        ).single()
+
     private fun serverGroup(defaultSplit: JsonObject): GroupDto = GroupDto(
         id = "group-1",
         createdBy = "user-1",
@@ -1645,6 +1914,8 @@ class GroupMapperImplTest {
         updatedAt = 2L,
         inviteCode = null,
         defaultSplit = defaultSplit,
+        shape = null,
+        photoUrl = null,
     )
 
     private fun photo(
@@ -1666,6 +1937,9 @@ class GroupMapperImplTest {
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
         inviteCode: String? = null,
+        shape: String? = null,
+        photoUrl: String? = null,
+        pendingPhoto: ByteArray? = null,
     ): GroupEntity = GroupEntity(
         id = id,
         name = "Viagem Floripa",
@@ -1680,6 +1954,9 @@ class GroupMapperImplTest {
         inviteCode = inviteCode,
         defaultSplit = null,
         splitIncomes = null,
+        shape = shape,
+        photoUrl = photoUrl,
+        pendingPhoto = pendingPhoto,
     )
 
     private fun memberEntity(
@@ -1722,6 +1999,8 @@ class GroupMapperImplTest {
         updatedAt = 7L,
         inviteCode = inviteCode,
         defaultSplit = null,
+        shape = null,
+        photoUrl = null,
     )
 
     private fun memberDto(

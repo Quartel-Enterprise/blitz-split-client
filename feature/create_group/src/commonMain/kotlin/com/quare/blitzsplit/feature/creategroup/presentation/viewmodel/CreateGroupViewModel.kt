@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -41,6 +42,7 @@ class CreateGroupViewModel(
                 name = "",
                 initials = "",
                 color = AvatarColor.default,
+                shape = GroupShape.default,
                 type = GroupType.default,
                 currency = GroupCurrency.ofRegion(deviceRegion()),
                 members = emptyList(),
@@ -90,6 +92,13 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnNameChanged -> changeName(event.name)
 
             CreateGroupUiEvent.OnColorClicked -> uiState.update { it.copy(color = it.color.toNextColor()) }
+
+            CreateGroupUiEvent.OnShapeAndColorClicked -> uiState.update {
+                it.copy(
+                    color = it.color.toNextColor(),
+                    shape = it.shape.toNext(),
+                )
+            }
 
             is CreateGroupUiEvent.OnTypeSelected -> uiState.update { it.copy(type = event.type) }
 
@@ -204,6 +213,7 @@ class CreateGroupViewModel(
                 name = state.name,
                 type = state.type,
                 color = state.color,
+                shape = state.shape,
                 currency = state.currency,
                 members = members,
             ).onSuccess(::openInvite)

@@ -167,7 +167,14 @@ internal fun StatsSummaryHero(
     ) {
         val content = MaterialTheme.colorScheme.onPrimaryContainer
         Text(
-            stringResource(R.string.group_stats_total_spent),
+            // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
+            stringResource(
+                if (state.isFirstDownload) {
+                    R.string.group_stats_total_spent_so_far
+                } else {
+                    R.string.group_stats_total_spent
+                },
+            ),
             style = MaterialTheme.typography.titleSmall,
             color = content,
         )

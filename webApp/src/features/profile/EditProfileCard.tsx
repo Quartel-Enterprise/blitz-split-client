@@ -1,5 +1,5 @@
 import { Camera, ImageIcon, Info, Loader2, Pencil, Trash2, UserRound } from 'lucide-react'
-import { useRef, type ChangeEvent } from 'react'
+import { useRef } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
@@ -12,17 +12,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
-
-async function onPhotoFile(presenter: EditProfilePresenter, event: ChangeEvent<HTMLInputElement>) {
-  const file = event.target.files?.[0]
-  event.target.value = ''
-  if (!file) return
-  try {
-    presenter.photoPicked(new Int8Array(await file.arrayBuffer()))
-  } catch {
-    presenter.photoUnreadable()
-  }
-}
+import { onPhotoFile } from '@/lib/photoFile'
 
 const nameErrors: Record<string, MessageKey> = {
   TOO_SHORT: 'editProfile_nameTooShort',

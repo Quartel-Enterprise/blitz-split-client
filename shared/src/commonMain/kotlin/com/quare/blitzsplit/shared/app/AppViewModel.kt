@@ -3,15 +3,21 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +30,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 class AppViewModel(
     private val observeProfile: ObserveProfile,
@@ -31,6 +39,10 @@ class AppViewModel(
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
     private val linkInbox: LinkInbox,
+    private val markActivityRead: MarkActivityRead,
+    private val observeGroup: ObserveGroup,
+    private val observeExpense: ObserveExpense,
+    private val syncNow: SyncNow,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -96,6 +108,7 @@ class AppViewModel(
             .onEach { url ->
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
+                PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
                 SharedBillLink.codeOf(url)?.let { code -> return@onEach openSharedBill(code) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
@@ -117,6 +130,30 @@ class AppViewModel(
         if (openIndex < 0) navigator.navigate(Route.SharedBill(code)) else navigator.popTo(openIndex + 1)
     }
 
+    /*
+     * Why: a push notification's tap opens its tab, then, after a sync, what it is about: a notification comes right
+     * after the change it tells of, which this device may not have yet (a new bill, a group the person was just
+     * added to). Offline the sync fails at once and what the device has opens. The sync runs on its own and waits a
+     * few seconds at most, so a long one never holds the tab nor the links that come after. Nothing opens over the
+     * tab once the person moved on, nor for a group still not on the device, and Conta, which would close at once,
+     * not for a bill still not on it. The event is read, as its tap in Atividade makes it. Without a profile there is
+     * no home, and nothing opens.
+     */
+    private fun openPushLink(link: PushLink) {
+        link.eventId?.let { eventId -> viewModelScope.launch { markActivityRead(eventId) } }
+        if (Route.Home !in navigator.backStack.value) return
+        navigator.openHomeTab(link.homeTab)
+        val groupId = link.groupId ?: return
+        val tabTop = navigator.backStack.value
+        viewModelScope.launch {
+            withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
+            if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return@launch
+            link.routesAbove
+                .filter { route -> route !is Route.BillDetail || observeExpense(route.expenseId).first() != null }
+                .forEach(navigator::navigate)
+        }
+    }
+
     // Why: signing out, now or once synced, erases the profile wherever the app is, and only the welcome is left.
     private fun returnToWelcomeOnceErased() {
         observeProfile()
@@ -126,5 +163,10 @@ class AppViewModel(
             .filter { hasProfile -> !hasProfile }
             .onEach { navigator.replaceAll(Route.Welcome) }
             .launchIn(viewModelScope)
+    }
+
+    private companion object {
+        // Why: how long a tapped notification waits for a sync before opening what the device already has.
+        const val PUSH_LINK_SYNC_SECONDS = 5
     }
 }

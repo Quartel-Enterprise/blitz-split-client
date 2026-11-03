@@ -27,6 +27,7 @@ class FakeExpenseRepository(
     val deletedAts = mutableListOf<Long>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var createError: Throwable? = null
     var updateError: Throwable? = null
     var deleteError: Throwable? = null
@@ -121,4 +122,8 @@ class FakeExpenseRepository(
         downloadedUserIds += userId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
+
+    // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
+    override suspend fun fetchGroupExpenses(groupId: String): Result<suspend () -> Unit> =
+        pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
 }

@@ -237,7 +237,7 @@ struct HomeSummaryCard: View {
     }
 }
 
-/// "Scan a receipt" (it needs the internet, and answers "Coming soon" for now), "Record payment" and "New group".
+/// "Scan a receipt" (it needs the internet), "Record payment" and "New group".
 /// The Mac has them in its toolbar instead.
 struct HomeShortcuts: View {
     let canScanReceipt: Bool
@@ -422,7 +422,7 @@ private struct HomeGroupCard: View {
         let row = group.row
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top) {
-                GroupAvatar(initials: row.initials, color: row.color, size: 38)
+                GroupAvatar(initials: row.initials, color: row.color, photoUrl: row.photoUrl, size: 38)
                 Spacer(minLength: 4)
                 if group.isPinned {
                     Image(systemName: "pin.fill")
@@ -454,7 +454,7 @@ private struct HomeGroupRow: View {
     var body: some View {
         let row = group.row
         HStack(spacing: 10) {
-            GroupAvatar(initials: row.initials, color: row.color, size: 32)
+            GroupAvatar(initials: row.initials, color: row.color, photoUrl: row.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 4) {
                     Text(verbatim: row.name)

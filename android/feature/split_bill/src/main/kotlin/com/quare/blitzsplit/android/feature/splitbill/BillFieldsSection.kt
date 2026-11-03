@@ -181,6 +181,8 @@ private fun GroupChipContent(state: SplitBillUiState) {
         GroupBadge(
             initials = state.groupInitials,
             color = state.groupColor,
+            shape = state.groupShape,
+            photoUrl = state.groupPhotoUrl,
             size = 32.dp,
         )
         Text(

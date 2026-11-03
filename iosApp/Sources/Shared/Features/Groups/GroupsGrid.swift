@@ -103,7 +103,7 @@ private struct GroupGridCard: View {
             send(GroupsUiEventOnGroupClicked(groupId: group.id))
         } label: {
             VStack(alignment: .leading, spacing: 8) {
-                GroupAvatar(initials: group.initials, color: group.color, size: metrics.avatar)
+                GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: metrics.avatar)
                     .padding(.bottom, 4)
                 Text(verbatim: group.name)
                     .font(metrics.name)

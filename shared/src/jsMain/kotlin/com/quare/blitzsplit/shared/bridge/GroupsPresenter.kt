@@ -27,6 +27,8 @@ class JsGroupRow(
     val name: String,
     val initials: String,
     val color: String,
+    // Why: drawn in place of the color and the initials, null for none.
+    val photoUrl: String?,
     // Why: up to three faces; the rest is "+N".
     val faces: Array<JsMemberFace>,
     val extraMemberCount: Int,
@@ -93,8 +95,12 @@ class JsGroupsState(
     // Why: the latest activity first; nothing draws until they were read.
     val groups: Array<JsGroupRow>,
     val hasLoadedGroups: Boolean,
+    // Why: "Trazendo seus grupos" (5.1d) in Saldo geral's place, with grey rows for the groups still coming.
+    val firstDownload: JsDownloadProgress?,
     val showsEmptyState: Boolean,
     val showsSummary: Boolean,
+    // Why: no "Rachar conta" while the first download brings the groups down.
+    val showsSplitBillButton: Boolean,
     val summary: JsGroupsSummary,
     // Why: the tabs Em aberto and Quitados, already filtered by "Filtrar grupos".
     val openGroups: Array<JsGroupRow>,
@@ -146,8 +152,10 @@ class GroupsPresenter {
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
                 groups = state.groups.map(::toJsGroupRow).toTypedArray(),
                 hasLoadedGroups = state.hasLoadedGroups,
+                firstDownload = state.firstDownload?.toJsDownloadProgress(),
                 showsEmptyState = state.showsEmptyState,
                 showsSummary = state.showsSummary,
+                showsSplitBillButton = state.showsSplitBillButton,
                 summary = toJsGroupsSummary(state.summary),
                 openGroups = state.openGroups.map(::toJsGroupRow).toTypedArray(),
                 settledGroups = state.settledGroups.map(::toJsGroupRow).toTypedArray(),
@@ -336,6 +344,7 @@ internal fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
     name = row.name,
     initials = row.initials,
     color = row.color.code,
+    photoUrl = row.photoUrl,
     faces = row.faces.map { JsMemberFace(it.initial, it.color.code, it.photoUrl) }.toTypedArray(),
     extraMemberCount = row.extraMemberCount,
     memberCount = row.memberCount,

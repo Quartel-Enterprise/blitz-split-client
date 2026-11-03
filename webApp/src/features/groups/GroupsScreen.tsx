@@ -97,7 +97,8 @@ export function GroupsScreen() {
       <main className="flex flex-1 flex-col gap-5 p-4 sm:p-8 lg:px-10">
         {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
         <h1 className="sr-only">{t('groups_title')}</h1>
-        {state.groups.length > 0 ? (
+        {/* Why: the first download draws the page before its first group, with what is still coming in gray. */}
+        {state.groups.length > 0 || state.firstDownload ? (
           <GroupsPage presenter={presenter} state={state} />
         ) : (
           <>

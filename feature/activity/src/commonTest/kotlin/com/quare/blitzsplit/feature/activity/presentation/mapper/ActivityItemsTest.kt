@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
@@ -980,7 +981,8 @@ class ActivityItemsTest {
         )
 
         // When
-        val days = daysOf(items, NOW, TimeZone.of("America/Sao_Paulo"))
+        // Why: a fixed offset, since the browser's tests have no time zone database to read a region from.
+        val days = daysOf(items, NOW, TimeZone.of("UTC-03:00"))
 
         // Then
         assertEquals(RelativeDay.YESTERDAY, days.single().relativeDay)
@@ -1098,6 +1100,8 @@ class ActivityItemsTest {
         name = name,
         type = type,
         color = color,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members.toList(),
         isPending = false,

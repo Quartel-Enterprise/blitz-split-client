@@ -4,6 +4,12 @@ import SwiftUI
 @main
 struct BoraRacharApp: App {
     #if os(macOS)
+    @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
+    #else
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
+    #endif
+
+    #if os(macOS)
     private static let willResignActive = NSApplication.willResignActiveNotification
     private static let didBecomeActive = NSApplication.didBecomeActiveNotification
     #else

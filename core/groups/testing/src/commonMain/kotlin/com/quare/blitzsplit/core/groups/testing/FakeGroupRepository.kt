@@ -7,7 +7,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,11 @@ class FakeGroupRepository(
     val createdAts = mutableListOf<Long>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+
+    // Why: the groups the server holds, which a first download brings down one by one.
+    var serverGroups: List<Group> = emptyList()
+    val downloadedGroupIds = mutableListOf<String>()
+    var firstDownloadError: Throwable? = null
     var createError: Throwable? = null
     val addedMembers = mutableListOf<Pair<String, GroupMember>>()
     val memberChangeTimes = mutableListOf<Long>()
@@ -119,6 +126,8 @@ class FakeGroupRepository(
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape?,
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit> {
@@ -132,6 +141,8 @@ class FakeGroupRepository(
                     name = name,
                     type = type,
                     color = color,
+                    shape = shape ?: group.shape,
+                    photo = photo,
                     currency = currency,
                     isPending = true,
                 )
@@ -250,6 +261,23 @@ class FakeGroupRepository(
     override suspend fun downloadGroups(userId: String): Result<Unit> {
         downloadedUserIds += userId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun fetchFirstDownloadGroupIds(): Result<List<String>> {
+        firstDownloadError?.let { return Result.failure(it) }
+        return Result.success(serverGroups.map { it.id })
+    }
+
+    // Why: its write puts the server's group on the device, as a first download does.
+    override suspend fun fetchGroupDownload(
+        userId: String,
+        groupId: String,
+    ): Result<suspend () -> Unit> {
+        firstDownloadError?.let { return Result.failure(it) }
+        return Result.success {
+            downloadedGroupIds += groupId
+            serverGroups.firstOrNull { it.id == groupId }?.let { group -> groups.value += group }
+        }
     }
 
     override suspend fun clear() {

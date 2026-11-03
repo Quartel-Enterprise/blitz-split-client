@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PaymentKey
@@ -706,6 +707,8 @@ class PayReceiverViewModelTest {
             name = "Viagem Floripa",
             type = GroupType.TRIP,
             color = AvatarColor.GREEN,
+            shape = GroupShape.SQUARE,
+            photo = null,
             currency = currency,
             members = listOf(
                 member(ANA, "Ana", userId = ANA_USER),

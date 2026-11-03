@@ -1,25 +1,43 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /*
  * Why: a first download is the sync that fills a device right after an account already on the server was restored on
- * it (a sign in, the recovery code), which Início draws as "Sincronizando…". It starts before the restored profile
- * reaches Room, so every sync that runs with that profile began after it, and ends once the first of them settles,
- * failed or not. In memory (a Koin single): a relaunch, or Início made again (the web's tabs), is never one.
+ * it (a sign in, the recovery code), which Início and Grupos draw as "Sincronizando… 3 de 7 grupos". It starts before
+ * the restored profile reaches Room, so every sync that runs with that profile began after it, and ends once its
+ * groups came down, or the first of those syncs settles, failed or not. In memory (a Koin single): a relaunch, or
+ * Início made again (the web's tabs), is never one.
  */
 class FirstDownload {
-    private val isPending = MutableStateFlow(false)
+    private val progress = MutableStateFlow<FirstDownloadProgress?>(null)
 
-    fun observeIsPending(): StateFlow<Boolean> = isPending.asStateFlow()
+    val isPending: Boolean
+        get() = progress.value != null
+
+    // Why: null when there is no first download.
+    fun observeProgress(): StateFlow<FirstDownloadProgress?> = progress.asStateFlow()
 
     fun start() {
-        isPending.value = true
+        progress.value = FirstDownloadProgress(
+            arrivedGroupCount = 0,
+            groupCount = null,
+        )
+    }
+
+    fun expect(groupCount: Int) {
+        progress.update { it?.copy(groupCount = groupCount) }
+    }
+
+    fun groupArrived() {
+        progress.update { it?.copy(arrivedGroupCount = it.arrivedGroupCount + 1) }
     }
 
     fun end() {
-        isPending.value = false
+        progress.value = null
     }
 }

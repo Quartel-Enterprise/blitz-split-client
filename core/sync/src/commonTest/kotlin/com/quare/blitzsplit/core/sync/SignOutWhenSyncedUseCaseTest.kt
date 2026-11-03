@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutWhenSyncedUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
@@ -89,6 +90,7 @@ class SignOutWhenSyncedUseCaseTest {
                 billAttachmentRepository = FakeBillAttachmentRepository(),
                 activityRepository = FakeActivityRepository(),
                 hiddenContactRepository = FakeHiddenContactRepository(),
+                pushDeviceRepository = FakePushDeviceRepository(),
                 firstDownload = FirstDownload(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,

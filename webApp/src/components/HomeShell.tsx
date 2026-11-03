@@ -230,7 +230,7 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
               group.id === openGroups.selectedId && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
             )}
           >
-            <GroupAvatar initials={group.initials} color={group.color} className="size-[22px] rounded-md text-[9px]" />
+            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-[22px] rounded-md text-[9px]" />
             <span className="min-w-0 flex-1 truncate">{group.name}</span>
             <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{formatSignedPlainMoney(group.netMinor, group.fractionDigits)}</span>
           </button>

@@ -283,6 +283,166 @@ class ActivityMapperImplTest {
     }
 
     @Test
+    fun `GIVEN the group shape changed WHEN reading the edit THEN reads both shapes as codes`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """{"changes":[{"field":"shape","before":"cookie","after":"petal"}]}""",
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.SHAPE,
+                before = ActivityValue.none.copy(code = "cookie"),
+                after = ActivityValue.none.copy(code = "petal"),
+            ),
+            change,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group made before shapes given a shape WHEN reading the edit THEN its before is the square`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """{"changes":[{"field":"shape","before":null,"after":"circle"}]}""",
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.SHAPE,
+                before = ActivityValue.none.copy(code = "square"),
+                after = ActivityValue.none.copy(code = "circle"),
+            ),
+            change,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo added to a group WHEN reading the edit THEN its before is none and its after the new photo`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """
+                {"changes":[{"field":"photo_url","before":null,
+                "after":"https://cdn.example/group-photos/group-1/photo.jpg?v=2"}]}
+            """,
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.PHOTO,
+                before = ActivityValue.none,
+                after = ActivityValue.none.copy(code = "new"),
+            ),
+            change,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group photo removed WHEN reading the edit THEN its before is the previous photo and its after none`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """
+                {"changes":[{"field":"photo_url",
+                "before":"https://cdn.example/group-photos/group-1/photo.jpg?v=1","after":null}]}
+            """,
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.PHOTO,
+                before = ActivityValue.none.copy(code = "previous"),
+                after = ActivityValue.none,
+            ),
+            change,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group photo replaced WHEN reading the edit THEN reads the previous and the new photo with no URL`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """
+                {"changes":[{"field":"photo_url",
+                "before":"https://cdn.example/group-photos/group-1/photo.jpg?v=1",
+                "after":"https://cdn.example/group-photos/group-1/photo.jpg?v=2"}]}
+            """,
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.PHOTO,
+                before = ActivityValue.none.copy(code = "previous"),
+                after = ActivityValue.none.copy(code = "new"),
+            ),
+            change,
+        )
+    }
+
+    @Test
+    fun `GIVEN the color shape and photo changed in one edit WHEN reading it THEN reads each in its order`() {
+        // Given
+        val entity = entity(
+            kind = "group_edited",
+            data = """
+                {"changes":[
+                  {"field":"color","before":"blue","after":"peach"},
+                  {"field":"shape","before":"square","after":"cookie"},
+                  {"field":"photo_url","before":"https://cdn.example/group-photos/group-1/photo.jpg?v=1","after":null}
+                ]}
+            """,
+        )
+
+        // When
+        val changes = mapper.toDomain(entity)?.changes
+
+        // Then
+        assertEquals(
+            listOf(
+                ActivityChange(
+                    field = ActivityField.COLOR,
+                    before = ActivityValue.none.copy(code = "blue"),
+                    after = ActivityValue.none.copy(code = "peach"),
+                ),
+                ActivityChange(
+                    field = ActivityField.SHAPE,
+                    before = ActivityValue.none.copy(code = "square"),
+                    after = ActivityValue.none.copy(code = "cookie"),
+                ),
+                ActivityChange(
+                    field = ActivityField.PHOTO,
+                    before = ActivityValue.none.copy(code = "previous"),
+                    after = ActivityValue.none,
+                ),
+            ),
+            changes,
+        )
+    }
+
+    @Test
     fun `GIVEN a change of a field unknown to this version WHEN reading the edit THEN leaves that change out`() {
         // Given
         val entity = entity(

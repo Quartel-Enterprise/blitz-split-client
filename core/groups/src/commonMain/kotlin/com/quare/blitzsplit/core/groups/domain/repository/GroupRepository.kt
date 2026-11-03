@@ -6,7 +6,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
@@ -27,6 +29,10 @@ interface GroupRepository {
         name: String,
         type: GroupType,
         color: AvatarColor,
+        // Why: null keeps the stored one, which may be none (a group made before shapes) or a newer app's.
+        shape: GroupShape?,
+        // Why: a Pending one goes up with the next sync; null takes the photo off.
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit>
@@ -89,6 +95,19 @@ interface GroupRepository {
      * leaves it even with changes not pushed yet, and one someone else deleted posts its "Grupo apagado".
      */
     suspend fun downloadGroups(userId: String): Result<Unit>
+
+    // Why: the groups a first download brings (5.1d), the latest activity first, before any of them comes down.
+    suspend fun fetchFirstDownloadGroupIds(): Result<List<String>>
+
+    /*
+     * Why: one group and its members, as a first download brings each group whole before the next. It only reads the
+     * server; the write it returns puts them on the device, so the sync writes a group's rows together, with no round
+     * trip in between. Nothing leaves the device, which the full download that follows decides.
+     */
+    suspend fun fetchGroupDownload(
+        userId: String,
+        groupId: String,
+    ): Result<suspend () -> Unit>
 
     // Why: a sign out leaves no group on the device.
     suspend fun clear()

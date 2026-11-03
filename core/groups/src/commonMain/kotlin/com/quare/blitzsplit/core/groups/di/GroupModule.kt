@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.core.groups.di
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPinLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPinRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.RoomGroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.RoomGroupPinLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupPinRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
@@ -62,6 +64,7 @@ import org.koin.dsl.module
 val groupModule = module {
     singleOf(::RoomGroupLocalDataSource).bind<GroupLocalDataSource>()
     singleOf(::SupabaseGroupRemoteDataSource).bind<GroupRemoteDataSource>()
+    singleOf(::SupabaseGroupPhotoRemoteDataSource).bind<GroupPhotoRemoteDataSource>()
     singleOf(::GroupMapperImpl).bind<GroupMapper>()
     singleOf(::GroupRepositoryImpl).bind<GroupRepository>()
     singleOf(::InMemoryGroupDeletionRepository).bind<GroupDeletionRepository>()

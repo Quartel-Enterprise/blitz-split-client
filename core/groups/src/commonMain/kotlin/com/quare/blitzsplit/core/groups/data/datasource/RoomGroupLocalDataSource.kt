@@ -49,6 +49,9 @@ class RoomGroupLocalDataSource(
         name: String,
         type: String,
         color: String,
+        shape: String?,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     ) {
@@ -57,6 +60,9 @@ class RoomGroupLocalDataSource(
             name = name,
             type = type,
             color = color,
+            shape = shape,
+            photoUrl = photoUrl,
+            pendingPhoto = pendingPhoto,
             currency = currency,
             updatedAt = updatedAt,
         )
@@ -101,6 +107,28 @@ class RoomGroupLocalDataSource(
         dao.insertGroupWithMembers(
             group = group,
             members = members,
+        )
+    }
+
+    override suspend fun markGroupPhotoUploaded(
+        id: String,
+        jpeg: ByteArray,
+        photoUrl: String,
+    ) {
+        dao.markGroupPhotoUploaded(
+            id = id,
+            jpeg = jpeg,
+            photoUrl = photoUrl,
+        )
+    }
+
+    override suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
+    ) {
+        dao.dropRefusedGroupPhoto(
+            id = id,
+            jpeg = jpeg,
         )
     }
 

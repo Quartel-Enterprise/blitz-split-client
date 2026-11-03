@@ -57,6 +57,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
@@ -267,17 +268,18 @@ private fun IdentitySection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val changeColorLabel = stringResource(R.string.create_group_change_color)
-        // Why: tapping the avatar cycles its color through the palette.
+        val changeIconLabel = stringResource(R.string.create_group_change_shape_and_color)
+        // Why: tapping the avatar steps through the shapes and the colors together.
         GroupBadge(
             initials = state.initials,
             color = state.color,
             size = 72.dp,
+            shape = state.shape,
             modifier = Modifier
                 .clickable(
                     role = Role.Button,
-                    onClick = { onEvent(CreateGroupUiEvent.OnColorClicked) },
-                ).semantics { contentDescription = changeColorLabel },
+                    onClick = { onEvent(CreateGroupUiEvent.OnShapeAndColorClicked) },
+                ).semantics { contentDescription = changeIconLabel },
         )
         OutlinedTextField(
             value = state.name,
@@ -436,6 +438,7 @@ private fun buildPreviewState(
     name = "Viagem Floripa",
     initials = "VF",
     color = AvatarColor.PEACH,
+    shape = GroupShape.COOKIE,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     members = listOf(

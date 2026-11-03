@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
+import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -19,6 +21,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -74,7 +77,15 @@ class PickGroupViewModelTest {
             // Then
             assertEquals(GroupSelection(groupId = TRIP_ID), state.groupSelection)
             assertEquals(
-                BillGroup(TRIP_ID, "Viagem Floripa", "VF", AvatarColor.GREEN, memberCount = 3),
+                BillGroup(
+                    TRIP_ID,
+                    "Viagem Floripa",
+                    "VF",
+                    AvatarColor.GREEN,
+                    GroupShape.SQUARE,
+                    photoUrl = null,
+                    memberCount = 3,
+                ),
                 state.groups.first(),
             )
             assertEquals(listOf(TRIP_ID, HOME_ID), state.groups.map { it.id })
@@ -333,7 +344,14 @@ class PickGroupViewModelTest {
     @Test
     fun `GIVEN a bill being edited WHEN tapping its group THEN nothing opens`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(screen = Route.SplitBill(TRIP_ID, "bill-1", picksGroupFirst = false))
+        prepareScenario(
+            screen = Route.SplitBill(
+                TRIP_ID,
+                "bill-1",
+                picksGroupFirst = false,
+                scansReceipt = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
@@ -443,12 +461,14 @@ class PickGroupViewModelTest {
         TRIP_ID,
         expenseId = null,
         picksGroupFirst = true,
+        scansReceipt = false,
     )
 
     private val fromGroup = Route.SplitBill(
         TRIP_ID,
         expenseId = null,
         picksGroupFirst = false,
+        scansReceipt = false,
     )
 
     private val trip = group(
@@ -493,6 +513,8 @@ class PickGroupViewModelTest {
         name = name,
         type = GroupType.TRIP,
         color = color,
+        shape = GroupShape.SQUARE,
+        photo = null,
         currency = currency,
         members = members,
         isPending = false,
@@ -554,6 +576,13 @@ class PickGroupViewModelTest {
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
             offerCategoryTeach = {},
+            readReceipt = { _, _ ->
+                ReceiptScan(
+                    photo = null,
+                    reading = null,
+                )
+            },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

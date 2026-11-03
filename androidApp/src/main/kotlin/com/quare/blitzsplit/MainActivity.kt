@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.navigation.AppNavDisplay
+import com.quare.blitzsplit.push.NotificationPermissionEffect
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import io.github.jan.supabase.SupabaseClient
@@ -59,6 +60,8 @@ class MainActivity : ComponentActivity() {
                 FoldLayoutRoot {
                     AppNavDisplay(appViewModel = appViewModel)
                 }
+                val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()
+                NotificationPermissionEffect(top = backStack.lastOrNull())
             }
         }
     }
@@ -82,7 +85,7 @@ class MainActivity : ComponentActivity() {
         handleAppResumed()
     }
 
-    // Why: each handler takes only the links it knows: the sign in's callback, or a group's invite.
+    // Why: each handler takes only the links it knows: the sign in's callback, an invite, a notification's tap.
     private fun handleLink(intent: Intent) {
         supabase.handleDeeplinks(intent)
         val url = intent.dataString ?: return

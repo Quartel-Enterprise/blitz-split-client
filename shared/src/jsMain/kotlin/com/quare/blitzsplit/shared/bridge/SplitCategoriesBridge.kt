@@ -16,7 +16,7 @@ class JsCategoryMatch(
     val end: Int,
 )
 
-// Why: one of "Sugeridas"; reason is "description", "most-used", "group" or "used".
+// Why: one of "Sugeridas"; reason is "description", "receipt", "most-used", "group" or "used".
 class JsCategorySuggestion(
     val category: JsCategory,
     val reason: String,
@@ -50,8 +50,8 @@ class JsCategoryDeletion(
 )
 
 /*
- * Why: the bill's category and "Categoria" (7.7, 7.8). hint is "by-term", "by-longest-term", "no-term", "changed" or
- * "picked"; the picker's fields are only meaningful while isPickerOpen.
+ * Why: the bill's category and "Categoria" (7.7, 7.8). hint is "by-term", "by-longest-term", "by-receipt", "no-term",
+ * "changed" or "picked"; the picker's fields are only meaningful while isPickerOpen.
  */
 class JsBillCategories(
     val category: JsCategory,
@@ -88,6 +88,7 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
         hint = when (state.categoryHint) {
             CategoryHint.BY_TERM -> "by-term"
             CategoryHint.BY_LONGEST_TERM -> "by-longest-term"
+            CategoryHint.BY_RECEIPT -> "by-receipt"
             CategoryHint.NO_TERM -> "no-term"
             CategoryHint.CHANGED -> "changed"
             CategoryHint.PICKED -> "picked"

@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Settle-up reminder</string>
+    <string name="push_bill_created">%1$s added “%2$s” with you</string>
+    <string name="push_bill_edited">%1$s edited “%2$s”</string>
+    <string name="push_bill_deleted">%1$s deleted “%2$s”</string>
+    <string name="push_comment_added">%1$s commented on “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s marked that they paid you</string>
+    <string name="push_payment_to_you">%1$s marked that %2$s paid you</string>
+    <string name="push_payment_received_yours">%1$s marked your payment as received</string>
+    <string name="push_payment_from_you">%1$s marked that you paid %2$s</string>
+    <string name="push_payment_undone">%1$s undid a payment with you</string>
+    <string name="push_charge_sent">%1$s sent you a reminder to settle up</string>
+    <string name="push_settle_reminder">You have an open balance in %1$s</string>
+    <string name="push_settle_reminders">You have open balances in %1$s groups</string>
+    <string name="push_added_to_group">%1$s added you to the group</string>
+    <string name="push_member_joined">%1$s joined the group</string>
 </resources>

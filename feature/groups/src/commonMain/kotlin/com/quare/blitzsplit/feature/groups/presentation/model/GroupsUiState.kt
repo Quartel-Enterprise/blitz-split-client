@@ -25,6 +25,11 @@ data class GroupsUiState(
      */
     val groups: List<GroupRow>,
     val hasLoadedGroups: Boolean,
+    /*
+     * Why: "Trazendo seus grupos" (5.1d) while a new device's first download brings the groups down one by one: the
+     * card with "3 de 7 grupos" in Saldo geral's place, the rows that came and grey ones for the rest; null otherwise.
+     */
+    val firstDownload: DownloadProgress?,
     val summary: GroupsSummary,
     /*
      * Why: "Quitados" expanded under "Em aberto" on a phone, or the Quitados tab chosen on the web and the Mac. It
@@ -88,11 +93,15 @@ data class GroupsUiState(
         get() = exitGroupId?.let { id -> groups.firstOrNull { it.id == id } }
 
     val showsEmptyState: Boolean
-        get() = hasLoadedGroups && groups.isEmpty()
+        get() = hasLoadedGroups && groups.isEmpty() && firstDownload == null
 
-    // Why: the "Saldo geral" card, once there is a group.
+    // Why: the "Saldo geral" card, once there is a group; a first download draws its own card in its place.
     val showsSummary: Boolean
         get() = groups.isNotEmpty()
+
+    // Why: 5.1d draws no "Rachar conta" while the groups come down; the ones that came take bills once it ends.
+    val showsSplitBillButton: Boolean
+        get() = firstDownload == null
 
     val canRetrySync: Boolean
         get() = syncBadge == SyncBadge.FAILED
@@ -110,11 +119,11 @@ data class GroupsUiState(
      * so instead.
      */
     val showsNoOpenGroups: Boolean
-        get() = groups.isNotEmpty() && filterQuery.isBlank() && openGroups.isEmpty()
+        get() = groups.isNotEmpty() && filterQuery.isBlank() && openGroups.isEmpty() && firstDownload == null
 
     // Why: "Nenhum grupo quitado" on the web's and the Mac's Quitados; a phone hides the empty section instead.
     val showsNoSettledGroups: Boolean
-        get() = groups.isNotEmpty() && filterQuery.isBlank() && settledGroups.isEmpty()
+        get() = groups.isNotEmpty() && filterQuery.isBlank() && settledGroups.isEmpty() && firstDownload == null
 
     // Why: the query is folded once, not once per row.
     private val filteredGroups: List<GroupRow>

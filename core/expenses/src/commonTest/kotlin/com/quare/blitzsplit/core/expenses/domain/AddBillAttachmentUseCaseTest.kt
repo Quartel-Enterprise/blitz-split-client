@@ -66,6 +66,36 @@ class AddBillAttachmentUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a receipt image already encoded WHEN attaching it THEN stores it as it is without encoding it again`() =
+        runTest {
+            // Given
+            prepareScenario(now = 7_000L)
+            val readJpeg = byteArrayOf(5, 6, 7)
+
+            // When
+            val result = useCase(
+                expenseId = BILL_ID,
+                groupId = GROUP_ID,
+                kind = BillAttachmentKind.RECEIPT,
+                image = BillImage(
+                    jpeg = readJpeg,
+                    width = 1_200,
+                    height = 1_600,
+                ),
+                addedByMemberId = "member-ana",
+            )
+
+            // Then
+            assertEquals(BillAttachmentAddition.ADDED, result.getOrNull())
+            assertTrue(encodedSources.isEmpty())
+            val saved = repository.attachments.value.single()
+            assertEquals(BillAttachmentKind.RECEIPT, saved.kind)
+            assertEquals(1_200, saved.width)
+            assertEquals(1_600, saved.height)
+            assertTrue(readJpeg.contentEquals(repository.pendingImages.getValue(saved.id)))
+        }
+
+    @Test
     fun `GIVEN a picked photo WHEN adding it THEN its id is a new uuid`() = runTest {
         // Given
         prepareScenario()

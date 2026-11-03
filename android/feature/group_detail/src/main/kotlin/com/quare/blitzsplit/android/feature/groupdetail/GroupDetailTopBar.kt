@@ -125,6 +125,8 @@ private fun GroupTitle(
         GroupBadge(
             initials = header.groupInitials,
             color = header.groupColor,
+            shape = header.groupShape,
+            photoUrl = header.groupPhotoUrl,
             size = badgeSize,
         )
         Text(

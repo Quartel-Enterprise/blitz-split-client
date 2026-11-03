@@ -39,6 +39,10 @@ interface GroupLocalDataSource {
         name: String,
         type: String,
         color: String,
+        // Why: null keeps the stored one.
+        shape: String?,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     )
@@ -68,6 +72,17 @@ interface GroupLocalDataSource {
     suspend fun insertGroupWithMembers(
         group: GroupEntity,
         members: List<GroupMemberEntity>,
+    )
+
+    suspend fun markGroupPhotoUploaded(
+        id: String,
+        jpeg: ByteArray,
+        photoUrl: String,
+    )
+
+    suspend fun dropRefusedGroupPhoto(
+        id: String,
+        jpeg: ByteArray,
     )
 
     suspend fun markGroupSynced(
