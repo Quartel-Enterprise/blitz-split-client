@@ -18,6 +18,4 @@ data class ContactRow(
     val firstGroupName: String,
     // Why: "· convidado sem app".
     val isGuest: Boolean,
-    // Why: the search marks where the name matched ("Ca rla"); null outside the search.
-    val match: NameMatch?,
 )

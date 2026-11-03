@@ -49,10 +49,10 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
-import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 
 /*
@@ -62,7 +62,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 @Composable
 internal fun GroupsSearchPane(
     search: GroupsSearch,
-    onEvent: (GroupsUiEvent) -> Unit,
+    onEvent: (SearchUiEvent) -> Unit,
     layout: DeviceLayout,
     modifier: Modifier = Modifier,
     // Why: none beside a phone lying down's column, whose own padding already keeps the results off the edge.
@@ -78,7 +78,7 @@ internal fun GroupsSearchPane(
         when {
             search.showsNoResults -> SearchNoResultsColumn(
                 query = search.trimmedQuery,
-                onClear = { onEvent(GroupsUiEvent.OnSearchQueryChanged("")) },
+                onClear = { onEvent(SearchUiEvent.OnQueryChanged("")) },
                 modifier = listModifier,
             )
 
@@ -104,7 +104,7 @@ internal fun GroupsSearchPane(
 
 private fun LazyListScope.searchResultItems(
     search: GroupsSearch,
-    onEvent: (GroupsUiEvent) -> Unit,
+    onEvent: (SearchUiEvent) -> Unit,
 ) {
     val results = search.results
     if (results.groups.isNotEmpty()) {
@@ -113,7 +113,7 @@ private fun LazyListScope.searchResultItems(
             SearchGroupRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, results.groups.size),
-                onClick = { onEvent(GroupsUiEvent.OnGroupClicked(hit.group.id)) },
+                onClick = { onEvent(SearchUiEvent.OnGroupClicked(hit.group.id)) },
             )
         }
     }
@@ -123,7 +123,7 @@ private fun LazyListScope.searchResultItems(
             SearchPersonRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, results.people.size),
-                onClick = { onEvent(GroupsUiEvent.OnSearchPersonClicked(hit.groupId)) },
+                onClick = { onEvent(SearchUiEvent.OnPersonClicked(hit.groupId)) },
             )
         }
     }
@@ -133,7 +133,7 @@ private fun LazyListScope.searchResultItems(
             SearchBillRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, results.bills.size),
-                onClick = { onEvent(GroupsUiEvent.OnSearchBillClicked(hit.groupId, hit.id)) },
+                onClick = { onEvent(SearchUiEvent.OnBillClicked(hit.groupId, hit.id)) },
             )
         }
     }

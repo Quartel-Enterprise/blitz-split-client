@@ -4,6 +4,7 @@ import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewMode
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.RecoveryCodeCardDismissal
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.SearchViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -69,6 +70,7 @@ val groupsModule = module {
         )
     }
     viewModelOf(::HomeSidebarViewModel)
+    viewModelOf(::SearchViewModel)
     // Why: Início's recovery code card stays closed until the next launch, whichever Início is drawn.
     singleOf(::RecoveryCodeCardDismissal)
 }

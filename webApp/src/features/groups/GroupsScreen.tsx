@@ -1,6 +1,6 @@
 import { Plus, Users } from 'lucide-react'
 import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
-import { GroupsSearchDialog, searchShortcut } from '@/features/groups/GroupsSearchDialog'
+import { SearchDialog, useHomeSearch, type SearchActions } from '@/features/groups/SearchDialog'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
 
@@ -61,19 +61,8 @@ export function GroupsScreen() {
   useDeletedGroupNotice(presenter, state)
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  // Why: ⌘K (Ctrl+K off Apple devices) opens "Buscar" from anywhere on the home, once there is a group to look in.
-  const canSearch = state?.canSearch ?? false
-  useEffect(() => {
-    if (!presenter || !canSearch) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        presenter.openSearch()
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [presenter, canSearch])
+  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const searchActions = useMemo(() => (presenter ? searchActionsOf(presenter) : null), [presenter])
   if (!presenter || !state) return null
 
   return (
@@ -83,14 +72,10 @@ export function GroupsScreen() {
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
-      search={
-        state.canSearch
-          ? { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K', onOpen: () => presenter.openSearch() }
-          : undefined
-      }
+      search={search}
       overlays={
         <>
-          {state.isSearching && <GroupsSearchDialog presenter={presenter} state={state} />}
+          {state.isSearching && searchActions && <SearchDialog search={state.search} actions={searchActions} />}
           {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
         </>
       }
@@ -130,4 +115,20 @@ export function GroupsScreen() {
       </main>
     </HomeShell>
   )
+}
+
+/** Grupos' own search: it closes first, with the home still on top, so what opens isn't refused nor popped by the close. */
+function searchActionsOf(presenter: GroupsPresenter): SearchActions {
+  const pick = (open: () => void) => {
+    presenter.closeSearch()
+    open()
+  }
+  return {
+    closeSearch: () => presenter.closeSearch(),
+    search: (query) => presenter.search(query),
+    searchIn: (scope) => presenter.searchIn(scope),
+    openSearchedGroup: (groupId) => pick(() => presenter.openSearchedGroup(groupId)),
+    openSearchedPerson: (groupId) => pick(() => presenter.openSearchedPerson(groupId)),
+    openSearchedBill: (groupId, expenseId) => pick(() => presenter.openSearchedBill(groupId, expenseId)),
+  }
 }

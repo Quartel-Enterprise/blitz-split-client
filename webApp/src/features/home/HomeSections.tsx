@@ -7,7 +7,7 @@ import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } f
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
-import { paidText as payersText } from '@/features/groups/GroupsSearchDialog'
+import { paidText as payersText } from '@/features/groups/SearchDialog'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'

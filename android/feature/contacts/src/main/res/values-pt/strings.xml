@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="contacts_title">Contatos</string>
-    <string name="contacts_search">Buscar contatos</string>
     <string name="contacts_profile">Perfil</string>
     <string name="contacts_offline">Offline · contatos deste aparelho</string>
     <string name="contacts_summary_you_owe">Você deve</string>
@@ -31,14 +30,11 @@
     <string name="contacts_hidden_note">Quem está oculto continua nos grupos. Volta para a lista sozinho se entrar numa conta nova com você.</string>
     <string name="contacts_empty_title">Ninguém por aqui ainda</string>
     <string name="contacts_empty_body">Quem dividir um grupo com você aparece aqui, com o saldo de cada um.</string>
-    <string name="contacts_search_back">Fechar a busca</string>
     <string name="contacts_search_clear">Limpar busca</string>
-    <string name="contacts_search_in_groups">Nos seus grupos · %d</string>
     <string name="contacts_search_in_agenda">Na agenda · %d</string>
     <string name="contacts_invite">Convidar</string>
     <string name="contacts_invite_person">Convidar %s</string>
     <string name="contacts_no_results_title">Ninguém com “%s”</string>
-    <string name="contacts_no_results_body">Não achamos ninguém com esse nome nos seus grupos nem na agenda. Confira a grafia ou convide a pessoa.</string>
     <string name="contacts_coming_soon">Em breve</string>
     <string name="contacts_change_error">Não deu para salvar a mudança. Tente de novo.</string>
     <string name="contacts_close">Fechar</string>

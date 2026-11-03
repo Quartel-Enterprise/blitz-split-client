@@ -47,6 +47,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -125,7 +126,7 @@ class GroupsSearchTest {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
             groups.groups.value = emptyList()
 
             // When
@@ -143,7 +144,7 @@ class GroupsSearchTest {
             prepareScenario()
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
             // Then
             assertFalse(viewModel.uiState.value.isSearching)
@@ -176,7 +177,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
             // Then
             val results = viewModel.uiState.value.search.results
@@ -197,7 +198,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("churros"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("churros")))
 
             // Then
             val hit = viewModel.uiState.value.search.results.groups
@@ -220,7 +221,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("  CHÚR "))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("  CHÚR ")))
 
             // Then
             assertEquals(
@@ -238,7 +239,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("carla"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
 
             // Then
             val people = viewModel.uiState.value.search.results.people
@@ -254,7 +255,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("pierre"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("pierre")))
 
         // Then
         assertTrue(
@@ -271,7 +272,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged(" pizza "))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged(" pizza ")))
 
         // Then
         assertTrue(viewModel.uiState.value.search.showsNoResults)
@@ -283,10 +284,10 @@ class GroupsSearchTest {
         // Given
         prepareScenario()
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.GROUPS))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(SearchScope.GROUPS)))
 
         // Then
         val results = viewModel.uiState.value.search.results
@@ -301,10 +302,10 @@ class GroupsSearchTest {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.BILLS))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(SearchScope.BILLS)))
 
             // Then
             val results = viewModel.uiState.value.search.results
@@ -317,10 +318,10 @@ class GroupsSearchTest {
         // Given
         prepareScenario()
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("an"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("an")))
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.PEOPLE))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(SearchScope.PEOPLE)))
 
         // Then
         val results = viewModel.uiState.value.search.results
@@ -334,7 +335,7 @@ class GroupsSearchTest {
         // Given
         prepareScenario()
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
 
         // When
         expenses.expenses.value += bill(
@@ -361,7 +362,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked("ape"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnPersonClicked("ape")))
 
         // Then
         assertEquals(
@@ -377,7 +378,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchBillClicked("churrasco", "carne"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked("churrasco", "carne")))
 
         // Then
         assertEquals(
@@ -399,10 +400,10 @@ class GroupsSearchTest {
         // Given
         prepareScenario()
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-        viewModel.onEvent(GroupsUiEvent.OnSearchBillClicked("churrasco", "carne"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked("churrasco", "carne")))
 
         // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked("ape"))
+        viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnPersonClicked("ape")))
 
         // Then
         assertEquals(3, navigator.backStack.value.size)
@@ -414,11 +415,11 @@ class GroupsSearchTest {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
 
             // Then
             val search = viewModel.uiState.value.search
@@ -433,8 +434,8 @@ class GroupsSearchTest {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
-            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
-            viewModel.onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.BILLS))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(SearchScope.BILLS)))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
 
             // When

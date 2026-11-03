@@ -180,6 +180,12 @@ one under it (`List<Route>.findHomeTabUnder`: Início for a group Início opened
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
 Saldos); a face tapped in Saldos opens the same profile over Saldos. Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
 
+"Buscar" is the same search on every tab. Grupos keeps it as its own state (`GroupsUiState.search`), since its
+results preview beside the list; over Início, Saldos, Contatos and Atividade it is a route of its own,
+`Route.Search`, pushed by `Navigator.openSearchOver(HomeTab)` only while that tab is on top, so a late tap never
+stacks it over something the tab opened. `SearchViewModel` closes it with `navigateBack` and opens a result in its
+place (`replaceAbove`), so back from the group or the bill returns to the tab, never to the search.
+
 A group's tabs (Despesas, Saldos, Membros) are state too: the group is one route, `Route.GroupDetail(groupId,
 joinedAs, tab)`, whose `tab` is only the one it opens on (the home's "Ver saldos", Convidar's "Ver quem já entrou").
 `GroupDetailViewModel` keeps the tab picked (`GroupDetailUiState.tab`, `OnTabSelected`), reads the group once for the

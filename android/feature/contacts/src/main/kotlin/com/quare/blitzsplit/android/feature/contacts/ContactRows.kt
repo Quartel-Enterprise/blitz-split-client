@@ -67,7 +67,6 @@ internal fun ContactListRow(
         NameColumn(
             name = row.name,
             meta = rowMetaOf(row),
-            row = row,
             modifier = Modifier.weight(1f),
         )
         Column(
@@ -124,7 +123,6 @@ private fun SelectableListRow(
 private fun NameColumn(
     name: String,
     meta: String,
-    row: ContactRow?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -132,7 +130,7 @@ private fun NameColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(
-            text = highlightedNameOf(name, row?.match),
+            text = name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -253,7 +251,6 @@ internal fun InviteActionRow(
         NameColumn(
             name = title,
             meta = subtitle,
-            row = null,
             modifier = Modifier.weight(1f),
         )
         Icon(

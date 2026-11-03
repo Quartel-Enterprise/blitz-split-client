@@ -33,8 +33,8 @@ import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.SearchQueryField
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
-import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 
 /*
  * Why: while searching, the search bar takes the top app bar's place: back, what is typed and ✕, and under it "Tudo",
@@ -43,7 +43,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 @Composable
 internal fun GroupsSearchBar(
     search: GroupsSearch,
-    onEvent: (GroupsUiEvent) -> Unit,
+    onEvent: (SearchUiEvent) -> Unit,
     layout: DeviceLayout,
 ) {
     Box(
@@ -75,7 +75,7 @@ internal fun GroupsSearchBar(
 @Composable
 internal fun GroupsSearchHeader(
     search: GroupsSearch,
-    onEvent: (GroupsUiEvent) -> Unit,
+    onEvent: (SearchUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -96,7 +96,7 @@ internal fun GroupsSearchHeader(
                     .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchClosed) }) {
+                IconButton(onClick = { onEvent(SearchUiEvent.OnClosed) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                         contentDescription = stringResource(R.string.groups_search_back),
@@ -105,14 +105,14 @@ internal fun GroupsSearchHeader(
                 SearchQueryField(
                     query = search.query,
                     placeholder = stringResource(R.string.groups_search_placeholder),
-                    onQueryChange = { onEvent(GroupsUiEvent.OnSearchQueryChanged(it)) },
+                    onQueryChange = { onEvent(SearchUiEvent.OnQueryChanged(it)) },
                     onSearch = { focusManager.clearFocus() },
                     modifier = Modifier
                         .weight(1f)
                         .focusRequester(focusRequester),
                 )
                 if (search.query.isNotEmpty()) {
-                    IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchQueryChanged("")) }) {
+                    IconButton(onClick = { onEvent(SearchUiEvent.OnQueryChanged("")) }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = stringResource(R.string.groups_search_clear),
@@ -126,7 +126,7 @@ internal fun GroupsSearchHeader(
             labels = SearchScope.entries.map { stringResource(scopeLabelOf(it)) },
             selectedIndex = SearchScope.entries.indexOf(search.scope),
             groupLabel = stringResource(R.string.groups_search_scopes),
-            onClick = { index -> onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.entries[index])) },
+            onClick = { index -> onEvent(SearchUiEvent.OnScopeChanged(SearchScope.entries[index])) },
             height = 40.dp,
             showsCheck = false,
         )

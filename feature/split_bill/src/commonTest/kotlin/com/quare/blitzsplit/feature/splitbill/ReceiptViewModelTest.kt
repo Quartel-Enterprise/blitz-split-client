@@ -1289,42 +1289,18 @@ class ReceiptViewModelTest {
         }
 
     @Test
-    fun `GIVEN fields typed while a receipt is read WHEN the reading comes back THEN keeps what was typed`() =
+    fun `GIVEN a receipt being read WHEN typing in the fields THEN nothing changes and the reading fills them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(holdsReads = true)
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-            val picked = millisOf(2026, 10, 29, 9, 30)
+            val spentAt = viewModel.uiState.value.spentAt
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
             viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado do mês"))
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(picked))
-
-            // When
-            answerRead(
-                0,
-                scanOf(
-                    reading(
-                        date = LocalDate(2026, 10, 28),
-                        time = LocalTime(12, 34),
-                    ),
-                ),
-            )
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals("100,00", state.amountText)
-            assertEquals("Mercado do mês", state.description)
-            assertEquals(picked, state.spentAt)
-            assertEquals(ReceiptStatus.READ, state.receipt?.status)
-        }
-
-    @Test
-    fun `GIVEN only the description typed while a receipt is read WHEN it comes back THEN fills the rest`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(holdsReads = true)
-            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado do mês"))
+            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(millisOf(2026, 10, 29, 9, 30)))
+            assertEquals("", viewModel.uiState.value.amountText)
+            assertEquals("", viewModel.uiState.value.description)
+            assertEquals(spentAt, viewModel.uiState.value.spentAt)
 
             // When
             answerRead(
@@ -1340,8 +1316,9 @@ class ReceiptViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals("259,90", state.amountText)
-            assertEquals("Mercado do mês", state.description)
+            assertEquals("Bom Preço", state.description)
             assertEquals(millisOf(2026, 10, 28, 12, 34), state.spentAt)
+            assertEquals(ReceiptStatus.READ, state.receipt?.status)
         }
 
     @Test

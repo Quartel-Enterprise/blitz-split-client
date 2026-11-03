@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 // In-memory GroupRepository: the state is public so a test can set and read it, every call is
 // recorded, and the failure knobs are public vars.
@@ -84,6 +85,8 @@ class FakeGroupRepository(
     var exitGate: CompletableDeferred<Unit>? = null
 
     override fun observeGroups(): Flow<List<Group>> = groups
+
+    override fun observeHasGroups(): Flow<Boolean> = groups.map { it.isNotEmpty() }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 

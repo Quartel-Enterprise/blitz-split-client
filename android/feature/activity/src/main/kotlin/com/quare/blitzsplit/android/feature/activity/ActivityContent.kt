@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
+import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
@@ -97,6 +98,12 @@ fun ActivityContent(
                     TopAppBar(
                         title = { Text(title) },
                         actions = {
+                            // Why: only once there is a group to look in, as on Grupos.
+                            if (state.canSearch) {
+                                SearchActionButton(
+                                    onClick = { onEvent(ActivityUiEvent.OnSearchClicked) },
+                                )
+                            }
                             ProfileAvatarButton(
                                 initial = state.avatarInitial,
                                 color = state.avatarColor,

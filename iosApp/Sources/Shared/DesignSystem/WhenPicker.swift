@@ -52,12 +52,17 @@ struct MacWhenField: View {
     let onOpen: () -> Void
 
     @State private var isOpen = false
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         LabeledContent("When:") {
             Button(ExpenseFormat.when(millis, relativeDay: relativeDay)) {
                 onOpen()
                 isOpen = true
+            }
+            // A form locked while its popover is open (a receipt being read) closes it, so nothing picked is lost
+            .onChange(of: isEnabled) { _, enabled in
+                if !enabled { isOpen = false }
             }
             .popover(isPresented: $isOpen, arrowEdge: .bottom) {
                 VStack(spacing: 8) {

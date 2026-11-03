@@ -1,15 +1,34 @@
 import Shared
 import SwiftUI
 
+/// What the search's views read and send: Groups' own search (`GroupsModel`) and the one over Home, Balances, Contacts
+/// and Activity (`SearchModel`, `Route.Search`) draw the same.
+protocol SearchSource: AnyObject {
+    /// The search as the watcher brought it, which redraws the views.
+    var search: GroupsSearch { get }
+    /// The search as the ViewModel holds it right now: the field reads its text back at once, so the caret never jumps.
+    var currentSearch: GroupsSearch { get }
+    func sendSearch(_ event: any SearchUiEvent)
+}
+
+extension GroupsModel: SearchSource {
+    var search: GroupsSearch { state.search }
+    var currentSearch: GroupsSearch { current.search }
+
+    func sendSearch(_ event: any SearchUiEvent) {
+        send(GroupsUiEventOnSearch(event: event))
+    }
+}
+
 /// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
 /// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
 /// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
 /// the members of the group they were found in, an expense its bill over the group. Always a list, even with the grid.
 struct GroupsSearchResultsList: View {
-    let model: GroupsModel
+    let model: any SearchSource
 
     var body: some View {
-        let search = model.state.search
+        let search = model.search
         if search.showsNoResults {
             ContentUnavailableView {
                 Label {
@@ -40,7 +59,7 @@ struct GroupsSearchResultsList: View {
                 Section("Groups") {
                     ForEach(results.groups, id: \.group.id) { hit in
                         Button {
-                            model.send(GroupsUiEventOnGroupClicked(groupId: hit.group.id))
+                            model.sendSearch(SearchUiEventOnGroupClicked(groupId: hit.group.id))
                         } label: {
                             SearchGroupRow(hit: hit)
                         }
@@ -52,7 +71,7 @@ struct GroupsSearchResultsList: View {
                 Section("People") {
                     ForEach(results.people, id: \.self) { hit in
                         Button {
-                            model.send(GroupsUiEventOnSearchPersonClicked(groupId: hit.groupId))
+                            model.sendSearch(SearchUiEventOnPersonClicked(groupId: hit.groupId))
                         } label: {
                             SearchPersonRow(hit: hit)
                         }
@@ -64,7 +83,7 @@ struct GroupsSearchResultsList: View {
                 Section("Expenses") {
                     ForEach(results.bills, id: \.id) { hit in
                         Button {
-                            model.send(GroupsUiEventOnSearchBillClicked(groupId: hit.groupId, expenseId: hit.id))
+                            model.sendSearch(SearchUiEventOnBillClicked(groupId: hit.groupId, expenseId: hit.id))
                         } label: {
                             SearchBillRow(hit: hit)
                         }
@@ -82,18 +101,26 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab, or Groups' place on an iPhone: a large "Search" title, the field under it, and All / Groups
-/// / People / Expenses as segments. An iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt
-/// column on the left and the results on the right.
+/// The search tab, Groups' place on an iPhone, or pushed over Home, Balances, Contacts or Activity on an iPhone
+/// (`isPushed`): a large "Search" title, the field under it, and All / Groups / People / Expenses as segments. An
+/// iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results
+/// on the right.
 struct GroupsSearchView: View {
-    let model: GroupsModel
+    let model: any SearchSource
+    /// Pushed over another tab (`Route.Search`), whose back button closes it.
+    var isPushed = false
     @State private var layout = ScreenLayout()
     @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
     @FocusState private var isFieldFocused: Bool
 
     /// In the groups' place, where the tab bar is compact and has no search tab: ✕ closes it, as Android's back does.
     private var isInGroups: Bool {
-        !hasSearchTabRoom
+        !hasSearchTabRoom && !isPushed
+    }
+
+    /// Opened from a magnifier rather than a tab: the keyboard comes up at once.
+    private var focusesOnAppear: Bool {
+        isInGroups || isPushed
     }
 
     /// Lying down short of an iPad's room: an iPhone lying down.
@@ -111,7 +138,8 @@ struct GroupsSearchView: View {
                                 .font(.title.bold())
                                 .accessibilityAddTraits(.isHeader)
                             Spacer()
-                            if isInGroups {
+                            // The bar, and with it the back button, is hidden lying down
+                            if focusesOnAppear {
                                 closeButton
                                     .buttonStyle(.glass)
                             }
@@ -147,7 +175,7 @@ struct GroupsSearchView: View {
                 }
                 // Opened from the magnifier, the keyboard comes up as a search tab's does; coming back from a
                 // result keeps it down over what was found
-                .onAppear { if isInGroups, model.current.search.query.isEmpty { isFieldFocused = true } }
+                .onAppear { if focusesOnAppear, model.currentSearch.query.isEmpty { isFieldFocused = true } }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -158,7 +186,7 @@ struct GroupsSearchView: View {
 
     private var closeButton: some View {
         Button("Close", systemImage: "xmark") {
-            model.send(GroupsUiEventOnSearchClosed.shared)
+            model.sendSearch(SearchUiEventOnClosed.shared)
         }
         .labelStyle(.iconOnly)
     }
@@ -176,7 +204,7 @@ struct GroupsSearchView: View {
 /// The search field of an iPhone lying down, in the column beside the results: the system's field sits in the bar,
 /// which the boards leave for the results there. It takes the focus as it opens, so the keyboard comes up at once.
 private struct GroupsSearchField: View {
-    let model: GroupsModel
+    let model: any SearchSource
     @FocusState private var isFocused: Bool
 
     var body: some View {
@@ -189,7 +217,7 @@ private struct GroupsSearchField: View {
                 .focused($isFocused)
                 .submitLabel(.search)
                 .autocorrectionDisabled()
-            if !model.state.search.query.isEmpty {
+            if !model.search.query.isEmpty {
                 Button("Clear", systemImage: "xmark.circle.fill") {
                     query.wrappedValue = ""
                 }
@@ -202,7 +230,7 @@ private struct GroupsSearchField: View {
         .frame(height: 40)
         .background(.fill.tertiary, in: .capsule)
         // Only for a new search; coming back from a result keeps the keyboard down over what was found
-        .onAppear { if model.current.search.query.isEmpty { isFocused = true } }
+        .onAppear { if model.currentSearch.query.isEmpty { isFocused = true } }
     }
 }
 #endif
@@ -221,17 +249,17 @@ enum GroupsSearchCopy {
     }
 
     /// What is typed: the field reads the ViewModel's text back at once, so the caret never jumps.
-    @MainActor static func queryBinding(_ model: GroupsModel) -> Binding<String> {
+    @MainActor static func queryBinding(_ model: any SearchSource) -> Binding<String> {
         Binding(
-            get: { model.current.search.query },
-            set: { model.send(GroupsUiEventOnSearchQueryChanged(query: $0)) },
+            get: { model.currentSearch.query },
+            set: { model.sendSearch(SearchUiEventOnQueryChanged(query: $0)) },
         )
     }
 
-    @MainActor static func scopeBinding(_ model: GroupsModel) -> Binding<SearchScope> {
+    @MainActor static func scopeBinding(_ model: any SearchSource) -> Binding<SearchScope> {
         Binding(
-            get: { model.state.search.scope },
-            set: { model.send(GroupsUiEventOnSearchScopeChanged(scope: $0)) },
+            get: { model.search.scope },
+            set: { model.sendSearch(SearchUiEventOnScopeChanged(scope: $0)) },
         )
     }
 

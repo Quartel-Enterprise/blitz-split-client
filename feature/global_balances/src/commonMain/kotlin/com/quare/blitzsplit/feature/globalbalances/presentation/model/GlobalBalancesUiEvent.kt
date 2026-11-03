@@ -79,6 +79,9 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
 
     data object OnProfileClicked : GlobalBalancesUiEvent
 
+    // Why: "Buscar" (5.2), the same search as Grupos', over Saldos: the magnifier, the web's ⌘K.
+    data object OnSearchClicked : GlobalBalancesUiEvent
+
     // Why: "Desfazer" on the notice of a settling up just recorded.
     data object OnUndoPaymentClicked : GlobalBalancesUiEvent
 

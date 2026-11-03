@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCard, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -57,6 +58,7 @@ const emptyWords: Record<string, { title: MessageKey; body: MessageKey; bodyOne:
 export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GlobalBalancesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsGlobalBalancesState) => void) => p.observeState(onChange))
+  const search = useHomeSearch(presenter, state?.canSearch ?? false)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) =>
     toast(t(action === 'coming-soon' ? 'groups_comingSoon' : 'globalBalances_changeError')),
   )
@@ -75,6 +77,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      search={search}
       overlays={state.charge && <ChargeDialog presenter={presenter} state={state} charge={state.charge} />}
     >
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-5 p-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>

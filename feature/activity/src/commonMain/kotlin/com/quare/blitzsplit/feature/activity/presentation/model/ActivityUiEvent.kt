@@ -77,6 +77,9 @@ sealed interface ActivityUiEvent : UiEvent {
 
     data object OnProfileClicked : ActivityUiEvent
 
+    // Why: "Buscar" (5.2), the same search as Grupos', over Atividade: the magnifier, the web's ⌘K.
+    data object OnSearchClicked : ActivityUiEvent
+
     data object OnHomeTabClicked : ActivityUiEvent
 
     data object OnGroupsTabClicked : ActivityUiEvent

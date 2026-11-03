@@ -12,7 +12,6 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaAccess
-import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
@@ -51,7 +50,6 @@ private fun createPreviewRow(
     groupCount = groupCount,
     firstGroupName = "Viagem Floripa",
     isGuest = isGuest,
-    match = null,
 )
 
 private fun createPreviewState(
@@ -75,9 +73,6 @@ private fun createPreviewState(
         toReceiveCount = 2,
         toPayCount = 1,
     ).toLoaded(),
-    isSearchOpen = false,
-    query = "",
-    agenda = emptyList<AgendaContact>().toLoaded(),
     isOnline = isOnline,
     isLoaded = isLoaded,
     isWaitingForInternet = !isOnline && !isLoaded,
@@ -85,6 +80,7 @@ private fun createPreviewState(
     pickedKey = null,
     isAgendaPicked = false,
     activityUnreadCount = 3,
+    canSearch = true,
 )
 
 // Why: a stand-in pattern for the previews, which can't run the shared encoder.

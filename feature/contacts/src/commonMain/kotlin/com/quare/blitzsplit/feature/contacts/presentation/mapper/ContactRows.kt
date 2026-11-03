@@ -14,5 +14,4 @@ internal fun rowOf(contact: Contact): ContactRow = ContactRow(
     groupCount = contact.groups.size,
     firstGroupName = contact.groups.first().groupName,
     isGuest = contact.isGuest,
-    match = null,
 )

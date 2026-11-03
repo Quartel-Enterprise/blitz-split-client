@@ -17,6 +17,7 @@ import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesS
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
+import { SearchRouteDialog } from '@/features/groups/SearchDialog'
 import { HomeScreen } from '@/features/home/HomeScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
@@ -85,6 +86,8 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   // Why: Contatos' "Convidar com link ou QR" (and a guest's "Convidar Diego") opens over Contatos or the profile.
   const isContactInvite = top.name === 'contact-invite'
   const isJoinWithLink = top.name === 'join-with-link'
+  // Why: "Buscar" (⌘K) over Início, Saldos, Contatos or Atividade, which stay mounted under it.
+  const isSearch = top.name === 'search'
   const isSplitBill = top.name === 'split-bill'
   // Why: "Compartilhar conta" opens over Conta, which stays open under it.
   const isShareBill = top.name === 'share-bill'
@@ -97,7 +100,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -116,6 +119,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
+      {isSearch && <SearchRouteDialog />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isMapOverBill} />}
       {isMapOverBill && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background">

@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -76,6 +77,7 @@ import kotlin.test.assertTrue
 class ActivityViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var activity: FakeActivityRepository
+    private lateinit var groupRepository: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var minutes: MutableStateFlow<Int>
@@ -1909,6 +1911,186 @@ class ActivityViewModelTest {
 
     // endregion
 
+    // region Buscar
+
+    @Test
+    fun `GIVEN groups on the device WHEN Atividade opens THEN offers the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN groups on the device and the feed not read yet WHEN Atividade opens THEN offers the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertTrue(state.canSearch)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN Atividade opens THEN hides the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.canSearch)
+    }
+
+    @Test
+    fun `GIVEN groups Atividade has no event for WHEN Atividade opens THEN offers the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = emptyList())
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.canSearch)
+            assertEquals(ActivityEmptyState.NOTHING_YET, state.emptyState)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN a sync brings the first group THEN offers the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = emptyList())
+            val firstGroup = defaultGroups.first()
+
+            // When
+            groupRepository.groups.value = listOf(firstGroup)
+
+            // Then
+            assertTrue(viewModel.uiState.value.canSearch)
+        }
+
+    @Test
+    fun `GIVEN Atividade on top WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the history of a contact on top WHEN tapping Buscar THEN opens the search over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = "user:ana")
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Activity(personKey = "user:ana"), Route.Search),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill opened from an item WHEN tapping Buscar late THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
+        val opened = navigator.backStack.value
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(opened, navigator.backStack.value)
+        assertEquals(Route.BillDetail(APE, BILL_JANTAR), navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN the search already open over Atividade WHEN tapping Buscar again THEN opens it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN tapping Buscar THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Filtrar open WHEN tapping Buscar THEN opens nothing and keeps Filtrar open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        assertTrue(viewModel.uiState.value.isFilterOpen)
+    }
+
+    @Test
+    fun `GIVEN Filtrar applied WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        applyFilter(FLORIPA)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Filtrar dismissed WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        viewModel.onEvent(ActivityUiEvent.OnFilterDismissed)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+    }
+
+    // endregion
+
     private fun applyFilter(
         groupId: String?,
         vararg types: ActivityType,
@@ -2169,6 +2351,7 @@ class ActivityViewModelTest {
         online: Boolean = true,
         sync: SyncState = SyncState.SYNCED,
         groupsRead: Boolean = true,
+        storedGroups: List<Group> = defaultGroups,
         syncStateRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
         isOlderPageHeld: Boolean = false,
@@ -2190,6 +2373,7 @@ class ActivityViewModelTest {
             )
             it.hasOlder.value = hasOlder
         }
+        groupRepository = FakeGroupRepository(initialGroups = storedGroups)
         val account = FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE))
         route = Route.Activity(personKey)
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
@@ -2213,10 +2397,11 @@ class ActivityViewModelTest {
             observeActivityFeed = ObserveActivityFeedUseCase(activity, ObserveAccountStatusUseCase(account)),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) {
-                ObserveGroupsUseCase(FakeGroupRepository(initialGroups = defaultGroups))
+                ObserveGroupsUseCase(groupRepository)
             } else {
                 ObserveGroups { MutableSharedFlow() }
             },
+            observeHasGroups = ObserveHasGroupsUseCase(groupRepository),
             observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository()),
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
