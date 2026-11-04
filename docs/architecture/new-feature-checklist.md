@@ -12,11 +12,12 @@ each platform.
       `pendingSync`, `applyRemote`, `markSynced`, and a step in `SyncCoordinator.syncNow()`
 - [ ] Create `feature/<name>` with `blitzsplit.kotlin.multiplatform`, and include it in `settings.gradle.kts`. It may
       not depend on another feature (see [Dependency rules](module-structure.md#dependency-rules))
-- [ ] `XUiState` (data class, no defaults, derived rules as getters), `XUiEvent : UiEvent`, `XUiAction` only if a
+- [ ] `XUiState` (data class, no defaults, derived rules as getters), `XUiEvent : TrackedUiEvent` with each case's
+      `analytics` and its rows in the catalog (the `add-analytics-event` skill, [analytics](../analytics/README.md)), `XUiAction` only if a
       platform effect is needed, and an `XError` enum if the screen shows errors (see
       [state-management.md](state-management.md))
-- [ ] `XViewModel`: public, `uiState` / `uiAction` with explicit backing fields, `stateWatcher` / `actionWatcher`,
-      `onEvent`; navigation through `Navigator`
+- [ ] `XViewModel`: public, extends `TrackedViewModel<XUiEvent>(trackEvent)`, `uiState` / `uiAction` with explicit
+      backing fields, `stateWatcher` / `actionWatcher`, `handleEvent`; navigation through `Navigator`
 - [ ] `di/XModule.kt` with `viewModelOf(::XViewModel)`, added to `sharedModules` in `shared/.../di/AppModules.kt`
 - [ ] If it is a screen of its own: a `Route` (see [Adding a route](navigation.md#adding-a-route))
 - [ ] `XViewModelTest` in `commonTest`, and tests for the new use cases, repository and mapper (see

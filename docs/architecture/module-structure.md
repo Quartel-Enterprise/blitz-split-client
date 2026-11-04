@@ -8,7 +8,7 @@ shared/                 # Composition root: Koin, AppViewModel, the Apple framew
 core/
 ├── model/              # Plain models every layer shares (UserProfile, AccountStatus, AvatarColor…)
 ├── utils/              # suspendRunCatching, ioDispatcher, CurrentTimeMillis, RecoveryCodeFormat
-├── presentation/       # The UiEvent marker and the Swift/JS bridge (FlowWatcher, Watch, ViewModelHolder)
+├── presentation/       # The UiEvent marker, TrackedUiEvent, EventAnalytics and TrackedViewModel (over :core:provider:analytics), and the Swift/JS bridge (FlowWatcher, Watch, ViewModelHolder)
 ├── navigation/         # Route, Navigator, BackStackNavigator: the one back stack
 ├── profile/            # Profile domain + data
 │   └── testing/        # FakeProfileRepository, for other modules' tests

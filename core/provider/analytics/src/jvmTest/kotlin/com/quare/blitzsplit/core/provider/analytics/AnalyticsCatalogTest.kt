@@ -15,18 +15,82 @@ class AnalyticsCatalogTest {
     private val eventNameRegex = Regex("""[a-z][a-z0-9_]{0,39}""")
     private val automaticRegex = Regex("""EventAnalytics\.Automatic\(\s*(?:name\s*=\s*)?"([^"]+)"""")
     private val literalRegex = Regex(""""([^"]+)"""")
+    private val trackEventRegex = Regex("""trackEvent\(\s*(?:name\s*=\s*)?"([^"]+)"""")
+    private val nestedImportRegex = Regex("""import [\w.]*\.EventAnalytics\.\w+""")
+
+    // Why: the names and prefixes Firebase keeps for its own events, which it drops when an app logs them.
+    private val reservedNames = setOf(
+        "ad_activeview",
+        "ad_click",
+        "ad_exposure",
+        "ad_query",
+        "ad_reward",
+        "adunit_exposure",
+        "app_background",
+        "app_clear_data",
+        "app_exception",
+        "app_remove",
+        "app_store_refund",
+        "app_store_subscription_cancel",
+        "app_store_subscription_convert",
+        "app_store_subscription_renew",
+        "app_update",
+        "app_upgrade",
+        "dynamic_link_app_open",
+        "dynamic_link_app_update",
+        "dynamic_link_first_open",
+        "error",
+        "first_open",
+        "first_visit",
+        "in_app_purchase",
+        "notification_dismiss",
+        "notification_foreground",
+        "notification_open",
+        "notification_receive",
+        "os_update",
+        "session_start",
+        "session_start_with_rollout",
+        "user_engagement",
+        "screen_view",
+    )
+    private val reservedPrefixes = listOf("firebase_", "google_", "ga_")
+    private val leadingLiteralRegex = Regex("""^\s*(?:name\s*=\s*)?"""")
     private val catalogRowRegex = Regex("""^\|\s*`([^`]+)`\s*\|""", RegexOption.MULTILINE)
 
     @Test
-    fun `GIVEN every declared event WHEN checking its name THEN it is snake case within the 40 letters GA4 takes`() {
+    fun `GIVEN every declared event WHEN checking its name THEN it is a snake case name GA4 takes and keeps`() {
         // Given
         val names = findDeclaredNames()
 
         // When
-        val violations = names.filterNot { name -> eventNameRegex.matches(name) }
+        val violations = names.filter { name ->
+            !eventNameRegex.matches(name) || name in reservedNames || reservedPrefixes.any(name::startsWith)
+        }
 
         // Then
         if (violations.isNotEmpty()) fail("Event names GA4 won't take:\n" + violations.joinToString("\n"))
+    }
+
+    @Test
+    fun `GIVEN every declaration WHEN reading its name THEN it is a prefixed literal the test can read`() {
+        // Given
+        val declarations = findDeclarationFiles()
+
+        // When
+        val violations = declarations.flatMap { file ->
+            val text = file.readText()
+            val automatic = findCallArguments(text, "EventAnalytics.Automatic(")
+                .filterNot { arguments -> leadingLiteralRegex.containsMatchIn(arguments) }
+            val manual = findCallArguments(text, "EventAnalytics.Manual(")
+                .filterNot { arguments -> literalRegex.containsMatchIn(arguments) }
+            val nestedImports = nestedImportRegex.findAll(text).map { it.value }.toList()
+            (automatic + manual + nestedImports).map { found -> "${file.relativeTo(repoRoot)}: $found" }
+        }
+
+        // Then
+        if (violations.isNotEmpty()) {
+            fail("Event names the test can't read (a literal after EventAnalytics.):\n" + violations.joinToString("\n"))
+        }
     }
 
     @Test
@@ -64,7 +128,7 @@ class AnalyticsCatalogTest {
         val violations = declarations.flatMap { file ->
             val sources = file
                 .moduleRoot()
-                .kotlinSources()
+                .mainSources()
                 .filter { it != file }
                 .map { it.readText() }
                 .toList()
@@ -79,12 +143,31 @@ class AnalyticsCatalogTest {
         if (violations.isNotEmpty()) fail("Manual events nobody sends:\n" + violations.joinToString("\n"))
     }
 
+    @Test
+    fun `GIVEN every trackEvent call WHEN looking for its event THEN a Manual of its module declares it`() {
+        // Given
+        val modules = File(repoRoot, "feature").mainSources().map { it.moduleRoot() }.toSet()
+
+        // When
+        val violations = modules.flatMap { module ->
+            val sources = module.mainSources().map { it.readText() }.toList()
+            val manual = sources.flatMap(::findManualNames).toSet()
+            sources
+                .flatMap { source -> trackEventRegex.findAll(source).map { it.groupValues[1] } }
+                .filterNot { name -> name in manual }
+                .map { name -> "${module.relativeTo(repoRoot)}: trackEvent(\"$name\") no Manual declares" }
+        }
+
+        // Then
+        if (violations.isNotEmpty()) fail("Events sent without a declaration:\n" + violations.joinToString("\n"))
+    }
+
     private fun findDeclaredNames(): Set<String> = findDeclarationFiles()
         .flatMap { file -> findAutomaticNames(file.readText()) + findManualNames(file.readText()) }
         .toSortedSet()
 
     private fun findDeclarationFiles(): List<File> = File(repoRoot, "feature")
-        .kotlinSources()
+        .mainSources()
         .filter { file -> file.readText().contains("EventAnalytics.") }
         .toList()
 
@@ -127,8 +210,9 @@ class AnalyticsCatalogTest {
         return arguments
     }
 
-    private fun File.kotlinSources(): Sequence<File> = walkTopDown()
-        .onEnter { directory -> directory.name != "build" }
+    // Why: the production code only, so a test's fake event neither declares an event nor keeps a row alive.
+    private fun File.mainSources(): Sequence<File> = walkTopDown()
+        .onEnter { directory -> directory.name != "build" && !directory.name.endsWith("Test") }
         .filter { it.isFile && it.extension == "kt" }
 
     private fun File.moduleRoot(): File = generateSequence(parentFile) { it.parentFile }

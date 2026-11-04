@@ -2,11 +2,9 @@ package com.quare.blitzsplit.core.presentation.analytics
 
 /*
  * Why: what a user action sends to Analytics (docs/analytics/README.md), declared on its UiEvent so the compiler asks
- * for the decision on every new one. Track when it is a user action, NotTracked only when it isn't one at all.
+ * for the decision on every new one: Automatic or Manual when it is a user action, NotTracked only when it isn't one.
  */
 sealed interface EventAnalytics {
-    sealed interface Track : EventAnalytics
-
     /*
      * Why: the event and its params are known from the UiEvent itself, so TrackedViewModel sends it before handling the
      * event; the ViewModel never calls trackEvent for it.
@@ -14,7 +12,7 @@ sealed interface EventAnalytics {
     data class Automatic(
         val name: String,
         val params: Map<String, Any>,
-    ) : Track {
+    ) : EventAnalytics {
         constructor(name: String) : this(name, emptyMap())
     }
 
@@ -24,7 +22,7 @@ sealed interface EventAnalytics {
      */
     data class Manual(
         val names: Set<String>,
-    ) : Track {
+    ) : EventAnalytics {
         constructor(name: String) : this(setOf(name))
     }
 

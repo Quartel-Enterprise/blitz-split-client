@@ -23,7 +23,7 @@ tasks.withType<Test>().configureEach {
         inputs
             .files(
                 fileTree(rootProject.layout.projectDirectory.dir("feature")) {
-                    include("**/*.kt")
+                    include("**/src/*Main/**/*.kt")
                     exclude("**/build/**")
                 },
             ).withPropertyName("featureSources")
