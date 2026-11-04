@@ -1247,14 +1247,8 @@ class BillHistoriesTest {
             ),
         )
         val joined = group.copy(
-            members = group.members.map {
-                if (it.id ==
-                    BRUNO
-                ) {
-                    it.copy(userId = BRUNO_USER)
-                } else {
-                    it
-                }
+            members = group.members.map { member ->
+                if (member.id == BRUNO) member.copy(userId = BRUNO_USER) else member
             },
         )
 

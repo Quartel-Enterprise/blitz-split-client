@@ -7,7 +7,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -33,7 +32,6 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
-import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -144,13 +142,6 @@ class HomeViewModel(
     private var rows = emptyList<GroupRow>()
     private var groups = emptyList<Group>()
 
-    // Why: whom "Você deve" settles up with straight away, as the global Saldos has them.
-    private var peopleBalances = PeopleBalances(
-        people = emptyList(),
-        totals = emptyList(),
-        me = null,
-    )
-
     // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
@@ -230,7 +221,6 @@ class HomeViewModel(
             }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
-                peopleBalances = people
                 uiState.update {
                     it.copy(
                         people = homePeopleOf(people).toLoaded(),
@@ -397,10 +387,14 @@ class HomeViewModel(
             .valueOrNull()
             ?.firstOrNull { it.key == key && it.currency == currency } ?: return
         open(
-            personProfileRouteOf(key, isMe = false).takeIf { person.opensProfile } ?: Route.SettleUp(
-                personKey = key,
-                currency = currency,
-            ),
+            if (person.opensProfile) {
+                Route.ContactProfile(key)
+            } else {
+                Route.SettleUp(
+                    personKey = key,
+                    currency = currency,
+                )
+            },
         )
     }
 

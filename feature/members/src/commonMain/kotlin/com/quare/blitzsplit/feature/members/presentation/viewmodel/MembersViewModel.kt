@@ -91,7 +91,8 @@ class MembersViewModel(
     )
 
     private var expenses: List<Expense> = emptyList()
-    private var members: List<GroupMember> = emptyList()
+    // Why: the group's members as last read, whose account or name keys the profile a row opens.
+    private var groupMembers: List<GroupMember> = emptyList()
 
     /*
      * Why: a sync may bring other members' changes, bills and payments while the screen is open. A group that goes is
@@ -158,7 +159,7 @@ class MembersViewModel(
     }
 
     private fun show(group: Group) {
-        members = group.members
+        groupMembers = group.members
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
         val members = group.members.map { toMembersMember(it, group, inviterCode) }
         uiState.update { state ->
@@ -270,7 +271,7 @@ class MembersViewModel(
 
     // Why: over the group, or in the place of its bill the Mac draws beside it, as Convidar opens.
     private fun openProfile(memberId: String) {
-        val member = members.firstOrNull { it.id == memberId } ?: return
+        val member = groupMembers.firstOrNull { it.id == memberId } ?: return
         val next = personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe) ?: return
         navigator.openFromGroupScreen(
             from = route,
