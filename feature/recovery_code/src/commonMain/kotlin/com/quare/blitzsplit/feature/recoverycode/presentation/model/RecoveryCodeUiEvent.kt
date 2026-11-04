@@ -10,7 +10,7 @@ private const val SOURCE = "recovery_code"
 sealed interface RecoveryCodeUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copied")
+            OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copy_clicked")
 
             OnSaveToPasswordManagerClicked -> EventAnalytics.Automatic("recovery_code_save_clicked")
 
@@ -27,7 +27,7 @@ sealed interface RecoveryCodeUiEvent : TrackedUiEvent {
 
             OnNativeSignInCancelled -> EventAnalytics.Automatic("native_sign_in_cancelled", mapOf("source" to SOURCE))
 
-            OnRemindLaterClicked -> EventAnalytics.Automatic("recovery_code_snoozed")
+            OnRemindLaterClicked -> EventAnalytics.Automatic("recovery_code_remind_later_clicked")
 
             OnSavedClicked -> EventAnalytics.Automatic("recovery_code_saved_clicked")
         }

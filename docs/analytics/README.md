@@ -143,10 +143,10 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `restore_code_submitted` | none | Recuperar's Recuperar, with the code typed or read | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
-| `recovery_code_copied` | none | The recovery code's Copiar | `:feature:recovery_code` |
+| `recovery_code_copy_clicked` | none | The recovery code's Copiar | `:feature:recovery_code` |
 | `recovery_code_save_clicked` | none | "Salvar no gerenciador de senhas" | `:feature:recovery_code` |
 | `recovery_code_connect_instead_clicked` | none | "Conectar Google ou Apple em vez disso" | `:feature:recovery_code` |
-| `recovery_code_snoozed` | none | "Lembrar depois" | `:feature:recovery_code` |
+| `recovery_code_remind_later_clicked` | none | "Lembrar depois" | `:feature:recovery_code` |
 | `recovery_code_saved_clicked` | none | "Já guardei" | `:feature:recovery_code` |
 | `delete_account_confirm_toggled` | `is_checked` | Excluir conta's confirmation checkbox | `:feature:delete_account` |
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |

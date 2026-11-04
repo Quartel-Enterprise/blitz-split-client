@@ -419,7 +419,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
 
         // Then
-        assertEquals(listOf("recovery_code_copied" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
@@ -434,7 +434,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
 
         // Then
-        assertEquals(listOf("recovery_code_copied" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
@@ -596,7 +596,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
 
         // Then
-        assertEquals(listOf("recovery_code_snoozed" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf("recovery_code_remind_later_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
@@ -612,7 +612,7 @@ class RecoveryCodeViewModelTest {
             viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
 
             // Then
-            assertEquals(listOf("recovery_code_snoozed" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf("recovery_code_remind_later_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
     @Test
