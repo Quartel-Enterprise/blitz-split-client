@@ -20,11 +20,11 @@ simulator the user or another session is using. Tasks that never need a device d
 
 ### 1. Determine how to start
 
-Check whether the user's request already specifies a mode (e.g. "cria numa worktree", "começa
-in-place", "direto no checkout atual"). If it does, use that mode and skip straight to step 2.
+Check whether the user's request already specifies a mode (e.g. "create it in a worktree", "start
+in-place", "straight in the current checkout"). If it does, use that mode and skip straight to step 2.
 
-Otherwise, ask the user directly: "Quer que eu crie isso numa worktree isolada, ou direto in-place
-no checkout atual?" Do not assume a default: wait for their answer.
+Otherwise, ask the user directly, in the language they write in, whether to create it in an isolated
+worktree or straight in-place in the current checkout. Do not assume a default: wait for their answer.
 
 ### 2. Determine the branch type and short description
 

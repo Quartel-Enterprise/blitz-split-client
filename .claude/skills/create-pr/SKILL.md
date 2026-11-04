@@ -366,8 +366,8 @@ gh pr create \
 
 Take the label from the table in [`branch-types.md`](../branch-types.md). `chore` has no label:
 drop the `--label` flag for it. The repository is new, so the label may not exist yet
-(`gh label list`): `gh pr create` then fails. Ask the user "O label `<label>` ainda não existe no
-repositório. Quer que eu crie?" and, on a yes, create it with `gh label create <label>` before
+(`gh label list`): `gh pr create` then fails. Ask the user (in the language they write in) whether to create the
+missing label `<label>` and, on a yes, create it with `gh label create <label>` before
 creating the pull request. On a no, create the pull request without `--label`.
 
 If `gh` is not installed, make the same calls through the GitHub MCP tools when the session has
@@ -400,8 +400,8 @@ Right after the pull request is created, without asking, add the `merge-when-gre
 auto fix: from then on the pull request is this session's to drive until it merges, fixing failing
 checks, review threads and conflicts with `main` as they show up. The label merges it (see
 [docs/ci.md](../../../docs/ci.md#merge-when-green)), unless the user asked to merge right away (e.g.
-"mergeia agora"): then merge directly, as below. Skip this step only when the user's request said not
-to merge (e.g. "só abre o PR"), and stop after step 11.
+"merge it now"): then merge directly, as below. Skip this step only when the user's request said not
+to merge (e.g. "just open the PR"), and stop after step 11.
 
 In a session without `gh`, make the same calls through the GitHub MCP tools, as in step 11. The
 label needs the `MERGE_WHEN_GREEN_TOKEN` repository secret, so check for it first:
