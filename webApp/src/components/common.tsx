@@ -65,7 +65,7 @@ export function providerLabel(provider: AccountProvider, short = false): string 
   return t(short ? 'common_apple' : 'common_continueWithApple')
 }
 
-function ProviderLogo({ provider }: { provider: AccountProvider }) {
+export function ProviderLogo({ provider }: { provider: AccountProvider }) {
   if (provider === 'apple') return <AppleLogo />
   return <GoogleLogo />
 }

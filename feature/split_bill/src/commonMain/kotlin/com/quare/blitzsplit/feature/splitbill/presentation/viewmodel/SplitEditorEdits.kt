@@ -342,10 +342,16 @@ internal fun SplitBillUiState.withSplitAmong(
             )
         },
         defaultSplit = billDefault,
+        defaultSplitExceptionId = exception?.categoryId?.takeUnless { isEditing },
+        // Why: another category falls under another default, so "Usar como padrão do grupo" asked for its old one goes.
+        splitAsDefault = splitAsDefault?.takeIf { it.exceptionCategoryId == exception?.categoryId },
     )
 }
 
-// Why: "Voltar ao padrão" only puts Dividir's split back; the bill's own changes on "Pronto", as any change there.
+/*
+ * Why: "Voltar ao padrão" only puts Dividir's split back; the bill's own changes on "Pronto", as any change there.
+ * Back on the default, "Usar como padrão do grupo" hides, and unchecks.
+ */
 internal fun SplitBillUiState.withSplitEditorReset(): SplitBillUiState {
     val default = defaultSplit ?: return this
     val editor = splitEditor ?: return this
@@ -355,7 +361,7 @@ internal fun SplitBillUiState.withSplitEditorReset(): SplitBillUiState {
                 totalMinor = editor.totalMinor,
                 payerIds = editor.payerIds,
             ).withShares(),
-    )
+    ).withSplitAsDefaultSettled()
 }
 
 // Why: Partes' stepper, from 0 up to the same cap as the group's "Divisão padrão", which a new bill opens with.

@@ -12,14 +12,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,10 +35,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
-import com.quare.blitzsplit.android.designsystem.layout.FormFactor
-import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
-import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -56,52 +50,34 @@ private val chargeWidth = 560.dp
  * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog elsewhere, with the people under
  * the scrim: a book's right half, a tabletop's top half, its right half above the hinge lying down (FoldDialog).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ChargeSheet(
     charge: ChargeDraft,
     pixKey: PaymentKey?,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
-    val onDismiss = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) }
     val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
-    val formFactor = rememberFoldLayout().formFactor
-    if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            sheetMaxWidth = chargeWidth,
-        ) {
-            ChargeColumn(
-                charge = charge,
-                name = name,
-                pixKey = pixKey,
-                onEvent = onEvent,
-                modifier = Modifier.padding(
+    AdaptiveSheet(
+        title = stringResource(R.string.global_balances_charge_title, name),
+        onDismissRequest = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) },
+        skipPartiallyExpanded = false,
+        sheetMaxWidth = chargeWidth,
+        dialogShape = MaterialTheme.shapes.extraLarge,
+        dialogColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+        ChargeColumn(
+            charge = charge,
+            name = name,
+            pixKey = pixKey,
+            onEvent = onEvent,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
                     start = 24.dp,
                     end = 24.dp,
                     bottom = 24.dp,
                 ),
-            )
-        }
-    } else {
-        val title = stringResource(R.string.global_balances_charge_title, name)
-        FoldDialog(onDismissRequest = onDismiss) {
-            Surface(
-                modifier = Modifier
-                    .alertDialogPane(title)
-                    .fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                ChargeColumn(
-                    charge = charge,
-                    name = name,
-                    pixKey = pixKey,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
-        }
+        )
     }
 }
 

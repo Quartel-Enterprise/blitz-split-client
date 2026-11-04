@@ -103,4 +103,5 @@
     <string name="profile_unlink_confirm">Disconnect</string>
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
+    <string name="profile_photo_open">View photo</string>
 </resources>

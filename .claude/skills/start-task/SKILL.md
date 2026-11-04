@@ -270,10 +270,13 @@ the variables) in every call that runs `adb`. Drop `-no-window` when the user wa
 
 **Run the app on it.** Run configurations and Gradle's `installDebug` pick a device on their own,
 so install the APK directly (in worktree mode, `./gradlew -p <worktree>` and the worktree's APK
-path, or you install the main checkout's build):
+path, or you install the main checkout's build). The build goes through `heavy-check.sh`, which waits
+for any other worktree's build first (see step 8 of [`create-pr`](../create-pr/SKILL.md)), so run it
+on its own with `run_in_background` and install once its completion calls you back, since the wait
+may outlast the Bash tool's ten minutes:
 
 ```bash
-./gradlew :androidApp:assembleDebug
+./scripts/heavy-check.sh ./gradlew :androidApp:assembleDebug
 adb -s "emulator-$CONSOLE_PORT" install -r androidApp/build/outputs/apk/debug/androidApp-debug.apk
 adb -s "emulator-$CONSOLE_PORT" shell am start -n com.quare.blitzsplit/.MainActivity
 adb -s "emulator-$CONSOLE_PORT" exec-out screencap -p > <scratchpad>/screen.png
@@ -343,10 +346,11 @@ It boots headless. When the user wants to watch, open the iOS Simulator panel on
 **Run the app on it.** Generate the Xcode project first if this checkout doesn't have it yet
 (`./iosApp/generate-project.sh`). The build phase of the project builds the `Shared` framework with
 Gradle, so the first build takes a few minutes. In worktree mode, use the worktree's project and
-derived data path.
+derived data path. As with the APK, run the queued `xcodebuild` on its own with `run_in_background`
+and install once it calls you back.
 
 ```bash
-xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
   -destination "id=$UDID" -derivedDataPath iosApp/build/DerivedData build -quiet
 xcrun simctl install "$UDID" iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app
 xcrun simctl launch "$UDID" com.quare.blitzsplit

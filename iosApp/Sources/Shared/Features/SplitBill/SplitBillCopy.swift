@@ -108,10 +108,15 @@ enum SplitBillCopy {
         let count = Int(split.includedCount)
         guard count > 0 else { return String(localized: "Nobody is in yet") }
         let exception = state.defaultSplitException.map { CategoryCopy.name($0) }
+        let newException = state.splitAsDefaultException.map { CategoryCopy.name($0) }
         let facts = state.splitSummary.map { (fact: any SplitFact) -> String in
             // "Group exception for Groceries" in place of "Group default" (7.1k).
             if fact is SplitFactGroupDefault, let exception {
                 return String(localized: "Group exception for \(exception)")
+            }
+            // "Becomes the group exception for Groceries" in place of "Becomes the group default" (beta feedback 11).
+            if fact is SplitFactNewGroupDefault, let newException {
+                return String(localized: "Becomes the group exception for \(newException)")
             }
             return text(fact, currency: split.currency)
         }
@@ -230,6 +235,8 @@ enum SplitBillCopy {
             return String(localized: "\(Int(fact.count)) shares of \(currency.format(fact.partMinor))")
         case is SplitFactGroupDefault:
             return String(localized: "Group default")
+        case is SplitFactNewGroupDefault:
+            return String(localized: "Becomes the group default")
         case let fact as SplitFactItems:
             let count = Int(fact.count)
             return count == 1 ? String(localized: "1 item") : String(localized: "\(count) items")

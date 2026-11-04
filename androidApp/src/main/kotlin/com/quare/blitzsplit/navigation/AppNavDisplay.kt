@@ -40,6 +40,7 @@ import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDialog
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
+import com.quare.blitzsplit.android.feature.editprofile.ProfilePhotoScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
@@ -220,6 +221,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Search> { SearchScreen() }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
+            // Why: the photo big over the profile, the whole window dimmed behind it (a book's end half, as any dialog).
+            entry<Route.ProfilePhoto>(
+                metadata = FoldDialogSceneStrategy.dialogMetadataOf(
+                    DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        decorFitsSystemWindows = false,
+                    ),
+                ),
+            ) {
+                ProfilePhotoScreen()
+            }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             entry<Route.CategoryMap> { CategoryMapScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.

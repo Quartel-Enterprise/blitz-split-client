@@ -32,6 +32,9 @@ sealed interface EditProfileUiEvent : UiEvent {
     // Why: without a photo the avatar shows the initial on its color.
     data object OnPhotoRemoved : EditProfileUiEvent
 
+    // Why: the web and the Mac draw the form inside the profile, where the avatar opens the photo big.
+    data object OnAvatarClicked : EditProfileUiEvent
+
     data object OnSaveClicked : EditProfileUiEvent
 
     // Why: the web and the Mac edit inside the profile, where Cancel puts back what was saved.
