@@ -80,6 +80,7 @@ import kotlin.time.Instant
 
 // Conta's "Anexos" (7.3g): the tiles, the signed URLs, adding and removing a photo and the viewer.
 class BillDetailAttachmentsTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1217,6 +1218,7 @@ class BillDetailAttachmentsTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),

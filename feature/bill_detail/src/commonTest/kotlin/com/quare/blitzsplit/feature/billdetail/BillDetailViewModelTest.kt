@@ -101,6 +101,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class BillDetailViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -3923,6 +3924,7 @@ class BillDetailViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),

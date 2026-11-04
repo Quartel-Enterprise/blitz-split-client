@@ -41,6 +41,7 @@ val billDetailModule = module {
             observeBillAttachments = get(),
             connectivityObserver = get(),
             minuteTicks = get(),
+            trackEvent = get(),
         )
     }
     viewModelOf(::ShareBillViewModel)

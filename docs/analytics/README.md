@@ -132,13 +132,13 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail` |
 | `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
-| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill` |
+| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
@@ -160,7 +160,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `invite_link_change_cancelled` | none | "Trocar o link do convite?" closed without confirming, while it was open | `:feature:invite` |
 | `members_share_clicked` | none | Membros' Compartilhar, which opens Convidar | `:feature:members` |
 | `member_add_clicked` | none | "Adicionar pessoa" | `:feature:members` |
-| `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats` |
+| `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`, `bill_detail`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats`, `:feature:bill_detail` |
 | `member_rename_clicked` | none | A member's "Renomear" | `:feature:members` |
 | `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
 | `member_editor_save_clicked` | none | The name editor's Salvar or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
@@ -364,6 +364,26 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `receipt_removed` | none | × on "Foto do cupom" | `:feature:split_bill` |
 | `split_bill_save_clicked` | none | Rachar conta's Salvar, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
-| `bill_delete_clicked` | `source` (`split_bill`) | "Apagar conta", when its question opens | `:feature:split_bill` |
-| `bill_delete_confirmed` | `source` (`split_bill`) | "Apagar esta conta?" confirmed, while it was open and not deleting yet | `:feature:split_bill` |
-| `bill_delete_cancelled` | `source` (`split_bill`) | "Apagar esta conta?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill` |
+| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`) | "Apagar conta", when its question opens | `:feature:split_bill`, `:feature:bill_detail` |
+| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`) | "Apagar esta conta?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
+| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`) | "Apagar esta conta?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
+| `bill_edit_clicked` | none | Conta's "Editar conta", while it can edit | `:feature:bill_detail` |
+| `bill_share_clicked` | none | Conta's Compartilhar, which opens "Compartilhar conta" | `:feature:bill_detail` |
+| `bill_undo_clicked` | none | "Desfazer" on Histórico's latest edit, when it undoes | `:feature:bill_detail` |
+| `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
+| `bill_attachment_removed` | none | "Remover foto" in the viewer, on a photo it can remove | `:feature:bill_detail` |
+| `comment_send_clicked` | `is_reply`, `is_edit`, `source` (`bill_detail`, `shared_bill`) | "Enviar comentário", when the composer can send (offline too in Conta, where it waits in the queue) | `:feature:bill_detail` |
+| `comment_reply_clicked` | `source` (`bill_detail`, `shared_bill`) | "Responder", on a comment still there | `:feature:bill_detail` |
+| `comment_edit_clicked` | `source` (`bill_detail`, `shared_bill`) | "Editar" on the user's own comment, when the composer takes it | `:feature:bill_detail` |
+| `comment_delete_clicked` | `source` (`bill_detail`, `shared_bill`) | "Apagar" on the user's own comment, when its question opens | `:feature:bill_detail` |
+| `comment_delete_confirmed` | `source` (`bill_detail`, `shared_bill`) | Its question confirmed, while it was open | `:feature:bill_detail` |
+| `comment_delete_cancelled` | `source` (`bill_detail`, `shared_bill`) | Its question closed without confirming, while it was open | `:feature:bill_detail` |
+| `comment_like_toggled` | `is_liked`, `source` (`bill_detail`, `shared_bill`) | The heart, with where it ended up | `:feature:bill_detail` |
+| `comment_likes_clicked` | `source` (`bill_detail`, `shared_bill`) | The count beside the heart, on a comment with likes | `:feature:bill_detail` |
+| `comment_share_clicked` | `source` (`bill_detail`, `shared_bill`) | "Compartilhar" in a comment's menu | `:feature:bill_detail` |
+| `bill_link_visibility_changed` | `visibility` (`members`, `anyone`) | "Quem pode abrir" switched, while the link can change | `:feature:bill_detail` |
+| `bill_link_copy_clicked` | none | "Compartilhar conta"'s Copiar, with a link there | `:feature:bill_detail` |
+| `bill_link_send_clicked` | none | "Enviar link", with a link there | `:feature:bill_detail` |
+| `bill_link_disable_clicked` | none | "Desativar link", while the link can change | `:feature:bill_detail` |
+| `shared_bill_sign_in_clicked` | none | The shared page's "Entrar" or "Entrar para comentar" | `:feature:bill_detail` |
+| `shared_bill_open_in_app_clicked` | none | The shared page's "Abrir no app" | `:feature:bill_detail` |

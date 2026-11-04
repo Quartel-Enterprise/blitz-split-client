@@ -64,6 +64,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class SharedBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var links: FakeBillShareLinkRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1860,6 +1861,7 @@ class SharedBillViewModelTest {
         profiles = FakeProfileRepository(initialProfile = storedProfile)
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
         viewModel = SharedBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             loadSharedBill = LoadSharedBillUseCase(links),

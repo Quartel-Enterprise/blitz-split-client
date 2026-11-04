@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
@@ -42,7 +41,9 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openPersonProfile
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
@@ -53,6 +54,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.tilesOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.undoOf
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BILL_DETAIL_SOURCE
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -106,7 +108,8 @@ class BillDetailViewModel(
     observeBillAttachments: ObserveBillAttachments,
     connectivityObserver: NetworkConnectivityObserver,
     minuteTicks: MinuteTicks,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<BillDetailUiEvent>(trackEvent) {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
             BillDetailUiState(
@@ -174,6 +177,7 @@ class BillDetailViewModel(
         likeBillComment = likeBillComment,
         me = { shownGroup?.members?.firstOrNull { it.isMe } },
         emit = uiAction::emit,
+        trackEvent = trackEvent,
     )
 
     private val historyRead = BillHistoryRead(
@@ -284,7 +288,7 @@ class BillDetailViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: BillDetailUiEvent) {
+    override fun handleEvent(event: BillDetailUiEvent) {
         when (event) {
             is BillDetailUiEvent.CommentEvent -> comments.onEvent(event)
 
@@ -301,14 +305,9 @@ class BillDetailViewModel(
             BillDetailUiEvent.OnDeleteConfirmed -> delete()
 
             // Why: the question stays while the bill is being deleted, whatever closes it.
-            BillDetailUiEvent.OnDeleteDismissed -> uiState.update {
-                if (it.isDeleting) {
-                    it
-                } else {
-                    it.copy(
-                        deletion = null,
-                    )
-                }
+            BillDetailUiEvent.OnDeleteDismissed -> if (uiState.value.deletion != null && !uiState.value.isDeleting) {
+                trackEvent("bill_delete_cancelled", mapOf("source" to BILL_DETAIL_SOURCE))
+                uiState.update { it.copy(deletion = null) }
             }
 
             BillDetailUiEvent.OnUndoClicked -> undo()
@@ -319,7 +318,10 @@ class BillDetailViewModel(
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))
             }
 
-            is BillDetailUiEvent.OnAttachmentClicked -> view(event.id)
+            is BillDetailUiEvent.OnAttachmentClicked -> if (uiState.value.hasAttachment(event.id)) {
+                trackEvent("bill_attachment_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
+                view(event.id)
+            }
 
             is BillDetailUiEvent.OnViewerPageChanged -> view(event.id)
 
@@ -420,6 +422,7 @@ class BillDetailViewModel(
     // Why: on the device first, offline too, by this device's member; the sync takes it up.
     private fun addPhoto(source: ByteArray) {
         if (!uiState.value.canAddPhoto) return
+        trackEvent("photo_picked", mapOf("source" to BILL_DETAIL_SOURCE))
         uiState.update { it.copy(isAddingPhoto = true) }
         viewModelScope.launch {
             val error = addBillAttachment(
@@ -451,6 +454,7 @@ class BillDetailViewModel(
         val index = tiles.indexOfFirst { it.id == attachmentId }
         val tile = tiles.getOrNull(index) ?: return
         if (!tile.canRemove || !state.areActionsEnabled) return
+        trackEvent("bill_attachment_removed", emptyMap())
         val next = tiles.getOrNull(index + 1) ?: tiles.getOrNull(index - 1)
         if (state.viewedAttachmentId == attachmentId) uiState.update { it.copy(viewedAttachmentId = next?.id) }
         viewModelScope.launch {
@@ -483,6 +487,7 @@ class BillDetailViewModel(
     // Why: only while Conta is on top, as Editar: a second tap mustn't stack the sheet twice.
     private fun share() {
         if (!uiState.value.areActionsEnabled || !isOnTop()) return
+        trackEvent("bill_share_clicked", emptyMap())
         navigator.navigate(
             Route.ShareBill(
                 groupId = route.groupId,
@@ -500,6 +505,7 @@ class BillDetailViewModel(
         // Why: the latest line is the server's to say; while its history loads, an older edit could look latest.
         if (state.isUndoing || !state.areActionsEnabled || state.history.isLoading()) return
         val undo = undoOf(event, expense, group) ?: return
+        trackEvent("bill_undo_clicked", emptyMap())
         uiState.update { it.copy(isUndoing = true) }
         viewModelScope.launch {
             updateExpense(
@@ -521,11 +527,14 @@ class BillDetailViewModel(
     // Why: only someone still in the group has a profile, and only Conta on top takes the tap.
     private fun openPerson(memberId: String) {
         val member = shownGroup?.members?.firstOrNull { it.id == memberId }
-        if (member != null && isOnTop()) navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
+        if (member == null || !isOnTop()) return
+        trackEvent("person_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
+        navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
     }
 
     private fun edit() {
         if (!uiState.value.areActionsEnabled || !isOnTop()) return
+        trackEvent("bill_edit_clicked", emptyMap())
         navigator.navigate(
             Route.SplitBill(
                 groupId = route.groupId,
@@ -539,12 +548,14 @@ class BillDetailViewModel(
     private fun askToDelete() {
         val expense = expense ?: return
         if (!uiState.value.areActionsEnabled) return
+        trackEvent("bill_delete_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
         uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair.value)) }
     }
 
     private fun delete() {
         val state = uiState.value
         if (state.deletion == null || state.isDeleting) return
+        trackEvent("bill_delete_confirmed", mapOf("source" to BILL_DETAIL_SOURCE))
         uiState.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
             deleteExpense(route.expenseId)
