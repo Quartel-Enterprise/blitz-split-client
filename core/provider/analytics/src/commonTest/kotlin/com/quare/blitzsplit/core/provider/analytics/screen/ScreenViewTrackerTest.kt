@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.core.navigation.domain.usecase.impl
+package com.quare.blitzsplit.core.provider.analytics.screen
 
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -11,10 +11,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.milliseconds
 
-class StartScreenViewsUseCaseTest {
+class ScreenViewTrackerTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
-    private lateinit var startScreenViews: StartScreenViewsUseCase
+    private lateinit var tracker: ScreenViewTracker
     private val events = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @Test
@@ -26,7 +26,7 @@ class StartScreenViewsUseCaseTest {
             stay()
 
             // When
-            startScreenViews()
+            tracker.start()
 
             stay()
 
@@ -44,7 +44,7 @@ class StartScreenViewsUseCaseTest {
         stay()
 
         // When
-        startScreenViews()
+        tracker.start()
 
         stay()
 
@@ -56,7 +56,7 @@ class StartScreenViewsUseCaseTest {
     fun `GIVEN started WHEN another screen comes on top THEN sends one view of it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(startRoute = Route.Home)
-        startScreenViews()
+        tracker.start()
 
         stay()
 
@@ -70,12 +70,12 @@ class StartScreenViewsUseCaseTest {
     }
 
     @Test
-    fun `GIVEN started WHEN a group opens THEN sends its view with the tab and how it was opened`() = runTest(
+    fun `GIVEN started WHEN a group opens THEN sends its view`() = runTest(
         testDispatcher,
     ) {
         // Given
         prepareScenario(startRoute = Route.Groups)
-        startScreenViews()
+        tracker.start()
 
         stay()
 
@@ -94,7 +94,7 @@ class StartScreenViewsUseCaseTest {
         assertEquals(
             listOf(
                 screenView("groups"),
-                screenView("group_detail", mapOf("tab" to GroupTab.BALANCES, "is_join" to true)),
+                screenView("group_detail", emptyMap()),
             ),
             events,
         )
@@ -106,7 +106,7 @@ class StartScreenViewsUseCaseTest {
     ) {
         // Given
         prepareScenario(startRoute = Route.Home)
-        startScreenViews()
+        tracker.start()
         stay()
         navigator.navigate(Route.Profile)
 
@@ -134,7 +134,7 @@ class StartScreenViewsUseCaseTest {
                     tab = GroupTab.EXPENSES,
                 ),
             )
-            startScreenViews()
+            tracker.start()
 
             stay()
 
@@ -152,7 +152,7 @@ class StartScreenViewsUseCaseTest {
 
             // Then
             assertEquals(
-                listOf(screenView("group_detail", mapOf("tab" to GroupTab.EXPENSES, "is_join" to false))),
+                listOf(screenView("group_detail", emptyMap())),
                 events,
             )
         }
@@ -168,7 +168,7 @@ class StartScreenViewsUseCaseTest {
                 tab = GroupTab.EXPENSES,
             ),
         )
-        startScreenViews()
+        tracker.start()
 
         stay()
 
@@ -184,7 +184,7 @@ class StartScreenViewsUseCaseTest {
         stay()
 
         // Then
-        val groupView = screenView("group_detail", mapOf("tab" to GroupTab.EXPENSES, "is_join" to false))
+        val groupView = screenView("group_detail", emptyMap())
         assertEquals(listOf(groupView, groupView), events)
     }
 
@@ -192,12 +192,12 @@ class StartScreenViewsUseCaseTest {
     fun `GIVEN already started WHEN starting again THEN sends nothing more`() = runTest(testDispatcher) {
         // Given
         prepareScenario(startRoute = Route.Home)
-        startScreenViews()
+        tracker.start()
 
         stay()
 
         // When
-        startScreenViews()
+        tracker.start()
 
         stay()
 
@@ -209,8 +209,8 @@ class StartScreenViewsUseCaseTest {
     fun `GIVEN started twice WHEN another screen comes on top THEN sends its view once`() = runTest(testDispatcher) {
         // Given
         prepareScenario(startRoute = Route.Home)
-        startScreenViews()
-        startScreenViews()
+        tracker.start()
+        tracker.start()
 
         stay()
 
@@ -228,7 +228,7 @@ class StartScreenViewsUseCaseTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(startRoute = Route.Home)
-            startScreenViews()
+            tracker.start()
             stay()
 
             // When
@@ -253,7 +253,7 @@ class StartScreenViewsUseCaseTest {
 
     private fun TestScope.prepareScenario(startRoute: Route) {
         navigator = BackStackNavigator(startRoute = startRoute)
-        startScreenViews = StartScreenViewsUseCase(
+        tracker = ScreenViewTracker(
             navigator = navigator,
             trackEvent = { name, params -> events += name to params },
             scope = backgroundScope,

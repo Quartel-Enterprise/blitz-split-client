@@ -1,8 +1,6 @@
-package com.quare.blitzsplit.core.navigation.domain.usecase.impl
+package com.quare.blitzsplit.core.provider.analytics.screen
 
 import com.quare.blitzsplit.core.navigation.Navigator
-import com.quare.blitzsplit.core.navigation.analytics.toScreenView
-import com.quare.blitzsplit.core.navigation.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -12,6 +10,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.milliseconds
 
 /*
@@ -22,20 +22,26 @@ import kotlin.time.Duration.Companion.milliseconds
 internal val screenStay = 500.milliseconds
 
 /*
- * Why: a screen counts each time it comes on top and stays, back to it included, and once per route: another group's Despesas
- * is another view, the same one drawn again is not. Every window of the Mac shares the back stack, so it starts once.
+ * Why: a screen counts each time it comes on top and stays, back to it included, and once per route: another group's
+ * Despesas is another view, the same one drawn again is not. One for the app's whole life, following the one back
+ * stack every window of the Mac shares, so it starts once however many AppViewModels ask.
  */
-@OptIn(FlowPreview::class)
-internal class StartScreenViewsUseCase(
+@OptIn(FlowPreview::class, ExperimentalAtomicApi::class)
+internal class ScreenViewTracker(
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
     private val scope: CoroutineScope,
-) : StartScreenViews {
-    private var isStarted = false
+) {
+    private val isStarted = AtomicBoolean(false)
 
-    override fun invoke() {
-        if (isStarted) return
-        isStarted = true
+    fun start() {
+        if (!isStarted.compareAndSet(
+                expectedValue = false,
+                newValue = true,
+            )
+        ) {
+            return
+        }
         navigator.backStack
             .map { routes -> routes.lastOrNull() }
             .filterNotNull()

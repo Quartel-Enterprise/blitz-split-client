@@ -10,7 +10,7 @@ every UI.
 | Piece | Where | Does |
 | --- | --- | --- |
 | `TrackEvent` | `:core:provider:analytics`'s `domain/usecase` | How the shared code tracks an event: a name and its params. A Boolean goes as `"true"` or `"false"` (GA4 has no boolean), a whole number as a Long, any other as a Double, an enum as its name in lowercase; any other value is left out, never sent as its text |
-| `AnalyticsHub` | `:core:provider:analytics` | Where the events go: once an app attaches its platform's `AnalyticsService`. The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
+| `AnalyticsHub` | `:core:provider:analytics` | Where the events go, an SDK that throws losing only that event: once an app attaches its platform's `AnalyticsService`. The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
 | `FirebaseAnalyticsService` | `:core:provider:analytics`'s `androidMain` | Android's, attached by `BlitzSplitApplication` |
 | `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | Apple's, attached through `BlitzSplitApple.attachAnalytics` once the shared code started |
 | `firebaseAnalytics.ts` | `webApp/src/analytics` | The web's, through `firebase/analytics`, attached through the exported `attachAnalytics` |
@@ -20,29 +20,25 @@ Screen views are tracked ([below](#screen-views)); each user action's event come
 
 ## Screen views
 
-`StartScreenViews` (`:core:navigation`) sends GA4's `screen_view` each time another route comes on top of the back
+`StartScreenViews` (`:core:provider:analytics`, which `ScreenViewTracker` behind it follows the back stack for) sends GA4's `screen_view` each time another route comes on top of the back
 stack and stays there for half a second, going back to one included, once per route: another group's Despesas is
 another view, the same route drawn again is not. One gone at once never counts, nor does the screen under it coming
 back: the Mac pops Perfil and Mapa de categorias right away to open them in Ajustes, so Ajustes is not a screen view
-there (Notificações, kept inside the profile on the Mac and the web, isn't either). It starts once `AppViewModel` picked the first screen, so the welcome the stack holds before that never counts.
+there (Notificações, kept inside the profile on the Mac and the web, isn't either). It starts once `AppViewModel` drew the first screen, so the welcome the stack holds before that never counts.
 `screen_name` and `screen_class` (the web's adapter renames them `firebase_screen` and `firebase_screen_class`, which
 its SDK reads) are the route's name (`RouteScreenView.kt`, a `when` with no `else`, so a new route
-can't ship without one); a few routes add what kind of visit it was, never whose:
+can't ship without one); a few routes add what kind of screen it is, which stays true each time it comes back on top, never how it was opened (the tap's own event says that) nor whose:
 
 | `screen_name` | Params |
 | --- | --- |
-| `welcome`, `profile_setup`, `restore`, `home`, `groups`, `search`, `profile`, `create_group`, `edit_profile`, `profile_photo`, `delete_account`, `notification_settings`, `category_map`, `group_stats`, `edit_group`, `default_split`, `share_bill`, `pick_payment`, `contacts`, `contact_profile`, `contacts_agenda`, `settle_up`, `join_pick` | none |
-| `invite` | `is_new_group` |
-| `group_detail` | `tab` (`expenses`, `balances`, `members`: the tab it opens on; a tab picked inside it is a click, not a view), `is_join` |
-| `split_bill` | `is_edit`, `picks_group_first`, `scans_receipt` |
-| `bill_detail`, `shared_bill` | `is_comment` (opened at a comment) |
+| `invite` | `is_new_group` (right after Novo grupo) |
+| `split_bill` | `is_edit` (Editar conta) |
 | `register_payment` | `offers_keys` ("Pagar Ana") |
-| `global_balances` | `filter` (`all`, `you_owe`, `owes_you`), `is_charge` |
-| `contact_invite` | `is_guest` |
-| `activity` | `is_person` |
-| `join_invite` | `is_personal` |
-| `join_with_link` | `is_retry` |
+| `contact_invite` | `is_guest` (a guest's personal link) |
+| `activity` | `is_person` (one person's history) |
+| `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
+| Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
 
 ## What is never sent
 
