@@ -41,6 +41,7 @@ import kotlin.test.assertTrue
 
 // Why: "Buscar" (5.2) over Início, Saldos, Contatos and Atividade (Route.Search): what it finds opens in its place.
 class SearchViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var groups: FakeGroupRepository
@@ -594,6 +595,7 @@ class SearchViewModelTest {
             it.navigate(Route.Search)
         }
         viewModel = SearchViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             currentTimeMillis = CurrentTimeMillis { 10_000L },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },

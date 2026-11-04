@@ -70,6 +70,7 @@ import kotlin.test.assertTrue
 
 // Why: "Buscar" (5.2): the groups, people and bills on this device, the settled groups included, offline too.
 class GroupsSearchTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var groups: FakeGroupRepository
@@ -564,6 +565,7 @@ class GroupsSearchTest {
         navigator = BackStackNavigator(startRoute = Route.Groups)
         val deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
             ),

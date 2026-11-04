@@ -121,6 +121,22 @@ class GroupExitController(
         }
     }
 
+    /*
+     * Why: which dialog is open and can still be answered, as Analytics names it, so an answer counts only while it
+     * means something: null while none is open or a request runs.
+     */
+    fun findAnswerableDialog(): String? {
+        val current = state.value
+        if (current.isRunning) return null
+        return when (current.dialog) {
+            null -> null
+            is GroupExitDialog.LeaveBlocked -> "leave_blocked"
+            is GroupExitDialog.ConfirmLeave -> "confirm_leave"
+            is GroupExitDialog.DeleteBlocked -> "delete_blocked"
+            is GroupExitDialog.ConfirmDelete -> "confirm_delete"
+        }
+    }
+
     // Why: a request in flight can't be called back, so the dialog stays until the server answers.
     fun dismiss() {
         state.update { if (it.isRunning) it else it.copy(dialog = null) }

@@ -77,6 +77,7 @@ import kotlin.test.assertTrue
 
 // Why: flows 5.3 and 5.4, "Convidar pessoas", "Sair do grupo" and "Apagar grupo" from a row of the home.
 class GroupsRowActionsTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -556,6 +557,7 @@ class GroupsRowActionsTest {
         val deletions = InMemoryGroupDeletionRepository()
         recordedPayments = InMemoryRecordedPaymentRepository()
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
             ),

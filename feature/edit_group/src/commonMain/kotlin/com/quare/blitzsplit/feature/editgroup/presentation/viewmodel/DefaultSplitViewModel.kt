@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -18,7 +17,9 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitFigures
@@ -46,7 +47,8 @@ class DefaultSplitViewModel(
     observeCategoryTree: ObserveCategoryTree,
     observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DefaultSplitUiEvent>(trackEvent) {
     val uiState: StateFlow<DefaultSplitUiState>
         field = MutableStateFlow(
             DefaultSplitUiState(
@@ -127,7 +129,7 @@ class DefaultSplitViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: DefaultSplitUiEvent) {
+    override fun handleEvent(event: DefaultSplitUiEvent) {
         when (event) {
             // Why: leaving clears the ViewModel, which would cancel a save in flight.
             DefaultSplitUiEvent.OnBackClicked -> if (!uiState.value.isSaving) leave()

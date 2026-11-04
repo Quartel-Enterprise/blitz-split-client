@@ -101,6 +101,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class GroupDetailViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
@@ -2441,6 +2442,7 @@ class GroupDetailViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expensesNeverAnswer = MutableSharedFlow<List<Expense>>()
         viewModel = GroupDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },

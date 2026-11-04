@@ -1,12 +1,53 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 /*
  * Why: what "Buscar" (5.2) takes, the same wherever it opens: in Grupos' place (GroupsUiEvent.OnSearch) or over
  * Início, Saldos, Contatos and Atividade (Route.Search).
  */
-sealed interface SearchUiEvent : UiEvent {
+sealed interface SearchUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = toEventAnalytics(source = "search")
+
+    // Why: the same search over the tabs (Route.Search) and in Grupos' place, source saying which.
+    fun toEventAnalytics(source: String): EventAnalytics = when (this) {
+        is OnQueryChanged -> EventAnalytics.NotTracked
+
+        is OnScopeChanged -> EventAnalytics.Automatic(
+            "search_scope_selected",
+            mapOf(
+                "scope" to scope,
+                "source" to source,
+            ),
+        )
+
+        is OnGroupClicked -> EventAnalytics.Automatic(
+            "search_result_clicked",
+            mapOf(
+                "kind" to "group",
+                "source" to source,
+            ),
+        )
+
+        is OnPersonClicked -> EventAnalytics.Automatic(
+            "search_result_clicked",
+            mapOf(
+                "kind" to "person",
+                "source" to source,
+            ),
+        )
+
+        is OnBillClicked -> EventAnalytics.Automatic(
+            "search_result_clicked",
+            mapOf("kind" to "bill", "source" to source),
+        )
+
+        // Why: a close, which each platform also does its own way: where it went is its screen view.
+        OnClosed -> EventAnalytics.NotTracked
+    }
+
     data class OnQueryChanged(
         val query: String,
     ) : SearchUiEvent

@@ -55,6 +55,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class HomeSidebarViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -680,6 +681,7 @@ class HomeSidebarViewModelTest {
         activityUnread = MutableStateFlow(unreadCount)
         navigator = BackStackNavigator(startRoute = stack.first()).also { nav -> stack.drop(1).forEach(nav::navigate) }
         viewModel = HomeSidebarViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             currentTimeMillis = CurrentTimeMillis { now },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },

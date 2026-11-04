@@ -97,6 +97,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class GroupsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -3109,6 +3110,7 @@ class GroupsViewModelTest {
         syncRequests = 0
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Groups) }
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },

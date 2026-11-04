@@ -1,9 +1,93 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface HomeUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "home"
+
+sealed interface HomeUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
+
+            OnSearchClicked -> EventAnalytics.Automatic("search_opened", mapOf("source" to SOURCE))
+
+            OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
+
+            OnRefresh -> EventAnalytics.Automatic("pull_to_refresh", mapOf("source" to SOURCE))
+
+            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+
+            OnSeeBalancesClicked -> EventAnalytics.Automatic("home_see_balances_clicked")
+
+            OnToReceiveClicked -> EventAnalytics.Automatic("balances_to_receive_clicked", mapOf("source" to SOURCE))
+
+            OnToPayClicked -> EventAnalytics.Automatic("balances_to_pay_clicked", mapOf("source" to SOURCE))
+
+            OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
+
+            OnScanReceiptClicked -> EventAnalytics.Automatic("scan_receipt_clicked", mapOf("source" to SOURCE))
+
+            OnRecordPaymentClicked -> EventAnalytics.Automatic("record_payment_clicked", mapOf("source" to SOURCE))
+
+            OnCreateGroupClicked -> EventAnalytics.Automatic("create_group_clicked", mapOf("source" to SOURCE))
+
+            OnJoinWithLinkClicked -> EventAnalytics.Automatic("join_with_link_clicked", mapOf("source" to SOURCE))
+
+            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
+
+            OnSeeAllGroupsClicked -> EventAnalytics.Automatic("home_see_all_groups_clicked")
+
+            is OnBillClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
+
+            OnSeeAllBillsClicked -> EventAnalytics.Automatic("home_see_all_bills_clicked")
+
+            OnShowRecoveryCodeClicked -> EventAnalytics.Automatic("recovery_code_card_show_clicked")
+
+            OnConnectAccountClicked -> EventAnalytics.Automatic("recovery_code_card_connect_clicked")
+
+            OnRecoveryCodeCardDismissed -> EventAnalytics.Automatic("recovery_code_card_dismissed")
+
+            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+
+            // Why: a notice that went away, which nobody tapped.
+            OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked
+
+            OnGroupsTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "groups",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnBalancesTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "balances",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnContactsTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "contacts",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnActivityTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "activity",
+                    "source" to SOURCE,
+                ),
+            )
+        }
+
     data object OnProfileClicked : HomeUiEvent
 
     // Why: "Buscar" (5.2), the same search as Grupos', over Início: the magnifier, the web's ⌘K.

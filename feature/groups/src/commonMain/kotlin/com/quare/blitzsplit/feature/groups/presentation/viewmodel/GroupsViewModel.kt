@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
@@ -29,8 +28,10 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -104,7 +105,8 @@ class GroupsViewModel(
     observePeopleBalances: ObservePeopleBalances,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeFirstDownload: ObserveFirstDownload,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GroupsUiEvent>(trackEvent) {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
             GroupsUiState(
@@ -306,7 +308,7 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: GroupsUiEvent) {
+    override fun handleEvent(event: GroupsUiEvent) {
         when (event) {
             GroupsUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()
 
@@ -343,9 +345,9 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnDeleteGroupClicked -> askToExit(event.groupId, GroupExitController::askToDelete)
 
-            GroupsUiEvent.OnGroupExitConfirmed -> exit.confirm()
+            GroupsUiEvent.OnGroupExitConfirmed -> exit.answer(trackEvent, isConfirmed = true)
 
-            GroupsUiEvent.OnGroupExitDismissed -> exit.dismiss()
+            GroupsUiEvent.OnGroupExitDismissed -> exit.answer(trackEvent, isConfirmed = false)
 
             GroupsUiEvent.OnDeletedGroupNoticeShown -> {
                 uiState.update { it.copy(deletedGroupNotice = null) }

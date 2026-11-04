@@ -104,6 +104,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 class HomeViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var groups: FakeGroupRepository
@@ -2522,6 +2523,7 @@ class HomeViewModelTest {
         activityUnread = MutableStateFlow(0)
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             retrySync = RetrySync { retryCount++ },
             syncNow = SyncNow {

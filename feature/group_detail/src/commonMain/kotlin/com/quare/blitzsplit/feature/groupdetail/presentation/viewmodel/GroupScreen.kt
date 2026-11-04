@@ -222,6 +222,10 @@ internal class GroupScreen(
         )
     }
 
+    // Why: a group read, whose pin a tap can toggle.
+    val hasGroup: Boolean
+        get() = group != null
+
     // Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it.
     fun togglePin() {
         if (group == null) return

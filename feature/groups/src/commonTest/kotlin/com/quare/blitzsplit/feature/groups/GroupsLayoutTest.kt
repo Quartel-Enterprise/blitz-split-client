@@ -63,6 +63,7 @@ import kotlin.test.assertTrue
 
 // Why: "Lista ou grade" (5.5, 5.6): the display and the grid's size, kept on the device.
 class GroupsLayoutTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var storedLayout: MutableStateFlow<GroupsLayout>
     private lateinit var savedLayouts: MutableList<GroupsLayout>
@@ -365,6 +366,7 @@ class GroupsLayoutTest {
         savedLayouts = mutableListOf()
         val deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
             ),

@@ -60,6 +60,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditGroupViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2976,6 +2977,7 @@ class EditGroupViewModelTest {
         photoGate = CompletableDeferred<Unit>().also { if (!isPhotoHeld) it.complete(Unit) }
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         viewModel = EditGroupViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = editGroup,
             navigator = navigator,
             updateGroup = UpdateGroupUseCase(groups) { 1_000L },

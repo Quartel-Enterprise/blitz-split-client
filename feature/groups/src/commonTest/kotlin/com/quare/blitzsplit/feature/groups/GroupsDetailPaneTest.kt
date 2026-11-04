@@ -66,6 +66,7 @@ import kotlin.test.assertTrue
 
 // Why: a list and detail (a tablet lying down, an unfolded book) draws the group beside the list, still on one back stack.
 class GroupsDetailPaneTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var groups: FakeGroupRepository
@@ -613,6 +614,7 @@ class GroupsDetailPaneTest {
         navigator = BackStackNavigator(startRoute = Route.Groups)
         val deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
             ),

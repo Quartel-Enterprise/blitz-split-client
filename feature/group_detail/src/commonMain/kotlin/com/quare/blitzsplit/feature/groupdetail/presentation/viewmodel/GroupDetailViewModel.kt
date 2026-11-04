@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -24,7 +23,9 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
@@ -63,7 +64,8 @@ class GroupDetailViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     useCases: GroupScreenUseCases,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GroupDetailUiEvent>(trackEvent) {
     val uiState: StateFlow<GroupDetailUiState>
         field = MutableStateFlow(
             GroupDetailUiState(
@@ -177,7 +179,7 @@ class GroupDetailViewModel(
         }
     }
 
-    fun onEvent(event: GroupDetailUiEvent) {
+    override fun handleEvent(event: GroupDetailUiEvent) {
         when (event) {
             GroupDetailUiEvent.OnBackClicked -> screen.leave()
 
@@ -201,15 +203,28 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()
+            GroupDetailUiEvent.OnPinToggled -> {
+                if (screen.hasGroup) trackEvent("group_pin_toggled", mapOf("is_pinned" to !screen.isPinned))
+                screen.togglePin()
+            }
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
             GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.exit.confirm()
+            GroupDetailUiEvent.OnGroupExitConfirmed -> {
+                screen.exit.findAnswerableDialog()?.let {
+                    trackEvent("group_exit_confirmed", mapOf("dialog" to it, "source" to "group_detail"))
+                }
+                screen.exit.confirm()
+            }
 
-            GroupDetailUiEvent.OnGroupExitDismissed -> screen.exit.dismiss()
+            GroupDetailUiEvent.OnGroupExitDismissed -> {
+                screen.exit.findAnswerableDialog()?.let {
+                    trackEvent("group_exit_cancelled", mapOf("dialog" to it, "source" to "group_detail"))
+                }
+                screen.exit.dismiss()
+            }
 
             GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 
@@ -226,7 +241,10 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnPaymentDeleteConfirmed -> deletePayment()
 
-            GroupDetailUiEvent.OnPaymentDeleteDismissed -> uiState.update { it.copy(paymentToDelete = null) }
+            GroupDetailUiEvent.OnPaymentDeleteDismissed -> {
+                if (uiState.value.paymentToDelete != null) trackEvent("payment_delete_cancelled", emptyMap())
+                uiState.update { it.copy(paymentToDelete = null) }
+            }
 
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 

@@ -2,9 +2,101 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface GroupsUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "groups"
+
+sealed interface GroupsUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnCreateGroupClicked -> EventAnalytics.Automatic("create_group_clicked", mapOf("source" to SOURCE))
+
+            OnJoinWithLinkClicked -> EventAnalytics.Automatic("join_with_link_clicked", mapOf("source" to SOURCE))
+
+            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
+
+            OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
+
+            // Why: the window drawing the group beside the list or not, never a tap.
+            is OnDetailPaneChanged -> EventAnalytics.NotTracked
+
+            OnHomeTabClicked -> EventAnalytics.Automatic("home_tab_clicked", mapOf("tab" to "home", "source" to SOURCE))
+
+            OnBalancesTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "balances",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnGroupsTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "groups",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnContactsTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "contacts",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnActivityTabClicked -> EventAnalytics.Automatic(
+                "home_tab_clicked",
+                mapOf(
+                    "tab" to "activity",
+                    "source" to SOURCE,
+                ),
+            )
+
+            OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
+
+            OnRefresh -> EventAnalytics.Automatic("pull_to_refresh", mapOf("source" to SOURCE))
+
+            OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
+
+            OnToReceiveClicked -> EventAnalytics.Automatic("balances_to_receive_clicked", mapOf("source" to SOURCE))
+
+            OnToPayClicked -> EventAnalytics.Automatic("balances_to_pay_clicked", mapOf("source" to SOURCE))
+
+            is OnShowSettledChanged -> EventAnalytics.Automatic("settled_groups_toggled", mapOf("is_shown" to isShown))
+
+            is OnFilterChanged -> EventAnalytics.NotTracked
+
+            is OnDisplayChanged -> EventAnalytics.Automatic("groups_display_changed", mapOf("display" to display))
+
+            is OnGridSizeChanged -> EventAnalytics.Automatic("groups_grid_size_changed", mapOf("size" to size))
+
+            is OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to SOURCE))
+
+            is OnLeaveGroupClicked -> EventAnalytics.Automatic("leave_group_clicked", mapOf("source" to SOURCE))
+
+            is OnDeleteGroupClicked -> EventAnalytics.Automatic("delete_group_clicked", mapOf("source" to SOURCE))
+
+            // Why: only an answer to a dialog still open, since Apple's alert also closes itself after its button.
+            OnGroupExitConfirmed -> EventAnalytics.Manual("group_exit_confirmed")
+
+            OnGroupExitDismissed -> EventAnalytics.Manual("group_exit_cancelled")
+
+            // Why: a notice that went away, which nobody tapped.
+            OnDeletedGroupNoticeShown, OnRecordedPaymentNoticeShown -> EventAnalytics.NotTracked
+
+            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+
+            OnSearchOpened -> EventAnalytics.Automatic("search_opened", mapOf("source" to SOURCE))
+
+            OnSearchTabLeft -> EventAnalytics.NotTracked
+
+            is OnSearch -> event.toEventAnalytics(source = SOURCE)
+        }
+
     data object OnCreateGroupClicked : GroupsUiEvent
 
     data object OnJoinWithLinkClicked : GroupsUiEvent

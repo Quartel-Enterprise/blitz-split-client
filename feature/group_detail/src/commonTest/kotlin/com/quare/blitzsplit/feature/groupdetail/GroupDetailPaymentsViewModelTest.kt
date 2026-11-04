@@ -83,6 +83,7 @@ import kotlin.time.Instant
 
 // Why: the payments, balance card and payment notice of Despesas; the bills are in GroupDetailViewModelTest.
 class GroupDetailPaymentsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
@@ -1297,6 +1298,7 @@ class GroupDetailPaymentsViewModelTest {
         val deletedBills = InMemoryDeletedBillRepository()
         val observeStoredGroup = ObserveGroupUseCase(groups)
         viewModel = GroupDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },

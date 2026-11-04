@@ -38,6 +38,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DefaultSplitViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
@@ -618,6 +619,7 @@ class DefaultSplitViewModelTest {
             it.navigate(defaultSplit)
         }
         viewModel = DefaultSplitViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = defaultSplit,
             navigator = navigator,
             updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { 1_000L },

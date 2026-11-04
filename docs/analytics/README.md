@@ -132,11 +132,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group` |
-| `photo_crop_turned` | `source` (`profile_setup`, `create_group`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
-| `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
-| `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
-| `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group` |
+| `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
 | `retry_clicked` | `source` (`restore`, `invite`, `join_invite`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
@@ -160,7 +160,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `invite_link_change_cancelled` | none | "Trocar o link do convite?" closed without confirming, while it was open | `:feature:invite` |
 | `members_share_clicked` | none | Membros' Compartilhar, which opens Convidar | `:feature:members` |
 | `member_add_clicked` | none | "Adicionar pessoa" | `:feature:members` |
-| `person_clicked` | `source` (`members`) | A person's row, which opens their profile | `:feature:members` |
+| `person_clicked` | `source` (`members`, `home`) | A person's row, which opens their profile | `:feature:members` |
 | `member_rename_clicked` | none | A member's "Renomear" | `:feature:members` |
 | `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
 | `member_editor_save_clicked` | none | The name editor's Salvar or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
@@ -188,11 +188,81 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_color_clicked` | `source` (`create_group`) | The group's avatar tapped, stepping its color | `:feature:create_group` |
 | `group_shape_and_color_clicked` | `source` (`create_group`) | Android's "Trocar forma e cor do grupo" | `:feature:create_group` |
 | `photo_removed` | `source` (`create_group`) | "Remover foto" | `:feature:create_group` |
-| `group_type_selected` | `type`, `source` (`create_group`) | A group type picked | `:feature:create_group` |
-| `group_currency_selected` | `currency`, `source` (`create_group`) | A currency picked | `:feature:create_group` |
+| `group_type_selected` | `type`, `source` (`create_group`, `edit_group`) | A group type picked | `:feature:create_group` |
+| `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A currency picked, one Editar grupo takes (not once the group has a bill) | `:feature:create_group` |
 | `create_group_add_member_clicked` | none | Novo grupo's "Adicionar" (or the keyboard's Done) | `:feature:create_group` |
 | `create_group_remove_member_clicked` | none | A person taken off the new group | `:feature:create_group` |
 | `create_group_create_clicked` | none | Novo grupo's Criar, also when the form can't create yet | `:feature:create_group` |
 | `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |
+| `home_tab_clicked` | `tab` (`home`, `groups`, `balances`, `contacts`, `activity`), `source` (`home`, `groups`, `sidebar`, `group_detail`) | A tab of the home: the bar, the rail, iOS's tab bar, the web's and the Mac's sidebar | `:feature:groups`, `:feature:group_detail` |
+| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`) | The avatar that opens Perfil | `:feature:groups` |
+| `search_opened` | `source` (`home`, `groups`) | Buscar's magnifier, search tab, field or ⌘K | `:feature:groups` |
+| `search_scope_selected` | `scope`, `source` (`search`, `groups`) | Tudo, Grupos, Pessoas or Despesas | `:feature:groups` |
+| `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
+| `sync_retry_clicked` | `source` (`home`, `groups`) | The sync chip's "tentar de novo" | `:feature:groups` |
+| `pull_to_refresh` | `source` (`home`, `groups`) | Pulled down on Android and iOS | `:feature:groups` |
+| `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`) | "Rachar conta" | `:feature:groups`, `:feature:group_detail` |
+| `balances_to_receive_clicked` | `source` (`home`, `groups`) | "A receber" or "Te devem" | `:feature:groups` |
+| `balances_to_pay_clicked` | `source` (`home`, `groups`) | "A pagar" or "Você deve" | `:feature:groups` |
+| `create_group_clicked` | `source` (`home`, `groups`) | "Novo grupo" | `:feature:groups` |
+| `join_with_link_clicked` | `source` (`home`, `groups`) | "Entrar com link ou QR" | `:feature:groups` |
+| `group_clicked` | `source` (`home`, `groups`, `sidebar`) | A group's row, card or sidebar entry | `:feature:groups` |
+| `settled_groups_toggled` | `is_shown` | Quitados expanded or collapsed, or its tab | `:feature:groups` |
+| `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade" | `:feature:groups` |
+| `groups_grid_size_changed` | `size` | Compacto, Padrão or Grande | `:feature:groups` |
+| `invite_clicked` | `source` (`groups`, `group_detail`) | "Convidar pessoas" | `:feature:groups`, `:feature:group_detail` |
+| `leave_group_clicked` | `source` (`groups`, `group_detail`) | "Sair do grupo" | `:feature:groups`, `:feature:group_detail` |
+| `delete_group_clicked` | `source` (`groups`, `group_detail`) | "Apagar grupo" | `:feature:groups`, `:feature:group_detail` |
+| `group_exit_confirmed` | `dialog` (`leave_blocked`, `confirm_leave`, `delete_blocked`, `confirm_delete`), `source` (`groups`, `group_detail`) | The dialog's main button (Sair, Apagar para todos, Acertar, Ver saldos), while it could be answered | `:feature:groups`, `:feature:group_detail` |
+| `group_exit_cancelled` | `dialog`, `source` (`groups`, `group_detail`) | The dialog closed without its main button, while it could be answered | `:feature:groups`, `:feature:group_detail` |
+| `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`) | "Desfazer" on "Pagamento de Ana registrado." | `:feature:groups`, `:feature:group_detail` |
+| `home_see_balances_clicked` | none | "Ver saldos" over Início's faces | `:feature:groups` |
+| `scan_receipt_clicked` | `source` (`home`) | "Ler cupom fiscal" | `:feature:groups` |
+| `record_payment_clicked` | `source` (`home`) | Início's "Registrar pagamento" | `:feature:groups` |
+| `home_see_all_groups_clicked` | none | "Ver todos" over "Seus grupos" | `:feature:groups` |
+| `bill_clicked` | `source` (`home`, `group_detail`) | A bill's row, which opens its Conta | `:feature:groups`, `:feature:group_detail` |
+| `home_see_all_bills_clicked` | none | "Ver tudo" over "Últimas despesas" | `:feature:groups` |
+| `recovery_code_card_show_clicked` | none | "Ver código" on "Guarde seu código de recuperação" | `:feature:groups` |
+| `recovery_code_card_connect_clicked` | none | "Conectar conta" on that card | `:feature:groups` |
+| `recovery_code_card_dismissed` | none | That card's ✕ | `:feature:groups` |
+| `group_stats_clicked` | none | The group's Estatísticas | `:feature:group_detail` |
+| `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Despesas, Saldos or Membros | `:feature:group_detail` |
+| `edit_group_clicked` | none | "Editar grupo" | `:feature:group_detail` |
+| `group_pin_toggled` | `is_pinned` | "Fixar na Início" or "Desafixar da Início" | `:feature:group_detail` |
+| `group_deleted_back_clicked` | none | "Voltar para Grupos" on "Grupo apagado" | `:feature:group_detail` |
+| `settle_clicked` | `source` (`group_detail`) | "Acertar" on "Seu saldo neste grupo" | `:feature:group_detail` |
+| `debt_clicked` | `source` (`group_detail`) | "Acertar", "Recebi" or "Já pagou" on a pair of Saldos | `:feature:group_detail` |
+| `payment_clicked` | `source` (`group_detail`) | A payment of Despesas, which asks "Apagar este acerto?" | `:feature:group_detail` |
+| `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed | `:feature:group_detail` |
+| `payment_delete_cancelled` | none | "Apagar este acerto?" closed without confirming, while it was open | `:feature:group_detail` |
+| `category_teach_clicked` | none | "Ensinar" on "Ensinar ao mapa?" | `:feature:group_detail` |
+| `category_teach_dismissed` | none | "Agora não" on it, or Cancelar on which word | `:feature:group_detail` |
+| `category_teach_word_picked` | none | A word of the title picked to teach | `:feature:group_detail` |
+| `category_teach_confirmed` | none | The word taught | `:feature:group_detail` |
+| `protect_access_clicked` | `source` (`group_detail`) | "Proteja seu acesso" | `:feature:group_detail` |
+| `simplify_debts_info_clicked` | `source` (`group_detail`, `edit_group`) | "Como funciona" of "Simplificar dívidas" | `:feature:group_detail`, `:feature:edit_group` |
+| `simplify_conflict_activity_clicked` | `source` (`group_detail`, `edit_group`) | "Ver na Atividade" on the simplify conflict's notice | `:feature:group_detail`, `:feature:edit_group` |
+| `group_icon_clicked` | none | The avatar or "Trocar ícone ou foto", which opens "Ícone do grupo" | `:feature:edit_group` |
+| `group_icon_color_picked` | `color` | A color in "Ícone do grupo" | `:feature:edit_group` |
+| `group_icon_shape_picked` | `shape` | A shape in "Ícone do grupo" (Android) | `:feature:edit_group` |
+| `group_icon_confirmed` | none | "Usar este ícone" | `:feature:edit_group` |
+| `group_color_selected` | `color`, `source` (`edit_group`) | "Cor do ícone" on the web and the Mac | `:feature:edit_group` |
+| `default_split_clicked` | none | Editar grupo's "Divisão padrão" | `:feature:edit_group` |
+| `edit_group_save_clicked` | none | Editar grupo's Salvar | `:feature:edit_group` |
+| `simplify_debts_clicked` | none | The switch of "Simplificar dívidas", which asks first | `:feature:edit_group` |
+| `simplify_debts_toggled` | `is_on` | Its confirmation, which turns it on or off | `:feature:edit_group` |
+| `simplify_debts_cancelled` | none | Its confirmation closed without answering, while it was open | `:feature:edit_group` |
+| `default_split_mode_selected` | `mode` | Igual, Partes, Porcentagem or Pela renda | `:feature:edit_group` |
+| `default_split_person_toggled` | none | A person in or out of Igual | `:feature:edit_group` |
+| `default_split_parts_changed` | `direction` (`up`, `down`) | A part added or taken | `:feature:edit_group` |
+| `default_split_save_clicked` | none | Divisão padrão's Salvar | `:feature:edit_group` |
+| `default_split_exception_add_clicked` | none | "Adicionar exceção" | `:feature:edit_group` |
+| `default_split_exception_clicked` | none | An exception of the list | `:feature:edit_group` |
+| `default_split_exception_category_picked` | none | The exception's category picked | `:feature:edit_group` |
+| `default_split_exception_mode_selected` | `mode` | The exception's way to split | `:feature:edit_group` |
+| `default_split_exception_person_toggled` | none | A person in or out of the exception's Igual | `:feature:edit_group` |
+| `default_split_exception_parts_changed` | `direction` (`up`, `down`) | A part added or taken in the exception | `:feature:edit_group` |
+| `default_split_exception_save_clicked` | none | "Salvar exceção" | `:feature:edit_group` |
+| `default_split_exception_remove_clicked` | none | The exception removed | `:feature:edit_group` |
