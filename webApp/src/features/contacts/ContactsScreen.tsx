@@ -54,6 +54,7 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
       activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      onBrand={() => presenter.openBrand()}
       search={search}
     >
       <main

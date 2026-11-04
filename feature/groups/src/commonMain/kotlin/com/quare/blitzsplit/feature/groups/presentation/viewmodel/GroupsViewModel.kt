@@ -387,7 +387,7 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnSearch -> onSearchEvent(event.event)
 
-            GroupsUiEvent.OnHomeTabClicked -> {
+            GroupsUiEvent.OnHomeTabClicked, GroupsUiEvent.OnBrandClicked -> {
                 closeSearch()
                 navigator.openHomeTab(Route.Home)
             }

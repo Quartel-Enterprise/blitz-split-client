@@ -12,14 +12,15 @@ import { cn } from '@/lib/utils'
  * Portuguese, Blitz Split in every other language.
  */
 export function BrandMark({ showsName = true, className }: { showsName?: boolean; className?: string }) {
+  // Why: a span, so the logo can sit inside the button that opens Home (a button holds no div).
   return (
-    <div className={cn('flex items-center gap-2.5', className)}>
+    <span className={cn('flex items-center gap-2.5', className)}>
       <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
         {/* Why: a mask over the favicon's own file, so the glyph is drawn from one copy in the tile's color. */}
         <span className="size-5 bg-current mask-[url(/icon.svg)] mask-contain mask-center mask-no-repeat" />
       </span>
       {showsName && <span className="font-semibold">{t('appName')}</span>}
-    </div>
+    </span>
   )
 }
 

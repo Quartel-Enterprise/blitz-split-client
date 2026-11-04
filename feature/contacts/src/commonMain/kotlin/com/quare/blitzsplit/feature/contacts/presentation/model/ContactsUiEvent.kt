@@ -40,6 +40,9 @@ sealed interface ContactsUiEvent : TrackedUiEvent {
             OnInviteWithLinkClicked -> EventAnalytics.Manual("contacts_invite_with_link_clicked")
 
             OnProfileClicked -> EventAnalytics.Manual("profile_avatar_clicked")
+
+            // Why: the web's logo, only while the tab shows, as its Home tab is taken; the tab itself is its screen view.
+            OnBrandClicked -> EventAnalytics.Manual("brand_clicked")
         }
 
     // Why: a row tapped: its profile, beside the list where the UI draws the pane, over it everywhere else.
@@ -77,6 +80,9 @@ sealed interface ContactsUiEvent : TrackedUiEvent {
     data object OnInviteWithLinkClicked : ContactsUiEvent
 
     data object OnHomeTabClicked : ContactsUiEvent
+
+    // Why: the web's logo, which opens Home as its tab does.
+    data object OnBrandClicked : ContactsUiEvent
 
     data object OnGroupsTabClicked : ContactsUiEvent
 

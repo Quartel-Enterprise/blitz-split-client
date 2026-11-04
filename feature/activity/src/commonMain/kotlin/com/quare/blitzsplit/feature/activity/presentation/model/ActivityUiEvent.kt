@@ -36,6 +36,9 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
              */
             OnFilterClicked -> EventAnalytics.Manual("activity_filter_clicked")
 
+            // Why: the web's logo, which opens Home; the tabs it stands beside are not tracked, their screen view is.
+            OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to "activity"))
+
             is OnItemClicked -> EventAnalytics.Manual("activity_item_clicked")
 
             is OnOpenTargetClicked -> EventAnalytics.Manual("activity_open_target_clicked")
@@ -152,6 +155,9 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
     data object OnSearchClicked : ActivityUiEvent
 
     data object OnHomeTabClicked : ActivityUiEvent
+
+    // Why: the web's logo, which opens Home as its tab does.
+    data object OnBrandClicked : ActivityUiEvent
 
     data object OnGroupsTabClicked : ActivityUiEvent
 

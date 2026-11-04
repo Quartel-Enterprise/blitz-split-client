@@ -313,7 +313,7 @@ class ActivityViewModel(
                 if (navigator.openSearchOver(HomeTab.ACTIVITY)) trackEvent("search_opened", sourceParams)
             }
 
-            ActivityUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
+            ActivityUiEvent.OnHomeTabClicked, ActivityUiEvent.OnBrandClicked -> navigator.openHomeTab(Route.Home)
 
             ActivityUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 

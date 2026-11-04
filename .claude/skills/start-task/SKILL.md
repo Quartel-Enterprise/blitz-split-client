@@ -20,11 +20,11 @@ simulator the user or another session is using. Tasks that never need a device d
 
 ### 1. Determine how to start
 
-Check whether the user's request already specifies a mode (e.g. "cria numa worktree", "começa
-in-place", "direto no checkout atual"). If it does, use that mode and skip straight to step 2.
+Check whether the user's request already specifies a mode (e.g. "create it in a worktree", "start
+in-place", "straight in the current checkout"). If it does, use that mode and skip straight to step 2.
 
-Otherwise, ask the user directly: "Quer que eu crie isso numa worktree isolada, ou direto in-place
-no checkout atual?" Do not assume a default: wait for their answer.
+Otherwise, ask the user directly, in the language they write in, whether to create it in an isolated
+worktree or straight in-place in the current checkout. Do not assume a default: wait for their answer.
 
 ### 2. Determine the branch type and short description
 
@@ -181,8 +181,8 @@ one line.
 ### 7. Start implementing immediately
 
 If the user's request already described the task to do (bug to fix, feature to add, etc.), not
-just which branch/mode to use, don't stop after step 6 and wait for a "go ahead"/"pode
-implementar". Continue straight into implementing that task in this same turn, right after the
+just which branch/mode to use, don't stop after step 6 and wait for a "go ahead".
+Continue straight into implementing that task in this same turn, right after the
 short status report from step 6.
 
 - Worktree mode: keep working in this same session; do not wait for a new session to be opened

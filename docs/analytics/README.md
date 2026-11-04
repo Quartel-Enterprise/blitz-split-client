@@ -197,6 +197,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_accepted` | `source` (`startup`, `manual`) | "Open in the App Store" on "Update available" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
+| `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`, `activity`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:activity` |
 | `search_opened` | `source` (`home`, `groups`, `global_balances`, `activity`, `contacts`) | Search opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |

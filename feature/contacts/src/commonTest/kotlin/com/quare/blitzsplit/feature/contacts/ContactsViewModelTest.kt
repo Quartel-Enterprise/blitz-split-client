@@ -654,6 +654,20 @@ class ContactsViewModelTest {
     }
 
     @Test
+    fun `GIVEN Contatos WHEN the web logo is tapped THEN goes back to Inicio and sends brand_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnBrandClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+            assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "contacts")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Contatos WHEN the Grupos tab is tapped THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

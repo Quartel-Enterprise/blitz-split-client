@@ -51,6 +51,7 @@ export function HomeScreen() {
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      onBrand={() => presenter.openBrand()}
       search={search}
       activityUnreadCount={state.activityUnreadCount}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}

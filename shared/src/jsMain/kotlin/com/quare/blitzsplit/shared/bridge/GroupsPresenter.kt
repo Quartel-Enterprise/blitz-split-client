@@ -213,6 +213,11 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
     }
 
+    // Why: the logo, which opens Home.
+    fun openBrand() {
+        viewModel.onEvent(GroupsUiEvent.OnBrandClicked)
+    }
+
     // Why: Início, the home's first tab.
     fun openHome() {
         viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)

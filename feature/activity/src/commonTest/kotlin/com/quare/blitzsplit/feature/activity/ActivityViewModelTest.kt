@@ -2238,6 +2238,20 @@ class ActivityViewModelTest {
     }
 
     @Test
+    fun `GIVEN Atividade WHEN the web logo is tapped THEN goes back to Inicio and sends brand_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnBrandClicked)
+
+            // Then
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Atividade WHEN tapping Saldos THEN opens Saldos in its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

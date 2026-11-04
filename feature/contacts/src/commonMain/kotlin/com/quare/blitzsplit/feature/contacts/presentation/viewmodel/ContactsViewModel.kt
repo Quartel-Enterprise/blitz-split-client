@@ -193,6 +193,11 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)
 
+            ContactsUiEvent.OnBrandClicked -> if (isTabShown()) {
+                trackEvent("brand_clicked", sourceParams)
+                navigator.openHomeTab(Route.Home)
+            }
+
             ContactsUiEvent.OnGroupsTabClicked -> if (isTabShown()) navigator.popToGroups()
 
             ContactsUiEvent.OnBalancesTabClicked -> if (isTabShown()) {

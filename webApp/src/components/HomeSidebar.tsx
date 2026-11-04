@@ -73,6 +73,7 @@ export function PageShell({
       activityUnreadCount={state?.activityUnreadCount ?? 0}
       onTab={(tab) => presenter?.openTab(tab)}
       onProfile={() => presenter?.openProfile()}
+      onBrand={() => presenter?.openBrand()}
       openGroups={groups && (state && presenter ? { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) } : 'loading')}
       phoneBars={phoneBars}
       isOutsideTabs
