@@ -32,6 +32,7 @@ The backend (Supabase: migrations, edge functions, auth settings) lives in the `
 ./gradlew assertModuleGraph           # the module dependency rules
 ./scripts/ktlint.sh [--format]        # Kotlin style, Quare ruleset
 ./scripts/cpd.sh                      # no new copied code in Kotlin, Swift and TypeScript (jscpd)
+./scripts/heavy-check.sh <command>    # run a heavy build (Gradle, xcodebuild, the web build) once no other worktree runs one
 ./gradlew :androidApp:assembleDebug   # Android
 ./iosApp/generate-project.sh          # then build the BoraRachar-iOS or BoraRachar-macOS scheme in Xcode
 npm --prefix webApp run dev           # web dev server (builds the shared JS library first); `build` for dist/
@@ -255,8 +256,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Perfil" (4.1, `Route.Profile`) opens from the avatar of each home tab (Início, Grupos…). It is one column on a
     phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
     your account and "Privacidade e sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
-    glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
-    and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
+    glass panel of a Settings split) and the keys and preferences on the right, each column scrolling on its own.
+    "Sair" (or "Apagar perfil e sair") comes right after "Conta e sincronização" on every platform and layout, one
+    column included (Pierre's call, beta feedback 16), and "Excluir conta" stays the last thing of its column; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
     Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
@@ -266,6 +268,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - The profile's avatar (Perfil's on Android and iOS, the inline form's on the web and the Mac, never Editar
+    perfil's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
+    `ProfilePhotoViewModel`), the initial on its color too when there is no photo: 200 pt/dp/px (260 once both sides
+    have 600, so a phone lying down keeps 200, scrolling where it still doesn't fit) over the dimmed, blurred
+    profile, with its shortcuts under it, the account's photo (its logo, "Google" or "Apple", while it isn't the one
+    shown), "Câmera" where there is one, "Galeria" and "Remover" (with a photo). Each saves the profile's photo at
+    once, offline too, with no Salvar, and the viewer stays open showing the new one; a photo picked opens "Ajustar
+    foto" over it first, and is still saved when the viewer closes while it is prepared. ✕, a tap outside, back and
+    Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
+    the Mac opens it as a sheet on Ajustes and the web as a dialog over the profile.
   - Android's Perfil › Preferências › "Aparência" is a row ("Sistema", "Sistema · cores dinâmicas") opening a sheet
     as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
     (Sistema half light, half dark, in the wallpaper's colors while they are on), then "Cores dinâmicas" with an ⓘ
@@ -398,8 +410,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
     left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
     (`BillHistoryEntry.canUndo`).
-  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's and the
-    web's files), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
+  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's files,
+    the web's files or its camera), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
     them from the viewer ("Remover foto", no question, as the boards draw none). "Anexos · 2 de 5 fotos" lists the
     receipt the bill was read from first (badge "Cupom", never removed from Conta; reading it is 7.1e), then the photos
     as "Foto 2" with who added it and when, since the server keeps no caption, then "Adicionar foto" while there is
@@ -548,7 +560,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Escolher foto", "Tirar foto" and "Usar este ícone", a 480 dp dialog where Editar grupo is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
     sources and ✓), the shape and color picked there reaching the form only on "Usar este ícone"; the web ("Cor do
-    ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
+    ícone", "Usar uma foto" and, with a camera, "Tirar foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
     Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
     made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
     The photo is the profile's 512x512 JPEG framed in "Ajustar foto" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
@@ -577,9 +589,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
-    percentages they give (`IncomePercents`). "Numa conta de R$ 100: Pierre R$ 75 · Ana R$ 25" with the bar
-    in each one's color is always in sight, the cents as Rachar conta shares them (Igual's example is the first round
-    bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
+    percentages they give (`IncomePercents`). A new bill's Dividir may also save its split as the default or its
+    category's exception ("Usar como padrão do grupo", below in Rachar conta). "Numa conta de R$ 100: Pierre R$ 75 ·
+    Ana R$ 25" with the bar in each one's color is always in sight, the cents as Rachar conta shares them (Igual's
+    example is the first round bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
@@ -628,7 +641,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (in Igual, out of the other modes). "Divisão" then says "Padrão do grupo", and Dividir's notice above the
     modes "Padrão do Apê 302: Partes, 3 para 1", or "Diferente do padrão do grupo" with "Voltar ao padrão" once
     changed for this bill (`SplitBillUiState.defaultSplit`, `isSplitEditorOffDefault`); "Editar conta" keeps its split
-    with no notice. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
+    with no notice. A new bill split by Igual, Partes or % in another way than that default (or, for a group without
+    one, anything that doesn't split equally among everyone, Partes at 1 each included) offers "Usar como padrão do
+    grupo" under Dividir's people (beta feedback 11, Pierre's call, `offersSplitAsDefault`; never Valores nor Itens,
+    which are one bill's amounts, nor on "Editar conta"): "Pronto" with it checked makes "Divisão" say "Vira o padrão
+    do grupo", and saving the bill saves its split as the group's "Divisão padrão" (`SaveSplitAsDefault`), keeping its
+    exceptions, as Divisão padrão's Salvar does (offline too, Last-Write-Wins, a "Pela renda" replaced dropping this
+    device's incomes). A bill whose category has an exception, even one that no longer adds up after someone in it
+    left (`defaultSplitExceptionId`), offers "Usar como padrão do grupo para Mercado" and replaces only that exception
+    ("Vira a exceção do grupo para Mercado"). Closing the bill unsaved changes nothing; another group or category
+    picked (Pierre's call: another category falls under another default) or Itens' "Pronto" drops it, and the
+    checkbox unchecks once it hides. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's
@@ -735,7 +758,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Divisão" (never on "Editar conta", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
     leave it out there; Início's shortcut still opens it), online only ("Precisa de internet. Preencha à mão ou leia
     o cupom quando reconectar."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
-    the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
+    the gallery and the shutter; the Mac picks a file, and the web opens the browser's camera (a webcam too) with "Escolher arquivo" in it, a file
+    chooser where the browser has no camera. The
     photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
     a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…",
@@ -798,6 +822,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     a pasted link opens.
   - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
     configurações" offers "Configurações", which opens the app's settings page.
+  - The web's "Tirar foto" (beta feedback 2): wherever the web takes a photo from a file (Seu perfil, Editar perfil,
+    Novo grupo, Editar grupo, Conta's Anexos, Ler cupom fiscal) it also offers the browser's camera, a desktop's
+    webcam too, but only while the browser lists a camera (`useCameras`). One dialog (`CameraCaptureDialog`, a
+    drawer on a phone) shows it live, the selfie camera mirrored and the photo never, with the shutter, "Tirar outra"
+    and "Usar foto", "Trocar câmera" with more than one (front and back where the cameras say which they are, else
+    one camera after the other) and the flashlight where the browser has it; "Usar foto" hands the JPEG on as a file
+    picked would be, so a profile's or a group's goes through "Ajustar foto". A camera refused says so ("Sem acesso
+    à câmera") with "Tentar de novo" and "Escolher arquivo", and closing stops it, as does the photo taken.
   - Foldables and the iPhone Duo follow the fold the device reports, never the window alone (decision 8: Android's
     `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
     book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its

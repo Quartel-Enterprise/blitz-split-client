@@ -127,6 +127,13 @@ internal fun SplitEditorContent(
                 money = money,
                 onEvent = onEvent,
             )
+            if (state.offersSplitAsDefault) {
+                SplitAsDefaultRow(
+                    isChecked = state.isSplitEditorAsDefaultChecked,
+                    exceptionName = state.splitEditorDefaultException?.let { categoryNameOf(it) },
+                    onEvent = onEvent,
+                )
+            }
         },
         tabletop = TabletopForm.ConfirmInBar,
     )

@@ -36,6 +36,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiActi
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -2483,15 +2484,18 @@ class SplitBillViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
-            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            categoryUseCases = BillCategoryUseCases(
+                observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+                observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                deleteGroupCategory = { Result.success(Unit) },
+            ),
+            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
-            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
-            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

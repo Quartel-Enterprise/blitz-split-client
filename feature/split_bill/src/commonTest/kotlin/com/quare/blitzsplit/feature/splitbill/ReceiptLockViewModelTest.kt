@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -98,13 +99,16 @@ class ReceiptLockViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
-            observeCategoryMap = ObserveCategoryMapUseCase(terms),
+            categoryUseCases = BillCategoryUseCases(
+                observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+                observeCategoryMap = ObserveCategoryMapUseCase(terms),
+                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                deleteGroupCategory = { Result.success(Unit) },
+            ),
+            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             readReceipt = { _, _, _ -> CompletableDeferred<ReceiptScan>().also { pendingReads += it }.await() },
             attachBillImage = { _, _, _, _, _ -> Result.failure(IllegalStateException("not attached here")) },
-            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
-            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

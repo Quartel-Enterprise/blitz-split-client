@@ -35,7 +35,7 @@ import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryHint, categoryPane } from './CategoryPane'
-import { ReceiptFailureAlert, ReceiptField, ReceiptInput, ReceiptReadChips, useReceiptInput } from './ReceiptField'
+import { ReceiptFailureAlert, ReceiptField, ReceiptInput, ReceiptReadChips, useReceiptPicker } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
@@ -208,7 +208,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
-  const receiptInput = useReceiptInput(presenter, state)
+  const receiptPicker = useReceiptPicker(presenter, state)
 
   return (
     <form
@@ -219,8 +219,8 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         presenter.save()
       }}
     >
-      <ReceiptInput presenter={presenter} input={receiptInput} />
-      <ReceiptFailureAlert state={state} presenter={presenter} input={receiptInput} />
+      <ReceiptInput presenter={presenter} picker={receiptPicker} />
+      <ReceiptFailureAlert state={state} presenter={presenter} picker={receiptPicker} />
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <SettledPairAnnouncement change={state.settledPair} money={money} />
@@ -319,11 +319,12 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 split={state.split}
                 summary={state.splitSummary}
                 exceptionName={state.categories.defaultSplitException ? categoryName(state.categories.defaultSplitException) : undefined}
+                newExceptionName={state.categories.splitAsDefaultException ? categoryName(state.categories.splitAsDefaultException) : undefined}
                 money={money}
               />
             </div>
           </fieldset>
-          <ReceiptField presenter={presenter} state={state} input={receiptInput} />
+          <ReceiptField presenter={presenter} state={state} picker={receiptPicker} />
         </div>
       </div>
 
@@ -543,16 +544,18 @@ function SplitSummary({
   split,
   summary,
   exceptionName,
+  newExceptionName,
   money,
 }: {
   presenter: SplitBillPresenter
   split: JsSplitEditor
   summary: JsSplitFact[]
   exceptionName?: string
+  newExceptionName?: string
   money: Money
 }) {
   const title = t(splitTitles[split.mode] ?? 'splitBill_splitEqual', { count: split.includedCount })
-  const details = splitSummary(summary, money, exceptionName)
+  const details = splitSummary(summary, money, exceptionName, newExceptionName)
   const faces = split.included.slice(0, 3)
   const extra = split.included.length - faces.length
   return (

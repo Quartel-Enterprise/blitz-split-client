@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.editprofile
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountPhotoUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -952,6 +953,35 @@ class EditProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the editor inline in the profile WHEN tapping the avatar THEN opens the photo big over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = false)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.ProfilePhoto), navigator.backStack.value)
+            assertTrue(profiles.savedProfiles.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an edited name inline WHEN tapping the avatar THEN keeps the edit unsaved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = false)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+        // Then
+        assertEquals("Pierre Vieira", viewModel.uiState.value.name)
+        assertTrue(viewModel.uiState.value.hasChanges)
+        assertTrue(profiles.savedProfiles.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the editor pushed on a phone WHEN going back THEN returns to the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario(pushed = true)
@@ -1622,12 +1652,14 @@ class EditProfileViewModelTest {
             },
             navigator = navigator,
             observeProfile = ObserveProfileUseCase(profiles),
-            getSessionUser = GetSessionUser {
-                sessionReads++
-                heldSession.await()
-                GetSessionUserUseCase(account)()
-            },
-            observeAccount = ObserveAccountUseCase(account),
+            observeAccountPhoto = ObserveAccountPhotoUseCase(
+                observeAccount = ObserveAccountUseCase(account),
+                getSessionUser = GetSessionUser {
+                    sessionReads++
+                    heldSession.await()
+                    GetSessionUserUseCase(account)()
+                },
+            ),
         )
     }
 

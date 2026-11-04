@@ -37,6 +37,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
+import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.groups.domain.usecase.SetGroupPinned
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
@@ -55,6 +56,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupId
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
@@ -84,6 +86,7 @@ val groupModule = module {
     factoryOf(::ReleaseMemberUseCase).bind<ReleaseMember>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
     factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
+    factoryOf(::SaveSplitAsDefaultUseCase).bind<SaveSplitAsDefault>()
     factoryOf(::GetSplitIncomesUseCase).bind<GetSplitIncomes>()
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
     factoryOf(::ObserveGroupDeletionsUseCase).bind<ObserveGroupDeletions>()

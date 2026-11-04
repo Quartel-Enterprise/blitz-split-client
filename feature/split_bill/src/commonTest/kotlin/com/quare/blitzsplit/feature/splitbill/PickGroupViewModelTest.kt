@@ -30,6 +30,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -574,15 +575,18 @@ class PickGroupViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
-            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            categoryUseCases = BillCategoryUseCases(
+                observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+                observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                deleteGroupCategory = { Result.success(Unit) },
+            ),
+            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
-            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
-            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

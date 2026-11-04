@@ -345,4 +345,9 @@
     <string name="split_bill_receipt_camera_permission">Allow the camera to scan the receipt, or choose a photo from the gallery.</string>
     <string name="split_bill_receipt_camera_allow">Allow camera</string>
     <string name="split_bill_receipt_camera_settings">Open settings</string>
+    <string name="split_bill_as_default">Use as the group default</string>
+    <string name="split_bill_as_default_exception">Use as the group default for %s</string>
+    <string name="split_bill_as_default_body">New bills in the group start this way once this one is saved.</string>
+    <string name="split_bill_new_group_default">Becomes the group default</string>
+    <string name="split_bill_new_group_exception">Becomes the group exception for %s</string>
 </resources>

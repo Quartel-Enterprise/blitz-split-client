@@ -96,6 +96,9 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Voltar ao padrão" on Dividir's notice, back to the group's "Divisão padrão" for this bill.
     data object OnSplitResetToDefault : SplitBillUiEvent
 
+    // Why: Dividir's "Usar como padrão do grupo" (beta feedback 11), checked or not.
+    data object OnSplitAsDefaultToggled : SplitBillUiEvent
+
     // Why: "Pronto" on "Dividir".
     data object OnSplitDone : SplitBillUiEvent
 
