@@ -193,7 +193,7 @@ private struct DebtRowView: View {
     private var amountColor: Color {
         switch row.kind {
         case .youOwe: Palette.negative
-        case .owesYou: Palette.accent
+        case .owesYou: Palette.positive
         default: .secondary
         }
     }

@@ -42,7 +42,7 @@ struct PersonGroupsList: View {
                 Spacer()
                 Text(verbatim: currency.formatSigned(netMinor))
                     .monospacedDigit()
-                    .foregroundStyle(netMinor < 0 ? Palette.negative : Palette.accent)
+                    .foregroundStyle(Palette.balance(netMinor))
             }
             .font(.subheadline.weight(.semibold))
             .padding(.vertical, 9)
@@ -65,7 +65,7 @@ struct PersonGroupsList: View {
             Spacer(minLength: 8)
             Text(verbatim: currency.formatSigned(part.amountMinor))
                 .monospacedDigit()
-                .foregroundStyle(part.amountMinor < 0 ? Palette.negative : Palette.accent)
+                .foregroundStyle(Palette.balance(part.amountMinor))
         }
         .font(.subheadline)
         .padding(.vertical, 8)

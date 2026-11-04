@@ -234,7 +234,7 @@ private struct BalancesSummary: View {
                     Text(verbatim: total.currency.formatSigned(total.netMinor))
                         .font(.system(size: amountSize, weight: .bold))
                         .monospacedDigit()
-                        .foregroundStyle(total.netMinor == 0 ? Color.secondary : Palette.accent)
+                        .foregroundStyle(Palette.balance(total.netMinor))
                 }
                 Text(hint)
                     .font(.footnote)
@@ -413,7 +413,7 @@ private struct PersonSummary: View {
                 Text(verbatim: row.currency.formatSigned(row.netMinor))
                     .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
-                    .foregroundStyle(row.owesYou ? Palette.accent : Palette.negative)
+                    .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
                 Text(direction)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -596,7 +596,7 @@ private struct PersonDetail: View {
                 Text(verbatim: row.currency.formatSigned(row.netMinor))
                     .font(.system(size: 34, weight: .bold))
                     .monospacedDigit()
-                    .foregroundStyle(row.owesYou ? Palette.accent : Palette.negative)
+                    .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
                 HStack(spacing: 8) {
                     Spacer()
                     PersonActions(model: model, row: row, name: name)
@@ -840,7 +840,7 @@ private struct ChargeSheet: View {
             HStack(spacing: 12) {
                 AvatarPhoto(initial: charge.initials, color: charge.color ?? .blue, photoUrl: charge.photoUrl, size: 36)
                     .accessibilityHidden(true)
-                Text("\(name) owes you \(Text(verbatim: charge.currency.format(charge.amountMinor)).foregroundStyle(Palette.accent).bold()) · \(GlobalBalancesCopy.groupsText(names: charge.groupNames))")
+                Text("\(name) owes you \(Text(verbatim: charge.currency.format(charge.amountMinor)).foregroundStyle(Palette.positive).bold()) · \(GlobalBalancesCopy.groupsText(names: charge.groupNames))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

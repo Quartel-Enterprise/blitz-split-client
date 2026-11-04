@@ -33,9 +33,9 @@ export function paymentMethodLabel(code: string): string {
   return t(methodLabels[code] ?? 'payment_methodOther')
 }
 
-/** The color of a signed balance: positive to get back, destructive to owe, muted at zero. */
+/** The color of a signed balance: positive (green) to get back, destructive to owe, muted at zero. */
 export function balanceTone(minor: number): string {
-  return minor > 0 ? 'text-primary' : minor < 0 ? 'text-destructive' : 'text-muted-foreground'
+  return minor > 0 ? 'text-positive' : minor < 0 ? 'text-destructive' : 'text-muted-foreground'
 }
 
 /**
@@ -74,7 +74,7 @@ export function BalanceCard({
           <span className="text-lg font-semibold tabular-nums">{t('balance_settled', { amount: money(0) })}</span>
         ) : (
           <span className="flex flex-wrap items-baseline gap-x-2">
-            <span className={cn('text-xl font-semibold tabular-nums', net === 0 ? 'text-foreground' : balanceTone(net))}>
+            <span className={cn('text-xl font-semibold tabular-nums', balanceTone(net))}>
               {formatSignedMoney(net, currency, fractionDigits)}
             </span>
             {net !== 0 && <span className={cn('font-medium', balanceTone(net))}>{t(net > 0 ? 'balance_toGetBack' : 'balance_youOwe')}</span>}

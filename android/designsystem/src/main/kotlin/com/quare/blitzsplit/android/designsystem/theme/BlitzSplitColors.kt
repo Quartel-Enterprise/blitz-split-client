@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.designsystem.theme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // Why: the tokens of the design canvas (Android, Material 3 Expressive), seeded from #266489.
@@ -57,3 +58,13 @@ internal val darkBlitzSplitColors: ColorScheme = darkColorScheme(
     surfaceContainer = Color(0xFF1C2024),
     surfaceContainerHigh = Color(0xFF262A2E),
 )
+
+private val lightPositive = Color(0xFF006C4C)
+private val darkPositive = Color(0xFF6EDBAA)
+
+/*
+ * Why: what comes back to the user (a positive net, "a receber", "te deve") is green on every platform, apart from
+ * the primary of links and buttons; outside the scheme, so the wallpaper's colors never replace it.
+ */
+@Composable
+fun positiveAmountColor(): Color = if (LocalIsDarkTheme.current) darkPositive else lightPositive

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
@@ -109,8 +110,8 @@ private fun SegmentAmountText(
         color = when {
             isSelected -> MaterialTheme.colorScheme.onPrimary
             amountMinor == 0L -> MaterialTheme.colorScheme.onSurfaceVariant
-            filter == BalancesFilter.YOU_OWE -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.primary
+            filter == BalancesFilter.YOU_OWE || amountMinor < 0 -> MaterialTheme.colorScheme.error
+            else -> positiveAmountColor()
         },
     )
 }

@@ -327,8 +327,8 @@ private struct MemberRow: View {
     }
 }
 
-/// "+$223.50 to get back" in the accent, "−$118.00 owes" in the negative color, "$0.00" when what they get back and
-/// owe cancel out, or a muted "Settled up".
+/// "+$223.50 to get back" in the positive green, "−$118.00 owes" in the negative color, "$0.00" when what they get
+/// back and owe cancel out, or a muted "Settled up".
 private struct MemberBalanceText: View {
     let balance: MemberBalance
     let currency: GroupCurrency
@@ -341,7 +341,7 @@ private struct MemberBalanceText: View {
         } else if balance.netMinor > 0 {
             Text("\(amount) to get back")
                 .monospacedDigit()
-                .foregroundStyle(Palette.accent)
+                .foregroundStyle(Palette.positive)
         } else if balance.netMinor < 0 {
             Text("\(amount) owes")
                 .monospacedDigit()
