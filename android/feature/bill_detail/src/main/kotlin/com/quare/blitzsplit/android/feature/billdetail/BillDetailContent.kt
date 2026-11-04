@@ -341,6 +341,7 @@ private fun BillColumnsLayout(
             state = state,
             money = money,
             dates = dates,
+            onEvent = onEvent,
         )
         if (state.showsMyPart) {
             MyPartCard(
@@ -361,6 +362,7 @@ private fun BillColumnsLayout(
         BillSplitSection(
             state = state,
             money = money,
+            onEvent = onEvent,
         )
         BillCommentsSection(
             state = state,

@@ -1305,6 +1305,8 @@ export const en = {
   activity_groupGone: 'Group deleted',
   activity_pending: 'Waiting to send',
   activity_unread: 'Unread',
+  activity_openActorProfile: "Open {name}'s profile",
+  activity_openMyProfile: 'Open your profile',
   activity_newOne: '1 new',
   activity_newOther: '{count} new',
   activity_markAllRead: 'Mark all as read',

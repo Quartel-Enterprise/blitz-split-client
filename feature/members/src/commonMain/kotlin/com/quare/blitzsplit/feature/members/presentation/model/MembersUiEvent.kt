@@ -8,6 +8,11 @@ sealed interface MembersUiEvent : UiEvent {
 
     data object OnAddClicked : MembersUiEvent
 
+    // Why: a member's row (their face or name), which opens their profile; the ⋮ keeps the member's menu.
+    data class OnMemberClicked(
+        val memberId: String,
+    ) : MembersUiEvent
+
     data class OnRenameClicked(
         val memberId: String,
     ) : MembersUiEvent

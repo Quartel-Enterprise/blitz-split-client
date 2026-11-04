@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -29,9 +30,11 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
@@ -40,13 +43,18 @@ private const val PAYER_FACE_COUNT = 3
 private val payerAvatarSize = 32.dp
 private val rowAvatarSize = 40.dp
 
-// Why: what the bill was, when, how much and who paid it, with the pending line while it waits for the server.
+/*
+ * Why: what the bill was, when, how much and who paid it, with the pending line while it waits for the server. A lone
+ * payer opens their profile from here; several each have their row in the split, which opens them.
+ */
 @Composable
 internal fun BillSummaryColumn(
     state: BillDetailUiState,
     money: MoneyFormatter,
     dates: DateTimeTextFormatter,
+    onEvent: (BillDetailUiEvent) -> Unit,
 ) {
+    val lonePayer = state.payers.singleOrNull()?.takeIf { it.opensProfile }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // Why: the bill's category over its title, "Alimentação › Mercado" (7.3).
         Row(
@@ -84,6 +92,11 @@ internal fun BillSummaryColumn(
             fontWeight = FontWeight.Bold,
         )
         Row(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.small)
+                .opensProfileWhen(lonePayer != null) {
+                    lonePayer?.let { onEvent(BillDetailUiEvent.OnPersonClicked(it.memberId)) }
+                },
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -165,6 +178,7 @@ internal fun MyPartCard(
 internal fun BillSplitSection(
     state: BillDetailUiState,
     money: MoneyFormatter,
+    onEvent: (BillDetailUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
@@ -188,16 +202,19 @@ internal fun BillSplitSection(
                     count = state.people.size,
                 ),
                 money = money,
+                onClick = { onEvent(BillDetailUiEvent.OnPersonClicked(row.memberId)) },
             )
         }
     }
 }
 
+// Why: the whole row opens their profile, Perfil for this device's user; an ex-member has none.
 @Composable
 private fun ShareRow(
     row: BillShareRow,
     shape: Shape,
     money: MoneyFormatter,
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -205,10 +222,15 @@ private fun ShareRow(
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 12.dp,
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .opensProfileWhen(
+                    isClickable = row.opensProfile,
+                    onClick = onClick,
+                ).padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

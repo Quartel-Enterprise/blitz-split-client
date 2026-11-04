@@ -39,6 +39,11 @@ sealed interface GroupStatsUiEvent : UiEvent {
         val grain: StatsGrain,
     ) : GroupStatsUiEvent
 
+    // Why: a person of "Por pessoa", which opens their profile.
+    data class OnPersonClicked(
+        val memberId: String,
+    ) : GroupStatsUiEvent
+
     // Why: "Maior despesa", which opens the bill.
     data object OnBiggestExpenseClicked : GroupStatsUiEvent
 

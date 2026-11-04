@@ -13,7 +13,8 @@ import kotlinx.datetime.TimeZone
 
 /*
  * Why: a bill's link page draws the bill as Conta does, by the names the server sent: nobody is this device's user
- * there, and someone who left the group has no name ("Ex-membro").
+ * there, someone who left the group has no name ("Ex-membro"), and nobody opens a profile, since the page is outside
+ * the app's groups.
  */
 internal fun payersOf(bill: SharedBill.Open): List<BillPayer> = bill.payers.map { payer ->
     BillPayer(
@@ -22,6 +23,8 @@ internal fun payersOf(bill: SharedBill.Open): List<BillPayer> = bill.payers.map 
         avatarColor = AvatarColor.default,
         photoUrl = null,
         isMe = false,
+        memberId = payer.memberId,
+        opensProfile = false,
     )
 }
 
@@ -44,6 +47,7 @@ internal fun peopleOf(bill: SharedBill.Open): List<BillShareRow> {
                 hasJoined = true,
                 paidMinor = paid[memberId],
                 shareMinor = shared[memberId],
+                opensProfile = false,
             )
         }
 }

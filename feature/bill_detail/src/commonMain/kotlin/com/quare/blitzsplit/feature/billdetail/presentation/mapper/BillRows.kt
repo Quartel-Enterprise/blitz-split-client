@@ -24,6 +24,8 @@ internal fun payersOf(
         avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
         photoUrl = member?.photoUrl,
         isMe = member?.isMe == true,
+        memberId = id,
+        opensProfile = member != null,
     )
 }
 
@@ -46,6 +48,7 @@ internal fun rowsOf(
             hasJoined = member.hasJoined,
             paidMinor = paidById[member.id],
             shareMinor = shareById[member.id],
+            opensProfile = true,
         )
     }
     val memberIds = group.members.map { it.id }.toSet()
@@ -63,6 +66,7 @@ internal fun rowsOf(
             hasJoined = true,
             paidMinor = paidById[id],
             shareMinor = shareById[id],
+            opensProfile = false,
         )
     }
     return memberRows + formerRows

@@ -41,6 +41,8 @@ class JsStatsPerson(
     val isMe: Boolean,
     val amountMinor: Double,
     val barFraction: Double,
+    // Why: the row opens their profile (openPerson), Perfil for isMe; "Ex-membro" has none.
+    val opensProfile: Boolean,
 )
 
 class JsStatsBar(
@@ -191,6 +193,10 @@ class GroupStatsPresenter(
         viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(grain))
     }
 
+    fun openPerson(memberId: String) {
+        viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(memberId))
+    }
+
     fun openBiggestExpense() {
         viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
     }
@@ -290,6 +296,7 @@ private fun toJsStatsPerson(row: StatsPersonRow): JsStatsPerson = JsStatsPerson(
     isMe = row.isMe,
     amountMinor = row.amountMinor.toDouble(),
     barFraction = row.barFraction,
+    opensProfile = row.opensProfile,
 )
 
 private fun toJsStatsBar(bar: StatsBar): JsStatsBar = JsStatsBar(

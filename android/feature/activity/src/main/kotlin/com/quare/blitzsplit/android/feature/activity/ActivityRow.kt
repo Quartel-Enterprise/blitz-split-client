@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
@@ -89,18 +91,27 @@ private fun badgeColorsOf(item: ActivityItem): Pair<Color, Color> {
     }
 }
 
-// Why: who did it, with the kind of event at its corner, as every row and the detail draw it.
+/*
+ * Why: who did it, with the kind of event at its corner, as every row and the detail draw it. The face opens their
+ * profile (Perfil for this device's user), apart from the row, which opens the item.
+ */
 @Composable
 internal fun ActorAvatarIcon(
     item: ActivityItem,
+    onEvent: (ActivityUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (container, content) = badgeColorsOf(item)
     val rowColor = MaterialTheme.colorScheme.surfaceContainerLowest
+    val name = actorNameOf(item)
     Box(modifier = modifier) {
         AvatarBadge(
             initial = item.actor.initials,
             color = item.actor.color,
+            modifier = Modifier
+                .clip(CircleShape)
+                .semantics { if (item.actor.opensProfile) contentDescription = name }
+                .opensProfileWhen(item.actor.opensProfile) { onEvent(ActivityUiEvent.OnActorClicked(item.id)) },
         )
         Box(
             modifier = Modifier
@@ -176,7 +187,10 @@ internal fun ActivityRow(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActorAvatarIcon(item = item)
+                ActorAvatarIcon(
+                    item = item,
+                    onEvent = onEvent,
+                )
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp),

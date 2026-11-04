@@ -18,4 +18,6 @@ data class BillShareRow(
     val paidMinor: Long?,
     // Why: their part, null for someone in the group left out of the split ("Não participa").
     val shareMinor: Long?,
+    // Why: a tap opens their profile (Perfil for isMe); someone no longer in the group has none.
+    val opensProfile: Boolean,
 )

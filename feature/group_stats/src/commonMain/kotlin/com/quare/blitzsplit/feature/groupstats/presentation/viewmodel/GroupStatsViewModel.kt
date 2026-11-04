@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
@@ -174,6 +176,10 @@ class GroupStatsViewModel(
             is GroupStatsUiEvent.OnGrainPicked -> pickGrain(event.grain)
 
             GroupStatsUiEvent.OnBiggestExpenseClicked -> openBiggestExpense()
+
+            is GroupStatsUiEvent.OnPersonClicked -> group?.members
+                ?.firstOrNull { it.id == event.memberId }
+                ?.let { member -> open(personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe)) }
 
             GroupStatsUiEvent.OnSplitBillClicked -> open(
                 Route.SplitBill(

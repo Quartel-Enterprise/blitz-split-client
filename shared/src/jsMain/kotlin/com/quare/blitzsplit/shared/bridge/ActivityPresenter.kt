@@ -66,6 +66,8 @@ class JsActivityItem(
     val actorIsMe: Boolean,
     val actorInitials: String,
     val actorColor: String,
+    // Why: the actor's face opens their profile, or Perfil for actorIsMe (openActor).
+    val actorOpensProfile: Boolean,
     val groupId: String,
     val groupName: String?,
     val groupInitials: String,
@@ -255,6 +257,10 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnGroupClicked(itemId))
     }
 
+    fun openActor(itemId: String) {
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(itemId))
+    }
+
     fun openTarget(itemId: String) {
         viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(itemId))
     }
@@ -419,6 +425,7 @@ private fun toJsActivityItem(
     actorIsMe = item.actor.isMe,
     actorInitials = item.actor.initials,
     actorColor = item.actor.color.code,
+    actorOpensProfile = item.actor.opensProfile,
     groupId = item.groupId,
     groupName = item.groupName,
     groupInitials = item.groupName?.let(Initials::of).orEmpty(),

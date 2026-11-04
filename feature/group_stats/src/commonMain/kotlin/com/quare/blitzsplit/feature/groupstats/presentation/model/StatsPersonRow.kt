@@ -14,4 +14,8 @@ data class StatsPersonRow(
     val amountMinor: Long,
     // Why: the bar, scaled by the largest amount of the list.
     val barFraction: Double,
-)
+) {
+    // Why: the row opens their profile (Perfil for isMe); someone no longer in the group has none.
+    val opensProfile: Boolean
+        get() = name != null
+}

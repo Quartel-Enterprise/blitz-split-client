@@ -13,6 +13,8 @@ data class BillHistoryEntry(
     val actorColor: AvatarColor,
     val actorPhotoUrl: String?,
     val actorIsMe: Boolean,
+    // Why: the actor while still in the group, whose face opens their profile; null for anyone else.
+    val actorMemberId: String?,
     val occurredAt: Long,
     val changes: List<BillHistoryChange>,
     // Why: CREATED's note, "Igual entre 5 · R$ 312,00", as the bill was created.

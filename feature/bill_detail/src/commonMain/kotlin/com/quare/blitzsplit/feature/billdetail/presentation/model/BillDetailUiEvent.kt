@@ -5,6 +5,11 @@ import com.quare.blitzsplit.core.presentation.UiEvent
 sealed interface BillDetailUiEvent : UiEvent {
     data object OnBackClicked : BillDetailUiEvent
 
+    // Why: a person's face or name (the split, who paid, a comment's author, Histórico), which opens their profile.
+    data class OnPersonClicked(
+        val memberId: String,
+    ) : BillDetailUiEvent
+
     // Why: "Editar conta" in the top bar.
     data object OnEditClicked : BillDetailUiEvent
 

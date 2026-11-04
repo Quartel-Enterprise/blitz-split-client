@@ -1306,6 +1306,8 @@ export const pt: Record<MessageKey, string> = {
   activity_groupGone: 'Grupo apagado',
   activity_pending: 'Aguardando envio',
   activity_unread: 'Não lida',
+  activity_openActorProfile: 'Abrir o perfil de {name}',
+  activity_openMyProfile: 'Abrir seu perfil',
   activity_newOne: '1 nova',
   activity_newOther: '{count} novas',
   activity_markAllRead: 'Marcar tudo como lido',

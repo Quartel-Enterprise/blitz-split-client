@@ -69,6 +69,7 @@ private fun rowOf(
     val name = member?.name ?: comment.authorName
     return BillCommentRow(
         id = comment.id,
+        authorMemberId = member?.id,
         authorName = name,
         initials = name?.let { Initials.ofMember(it, isMe) }.orEmpty(),
         avatarColor = member?.avatarColor ?: AvatarColor.default,

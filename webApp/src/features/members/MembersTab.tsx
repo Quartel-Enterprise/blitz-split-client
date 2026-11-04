@@ -11,7 +11,7 @@ import {
 } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -110,22 +110,25 @@ function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money
   return <span className={cn('text-sm font-medium whitespace-nowrap tabular-nums', tone)}>{text}</span>
 }
 
+/** A member: the row opens their profile (Perfil for this browser's user), the ⋮ their menu. */
 function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
   return (
-    <li className="flex items-center gap-3 py-2.5 pr-2 pl-4">
+    <li className="flex items-center gap-1 py-1 pr-2 pl-2">
+      <PersonButton onOpen={() => presenter.openMember(member.id)} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1.5">
       <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-medium">
           {member.name}
           {member.isMe && <span className="text-muted-foreground"> · {t('members_me')}</span>}
-        </p>
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span aria-hidden className={cn('size-2 rounded-full', member.hasJoined ? 'bg-primary' : 'border-[1.5px] border-muted-foreground')} />
           {member.isMe ? t('members_statusThisBrowser') : member.hasJoined ? t('members_statusJoined') : t('members_statusNotJoined')}
-        </p>
-      </div>
+        </span>
+      </span>
       {member.balance && <MemberBalanceText balance={member.balance} money={money} />}
       {member.hasJoined && <Check aria-hidden className="size-4 text-primary" />}
+      </PersonButton>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={t('members_options', { name: member.name })}>

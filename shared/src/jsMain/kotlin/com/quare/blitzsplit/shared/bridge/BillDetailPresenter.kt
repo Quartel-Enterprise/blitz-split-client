@@ -27,13 +27,15 @@ import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 import software.quare.loadable.valueOrNull
 
-// Why: name null for "Ex-membro".
+// Why: name null for "Ex-membro"; opensProfile, the face and name open their profile (openPerson).
 class JsBillPayer(
+    val memberId: String,
     val name: String?,
     val initials: String,
     val color: String,
     val photoUrl: String?,
     val isMe: Boolean,
+    val opensProfile: Boolean,
 )
 
 // Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly; name null for "Ex-membro".
@@ -47,6 +49,7 @@ class JsBillShareRow(
     val hasJoined: Boolean,
     val paidMinor: Double?,
     val shareMinor: Double?,
+    val opensProfile: Boolean,
 )
 
 /*
@@ -63,6 +66,8 @@ class JsMyPartNote(
 // Why: one comment or reply; authorName null when the server kept none ("Alguém"), replyToName the "@Diego" of a reply.
 class JsBillCommentRow(
     val id: String,
+    // Why: the author still in the group, whose face and name open their profile (openPerson); else null.
+    val authorMemberId: String?,
     val authorName: String?,
     val initials: String,
     val color: String,
@@ -133,6 +138,8 @@ class JsBillHistoryEntry(
     val actorColor: String,
     val actorPhotoUrl: String?,
     val actorIsMe: Boolean,
+    // Why: the actor still in the group, whose face opens their profile (openPerson); else null.
+    val actorMemberId: String?,
     val occurredAt: Double,
     val changes: Array<JsBillHistoryChange>,
     val amountMinor: Double?,
@@ -332,6 +339,10 @@ class BillDetailPresenter(
         viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
     }
 
+    fun openPerson(memberId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(memberId))
+    }
+
     fun deleteBill() {
         viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
     }
@@ -396,11 +407,13 @@ class BillDetailPresenter(
 
 // Why: shared with a bill's link page (SharedBillPresenter), which draws the bill as Conta does.
 internal fun toJsBillPayer(payer: BillPayer): JsBillPayer = JsBillPayer(
+    memberId = payer.memberId,
     name = payer.name,
     initials = payer.initials,
     color = payer.avatarColor.code,
     photoUrl = payer.photoUrl,
     isMe = payer.isMe,
+    opensProfile = payer.opensProfile,
 )
 
 internal fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRow(
@@ -413,6 +426,7 @@ internal fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRo
     hasJoined = row.hasJoined,
     paidMinor = row.paidMinor?.toDouble(),
     shareMinor = row.shareMinor?.toDouble(),
+    opensProfile = row.opensProfile,
 )
 
 private fun toJsMyPartNote(note: MyPartNote): JsMyPartNote = when (note) {
@@ -433,6 +447,7 @@ private fun toJsMyPartNote(note: MyPartNote): JsMyPartNote = when (note) {
 
 private fun toJsBillCommentRow(row: BillCommentRow): JsBillCommentRow = JsBillCommentRow(
     id = row.id,
+    authorMemberId = row.authorMemberId,
     authorName = row.authorName,
     initials = row.initials,
     color = row.avatarColor.code,
@@ -478,6 +493,7 @@ private fun toJsBillHistoryEntry(
     actorColor = entry.actorColor.code,
     actorPhotoUrl = entry.actorPhotoUrl,
     actorIsMe = entry.actorIsMe,
+    actorMemberId = entry.actorMemberId,
     occurredAt = entry.occurredAt.toDouble(),
     changes = entry.changes.map { toJsBillHistoryChange(it, categories) }.toTypedArray(),
     amountMinor = entry.amountMinor?.toDouble(),

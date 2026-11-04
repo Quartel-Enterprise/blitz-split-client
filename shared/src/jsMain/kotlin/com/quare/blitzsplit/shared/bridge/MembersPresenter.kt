@@ -140,6 +140,11 @@ class MembersPresenter(
         viewModel.onEvent(MembersUiEvent.OnAddClicked)
     }
 
+    // Why: the member's row, which opens their profile (Perfil for this device's user).
+    fun openMember(memberId: String) {
+        viewModel.onEvent(MembersUiEvent.OnMemberClicked(memberId))
+    }
+
     fun rename(memberId: String) {
         viewModel.onEvent(MembersUiEvent.OnRenameClicked(memberId))
     }

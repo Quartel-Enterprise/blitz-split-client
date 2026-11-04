@@ -8,7 +8,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
  * across the groups as Saldos (flow 8) nets them.
  */
 data class HomePerson(
-    // Why: PersonBalance.key, which with the currency is what tapping the face settles up (Route.SettleUp).
+    // Why: PersonBalance.key, the profile tapping the face opens (Route.ContactProfile), or with the currency what it settles up.
     val key: String,
     // Why: null for someone no longer in the group, whom each UI calls "Ex-membro".
     val name: String?,

@@ -9,4 +9,10 @@ data class ActivityActor(
     val isMe: Boolean,
     val initials: String,
     val color: AvatarColor,
-)
+    // Why: PeopleBalances.keyOf while they are in a group on the device, whose profile their face opens; else null.
+    val personKey: String?,
+) {
+    // Why: the face opens their profile, or Perfil for this device's user; nobody else has one to open.
+    val opensProfile: Boolean
+        get() = isMe || personKey != null
+}

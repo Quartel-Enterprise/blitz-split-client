@@ -211,5 +211,6 @@
     <string name="designsystem_photo_crop_confirm">Pronto</string>
     <string name="designsystem_search">Buscar</string>
     <string name="designsystem_loading">Carregando</string>
+    <string name="designsystem_open_profile">Abrir perfil</string>
     <string name="designsystem_waiting_for_internet">Sem internet. Seus dados aparecem quando reconectar.</string>
 </resources>

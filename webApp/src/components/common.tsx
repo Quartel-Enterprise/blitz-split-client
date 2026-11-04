@@ -135,6 +135,23 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
   )
 }
 
+/**
+ * A person's face and name, which open their profile while `onOpen` is set (beta feedback 18): the one Contatos opens,
+ * or Perfil for this device's user. Someone with no profile to open (no longer in the group) gets them as plain text.
+ */
+export function PersonButton({ onOpen, className, children }: { onOpen?: (() => void) | null; className?: string; children: ReactNode }) {
+  if (!onOpen) return <span className={className}>{children}</span>
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={cn('cursor-pointer rounded-md text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50', className)}
+    >
+      {children}
+    </button>
+  )
+}
+
 /** The avatar colors as a radio group, the one picked with a check. `labelledBy` is the id of its label. */
 export function AvatarColorPicker({ colors, selected, onSelect, labelledBy }: { colors: string[]; selected: string; onSelect: (code: string) => void; labelledBy: string }) {
   return (
