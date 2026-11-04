@@ -93,7 +93,8 @@ class CategoryMapViewModel(
         combine(
             observeCategoryMap(),
             observeMapCategories(),
-            observeGroupsByActivity(),
+            // Why: a bill or payment that moves neither a group nor their order leaves the map as it is.
+            observeGroupsByActivity().distinctUntilChanged(),
             observeAccount().map { account -> account.status is AccountStatus.Connected }.distinctUntilChanged(),
             observeFirstDownload().map { it == null }.distinctUntilChanged(),
         ) { map, tree, groups, isConnected, isWhole ->

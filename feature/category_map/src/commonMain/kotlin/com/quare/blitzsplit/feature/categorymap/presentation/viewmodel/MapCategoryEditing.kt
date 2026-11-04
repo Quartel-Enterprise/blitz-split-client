@@ -102,16 +102,13 @@ internal class MapCategoryEditing(
     }
 
     /*
-     * Why: a subcategory goes in its main category's group; a main category, or one under the app's, in the group of
-     * the category picked beside the list, else the one with the latest activity.
+     * Why: a subcategory of a group's category goes in that group; anything else in the one with the latest activity,
+     * the same on every layout, since a phone has no category picked beside the list.
      */
     private fun openNew(parentId: String?) {
         uiState.update { state ->
             if (!state.canCreateCategory) return@update state
-            val selected = state.selectedSection?.category?.takeIf { state.sections.size > 1 && !state.isSearching }
-            val groupId = parentId?.let(state.categories::groupIdOf)
-                ?: selected?.let { state.categories.groupIdOf(it.id) }
-                ?: state.groups.first().id
+            val groupId = parentId?.let(state.categories::groupIdOf) ?: state.groups.first().id
             state.copy(
                 categoryForm = CategoryForm.create(
                     categories = state.categories.ofGroup(groupId),

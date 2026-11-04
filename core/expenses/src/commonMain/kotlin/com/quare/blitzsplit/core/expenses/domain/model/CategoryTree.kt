@@ -73,7 +73,7 @@ class CategoryTree private constructor(
      * deleted too: its own for a main one, the slot it takes for a subcategory made a main one, the next for a new one.
      */
     fun mainColorOf(categoryId: String?): AvatarColor =
-        colorAt(groupCategories.values.takeWhile { it.id != categoryId }.count { it.parentId == null })
+        findColorAt(groupCategories.values.takeWhile { it.id != categoryId }.count { it.parentId == null })
 
     /*
      * Why: one group's categories out of every group's (the map's, flow 9), which a category created or edited there
@@ -111,7 +111,7 @@ class CategoryTree private constructor(
                 val category = groupCategoryOf(
                     category = main,
                     icon = main.icon ?: CategoryIcon.DOTS,
-                    color = colorAt(colorIndexes.getValue(main.id)),
+                    color = findColorAt(colorIndexes.getValue(main.id)),
                 )
                 CategoryBranch(
                     category = category,
@@ -154,7 +154,7 @@ class CategoryTree private constructor(
         // Why: the app's alone, for a bill whose group has no category of its own; built once, as it never changes.
         val appOnly: CategoryTree by lazy { of(emptyList()) }
 
-        private fun colorAt(mainIndex: Int): AvatarColor = AvatarColor.entries[mainIndex % AvatarColor.entries.size]
+        private fun findColorAt(mainIndex: Int): AvatarColor = AvatarColor.entries[mainIndex % AvatarColor.entries.size]
 
         private fun groupSubcategoriesOf(
             groupCategories: List<GroupCategory>,

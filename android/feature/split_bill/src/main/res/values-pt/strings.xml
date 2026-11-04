@@ -299,8 +299,6 @@
     <string name="split_bill_category_side_hint">Escolha uma subcategoria ou fique só com %s</string>
     <string name="split_bill_category_hold_hint">Toque e segure numa categoria do grupo para editar ou apagar.</string>
     <string name="split_bill_category_edit_action">Editar</string>
-    <string name="split_bill_category_save_error">Não deu para salvar a categoria. Tente de novo.</string>
-    <string name="split_bill_category_delete_error">Não deu para apagar a categoria. Tente de novo.</string>
     <string name="split_bill_group_exception">Exceção do grupo para %s</string>
     <string name="split_bill_default_exception_title">Exceção do grupo para %1$s: %2$s</string>
     <plurals name="split_bill_category_subcategories">

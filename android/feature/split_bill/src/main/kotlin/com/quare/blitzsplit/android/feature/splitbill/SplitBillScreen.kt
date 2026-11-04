@@ -35,6 +35,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private const val PAGE_BILL = 0
 private const val PAGE_SPLIT = 1
@@ -55,8 +56,8 @@ fun SplitBillScreen(
         when (action) {
             SplitBillUiAction.ShowSaveError -> R.string.split_bill_save_error
             SplitBillUiAction.ShowDeleteError -> R.string.split_bill_delete_error
-            SplitBillUiAction.ShowCategorySaveError -> R.string.split_bill_category_save_error
-            SplitBillUiAction.ShowCategoryDeleteError -> R.string.split_bill_category_delete_error
+            SplitBillUiAction.ShowCategorySaveError -> DesignR.string.designsystem_category_save_error
+            SplitBillUiAction.ShowCategoryDeleteError -> DesignR.string.designsystem_category_delete_error
         }
     }
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }

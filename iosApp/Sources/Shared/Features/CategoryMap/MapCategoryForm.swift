@@ -84,6 +84,10 @@ extension View {
                     TermFormView(model: model)
                 }
             }
+            // Why: the ViewModel keeps a form open while it saves, so a swipe then would leave the state and the sheet apart.
+            .interactiveDismissDisabled(
+                model.state.categoryForm?.isSaving == true || model.state.termForm?.isSaving == true,
+            )
             // Why: in the sheet, as a failed save or delete keeps the form open over the map, which would hide it.
             .glassToast([
                 GlassToastMessage(text: "Couldn't save the category. Try again.", trigger: model.categorySaveErrorCount),

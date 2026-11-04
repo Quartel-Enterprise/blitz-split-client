@@ -245,4 +245,6 @@
     <string name="designsystem_category_parent_none">None: main category</string>
     <string name="designsystem_category_preview">How it shows on bills</string>
     <string name="designsystem_category_save">Save</string>
+    <string name="designsystem_category_save_error">Couldn\'t save the category. Try again.</string>
+    <string name="designsystem_category_delete_error">Couldn\'t delete the category. Try again.</string>
 </resources>

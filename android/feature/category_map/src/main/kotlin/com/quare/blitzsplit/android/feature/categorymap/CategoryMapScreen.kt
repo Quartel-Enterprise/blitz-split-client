@@ -14,14 +14,15 @@ import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUi
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 fun CategoryMapScreen(viewModel: CategoryMapViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val saveError = stringResource(R.string.category_map_save_error)
-    val categorySaveError = stringResource(R.string.category_map_category_save_error)
-    val categoryDeleteError = stringResource(R.string.category_map_category_delete_error)
+    val categorySaveError = stringResource(DesignR.string.designsystem_category_save_error)
+    val categoryDeleteError = stringResource(DesignR.string.designsystem_category_delete_error)
     val undo = stringResource(R.string.category_map_undo)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->

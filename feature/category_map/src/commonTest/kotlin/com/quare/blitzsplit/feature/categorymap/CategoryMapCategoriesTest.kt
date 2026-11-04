@@ -182,23 +182,22 @@ class CategoryMapCategoriesTest {
         }
 
     @Test
-    fun `GIVEN the second group category picked beside the list WHEN Nova categoria THEN it goes in that group`() =
-        runTest {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(PET_ID))
+    fun `GIVEN the second group category picked WHEN Nova categoria THEN it goes in the latest group`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(PET_ID))
 
-            // When
-            viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
 
-            // Then
-            val form = assertNotNull(viewModel.uiState.value.categoryForm)
-            assertEquals(HOUSE_ID, form.groupId)
-            assertNull(form.parentId)
-        }
+        // Then
+        val form = assertNotNull(viewModel.uiState.value.categoryForm)
+        assertEquals(TRIP_ID, form.groupId)
+        assertNull(form.parentId)
+    }
 
     @Test
-    fun `GIVEN a second group category picked WHEN Nova subcategoria in Transporte THEN it goes in that group`() =
+    fun `GIVEN a second group category picked WHEN Nova subcategoria in Transporte THEN it goes in the latest group`() =
         runTest {
             // Given
             prepareScenario()
@@ -209,7 +208,7 @@ class CategoryMapCategoriesTest {
 
             // Then
             val form = assertNotNull(viewModel.uiState.value.categoryForm)
-            assertEquals(HOUSE_ID, form.groupId)
+            assertEquals(TRIP_ID, form.groupId)
             assertEquals(AppCategory.TRANSPORT.key, form.parentId)
         }
 

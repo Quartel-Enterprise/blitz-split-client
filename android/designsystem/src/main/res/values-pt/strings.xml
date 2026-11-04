@@ -246,4 +246,6 @@
     <string name="designsystem_category_parent_none">Nenhuma: categoria principal</string>
     <string name="designsystem_category_preview">Assim aparece nas contas</string>
     <string name="designsystem_category_save">Salvar</string>
+    <string name="designsystem_category_save_error">Não deu para salvar a categoria. Tente de novo.</string>
+    <string name="designsystem_category_delete_error">Não deu para apagar a categoria. Tente de novo.</string>
 </resources>
