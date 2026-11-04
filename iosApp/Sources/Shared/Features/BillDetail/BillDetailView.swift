@@ -299,7 +299,8 @@ private struct PendingLine: View {
     }
 }
 
-/// "−R$ 118,00 you owe" in the negative color, "+R$ 249,60 to get back" in the accent, and who settles it.
+/// "−R$ 118,00 you owe" in the negative color, "+R$ 249,60 to get back" in the positive green, zero muted, and who
+/// settles it.
 private struct MyPartContent: View {
     let state: BillDetailUiState
 

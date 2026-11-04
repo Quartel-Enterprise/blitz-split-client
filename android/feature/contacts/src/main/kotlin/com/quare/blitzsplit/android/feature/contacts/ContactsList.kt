@@ -241,7 +241,11 @@ private fun SummaryTotalCell(
             text = amount,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = if (isOwed) positiveAmountColor() else MaterialTheme.colorScheme.error,
+            color = when {
+                !isEnabled -> MaterialTheme.colorScheme.onSurfaceVariant
+                isOwed -> positiveAmountColor()
+                else -> MaterialTheme.colorScheme.error
+            },
             maxLines = 1,
         )
     }

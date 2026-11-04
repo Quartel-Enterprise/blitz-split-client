@@ -117,10 +117,13 @@ fun PersonGroupsCard(
     }
 }
 
-// Why: what you owe in the error color, what you get back in the positive green, as the home's rows.
+/*
+ * Why: what you owe in the error color, what you get back in the positive green, zero in the quiet one, as every
+ * signed amount of the app.
+ */
 @Composable
-fun amountColorOf(amountMinor: Long): Color = if (amountMinor < 0) {
-    MaterialTheme.colorScheme.error
-} else {
-    positiveAmountColor()
+fun amountColorOf(amountMinor: Long): Color = when {
+    amountMinor > 0 -> positiveAmountColor()
+    amountMinor < 0 -> MaterialTheme.colorScheme.error
+    else -> MaterialTheme.colorScheme.onSurfaceVariant
 }

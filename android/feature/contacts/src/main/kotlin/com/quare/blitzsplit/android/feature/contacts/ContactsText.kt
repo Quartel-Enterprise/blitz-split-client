@@ -2,14 +2,12 @@ package com.quare.blitzsplit.android.feature.contacts
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
 import com.quare.blitzsplit.feature.contacts.presentation.model.NameMatch
 
@@ -40,14 +38,6 @@ internal fun netWordOf(amountMinor: Long): String = stringResource(
         else -> R.string.contacts_settled
     },
 )
-
-// Why: what you owe in the error color, what you get back in the positive green, zero in the quiet one.
-@Composable
-internal fun netColorOf(amountMinor: Long): Color = if (amountMinor == 0L) {
-    MaterialTheme.colorScheme.onSurfaceVariant
-} else {
-    amountColorOf(amountMinor)
-}
 
 // Why: where the search matched the name, marked in the tertiary container as the home's search marks it.
 @Composable
