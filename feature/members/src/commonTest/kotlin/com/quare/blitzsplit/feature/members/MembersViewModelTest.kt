@@ -2923,6 +2923,30 @@ class MembersViewModelTest {
         }
 
     @Test
+    fun `GIVEN no removal asked WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no release asked WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN Carla removed WHEN the Apple alert then closes itself THEN sends no cancellation`() =
         runTest(testDispatcher) {
             // Given

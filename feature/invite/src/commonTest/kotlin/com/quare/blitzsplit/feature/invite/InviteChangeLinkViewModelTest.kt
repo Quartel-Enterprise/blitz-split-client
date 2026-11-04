@@ -511,17 +511,16 @@ class InviteChangeLinkViewModelTest {
         }
 
     @Test
-    fun `GIVEN no confirmation open WHEN a confirmation arrives THEN still sends the confirmed event`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN no confirmation open WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+        // When
+        viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
 
-            // Then
-            assertEquals(listOf("invite_link_change_confirmed" to emptyMap<String, Any>()), trackedEvents)
-        }
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
 
     @Test
     fun `GIVEN the link being changed WHEN the server fails THEN sends no event of its own`() =

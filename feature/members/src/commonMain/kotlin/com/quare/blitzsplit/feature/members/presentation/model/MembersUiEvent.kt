@@ -34,14 +34,16 @@ sealed interface MembersUiEvent : TrackedUiEvent {
 
             is OnRemoveClicked -> EventAnalytics.Automatic("member_remove_clicked")
 
-            OnRemoveConfirmed -> EventAnalytics.Automatic("member_remove_confirmed")
+            // Why: only an answer to a question still open, as its cancellation.
+            OnRemoveConfirmed -> EventAnalytics.Manual("member_remove_confirmed")
 
             // Why: only a question still open, since Apple's alert also closes itself after Remover.
             OnRemoveDismissed -> EventAnalytics.Manual("member_remove_cancelled")
 
             is OnReleaseClicked -> EventAnalytics.Automatic("member_release_clicked")
 
-            OnReleaseConfirmed -> EventAnalytics.Automatic("member_release_confirmed")
+            // Why: only an answer to a question still open, as its cancellation.
+            OnReleaseConfirmed -> EventAnalytics.Manual("member_release_confirmed")
 
             // Why: only a question still open and not waiting on the server, which keeps it open until it answers.
             OnReleaseDismissed -> EventAnalytics.Manual("member_release_cancelled")
