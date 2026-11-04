@@ -47,14 +47,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
 - Product decisions, to follow on every platform, one doc per area of the app:
   - [General rules](docs/product/general.md): language, amounts, colors, currencies, platform minimums, loading.
   - [The home and the shells](docs/product/home-and-shell.md): the five tabs, the web's and the Mac's shell.
-  - [Início](docs/product/inicio.md): the home tab, its shortcuts, pinned groups.
-  - [Atividade and push notifications](docs/product/activity-and-push.md)
-  - [Grupos](docs/product/groups-home.md): the list, its actions, grid, search, list and detail.
-  - [Perfil](docs/product/profile.md): the profile, photos, appearance, in-app update.
-  - [Novo grupo and Convidar](docs/product/new-group-and-invite.md)
-  - [Saldos, Contatos and people](docs/product/balances-and-contacts.md)
-  - [The group screen and its bills](docs/product/group-and-bills.md): Despesas, Conta, Estatísticas.
-  - [Membros, group balances and payments](docs/product/members-and-payments.md)
-  - [Rachar conta](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
+  - [Home](docs/product/inicio.md): the home tab (Início), its shortcuts, pinned groups.
+  - [Activity and push notifications](docs/product/activity-and-push.md)
+  - [Groups](docs/product/groups-home.md): the list, its actions, grid, search, list and detail.
+  - [Profile](docs/product/profile.md): the profile, photos, appearance, in-app update.
+  - [New group and Invite](docs/product/new-group-and-invite.md)
+  - [Balances, Contacts and people](docs/product/balances-and-contacts.md)
+  - [The group screen and its bills](docs/product/group-and-bills.md): Expenses, the bill, Statistics.
+  - [Members, group balances and payments](docs/product/members-and-payments.md)
+  - [Split a bill](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
   - [Joining and foldables](docs/product/joining-and-folds.md): invite links, cameras, foldables, iPhone Duo.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.
