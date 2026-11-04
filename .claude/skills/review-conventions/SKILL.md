@@ -53,6 +53,7 @@ full:
 | Any Kotlin file | `docs/architecture/code-style.md` |
 | A new or moved module, a `build.gradle.kts`, `settings.gradle.kts`, `build-logic/`, a dependency between modules | `docs/architecture/module-structure.md`, `docs/architecture/stack.md` |
 | A `ViewModel`, `UiState`, `UiEvent`, `UiAction`, a `*Presenter` of `shared/src/jsMain`, `BlitzSplitApple`, a SwiftUI `*Model`, a React screen | `docs/architecture/state-management.md` |
+| A `UiEvent` case, `TrackedUiEvent`, `EventAnalytics`, `TrackEvent`, `docs/analytics` | `docs/analytics/README.md` |
 | A use case, repository, data source, DTO, mapper | `docs/architecture/use-cases.md`, `docs/architecture/data-sources-and-sync.md` |
 | A Room entity or DAO, `:core:provider:*`, `SyncCoordinator`, a Supabase call | `docs/architecture/data-sources-and-sync.md` |
 | Koin modules, `single`/`factory`/`viewModel`, `AppModules.kt` | `docs/architecture/dependency-injection.md` |
