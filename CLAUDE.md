@@ -48,7 +48,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   area's doc and update it in the same PR:
   - [General rules](docs/product/general.md): language, amounts, colors, currencies, sign in buttons and recovery code, platform minimums, loading.
   - [The home and the shells](docs/product/home-and-shell.md): the five tabs, the web's and the Mac's shell.
-  - [Home](docs/product/inicio.md): the home tab (Início), its shortcuts, pinned groups.
+  - [Home](docs/product/home-tab.md): the home tab (Início), its shortcuts, pinned groups.
   - [Activity and push notifications](docs/product/activity-and-push.md)
   - [Groups](docs/product/groups-home.md): the list, its actions, grid, search, list and detail.
   - [Profile](docs/product/profile.md): the profile, photos, appearance, in-app update.
