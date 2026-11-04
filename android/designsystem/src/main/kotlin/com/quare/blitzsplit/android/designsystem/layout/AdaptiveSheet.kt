@@ -16,9 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 
 private val landscapeSheetMaxWidth = 640.dp
-private val dialogMaxWidth = 560.dp
+private val alertDialogMaxWidth = 560.dp
 private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape)
 
 /*
@@ -26,7 +27,9 @@ private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape
  * tablet and an upright foldable, the book's right half with the screen under the scrim. The dialog adds the top space
  * the sheet's drag handle gives, and the title TalkBack says as it opens, as Material's dialogs do. The defaults are
  * that look; the options only keep what the sheets drawn before it already did: a dialog on fewer devices
- * (usesDialog), a sheet that opens half way or narrower lying down, the dialog's shape and color, and no pane title.
+ * (usesDialog), a sheet that opens half way or narrower lying down, a narrower dialog (dialogMaxWidth only narrows it:
+ * with a title the pane stays within 560dp), its shape and color, a dialog that a tap outside leaves open (the sheet's
+ * scrim still closes it), and no pane title.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,8 +39,10 @@ fun AdaptiveSheet(
     usesDialog: Boolean = rememberFoldLayout().formFactor !in phoneFormFactors,
     skipPartiallyExpanded: Boolean = true,
     sheetMaxWidth: Dp = landscapeSheetMaxWidth,
+    dialogMaxWidth: Dp = alertDialogMaxWidth,
     dialogShape: Shape = RoundedCornerShape(28.dp),
     dialogColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    dialogDismissOnClickOutside: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     if (!usesDialog) {
@@ -55,12 +60,18 @@ fun AdaptiveSheet(
             content()
         }
     } else {
-        val pane = title?.let { Modifier.alertDialogPane(it) } ?: Modifier.widthIn(max = dialogMaxWidth)
-        FoldDialog(onDismissRequest = onDismissRequest) {
+        val pane = title?.let { Modifier.alertDialogPane(it) } ?: Modifier
+        FoldDialog(
+            onDismissRequest = onDismissRequest,
+            properties = DialogProperties(
+                dismissOnClickOutside = dialogDismissOnClickOutside,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
             Surface(
                 shape = dialogShape,
                 color = dialogColor,
-                modifier = pane,
+                modifier = pane.widthIn(max = dialogMaxWidth),
             ) {
                 Box(modifier = Modifier.padding(top = 24.dp)) { content() }
             }
