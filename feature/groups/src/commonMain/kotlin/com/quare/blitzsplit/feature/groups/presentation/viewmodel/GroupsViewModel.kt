@@ -375,11 +375,8 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnDisplayChanged -> layoutPicker.changeDisplay(event.display)
 
-            is GroupsUiEvent.OnGridSizeChanged -> {
-                if (layoutPicker.isNewGridSize(event.size)) {
-                    trackEvent("groups_grid_size_changed", mapOf("size" to event.size))
-                }
-                layoutPicker.changeGridSize(event.size)
+            is GroupsUiEvent.OnGridSizeChanged -> if (layoutPicker.changeGridSize(event.size)) {
+                trackEvent("groups_grid_size_changed", mapOf("size" to event.size))
             }
 
             GroupsUiEvent.OnSearchOpened -> openSearch()

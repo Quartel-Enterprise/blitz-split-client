@@ -203,9 +203,8 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnPinToggled -> {
-                if (screen.hasGroup) trackEvent("group_pin_toggled", mapOf("is_pinned" to !screen.isPinned))
-                screen.togglePin()
+            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()?.let { isPinned ->
+                trackEvent("group_pin_toggled", mapOf("is_pinned" to isPinned))
             }
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()

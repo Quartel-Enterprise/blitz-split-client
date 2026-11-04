@@ -296,10 +296,12 @@ class EditGroupViewModel(
         updateForm { it.copy(currency = currency) }
     }
 
+    // Why: counted only while the question still asks, but it closes in any case, as it always did.
     private fun dismissSimplifyDebts() {
         val state = uiState.value
-        if (state.simplifyConfirmation == null || state.isChangingSimplifyDebts) return
-        trackEvent("simplify_debts_cancelled", emptyMap())
+        if (state.simplifyConfirmation != null && !state.isChangingSimplifyDebts) {
+            trackEvent("simplify_debts_cancelled", emptyMap())
+        }
         uiState.update { it.copy(simplifyConfirmation = null) }
     }
 
