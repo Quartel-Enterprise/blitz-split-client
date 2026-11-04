@@ -244,6 +244,9 @@ struct MacReceiptRow: View {
                                 model.send(SplitBillUiEventOnReceiptItemsClicked.shared)
                             }
                             .buttonStyle(.link)
+                            // Why: two links side by side, the items and "Remover", read apart.
+                            Text(verbatim: "·")
+                                .foregroundStyle(.secondary)
                         }
                     default:
                         EmptyView()
