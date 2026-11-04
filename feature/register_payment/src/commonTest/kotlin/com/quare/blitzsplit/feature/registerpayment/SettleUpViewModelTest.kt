@@ -62,6 +62,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SettleUpViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var route: Route.SettleUp
@@ -478,6 +479,114 @@ class SettleUpViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN Carla owes you across three groups WHEN confirming by cash THEN tracks one payment per group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "payment_confirm_clicked" to emptyMap(),
+                    paymentRecorded(
+                        method = SettlementMethod.CASH,
+                        way = "form",
+                        kind = PaymentKind.RECEIVED,
+                        groups = 3,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe Carla across two groups WHEN tapping Marcar como pago THEN tracks two payments by Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaKeys = listOf(carlaPhoneKey),
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "payment_mark_as_paid_clicked" to emptyMap(),
+                    paymentRecorded(
+                        method = SettlementMethod.PIX,
+                        way = "mark_as_paid",
+                        kind = PaymentKind.PAID,
+                        groups = 2,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a settling up in one group WHEN paying part of it THEN tracks one partial payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = listOf(owes(FLORIPA, CARLA_FLORIPA, ME_FLORIPA, 9_840L)))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("40,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "payment_confirm_clicked" to emptyMap(),
+                    paymentRecorded(
+                        method = SettlementMethod.PIX,
+                        way = "form",
+                        kind = PaymentKind.RECEIVED,
+                        groups = 1,
+                        isFullDebt = false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the settling up fails WHEN confirming THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        settlements.recordError = IllegalStateException("disk full")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf<Pair<String, Map<String, Any>>>("payment_confirm_clicked" to emptyMap()), trackedEvents)
+    }
+
+    private fun paymentRecorded(
+        method: SettlementMethod,
+        way: String,
+        kind: PaymentKind,
+        groups: Int,
+        isFullDebt: Boolean,
+    ): Pair<String, Map<String, Any>> = "payment_recorded" to mapOf(
+        "method" to method,
+        "way" to way,
+        "kind" to kind,
+        "groups" to groups,
+        "is_full_debt" to isFullDebt,
+    )
+
     private val carlaPhoneKey = PaymentKey(
         id = "carla-phone",
         type = PaymentKeyType.PHONE,
@@ -595,6 +704,7 @@ class SettleUpViewModelTest {
         }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { NOW },

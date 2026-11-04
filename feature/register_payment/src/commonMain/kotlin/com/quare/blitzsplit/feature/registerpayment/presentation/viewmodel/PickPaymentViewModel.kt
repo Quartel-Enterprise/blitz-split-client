@@ -1,19 +1,18 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentGroup
@@ -35,7 +34,8 @@ class PickPaymentViewModel(
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeGroupsMoney: ObserveGroupsMoney,
     observeFirstDownload: ObserveFirstDownload,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<PickPaymentUiEvent>(trackEvent) {
     val uiState: StateFlow<PickPaymentUiState>
         field = MutableStateFlow(
             PickPaymentUiState(
@@ -59,7 +59,7 @@ class PickPaymentViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: PickPaymentUiEvent) {
+    override fun handleEvent(event: PickPaymentUiEvent) {
         when (event) {
             // Why: in this sheet's place, so the form's back goes to Início, which shows its notice.
             is PickPaymentUiEvent.OnPairClicked -> if (isOnTop() && hasPair(event)) {
@@ -120,14 +120,4 @@ class PickPaymentViewModel(
         group: Group,
         memberId: String,
     ): PaymentPerson? = group.members.firstOrNull { it.id == memberId }?.let(::toPerson)
-
-    private fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
-        id = member.id,
-        name = member.name,
-        initials = Initials.ofMember(member.name, member.isMe),
-        avatarColor = member.avatarColor,
-        photoUrl = member.photoUrl,
-        isMe = member.isMe,
-        personKey = PeopleBalances.keyOf(member),
-    )
 }

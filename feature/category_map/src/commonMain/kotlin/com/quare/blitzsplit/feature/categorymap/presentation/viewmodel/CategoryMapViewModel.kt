@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
@@ -18,7 +17,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -53,7 +54,8 @@ class CategoryMapViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<CategoryMapUiEvent>(trackEvent) {
     val uiState: StateFlow<CategoryMapUiState>
         field = MutableStateFlow(
             CategoryMapUiState(
@@ -86,6 +88,7 @@ class CategoryMapViewModel(
         saveGroupCategory = saveGroupCategory,
         deleteGroupCategory = deleteGroupCategory,
         emit = uiAction::emit,
+        trackEvent = trackEvent,
     )
 
     init {
@@ -127,7 +130,7 @@ class CategoryMapViewModel(
         categoryEditing.observe(observeExpenses)
     }
 
-    fun onEvent(event: CategoryMapUiEvent) {
+    override fun handleEvent(event: CategoryMapUiEvent) {
         if (!uiState.value.canEditMap && event.isMapChange()) return
         when (event) {
             CategoryMapUiEvent.OnBackClicked -> leave()
@@ -136,18 +139,39 @@ class CategoryMapViewModel(
 
             is CategoryMapUiEvent.OnQueryChanged -> uiState.update { it.copy(query = event.text) }
 
-            is CategoryMapUiEvent.OnSectionSelected -> uiState.update { it.copy(selectedCategoryId = event.categoryId) }
+            // Why: the section shown, which is the first one until a pick, never the id stored (null until then).
+            is CategoryMapUiEvent.OnSectionSelected -> {
+                if (event.categoryId != uiState.value.selectedSection
+                        ?.category
+                        ?.id
+                ) {
+                    trackEvent("category_map_section_selected", emptyMap())
+                }
+                uiState.update { it.copy(selectedCategoryId = event.categoryId) }
+            }
 
-            is CategoryMapUiEvent.OnAddTermClicked -> openNewTerm(event.categoryId, event.text)
+            is CategoryMapUiEvent.OnAddTermClicked -> {
+                trackEvent("category_term_add_clicked", mapOf("entry" to event.entry))
+                openNewTerm(event.categoryId, event.text)
+            }
 
-            is CategoryMapUiEvent.OnTermClicked -> openTerm(event.key)
+            is CategoryMapUiEvent.OnTermClicked -> {
+                trackEvent("category_term_clicked", emptyMap())
+                openTerm(event.key)
+            }
 
             is CategoryMapUiEvent.OnTermTextChanged -> uiState.update { state ->
                 state.copy(termForm = state.termForm?.copy(text = event.text.take(MAX_TYPED)))
             }
 
-            CategoryMapUiEvent.OnTermCategoryClicked -> uiState.update { state ->
-                state.copy(termForm = state.termForm?.let { it.copy(isPickingCategory = !it.isPickingCategory) })
+            // Why: the same row opens and closes the picker; only opening it counts.
+            CategoryMapUiEvent.OnTermCategoryClicked -> {
+                if (uiState.value.termForm?.isPickingCategory == false) {
+                    trackEvent("category_term_category_clicked", emptyMap())
+                }
+                uiState.update { state ->
+                    state.copy(termForm = state.termForm?.let { it.copy(isPickingCategory = !it.isPickingCategory) })
+                }
             }
 
             is CategoryMapUiEvent.OnTermCategoryPicked -> uiState.update { state ->
@@ -160,7 +184,10 @@ class CategoryMapViewModel(
                 )
             }
 
-            CategoryMapUiEvent.OnTermSaveClicked -> saveTerm()
+            CategoryMapUiEvent.OnTermSaveClicked -> {
+                trackEvent("category_term_save_clicked", emptyMap())
+                saveTerm()
+            }
 
             CategoryMapUiEvent.OnTermRemoveClicked -> removeTerm()
 
@@ -178,11 +205,20 @@ class CategoryMapViewModel(
 
             CategoryMapUiEvent.OnRemovedNoticeDismissed -> uiState.update { it.copy(removedTerm = null) }
 
-            CategoryMapUiEvent.OnRestoreClicked -> uiState.update { it.copy(isRestoreConfirmOpen = true) }
+            CategoryMapUiEvent.OnRestoreClicked -> {
+                trackEvent("category_map_restore_clicked", emptyMap())
+                uiState.update { it.copy(isRestoreConfirmOpen = true) }
+            }
 
-            CategoryMapUiEvent.OnRestoreConfirmed -> restore()
+            CategoryMapUiEvent.OnRestoreConfirmed -> {
+                if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_confirmed", emptyMap())
+                restore()
+            }
 
-            CategoryMapUiEvent.OnRestoreDismissed -> uiState.update { it.copy(isRestoreConfirmOpen = false) }
+            CategoryMapUiEvent.OnRestoreDismissed -> {
+                if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_cancelled", emptyMap())
+                uiState.update { it.copy(isRestoreConfirmOpen = false) }
+            }
 
             is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
         }
@@ -260,6 +296,7 @@ class CategoryMapViewModel(
                 categoryId = form.categoryId,
                 replacedTerm = form.original?.term,
             ).onSuccess {
+                trackEvent("category_term_saved", mapOf("is_new" to (form.original == null)))
                 uiState.update {
                     it.copy(
                         termForm = null,
@@ -289,6 +326,7 @@ class CategoryMapViewModel(
 
     private fun undoRemove() {
         val term = uiState.value.removedTerm ?: return
+        trackEvent("category_term_undo_clicked", emptyMap())
         uiState.update { it.copy(removedTerm = null) }
         viewModelScope.launch {
             saveCategoryTerm(

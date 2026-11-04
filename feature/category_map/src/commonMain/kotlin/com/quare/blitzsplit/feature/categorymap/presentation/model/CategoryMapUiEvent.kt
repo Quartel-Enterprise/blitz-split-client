@@ -1,9 +1,90 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface CategoryMapUiEvent : UiEvent {
+sealed interface CategoryMapUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: a back, which each platform also does its own way: where it went is its screen view.
+            OnBackClicked -> EventAnalytics.NotTracked
+
+            OnProfileClicked -> EventAnalytics.Automatic("category_map_profile_clicked")
+
+            // Why: typed letter by letter; what was typed shows in the term saved.
+            is OnQueryChanged,
+            is OnTermTextChanged,
+            is OnCategoryNameChanged,
+            -> EventAnalytics.NotTracked
+
+            // Why: only another category, never the one picked, as the Mac's list reports only a change.
+            is OnSectionSelected -> EventAnalytics.Manual("category_map_section_selected")
+
+            // Why: the map's changes count only once it is read, since until then the screen takes none.
+            is OnAddTermClicked -> EventAnalytics.Manual("category_term_add_clicked")
+
+            is OnTermClicked -> EventAnalytics.Manual("category_term_clicked")
+
+            // Why: only the tap that opens the picker, since the same row closes it again.
+            OnTermCategoryClicked -> EventAnalytics.Manual("category_term_category_clicked")
+
+            is OnTermCategoryPicked -> EventAnalytics.Automatic("category_term_category_picked")
+
+            // Why: the tap, then the term once it is saved.
+            OnTermSaveClicked -> EventAnalytics.Manual(setOf("category_term_save_clicked", "category_term_saved"))
+
+            OnTermRemoveClicked -> EventAnalytics.Automatic("category_term_remove_clicked")
+
+            // Why: only an undo that brings a term back, once the map is read.
+            OnUndoRemoveClicked -> EventAnalytics.Manual("category_term_undo_clicked")
+
+            // Why: a close or a notice that went away, which each platform also does its own way.
+            OnTermDismissed,
+            OnRemovedNoticeDismissed,
+            OnCategoryFormDismissed,
+            -> EventAnalytics.NotTracked
+
+            OnRestoreClicked -> EventAnalytics.Manual("category_map_restore_clicked")
+
+            // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
+            OnRestoreConfirmed -> EventAnalytics.Manual("category_map_restore_confirmed")
+
+            OnRestoreDismissed -> EventAnalytics.Manual("category_map_restore_cancelled")
+
+            is OnNewCategoryClicked -> EventAnalytics.Manual("category_create_clicked")
+
+            is OnEditCategoryClicked -> EventAnalytics.Manual("category_edit_clicked")
+
+            is OnCategoryGroupPicked -> EventAnalytics.Automatic(
+                "category_group_picked",
+                mapOf("source" to CATEGORY_MAP_SOURCE),
+            )
+
+            is OnCategoryParentPicked -> EventAnalytics.Automatic(
+                "category_parent_picked",
+                mapOf("source" to CATEGORY_MAP_SOURCE),
+            )
+
+            is OnCategoryIconPicked -> EventAnalytics.Automatic(
+                "category_icon_picked",
+                mapOf("icon" to icon, "source" to CATEGORY_MAP_SOURCE),
+            )
+
+            // Why: the tap, then the category once it is saved.
+            OnCategoryFormSaveClicked -> EventAnalytics.Manual(setOf("category_save_clicked", "category_saved"))
+
+            OnCategoryDeleteClicked -> EventAnalytics.Automatic(
+                "category_delete_clicked",
+                mapOf("source" to CATEGORY_MAP_SOURCE),
+            )
+
+            // Why: only an answer to a question still open and not deleting yet.
+            OnCategoryDeleteConfirmed -> EventAnalytics.Manual("category_delete_confirmed")
+
+            OnCategoryDeleteDismissed -> EventAnalytics.Manual("category_delete_cancelled")
+        }
+
     data object OnBackClicked : CategoryMapUiEvent
 
     // Why: "Abrir Perfil" from "Seu mapa fica só neste aparelho" (9.1h).
@@ -25,7 +106,15 @@ sealed interface CategoryMapUiEvent : UiEvent {
     data class OnAddTermClicked(
         val categoryId: String?,
         val text: String,
-    ) : CategoryMapUiEvent
+    ) : CategoryMapUiEvent {
+        // Why: where it was added from, as category_term_add_clicked's entry says.
+        val entry: String
+            get() = when {
+                categoryId != null -> "category"
+                text.isNotBlank() -> "search"
+                else -> "map"
+            }
+    }
 
     data class OnTermClicked(
         val key: String,

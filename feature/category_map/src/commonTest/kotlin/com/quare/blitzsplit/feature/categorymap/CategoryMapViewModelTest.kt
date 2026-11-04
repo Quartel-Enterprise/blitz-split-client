@@ -49,6 +49,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CategoryMapViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var terms: FakeCategoryTermRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: CategoryMapViewModel
@@ -421,6 +422,480 @@ class CategoryMapViewModelTest {
             assertTrue(state.sections.isNotEmpty())
         }
 
+    @Test
+    fun `GIVEN the map open WHEN Abrir Perfil THEN sends the profile clicked event`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnProfileClicked)
+
+        // Then
+        assertEquals(listOf("category_map_profile_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN picking a category beside its terms THEN sends the section selected without it`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(AppCategory.TRANSPORT.key))
+
+            // Then
+            assertEquals(listOf("category_map_section_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Transporte picked beside its terms WHEN picking it again THEN sends nothing more`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(AppCategory.TRANSPORT.key))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(AppCategory.TRANSPORT.key))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN nothing picked yet WHEN picking the first category shown beside its terms THEN sends nothing`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val shown = viewModel.uiState.value.selectedSection
+                ?.category
+                ?.id
+                .orEmpty()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(shown))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the term category picker open WHEN tapping its category again to close it THEN sends nothing`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the map not read yet WHEN adding a term or restoring THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(holdsGroupCategories = true)
+
+        // When
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN Adicionar termo from the bar THEN sends the add clicked from the map`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            listOf("category_term_add_clicked" to mapOf<String, Any>("entry" to "map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN Adicionar termo em Transporte THEN sends the add clicked from the category`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                CategoryMapUiEvent.OnAddTermClicked(
+                    categoryId = AppCategory.TRANSPORT.key,
+                    text = "",
+                ),
+            )
+
+            // Then
+            assertEquals(
+                listOf("category_term_add_clicked" to mapOf<String, Any>("entry" to "category")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a search that found nothing WHEN adding pizzaria THEN sends the add clicked from the search`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnQueryChanged("pizzaria"))
+
+            // When
+            viewModel.onEvent(
+                CategoryMapUiEvent.OnAddTermClicked(
+                    categoryId = null,
+                    text = "pizzaria",
+                ),
+            )
+
+            // Then
+            assertEquals(
+                listOf("category_term_add_clicked" to mapOf<String, Any>("entry" to "search")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the map open WHEN a term is tapped THEN sends the term clicked without it`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+
+        // Then
+        assertEquals(listOf("category_term_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Editar termo open WHEN tapping its category THEN sends the term category clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+
+        // Then
+        assertEquals(listOf("category_term_category_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the term category picker open WHEN picking Festas THEN sends the term category picked without it`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryPicked(AppCategory.LEISURE_PARTIES.key))
+
+            // Then
+            assertEquals(listOf("category_term_category_picked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Editar termo open WHEN Remover do mapa THEN sends the remove clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("cafe"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermRemoveClicked)
+
+        // Then
+        assertEquals(listOf("category_term_remove_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a term removed WHEN Desfazer THEN sends the undo clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("cafe"))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermRemoveClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnUndoRemoveClicked)
+
+        // Then
+        assertEquals(listOf("category_term_undo_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new term typed WHEN saving THEN sends the save clicked then the term saved as new`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.FOOD_RESTAURANT.key, ""))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged("pizzaria"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_term_save_clicked" to emptyMap(),
+                "category_term_saved" to mapOf<String, Any>("is_new" to true),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a term renamed WHEN saving THEN sends the term saved as not new`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("feira"))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged("hortifruti"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_term_save_clicked" to emptyMap(),
+                "category_term_saved" to mapOf<String, Any>("is_new" to false),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a term moved to Festas in Editar termo WHEN saving THEN sends the term saved as not new`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryPicked(AppCategory.LEISURE_PARTIES.key))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_term_save_clicked" to emptyMap(),
+                "category_term_saved" to mapOf<String, Any>("is_new" to false),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN saving a new term THEN sends only the save clicked`() = runTest {
+        // Given
+        prepareScenario(saveError = IllegalStateException("disk full"))
+        viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.FOOD_RESTAURANT.key, "pizzaria"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+
+        // Then
+        assertEquals(listOf("category_term_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new term of one letter WHEN saving THEN sends only the save clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.FOOD_RESTAURANT.key, ""))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged("a"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+
+        // Then
+        assertEquals(listOf("category_term_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertNull(terms.changes.value.firstOrNull { it.term == "a" })
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN Restaurar padrao THEN sends the restore clicked`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf("category_map_restore_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the restore question open WHEN confirming THEN sends the restore confirmed`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreConfirmed)
+
+        // Then
+        assertEquals(listOf("category_map_restore_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the restore confirmed WHEN the Apple alert dismisses itself THEN sends nothing more`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the restore question open WHEN dismissing it THEN sends the restore cancelled`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
+
+        // Then
+        assertEquals(listOf("category_map_restore_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no restore question open WHEN confirming THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no restore question open WHEN dismissing THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN tapping back THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the map open WHEN typing a search THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnQueryChanged("ub"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Novo termo open WHEN typing the term THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged("pizzaria"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Novo termo open WHEN closing it THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a term removed WHEN its notice goes away THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("cafe"))
+        viewModel.onEvent(CategoryMapUiEvent.OnTermRemoveClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnRemovedNoticeDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private fun changeOf(
         term: String,
         categoryId: String?,
@@ -448,10 +923,11 @@ class CategoryMapViewModelTest {
         status: AccountStatus = AccountStatus.LocalOnly,
         firstDownload: FirstDownloadProgress? = null,
         holdsGroupCategories: Boolean = false,
+        saveError: Throwable? = null,
     ) {
         this.firstDownload.value = firstDownload
         groupCategories.value = if (holdsGroupCategories) null else Unit
-        terms = FakeCategoryTermRepository(initialChanges = changes)
+        terms = FakeCategoryTermRepository(initialChanges = changes).also { it.saveError = saveError }
         val categories = FakeCategoryRepository(
             initialGroupCategories = listOf(
                 GroupCategory(
@@ -471,6 +947,7 @@ class CategoryMapViewModelTest {
             it.navigate(Route.CategoryMap)
         }
         viewModel = CategoryMapViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },

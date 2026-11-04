@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -26,7 +25,9 @@ import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.personProfileRouteOf
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -66,7 +67,8 @@ class GroupStatsViewModel(
     observeCategoryTree: ObserveCategoryTree,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeFirstDownload: ObserveFirstDownload,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GroupStatsUiEvent>(trackEvent) {
     val uiState: StateFlow<GroupStatsUiState>
         field = MutableStateFlow(
             GroupStatsUiState(
@@ -169,7 +171,7 @@ class GroupStatsViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: GroupStatsUiEvent) {
+    override fun handleEvent(event: GroupStatsUiEvent) {
         when (event) {
             GroupStatsUiEvent.OnBackClicked -> leave()
 
@@ -179,12 +181,16 @@ class GroupStatsViewModel(
 
             is GroupStatsUiEvent.OnCustomPeriodPicked -> pickCustomPeriod(event.startMillis, event.endMillis)
 
-            is GroupStatsUiEvent.OnPeopleViewPicked -> {
+            is GroupStatsUiEvent.OnPeopleViewPicked -> if (event.view != peopleView) {
+                trackEvent("stats_people_view_selected", mapOf("view" to event.view))
                 peopleView = event.view
                 render()
             }
 
-            is GroupStatsUiEvent.OnChartTypePicked -> keepChart(chart.copy(chartType = event.chartType))
+            is GroupStatsUiEvent.OnChartTypePicked -> if (event.chartType != chart.chartType) {
+                trackEvent("stats_chart_type_selected", mapOf("chart_type" to event.chartType))
+                keepChart(chart.copy(chartType = event.chartType))
+            }
 
             is GroupStatsUiEvent.OnGrainPicked -> pickGrain(event.grain)
 
@@ -230,7 +236,9 @@ class GroupStatsViewModel(
         val calculator = createCalculatorOrNull() ?: return
         val span = calculator.findSpanOrNull(period, customSpan) ?: return
         if (!calculator.isEnabled(grain, span)) return
-        if (!span.canSplitBy(grain)) period = StatsPeriod.ALL
+        val switchesPeriod = !span.canSplitBy(grain)
+        if (grain != chart.grain || switchesPeriod) trackEvent("stats_grain_selected", mapOf("grain" to grain))
+        if (switchesPeriod) period = StatsPeriod.ALL
         keepChart(chart.copy(grain = grain))
     }
 
