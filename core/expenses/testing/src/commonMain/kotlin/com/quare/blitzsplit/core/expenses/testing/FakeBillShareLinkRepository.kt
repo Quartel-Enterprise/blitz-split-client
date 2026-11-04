@@ -34,6 +34,11 @@ class FakeBillShareLinkRepository(
     val disabledExpenseIds = mutableListOf<String>()
     val loadedCodes = mutableListOf<String>()
     val postedComments = mutableListOf<PostedSharedBillComment>()
+    val editedComments = mutableListOf<Triple<String, String, String>>()
+    val deletedComments = mutableListOf<Pair<String, String>>()
+    val likedComments = mutableListOf<Triple<String, String, Boolean>>()
+    var changeOutcome = SharedBillComment.POSTED
+    var changeError: Throwable? = null
 
     var commentOutcome = SharedBillComment.POSTED
     var getLinkError: Throwable? = null
@@ -98,6 +103,35 @@ class FakeBillShareLinkRepository(
         commentError?.let { return Result.failure(it) }
         postedComments += PostedSharedBillComment(code, id, body, threadId, replyToName, authorName)
         return Result.success(commentOutcome)
+    }
+
+    override suspend fun editSharedBillComment(
+        code: String,
+        id: String,
+        body: String,
+    ): Result<SharedBillComment> {
+        changeError?.let { return Result.failure(it) }
+        editedComments += Triple(code, id, body)
+        return Result.success(changeOutcome)
+    }
+
+    override suspend fun deleteSharedBillComment(
+        code: String,
+        id: String,
+    ): Result<SharedBillComment> {
+        changeError?.let { return Result.failure(it) }
+        deletedComments += code to id
+        return Result.success(changeOutcome)
+    }
+
+    override suspend fun likeSharedBillComment(
+        code: String,
+        id: String,
+        isLiked: Boolean,
+    ): Result<SharedBillComment> {
+        changeError?.let { return Result.failure(it) }
+        likedComments += Triple(code, id, isLiked)
+        return Result.success(changeOutcome)
     }
 
     // Why: what a comment through a link sent to the server.

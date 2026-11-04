@@ -3,6 +3,9 @@ package com.quare.blitzsplit.core.expenses.data.datasource
 import com.quare.blitzsplit.core.expenses.data.dto.BillLinkResultDto
 import com.quare.blitzsplit.core.expenses.data.dto.BillShareLinkDto
 import com.quare.blitzsplit.core.expenses.data.dto.CommentOnSharedBillParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.DeleteSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.EditSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.LikeSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillStatusDto
 
@@ -21,4 +24,10 @@ interface BillShareLinkRemoteDataSource {
     suspend fun fetchSharedBill(code: String): SharedBillDto
 
     suspend fun createSharedBillComment(params: CommentOnSharedBillParamsDto): SharedBillStatusDto
+
+    suspend fun editSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto
+
+    suspend fun deleteSharedBillComment(params: DeleteSharedBillCommentParamsDto): SharedBillStatusDto
+
+    suspend fun likeSharedBillComment(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto
 }

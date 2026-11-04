@@ -35,6 +35,10 @@ class AddBillCommentUseCase(
                 body = body.trim(),
                 viaLink = false,
                 postedAt = currentTimeMillis(),
+                editedAt = null,
+                isDeleted = false,
+                isMine = false,
+                likes = emptyList(),
                 isPending = true,
             ),
         )

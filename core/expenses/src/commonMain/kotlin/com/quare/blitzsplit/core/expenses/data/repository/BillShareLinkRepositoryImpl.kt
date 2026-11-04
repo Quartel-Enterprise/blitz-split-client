@@ -3,6 +3,9 @@ package com.quare.blitzsplit.core.expenses.data.repository
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillShareLinkRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.dto.CommentOnSharedBillParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.DeleteSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.EditSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.LikeSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.mapper.SharedBillMapper
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
@@ -68,5 +71,28 @@ class BillShareLinkRepositoryImpl(
             authorName = authorName,
         )
         mapper.toDomain(remote.createSharedBillComment(params))
+    }
+
+    override suspend fun editSharedBillComment(
+        code: String,
+        id: String,
+        body: String,
+    ): Result<SharedBillComment> = suspendRunCatching {
+        mapper.toDomain(remote.editSharedBillComment(EditSharedBillCommentParamsDto(code, id, body)))
+    }
+
+    override suspend fun deleteSharedBillComment(
+        code: String,
+        id: String,
+    ): Result<SharedBillComment> = suspendRunCatching {
+        mapper.toDomain(remote.deleteSharedBillComment(DeleteSharedBillCommentParamsDto(code, id)))
+    }
+
+    override suspend fun likeSharedBillComment(
+        code: String,
+        id: String,
+        isLiked: Boolean,
+    ): Result<SharedBillComment> = suspendRunCatching {
+        mapper.toDomain(remote.likeSharedBillComment(LikeSharedBillCommentParamsDto(code, id, isLiked)))
     }
 }

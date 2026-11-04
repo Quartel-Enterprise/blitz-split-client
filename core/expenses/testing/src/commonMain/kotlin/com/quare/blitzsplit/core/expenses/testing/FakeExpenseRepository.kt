@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.testing
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ServerBill
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,10 @@ class FakeExpenseRepository(
     val updatedAts = mutableListOf<Long>()
     val deletedIds = mutableListOf<String>()
     val deletedAts = mutableListOf<Long>()
+
+    // Why: what the server keeps of a bill this device may not have, by id; absent reads as out of the user's groups.
+    val serverBills = mutableMapOf<String, ServerBill>()
+    var serverBillError: Throwable? = null
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     val downloadedGroupIds = mutableListOf<String>()
@@ -126,4 +131,7 @@ class FakeExpenseRepository(
     // Why: downloadedGroupIds counts the group once its rows are written, not when they are read.
     override suspend fun fetchGroupExpenses(groupId: String): Result<suspend () -> Unit> =
         pullError?.let { Result.failure(it) } ?: Result.success { downloadedGroupIds += groupId }
+
+    override suspend fun fetchServerBill(id: String): Result<ServerBill?> =
+        serverBillError?.let { Result.failure(it) } ?: Result.success(serverBills[id])
 }

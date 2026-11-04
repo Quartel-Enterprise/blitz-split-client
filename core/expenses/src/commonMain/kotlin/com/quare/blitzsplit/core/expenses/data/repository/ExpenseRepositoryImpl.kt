@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapper
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ServerBill
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -104,5 +105,9 @@ class ExpenseRepositoryImpl(
             ownerUserId = userId,
             serverExpenseIds = remoteExpenses.map { it.id }.toSet(),
         )
+    }
+
+    override suspend fun fetchServerBill(id: String): Result<ServerBill?> = suspendRunCatching {
+        remote.fetchServerBill(id)?.let { ServerBill(groupId = it.groupId, isDeleted = it.isDeleted) }
     }
 }

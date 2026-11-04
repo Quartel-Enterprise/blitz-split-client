@@ -75,14 +75,21 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOff
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DisableBillShareLink
+import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.LikeSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadSharedBill
+import com.quare.blitzsplit.core.expenses.domain.usecase.LocateBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
@@ -118,14 +125,21 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTea
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DisableBillShareLinkUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillShareLinkUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadSharedBillUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LocateBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
@@ -222,6 +236,10 @@ val expenseModule = module {
     singleOf(::BillCommentRepositoryImpl).bind<BillCommentRepository>()
     factoryOf(::ObserveBillCommentsUseCase).bind<ObserveBillComments>()
     factoryOf(::AddBillCommentUseCase).bind<AddBillComment>()
+    factoryOf(::EditBillCommentUseCase).bind<EditBillComment>()
+    factoryOf(::DeleteBillCommentUseCase).bind<DeleteBillComment>()
+    factoryOf(::LikeBillCommentUseCase).bind<LikeBillComment>()
+    factoryOf(::LocateBillUseCase).bind<LocateBill>()
     singleOf(::RoomBillAttachmentLocalDataSource).bind<BillAttachmentLocalDataSource>()
     singleOf(::SupabaseBillAttachmentRemoteDataSource).bind<BillAttachmentRemoteDataSource>()
     singleOf(::BillAttachmentMapperImpl).bind<BillAttachmentMapper>()
@@ -239,6 +257,9 @@ val expenseModule = module {
     factoryOf(::DisableBillShareLinkUseCase).bind<DisableBillShareLink>()
     factoryOf(::LoadSharedBillUseCase).bind<LoadSharedBill>()
     factoryOf(::CommentOnSharedBillUseCase).bind<CommentOnSharedBill>()
+    factoryOf(::EditSharedBillCommentUseCase).bind<EditSharedBillComment>()
+    factoryOf(::DeleteSharedBillCommentUseCase).bind<DeleteSharedBillComment>()
+    factoryOf(::LikeSharedBillCommentUseCase).bind<LikeSharedBillComment>()
     singleOf(::SupabaseReceiptRemoteDataSource).bind<ReceiptRemoteDataSource>()
     singleOf(::ReceiptMapperImpl).bind<ReceiptMapper>()
     singleOf(::ReceiptRepositoryImpl).bind<ReceiptRepository>()
