@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -26,7 +25,9 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
@@ -60,7 +61,8 @@ class MembersViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<MembersUiEvent>(trackEvent) {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
             MembersUiState(
@@ -114,7 +116,7 @@ class MembersViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: MembersUiEvent) {
+    override fun handleEvent(event: MembersUiEvent) {
         when (event) {
             // Why: over the group, or in the place of its bill the Mac draws beside it.
             MembersUiEvent.OnShareClicked -> navigator.openFromGroupScreen(

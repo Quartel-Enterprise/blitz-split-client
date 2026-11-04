@@ -44,6 +44,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class InviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -1023,6 +1024,7 @@ class InviteViewModelTest {
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val connectivityNeverAnswers = MutableSharedFlow<Boolean>()
         viewModel = InviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode { text ->

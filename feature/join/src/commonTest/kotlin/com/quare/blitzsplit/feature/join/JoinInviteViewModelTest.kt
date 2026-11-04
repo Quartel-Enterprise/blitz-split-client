@@ -44,6 +44,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class JoinInviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var invites: FakeInviteRepository
     private lateinit var groups: FakeGroupRepository
@@ -1528,6 +1529,7 @@ class JoinInviteViewModelTest {
             navigator.navigate(route)
         }
         viewModel = JoinInviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),

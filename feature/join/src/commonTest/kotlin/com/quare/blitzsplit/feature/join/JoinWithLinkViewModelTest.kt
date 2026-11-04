@@ -26,6 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class JoinWithLinkViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: JoinWithLinkViewModel
@@ -1034,6 +1035,7 @@ class JoinWithLinkViewModelTest {
             navigator.navigate(route)
         }
         viewModel = JoinWithLinkViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
         )

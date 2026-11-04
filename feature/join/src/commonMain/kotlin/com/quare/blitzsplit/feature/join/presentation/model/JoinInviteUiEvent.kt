@@ -1,8 +1,22 @@
 package com.quare.blitzsplit.feature.join.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface JoinInviteUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "join_invite"
+
+sealed interface JoinInviteUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnJoinClicked -> EventAnalytics.Automatic("join_invite_join_clicked")
+            OnNotMeClicked -> EventAnalytics.Automatic("join_invite_not_me_clicked")
+            OnNotNowClicked -> EventAnalytics.Automatic("join_invite_not_now_clicked")
+            OnRetryClicked -> EventAnalytics.Automatic("retry_clicked", mapOf("source" to SOURCE))
+            OnGoHomeClicked -> EventAnalytics.Automatic("join_invite_go_home_clicked")
+            OnScanAnotherClicked -> EventAnalytics.Automatic("join_invite_scan_another_clicked")
+        }
+
     /*
      * Why: "Entrar no grupo", which goes on to "Quem é você no grupo?"; on a personal invite "Entrar como Carla", which
      * joins straight in as that member.

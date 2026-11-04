@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.join.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Invite
@@ -12,7 +11,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
@@ -31,7 +32,8 @@ class JoinPickViewModel(
     private val getInvite: GetInvite,
     private val joinGroup: JoinGroup,
     private val checkMemberName: CheckMemberName,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<JoinPickUiEvent>(trackEvent) {
     val uiState: StateFlow<JoinPickUiState>
         field = MutableStateFlow(
             JoinPickUiState(
@@ -61,7 +63,7 @@ class JoinPickViewModel(
         viewModelScope.launch { load() }
     }
 
-    fun onEvent(event: JoinPickUiEvent) {
+    override fun handleEvent(event: JoinPickUiEvent) {
         when (event) {
             JoinPickUiEvent.OnBackClicked -> leave()
             is JoinPickUiEvent.OnMemberSelected -> select(event.memberId)

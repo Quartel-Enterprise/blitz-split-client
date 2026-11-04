@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.join.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.Invite
@@ -15,7 +14,9 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteStatus
@@ -44,7 +45,8 @@ class JoinInviteViewModel(
     private val observeGroup: ObserveGroup,
     private val syncNow: SyncNow,
     private val connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<JoinInviteUiEvent>(trackEvent) {
     val uiState: StateFlow<JoinInviteUiState>
         field = MutableStateFlow(
             JoinInviteUiState(
@@ -102,7 +104,7 @@ class JoinInviteViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: JoinInviteUiEvent) {
+    override fun handleEvent(event: JoinInviteUiEvent) {
         when (event) {
             JoinInviteUiEvent.OnJoinClicked -> if (uiState.value.isPersonal) joinAsPersonalMember() else pick()
             JoinInviteUiEvent.OnNotMeClicked -> pick()

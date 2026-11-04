@@ -39,6 +39,7 @@ import kotlin.test.assertTrue
 
 // Why: "Trocar link" and its confirmation; the rest of Convidar is in InviteViewModelTest.
 class InviteChangeLinkViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -528,6 +529,7 @@ class InviteChangeLinkViewModelTest {
             }
         }
         viewModel = InviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode { text ->

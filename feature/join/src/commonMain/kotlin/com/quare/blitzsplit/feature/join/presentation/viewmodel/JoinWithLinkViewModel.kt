@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.feature.join.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
@@ -24,7 +25,8 @@ import kotlin.time.Duration.Companion.seconds
 class JoinWithLinkViewModel(
     private val route: Route.JoinWithLink,
     private val navigator: Navigator,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<JoinWithLinkUiEvent>(trackEvent) {
     val uiState: StateFlow<JoinWithLinkUiState>
         field = MutableStateFlow(
             JoinWithLinkUiState(
@@ -47,7 +49,7 @@ class JoinWithLinkViewModel(
     private val invalidQrDuration = 3.seconds
     private var invalidQrTimer: Job? = null
 
-    fun onEvent(event: JoinWithLinkUiEvent) {
+    override fun handleEvent(event: JoinWithLinkUiEvent) {
         when (event) {
             is JoinWithLinkUiEvent.OnCameraAccessChanged -> uiState.update {
                 it.copy(

@@ -1,8 +1,34 @@
 package com.quare.blitzsplit.feature.invite.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface InviteUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "invite"
+
+sealed interface InviteUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: a close, which each platform also does its own way (a swipe, back): where it went is its screen view.
+            OnCloseClicked -> EventAnalytics.NotTracked
+
+            OnCopyClicked -> EventAnalytics.Automatic("invite_link_copy_clicked", mapOf("source" to SOURCE))
+
+            OnShareClicked -> EventAnalytics.Automatic("invite_link_share_clicked", mapOf("source" to SOURCE))
+
+            OnSeeWhoJoinedClicked -> EventAnalytics.Automatic("invite_see_who_joined_clicked")
+
+            OnRetryClicked -> EventAnalytics.Automatic("retry_clicked", mapOf("source" to SOURCE))
+
+            OnGoToGroupClicked -> EventAnalytics.Automatic("invite_go_to_group_clicked")
+
+            OnChangeLinkClicked -> EventAnalytics.Automatic("invite_link_change_clicked")
+
+            OnChangeLinkConfirmed -> EventAnalytics.Automatic("invite_link_change_confirmed")
+
+            OnChangeLinkDismissed -> EventAnalytics.Automatic("invite_link_change_cancelled")
+        }
+
     data object OnCloseClicked : InviteUiEvent
 
     data object OnCopyClicked : InviteUiEvent

@@ -36,6 +36,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class JoinPickViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var invites: FakeInviteRepository
     private lateinit var navigator: BackStackNavigator
@@ -797,6 +798,7 @@ class JoinPickViewModelTest {
             it.navigate(Route.JoinPick(CODE))
         }
         viewModel = JoinPickViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = Route.JoinPick(CODE),
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),

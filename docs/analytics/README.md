@@ -133,11 +133,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup` |
-| `photo_crop_turned` | `source` (`profile_setup`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup` |
-| `photo_crop_mirrored` | `source` (`profile_setup`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup` |
-| `photo_crop_confirmed` | `source` (`profile_setup`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` |
-| `photo_crop_dismissed` | `source` (`profile_setup`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group` |
+| `photo_crop_turned` | `source` (`profile_setup`, `create_group`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
+| `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
@@ -150,3 +150,49 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_confirm_toggled` | `is_checked` | Excluir conta's confirmation checkbox | `:feature:delete_account` |
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |
+| `retry_clicked` | `source` (`invite`, `join_invite`) | "Tentar de novo" after a failure | `:feature:invite`, `:feature:join` |
+| `invite_link_copy_clicked` | `source` (`invite`) | Convidar's Copiar | `:feature:invite` |
+| `invite_link_share_clicked` | `source` (`invite`) | Convidar's "Compartilhar link" | `:feature:invite` |
+| `invite_see_who_joined_clicked` | none | Convidar's "Ver quem já entrou" | `:feature:invite` |
+| `invite_go_to_group_clicked` | none | Convidar's "Ir para o grupo" | `:feature:invite` |
+| `invite_link_change_clicked` | none | "Trocar link", which asks first | `:feature:invite` |
+| `invite_link_change_confirmed` | none | "Trocar o link do convite?" confirmed | `:feature:invite` |
+| `invite_link_change_cancelled` | none | "Trocar o link do convite?" closed without confirming | `:feature:invite` |
+| `members_share_clicked` | none | Membros' Compartilhar, which opens Convidar | `:feature:members` |
+| `member_add_clicked` | none | "Adicionar pessoa" | `:feature:members` |
+| `person_clicked` | `source` (`members`) | A person's row, which opens their profile | `:feature:members` |
+| `member_rename_clicked` | none | A member's "Renomear" | `:feature:members` |
+| `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
+| `member_editor_save_clicked` | none | The name editor's Salvar, adding or renaming | `:feature:members` |
+| `personal_invite_clicked` | none | "Convite pessoal para Carla" | `:feature:members` |
+| `personal_invite_copy_clicked` | none | The personal invite's Copiar | `:feature:members` |
+| `personal_invite_share_clicked` | none | "Compartilhar com Carla" | `:feature:members` |
+| `member_remove_clicked` | none | "Remover do grupo", which asks first | `:feature:members` |
+| `member_remove_confirmed` | none | "Remover Carla do grupo?" confirmed | `:feature:members` |
+| `member_remove_cancelled` | none | "Remover Carla do grupo?" closed without confirming | `:feature:members` |
+| `member_release_clicked` | none | "Liberar nome", which asks first | `:feature:members` |
+| `member_release_confirmed` | none | "Liberar o nome Carla?" confirmed | `:feature:members` |
+| `member_release_cancelled` | none | "Liberar o nome Carla?" closed without confirming | `:feature:members` |
+| `join_invite_join_clicked` | none | Convite's "Entrar no grupo" (or "Entrar como Carla" on a personal invite) | `:feature:join` |
+| `join_invite_not_me_clicked` | none | A personal invite's "Não sou Carla" | `:feature:join` |
+| `join_invite_not_now_clicked` | none | Convite's "Agora não" or its ✕ | `:feature:join` |
+| `join_invite_go_home_clicked` | none | "Ir para o início", for an invite that can't open | `:feature:join` |
+| `join_invite_scan_another_clicked` | none | "Escanear outro QR", for an invite no longer valid | `:feature:join` |
+| `join_pick_member_selected` | none | A name picked in "Quem é você no grupo?" | `:feature:join` |
+| `join_pick_join_clicked` | none | "Entrar como Bruno" | `:feature:join` |
+| `join_pick_not_in_list_clicked` | none | "Não estou na lista" | `:feature:join` |
+| `join_pick_new_member_confirmed` | none | "Entrar no grupo" with a new name | `:feature:join` |
+| `camera_settings_clicked` | `source` (`join_with_link`) | "Abrir configurações" with the camera denied | `:feature:join` |
+| `join_with_link_torch_clicked` | none | The reader's flashlight | `:feature:join` |
+| `join_with_link_paste_clicked` | none | The reader's Colar | `:feature:join` |
+| `join_with_link_clear_clicked` | none | The link field cleared | `:feature:join` |
+| `join_with_link_open_clicked` | none | "Abrir convite", for a link typed | `:feature:join` |
+| `group_color_clicked` | `source` (`create_group`) | The group's avatar tapped, stepping its color | `:feature:create_group` |
+| `group_shape_and_color_clicked` | `source` (`create_group`) | Android's "Trocar forma e cor do grupo" | `:feature:create_group` |
+| `photo_removed` | `source` (`create_group`) | "Remover foto" | `:feature:create_group` |
+| `group_type_selected` | `type`, `source` (`create_group`) | A group type picked | `:feature:create_group` |
+| `group_currency_selected` | `currency`, `source` (`create_group`) | A currency picked | `:feature:create_group` |
+| `create_group_add_member_clicked` | none | Novo grupo's "Adicionar" (or the keyboard's Done) | `:feature:create_group` |
+| `create_group_remove_member_clicked` | none | A person taken off the new group | `:feature:create_group` |
+| `create_group_create_clicked` | none | Novo grupo's Criar, also when the form can't create yet | `:feature:create_group` |
+| `group_created` | `type`, `currency`, `members` (how many, you included), `has_photo` | A new group saved | `:feature:create_group` |

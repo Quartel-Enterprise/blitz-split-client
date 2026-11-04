@@ -36,6 +36,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class CreateGroupViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var groups: FakeGroupRepository
@@ -1583,6 +1584,7 @@ class CreateGroupViewModelTest {
         groups = FakeGroupRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.CreateGroup) }
         viewModel = CreateGroupViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             createGroup = CreateGroupUseCase(groups) { 1_000L },
             checkMemberName = CheckMemberNameUseCase(),

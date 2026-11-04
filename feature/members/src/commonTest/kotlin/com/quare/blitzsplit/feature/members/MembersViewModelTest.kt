@@ -58,6 +58,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class MembersViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2877,6 +2878,7 @@ class MembersViewModelTest {
             ).also { it.navigate(Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)) }
         val observeGroup = ObserveGroupUseCase(groups)
         viewModel = MembersViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
             navigator = navigator,
             checkMemberName = CheckMemberNameUseCase(),

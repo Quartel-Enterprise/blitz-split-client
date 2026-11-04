@@ -1,8 +1,55 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface MembersUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "members"
+
+sealed interface MembersUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnShareClicked -> EventAnalytics.Automatic("members_share_clicked")
+
+            OnAddClicked -> EventAnalytics.Automatic("member_add_clicked")
+
+            is OnMemberClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+
+            is OnRenameClicked -> EventAnalytics.Automatic("member_rename_clicked")
+
+            is OnPersonalInviteClicked -> EventAnalytics.Automatic("personal_invite_clicked")
+
+            // Why: the sheet closed, which each platform also does its own way (a swipe, a tap outside).
+            OnPersonalInviteDismissed -> EventAnalytics.NotTracked
+
+            OnPersonalLinkCopyClicked -> EventAnalytics.Automatic("personal_invite_copy_clicked")
+
+            OnPersonalLinkShareClicked -> EventAnalytics.Automatic("personal_invite_share_clicked")
+
+            is OnRemoveClicked -> EventAnalytics.Automatic("member_remove_clicked")
+
+            OnRemoveConfirmed -> EventAnalytics.Automatic("member_remove_confirmed")
+
+            OnRemoveDismissed -> EventAnalytics.Automatic("member_remove_cancelled")
+
+            is OnReleaseClicked -> EventAnalytics.Automatic("member_release_clicked")
+
+            OnReleaseConfirmed -> EventAnalytics.Automatic("member_release_confirmed")
+
+            OnReleaseDismissed -> EventAnalytics.Automatic("member_release_cancelled")
+
+            is OnDraftChanged -> EventAnalytics.NotTracked
+
+            is OnSuggestionClicked -> EventAnalytics.Automatic(
+                "member_name_suggestion_clicked",
+                mapOf("source" to SOURCE),
+            )
+
+            OnSaveClicked -> EventAnalytics.Automatic("member_editor_save_clicked")
+
+            OnEditorDismissed -> EventAnalytics.NotTracked
+        }
+
     // Why: "Compartilhar" on the link card opens "Convidar", with the QR code.
     data object OnShareClicked : MembersUiEvent
 
