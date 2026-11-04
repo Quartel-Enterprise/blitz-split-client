@@ -210,7 +210,7 @@ private struct GroupsSummaryCards: View {
                 label: "To get back",
                 amounts: GroupsCopy.amounts(summary.totals) { $0.toReceiveMinor },
                 caption: String(localized: "in \(Int(summary.toReceiveGroupCount)) groups"),
-                color: Palette.accent,
+                color: Palette.positive,
                 isEnabled: summary.canOpenToReceive,
             ) {
                 send(GroupsUiEventOnToReceiveClicked.shared)

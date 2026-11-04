@@ -41,7 +41,7 @@ internal fun netWordOf(amountMinor: Long): String = stringResource(
     },
 )
 
-// Why: what you owe in the error color, what you get back in the primary one, zero in the quiet one.
+// Why: what you owe in the error color, what you get back in the positive green, zero in the quiet one.
 @Composable
 internal fun netColorOf(amountMinor: Long): Color = if (amountMinor == 0L) {
     MaterialTheme.colorScheme.onSurfaceVariant

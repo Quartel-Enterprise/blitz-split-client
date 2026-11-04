@@ -253,7 +253,7 @@ private struct ContactsSummaryCard: View {
                 tile(
                     "Owe you",
                     amountMinor: total.toReceiveMinor,
-                    color: Palette.accent,
+                    color: Palette.positive,
                     event: ContactsUiEventOnOwedToYouClicked.shared,
                 )
             }

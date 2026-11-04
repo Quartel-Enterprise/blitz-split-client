@@ -316,7 +316,8 @@ private struct PaymentTag: View {
     }
 }
 
-/// "+R$ 600,00" in the accent, "−R$ 118,00" in the negative color; nothing when the bill leaves this person out.
+/// "+R$ 600,00" in the positive green, "−R$ 118,00" in the negative color, zero muted; nothing when the bill leaves
+/// this person out.
 private struct MyBalanceText: View {
     let minor: Int64?
     let currency: GroupCurrency
@@ -325,7 +326,7 @@ private struct MyBalanceText: View {
         if let minor {
             Text(verbatim: currency.formatSigned(minor))
                 .monospacedDigit()
-                .foregroundStyle(minor >= 0 ? Palette.accent : Palette.negative)
+                .foregroundStyle(Palette.balance(minor))
         }
     }
 }

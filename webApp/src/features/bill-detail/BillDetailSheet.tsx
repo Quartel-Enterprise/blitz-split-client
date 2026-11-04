@@ -326,7 +326,7 @@ function paidText(payers: JsBillPayer[]): string {
 function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
   const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
   const word = balance < 0 ? t('billDetail_myPartOwe') : balance > 0 ? t('billDetail_myPartGetBack') : t('billDetail_myPartSettled')
-  const tone = balance < 0 ? 'text-destructive' : balance > 0 ? 'text-primary' : 'text-muted-foreground'
+  const tone = balance < 0 ? 'text-destructive' : balance > 0 ? 'text-positive' : 'text-muted-foreground'
   const noteText = note ? myPartNoteText(note, money) : null
   return (
     <div className="flex flex-col gap-1 rounded-xl border bg-card px-4 py-3.5">

@@ -394,7 +394,7 @@ struct BalanceCard: View {
     }
 
     private var netColor: Color {
-        if balance.netMinor > 0 { return Palette.accent }
+        if balance.netMinor > 0 { return Palette.positive }
         if balance.netMinor < 0 { return Palette.negative }
         return .primary
     }

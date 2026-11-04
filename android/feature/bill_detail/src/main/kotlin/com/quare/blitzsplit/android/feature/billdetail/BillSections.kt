@@ -34,6 +34,7 @@ import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
@@ -140,7 +141,7 @@ internal fun MyPartCard(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = when {
-                        balance > 0 -> MaterialTheme.colorScheme.primary
+                        balance > 0 -> positiveAmountColor()
                         balance < 0 -> MaterialTheme.colorScheme.error
                         else -> MaterialTheme.colorScheme.onSurface
                     },

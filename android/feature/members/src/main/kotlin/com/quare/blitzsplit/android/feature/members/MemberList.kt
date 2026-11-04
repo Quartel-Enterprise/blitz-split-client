@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
@@ -166,7 +167,7 @@ private fun MemberBalanceText(
         fontWeight = FontWeight.SemiBold,
         color = when {
             balance.isSettled -> MaterialTheme.colorScheme.outline
-            net > 0 -> MaterialTheme.colorScheme.primary
+            net > 0 -> positiveAmountColor()
             net < 0 -> MaterialTheme.colorScheme.error
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },

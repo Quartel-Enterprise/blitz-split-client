@@ -232,7 +232,7 @@ private struct GroupsSummaryCard: View {
         SummaryButton(
             label: "To get back",
             amounts: GroupsCopy.amounts(summary.totals) { $0.toReceiveMinor },
-            color: Palette.accent,
+            color: Palette.positive,
             isEnabled: summary.canOpenToReceive,
             hint: "See who owes you",
         ) {

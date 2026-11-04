@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 
 /*
@@ -116,7 +117,10 @@ fun PersonGroupsCard(
     }
 }
 
-// Why: what you owe in the error color, what you get back in the primary one, as the home's rows.
+// Why: what you owe in the error color, what you get back in the positive green, as the home's rows.
 @Composable
-fun amountColorOf(amountMinor: Long): Color =
-    if (amountMinor < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+fun amountColorOf(amountMinor: Long): Color = if (amountMinor < 0) {
+    MaterialTheme.colorScheme.error
+} else {
+    positiveAmountColor()
+}

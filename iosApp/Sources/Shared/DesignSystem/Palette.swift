@@ -11,6 +11,8 @@ import AppKit
 enum Palette {
     static let accent = Color("AccentColor")
     static let onAccent = Color(light: 0xFFFFFF, dark: 0x00344E)
+    /// What comes back to the device's user: a positive net, "owes you", "to get back".
+    static let positive = Color(light: 0x006C4C, dark: 0x6EDBAA)
     static let negative = Color(light: 0x8E4D31, dark: 0xFFB599)
     /// The viewfinder's corners on a QR that isn't an invite: the camera stays dark, so it is the dark error in both.
     static let cameraError = Color(light: 0xFFB599, dark: 0xFFB599)
@@ -28,10 +30,10 @@ enum Palette {
     /// The selected segment of a custom segmented control, as the system draws its thumb.
     static let segmentThumb = Color(light: 0xFFFFFF, dark: 0x636366)
 
-    /// A balance or a share in minor units: the accent for what comes back, the negative color for what is owed,
-    /// secondary at zero.
+    /// A balance or a share in minor units: the positive green for what comes back, the negative color for what is
+    /// owed, secondary at zero.
     static func balance(_ minor: Int64) -> Color {
-        if minor > 0 { return accent }
+        if minor > 0 { return positive }
         if minor < 0 { return negative }
         return .secondary
     }

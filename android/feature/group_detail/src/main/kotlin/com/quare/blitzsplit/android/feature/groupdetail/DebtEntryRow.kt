@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
@@ -89,7 +90,7 @@ internal fun DebtEntryRow(
                     fontWeight = FontWeight.SemiBold,
                     color = when (debt.kind) {
                         DebtKind.YOU_OWE -> MaterialTheme.colorScheme.error
-                        DebtKind.OWES_YOU -> MaterialTheme.colorScheme.primary
+                        DebtKind.OWES_YOU -> positiveAmountColor()
                         DebtKind.BETWEEN_OTHERS -> MaterialTheme.colorScheme.onSurfaceVariant
                     },
                 )

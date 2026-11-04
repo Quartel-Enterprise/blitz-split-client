@@ -52,6 +52,7 @@ import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
@@ -502,10 +503,10 @@ internal fun balanceLabelOf(kind: GroupBalanceKind): Int = when (kind) {
     GroupBalanceKind.EVERYONE_SETTLED -> R.string.groups_balance_everyone_settled
 }
 
-// Why: the accent for what comes back, the error tone for what you owe, plain for zero.
+// Why: the positive green for what comes back, the error tone for what you owe, plain for zero.
 @Composable
 internal fun amountColorOf(netMinor: Long): Color = when {
-    netMinor > 0 -> MaterialTheme.colorScheme.primary
+    netMinor > 0 -> positiveAmountColor()
     netMinor < 0 -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
 }

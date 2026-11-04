@@ -33,9 +33,9 @@ export function paymentMethodLabel(code: string): string {
   return t(methodLabels[code] ?? 'payment_methodOther')
 }
 
-/** The color of a signed balance: positive to get back, destructive to owe, muted at zero. */
+/** The color of a signed balance: positive (green) to get back, destructive to owe, muted at zero. */
 export function balanceTone(minor: number): string {
-  return minor > 0 ? 'text-primary' : minor < 0 ? 'text-destructive' : 'text-muted-foreground'
+  return minor > 0 ? 'text-positive' : minor < 0 ? 'text-destructive' : 'text-muted-foreground'
 }
 
 /**

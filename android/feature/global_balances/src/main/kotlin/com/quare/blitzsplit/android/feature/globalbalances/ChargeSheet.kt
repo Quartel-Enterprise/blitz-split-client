@@ -36,6 +36,7 @@ import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -176,7 +177,7 @@ private fun ChargeHeader(
     } else {
         charge.groupNames.firstOrNull().orEmpty()
     }
-    // Why: where the amount goes in "Te deve %1$s · %2$s", so it can be drawn in the primary color.
+    // Why: where the amount goes in "Te deve %1$s · %2$s", so it can be drawn in the positive green.
     val amountSlot = "\u0000"
     val owes = stringResource(R.string.global_balances_charge_owes, amountSlot, groups)
     val amount = money.toText(charge.amountMinor)
@@ -205,7 +206,7 @@ private fun ChargeHeader(
                     append(owes.substringBefore(amountSlot))
                     withStyle(
                         SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = positiveAmountColor(),
                             fontWeight = FontWeight.Bold,
                         ),
                     ) {

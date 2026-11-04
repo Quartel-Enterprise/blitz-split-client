@@ -174,7 +174,7 @@ function SummaryCard({ presenter, state }: { presenter: ContactsPresenter; state
   const amount = (minor: number) => formatMoney(minor, total.currency, total.fractionDigits)
   const totals = [
     { label: t('contacts_youOwe'), minor: total.toPayMinor, tone: 'text-destructive', onClick: () => presenter.openYouOwe() },
-    { label: t('contacts_owedToYou'), minor: total.toReceiveMinor, tone: 'text-primary', onClick: () => presenter.openOwedToYou() },
+    { label: t('contacts_owedToYou'), minor: total.toReceiveMinor, tone: 'text-positive', onClick: () => presenter.openOwedToYou() },
   ]
   return (
     <section aria-label={t('contacts_summary')} className="flex items-center gap-2 rounded-xl border bg-card p-2">
