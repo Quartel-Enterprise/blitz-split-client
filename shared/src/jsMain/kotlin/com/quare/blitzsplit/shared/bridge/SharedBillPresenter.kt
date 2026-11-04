@@ -157,7 +157,11 @@ class SharedBillPresenter(
 
     // Why: the browser's sign in leaves the page, so the link is kept for when it comes back (BlitzSplitWeb).
     fun signIn() {
-        keepSharedBillForSignIn(SharedBillLink.of(sharedBillRoute.code))
+        // Why: a link shared at a comment opens at it again once the browser comes back.
+        val link = sharedBillRoute.commentId
+            ?.let { commentId -> SharedBillLink.of(sharedBillRoute.code, commentId) }
+            ?: SharedBillLink.of(sharedBillRoute.code)
+        keepSharedBillForSignIn(link)
         viewModel.onEvent(SharedBillUiEvent.OnSignInClicked)
     }
 

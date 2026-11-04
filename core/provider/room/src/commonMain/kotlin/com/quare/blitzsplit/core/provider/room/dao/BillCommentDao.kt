@@ -2,9 +2,9 @@ package com.quare.blitzsplit.core.provider.room.dao
 
 import androidx.room3.Dao
 import androidx.room3.Insert
-import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
+import androidx.room3.Upsert
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -77,7 +77,8 @@ interface BillCommentDao {
     @Query("SELECT id FROM bill_comment WHERE pendingSync = 1")
     suspend fun getPendingIds(): List<String>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    // Why: an upsert, never REPLACE, whose delete and insert would cascade to the comment's likes (pending ones too).
+    @Upsert
     suspend fun upsertComments(entities: List<BillCommentEntity>)
 
     // Why: only the version that went up; one edited again meanwhile still waits.

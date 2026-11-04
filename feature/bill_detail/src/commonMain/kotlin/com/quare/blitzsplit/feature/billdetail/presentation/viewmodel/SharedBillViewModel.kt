@@ -260,6 +260,10 @@ class SharedBillViewModel(
                 ) {
                     stopEditing()
                 }
+                // Why: "Curtidas" closed by itself once its comment or last like went; a later like never reopens it.
+                if (uiState.value.likesCommentId != null && uiState.value.likesComment == null) {
+                    uiState.update { it.copy(likesCommentId = null) }
+                }
             }
         }
     }

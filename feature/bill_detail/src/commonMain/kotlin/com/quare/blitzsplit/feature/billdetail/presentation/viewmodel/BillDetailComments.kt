@@ -73,6 +73,10 @@ internal class BillDetailComments(
         // Why: the comment being edited was deleted on another device meanwhile, so the edit has nothing to save.
         val editingId = uiState.value.editingCommentId
         if (editingId != null && threads.findComment(editingId)?.canChange != true) stopEditing()
+        // Why: "Curtidas" closed by itself once the comment or its last like went, so a later like never reopens it.
+        if (uiState.value.likesCommentId != null && uiState.value.likesComment == null) {
+            uiState.update { it.copy(likesCommentId = null) }
+        }
     }
 
     /*
