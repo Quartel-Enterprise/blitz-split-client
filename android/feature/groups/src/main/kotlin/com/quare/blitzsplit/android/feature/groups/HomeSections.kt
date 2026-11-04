@@ -142,8 +142,8 @@ internal fun HomePeopleSection(
 }
 
 /*
- * Why: a face, what tapping it settles up (4.5) or records as received (6.5). A guest, a name nobody joined as, wears
- * the crossed-out phone, and a long press says they get no notice.
+ * Why: a face, which opens the person's profile (an ex-member's settling up, 4.5). A guest, a name nobody joined as,
+ * wears the crossed-out phone, and a long press says they get no notice.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,6 +158,8 @@ private fun PersonFaceItem(
     val owesYou = person.netMinor > 0
     val description = stringResource(
         when {
+            person.name == null && owesYou -> R.string.groups_home_former_owes_you_description
+            person.name == null -> R.string.groups_home_former_you_owe_description
             owesYou && person.isGuest -> R.string.groups_home_guest_owes_you_description
             owesYou -> R.string.groups_home_person_owes_you_description
             person.isGuest -> R.string.groups_home_guest_you_owe_description
@@ -219,16 +221,7 @@ private fun PersonFaceItem(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
         tooltip = {
             PlainTooltip {
-                Text(
-                    stringResource(
-                        if (owesYou) {
-                            R.string.groups_home_guest_owes_you_tip
-                        } else {
-                            R.string.groups_home_guest_you_owe_tip
-                        },
-                        name,
-                    ),
-                )
+                Text(stringResource(R.string.groups_home_guest_tip, name))
             }
         },
         state = rememberTooltipState(),

@@ -275,7 +275,7 @@ export function BillBody({
           <span className="text-[32px] leading-10 font-semibold tracking-tight tabular-nums">{money(state.totalMinor)}</span>
           <PersonButton
             onOpen={onPerson && lonePayer ? () => onPerson(lonePayer.memberId) : null}
-            className="-mx-1 flex items-center gap-2 self-start px-1 text-sm text-muted-foreground"
+            className="flex items-center gap-2 self-start text-sm text-muted-foreground"
           >
             {faces.length > 0 && (
               <span aria-hidden className="flex shrink-0">
@@ -370,7 +370,7 @@ function ShareRow({ row, money, onOpen }: { row: JsBillShareRow; money: Money; o
           : null
   return (
     <li className="flex">
-      <PersonButton onOpen={onOpen} className="-mx-1 flex min-h-12 min-w-0 flex-1 items-center gap-3 px-1 py-2">
+      <PersonButton onOpen={onOpen} className="flex min-h-12 min-w-0 flex-1 items-center gap-3 py-2">
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>

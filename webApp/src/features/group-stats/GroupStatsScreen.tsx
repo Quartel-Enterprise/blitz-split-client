@@ -371,7 +371,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
             <PersonButton
               key={person.memberId}
               onOpen={person.opensProfile ? () => presenter.openPerson(person.memberId) : null}
-              className="-m-1 flex items-center gap-2.5 p-1"
+              className="flex items-center gap-2.5"
             >
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
               <span className="w-[108px] shrink-0 truncate font-medium">{name}</span>

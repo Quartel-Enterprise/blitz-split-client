@@ -103,7 +103,7 @@ function Comment({
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-          <PersonButton onOpen={openAuthor} className="-mx-1 px-1 text-sm font-medium">
+          <PersonButton onOpen={openAuthor} className="text-sm font-medium">
             {name}
           </PersonButton>
           {/* Why: written by someone out of the group through the bill's open link. */}

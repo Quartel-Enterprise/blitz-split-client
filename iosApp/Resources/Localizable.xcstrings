@@ -794,24 +794,24 @@
         }
       }
     },
-    "%@ is a guest without the app. Click to note what they paid you; they get no notice." : {
+    "%@ is a guest without the app. Click to open their profile; they get no notice." : {
       "comment" : "Home on the Mac: a guest's hover; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app. Clique para anotar o que ele te pagou; ele não recebe aviso."
+            "value" : "%@ é convidado e não tem o app. Clique para abrir o perfil; ele não recebe aviso."
           }
         }
       }
     },
-    "%@ is a guest without the app. Tap to note what they paid you; they get no notice." : {
+    "%@ is a guest without the app. Tap to open their profile; they get no notice." : {
       "comment" : "Home: a guest's long press; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app. Toque para anotar o que ele te pagou; ele não recebe aviso."
+            "value" : "%@ é convidado e não tem o app. Toque para abrir o perfil; ele não recebe aviso."
           }
         }
       }
