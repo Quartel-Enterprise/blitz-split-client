@@ -342,6 +342,8 @@ internal fun SplitBillUiState.withSplitAmong(
             )
         },
         defaultSplit = billDefault,
+        // Why: another category falls under another default, so "Usar como padrão do grupo" asked for its old one goes.
+        splitAsDefault = splitAsDefault?.takeIf { it.exceptionCategoryId == billDefault?.exceptionCategoryId },
     )
 }
 

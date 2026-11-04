@@ -76,6 +76,8 @@ export function splitFactText(fact: JsSplitFact, money: Money, place: FactPlace 
       return t(count === 1 ? 'split_sharesOne' : 'split_sharesOther', { count, amount })
     case 'group-default':
       return t('split_groupDefault')
+    case 'new-group-default':
+      return t('split_newGroupDefault')
     case 'items':
       return t(count === 1 ? 'split_factItemsOne' : 'split_factItemsOther', { count })
     case 'loose-items':
@@ -111,9 +113,14 @@ export function splitStatus(editor: JsSplitEditor, money: Money): SplitStatus {
  * "R$ 62,40 cada · Diego não participa", the line under Rachar conta's "Divisão", "Padrão do grupo" first while the
  * bill keeps the group's default split.
  */
-export function splitSummary(facts: JsSplitFact[], money: Money, exceptionName?: string): string {
+export function splitSummary(facts: JsSplitFact[], money: Money, exceptionName?: string, newExceptionName?: string): string {
   return facts
-    .map((fact) => (fact.kind === 'group-default' && exceptionName ? t('splitBill_groupException', { name: exceptionName }) : splitFactText(fact, money, 'summary')))
+    .map((fact) => {
+      if (fact.kind === 'group-default' && exceptionName) return t('splitBill_groupException', { name: exceptionName })
+      // Why: "Vira a exceção do grupo para Mercado" in place of "Vira o padrão do grupo" (beta feedback 11).
+      if (fact.kind === 'new-group-default' && newExceptionName) return t('split_newGroupException', { name: newExceptionName })
+      return splitFactText(fact, money, 'summary')
+    })
     .join(' · ')
 }
 

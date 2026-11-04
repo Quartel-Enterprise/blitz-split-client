@@ -69,6 +69,8 @@ internal fun factTextOf(
 
     SplitFact.GroupDefault -> stringResource(R.string.split_bill_group_default)
 
+    SplitFact.NewGroupDefault -> stringResource(R.string.split_bill_new_group_default)
+
     is SplitFact.Items -> pluralStringResource(R.plurals.split_bill_fact_items, fact.count, fact.count)
 
     is SplitFact.LooseItems -> pluralStringResource(R.plurals.split_bill_items_loose, fact.count, fact.count)

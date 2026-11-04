@@ -13,20 +13,17 @@ import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
-import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -64,6 +61,7 @@ class SplitBillViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
     private val offerCategoryTeach: OfferCategoryTeach,
+    private val saveSplitAsDefault: SaveSplitAsDefault,
     readReceipt: ReadReceipt,
     attachBillImage: AttachBillImage,
     navigator: Navigator,
@@ -72,10 +70,7 @@ class SplitBillViewModel(
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
-    observeCategoryTree: ObserveCategoryTree,
-    observeCategoryMap: ObserveCategoryMap,
-    saveGroupCategory: SaveGroupCategory,
-    deleteGroupCategory: DeleteGroupCategory,
+    categoryUseCases: BillCategoryUseCases,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -140,11 +135,11 @@ class SplitBillViewModel(
     private val categoryEditing = CategoryEditing(
         uiState = uiState,
         scope = viewModelScope,
-        observeCategoryTree = observeCategoryTree,
+        observeCategoryTree = categoryUseCases.observeCategoryTree,
         observeExpenses = observeExpenses,
-        observeCategoryMap = observeCategoryMap,
-        saveGroupCategory = saveGroupCategory,
-        deleteGroupCategory = deleteGroupCategory,
+        observeCategoryMap = categoryUseCases.observeCategoryMap,
+        saveGroupCategory = categoryUseCases.saveGroupCategory,
+        deleteGroupCategory = categoryUseCases.deleteGroupCategory,
         emit = { uiAction.emit(it) },
         onCategoryChanged = ::showCategorySplit,
     )
@@ -295,7 +290,15 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnPartsDecreased -> editSplit { it.withPartsChanged(event.memberId, -1) }
 
-            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
+            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update {
+                it
+                    .withSplitEditorReset()
+                    .withSplitAsDefaultSettled()
+            }
+
+            SplitBillUiEvent.OnSplitAsDefaultToggled -> uiState.update {
+                it.copy(isSplitEditorAsDefaultChecked = !it.isSplitEditorAsDefaultChecked)
+            }
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
@@ -487,13 +490,13 @@ class SplitBillViewModel(
 
     private fun editSplit(change: (SplitEditor) -> SplitEditor) {
         uiState.update { state ->
-            state.copy(splitEditor = state.splitEditor?.let(change)?.withShares())
+            state.copy(splitEditor = state.splitEditor?.let(change)?.withShares()).withSplitAsDefaultSettled()
         }
     }
 
     // Why: a bill split by its items opens Dividir straight on "Itens da conta".
     private fun openSplit() {
-        uiState.update { it.copy(splitEditor = it.split) }
+        uiState.update { it.withSplitOpened() }
         if (uiState.value.split.mode == SplitMode.ITEMS) items.open()
     }
 
@@ -503,12 +506,7 @@ class SplitBillViewModel(
         items.forget()
         hasPickedSplit = true
         amountAnchor = if (editor.mode == SplitMode.AMOUNT) editor.totalMinor to editor.entries else null
-        uiState.update {
-            it.copy(
-                split = editor,
-                splitEditor = null,
-            )
-        }
+        uiState.update { it.withSplitConfirmed(editor) }
     }
 
     private fun save() {
@@ -535,6 +533,7 @@ class SplitBillViewModel(
                     spentAt = state.spentAt,
                 ).map { id ->
                     receipt.attachTo(id, state)
+                    saveSplitAsDefault.saveOf(state)
                     state.teachOfferOrNull(id)
                 }
             } else {

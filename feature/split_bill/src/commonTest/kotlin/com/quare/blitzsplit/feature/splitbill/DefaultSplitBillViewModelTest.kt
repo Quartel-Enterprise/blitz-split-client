@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -19,10 +20,14 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -32,12 +37,18 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitAsDefault
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitFact
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -58,7 +69,9 @@ class DefaultSplitBillViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
+    private val actions = mutableListOf<SplitBillUiAction>()
 
     @BeforeTest
     fun setUp() {
@@ -301,6 +314,719 @@ class DefaultSplitBillViewModelTest {
             assertFalse(state.showsDefaultSplitNotice)
         }
 
+    @Test
+    fun `GIVEN Dividir still on the default WHEN it opens THEN Usar como padrao do grupo is not offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+            assertFalse(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+        }
+
+    @Test
+    fun `GIVEN Dividir on the default WHEN changing the parts THEN Usar como padrao do grupo is offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+
+            // Then
+            assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN a group without a default WHEN Dividir opens on Igual among everyone THEN it is not offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN a group without a default WHEN leaving Ana out of Igual THEN it is offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPersonToggled(ANA))
+
+        // Then
+        assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+    }
+
+    @Test
+    fun `GIVEN a group without a default WHEN switching to Partes at 1 each THEN it is not offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+            // Then
+            assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN a group without a default WHEN giving someone 2 parts THEN it is offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+
+        // Then
+        assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+    }
+
+    @Test
+    fun `GIVEN the box checked WHEN the split goes back to splitting equally THEN it unchecks`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPartsDecreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+
+            // Then
+            assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+            assertFalse(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+        }
+
+    @Test
+    fun `GIVEN percentages that do not add up WHEN typing them THEN it is still offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.PERCENT))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(PIERRE, "60"))
+
+        // Then
+        assertFalse(
+            viewModel.uiState.value.splitEditor
+                ?.addsUp ?: true,
+        )
+        assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+    }
+
+    @Test
+    fun `GIVEN a group without a default WHEN switching to Valores THEN it is not offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.AMOUNT))
+
+        // Then
+        assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+    }
+
+    @Test
+    fun `GIVEN Dividir changed to Partes WHEN opening Itens THEN it is not offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.ITEMS))
+
+        // Then
+        assertNotNull(viewModel.uiState.value.itemsEditor)
+        assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+    }
+
+    @Test
+    fun `GIVEN a saved bill being edited WHEN changing its split in Dividir THEN it is not offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                expenseId = BILL_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+            // Then
+            assertFalse(viewModel.uiState.value.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill already becomes the default WHEN Dividir is closed THEN it is not offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.splitEditor)
+            assertFalse(state.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the box unchecked WHEN toggling it THEN it is checked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+    }
+
+    @Test
+    fun `GIVEN the box checked WHEN toggling it again THEN it is unchecked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home)
+        fillBill()
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+        viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+        // Then
+        assertFalse(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+    }
+
+    @Test
+    fun `GIVEN the box checked on a changed split WHEN tapping Pronto THEN the bill becomes the group default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(SplitAsDefault(exceptionCategoryId = null), state.splitAsDefault)
+            assertNull(state.splitAsDefaultException)
+            assertTrue(state.splitSummary.contains(SplitFact.NewGroupDefault))
+        }
+
+    @Test
+    fun `GIVEN the box unchecked on a changed split WHEN tapping Pronto THEN the bill does not become the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.splitAsDefault)
+            assertFalse(state.splitSummary.contains(SplitFact.NewGroupDefault))
+        }
+
+    @Test
+    fun `GIVEN the box checked WHEN Voltar ao padrao and Pronto THEN the bill does not become the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.EQUAL))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitResetToDefault)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the box checked WHEN switching to Valores and Pronto THEN the bill does not become the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.AMOUNT))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            assertEquals(SplitMode.AMOUNT, viewModel.uiState.value.split.mode)
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN Dividir opens again THEN the box starts checked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+            assertTrue(viewModel.uiState.value.offersSplitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the box checked and Dividir dismissed WHEN Dividir opens again THEN the box starts unchecked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDismissed)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSplitEditorAsDefaultChecked)
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN unchecking and dismissing Dividir THEN it still does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDismissed)
+
+            // Then
+            assertEquals(SplitAsDefault(exceptionCategoryId = null), viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN unchecking and tapping Pronto THEN it no longer does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            assertNull(viewModel.uiState.value.splitAsDefault)
+            assertFalse(
+                viewModel.uiState.value.splitSummary
+                    .contains(SplitFact.NewGroupDefault),
+            )
+        }
+
+    @Test
+    fun `GIVEN a Mercado bill on its exception WHEN Pronto with the box checked THEN it replaces that exception`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Supermercado")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(SplitAsDefault(exceptionCategoryId = AppCategory.FOOD_MARKET.key), state.splitAsDefault)
+            assertEquals(AppCategory.FOOD_MARKET.key, state.splitAsDefaultException?.id)
+            assertTrue(state.splitSummary.contains(SplitFact.NewGroupDefault))
+        }
+
+    @Test
+    fun `GIVEN a Mercado bill replacing its exception WHEN the category changes THEN it no longer does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Supermercado")
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Uber"))
+
+            // Then
+            assertNull(viewModel.uiState.value.splitAsDefault)
+            assertFalse(
+                viewModel.uiState.value.splitSummary
+                    .contains(SplitFact.NewGroupDefault),
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill replacing the group default WHEN moved to a category with an exception THEN it no longer does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Jantar")
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Supermercado"))
+
+            // Then
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN a bill replacing the group default WHEN moved to another category without one THEN it still does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Jantar")
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Cinema"))
+
+            // Then
+            assertEquals(SplitAsDefault(exceptionCategoryId = null), viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN its items are done THEN it no longer does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.ITEMS))
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.SERVICE))
+            viewModel.onEvent(SplitBillUiEvent.OnFeeValueChanged(""))
+            viewModel.onEvent(SplitBillUiEvent.OnFeeDone)
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemNameChanged("Pizza"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("120,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnItemDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemsDone)
+
+            // Then
+            assertEquals(SplitMode.ITEMS, viewModel.uiState.value.split.mode)
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN moving it to another group THEN it no longer does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                otherGroups = listOf(trip),
+            )
+            fillBill()
+            pickSharesAsDefault()
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertEquals(TRIP_ID, viewModel.uiState.value.groupId)
+            assertNull(viewModel.uiState.value.splitAsDefault)
+        }
+
+    @Test
+    fun `GIVEN Partes 2 to 1 as the default WHEN saving the bill THEN the group default becomes Partes 2 to 1`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, expenses.createdExpenses.size)
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf(PIERRE to 2L, ANA to 1L), emptyList()),
+                groups.savedDefaultSplits.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN Igual without Ana as the default WHEN saving the bill THEN the group default leaves Ana out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPersonToggled(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L), emptyList()),
+                groups.savedDefaultSplits.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN 70 and 30 percent as the default WHEN saving the bill THEN the group default takes them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.PERCENT))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(PIERRE, "70"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "30"))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 70L, ANA to 30L), emptyList()),
+                groups.savedDefaultSplits.single(),
+            )
+            assertEquals(emptyMap(), groups.savedIncomes[GROUP_ID])
+        }
+
+    @Test
+    fun `GIVEN a default with exceptions WHEN saving a bill as the group default THEN the exceptions stay`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Conta de luz")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.EQUAL))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(
+                    DefaultSplitMode.EQUAL,
+                    mapOf(PIERRE to 1L, ANA to 1L),
+                    listOf(marketEqually, transportByPercent),
+                ),
+                groups.savedDefaultSplits.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a Mercado bill as its exception WHEN saving the bill THEN only the Mercado exception changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOneWithExceptions))
+            fillBill(description = "Supermercado")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                GROUP_ID to threeToOneWithExceptions.copy(
+                    exceptions = listOf(
+                        CategorySplit(
+                            AppCategory.FOOD_MARKET.key,
+                            DefaultSplitMode.SHARES,
+                            mapOf(
+                                PIERRE to 2L,
+                                ANA to 1L,
+                            ),
+                        ),
+                        transportByPercent,
+                    ),
+                ),
+                groups.savedDefaultSplits.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a changed split not made the default WHEN saving the bill THEN the group default stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.EQUAL))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, expenses.createdExpenses.size)
+            assertTrue(groups.savedDefaultSplits.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a saved bill being edited with the box toggled WHEN saving it THEN the group default stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                expenseId = BILL_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.splitAsDefault)
+            assertEquals(SplitMode.SHARES, expenses.updatedExpenses.single().splitMode)
+            assertTrue(groups.savedDefaultSplits.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill becomes the default WHEN closing Rachar conta without saving THEN the group default stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(groups.savedDefaultSplits.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the default fails to save WHEN saving the bill THEN the bill is saved and the form leaves`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                defaultSplitError = IllegalStateException("disk full"),
+            )
+            fillBill()
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, expenses.createdExpenses.size)
+            assertTrue(groups.savedDefaultSplits.isEmpty())
+            assertFalse(actions.contains(SplitBillUiAction.ShowSaveError))
+            assertFalse(navigator.backStack.value.any { it is Route.SplitBill })
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN saving a bill as the group default THEN the default is saved on the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                online = false,
+            )
+            fillBill()
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, expenses.createdExpenses.size)
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf(PIERRE to 2L, ANA to 1L), emptyList()),
+                groups.savedDefaultSplits.single(),
+            )
+        }
+
     private val pierre = GroupMember(
         id = PIERRE,
         name = "Pierre",
@@ -328,6 +1054,20 @@ class DefaultSplitBillViewModelTest {
         weights = mapOf(PIERRE to 3L, ANA to 1L),
         exceptions = emptyList(),
     )
+
+    private val marketEqually = CategorySplit(
+        categoryId = AppCategory.FOOD_MARKET.key,
+        mode = DefaultSplitMode.EQUAL,
+        weights = mapOf(PIERRE to 1L, ANA to 1L),
+    )
+
+    private val transportByPercent = CategorySplit(
+        categoryId = AppCategory.TRANSPORT.key,
+        mode = DefaultSplitMode.PERCENT,
+        weights = mapOf(PIERRE to 60L, ANA to 40L),
+    )
+
+    private val threeToOneWithExceptions = threeToOne.copy(exceptions = listOf(marketEqually, transportByPercent))
 
     private val home = Group(
         id = GROUP_ID,
@@ -372,11 +1112,36 @@ class DefaultSplitBillViewModelTest {
         updatedByMemberId = null,
     )
 
-    private fun prepareScenario(
+    private val trip = home.copy(
+        id = TRIP_ID,
+        name = "Viagem Floripa",
+        type = GroupType.TRIP,
+    )
+
+    private fun fillBill(description: String = "Jantar") {
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("120,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged(description))
+    }
+
+    // Why: Partes 2 to 1, since 1 each splits as a group without a default does and isn't offered.
+    private fun pickSharesAsDefault() {
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+        viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+        viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+        viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+    }
+
+    private fun TestScope.prepareScenario(
         storedGroup: Group,
         expenseId: String? = null,
+        otherGroups: List<Group> = emptyList(),
+        online: Boolean = true,
+        defaultSplitError: Throwable? = null,
     ) {
-        groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
+        groups = FakeGroupRepository(initialGroups = listOf(storedGroup) + otherGroups).also {
+            it.defaultSplitError = defaultSplitError
+        }
         expenses = FakeExpenseRepository(initialExpenses = listOf(bill))
         val route = Route.SplitBill(
             GROUP_ID,
@@ -384,7 +1149,7 @@ class DefaultSplitBillViewModelTest {
             picksGroupFirst = false,
             scansReceipt = false,
         )
-        val navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(
                 Route.GroupDetail(
                     GROUP_ID,
@@ -410,17 +1175,25 @@ class DefaultSplitBillViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
-            observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+            categoryUseCases = BillCategoryUseCases(
+                observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+                observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                deleteGroupCategory = { Result.success(Unit) },
+            ),
+            saveSplitAsDefault = SaveSplitAsDefaultUseCase(
+                observeGroup = ObserveGroupUseCase(groups),
+                getSplitIncomes = GetSplitIncomesUseCase(groups),
+                updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { NOW },
+            ),
             offerCategoryTeach = {},
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
-            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
-            deleteGroupCategory = { Result.success(Unit) },
-            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
+            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
     private companion object {
@@ -429,6 +1202,7 @@ class DefaultSplitBillViewModelTest {
         const val PIERRE = "member-1"
         const val ANA = "member-2"
         const val CARLA = "member-3"
+        const val TRIP_ID = "group-2"
         const val NOW = 10_000L
     }
 }

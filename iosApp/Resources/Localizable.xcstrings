@@ -17683,6 +17683,61 @@
           }
         }
       }
+    },
+    "Use as the group default" : {
+      "comment" : "Split: checkbox that makes this bill's split the group's default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar como padrão do grupo"
+          }
+        }
+      }
+    },
+    "Use as the group default for %@" : {
+      "comment" : "Split: checkbox that makes this bill's split the exception of its category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar como padrão do grupo para %@"
+          }
+        }
+      }
+    },
+    "New bills in the group start this way once this one is saved." : {
+      "comment" : "Split: under the checkbox that makes this bill's split the group's default",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As novas contas do grupo começam assim quando esta for salva."
+          }
+        }
+      }
+    },
+    "Becomes the group default" : {
+      "comment" : "Under a bill's split: it becomes the group's default once saved",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vira o padrão do grupo"
+          }
+        }
+      }
+    },
+    "Becomes the group exception for %@" : {
+      "comment" : "Under a bill's split: it becomes the exception of its category once saved",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vira a exceção do grupo para %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

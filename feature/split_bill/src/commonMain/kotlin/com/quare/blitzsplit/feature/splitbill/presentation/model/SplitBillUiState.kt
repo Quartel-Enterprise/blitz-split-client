@@ -58,6 +58,8 @@ data class SplitBillUiState(
     val split: SplitEditor,
     // Why: the group's "Divisão padrão" a new bill opens with; null while editing a saved bill or for a group without one.
     val defaultSplit: BillDefaultSplit?,
+    // Why: the bill's split becomes the group's default when it is saved, set by Dividir's "Pronto"; null for none.
+    val splitAsDefault: SplitAsDefault?,
     // Why: the app's categories with the group's (7.7), which the bill's category resolves in.
     val categories: CategoryTree,
     // Why: the bill's category, an app key or a group category's id; null for "Outros".
@@ -76,6 +78,8 @@ data class SplitBillUiState(
     val categoryDeletion: CategoryDeletion?,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
+    // Why: Dividir's "Usar como padrão do grupo", which the bill takes on "Pronto" while it shows.
+    val isSplitEditorAsDefaultChecked: Boolean,
     // Why: "Itens da conta" (7.5), Dividir's fifth mode, open in its place while not null; the bill changes on "Pronto".
     val itemsEditor: ItemsEditor?,
     // Why: "Item" (7.6), open over "Itens da conta" while not null; the items change on its "Pronto".
@@ -234,7 +238,10 @@ data class SplitBillUiState(
 
     // Why: what Rachar conta's "Divisão" says under its title, "Padrão do grupo" first while it follows the default.
     val splitSummary: List<SplitFact>
-        get() = listOfNotNull(SplitFact.GroupDefault.takeIf { splitFollowsDefault }) + split.summary
+        get() = listOfNotNull(
+            SplitFact.GroupDefault.takeIf { splitFollowsDefault },
+            SplitFact.NewGroupDefault.takeIf { splitAsDefault != null },
+        ) + split.summary
 
     // Why: Dividir's notice above the modes, "Padrão do Apê 302: Partes, 3 para 1", for a group with a default.
     val showsDefaultSplitNotice: Boolean
@@ -246,6 +253,24 @@ data class SplitBillUiState(
             val editor = splitEditor ?: return false
             return defaultSplit?.isFollowedBy(editor) == false
         }
+
+    /*
+     * Why: Dividir's "Usar como padrão do grupo" (beta feedback 11), on a new bill split by Igual, Partes or % in another
+     * way than the group's default, or its category's exception; without one, anything that doesn't split equally among
+     * everyone (Partes at 1 each included), which is what a group without a default does.
+     */
+    val offersSplitAsDefault: Boolean
+        get() {
+            val editor = splitEditor ?: return false
+            // Why: Itens opens in Dividir's place and leaves its last mode behind.
+            if (isEditing || itemsEditor != null || editor.mode.defaultMode == null) return false
+            val default = defaultSplit ?: return !editor.splitsEquallyAmongEveryone
+            return !default.isFollowedBy(editor)
+        }
+
+    // Why: "Vira a exceção do grupo para Mercado" under "Divisão", for the exception the bill's split replaces.
+    val splitAsDefaultException: Category?
+        get() = splitAsDefault?.exceptionCategoryId?.let { categories.resolve(it) }
 
     // Why: the bill's category as it reads: a deleted group category as its parent, none as "Outros".
     val category: Category

@@ -73,6 +73,8 @@ class JsBillCategories(
     val deletion: JsCategoryDeletion?,
     // Why: the exception of the bill's category, which Dividir's notice and "Divisão" name.
     val defaultSplitException: JsCategory?,
+    // Why: the exception the bill's split replaces once saved, which "Divisão" names (beta feedback 11).
+    val splitAsDefaultException: JsCategory?,
     // Why: every CategoryIcon's code, in the order "Nova categoria" offers them.
     val icons: Array<String>,
 )
@@ -147,6 +149,7 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
             )
         },
         defaultSplitException = state.defaultSplitException?.let(::toJsCategory),
+        splitAsDefaultException = state.splitAsDefaultException?.let(::toJsCategory),
         icons = CategoryIcon.entries.map { it.code }.toTypedArray(),
     )
 }

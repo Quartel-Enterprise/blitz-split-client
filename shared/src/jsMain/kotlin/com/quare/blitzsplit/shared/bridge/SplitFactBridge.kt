@@ -42,6 +42,7 @@ internal fun toJsSplitFact(fact: SplitFact): JsSplitFact {
         is SplitFact.Parts -> "parts"
         is SplitFact.PersonParts -> "person-parts"
         SplitFact.GroupDefault -> "group-default"
+        SplitFact.NewGroupDefault -> "new-group-default"
         is SplitFact.Items -> "items"
         is SplitFact.LooseItems -> "loose-items"
     }
