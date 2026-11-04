@@ -42,6 +42,7 @@ import kotlin.test.assertTrue
 
 class RestoreViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val codeSubmitted: Pair<String, Map<String, Any>> = "restore_code_submitted" to emptyMap()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var navigator: BackStackNavigator
@@ -508,6 +509,235 @@ class RestoreViewModelTest {
             assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
             assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
         }
+
+    @Test
+    fun `GIVEN the restore screen WHEN typing the code THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a typed code WHEN restoring THEN tracks only the submit with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf(codeSubmitted), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN half a code WHEN restoring THEN still tracks the submit`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA"))
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf(codeSubmitted), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN nothing typed WHEN restoring THEN still tracks the submit`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf(codeSubmitted), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an unknown code WHEN restoring THEN tracks the submit once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(restoreError = InvalidRecoveryCodeException())
+        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf(codeSubmitted), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the restore screen WHEN scanning THEN tracks the scan click with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnScanQrClicked)
+
+        // Then
+        assertEquals(listOf("restore_scan_qr_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the old device QR WHEN scanned THEN tracks nothing even though it restores`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=K7QM4XPA9TRE"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Google is native here WHEN clicking it THEN tracks Google as the provider from the restore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.GOOGLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Apple is not native here WHEN clicking it THEN tracks Apple as the provider from the restore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.APPLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a Google sign in in progress WHEN clicking Apple THEN tracks each click once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertEquals(
+                listOf(providerClicked(AccountProvider.GOOGLE), providerClicked(AccountProvider.APPLE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the restore screen WHEN the ID token arrives THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
+
+        // When
+        viewModel.onEvent(
+            RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", "code"),
+        )
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN it fails THEN tracks the failure from the restore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnNativeSignInFailed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.GOOGLE),
+                    "native_sign_in_failed" to mapOf<String, Any>("source" to "restore"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN the person cancels THEN tracks the cancel from the restore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnNativeSignInCancelled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.GOOGLE),
+                    "native_sign_in_cancelled" to mapOf<String, Any>("source" to "restore"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN starting fresh THEN tracks it with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnStartFreshClicked)
+
+        // Then
+        assertEquals(listOf("restore_start_fresh_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the restore screen WHEN going back THEN tracks the back from the restore`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(listOf("back_clicked" to mapOf<String, Any>("source" to "restore")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an error on screen WHEN dismissing it THEN tracks the dismiss from the restore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(restoreError = InvalidRecoveryCodeException())
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnErrorDismissed)
+
+            // Then
+            assertEquals(
+                listOf(codeSubmitted, "error_dismissed" to mapOf<String, Any>("source" to "restore")),
+                trackedEvents,
+            )
+        }
+
+    private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
+        "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "restore")
 
     private fun TestScope.prepareScenario(
         online: Boolean = true,

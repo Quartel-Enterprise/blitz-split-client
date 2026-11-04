@@ -629,6 +629,191 @@ class ProfileSetupViewModelTest {
             assertEquals(listOf(expected), profiles.savedProfiles)
         }
 
+    @Test
+    fun `GIVEN a Google session WHEN the screen opens and prefills THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sessionUser = googleUser)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals("Pierre Vieira", state.name)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the setup screen WHEN typing a name THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("P"))
+        viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the setup screen WHEN picking an avatar color THEN tracks the color from the setup`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(AvatarColor.SAND))
+
+            // Then
+            assertEquals(
+                listOf("avatar_color_selected" to mapOf<String, Any>("color" to AvatarColor.SAND, "source" to SOURCE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the setup screen WHEN picking a photo THEN tracks the pick with only its source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // Then
+            assertEquals(listOf(photoPickedEvent), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN dragging pinching and zooming THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(
+                ProfileSetupUiEvent.OnPhotoCrop(
+                    PhotoCropEvent.OnDragged(
+                        dx = 0.1f,
+                        dy = -0.2f,
+                    ),
+                ),
+            )
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnPinched(1.5f, 0f, 0f)))
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(2f)))
+
+            // Then
+            assertEquals(listOf(photoPickedEvent), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN turning it THEN tracks the turn from the setup`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(
+                listOf(photoPickedEvent, "photo_crop_turned" to mapOf<String, Any>("source" to SOURCE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN confirming it THEN tracks the confirmation from the setup`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(
+                listOf(photoPickedEvent, "photo_crop_confirmed" to mapOf<String, Any>("source" to SOURCE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a picked photo in Ajustar foto WHEN dismissing it THEN tracks the dismissal from the setup`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertEquals(
+                listOf(photoPickedEvent, "photo_crop_dismissed" to mapOf<String, Any>("source" to SOURCE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the setup screen WHEN the picked photo is unreadable THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sessionUser = googleUser)
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoUnreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a valid name WHEN continuing THEN tracks the continue click with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("Pierre"))
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
+
+        // Then
+        assertEquals(listOf(continueClickedEvent), trackedEvents)
+        assertEquals(1, profiles.savedProfiles.size)
+    }
+
+    @Test
+    fun `GIVEN an invalid name WHEN continuing THEN still tracks the continue click though nothing is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("P"))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
+
+            // Then
+            assertEquals(listOf(continueClickedEvent), trackedEvents)
+            assertTrue(profiles.savedProfiles.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the setup screen WHEN going back THEN tracks the back click from the setup`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(listOf("back_clicked" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+    }
+
+    private val photoPickedEvent = "photo_picked" to mapOf<String, Any>("source" to SOURCE)
+    private val continueClickedEvent = "profile_setup_continue_clicked" to emptyMap<String, Any>()
+
     private val googleUser = SessionUser("u", AccountProvider.GOOGLE, "Pierre Vieira", GOOGLE_PHOTO_URL, null)
     private val appleUser = SessionUser("u", AccountProvider.APPLE, "Pierre Vieira", APPLE_PHOTO_URL, null)
     private val photoSource = byteArrayOf(1, 2, 3)
@@ -725,5 +910,6 @@ class ProfileSetupViewModelTest {
         const val GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/pierre"
         const val APPLE_PHOTO_URL = "https://apple/pierre"
         const val UPLOADED_PHOTO_URL = "https://supabase/storage/avatars/pierre.jpg"
+        const val SOURCE = "profile_setup"
     }
 }
