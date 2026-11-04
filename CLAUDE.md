@@ -269,16 +269,30 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
+  - "Ajustar foto" (Bible Planner's editor, Pierre's call): every photo taken or picked for a profile (Seu perfil,
+    Editar perfil, the Mac's Ajustes) or a group (Novo grupo, Editar grupo) opens it before it becomes the avatar,
+    never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
+    sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
+    for a profile and a rounded square for a group (the group's one shape off Android, its badge's 32% corners): drag,
+    pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Girar" turns it 90°
+    clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Pronto" makes the 512x512
+    JPEG of what the frame holds; ✕, Cancelar or back leave the photo shown as it was. The framing is the shared
+    `PhotoCrop` (fractions of the frame, so a turned device keeps it), the photo the upright, at most 1600 px JPEG of
+    `LoadCropPhoto`, and each platform's canvas draws the result from `CropTransform`. On a fold the photo and the
+    controls take a half each, never the hinge: side by side on a book and an iPhone Duo open lying down, the photo
+    on top on a tabletop and an iPhone Duo open upright. Novo grupo's Criar and Seu perfil's Continuar wait while it
+    is open.
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
     participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
     with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar steps
     its color through the palette, and on Android its shape too, both at once ("Trocar forma e cor do grupo": five
-    colors over four shapes go through all twenty), starting as a peach Biscoito (a new group has no photo; Editar
-    grupo adds it), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+    colors over four shapes go through all twenty), starting as a peach Biscoito, and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
-    grupo") and "Ana 2".
+    grupo") and "Ana 2". The avatar's corner holds the photo's menu (Tirar foto where there is a camera, Escolher
+    foto, the Mac's "Escolher foto…" a file, and Remover foto once there is one), which opens "Ajustar foto"; while a
+    photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Editar grupo's does.
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
     only time it shows the "Grupo criado" badge. The server makes each group's invite code, and only the group's creator may change it ("Trocar link",
     `InviteUiState.showsChangeLink`): only on Convidar opened from the group and online, at the top on Android and
@@ -526,7 +540,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
     Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
     made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
-    The photo is the profile's 512x512 JPEG (`PrepareProfilePhoto`), drawn in place of the color and initials in the
+    The photo is the profile's 512x512 JPEG framed in "Ajustar foto" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
     group's shape, and picking a color or a shape takes it off. A new photo waits on the device and goes up with
     the group's next sync, offline too ("Uma foto nova sobe junto."), to the public `group-photos` bucket
     (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the shape and the photo are fields of the
@@ -552,10 +566,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
-    percentages they give (`IncomePercents`). A new bill's Dividir may also save its split as the default or its
-    category's exception ("Usar como padrão do grupo", below in Rachar conta). "Numa conta de R$ 100: Pierre R$ 75 ·
-    Ana R$ 25" with the bar in each one's color is always in sight, the cents as Rachar conta shares them (Igual's
-    example is the first round bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
+    percentages they give (`IncomePercents`). "Numa conta de R$ 100: Pierre R$ 75 · Ana R$ 25" with the bar
+    in each one's color is always in sight, the cents as Rachar conta shares them (Igual's example is the first round
+    bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
@@ -604,16 +617,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (in Igual, out of the other modes). "Divisão" then says "Padrão do grupo", and Dividir's notice above the
     modes "Padrão do Apê 302: Partes, 3 para 1", or "Diferente do padrão do grupo" with "Voltar ao padrão" once
     changed for this bill (`SplitBillUiState.defaultSplit`, `isSplitEditorOffDefault`); "Editar conta" keeps its split
-    with no notice. A new bill split by Igual, Partes or % in another way than that default (or, for a group without
-    one, anything that doesn't split equally among everyone, Partes at 1 each included) offers "Usar como padrão do grupo" under Dividir's people (beta feedback 11,
-    Pierre's call, `offersSplitAsDefault`; never Valores nor Itens, which are one bill's amounts, nor on "Editar
-    conta"): "Pronto" with it checked makes "Divisão" say "Vira o padrão do grupo", and saving the bill saves its split
-    as the group's "Divisão padrão" (`SaveSplitAsDefault`), keeping its exceptions, as Divisão padrão's Salvar does
-    (offline too, Last-Write-Wins, a "Pela renda" replaced dropping this device's incomes). A bill that opened with a
-    category's exception offers "Usar como padrão do grupo para Mercado" and replaces only that exception ("Vira a
-    exceção do grupo para Mercado"). Closing the bill unsaved changes nothing; another group or category picked (Pierre's
-    call: another category falls under another default) or Itens' "Pronto" drops it, and the checkbox unchecks once it
-    hides. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
+    with no notice. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's

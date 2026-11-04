@@ -267,6 +267,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnSplitModeClicked -> if (event.mode == SplitMode.ITEMS) {
                 items.open()
+                uiState.update { it.withSplitAsDefaultSettled() }
             } else {
                 editSplit { it.toMode(event.mode, separator) }
             }
@@ -457,7 +458,10 @@ class SplitBillViewModel(
                 decimalSeparator = separator,
             )
             // Why: another currency converts the typed amount to its own minor unit, which the split must add up to.
-            withSplit.withItemsAmong(people).withBillTotal()
+            withSplit
+                .withItemsAmong(people)
+                .withBillTotal()
+                .withSplitAsDefaultSettled()
         }
     }
 

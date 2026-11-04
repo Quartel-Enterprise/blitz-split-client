@@ -6,7 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 
 // Why: what "Categoria" (7.7) and the group's own categories (7.8) need, in one parameter of Rachar conta's ViewModel.
-class BillCategoryUseCases(
+data class BillCategoryUseCases(
     val observeCategoryTree: ObserveCategoryTree,
     val observeCategoryMap: ObserveCategoryMap,
     val saveGroupCategory: SaveGroupCategory,
