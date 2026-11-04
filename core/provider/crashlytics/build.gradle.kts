@@ -9,7 +9,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
-        // CrashKiOS calls Android's SDK, which the app brings at runtime
+        // The SDK CrashKiOS calls on Android
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.crashlytics)

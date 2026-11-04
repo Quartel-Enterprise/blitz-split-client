@@ -20,9 +20,12 @@ What is recorded as a non-fatal, and why:
 
 | Where | What | Why |
 | --- | --- | --- |
-| `SyncCoordinator` | A sync that failed while online | Offline a failure is expected; online it is a change the server keeps refusing or a step that broke, which fails every try and nobody else sees |
+| `SyncCoordinator` | A sync that failed while online, once until a sync gets through again, as `SyncFailure`: each cause's class with the server's status and PostgREST code | Offline, or with a request that got no answer (`HttpRequestException`), a failure is expected; online it is a change the server keeps refusing or a step that broke, which fails every try and nobody else sees |
 
-Never put a name, an amount or a group's id in what is recorded (a message, a custom key): the report goes to Google.
+Never put a name, an amount or a group's id in what is recorded: the report goes to Google. So `CrashReporter` sends
+only the names of a failure's classes, cause by cause, with its stack (Kotlin/Native keeps the stack of where the
+report is made), never their messages: supabase-kt's hold the request's URL and PostgREST's details, a failing row's
+values included. A failure written to be reported, with no cause, implements `ReportableFailure` and goes as it is.
 A debug build records nothing, and every launch sets that again, since Crashlytics keeps the setting on the device.
 
 ## What stays off until it is set up

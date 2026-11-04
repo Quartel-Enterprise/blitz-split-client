@@ -6,3 +6,6 @@ import co.touchlab.crashkios.crashlytics.setCrashlyticsUnhandledExceptionHook
 internal actual fun reportUnhandledExceptions() {
     setCrashlyticsUnhandledExceptionHook()
 }
+
+// Why: Kotlin/Native keeps a throwable's stack from where it was made, with no way to set another.
+internal actual fun Throwable.adoptStackTrace(from: Throwable) {}

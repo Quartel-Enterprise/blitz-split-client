@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.activity)
             implementation(projects.core.contacts)
             implementation(projects.core.provider.crashlytics)
+            implementation(projects.core.provider.supabase)
             implementation(libs.quare.connectivity)
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))

@@ -70,6 +70,9 @@ class SyncCoordinator(
     private val requestedSyncs = MutableStateFlow(0)
     private val lastSyncFailed = MutableStateFlow(false)
 
+    // Why: a change the server keeps refusing fails every sync; it is reported once, until a sync gets through again.
+    private var hasReportedFailure = false
+
     // Why: offline, a failed sync is expected and only a change still waiting on the device is worth telling.
     fun observeState(): Flow<SyncState> = combine(
         requestedSyncs,
@@ -144,15 +147,21 @@ class SyncCoordinator(
     }.also { result ->
         lastSyncFailed.value = result.isFailure
         if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
-        result.exceptionOrNull()?.let { failure -> reportIfOnline(failure) }
+        val failure = result.exceptionOrNull()
+        when {
+            failure == null -> hasReportedFailure = false
+            !hasReportedFailure -> hasReportedFailure = report(failure)
+        }
     }
 
     /*
-     * Why: offline, a failed sync is expected. Online it is a change the server keeps refusing or a step that broke,
-     * which fails every try and only Crashlytics tells.
+     * Why: offline, or with a request that got no answer, a failed sync is expected. Online it is a change the server
+     * keeps refusing or a step that broke, which fails every try and only Crashlytics tells. Returns whether it told.
      */
-    private suspend fun reportIfOnline(failure: Throwable) {
-        if (connectivityObserver.observe().first()) crashReporter.recordException(failure)
+    private suspend fun report(failure: Throwable): Boolean {
+        if (failure.isConnectionFailure() || !connectivityObserver.observe().first()) return false
+        crashReporter.recordException(SyncFailure(failure))
+        return true
     }
 
     // Why: returns the user it synced, whose copy it completed.

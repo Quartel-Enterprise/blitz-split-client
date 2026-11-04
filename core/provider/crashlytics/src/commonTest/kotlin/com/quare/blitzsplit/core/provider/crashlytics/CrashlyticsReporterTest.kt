@@ -16,10 +16,23 @@ class CrashlyticsReporterTest {
     }
 
     @Test
-    fun `GIVEN crash reporting started WHEN recording an exception THEN sends it as handled`() {
+    fun `GIVEN a failure WHEN recording it THEN sends only its classes cause by cause`() {
         // Given
         CrashlyticsKotlin.implementation = RecordingCalls(handled)
-        val failure = IllegalStateException("server down")
+        val failure = IllegalStateException("Failing row contains (Jantar, 31200)", IllegalArgumentException("Ana"))
+
+        // When
+        CrashlyticsReporter().recordException(failure)
+
+        // Then
+        assertEquals(listOf("IllegalStateException ← IllegalArgumentException"), handled.map { it.message })
+    }
+
+    @Test
+    fun `GIVEN a failure written to be reported WHEN recording it THEN sends it as it is`() {
+        // Given
+        CrashlyticsKotlin.implementation = RecordingCalls(handled)
+        val failure = WrittenFailure()
 
         // When
         CrashlyticsReporter().recordException(failure)
@@ -27,6 +40,10 @@ class CrashlyticsReporterTest {
         // Then
         assertEquals(listOf<Throwable>(failure), handled)
     }
+
+    private class WrittenFailure :
+        Exception("PostgrestRestException 400 23514"),
+        ReportableFailure
 
     private class RecordingCalls(
         private val handled: MutableList<Throwable>,
