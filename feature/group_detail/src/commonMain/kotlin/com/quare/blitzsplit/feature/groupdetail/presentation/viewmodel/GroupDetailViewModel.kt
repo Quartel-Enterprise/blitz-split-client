@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -24,7 +23,9 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
@@ -63,7 +64,8 @@ class GroupDetailViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     useCases: GroupScreenUseCases,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GroupDetailUiEvent>(trackEvent) {
     val uiState: StateFlow<GroupDetailUiState>
         field = MutableStateFlow(
             GroupDetailUiState(
@@ -177,7 +179,7 @@ class GroupDetailViewModel(
         }
     }
 
-    fun onEvent(event: GroupDetailUiEvent) {
+    override fun handleEvent(event: GroupDetailUiEvent) {
         when (event) {
             GroupDetailUiEvent.OnBackClicked -> screen.leave()
 
@@ -201,17 +203,22 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()
+            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()?.let { isPinned ->
+                trackEvent("group_pin_toggled", mapOf("is_pinned" to isPinned))
+            }
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
             GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.exit.confirm()
+            GroupDetailUiEvent.OnGroupExitConfirmed -> answerExit(isConfirmed = true)
 
-            GroupDetailUiEvent.OnGroupExitDismissed -> screen.exit.dismiss()
+            GroupDetailUiEvent.OnGroupExitDismissed -> answerExit(isConfirmed = false)
 
-            GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
+            GroupDetailUiEvent.OnBackToGroupsClicked -> {
+                if (screen.exit.state.value.deletedNotice != null) trackEvent("group_deleted_back_clicked", emptyMap())
+                screen.closeDeletedNotice()
+            }
 
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
 
@@ -226,7 +233,10 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnPaymentDeleteConfirmed -> deletePayment()
 
-            GroupDetailUiEvent.OnPaymentDeleteDismissed -> uiState.update { it.copy(paymentToDelete = null) }
+            GroupDetailUiEvent.OnPaymentDeleteDismissed -> {
+                if (uiState.value.paymentToDelete != null) trackEvent("payment_delete_cancelled", emptyMap())
+                uiState.update { it.copy(paymentToDelete = null) }
+            }
 
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
@@ -234,11 +244,21 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnTeachClicked -> teaching.open()
 
-            GroupDetailUiEvent.OnTeachDismissed -> teaching.dismiss()
+            GroupDetailUiEvent.OnTeachDismissed -> if (teaching.dismiss()) {
+                trackEvent(
+                    "category_teach_dismissed",
+                    emptyMap(),
+                )
+            }
 
             is GroupDetailUiEvent.OnTeachWordPicked -> teaching.pick(event.key)
 
-            GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
+            GroupDetailUiEvent.OnTeachConfirmed -> if (teaching.save()) {
+                trackEvent(
+                    "category_teach_confirmed",
+                    emptyMap(),
+                )
+            }
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
 
@@ -379,6 +399,7 @@ class GroupDetailViewModel(
 
     private fun deletePayment() {
         val payment = uiState.value.paymentToDelete ?: return
+        trackEvent("payment_delete_confirmed", emptyMap())
         uiState.update { it.copy(paymentToDelete = null) }
         screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
@@ -392,5 +413,17 @@ class GroupDetailViewModel(
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
         screen.deletePayment(notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+    }
+
+    /*
+     * Why: Sair's and Apagar's dialogs answered here, counted only while the dialog can still be answered, since
+     * Apple's alert also closes itself after its button; Grupos' rows answer theirs as GroupExitAnswer does.
+     */
+    private fun answerExit(isConfirmed: Boolean) {
+        screen.exit.findAnswerableDialog()?.let { dialog ->
+            val params = mapOf("dialog" to dialog, "source" to "group_detail")
+            if (isConfirmed) trackEvent("group_exit_confirmed", params) else trackEvent("group_exit_cancelled", params)
+        }
+        if (isConfirmed) screen.exit.confirm() else screen.exit.dismiss()
     }
 }

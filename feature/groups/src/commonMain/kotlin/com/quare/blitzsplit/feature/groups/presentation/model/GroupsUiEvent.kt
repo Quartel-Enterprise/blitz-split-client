@@ -2,9 +2,81 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface GroupsUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "groups"
+
+sealed interface GroupsUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnCreateGroupClicked -> EventAnalytics.Automatic("create_group_clicked", mapOf("source" to SOURCE))
+
+            OnJoinWithLinkClicked -> EventAnalytics.Automatic("join_with_link_clicked", mapOf("source" to SOURCE))
+
+            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
+
+            OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
+
+            // Why: the window drawing the group beside the list or not, never a tap.
+            is OnDetailPaneChanged -> EventAnalytics.NotTracked
+
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnHomeTabClicked,
+            OnBalancesTabClicked,
+            OnGroupsTabClicked,
+            OnContactsTabClicked,
+            OnActivityTabClicked,
+            -> EventAnalytics.NotTracked
+
+            OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
+
+            OnRefresh -> EventAnalytics.Automatic("pull_to_refresh", mapOf("source" to SOURCE))
+
+            OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
+
+            OnToReceiveClicked -> EventAnalytics.Automatic("balances_to_receive_clicked", mapOf("source" to SOURCE))
+
+            OnToPayClicked -> EventAnalytics.Automatic("balances_to_pay_clicked", mapOf("source" to SOURCE))
+
+            is OnShowSettledChanged -> EventAnalytics.Automatic("settled_groups_toggled", mapOf("is_shown" to isShown))
+
+            is OnFilterChanged -> EventAnalytics.NotTracked
+
+            // Why: only another way to show the groups, never the one already showing.
+            is OnDisplayChanged -> EventAnalytics.Manual("groups_display_changed")
+
+            // Why: only a size the grid takes, once per size the Mac's slider passes.
+            is OnGridSizeChanged -> EventAnalytics.Manual("groups_grid_size_changed")
+
+            is OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to SOURCE))
+
+            is OnLeaveGroupClicked -> EventAnalytics.Automatic("leave_group_clicked", mapOf("source" to SOURCE))
+
+            is OnDeleteGroupClicked -> EventAnalytics.Automatic("delete_group_clicked", mapOf("source" to SOURCE))
+
+            // Why: only an answer to a dialog still open, since Apple's alert also closes itself after its button.
+            OnGroupExitConfirmed -> EventAnalytics.Manual("group_exit_confirmed")
+
+            OnGroupExitDismissed -> EventAnalytics.Manual("group_exit_cancelled")
+
+            // Why: a notice that went away, which nobody tapped.
+            OnDeletedGroupNoticeShown, OnRecordedPaymentNoticeShown -> EventAnalytics.NotTracked
+
+            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+
+            // Why: only a search that opens, never ⌘K over a dialog nor the search tab over a pushed screen.
+            OnSearchOpened -> EventAnalytics.Manual("search_opened")
+
+            OnSearchTabLeft -> EventAnalytics.NotTracked
+
+            is OnSearch -> event.toEventAnalytics(source = SOURCE)
+        }
+
     data object OnCreateGroupClicked : GroupsUiEvent
 
     data object OnJoinWithLinkClicked : GroupsUiEvent

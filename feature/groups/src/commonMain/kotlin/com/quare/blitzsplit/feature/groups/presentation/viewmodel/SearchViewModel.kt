@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -8,7 +7,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
@@ -37,7 +38,8 @@ class SearchViewModel(
     currentTimeZone: CurrentTimeZone,
     observeGroups: ObserveGroups,
     observeGroupsMoney: ObserveGroupsMoney,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<SearchUiEvent>(trackEvent) {
     val uiState: StateFlow<SearchUiState>
         field = MutableStateFlow(SearchUiState(search = GroupsSearch.closed.copy(isOpen = true)))
 
@@ -61,11 +63,11 @@ class SearchViewModel(
                 rows = rowsOf(items, clock)
                 search { it }
                 // Why: as Grupos' own search, it closes once a sync leaves no group to look in.
-                if (items.isEmpty()) onEvent(SearchUiEvent.OnClosed)
+                if (items.isEmpty()) handleEvent(SearchUiEvent.OnClosed)
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: SearchUiEvent) {
+    override fun handleEvent(event: SearchUiEvent) {
         when (event) {
             is SearchUiEvent.OnQueryChanged -> search { it.copy(query = event.query) }
 

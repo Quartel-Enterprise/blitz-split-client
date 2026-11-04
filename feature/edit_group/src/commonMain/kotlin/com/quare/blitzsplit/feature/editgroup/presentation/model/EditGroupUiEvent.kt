@@ -5,9 +5,84 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCropEvent
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
+import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
-sealed interface EditGroupUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "edit_group"
+
+sealed interface EditGroupUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnCloseClicked -> EventAnalytics.NotTracked
+
+            is OnNameChanged -> EventAnalytics.NotTracked
+
+            OnIconClicked -> EventAnalytics.Automatic("group_icon_clicked")
+
+            OnIconDismissed -> EventAnalytics.NotTracked
+
+            // Why: only a pick "Ícone do grupo" takes, while it is open.
+            is OnIconColorPicked -> EventAnalytics.Manual("group_icon_color_picked")
+
+            is OnIconShapePicked -> EventAnalytics.Manual("group_icon_shape_picked")
+
+            OnIconConfirmed -> EventAnalytics.Automatic("group_icon_confirmed")
+
+            is OnColorSelected -> EventAnalytics.Automatic(
+                "group_color_selected",
+                mapOf(
+                    "color" to color,
+                    "source" to SOURCE,
+                ),
+            )
+
+            // Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for it.
+            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
+
+            is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
+
+            OnPhotoUnreadable -> EventAnalytics.NotTracked
+
+            is OnTypeSelected -> EventAnalytics.Automatic(
+                "group_type_selected",
+                mapOf(
+                    "type" to type,
+                    "source" to SOURCE,
+                ),
+            )
+
+            // Why: only a currency the form takes, never one picked once the group has a bill.
+            is OnCurrencySelected -> EventAnalytics.Manual("group_currency_selected")
+
+            OnDefaultSplitClicked -> EventAnalytics.Automatic("default_split_clicked")
+
+            OnSaveClicked -> EventAnalytics.Automatic("edit_group_save_clicked")
+
+            OnSimplifyDebtsClicked -> EventAnalytics.Automatic("simplify_debts_clicked")
+
+            /*
+             * Why: the change it applied, or only an answer to a question still open, since Apple's alert also closes
+             * itself after its button.
+             */
+            OnSimplifyDebtsConfirmed -> EventAnalytics.Manual("simplify_debts_toggled")
+
+            OnSimplifyDebtsDismissed -> EventAnalytics.Manual("simplify_debts_cancelled")
+
+            OnSimplifyDebtsInfoClicked -> EventAnalytics.Automatic(
+                "simplify_debts_info_clicked",
+                mapOf("source" to SOURCE),
+            )
+
+            OnSimplifyConflictDismissed -> EventAnalytics.NotTracked
+
+            OnSimplifyConflictActivityClicked -> EventAnalytics.Automatic(
+                "simplify_conflict_activity_clicked",
+                mapOf("source" to SOURCE),
+            )
+        }
+
     data object OnCloseClicked : EditGroupUiEvent
 
     data class OnNameChanged(

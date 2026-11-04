@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
@@ -13,8 +12,10 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
@@ -37,7 +38,8 @@ class HomeSidebarViewModel(
     observeGroups: ObserveGroups,
     observeGroupsMoney: ObserveGroupsMoney,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<HomeSidebarUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeSidebarUiState>
         field = MutableStateFlow(
             HomeSidebarUiState(
@@ -84,7 +86,7 @@ class HomeSidebarViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: HomeSidebarUiEvent) {
+    override fun handleEvent(event: HomeSidebarUiEvent) {
         when (event) {
             is HomeSidebarUiEvent.OnGroupClicked -> openGroup(event.groupId)
             is HomeSidebarUiEvent.OnTabClicked -> navigator.openHomeTab(event.tab)

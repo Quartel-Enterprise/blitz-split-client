@@ -49,11 +49,13 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.exit.GroupExitDialogKind
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -77,6 +79,7 @@ import kotlin.test.assertTrue
 
 // Why: flows 5.3 and 5.4, "Convidar pessoas", "Sair do grupo" and "Apagar grupo" from a row of the home.
 class GroupsRowActionsTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -453,6 +456,225 @@ class GroupsRowActionsTest {
         assertNull(viewModel.uiState.value.recordedPayment)
     }
 
+    @Test
+    fun `GIVEN a group WHEN tapping Convidar pessoas on its row THEN tracks invite_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnInviteClicked("trio"))
+
+            // Then
+            assertEquals(listOf("invite_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group WHEN tapping Sair do grupo on its row THEN tracks leave_group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // Then
+            assertEquals(listOf("leave_group_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group WHEN tapping Apagar grupo on its row THEN tracks delete_group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked("trio"))
+
+            // Then
+            assertEquals(listOf("delete_group_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Sair asking first WHEN confirming it THEN tracks group_exit_confirmed on confirm_leave`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Acerte antes de sair WHEN tapping Acertar THEN tracks group_exit_confirmed on leave_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.LEAVE_BLOCKED, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar asking first WHEN confirming it THEN tracks group_exit_confirmed on confirm_delete`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "delete_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_DELETE, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ainda ha saldo em aberto WHEN dismissing it THEN tracks group_exit_cancelled on delete_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "delete_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_cancelled" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.DELETE_BLOCKED, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Sair asking first WHEN dismissing it THEN tracks group_exit_cancelled on confirm_leave`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_cancelled" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a confirm and a dismiss arrive THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+        viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Sair confirmed and done WHEN the Apple alert dismisses itself THEN tracks no cancel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Sair waiting for the server WHEN a dismiss and another confirm arrive THEN tracks neither`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(leaveGate = CompletableDeferred())
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the payment notice on the home WHEN tapping Desfazer THEN tracks payment_undo_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            settleFromTheHome()
+            recordPierrePaidAna()
+            navigator.navigateBack()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf("payment_undo_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
     // Why: "Sair do grupo" says to settle first, and its "Acertar" opens Registrar pagamento over the home.
     private fun settleFromTheHome() {
         viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
@@ -545,6 +767,7 @@ class GroupsRowActionsTest {
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
         deleteResult: Result<GroupExitOutcome> = Result.success(GroupExitOutcome.DONE),
+        leaveGate: CompletableDeferred<Unit>? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(trio))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -556,6 +779,7 @@ class GroupsRowActionsTest {
         val deletions = InMemoryGroupDeletionRepository()
         recordedPayments = InMemoryRecordedPaymentRepository()
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
             ),
@@ -574,6 +798,7 @@ class GroupsRowActionsTest {
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { groupId ->
                 leftGroupIds += groupId
+                leaveGate?.await()
                 Result.success(GroupExitOutcome.DONE)
             },
             deleteGroup = DeleteGroup { groupId ->

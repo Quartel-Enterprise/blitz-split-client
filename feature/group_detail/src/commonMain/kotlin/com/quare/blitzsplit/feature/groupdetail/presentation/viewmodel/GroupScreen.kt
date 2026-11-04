@@ -222,11 +222,15 @@ internal class GroupScreen(
         )
     }
 
-    // Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it.
-    fun togglePin() {
-        if (group == null) return
+    /*
+     * Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it. Returns the
+     * pin it asked for, which Analytics counts, or null while no group is read.
+     */
+    fun togglePin(): Boolean? {
+        if (group == null) return null
         val pin = !isPinned
         scope.launch { useCases.setGroupPinned(groupId, pin) }
+        return pin
     }
 
     // Why: "Voltar para Grupos" on "Grupo apagado".

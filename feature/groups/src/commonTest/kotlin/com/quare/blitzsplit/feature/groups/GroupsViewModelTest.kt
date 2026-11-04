@@ -97,6 +97,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class GroupsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -2923,6 +2924,240 @@ class GroupsViewModelTest {
             assertFalse(state.showsSplitBillButton)
         }
 
+    @Test
+    fun `GIVEN the groups WHEN tapping Novo grupo THEN tracks create_group_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
+
+            // Then
+            assertEquals(listOf("create_group_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping Entrar com link ou QR THEN tracks join_with_link_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
+
+            // Then
+            assertEquals(listOf("join_with_link_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group WHEN tapping its row THEN tracks group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the avatar THEN tracks profile_avatar_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN the window starts drawing the group beside the list THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping each home tab THEN sends nothing since where it went is its screen view`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+            viewModel.onEvent(GroupsUiEvent.OnGroupsTabClicked)
+            viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
+            viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a sync that failed WHEN tapping tentar de novo THEN tracks sync_retry_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnRetrySyncClicked)
+
+            // Then
+            assertEquals(listOf("sync_retry_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN pulling down THEN tracks pull_to_refresh from the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnRefresh)
+
+        // Then
+        assertEquals(listOf("pull_to_refresh" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a group WHEN tapping Rachar conta THEN tracks split_bill_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping A receber THEN tracks balances_to_receive_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(
+                listOf("balances_to_receive_clicked" to mapOf<String, Any>("source" to "groups")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping A pagar THEN tracks balances_to_pay_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
+
+            // Then
+            assertEquals(listOf("balances_to_pay_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Quitados collapsed WHEN expanding it THEN tracks settled_groups_toggled as shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnShowSettledChanged(isShown = true))
+
+            // Then
+            assertEquals(listOf("settled_groups_toggled" to mapOf<String, Any>("is_shown" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Quitados expanded WHEN collapsing it THEN tracks settled_groups_toggled as hidden`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnShowSettledChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnShowSettledChanged(isShown = false))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "settled_groups_toggled" to mapOf<String, Any>("is_shown" to true),
+                    "settled_groups_toggled" to mapOf<String, Any>("is_shown" to false),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN typing in Filtrar grupos THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnFilterChanged("Floripa"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group WHEN opening the search THEN tracks search_opened from the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+        // Then
+        assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the search tab open WHEN leaving it for the groups THEN tracks only the opening`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchTabLeft)
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN the deleted group and payment notices go away THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
+            viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
@@ -3109,6 +3344,7 @@ class GroupsViewModelTest {
         syncRequests = 0
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Groups) }
         viewModel = GroupsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },

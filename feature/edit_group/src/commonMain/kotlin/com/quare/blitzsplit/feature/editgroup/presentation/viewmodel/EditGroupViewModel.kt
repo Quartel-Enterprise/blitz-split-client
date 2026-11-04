@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -25,10 +24,12 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
@@ -57,7 +58,8 @@ class EditGroupViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<EditGroupUiEvent>(trackEvent) {
     val uiState: StateFlow<EditGroupUiState>
         field = MutableStateFlow(
             EditGroupUiState(
@@ -159,7 +161,7 @@ class EditGroupViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: EditGroupUiEvent) {
+    override fun handleEvent(event: EditGroupUiEvent) {
         when (event) {
             // Why: leaving clears the ViewModel, which would cancel a save in flight.
             EditGroupUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
@@ -170,12 +172,14 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnIconDismissed -> uiState.update { it.copy(iconEditor = null) }
 
-            is EditGroupUiEvent.OnIconColorPicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(color = event.color))
+            is EditGroupUiEvent.OnIconColorPicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_color_picked", mapOf("color" to event.color))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(color = event.color)) }
             }
 
-            is EditGroupUiEvent.OnIconShapePicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape))
+            is EditGroupUiEvent.OnIconShapePicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_shape_picked", mapOf("shape" to event.shape))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape)) }
             }
 
             EditGroupUiEvent.OnIconConfirmed -> confirmIcon()
@@ -196,9 +200,7 @@ class EditGroupViewModel(
 
             is EditGroupUiEvent.OnTypeSelected -> updateForm { it.copy(type = event.type) }
 
-            is EditGroupUiEvent.OnCurrencySelected -> updateForm {
-                if (it.isCurrencyLocked) it else it.copy(currency = event.currency)
-            }
+            is EditGroupUiEvent.OnCurrencySelected -> selectCurrency(event.currency)
 
             EditGroupUiEvent.OnDefaultSplitClicked -> openDefaultSplit()
 
@@ -208,7 +210,7 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnSimplifyDebtsConfirmed -> confirmSimplifyDebts()
 
-            EditGroupUiEvent.OnSimplifyDebtsDismissed -> uiState.update { it.copy(simplifyConfirmation = null) }
+            EditGroupUiEvent.OnSimplifyDebtsDismissed -> dismissSimplifyDebts()
 
             EditGroupUiEvent.OnSimplifyDebtsInfoClicked -> openSimplifyDebtsInfo()
 
@@ -290,9 +292,25 @@ class EditGroupViewModel(
         uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raw, settlements)) }
     }
 
+    private fun selectCurrency(currency: GroupCurrency) {
+        if (uiState.value.isCurrencyLocked) return
+        trackEvent("group_currency_selected", mapOf("currency" to currency, "source" to "edit_group"))
+        updateForm { it.copy(currency = currency) }
+    }
+
+    // Why: counted only while the question still asks, but it closes in any case, as it always did.
+    private fun dismissSimplifyDebts() {
+        val state = uiState.value
+        if (state.simplifyConfirmation != null && !state.isChangingSimplifyDebts) {
+            trackEvent("simplify_debts_cancelled", emptyMap())
+        }
+        uiState.update { it.copy(simplifyConfirmation = null) }
+    }
+
     private fun confirmSimplifyDebts() {
         val confirmation = uiState.value.simplifyConfirmation ?: return
         if (uiState.value.isChangingSimplifyDebts) return
+        trackEvent("simplify_debts_toggled", mapOf("is_on" to confirmation.isTurningOn))
         uiState.update {
             it.copy(
                 isChangingSimplifyDebts = true,

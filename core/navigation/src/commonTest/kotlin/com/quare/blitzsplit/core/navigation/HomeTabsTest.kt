@@ -464,10 +464,11 @@ class HomeTabsTest {
         prepareScenario(Route.Home, Route.Contacts)
 
         // When
-        navigator.openSearchOver(HomeTab.CONTACTS)
+        val isOpened = navigator.openSearchOver(HomeTab.CONTACTS)
 
         // Then
         assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+        assertTrue(isOpened)
     }
 
     @Test
@@ -476,10 +477,11 @@ class HomeTabsTest {
         prepareScenario(Route.Home, Route.Contacts, Route.Profile)
 
         // When
-        navigator.openSearchOver(HomeTab.CONTACTS)
+        val isOpened = navigator.openSearchOver(HomeTab.CONTACTS)
 
         // Then
         assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
+        assertFalse(isOpened)
     }
 
     @Test

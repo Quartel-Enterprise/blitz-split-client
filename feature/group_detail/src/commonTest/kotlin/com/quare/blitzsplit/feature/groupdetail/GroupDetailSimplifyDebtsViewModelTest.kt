@@ -80,6 +80,7 @@ import kotlin.time.Instant
 
 // Why: "Simplificar dívidas" on the group's Saldos (13.4) and the notice of a change that lost to a later one (13.1e).
 class GroupDetailSimplifyDebtsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -776,6 +777,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
         }
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         viewModel = GroupDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },

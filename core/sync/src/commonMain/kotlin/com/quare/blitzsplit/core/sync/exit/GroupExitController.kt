@@ -121,6 +121,19 @@ class GroupExitController(
         }
     }
 
+    // Why: which dialog is open and can still be answered: null while none is open or a request runs.
+    fun findAnswerableDialog(): GroupExitDialogKind? {
+        val current = state.value
+        if (current.isRunning) return null
+        return when (current.dialog) {
+            null -> null
+            is GroupExitDialog.LeaveBlocked -> GroupExitDialogKind.LEAVE_BLOCKED
+            is GroupExitDialog.ConfirmLeave -> GroupExitDialogKind.CONFIRM_LEAVE
+            is GroupExitDialog.DeleteBlocked -> GroupExitDialogKind.DELETE_BLOCKED
+            is GroupExitDialog.ConfirmDelete -> GroupExitDialogKind.CONFIRM_DELETE
+        }
+    }
+
     // Why: a request in flight can't be called back, so the dialog stays until the server answers.
     fun dismiss() {
         state.update { if (it.isRunning) it else it.copy(dialog = null) }

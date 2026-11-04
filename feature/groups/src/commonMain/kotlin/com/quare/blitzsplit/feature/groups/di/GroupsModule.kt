@@ -38,6 +38,7 @@ val groupsModule = module {
             observePeopleBalances = get(),
             observeActivityUnreadCount = get(),
             observeFirstDownload = get(),
+            trackEvent = get(),
         )
     }
     viewModel {
@@ -67,6 +68,7 @@ val groupsModule = module {
             connectivityObserver = get(),
             observeActivityUnreadCount = get(),
             observeMapCategories = get(),
+            trackEvent = get(),
         )
     }
     viewModelOf(::HomeSidebarViewModel)

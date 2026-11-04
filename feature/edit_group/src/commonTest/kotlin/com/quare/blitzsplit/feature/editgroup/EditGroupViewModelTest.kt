@@ -60,6 +60,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditGroupViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2939,6 +2940,499 @@ class EditGroupViewModelTest {
         assertFalse(state.canSave)
     }
 
+    @Test
+    fun `GIVEN the form WHEN tapping Cancelar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the form WHEN typing a new name THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the form WHEN tapping the icon THEN sends the group icon clicked event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+
+        // Then
+        assertEquals(listOf("group_icon_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Icone do grupo open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnIconDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Icone do grupo open WHEN picking a color THEN sends the color picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
+
+        // Then
+        assertEquals(
+            listOf("group_icon_color_picked" to mapOf<String, Any>("color" to AvatarColor.LILAC)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Icone do grupo open WHEN picking a shape THEN sends the shape picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
+
+        // Then
+        assertEquals(
+            listOf("group_icon_shape_picked" to mapOf<String, Any>("shape" to GroupShape.PETAL)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Icone do grupo closed WHEN a late color or shape pick arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
+            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Icone do grupo open WHEN tapping Usar este icone THEN sends the group icon confirmed event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
+
+            // Then
+            assertEquals(listOf("group_icon_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the form WHEN picking a color in the form THEN sends the color from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.PEACH))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "group_color_selected" to mapOf<String, Any>(
+                        "color" to AvatarColor.PEACH,
+                        "source" to "edit_group",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the form WHEN a photo is picked THEN sends the photo picked from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+
+            // Then
+            assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to "edit_group")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN tapping Pronto THEN sends the crop confirmed from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_confirmed" to mapOf<String, Any>("source" to "edit_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN dragging pinching and zooming the photo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(pickedFile))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(
+                EditGroupUiEvent.OnPhotoCrop(
+                    PhotoCropEvent.OnDragged(
+                        dx = 0.1f,
+                        dy = 0.1f,
+                    ),
+                ),
+            )
+            viewModel.onEvent(
+                EditGroupUiEvent.OnPhotoCrop(
+                    PhotoCropEvent.OnPinched(
+                        zoomChange = 1.2f,
+                        focusX = 0f,
+                        focusY = 0f,
+                    ),
+                ),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(2f)))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Icone do grupo open WHEN the picked file is unreadable THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnPhotoUnreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a trip WHEN picking the home type THEN sends the type from Editar grupo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnTypeSelected(GroupType.HOME))
+
+        // Then
+        assertEquals(
+            listOf(
+                "group_type_selected" to mapOf<String, Any>(
+                    "type" to GroupType.HOME,
+                    "source" to "edit_group",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group with no bills WHEN picking another currency THEN sends the currency from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "group_currency_selected" to mapOf<String, Any>(
+                        "currency" to GroupCurrency.USD,
+                        "source" to "edit_group",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group with a bill WHEN picking another currency THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(dinner))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the form on top WHEN tapping Divisao padrao THEN sends the default split clicked event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
+
+            // Then
+            assertEquals(listOf("default_split_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an edited form WHEN tapping Salvar THEN sends the save clicked event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(listOf("edit_group_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a group of three not simplifying WHEN tapping the switch THEN sends the simplify clicked event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertEquals(listOf("simplify_debts_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the confirmation to turn it on WHEN confirming THEN sends the switch turned on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            assertEquals(listOf("simplify_debts_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the confirmation to turn it off WHEN confirming THEN sends the switch turned off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifiesDebts = true),
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            assertEquals(listOf("simplify_debts_toggled" to mapOf<String, Any>("is_on" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no confirmation open WHEN confirming the switch THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople,
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+        )
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a switch change in flight WHEN confirming again THEN sends no second toggle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+                isSimplifyHeld = true,
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN dismissing it THEN sends the simplify cancelled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed)
+
+            // Then
+            assertEquals(listOf("simplify_debts_cancelled" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no confirmation open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople,
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+        )
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a switch change in flight WHEN dismissing the confirmation THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+                isSimplifyHeld = true,
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch confirmed WHEN the alert dismisses itself after THEN sends only the toggle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            trackedEvents.clear()
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed)
+
+            // Then
+            assertEquals(listOf("simplify_debts_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the form WHEN tapping Como funciona THEN sends the info clicked from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+
+            // Then
+            assertEquals(
+                listOf("simplify_debts_info_clicked" to mapOf<String, Any>("source" to "edit_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the later change shown WHEN it is dismissed THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the later change shown WHEN tapping Ver na Atividade THEN sends it from Editar grupo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked)
+
+            // Then
+            assertEquals(
+                listOf("simplify_conflict_activity_clicked" to mapOf<String, Any>("source" to "edit_group")),
+                trackedEvents,
+            )
+        }
+
     // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
     private fun pickAndConfirmPhoto(source: ByteArray) {
         viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(source))
@@ -2976,6 +3470,7 @@ class EditGroupViewModelTest {
         photoGate = CompletableDeferred<Unit>().also { if (!isPhotoHeld) it.complete(Unit) }
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         viewModel = EditGroupViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = editGroup,
             navigator = navigator,
             updateGroup = UpdateGroupUseCase(groups) { 1_000L },

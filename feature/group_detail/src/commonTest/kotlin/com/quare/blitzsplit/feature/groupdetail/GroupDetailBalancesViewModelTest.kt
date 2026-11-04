@@ -88,6 +88,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class GroupDetailBalancesViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private val teach = InMemoryCategoryTeachRepository()
@@ -1103,6 +1104,7 @@ class GroupDetailBalancesViewModelTest {
         val observeStoredGroup = ObserveGroupUseCase(groups)
         val categories = FakeCategoryRepository()
         viewModel = GroupDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },

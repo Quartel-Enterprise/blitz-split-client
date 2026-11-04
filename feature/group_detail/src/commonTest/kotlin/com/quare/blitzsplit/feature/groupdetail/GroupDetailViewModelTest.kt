@@ -20,6 +20,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
@@ -66,6 +68,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.exit.GroupExitDialogKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -101,6 +104,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class GroupDetailViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
@@ -2103,6 +2107,845 @@ class GroupDetailViewModelTest {
             assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN a group on the device WHEN the screen opens THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    id = "bill-1",
+                    spentAt = thisMorning,
+                ),
+            ),
+        )
+
+        // When
+        val tracked = trackedEvents.toList()
+
+        // Then
+        assertTrue(tracked.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping back THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Esta conta foi apagada on screen WHEN it was shown THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the recorded payment notice WHEN it goes away THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the simplify debts conflict notice WHEN it goes away THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Rachar conta THEN tracks split_bill_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Convidar THEN tracks invite_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
+
+            // Then
+            assertEquals(listOf("invite_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Sair do grupo THEN tracks leave_group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            assertEquals(listOf("leave_group_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Apagar grupo THEN tracks delete_group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+            // Then
+            assertEquals(listOf("delete_group_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill on the list WHEN tapping it THEN tracks bill_clicked without the bill id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked("bill-1"))
+
+            // Then
+            assertEquals(listOf("bill_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN this person owes Ana WHEN tapping Acertar on the balance card THEN tracks settle_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
+
+            // Then
+            assertEquals(listOf("settle_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a pair on Saldos WHEN tapping it THEN tracks debt_clicked without the member ids`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(
+                GroupDetailUiEvent.OnDebtClicked(
+                    fromMemberId = PIERRE,
+                    toMemberId = ANA,
+                ),
+            )
+
+            // Then
+            assertEquals(listOf("debt_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a payment on the list WHEN tapping it THEN tracks payment_clicked without the payment id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+            // Then
+            assertEquals(listOf("payment_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the payment notice WHEN tapping Desfazer THEN tracks payment_undo_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf("payment_undo_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN just joined as Bruno WHEN tapping Proteja seu acesso THEN tracks protect_access_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(listOf("protect_access_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Saldos picked WHEN tapping Como funciona THEN tracks simplify_debts_info_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.BALANCES))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSimplifyDebtsInfoClicked)
+
+            // Then
+            assertEquals(listOf("simplify_debts_info_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the simplify debts conflict notice WHEN tapping Ver na Atividade THEN tracks it with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictActivityClicked)
+
+            // Then
+            assertEquals(listOf("simplify_conflict_activity_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Estatisticas THEN tracks group_stats_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
+
+            // Then
+            assertEquals(listOf("group_stats_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Editar grupo THEN tracks edit_group_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+
+            // Then
+            assertEquals(listOf("edit_group_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Grupo apagado shown WHEN tapping Voltar para Grupos THEN tracks group_deleted_back_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = "Ana",
+                ),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
+
+            // Then
+            assertEquals(listOf("group_deleted_back_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no payment asked to delete WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no Grupo apagado notice WHEN Voltar para Grupos arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Apagar este acerto asked WHEN confirming THEN tracks payment_delete_confirmed with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf("payment_delete_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN tapping Ensinar THEN tracks category_teach_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+
+            // Then
+            assertEquals(listOf("category_teach_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN tapping Agora nao THEN tracks category_teach_dismissed with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+
+            // Then
+            assertEquals(listOf("category_teach_dismissed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN asked which word WHEN picking aluguel THEN tracks category_teach_word_picked without the word`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+
+            // Then
+            assertEquals(listOf("category_teach_word_picked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a word picked to teach WHEN confirming THEN tracks category_teach_confirmed with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertEquals(listOf("category_teach_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a word picked to teach WHEN confirming twice THEN tracks category_teach_confirmed once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertEquals(listOf("category_teach_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the teach question closed WHEN a late Agora nao arrives THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Membros THEN tracks group_tab_clicked with the tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.MEMBERS))
+
+            // Then
+            assertEquals(listOf("group_tab_clicked" to mapOf<String, Any>("tab" to GroupTab.MEMBERS)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnRailTabClicked(HomeTab.CONTACTS))
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio THEN tracks group_pin_toggled as pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertEquals(listOf("group_pin_toggled" to mapOf<String, Any>("is_pinned" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio THEN tracks group_pin_toggled as not pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertEquals(listOf("group_pin_toggled" to mapOf<String, Any>("is_pinned" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the group just pinned WHEN tapping the item again THEN tracks it as not pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertEquals(listOf("group_pin_toggled" to mapOf<String, Any>("is_pinned" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio THEN tracks no pin`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
+            groups.groups.value = emptyList()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Sair do grupo asked WHEN confirming THEN tracks group_exit_confirmed on confirm_leave`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Sair do grupo asked WHEN dismissing THEN tracks group_exit_cancelled on confirm_leave`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Acerte antes de sair open WHEN tapping Acertar THEN tracks group_exit_confirmed on leave_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.LEAVE_BLOCKED)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Acerte antes de sair open WHEN dismissing THEN tracks group_exit_cancelled on leave_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.LEAVE_BLOCKED)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Apagar grupo asked WHEN confirming THEN tracks group_exit_confirmed on confirm_delete`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_DELETE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar grupo asked WHEN dismissing THEN tracks group_exit_cancelled on confirm_delete`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.CONFIRM_DELETE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an open balance WHEN tapping Ver saldos on Apagar grupo THEN tracks it on delete_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.DELETE_BLOCKED)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ainda ha saldo em aberto open WHEN dismissing THEN tracks group_exit_cancelled on delete_blocked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.DELETE_BLOCKED)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN confirming one THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no dialog open WHEN dismissing one THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Sair confirmed and the server still answering WHEN dismissing THEN tracks no cancel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(exitGate = CompletableDeferred())
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "leave_group_clicked" to fromGroupDetail,
+                    "group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Sair confirmed and the server still answering WHEN confirming again THEN tracks no second confirm`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(exitGate = CompletableDeferred())
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Sair failed and its dialog closed WHEN dismissing THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(exitError = IllegalStateException("offline"))
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar este acerto asked WHEN dismissing THEN tracks payment_delete_cancelled with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteDismissed)
+
+            // Then
+            assertEquals(listOf("payment_delete_cancelled" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no delete question open WHEN dismissing it THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unknown payment tapped WHEN dismissing the question THEN tracks no cancel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-unknown"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar este acerto confirmed WHEN the alert also dismisses THEN tracks no cancel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    private val fromGroupDetail = mapOf<String, Any>("source" to "group_detail")
+
+    private fun exitParams(dialog: GroupExitDialogKind): Map<String, Any> = mapOf(
+        "dialog" to dialog,
+        "source" to "group_detail",
+    )
+
+    private fun settlement(id: String): Settlement = Settlement(
+        id = id,
+        groupId = GROUP_ID,
+        fromMemberId = PIERRE,
+        toMemberId = ANA,
+        amountMinor = 5_000,
+        method = SettlementMethod.PIX,
+        paidAt = thisAfternoon,
+        isPending = false,
+        updatedAt = 0L,
+    )
+
     private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
     private var route = Route.GroupDetail(
@@ -2407,6 +3250,7 @@ class GroupDetailViewModelTest {
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
+        storedSettlements: List<Settlement> = emptyList(),
         isRoomRead: Boolean = true,
         timeZone: TimeZone = TimeZone.UTC,
         isOnline: Boolean = true,
@@ -2432,7 +3276,7 @@ class GroupDetailViewModelTest {
             it.exitGate = exitGate
         }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
-        settlements = FakeSettlementRepository()
+        settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
         navigator = BackStackNavigator(startRoute = Route.Home).also {
             routesBelow.forEach(it::navigate)
@@ -2441,6 +3285,7 @@ class GroupDetailViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expensesNeverAnswer = MutableSharedFlow<List<Expense>>()
         viewModel = GroupDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },

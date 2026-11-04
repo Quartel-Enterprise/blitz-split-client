@@ -55,6 +55,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class HomeSidebarViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -570,6 +571,45 @@ class HomeSidebarViewModelTest {
         assertEquals(listOf<Route>(Route.Welcome), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN an open group in the sidebar WHEN tapping it THEN tracks group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stack = listOf(Route.Home, Route.Groups))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnGroupClicked("trio"))
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "sidebar")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sidebar WHEN tapping Atividade THEN sends nothing since where it went is its screen view`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnTabClicked(HomeTab.ACTIVITY))
+
+            // Then
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sidebar WHEN tapping the profile at its foot THEN tracks profile_avatar_clicked from the sidebar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "sidebar")), trackedEvents)
+        }
+
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
 
@@ -680,6 +720,7 @@ class HomeSidebarViewModelTest {
         activityUnread = MutableStateFlow(unreadCount)
         navigator = BackStackNavigator(startRoute = stack.first()).also { nav -> stack.drop(1).forEach(nav::navigate) }
         viewModel = HomeSidebarViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             currentTimeMillis = CurrentTimeMillis { now },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },

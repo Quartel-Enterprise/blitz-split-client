@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
@@ -32,8 +31,10 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -104,7 +105,8 @@ class HomeViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeMapCategories: ObserveMapCategories,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<HomeUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeUiState>
         field = MutableStateFlow(
             HomeUiState(
@@ -266,13 +268,13 @@ class HomeViewModel(
         )
     }
 
-    fun onEvent(event: HomeUiEvent) {
+    override fun handleEvent(event: HomeUiEvent) {
         when (event) {
             HomeUiEvent.OnProfileClicked -> open(Route.Profile)
 
             // Why: never over the recovery code's prompt, which is no route, so ⌘K on the web can't stack the search on it.
             HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.showsRecoveryCodePrompt) {
-                navigator.openSearchOver(HomeTab.HOME)
+                if (navigator.openSearchOver(HomeTab.HOME)) trackEvent("search_opened", mapOf("source" to "home"))
             }
 
             HomeUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()

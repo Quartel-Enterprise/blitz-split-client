@@ -32,14 +32,21 @@ internal class GroupsLayoutPicker(
             }.launchIn(scope)
     }
 
-    fun changeDisplay(display: GroupsDisplay) {
+    // Why: says whether the groups show another way, which Analytics counts.
+    fun pickDisplay(display: GroupsDisplay): Boolean {
+        if (current().display == display) return false
         save(current().copy(display = display))
+        return true
     }
 
-    // Why: the size is disabled while the list is picked, so a late tap on it doesn't change the grid unseen.
-    fun changeGridSize(size: GroupGridSize) {
-        if (!canPickGridSize()) return
+    /*
+     * Why: the size is disabled while the list is picked, so a late tap on it doesn't change the grid unseen. Says
+     * whether the grid took another size, which Analytics counts.
+     */
+    fun pickGridSize(size: GroupGridSize): Boolean {
+        if (!canPickGridSize() || current().gridSize == size) return false
         save(current().copy(gridSize = size))
+        return true
     }
 
     /*
