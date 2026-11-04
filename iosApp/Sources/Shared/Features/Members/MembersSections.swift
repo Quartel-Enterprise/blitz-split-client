@@ -209,6 +209,7 @@ private struct MembersOverlays: ViewModifier {
     }
 }
 
+/// A member: the row opens their profile (Profile for this device's user), the ⋯ their menu.
 private struct MemberRow: View {
     let member: MembersMember
     let currency: GroupCurrency
@@ -217,95 +218,112 @@ private struct MemberRow: View {
     let send: (any MembersUiEvent) -> Void
 
     var body: some View {
-        Menu {
-            Button("Rename", systemImage: "pencil") {
-                send(MembersUiEventOnRenameClicked(memberId: member.id))
+        HStack(spacing: 4) {
+            content
+                .foregroundStyle(.primary)
+                .accessibilityElement(children: .combine)
+                .opensProfile { send(MembersUiEventOnMemberClicked(memberId: member.id)) }
+                // A long press (a right click on the Mac) holds the same items as the ⋯
+                .contextMenu { menuItems }
+            Menu {
+                menuItems
+            } label: {
+                Image(systemName: "ellipsis")
+                    .frame(width: 32, height: 32)
+                    .contentShape(.rect)
             }
-            // Disabled until the sync brings the member's link.
-            if member.canBeInvited {
+            .menuIndicator(.hidden)
+            .buttonStyle(.borderless)
+            .accessibilityLabel(Text("Options for \(member.name)"))
+        }
+    }
+
+    @ViewBuilder
+    private var menuItems: some View {
+        Button("Rename", systemImage: "pencil") {
+            send(MembersUiEventOnRenameClicked(memberId: member.id))
+        }
+        // Disabled until the sync brings the member's link.
+        if member.canBeInvited {
+            Button {
+                send(MembersUiEventOnPersonalInviteClicked(memberId: member.id))
+            } label: {
+                #if os(macOS)
+                Label("Personal invite for \(member.name)…", systemImage: "link")
+                #else
+                Label("Personal invite for \(member.name)", systemImage: "link")
+                #endif
+            }
+            .disabled(!member.isPersonalInviteReady)
+        }
+        if !member.isMe {
+            Divider()
+            if member.canBeReleased {
                 Button {
-                    send(MembersUiEventOnPersonalInviteClicked(memberId: member.id))
+                    send(MembersUiEventOnReleaseClicked(memberId: member.id))
                 } label: {
                     #if os(macOS)
-                    Label("Personal invite for \(member.name)…", systemImage: "link")
+                    Label("Release name…", systemImage: "lock.open")
                     #else
-                    Label("Personal invite for \(member.name)", systemImage: "link")
+                    Label("Release name", systemImage: "lock.open")
                     #endif
                 }
-                .disabled(!member.isPersonalInviteReady)
             }
-            if !member.isMe {
-                Divider()
-                if member.canBeReleased {
-                    Button {
-                        send(MembersUiEventOnReleaseClicked(memberId: member.id))
-                    } label: {
-                        #if os(macOS)
-                        Label("Release name…", systemImage: "lock.open")
-                        #else
-                        Label("Release name", systemImage: "lock.open")
-                        #endif
+            Button(role: .destructive) {
+                send(MembersUiEventOnRemoveClicked(memberId: member.id))
+            } label: {
+                Label {
+                    Text("Remove from group")
+                    // Why it is disabled
+                    if member.hasJoined {
+                        Text("\(member.name) already joined the group")
+                    } else if member.hasOpenBalance {
+                        Text("\(member.name) has an open balance")
                     }
-                }
-                Button(role: .destructive) {
-                    send(MembersUiEventOnRemoveClicked(memberId: member.id))
-                } label: {
-                    Label {
-                        Text("Remove from group")
-                        // Why it is disabled
-                        if member.hasJoined {
-                            Text("\(member.name) already joined the group")
-                        } else if member.hasOpenBalance {
-                            Text("\(member.name) has an open balance")
-                        }
-                    } icon: {
-                        Image(systemName: "trash")
-                    }
-                }
-                .disabled(!member.canBeRemoved)
-            }
-        } label: {
-            HStack(spacing: 12) {
-                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
-                VStack(alignment: .leading, spacing: 2) {
-                    if member.isMe {
-                        Text("\(member.name) (you)")
-                    } else {
-                        Text(verbatim: member.name)
-                    }
-                    Group {
-                        if member.isMe {
-                            Text("This \(DeviceName.current)")
-                        } else if member.hasJoined {
-                            Text("Joined")
-                        } else {
-                            Text("Hasn't joined yet")
-                        }
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if let balance = member.balance {
-                    MemberBalanceText(balance: balance, currency: currency)
-                        .font(.footnote.weight(.semibold))
-                }
-                if isReleasing {
-                    ProgressView()
-                        .controlSize(.small)
-                } else if member.hasJoined {
-                    Image(systemName: "checkmark")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Palette.accent)
-                        .accessibilityHidden(true)
+                } icon: {
+                    Image(systemName: "trash")
                 }
             }
-            .foregroundStyle(.primary)
-            .contentShape(.rect)
+            .disabled(!member.canBeRemoved)
         }
-        .menuIndicator(.hidden)
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text("Options for \(member.name)"))
+    }
+
+    private var content: some View {
+        HStack(spacing: 12) {
+            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
+            VStack(alignment: .leading, spacing: 2) {
+                if member.isMe {
+                    Text("\(member.name) (you)")
+                } else {
+                    Text(verbatim: member.name)
+                }
+                Group {
+                    if member.isMe {
+                        Text("This \(DeviceName.current)")
+                    } else if member.hasJoined {
+                        Text("Joined")
+                    } else {
+                        Text("Hasn't joined yet")
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if let balance = member.balance {
+                MemberBalanceText(balance: balance, currency: currency)
+                    .font(.footnote.weight(.semibold))
+            }
+            if isReleasing {
+                ProgressView()
+                    .controlSize(.small)
+            } else if member.hasJoined {
+                Image(systemName: "checkmark")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Palette.accent)
+                    .accessibilityHidden(true)
+            }
+        }
     }
 }
 

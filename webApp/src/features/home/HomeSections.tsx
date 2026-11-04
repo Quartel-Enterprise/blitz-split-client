@@ -159,7 +159,7 @@ interface GuestTip {
 
 /**
  * "Saldos com pessoas": a face per person you have an open balance with, whom you owe first, in a row that scrolls
- * sideways; " · 9" once it does. A face opens settling up with them for the net. A guest (a name nobody joined as)
+ * sideways; " · 9" once it does. A face opens the person's profile (an ex-member's settling up for the net). A guest (a name nobody joined as)
  * wears the crossed-out phone, and hovering it, focusing it or a long press shows why they get no notice. Gone,
  * leaving no gap, once everyone is settled; faces of gray while the first download hasn't brought anyone yet.
  */
@@ -278,7 +278,8 @@ function PersonFace({
     t(youOwe ? 'home_youOwePerson' : 'home_personOwesYou', { name, amount }),
     person.isGuest ? t('home_guestSuffix') : '',
     '. ',
-    t(youOwe ? 'balance_settle' : 'home_recordPayment'),
+    // Why: a face opens the person's profile; a former member's settles up, as they have none.
+    person.opensProfile ? t('home_openProfile') : t(youOwe ? 'balance_settle' : 'home_recordPayment'),
   ].join('')
   const cancelLongPress = () => {
     if (longPress.current) window.clearTimeout(longPress.current.timer)
@@ -311,7 +312,7 @@ function PersonFace({
       aria-label={label}
       aria-describedby={tipId}
       onClick={() => {
-        // Why: the tap ending a long press only showed the tip; it doesn't also open the settling up.
+        // Why: the tap ending a long press only showed the tip; it doesn't also open the person.
         if (longPress.current?.didShow) {
           longPress.current = null
           return

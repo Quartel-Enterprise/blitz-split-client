@@ -245,11 +245,13 @@ class BillDetailViewModelTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = ANA,
                     name = "Ana",
                     initials = "A",
                     avatarColor = AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = true,
                 ),
             ),
             state.payers,
@@ -268,11 +270,13 @@ class BillDetailViewModelTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = PIERRE,
                     name = "Pierre",
                     initials = "P",
                     avatarColor = AvatarColor.BLUE,
                     photoUrl = null,
                     isMe = true,
+                    opensProfile = true,
                 ),
             ),
             state.payers,
@@ -304,18 +308,22 @@ class BillDetailViewModelTest {
             assertEquals(
                 listOf(
                     BillPayer(
+                        memberId = ANA,
                         name = "Ana",
                         initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = BRUNO,
                         name = "Bruno",
                         initials = "B",
                         avatarColor = AvatarColor.GREEN,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                 ),
                 state.payers,
@@ -358,25 +366,31 @@ class BillDetailViewModelTest {
             assertEquals(
                 listOf(
                     BillPayer(
+                        memberId = PIERRE,
                         name = "Pierre",
                         initials = "P",
                         avatarColor = AvatarColor.BLUE,
                         photoUrl = null,
                         isMe = true,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = ANA,
                         name = "Ana",
                         initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = FORMER,
                         name = null,
                         initials = "",
                         avatarColor = AvatarColor.entries.first(),
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = false,
                     ),
                 ),
                 state.payers,
@@ -411,6 +425,106 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf("Carla"), state.payers.map { it.name })
+        }
+
+    @Test
+    fun `GIVEN only Ana paid WHEN it opens THEN the payer line opens Ana`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payerId = ANA))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(ANA, state.lonePayer?.memberId)
+    }
+
+    @Test
+    fun `GIVEN only the device user paid WHEN it opens THEN the payer line opens them`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payerId = PIERRE))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(PIERRE, state.lonePayer?.memberId)
+        assertEquals(true, state.lonePayer?.isMe)
+    }
+
+    @Test
+    fun `GIVEN only someone who left the group paid WHEN it opens THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = FORMER))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN Ana and Bruno paid WHEN it opens THEN the payer line opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000))))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.lonePayer)
+    }
+
+    @Test
+    fun `GIVEN Ana and someone who left the group paid WHEN it opens THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 24_000), paid(FORMER, 24_000)),
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN only Ana paid WHEN a sync brings Bruno as a second payer THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = ANA))
+            val edited = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000)))
+
+            // When
+            expenses.expenses.value = listOf(edited)
+
+            // Then
+            assertNull(viewModel.uiState.value.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN Ana and Bruno paid WHEN a sync leaves Bruno as the only payer THEN the payer line opens Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000))))
+            val edited = expense(payerId = BRUNO)
+
+            // When
+            expenses.expenses.value = listOf(edited)
+
+            // Then
+            assertEquals(
+                BRUNO,
+                viewModel.uiState.value.lonePayer
+                    ?.memberId,
+            )
         }
 
     @Test
@@ -877,6 +991,7 @@ class BillDetailViewModelTest {
                         hasJoined = true,
                         paidMinor = 48_000,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = PIERRE,
@@ -888,6 +1003,7 @@ class BillDetailViewModelTest {
                         hasJoined = true,
                         paidMinor = null,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = BRUNO,
@@ -899,6 +1015,7 @@ class BillDetailViewModelTest {
                         hasJoined = false,
                         paidMinor = null,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = CARLA,
@@ -910,6 +1027,7 @@ class BillDetailViewModelTest {
                         hasJoined = false,
                         paidMinor = null,
                         shareMinor = null,
+                        opensProfile = true,
                     ),
                 ),
                 state.people,
@@ -1165,6 +1283,225 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Bruno has not joined WHEN tapping Bruno THEN opens his profile by his name over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, groupRoute, route, Route.ContactProfile("name:bruno")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a guest named in capitals with two spaces WHEN tapping him THEN keys him as Contatos does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(ana, pierre, bruno.copy(name = "Bruno  Lima"), carla)),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, groupRoute, route, Route.ContactProfile("name:bruno lima")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana joined with her account WHEN tapping Ana THEN opens the profile of her account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(ana.copy(userId = ANA_USER), pierre, bruno, carla)),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, groupRoute, route, Route.ContactProfile("user:$ANA_USER")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla is left out of the split WHEN tapping Carla THEN opens her profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(CARLA))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, groupRoute, route, Route.ContactProfile("name:carla")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN the device user joined with an account WHEN tapping them THEN opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = trip.copy(members = listOf(ana, pierre.copy(userId = PIERRE_USER), bruno, carla)),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(PIERRE))
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN someone who left the group paid WHEN tapping them THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpense = expense(
+                payerId = FORMER,
+                shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(FORMER))
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping someone the device does not know THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked("member-unknown"))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping a person THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Editar conta is open over the bill WHEN a late tap on Bruno arrives THEN nothing opens over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+            val editing = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(editing, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a native back already closed the bill WHEN tapping Bruno THEN nothing opens over the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN someone who left the group has a part WHEN it opens THEN only the members rows open a profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(ANA to true, PIERRE to true, BRUNO to true, CARLA to true, FORMER to false),
+                state.people.map { it.memberId to it.opensProfile },
+            )
+        }
+
+    @Test
+    fun `GIVEN comments by Bruno and by someone outside the group WHEN it opens THEN only Bruno opens a profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(
+                    comment(
+                        id = "c1",
+                        postedAt = earlierToday,
+                    ),
+                    comment(
+                        id = "c2",
+                        authorMemberId = null,
+                        authorName = "Diego",
+                        postedAt = laterToday,
+                    ),
+                ),
+            )
+
+            // When
+            val threads = viewModel.uiState.value.threads
+                .loadedItems()
+
+            // Then
+            assertEquals(listOf(BRUNO, null), threads.map { it.comment.authorMemberId })
+        }
+
+    @Test
+    fun `GIVEN Ana created the bill WHEN it opens THEN her history line opens her profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(created))
+
+        // When
+        val history = viewModel.uiState.value.history
+            .loadedItems()
+
+        // Then
+        assertEquals(
+            ANA,
+            history
+                .single()
+                .entries
+                .single()
+                .actorMemberId,
+        )
     }
 
     @Test
@@ -2706,6 +3043,7 @@ class BillDetailViewModelTest {
     )
 
     private fun TestScope.prepareScenario(
+        storedGroup: Group = trip,
         storedExpense: Expense? = expense(),
         isRoomRead: Boolean = true,
         timeZone: TimeZone = TimeZone.UTC,
@@ -2726,7 +3064,7 @@ class BillDetailViewModelTest {
     ) {
         isOnline.value = online
         this@BillDetailViewModelTest.firstDownload.value = firstDownload
-        groups = FakeGroupRepository(initialGroups = listOf(trip))
+        groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense)).also {
             it.deleteError = deleteError
@@ -2816,5 +3154,7 @@ class BillDetailViewModelTest {
         const val CARLA = "member-4"
         const val FORMER = "member-9"
         const val OTHER_FORMER = "member-10"
+        const val ANA_USER = "user-ana"
+        const val PIERRE_USER = "user-pierre"
     }
 }

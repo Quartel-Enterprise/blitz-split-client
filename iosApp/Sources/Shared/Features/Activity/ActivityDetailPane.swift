@@ -104,7 +104,15 @@ private struct ActivityItemDetail: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 14) {
-            ActivityFace(item: item, size: Self.faceSize)
+            // The face opens whoever did it, their profile or Profile for this device's user
+            if item.actor.opensProfile {
+                ActivityFace(item: item, size: Self.faceSize)
+                    .opensProfile { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
+                    // The name alone: the hint already says the tap opens the profile
+                    .accessibilityLabel(Text(verbatim: ActivityCopy.actor(item)))
+            } else {
+                ActivityFace(item: item, size: Self.faceSize)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 ActivityCopy.headline(item)
                     .font(.title3)

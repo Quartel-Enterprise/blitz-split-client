@@ -10,10 +10,12 @@ import androidx.compose.ui.semantics.Role
  */
 fun Modifier.clickableWhen(
     isClickable: Boolean,
+    onClickLabel: String? = null,
     onClick: () -> Unit,
 ): Modifier = if (isClickable) {
     clickable(
         role = Role.Button,
+        onClickLabel = onClickLabel,
         onClick = onClick,
     )
 } else {

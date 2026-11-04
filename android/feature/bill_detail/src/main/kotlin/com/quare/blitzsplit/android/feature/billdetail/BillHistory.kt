@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -162,7 +164,10 @@ private fun HistoryEntryRow(
             },
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        ActorAvatarIcon(entry)
+        ActorAvatarIcon(
+            entry = entry,
+            onClick = { entry.actorMemberId?.let { onEvent(BillDetailUiEvent.OnPersonClicked(it)) } },
+        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -298,14 +303,23 @@ private fun DiffLine(diff: HistoryDiff) {
 
 // Why: who did it, with what they did at its corner, as Atividade draws its rows.
 @Composable
-private fun ActorAvatarIcon(entry: BillHistoryEntry) {
+private fun ActorAvatarIcon(
+    entry: BillHistoryEntry,
+    onClick: () -> Unit,
+) {
     val rowColor = MaterialTheme.colorScheme.surfaceContainerLowest
+    val name = personNameOf(entry.actorName, entry.actorIsMe)
     Box {
+        // Why: the actor's face opens their profile while they are in the group, named for TalkBack.
         AvatarBadge(
             initial = entry.actorInitials,
             color = entry.actorColor,
             photoUrl = entry.actorPhotoUrl,
             size = actorAvatarSize,
+            modifier = Modifier
+                .clip(CircleShape)
+                .semantics { if (entry.actorMemberId != null) contentDescription = name }
+                .opensProfile(onClick.takeIf { entry.actorMemberId != null }),
         )
         Box(
             modifier = Modifier

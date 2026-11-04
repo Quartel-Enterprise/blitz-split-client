@@ -66,6 +66,10 @@ data class BillDetailUiState(
     // Why: a photo picked and being made ready, which takes a moment on a large one.
     val isAddingPhoto: Boolean,
 ) {
+    // Why: "Ana pagou" opens Ana's profile; several payers each have their row in the split, which opens them instead.
+    val lonePayer: BillPayer?
+        get() = payers.singleOrNull()?.takeIf { it.opensProfile }
+
     // Why: "Anexos · 2 de 5 fotos"; the receipt isn't one of them. Null while the attachments load.
     val photoCount: Int?
         get() = attachments.valueOrNull()?.count { !it.isReceipt }

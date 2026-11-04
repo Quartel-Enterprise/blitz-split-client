@@ -3,7 +3,7 @@ import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsB
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
@@ -63,6 +63,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     presenter.reply(commentId)
     composerRef.current?.focus()
   }
+  const openPerson = (memberId: string) => presenter.openPerson(memberId)
   const actions = isLoaded && <BillActions presenter={presenter} state={state} />
   const groupName = isLoaded ? (
     <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
@@ -76,8 +77,8 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   )
   const conversation = isLoaded && (
     <>
-      <BillComments state={state} onReply={onReply} />
-      <BillHistory history={state.history} isUndoing={state.isUndoing} money={money} onUndo={() => presenter.undo()} />
+      <BillComments state={state} onReply={onReply} onPerson={openPerson} />
+      <BillHistory history={state.history} isUndoing={state.isUndoing} money={money} onUndo={() => presenter.undo()} onPerson={openPerson} />
     </>
   )
   const composer = (className: string) => isLoaded && <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
@@ -102,6 +103,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
         state={state}
         money={money}
         attachments={attachments}
+        onPerson={openPerson}
         title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
         description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</SheetDescription>}
       />
@@ -160,6 +162,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
                 state={state}
                 money={money}
                 attachments={attachments}
+                onPerson={openPerson}
                 title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
                 description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
               />
@@ -231,12 +234,30 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
 
 /** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
 export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
-  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote'>>
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId'>>
 
-/** The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. */
-export function BillBody({ state, money, attachments, title, description }: { state: BillBodyState; money: Money; attachments: ReactNode; title: ReactNode; description: ReactNode }) {
+/**
+ * The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. A
+ * person's row, and a lone payer, open their profile through `onPerson`.
+ */
+export function BillBody({
+  state,
+  money,
+  attachments,
+  title,
+  description,
+  onPerson,
+}: {
+  state: BillBodyState
+  money: Money
+  attachments: ReactNode
+  title: ReactNode
+  description: ReactNode
+  onPerson?: (memberId: string) => void
+}) {
   const paid = paidText(state.payers)
   const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
+  const lonePayerId = state.lonePayerId
   return (
     <div className="flex flex-col gap-6">
       <div className="flex min-w-0 flex-col gap-5">
@@ -251,7 +272,10 @@ export function BillBody({ state, money, attachments, title, description }: { st
         </div>
         <div className="flex flex-col gap-1.5">
           <span className="text-[32px] leading-10 font-semibold tracking-tight tabular-nums">{money(state.totalMinor)}</span>
-          <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          <PersonButton
+            onOpen={onPerson && lonePayerId ? () => onPerson(lonePayerId) : null}
+            className="flex items-center gap-2 self-start text-sm text-muted-foreground"
+          >
             {faces.length > 0 && (
               <span aria-hidden className="flex shrink-0">
                 {faces.map((payer, index) => (
@@ -260,7 +284,7 @@ export function BillBody({ state, money, attachments, title, description }: { st
               </span>
             )}
             {paid}
-          </span>
+          </PersonButton>
           {state.isPending && (
             <span
               role="status"
@@ -282,7 +306,7 @@ export function BillBody({ state, money, attachments, title, description }: { st
         </h3>
         <ul className="flex flex-col divide-y border-y">
           {state.people.map((row) => (
-            <ShareRow key={row.memberId} row={row} money={money} />
+            <ShareRow key={row.memberId} row={row} money={money} onOpen={onPerson && row.opensProfile ? () => onPerson(row.memberId) : null} />
           ))}
         </ul>
       </section>
@@ -329,8 +353,11 @@ function myPartNoteText(note: JsMyPartNote, money: Money): string {
   return t('billDetail_noteOwedByTotal', { names: formatNames(names), amount: money(note.totalMinor ?? 0) })
 }
 
-/** A person's part: "Pagou R$ 642,00", "Ainda não entrou" or "Não participa" under the name, "—" when out of it. */
-function ShareRow({ row, money }: { row: JsBillShareRow; money: Money }) {
+/**
+ * A person's part: "Pagou R$ 642,00", "Ainda não entrou" or "Não participa" under the name, "—" when out of it. The
+ * whole row opens their profile.
+ */
+function ShareRow({ row, money, onOpen }: { row: JsBillShareRow; money: Money; onOpen: (() => void) | null }) {
   const name = row.isMe ? t('splitBill_you') : nameOrFormer(row.name)
   const subtitle =
     row.paidMinor != null
@@ -341,7 +368,8 @@ function ShareRow({ row, money }: { row: JsBillShareRow; money: Money }) {
           ? t('billDetail_rowNotInBill')
           : null
   return (
-    <li className="flex min-h-12 items-center gap-3 py-2">
+    <li className="flex">
+      <PersonButton onOpen={onOpen} className="flex min-h-12 min-w-0 flex-1 items-center gap-3 py-2">
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>
@@ -350,6 +378,7 @@ function ShareRow({ row, money }: { row: JsBillShareRow; money: Money }) {
       <span className={cn('font-mono text-[13px] tabular-nums', row.shareMinor == null && 'text-muted-foreground')}>
         {row.shareMinor != null ? money(row.shareMinor) : '—'}
       </span>
+      </PersonButton>
     </li>
   )
 }

@@ -37,6 +37,8 @@ data class ContactProfileUiState(
      * selects and its back names.
      */
     val homeTab: HomeTab,
+    // Why: right above that tab, back returns to it and the web's back names it; over a bill or a group it says "Voltar".
+    val isOverHomeTab: Boolean,
 ) {
     val initials: String
         get() = contact?.name?.let(Initials::of).orEmpty()

@@ -52,12 +52,17 @@ struct BillQueuedLine: View {
 }
 
 /// One comment or reply: the face, "Carla · Via link · Today, 8:40 AM", what was written, "Queued" while it waits
-/// to go up, and "Reply".
+/// to go up, and "Reply". The author's face and name open their profile while they are in the group.
 struct BillCommentView: View {
     let comment: BillCommentRow
     let isReply: Bool
     let metrics: BillTalkMetrics
+    let onPerson: (String) -> Void
     let onReply: () -> Void
+
+    private var openAuthor: (() -> Void)? {
+        comment.authorMemberId.map { id in { onPerson(id) } }
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: metrics.spacing) {
@@ -67,6 +72,8 @@ struct BillCommentView: View {
                 photoUrl: comment.photoUrl,
                 size: isReply ? metrics.replyAvatar : metrics.avatar,
             )
+            // The name is the one stop for VoiceOver; the face is only a bigger target for the finger
+            .opensProfile(openAuthor)
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 header
@@ -92,6 +99,7 @@ struct BillCommentView: View {
             Text(verbatim: BillCopy.author(comment))
                 .fontWeight(.semibold)
                 .lineLimit(1)
+                .opensProfile(openAuthor)
             if comment.viaLink {
                 Text("Via link", comment: "A comment written through the bill's open link, by someone out of the group")
                     .font(.caption2.weight(.semibold))
@@ -154,13 +162,15 @@ struct BillNoComments: View {
 }
 
 /// One line of History: the face with what was done on its corner, "**Ana** changed the category · 9:12 AM", what
-/// changed ("Bar → Restaurant"), Created's note, and "Undo" on the latest edit.
+/// changed ("Bar → Restaurant"), Created's note, and "Undo" on the latest edit. The face opens the actor's profile
+/// while they are in the group.
 struct BillHistoryEntryView: View {
     let entry: BillHistoryEntry
     let currency: GroupCurrency
     let categories: CategoryTree
     let isUndoing: Bool
     let metrics: BillTalkMetrics
+    let onPerson: (String) -> Void
     let onUndo: () -> Void
 
     var body: some View {
@@ -201,8 +211,8 @@ struct BillHistoryEntryView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        // "Undo" stays a button of its own
-        .accessibilityElement(children: entry.canUndo ? .contain : .combine)
+        // "Undo" and the face that opens the profile stay buttons of their own
+        .accessibilityElement(children: entry.canUndo || entry.actorMemberId != nil ? .contain : .combine)
     }
 
     private var face: some View {
@@ -222,7 +232,9 @@ struct BillHistoryEntryView: View {
                     .overlay(Circle().strokeBorder(Palette.card, lineWidth: 1.5))
                     .offset(x: badge * 0.25, y: badge * 0.25)
             }
-            .accessibilityHidden(true)
+            .accessibilityLabel(Text(verbatim: BillCopy.actor(entry)))
+            .opensProfile(entry.actorMemberId.map { id in { onPerson(id) } })
+            .accessibilityHidden(entry.actorMemberId == nil)
     }
 }
 

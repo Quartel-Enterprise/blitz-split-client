@@ -446,7 +446,9 @@ private struct StatsPeopleSection: View {
             .labelsHidden()
             VStack(spacing: 0) {
                 ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, person in
-                    StatsPersonLine(person: person, currency: state.currency)
+                    StatsPersonLine(person: person, currency: state.currency) {
+                        model.send(GroupStatsUiEventOnPersonClicked(memberId: person.memberId))
+                    }
                     if index < state.people.count - 1 {
                         Divider().padding(.leading, 64)
                     }
@@ -475,9 +477,11 @@ private struct StatsPeopleSection: View {
     }
 }
 
+/// A person of "By person": the row opens their profile (Profile for you), which a former member doesn't have.
 private struct StatsPersonLine: View {
     let person: StatsPersonRow
     let currency: GroupCurrency
+    let onOpen: () -> Void
 
     var body: some View {
         StatsAvatarRow(
@@ -499,6 +503,7 @@ private struct StatsPersonLine: View {
                 StatsAmountBar(fraction: person.barFraction)
             }
         }
+        .opensProfile(person.opensProfile ? onOpen : nil)
     }
 }
 

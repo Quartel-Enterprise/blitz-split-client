@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -260,6 +262,8 @@ class BillDetailViewModel(
     fun onEvent(event: BillDetailUiEvent) {
         when (event) {
             BillDetailUiEvent.OnBackClicked -> leave()
+
+            is BillDetailUiEvent.OnPersonClicked -> openPerson(event.memberId)
 
             BillDetailUiEvent.OnEditClicked -> edit()
 
@@ -534,6 +538,12 @@ class BillDetailViewModel(
             ).onFailure { uiAction.emit(BillDetailUiAction.ShowUndoError) }
             uiState.update { it.copy(isUndoing = false) }
         }
+    }
+
+    // Why: only someone still in the group has a profile, and only Conta on top takes the tap.
+    private fun openPerson(memberId: String) {
+        val member = shownGroup?.members?.firstOrNull { it.id == memberId }
+        if (member != null && isOnTop()) navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
     }
 
     private fun edit() {

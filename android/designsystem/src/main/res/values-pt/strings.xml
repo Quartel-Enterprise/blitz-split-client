@@ -211,6 +211,7 @@
     <string name="designsystem_photo_crop_confirm">Pronto</string>
     <string name="designsystem_search">Buscar</string>
     <string name="designsystem_loading">Carregando</string>
+    <string name="designsystem_open_profile">Abrir perfil</string>
     <string name="designsystem_waiting_for_internet">Sem internet. Seus dados aparecem quando reconectar.</string>
     <plurals name="designsystem_category_delete_text">
         <item quantity="one">A %1$d conta com %2$s passa para %3$s. A categoria some para todo o %4$s.</item>

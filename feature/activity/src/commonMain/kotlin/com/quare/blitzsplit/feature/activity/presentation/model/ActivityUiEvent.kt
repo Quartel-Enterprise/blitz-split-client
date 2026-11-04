@@ -17,6 +17,11 @@ sealed interface ActivityUiEvent : UiEvent {
         val itemId: String,
     ) : ActivityUiEvent
 
+    // Why: the face of whoever did it, which opens their profile instead of the item (Pierre's call, beta feedback 18).
+    data class OnActorClicked(
+        val itemId: String,
+    ) : ActivityUiEvent
+
     // Why: the group's name in the detail beside the list, which opens the group.
     data class OnGroupClicked(
         val itemId: String,

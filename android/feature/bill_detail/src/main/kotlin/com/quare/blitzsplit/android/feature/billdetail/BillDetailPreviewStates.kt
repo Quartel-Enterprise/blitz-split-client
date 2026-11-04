@@ -57,11 +57,13 @@ internal fun createPreviewBillDetailState(
         spentDay = RelativeDay.YESTERDAY,
         payers = listOf(
             BillPayer(
+                memberId = if (isMePayer) "pierre" else "bruno",
                 name = if (isMePayer) "Pierre" else "Bruno",
                 initials = if (isMePayer) "P" else "B",
                 avatarColor = if (isMePayer) AvatarColor.PEACH else AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = isMePayer,
+                opensProfile = true,
             ),
         ),
         categoryId = AppCategory.FOOD_MARKET.key,
@@ -223,6 +225,7 @@ private fun createPreviewComment(
     isPending: Boolean = false,
 ): BillCommentRow = BillCommentRow(
     id = id,
+    authorMemberId = id,
     authorName = name,
     initials = initials,
     avatarColor = color,
@@ -338,6 +341,7 @@ private fun createPreviewEntry(
     actorColor = if (isMe) AvatarColor.PEACH else AvatarColor.GREEN,
     actorPhotoUrl = null,
     actorIsMe = isMe,
+    actorMemberId = id,
     occurredAt = PREVIEW_NOW,
     changes = changes,
     amountMinor = PREVIEW_TOTAL_MINOR.takeIf { kind == BillHistoryKind.CREATED },
@@ -367,4 +371,5 @@ private fun createPreviewRow(
     hasJoined = hasJoined,
     paidMinor = null,
     shareMinor = null,
+    opensProfile = true,
 )

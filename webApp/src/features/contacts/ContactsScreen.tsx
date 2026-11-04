@@ -89,7 +89,7 @@ function ProfileOverList({ personKey }: { personKey: string }) {
             presenter={profile.presenter}
             state={profile.state}
             contact={profile.state.contact}
-            backLabel={homeTabLabel(homeTab)}
+            backLabel={profile.state.isOverHomeTab ? homeTabLabel(homeTab) : t('common_back')}
             onBack={() => profile.presenter?.back()}
           />
         )}

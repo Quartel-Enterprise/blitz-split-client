@@ -976,6 +976,318 @@ class ActivityViewModelTest {
 
     // endregion
 
+    // region The face of whoever did it
+
+    @Test
+    fun `GIVEN an item by a guest WHEN Atividade opens THEN the face opens the guest by name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == CARLA_BILL }
+                .actor
+
+            // Then
+            assertEquals("name:carla", actor.personKey)
+            assertFalse(actor.isMe)
+            assertTrue(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN an item by someone who joined WHEN Atividade opens THEN the face opens their account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == EDIT_JANTAR }
+                .actor
+
+            // Then
+            assertEquals("user:bruno", actor.personKey)
+            assertTrue(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN an event with only an account WHEN Atividade opens THEN finds the actor by the account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    event(
+                        id = "ana-by-account",
+                        actorMemberId = null,
+                        actorUserId = "ana",
+                    ),
+                ),
+            )
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single()
+                .actor
+
+            // Then
+            assertEquals("user:ana", actor.personKey)
+            assertTrue(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN your own event WHEN Atividade opens THEN the face opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val actor = viewModel.uiState.value.items
+            .single { it.id == MERCADO_CREATED }
+            .actor
+
+        // Then
+        assertTrue(actor.isMe)
+        assertTrue(actor.opensProfile)
+    }
+
+    @Test
+    fun `GIVEN a change waiting to be sent WHEN Atividade opens THEN its face is yours and opens Perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedQueued = listOf(queued(id = "bill-queued")))
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == "bill-queued" }
+                .actor
+
+            // Then
+            assertTrue(actor.isMe)
+            assertTrue(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN an item by someone no longer in the group WHEN Atividade opens THEN the face opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(byGoneMember) + defaultEvents)
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == GONE_BILL }
+                .actor
+
+            // Then
+            assertNull(actor.personKey)
+            assertFalse(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN another person in a group gone from the device WHEN Atividade opens THEN the face opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(praiaBillByAna) + defaultEvents)
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == PRAIA_BILL }
+                .actor
+
+            // Then
+            assertNull(actor.personKey)
+            assertFalse(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN your own item of a group gone from the device WHEN Atividade opens THEN the face opens Perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(praiaBillByMe) + defaultEvents)
+
+            // When
+            val actor = viewModel.uiState.value.items
+                .single { it.id == PRAIA_BILL }
+                .actor
+
+            // Then
+            assertNull(actor.personKey)
+            assertTrue(actor.isMe)
+            assertTrue(actor.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN an item by a guest WHEN tapping the face THEN opens the guest profile over Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(CARLA_BILL))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.ContactProfile("name:carla")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN an unread item WHEN tapping the face THEN marks nothing read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(CARLA_BILL))
+
+        // Then
+        assertTrue(
+            activity.readState.value.readEventIds
+                .isEmpty(),
+        )
+        assertTrue(
+            viewModel.uiState.value.items
+                .single { it.id == CARLA_BILL }
+                .isUnread,
+        )
+    }
+
+    @Test
+    fun `GIVEN the detail beside the list WHEN tapping the face of another item THEN keeps the item picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(EDIT_JANTAR))
+
+            // Then
+            assertEquals(PAYMENT_ANA, viewModel.uiState.value.pickedItemId)
+            assertEquals(
+                listOf(Route.Home, route, Route.ContactProfile("user:bruno")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item by someone who joined WHEN tapping the face THEN opens their account profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(EDIT_JANTAR))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.ContactProfile("user:bruno")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN your own event WHEN tapping the face THEN opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(MERCADO_CREATED))
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a charge you sent with no member WHEN tapping the face THEN opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(CHARGE_CARLA))
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a change waiting to be sent WHEN tapping the face THEN opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedQueued = listOf(queued(id = "bill-queued")))
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked("bill-queued"))
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN an item by someone no longer in the group WHEN tapping the face THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(byGoneMember) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(GONE_BILL))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another person in a group gone from the device WHEN tapping the face THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(praiaBillByAna) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(PRAIA_BILL))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN your own item of a group no longer on the device WHEN tapping the face THEN opens Perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(praiaBillByMe) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(PRAIA_BILL))
+
+            // Then
+            assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN an id not in the feed WHEN tapping the face THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked("unknown"))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping a face THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(CARLA_BILL))
+
+        // Then
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+    }
+
+    // endregion
+
     // region Filtrar
 
     @Test
@@ -2254,6 +2566,42 @@ class ActivityViewModelTest {
         occurredAt = NOW - 30 * MINUTE,
     )
 
+    // Why: a bill Carla, a guest of Apê 302 (no account), created.
+    private val carlaBill = event(
+        id = CARLA_BILL,
+        seq = 8L,
+        actorMemberId = CARLA_APE,
+        actorUserId = null,
+        occurredAt = NOW - 20 * MINUTE,
+    )
+
+    // Why: a bill by a member no longer in Apê 302, with an account no member has.
+    private val byGoneMember = event(
+        id = GONE_BILL,
+        seq = 8L,
+        actorMemberId = "gone-member",
+        actorUserId = "gone-user",
+        occurredAt = NOW - 20 * MINUTE,
+    )
+
+    private val praiaBillByAna = event(
+        id = PRAIA_BILL,
+        groupId = PRAIA,
+        groupName = "Praia",
+        actorMemberId = "ana-praia",
+        actorUserId = "ana",
+        targetId = "bill-praia",
+    )
+
+    private val praiaBillByMe = event(
+        id = PRAIA_BILL,
+        groupId = PRAIA,
+        groupName = "Praia",
+        actorMemberId = "me-praia",
+        actorUserId = "pierre",
+        targetId = "bill-praia",
+    )
+
     private val pastelCreated = event(
         id = PASTEL_CREATED,
         seq = 6L,
@@ -2447,5 +2795,8 @@ class ActivityViewModelTest {
         const val DIEGO_ADDED = "diego-added"
         const val MERCADO_CREATED = "mercado-created"
         const val PASTEL_CREATED = "pastel-created"
+        const val CARLA_BILL = "carla-bill"
+        const val GONE_BILL = "gone-bill"
+        const val PRAIA_BILL = "praia-bill"
     }
 }

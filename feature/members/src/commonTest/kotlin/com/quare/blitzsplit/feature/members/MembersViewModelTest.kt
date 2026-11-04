@@ -272,6 +272,207 @@ class MembersViewModelTest {
         }
 
     @Test
+    fun `GIVEN a guest with spaces and capitals in the name WHEN tapping their row THEN opens their contact by name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre, ana, bruno, carla.copy(name = "Carla  Dias"))),
+            )
+            val event = MembersUiEvent.OnMemberClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.ContactProfile("name:carla dias"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone who joined with an account WHEN tapping their row THEN opens their contact by account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre, ana, bruno.copy(userId = "user-bruno"), carla)),
+            )
+            val event = MembersUiEvent.OnMemberClicked("member-3")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.ContactProfile("user:user-bruno"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user with an account WHEN tapping their own row THEN opens Perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre.copy(userId = "user-pierre"), ana, bruno, carla)),
+            )
+            val event = MembersUiEvent.OnMemberClicked("member-1")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping the row of an unknown member THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = MembersUiEvent.OnMemberClicked("member-99")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping the row of a member THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomReadAtStart = false)
+        val event = MembersUiEvent.OnMemberClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a bill of the group beside it WHEN tapping a guest THEN their contact takes the place of the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+            val event = MembersUiEvent.OnMemberClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.ContactProfile("name:carla"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill of the group beside it WHEN tapping their own row THEN Perfil opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+            val event = MembersUiEvent.OnMemberClicked("member-1")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.BillDetail("group-1", "dinner"),
+                    Route.Profile,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping the row of a guest THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
+            val event = MembersUiEvent.OnMemberClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping their own row THEN the back stack stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.Invite("group-1", isNewGroup = false))
+        val event = MembersUiEvent.OnMemberClicked("member-1")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                Route.Invite("group-1", isNewGroup = false),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a native back closed the group WHEN tapping the row of a guest THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+            val event = MembersUiEvent.OnMemberClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN someone whose link has not come yet WHEN tapping their personal invite THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given

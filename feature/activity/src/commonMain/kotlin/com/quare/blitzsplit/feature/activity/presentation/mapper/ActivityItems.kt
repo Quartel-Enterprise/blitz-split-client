@@ -186,6 +186,7 @@ private fun actorOf(
         isMe = isMe,
         initials = name?.let { Initials.ofMember(it, isMe) }.orEmpty(),
         color = member?.avatarColor ?: AvatarColor.default,
+        personKey = member?.let(PeopleBalances::keyOf),
     )
 }
 

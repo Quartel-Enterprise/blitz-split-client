@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -196,6 +197,11 @@ class ActivityViewModel(
             is ActivityUiEvent.OnItemClicked -> clickItem(event.itemId)
 
             is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let(::openTarget)
+
+            is ActivityUiEvent.OnActorClicked -> itemOrNull(event.itemId)
+                ?.actor
+                ?.takeIf { it.opensProfile && isOnTop() }
+                ?.let { actor -> navigator.openPersonProfile(actor.personKey, actor.isMe) }
 
             // Why: only a group still on the device; one deleted or left keeps its name, with nothing to open.
             is ActivityUiEvent.OnGroupClicked -> itemOrNull(event.itemId)

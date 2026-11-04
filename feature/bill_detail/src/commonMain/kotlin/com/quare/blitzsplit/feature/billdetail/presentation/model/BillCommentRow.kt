@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.model.AvatarColor
 // Why: one comment, "Carla · ontem, 22:40"; each UI says "Você" for isMe.
 data class BillCommentRow(
     val id: String,
+    // Why: the author while still in the group, whose face and name open their profile; null for anyone else.
+    val authorMemberId: String?,
     // Why: the member's name as it is now, else the name it was written under; null when the server kept none.
     val authorName: String?,
     val initials: String,

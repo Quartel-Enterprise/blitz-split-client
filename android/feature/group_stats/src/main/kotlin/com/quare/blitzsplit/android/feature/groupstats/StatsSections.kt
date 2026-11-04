@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
@@ -309,13 +311,21 @@ internal fun StatsPeopleSection(
         )
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             state.people.forEachIndexed { index, person ->
+                val shape = groupedRowShapeOf(index, state.people.size)
+                // Why: the row opens their profile (Perfil for this device's user); an ex-member has none.
                 StatsPersonRowItem(
                     person = person,
                     money = money,
-                    modifier = Modifier.background(
-                        MaterialTheme.colorScheme.surfaceContainerLowest,
-                        groupedRowShapeOf(index, state.people.size),
-                    ),
+                    modifier = Modifier
+                        .clip(shape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                        .opensProfile(
+                            {
+                                onEvent(
+                                    GroupStatsUiEvent.OnPersonClicked(person.memberId),
+                                )
+                            }.takeIf { person.opensProfile },
+                        ),
                 )
             }
         }

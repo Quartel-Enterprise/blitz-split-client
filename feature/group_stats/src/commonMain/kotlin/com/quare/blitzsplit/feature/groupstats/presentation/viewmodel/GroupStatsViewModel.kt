@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
@@ -22,7 +23,9 @@ import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
@@ -187,6 +190,8 @@ class GroupStatsViewModel(
 
             GroupStatsUiEvent.OnBiggestExpenseClicked -> openBiggestExpense()
 
+            is GroupStatsUiEvent.OnPersonClicked -> openPerson(event.memberId)
+
             GroupStatsUiEvent.OnSplitBillClicked -> open(
                 Route.SplitBill(
                     groupId = route.groupId,
@@ -334,6 +339,20 @@ class GroupStatsViewModel(
         ).createOrNull(inputs.span)
         settling = inputs to result
         return result
+    }
+
+    /*
+     * Why: over the statistics, or in the place of "Maior despesa" the Mac draws beside them (its inspector, which
+     * leaves the rows clickable), as Membros opens a person.
+     */
+    private fun openPerson(memberId: String) {
+        val member = group?.members?.firstOrNull { it.id == memberId } ?: return
+        val next = personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe) ?: return
+        navigator.openFromGroupScreen(
+            from = route,
+            groupId = route.groupId,
+            next = next,
+        )
     }
 
     private fun openBiggestExpense() {

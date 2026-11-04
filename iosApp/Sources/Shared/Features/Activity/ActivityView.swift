@@ -489,6 +489,8 @@ private struct ActivityRow: View {
         VStack(alignment: .leading, spacing: 6) {
             #if os(macOS)
             summary
+                .overlay(alignment: .topLeading) { actorButton }
+                .accessibilityActions { actorAction }
             #else
             Button {
                 model.send(ActivityUiEventOnItemClicked(itemId: item.id))
@@ -496,6 +498,10 @@ private struct ActivityRow: View {
                 summary
             }
             .buttonStyle(.plain)
+            // Over the row's button rather than inside its label, so the face's tap never reaches the row
+            .overlay(alignment: .topLeading) { actorButton }
+            // On the button itself, not its label, so VoiceOver's Actions keep it
+            .accessibilityActions { actorAction }
             #endif
             if item.hasChangesToShow, !showsDetail {
                 ActivityRowChanges(model: model, item: item, isExpanded: isExpanded)
@@ -542,6 +548,37 @@ private struct ActivityRow: View {
         .contentShape(.rect)
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnread ? Text("Unread") : Text(verbatim: ""))
+    }
+
+    /// VoiceOver reaches the face's tap as an action of the row.
+    @ViewBuilder
+    private var actorAction: some View {
+        if let openActor {
+            Button(ActivityCopy.openActorLabel(item), action: openActor)
+        }
+    }
+
+    /// A clear button over the face, which opens whoever did it apart from the row; VoiceOver has it as the row's
+    /// action instead.
+    @ViewBuilder
+    private var actorButton: some View {
+        if let openActor {
+            Button(action: openActor) {
+                Color.clear
+                    .frame(width: Self.faceSize, height: Self.faceSize)
+                    .contentShape(.circle)
+            }
+            .buttonStyle(.plain)
+            // The unread dot and the face's inset come before it
+            .padding(.leading, 11)
+            .accessibilityHidden(true)
+        }
+    }
+
+    /// The face opens whoever did it: their profile, or Profile for this device's user (Pierre's call, item 18).
+    private var openActor: (() -> Void)? {
+        guard item.actor.opensProfile else { return nil }
+        return { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
     }
 
     private var rowFont: Font {

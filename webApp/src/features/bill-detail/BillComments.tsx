@@ -1,7 +1,7 @@
 import { CornerDownRight, SendHorizontal, X } from 'lucide-react'
 import type { BillDetailPresenter, JsBillCommentRow, JsBillDetailState } from 'blitzsplit-shared'
 import type { KeyboardEvent, Ref } from 'react'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
@@ -19,8 +19,9 @@ export type ComposerPresenter = Pick<BillDetailPresenter, 'changeComment' | 'sen
 /**
  * "Comentários", with its count: each comment and, one level under it, its replies, in the order they were written.
  * "Responder" on any of them points the composer at it; without `onReply` (no composer to answer in) it doesn't show.
+ * An author's face and name open their profile through `onPerson`, while they are in the group.
  */
-export function BillComments({ state, onReply }: { state: CommentsState; onReply?: (commentId: string) => void }) {
+export function BillComments({ state, onReply, onPerson }: { state: CommentsState; onReply?: (commentId: string) => void; onPerson?: (memberId: string) => void }) {
   return (
     <section aria-labelledby="bill-comments-title" className="flex flex-col">
       <h3 id="bill-comments-title" className="flex justify-between text-sm font-medium">
@@ -32,12 +33,12 @@ export function BillComments({ state, onReply }: { state: CommentsState; onReply
       <ul className="flex flex-col">
         {state.threads?.map((thread) => (
           <li key={thread.comment.id} className="mt-1.5 border-t first:mt-0 first:border-t-0">
-            <Comment row={thread.comment} onReply={onReply} />
+            <Comment row={thread.comment} onReply={onReply} onPerson={onPerson} />
             {thread.replies.length > 0 && (
               <ul className="flex flex-col pl-[38px]">
                 {thread.replies.map((reply) => (
                   <li key={reply.id}>
-                    <Comment row={reply} isReply onReply={onReply} />
+                    <Comment row={reply} isReply onReply={onReply} onPerson={onPerson} />
                   </li>
                 ))}
               </ul>
@@ -74,15 +75,37 @@ export function postedText(millis: number, day: string): string {
   return `${formatShortDate(millis)}, ${time}`
 }
 
-function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isReply?: boolean; onReply?: (commentId: string) => void }) {
+function Comment({
+  row,
+  isReply = false,
+  onReply,
+  onPerson,
+}: {
+  row: JsBillCommentRow
+  isReply?: boolean
+  onReply?: (commentId: string) => void
+  onPerson?: (memberId: string) => void
+}) {
   const name = row.isMe ? t('splitBill_you') : (row.authorName ?? t('billDetail_commentSomeone'))
   const posted = postedText(row.postedAt, row.postedDay)
+  const authorId = row.authorMemberId
+  const openAuthor = onPerson && authorId ? () => onPerson(authorId) : null
+  const avatar = <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className={isReply ? 'size-6 text-[10px]' : 'size-7 text-[11px]'} />
   return (
     <article aria-label={`${name}, ${posted}`} className={cn('flex gap-2.5 pb-0.5', isReply ? 'pt-2' : 'pt-3')}>
-      <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className={isReply ? 'size-6 text-[10px]' : 'size-7 text-[11px]'} />
+      {/* Why: the name is the one stop for the keyboard and a screen reader; the face is only a bigger target for the pointer. */}
+      {openAuthor ? (
+        <button type="button" tabIndex={-1} aria-hidden onClick={openAuthor} className="flex shrink-0 self-start rounded-full">
+          {avatar}
+        </button>
+      ) : (
+        avatar
+      )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-          <span className="text-sm font-medium">{name}</span>
+          <PersonButton onOpen={openAuthor} className="text-sm font-medium">
+            {name}
+          </PersonButton>
           {/* Why: written by someone out of the group through the bill's open link. */}
           {row.viaLink && (
             <Badge variant="outline" className="h-5 rounded-md px-1.5 text-[11px] text-muted-foreground">

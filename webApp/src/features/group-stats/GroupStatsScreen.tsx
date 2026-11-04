@@ -2,7 +2,7 @@ import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, L
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, segmentClass } from '@/components/common'
+import { Avatar, PersonButton, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
 import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
@@ -370,7 +370,12 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
         {state.people.map((person) => {
           const name = person.isMe ? t('stats_you', { name: nameOrFormer(person.name) }) : nameOrFormer(person.name)
           return (
-            <div key={person.memberId} className="flex items-center gap-2.5">
+            // Why: the row opens their profile (Perfil for you); an ex-member has none.
+            <PersonButton
+              key={person.memberId}
+              onOpen={person.opensProfile ? () => presenter.openPerson(person.memberId) : null}
+              className="flex items-center gap-2.5"
+            >
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
               <span className="w-[108px] shrink-0 truncate font-medium">{name}</span>
               <span role="img" aria-label={`${name}: ${money(person.amountMinor)}`} className="flex h-2 min-w-0 flex-1 rounded-full bg-muted">
@@ -379,7 +384,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
               <span className={cn('w-[92px] shrink-0 text-right font-semibold tabular-nums', person.amountMinor === 0 && 'text-muted-foreground')}>
                 {money(person.amountMinor)}
               </span>
-            </div>
+            </PersonButton>
           )
         })}
       </div>

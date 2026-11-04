@@ -66,7 +66,10 @@ internal fun ActivityDetailPane(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ActorAvatarIcon(item = item)
+            ActorAvatarIcon(
+                item = item,
+                onEvent = onEvent,
+            )
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = sentenceTextOf(item),

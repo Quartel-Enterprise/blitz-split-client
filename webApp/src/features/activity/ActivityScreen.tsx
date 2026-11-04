@@ -3,7 +3,7 @@ import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRo
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
@@ -14,7 +14,7 @@ import { avatarStyle } from '@/lib/avatar'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { ActiveFilters, ActivityFilterButton } from './ActivityFilter'
-import { deletionText, detailLine, fieldLabel, headline, headlineText, openLabel, valueText } from './activityText'
+import { actorName, deletionText, detailLine, fieldLabel, headline, headlineText, openLabel, valueText } from './activityText'
 
 // Início, Grupos, Saldos and Contatos take Atividade's place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>> = {
@@ -214,7 +214,7 @@ function useEndReached(isEnabled: boolean, itemCount: number, onEnd: () => void)
 function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityPresenter; item: JsActivityItem; isWide: boolean; isSelected: boolean }) {
   const showsChanges = !isWide && item.hasChangesToShow
   return (
-    <div className={cn('border-b', isSelected && 'bg-muted')}>
+    <div className={cn('relative border-b', isSelected && 'bg-muted')}>
       <button
         type="button"
         aria-current={isSelected || undefined}
@@ -238,9 +238,18 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
           </>
         )}
       </button>
+      {/* Why: the face opens whoever did it (their profile, Perfil for you), apart from the row, which opens the item. */}
+      {item.actorOpensProfile && (
+        <PersonButton isRound label={actorProfileLabel(item)} onOpen={() => presenter.openActor(item.id)} className="absolute top-3 left-4 size-8" />
+      )}
       {showsChanges && <InlineChanges presenter={presenter} item={item} />}
     </div>
   )
+}
+
+/** "Abrir o perfil de Ana", or "Abrir seu perfil" for your own face. */
+function actorProfileLabel(item: JsActivityItem): string {
+  return item.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: actorName(item) })
 }
 
 /** "Ver mudanças" under a bill's edit, which opens its before → after in the row, with "Abrir conta". */
@@ -433,7 +442,14 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
   return (
     <section aria-label={headlineText(item)} className="sticky top-8 flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-6">
       <header className="flex items-start gap-3">
-        <ActorFace item={item} className="size-12 text-base" badgeClassName="size-[22px] [&>svg]:size-3" />
+        <PersonButton
+          isRound
+          label={actorProfileLabel(item)}
+          onOpen={item.actorOpensProfile ? () => presenter.openActor(item.id) : null}
+          className="flex shrink-0 self-start"
+        >
+          <ActorFace item={item} className="size-12 text-base" badgeClassName="size-[22px] [&>svg]:size-3" />
+        </PersonButton>
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <h2 className="text-lg leading-snug">
             <HeadlineLine item={item} isBold={false} />

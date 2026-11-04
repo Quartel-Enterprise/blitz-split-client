@@ -33,18 +33,22 @@ class SharedBillRowsTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = ANA,
                     name = "Ana Paula",
                     initials = "AP",
                     avatarColor = AvatarColor.default,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = false,
                 ),
                 BillPayer(
+                    memberId = BRUNO,
                     name = "Bruno",
                     initials = "B",
                     avatarColor = AvatarColor.default,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = false,
                 ),
             ),
             payers,
@@ -100,6 +104,7 @@ class SharedBillRowsTest {
                 hasJoined = true,
                 paidMinor = 64_200,
                 shareMinor = null,
+                opensProfile = false,
             ),
             people.last(),
         )
@@ -131,6 +136,32 @@ class SharedBillRowsTest {
         assertTrue(people.none { it.isMe })
         assertTrue(people.all { it.hasJoined })
         assertTrue(people.all { it.photoUrl == null })
+    }
+
+    @Test
+    fun `GIVEN whoever paid left the group WHEN listing the payers THEN keeps their member id and opens no profile`() {
+        // Given
+        val bill = bill(payers = listOf(part(FORMER, null, 64_200)))
+
+        // When
+        val payer = payersOf(bill).single()
+
+        // Then
+        assertEquals(FORMER, payer.memberId)
+        assertFalse(payer.opensProfile)
+    }
+
+    @Test
+    fun `GIVEN a part and a payer named WHEN listing the people of a link THEN nobody opens a profile`() {
+        // Given
+        val bill = bill(payers = listOf(part(DIEGO, "Diego", 64_200)))
+
+        // When
+        val people = peopleOf(bill)
+
+        // Then
+        assertEquals(listOf(ANA, BRUNO, CARLA, DIEGO), people.map { it.memberId })
+        assertTrue(people.none { it.opensProfile })
     }
 
     @Test

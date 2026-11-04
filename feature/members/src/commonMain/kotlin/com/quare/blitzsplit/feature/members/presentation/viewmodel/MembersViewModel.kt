@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBillParts
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
+import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -90,6 +92,9 @@ class MembersViewModel(
 
     private var expenses: List<Expense> = emptyList()
 
+    // Why: the group's members as last read, whose account or name keys the profile a row opens.
+    private var groupMembers: List<GroupMember> = emptyList()
+
     /*
      * Why: a sync may bring other members' changes, bills and payments while the screen is open. A group that goes is
      * the group's screen's to close. The bills are read once, for the balances and the personal invite alike.
@@ -119,6 +124,8 @@ class MembersViewModel(
                 memberId = null,
                 draft = "",
             )
+
+            is MembersUiEvent.OnMemberClicked -> openProfile(event.memberId)
 
             is MembersUiEvent.OnRenameClicked -> openRename(event.memberId)
 
@@ -153,6 +160,7 @@ class MembersViewModel(
     }
 
     private fun show(group: Group) {
+        groupMembers = group.members
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
         val members = group.members.map { toMembersMember(it, group, inviterCode) }
         uiState.update { state ->
@@ -259,6 +267,17 @@ class MembersViewModel(
                 memberName = invite.member.name,
                 groupName = state.groupName,
             ),
+        )
+    }
+
+    // Why: over the group, or in the place of its bill the Mac draws beside it, as Convidar opens.
+    private fun openProfile(memberId: String) {
+        val member = groupMembers.firstOrNull { it.id == memberId } ?: return
+        val next = personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe) ?: return
+        navigator.openFromGroupScreen(
+            from = route,
+            groupId = route.groupId,
+            next = next,
         )
     }
 
