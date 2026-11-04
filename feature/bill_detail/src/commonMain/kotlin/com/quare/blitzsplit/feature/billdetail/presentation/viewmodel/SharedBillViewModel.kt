@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -137,7 +138,7 @@ class SharedBillViewModel(
                         hasLinkedAccount = status is AccountStatus.Connected,
                     )
                 }
-                val userId = userIdOf(status)
+                val userId = status.userIdOrNull()
                 /*
                  * Why: a browser sign in coming back reopens the page while its session is still being made, so a
                  * page read before it (a link only the group opens, or not knowing a member) is read again with it.
@@ -201,12 +202,6 @@ class SharedBillViewModel(
         loading?.cancel()
         loading = null
         load()
-    }
-
-    private fun userIdOf(status: AccountStatus): String? = when (status) {
-        AccountStatus.LocalOnly -> null
-        is AccountStatus.Anonymous -> status.userId
-        is AccountStatus.Connected -> status.userId
     }
 
     private fun show(bill: SharedBill) {

@@ -156,6 +156,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it as edited,
     "Carla apagou um comentário em Jantar" once deleted), which open the bill's Conta at the comment; a bill's attachments and its share link show only in its Conta's Histórico, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
+  - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
+    show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
+    group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else
+    Atividade records (comments, photos, the invite link changed, a charge, a group deleted with its "Grupo apagado"),
+    Atividade's feed and badge with them, plus a member's profile photo and this user's own profile changed on another
+    of their devices. Each platform says when it is in front (Android's process, an Apple scene not in the background,
+    the page visible); coming back to the front, back online or with the socket back syncs once to catch up. The
+    server's Realtime only says what changed and the device pulls it as its sync does, so Room stays the one source
+    of truth (`RemoteChange`, `RemotePull`, the inserts of `activity_events` and the updates of `profiles`; see
+    [docs/architecture/data-sources-and-sync.md](docs/architecture/data-sources-and-sync.md#real-time)).
   - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
     event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
     grupos" for a bill created, edited or deleted while you are its payer or in its split (before the change too) and

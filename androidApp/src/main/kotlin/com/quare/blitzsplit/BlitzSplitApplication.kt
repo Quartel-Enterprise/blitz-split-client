@@ -1,6 +1,7 @@
 package com.quare.blitzsplit
 
 import android.app.Application
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import org.koin.android.ext.android.get
@@ -11,5 +12,6 @@ class BlitzSplitApplication : Application() {
         super.onCreate()
         startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
         PushSetup.start(this, setPushDevice = get())
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppForegroundObserver(reportAppForeground = get()))
     }
 }

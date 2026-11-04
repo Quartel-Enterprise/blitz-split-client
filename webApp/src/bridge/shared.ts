@@ -1,4 +1,4 @@
-import { startBlitzSplit } from 'blitzsplit-shared'
+import { setAppForeground, startBlitzSplit } from 'blitzsplit-shared'
 import { uiTag } from '@/lib/currency'
 
 const DATABASE_LOCK = 'borarachar-database'
@@ -42,6 +42,17 @@ async function start(onWaiting: () => void) {
   const worker = new Worker(new URL('../sqlite/worker.js', import.meta.url), { type: 'module' })
   releaseOnPageCache(worker)
   startBlitzSplit(worker, uiTag)
+  followVisibility()
+}
+
+/**
+ * Why: the other devices' changes reach this page in real time only while it is visible, as the apps listen only in
+ * front; a page shown again catches up on what it missed.
+ */
+function followVisibility() {
+  const report = () => setAppForeground(document.visibilityState === 'visible')
+  document.addEventListener('visibilitychange', report)
+  report()
 }
 
 function untilVisible(): Promise<void> {
