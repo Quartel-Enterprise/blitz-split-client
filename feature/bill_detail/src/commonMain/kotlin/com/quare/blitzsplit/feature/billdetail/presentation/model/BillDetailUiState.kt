@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -48,6 +49,14 @@ data class BillDetailUiState(
     val commentDraft: String,
     // Why: "Respondendo a Diego" while not null.
     val replyTarget: BillReplyTarget?,
+    // Why: "Editando comentário" over the composer, which holds the comment's text, while not null.
+    val editingCommentId: String?,
+    // Why: "Apagar comentário?", open while not null.
+    val commentToDelete: String?,
+    // Why: "Curtidas", who liked the comment, open while not null.
+    val likesCommentId: String?,
+    // Why: the comment a link opened Conta at: scrolled to and highlighted once, then null.
+    val focusedCommentId: String?,
     /*
      * Why: "Histórico", the most recent first, by day; never the comments. Loading online until the server's history
      * answered; offline, or once that read failed, the device's lines (isHistoryFromDeviceOnly).
@@ -97,9 +106,18 @@ data class BillDetailUiState(
     val viewedAttachment: BillAttachmentTile?
         get() = viewedAttachmentIndex?.let { attachments.valueOrNull()?.getOrNull(it) }
 
-    // Why: the count beside "Comentários", replies included; null while they load.
+    // Why: the count beside "Comentários", replies included and "Comentário apagado" not; null while they load.
     val commentCount: Int?
-        get() = threads.valueOrNull()?.sumOf { 1 + it.replies.size }
+        get() = threads.valueOrNull()?.sumOf { (if (it.comment.isDeleted) 0 else 1) + it.replies.size }
+
+    // Why: the sheet of who liked it closes once the comment or its last like is gone.
+    val likesComment: BillCommentRow?
+        get() = likesCommentId
+            ?.let { threads.valueOrNull()?.findComment(it) }
+            ?.takeIf { it.likeCount > 0 }
+
+    val isEditingComment: Boolean
+        get() = editingCommentId != null
 
     // Why: "Enviar comentário" stays disabled until something is typed, up to what the server takes.
     val canSendComment: Boolean

@@ -19,9 +19,30 @@ data class BillCommentRow(
     val viaLink: Boolean,
     // Why: whom a reply to a reply answers, "@Diego".
     val replyToName: String?,
+    // Why: empty for a deleted comment.
     val body: String,
     val postedAt: Long,
     val postedDay: RelativeDay,
+    // Why: "editado" after the time.
+    val isEdited: Boolean,
+    // Why: "Comentário apagado", a deleted top comment kept over its replies, with no face, name nor actions.
+    val isDeleted: Boolean,
+    // Why: "♥ 3", whoever liked it in the order they did, "Você" for isMe.
+    val likers: List<BillCommentLiker>,
+    // Why: the heart filled.
+    val isLikedByMe: Boolean,
     // Why: "Na fila · sai ao reconectar".
     val isPending: Boolean,
-)
+) {
+    val likeCount: Int
+        get() = likers.size
+
+    // Why: only its author edits or deletes it, never once deleted.
+    val canChange: Boolean
+        get() = isMe && !isDeleted
+
+    // Why: a deleted comment takes no like, reply nor share.
+    val canInteract: Boolean
+        get() = !isDeleted
+}
+

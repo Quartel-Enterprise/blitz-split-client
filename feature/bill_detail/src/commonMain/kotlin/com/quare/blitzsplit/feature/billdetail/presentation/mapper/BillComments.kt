@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
@@ -13,7 +14,8 @@ import kotlinx.datetime.TimeZone
 
 /*
  * Why: "Comentários" (7.3) in the order they were written, each with its replies under it. A reply whose comment isn't
- * on the device (it never came down) shows as a comment of its own rather than not at all.
+ * on the device (it never came down) shows as a comment of its own rather than not at all. A deleted comment shows only
+ * as "Comentário apagado" over replies still there; a deleted reply, or one with none, is gone.
  */
 internal fun threadsOf(
     comments: List<BillComment>,
@@ -31,14 +33,21 @@ internal fun threadsOf(
 ): List<BillCommentThread> {
     val ids = comments.mapTo(HashSet()) { it.id }
     val (replies, tops) = comments.partition { it.threadId != null && it.threadId in ids }
-    val repliesByThread = replies.groupBy { it.threadId }
+    val repliesByThread = replies.filterNot { it.isDeleted }.groupBy { it.threadId }
     val rowOf = { comment: BillComment -> rowOf(comment, members, nowMillis, timeZone) }
-    return tops.map { top ->
+    return tops.mapNotNull { top ->
+        val threadReplies = repliesByThread[top.id].orEmpty()
+        if (top.isDeleted && threadReplies.isEmpty()) return@mapNotNull null
         BillCommentThread(
             comment = rowOf(top),
-            replies = repliesByThread[top.id].orEmpty().map(rowOf),
+            replies = threadReplies.map(rowOf),
         )
     }
+}
+
+// Why: a comment shown, top or reply, by its id.
+internal fun List<BillCommentThread>.findComment(commentId: String): BillCommentRow? = firstNotNullOfOrNull { thread ->
+    (listOf(thread.comment) + thread.replies).firstOrNull { it.id == commentId }
 }
 
 // Why: a reply to a reply joins its thread and names whom it answers.
@@ -50,6 +59,7 @@ internal fun replyTargetOf(
         thread.comment.id == commentId || thread.replies.any { it.id == commentId }
     } ?: return null
     val comment = (listOf(thread.comment) + thread.replies).first { it.id == commentId }
+    if (!comment.canInteract) return null
     return BillReplyTarget(
         threadId = thread.comment.id,
         commentId = comment.id,
@@ -65,8 +75,15 @@ private fun rowOf(
     timeZone: TimeZone,
 ): BillCommentRow {
     val member = comment.authorMemberId?.let { id -> members.firstOrNull { it.id == id } }
-    val isMe = member?.isMe == true
+    val isMe = member?.isMe == true || comment.isMine
     val name = member?.name ?: comment.authorName
+    val likers = comment.likes.map { like ->
+        val liker = like.memberId?.let { id -> members.firstOrNull { it.id == id } }
+        BillCommentLiker(
+            name = liker?.name ?: like.name,
+            isMe = like.isMine || liker?.isMe == true,
+        )
+    }
     return BillCommentRow(
         id = comment.id,
         authorMemberId = member?.id,
@@ -84,6 +101,10 @@ private fun rowOf(
             nowMillis = nowMillis,
             timeZone = timeZone,
         ),
+        isEdited = comment.editedAt != null,
+        isDeleted = comment.isDeleted,
+        likers = if (comment.isDeleted) emptyList() else likers,
+        isLikedByMe = !comment.isDeleted && likers.any { it.isMe },
         isPending = comment.isPending,
     )
 }

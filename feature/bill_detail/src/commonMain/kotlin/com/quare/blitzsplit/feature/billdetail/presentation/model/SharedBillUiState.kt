@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 
 /*
  * Why: a bill's link opened (7.3h), blitzsplit.com/c/<code>: the bill, who paid, each one's part, the attachments and
@@ -40,6 +41,16 @@ data class SharedBillUiState(
     val commentDraft: String,
     val replyTarget: BillReplyTarget?,
     val isSendingComment: Boolean,
+    // Why: "Editando comentário" over the composer, which holds the comment's text, while not null.
+    val editingCommentId: String?,
+    // Why: "Apagar comentário?", open while not null.
+    val commentToDelete: String?,
+    // Why: "Curtidas", who liked the comment, open while not null.
+    val likesCommentId: String?,
+    // Why: the comment the link was shared at: scrolled to and highlighted once, then null.
+    val focusedCommentId: String?,
+    // Why: an edit, a deletion or a like on its way to the server, which the page reads again after.
+    val isChangingComment: Boolean,
 ) {
     val category: Category
         get() = categories.resolve(categoryId)
@@ -61,7 +72,17 @@ data class SharedBillUiState(
         get() = viewedAttachmentIndex?.let(attachments::get)
 
     val commentCount: Int
-        get() = threads.sumOf { 1 + it.replies.size }
+        get() = threads.sumOf { (if (it.comment.isDeleted) 0 else 1) + it.replies.size }
+
+    // Why: liking, editing and deleting go straight to the server, as commenting does here.
+    val canChangeComments: Boolean
+        get() = showsComposer && isOnline && !isChangingComment
+
+    val likesComment: BillCommentRow?
+        get() = likesCommentId?.let(threads::findComment)?.takeIf { it.likeCount > 0 }
+
+    val isEditingComment: Boolean
+        get() = editingCommentId != null
 
     val showsNoComments: Boolean
         get() = status == SharedBillStatus.OPEN && threads.isEmpty()

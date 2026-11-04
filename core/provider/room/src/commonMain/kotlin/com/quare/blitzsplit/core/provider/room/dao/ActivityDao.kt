@@ -7,6 +7,7 @@ import androidx.room3.Query
 import androidx.room3.Transaction
 import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
@@ -59,6 +60,10 @@ interface ActivityDao {
 
     @Query("SELECT id FROM split_group")
     fun observeLiveGroupIds(): Flow<List<String>>
+
+    // Why: a comment's event keeps the text it had; the device's copy says how it reads now.
+    @Query("SELECT id, body, isDeleted FROM bill_comment WHERE editedAt IS NOT NULL OR isDeleted = 1")
+    fun observeChangedComments(): Flow<List<ChangedCommentRow>>
 
     @Query("SELECT MAX(seq) FROM activity_event")
     suspend fun getMaxSeq(): Long?

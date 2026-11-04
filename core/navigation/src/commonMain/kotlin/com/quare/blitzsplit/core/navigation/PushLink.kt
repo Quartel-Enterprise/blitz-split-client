@@ -28,7 +28,7 @@ data class PushLink(
             return when (kind) {
                 BILL_CREATED, BILL_EDITED, COMMENT_ADDED -> listOfNotNull(
                     buildGroupRoute(groupId, GroupTab.EXPENSES),
-                    targetId?.let { Route.BillDetail(groupId, it) },
+                    targetId?.let { Route.BillDetail(groupId, it, focusCommentId = null) },
                 )
 
                 CHARGE_SENT, SETTLE_REMINDER -> listOf(buildGroupRoute(groupId, GroupTab.BALANCES))

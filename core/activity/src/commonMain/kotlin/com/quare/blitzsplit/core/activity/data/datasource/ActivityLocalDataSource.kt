@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.activity.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
@@ -25,6 +26,8 @@ interface ActivityLocalDataSource {
     fun observeLiveBillIds(): Flow<List<String>>
 
     fun observeLiveGroupIds(): Flow<List<String>>
+
+    fun observeChangedComments(): Flow<List<ChangedCommentRow>>
 
     suspend fun getState(): ActivityStateEntity?
 

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.activity.data.datasource
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
 import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
@@ -31,6 +32,8 @@ class RoomActivityLocalDataSource(
     override fun observeLiveBillIds(): Flow<List<String>> = dao.observeLiveBillIds()
 
     override fun observeLiveGroupIds(): Flow<List<String>> = dao.observeLiveGroupIds()
+
+    override fun observeChangedComments(): Flow<List<ChangedCommentRow>> = dao.observeChangedComments()
 
     override suspend fun getState(): ActivityStateEntity? = dao.getState()
 

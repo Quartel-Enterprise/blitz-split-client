@@ -40,6 +40,43 @@ sealed interface BillDetailUiEvent : UiEvent {
     // Why: the ✕ of "Respondendo a Diego".
     data object OnReplyCancelled : BillDetailUiEvent
 
+    // Why: "Editar" in the menu of the user's own comment, which puts its text in the composer.
+    data class OnCommentEditClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    // Why: the ✕ of "Editando comentário", which gives the composer back what was typed before.
+    data object OnCommentEditCancelled : BillDetailUiEvent
+
+    // Why: "Apagar" in the menu of the user's own comment, which asks first.
+    data class OnCommentDeleteClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    data object OnCommentDeleteConfirmed : BillDetailUiEvent
+
+    data object OnCommentDeleteDismissed : BillDetailUiEvent
+
+    // Why: the heart, which likes it or undoes the like, offline too.
+    data class OnCommentLikeClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    // Why: the count beside the heart (a long press or a hover too), which lists who liked it.
+    data class OnCommentLikesClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    data object OnCommentLikesDismissed : BillDetailUiEvent
+
+    // Why: "Compartilhar" in a comment's menu: its link with its text, through the system share.
+    data class OnCommentShareClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    // Why: the comment a link opened at was scrolled to and highlighted.
+    data object OnFocusedCommentShown : BillDetailUiEvent
+
     // Why: "Desfazer" on the history's latest edit.
     data object OnUndoClicked : BillDetailUiEvent
 
