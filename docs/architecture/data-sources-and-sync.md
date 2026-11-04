@@ -82,7 +82,7 @@ so nothing above it sees an HTTP status:
    their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
-5. `followRemoteChanges()`: real time, below.
+5. `followRemoteChanges()`: real time, below (`RemoteChangeListener` listens, `RemotePuller` pulls).
 6. `accountRepository.keepAppleTokens()`: hands the server Apple's refresh token after each browser sign in with
    Apple, so deleting the account can revoke it, as the App Store asks. The native sheet sends its authorization
    code at sign in instead.
@@ -182,10 +182,10 @@ the tables as the sync brings them.
 - **Catching up**: each time the channel joins (coming to the front, back online, the socket back after it dropped)
   a full sync brings what nobody heard meanwhile, unless one began since the join (`startedSyncs`), which already read
   after it: the launch's, or the one coming back online starts.
-- **The pull** (`RemotePull`): what is heard within half a second pulls once, under the sync lock, so the device's
+- **The pull** (`RemotePull`, each kind's `RemoteReach`): what is heard within half a second pulls once, under the sync lock, so the device's
   newest event (`ActivityRepository.getNewestSeq`) is read after any sync in flight. An event up to it is already on
   the device: this device's own, heard back after the sync that pushed it brought it down. A bill, a payment, a
-  group's edit, its link or a rename pulls that group alone (`downloadGroup`: the group and members, categories, bills
+  group's edit, its link or a rename pulls that group alone (`RemotePuller.downloadGroup`: the group and members, categories, bills
   and payments, read together and written in Room's foreign key order, as the first download does); a comment pulls
   the comments, a photo the attachments; then Atividade's new events come down, so the feed and its badge follow. A
   member added, joined, gone or released, a group deleted, and a kind this version doesn't know take the full sync,
