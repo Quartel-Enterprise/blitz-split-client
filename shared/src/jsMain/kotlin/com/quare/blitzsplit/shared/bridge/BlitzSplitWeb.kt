@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
@@ -43,14 +44,34 @@ private val sharedBillSignInWindow = 15.minutes
  * Why: what React calls. Only plain types cross into TypeScript: strings, booleans, arrays,
  * callbacks and the small exported classes of this package.
  */
-fun startBlitzSplit(sqliteWorker: Worker) {
+fun startBlitzSplit(
+    sqliteWorker: Worker,
+    languageTag: String,
+) {
     // Why: read before Auth starts, since it removes the callback's error from the fragment.
     val launchUrl = window.location.href
-    startBlitzSplitKoin(extraModules = listOf(module { single<Worker> { sqliteWorker } }))
+    startBlitzSplitKoin(
+        extraModules = listOf(
+            module {
+                single<Worker> { sqliteWorker }
+                single { DeviceDecimalSeparator { decimalSeparatorOf(languageTag) } }
+            },
+        ),
+    )
     val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
     MainScope().launch { handleBrowserCallback(launchUrl) }
     openInviteLink(launchUrl)
     openSharedBillOnceProfileMade()
+}
+
+/*
+ * Why: the separator Intl writes in 1.5 for the language the UI speaks, not navigator.language: Chrome gives that its
+ * own menus' language, which may be English while the pages and the app are in Portuguese.
+ */
+private fun decimalSeparatorOf(languageTag: String): Char = try {
+    (js("Intl").NumberFormat(languageTag).format(1.5) as? String)?.getOrNull(1) ?: '.'
+} catch (unsupported: Throwable) {
+    '.'
 }
 
 /*
