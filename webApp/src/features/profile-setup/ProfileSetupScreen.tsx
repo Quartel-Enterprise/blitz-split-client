@@ -1,16 +1,17 @@
-import { ArrowLeft, Camera, Info, Loader2 } from 'lucide-react'
-import { useRef } from 'react'
+import { ArrowLeft, Camera, ImageIcon, Info, Loader2 } from 'lucide-react'
+import type { ComponentProps } from 'react'
 import { ProfileSetupPresenter, type JsProfileSetupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
+import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
-import { onPhotoFile } from '@/lib/photoFile'
 
 export function ProfileSetupScreen() {
   const presenter = usePresenter(() => new ProfileSetupPresenter())
@@ -26,7 +27,7 @@ const nameErrors: Record<string, MessageKey> = {
 
 function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresenter; state: JsProfileSetupState }) {
   const [name, setName] = useDraft(state.name, (value) => presenter.changeName(value))
-  const photoInput = useRef<HTMLInputElement>(null)
+  const photo = usePhotoPicker()
   const nameError = state.nameError ? nameErrors[state.nameError] : null
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
@@ -52,23 +53,25 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
                 <Loader2 className="size-6 animate-spin" />
               </span>
             )}
-            <Button
-              type="button"
-              size="icon"
-              variant="secondary"
-              aria-label={t('profileSetup_addPhoto')}
-              className="absolute -right-2 -bottom-2 size-9 rounded-xl border-[3px] border-card"
-              onClick={() => photoInput.current?.click()}
-            >
-              <Camera className="size-4" />
-            </Button>
-            <input
-              ref={photoInput}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(event) => void onPhotoFile(presenter, event)}
-            />
+            {/* Why: with a camera the button asks where the photo comes from; without one it opens the file chooser. */}
+            {photo.hasCamera ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <AddPhotoButton />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={photo.takePhoto}>
+                    <Camera /> {t('profileSetup_takePhoto')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={photo.chooseFile}>
+                    <ImageIcon /> {t('profileSetup_choosePhoto')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <AddPhotoButton onClick={photo.chooseFile} />
+            )}
+            <PhotoPickerInputs picker={photo} receiver={presenter} facing="user" />
           </div>
           {state.showsPhotoError && (
             <span role="alert" className="text-xs text-destructive">
@@ -108,5 +111,21 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
       </form>
       {state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="circle" />}
     </main>
+  )
+}
+
+// The avatar's corner button, a menu's trigger too, so it takes the trigger's props and ref.
+function AddPhotoButton(props: ComponentProps<typeof Button>) {
+  return (
+    <Button
+      type="button"
+      size="icon"
+      variant="secondary"
+      aria-label={t('profileSetup_addPhoto')}
+      className="absolute -right-2 -bottom-2 size-9 rounded-xl border-[3px] border-card"
+      {...props}
+    >
+      <Camera className="size-4" />
+    </Button>
   )
 }

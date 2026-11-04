@@ -387,8 +387,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
     left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
     (`BillHistoryEntry.canUndo`).
-  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's and the
-    web's files), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
+  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's files,
+    the web's files or its camera), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
     them from the viewer ("Remover foto", no question, as the boards draw none). "Anexos · 2 de 5 fotos" lists the
     receipt the bill was read from first (badge "Cupom", never removed from Conta; reading it is 7.1e), then the photos
     as "Foto 2" with who added it and when, since the server keeps no caption, then "Adicionar foto" while there is
@@ -537,7 +537,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Escolher foto", "Tirar foto" and "Usar este ícone", a 480 dp dialog where Editar grupo is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
     sources and ✓), the shape and color picked there reaching the form only on "Usar este ícone"; the web ("Cor do
-    ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
+    ícone", "Usar uma foto" and, with a camera, "Tirar foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
     Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
     made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
     The photo is the profile's 512x512 JPEG framed in "Ajustar foto" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
@@ -713,7 +713,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Divisão" (never on "Editar conta", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
     leave it out there; Início's shortcut still opens it), online only ("Precisa de internet. Preencha à mão ou leia
     o cupom quando reconectar."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
-    the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
+    the gallery and the shutter; the Mac picks a file, and the web opens the browser's camera (a webcam too) with "Escolher arquivo" in it, a file
+    chooser where the browser has no camera. The
     photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
     a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…",
@@ -776,6 +777,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     a pasted link opens.
   - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
     configurações" offers "Configurações", which opens the app's settings page.
+  - The web's "Tirar foto" (beta feedback 2): wherever the web takes a photo from a file (Seu perfil, Editar perfil,
+    Novo grupo, Editar grupo, Conta's Anexos, Ler cupom fiscal) it also offers the browser's camera, a desktop's
+    webcam too, but only while the browser lists a camera (`useCameraCount`). One dialog (`CameraCaptureDialog`, a
+    drawer on a phone) shows it live, the selfie camera mirrored and the photo never, with the shutter, "Tirar outra"
+    and "Usar foto", "Trocar câmera" with more than one and the flashlight where the browser has it; "Usar foto"
+    hands the JPEG on as a file picked would be, so a profile's or a group's goes through "Ajustar foto". A camera
+    refused says so ("Sem acesso à câmera") with "Tentar de novo" and "Escolher arquivo", and closing stops it.
   - Foldables and the iPhone Duo follow the fold the device reports, never the window alone (decision 8: Android's
     `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
     book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its

@@ -1,9 +1,9 @@
 import { Camera, ImageIcon, Info, Loader2, Pencil, Trash2, UserRound } from 'lucide-react'
-import { useRef } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
+import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -11,10 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
-import { onPhotoFile } from '@/lib/photoFile'
 
 const nameErrors: Record<string, MessageKey> = {
   TOO_SHORT: 'editProfile_nameTooShort',
@@ -32,16 +30,7 @@ export function EditProfileCard({ isPending }: { isPending: boolean }) {
 
 function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfilePresenter; state: JsEditProfileState; isPending: boolean }) {
   const [name, setName] = useDraft(state.name, (value) => presenter.changeName(value))
-  const photoInput = useRef<HTMLInputElement>(null)
-  // Why: only a touch device has a camera the "capture" attribute can open; a desktop browser shows a file chooser.
-  const canTakePhoto = useMediaQuery('(pointer: coarse)')
-  const choosePhoto = (useCamera: boolean) => {
-    const input = photoInput.current
-    if (!input) return
-    if (useCamera) input.setAttribute('capture', 'user')
-    else input.removeAttribute('capture')
-    input.click()
-  }
+  const photo = usePhotoPicker()
   const nameError = state.nameError ? nameErrors[state.nameError] : null
   return (
     <Card>
@@ -78,13 +67,13 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {/* Why: a desktop browser ignores "capture" and would open the file chooser twice over. */}
-                  {canTakePhoto && (
-                    <DropdownMenuItem onSelect={() => choosePhoto(true)}>
+                  {/* Why: the browser's own camera, a webcam too; only where the browser lists one. */}
+                  {photo.hasCamera && (
+                    <DropdownMenuItem onSelect={photo.takePhoto}>
                       <Camera /> {t('editProfile_takePhoto')}
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onSelect={() => choosePhoto(false)}>
+                  <DropdownMenuItem onSelect={photo.chooseFile}>
                     <ImageIcon /> {t('editProfile_choosePhoto')}
                   </DropdownMenuItem>
                   {state.accountPhotoProvider && (
@@ -105,7 +94,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
                 {t('editProfile_photoError')}
               </span>
             )}
-            <input ref={photoInput} type="file" accept="image/*" hidden onChange={(event) => onPhotoFile(presenter, event)} />
+            <PhotoPickerInputs picker={photo} receiver={presenter} facing="user" />
           </div>
           {state.showsAvatarColors && (
             <div className="flex flex-col gap-2">
