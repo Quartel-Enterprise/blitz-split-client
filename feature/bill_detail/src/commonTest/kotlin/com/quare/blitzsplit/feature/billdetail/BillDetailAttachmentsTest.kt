@@ -1068,6 +1068,223 @@ class BillDetailAttachmentsTest {
             )
         }
 
+    @Test
+    fun `GIVEN the bill is open WHEN picking a photo THEN sends the photo picked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN picking a photo THEN still sends the photo picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // Then
+        assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN five photos WHEN picking another THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = fivePhotos)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a photo being made ready WHEN picking another THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(addGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN picking a photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN picking a photo THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the platform could not read the file WHEN it says so THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoUnreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the receipt and two photos WHEN tapping Foto 2 THEN sends the attachment clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(receipt, photoA, photoB))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_B))
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping an attachment that is not there THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(photoA))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked("gone"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping an attachment THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedAttachments = listOf(photoA),
+            isRoomRead = false,
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_A))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer on the receipt WHEN swiping to Foto 1 THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = listOf(receipt, photoA))
+        viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(RECEIPT))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnViewerPageChanged(PHOTO_A))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = listOf(photoA))
+        viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_A))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a photo WHEN removing it THEN sends the attachment removed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = listOf(receipt, photoA))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(PHOTO_A))
+
+        // Then
+        assertEquals(listOf("bill_attachment_removed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the receipt WHEN removing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = listOf(receipt, photoA))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(RECEIPT))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN removing an attachment that is not there THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(photoA))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked("gone"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN removing a photo THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedAttachments = listOf(photoA),
+            deleteGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(PHOTO_A))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,

@@ -369,19 +369,23 @@ class SharedBillViewModel(
         uiState.update { it.copy(commentDraft = text) }
     }
 
+    private fun trackSendClicked(isEdit: Boolean) {
+        trackEvent(
+            "comment_send_clicked",
+            mapOf(
+                "is_reply" to (uiState.value.replyTarget != null),
+                "is_edit" to isEdit,
+                "source" to SHARED_BILL_SOURCE,
+            ),
+        )
+    }
+
     // Why: straight to the server, so what was typed stays in the field until it is up.
     private fun sendComment() {
         val state = uiState.value
         if (!state.canSendComment) return
-        trackEvent(
-            "comment_send_clicked",
-            mapOf(
-                "is_reply" to (state.replyTarget != null),
-                "is_edit" to (state.editingCommentId != null),
-                "source" to SHARED_BILL_SOURCE,
-            ),
-        )
         state.editingCommentId?.let { return saveEdit(it) }
+        trackSendClicked(isEdit = false)
         val replyTarget = state.replyTarget
         val id = commentId ?: Uuid.random().toString().also { commentId = it }
         uiState.update { it.copy(isSendingComment = true) }
@@ -466,7 +470,10 @@ class SharedBillViewModel(
     // Why: straight to the server, so the edited text stays in the composer until it is up.
     private fun saveEdit(commentId: String) {
         val body = uiState.value.commentDraft
-        change(onPosted = { if (uiState.value.editingCommentId == commentId) stopEditing() }) {
+        change(
+            onStarted = { trackSendClicked(isEdit = true) },
+            onPosted = { if (uiState.value.editingCommentId == commentId) stopEditing() },
+        ) {
             editSharedBillComment(route.code, commentId, body)
         }
     }
@@ -479,27 +486,40 @@ class SharedBillViewModel(
 
     private fun deleteComment() {
         val commentId = uiState.value.commentToDelete ?: return
-        trackEvent("comment_delete_confirmed", sourceParams)
         uiState.update { it.copy(commentToDelete = null) }
         if (uiState.value.editingCommentId == commentId) stopEditing()
-        change { deleteSharedBillComment(route.code, commentId) }
+        change(onStarted = { trackEvent("comment_delete_confirmed", sourceParams) }) {
+            deleteSharedBillComment(route.code, commentId)
+        }
     }
 
     private fun toggleLike(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
-        trackEvent("comment_like_toggled", mapOf("is_liked" to !comment.isLikedByMe, "source" to SHARED_BILL_SOURCE))
-        change { likeSharedBillComment(route.code, comment.id, !comment.isLikedByMe) }
+        change(
+            onStarted = {
+                trackEvent(
+                    "comment_like_toggled",
+                    mapOf(
+                        "is_liked" to !comment.isLikedByMe,
+                        "source" to SHARED_BILL_SOURCE,
+                    ),
+                )
+            },
+        ) { likeSharedBillComment(route.code, comment.id, !comment.isLikedByMe) }
     }
 
     /*
      * Why: one change at a time, read again from the server once it answered; a link changed meanwhile reads again too,
-     * so the page says what it shows now.
+     * so the page says what it shows now. onStarted counts the tap only once the page takes the change (online,
+     * signed in, none in flight).
      */
     private fun change(
+        onStarted: () -> Unit = {},
         onPosted: () -> Unit = {},
         request: suspend () -> Result<SharedBillComment>,
     ) {
         if (!uiState.value.canChangeComments) return
+        onStarted()
         uiState.update { it.copy(isChangingComment = true) }
         viewModelScope.launch {
             val outcome = request().getOrNull()

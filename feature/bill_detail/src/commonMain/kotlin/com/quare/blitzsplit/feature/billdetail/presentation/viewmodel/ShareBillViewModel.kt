@@ -125,7 +125,12 @@ class ShareBillViewModel(
             ShareBillUiEvent.OnDisableClicked -> disable()
 
             ShareBillUiEvent.OnRetryClicked -> if (uiState.value.isOnline) {
-                trackEvent("retry_clicked", mapOf("source" to "share_bill"))
+                // Why: only a retry that reads the link again, never one while a read is under way.
+                if (uiState.value.link == null &&
+                    !isFetching
+                ) {
+                    trackEvent("retry_clicked", mapOf("source" to "share_bill"))
+                }
                 uiState.update { it.copy(hasFailed = false) }
                 loadOnce()
             }
