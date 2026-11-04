@@ -62,4 +62,22 @@ sealed interface EditGroupUiEvent : UiEvent {
     data object OnDefaultSplitClicked : EditGroupUiEvent
 
     data object OnSaveClicked : EditGroupUiEvent
+
+    // Why: the switch of "Simplificar dívidas" opens its confirmation, never changing it by itself (13.3).
+    data object OnSimplifyDebtsClicked : EditGroupUiEvent
+
+    // Why: "Simplificar", "Ligar mesmo assim" or "Desligar" applies it at once, offline too.
+    data object OnSimplifyDebtsConfirmed : EditGroupUiEvent
+
+    // Why: "Agora não", "Cancelar", a tap outside or back.
+    data object OnSimplifyDebtsDismissed : EditGroupUiEvent
+
+    // Why: "Como funciona" (13.2).
+    data object OnSimplifyDebtsInfoClicked : EditGroupUiEvent
+
+    // Why: the snackbar, banner or toast of 13.1e went away.
+    data object OnSimplifyConflictDismissed : EditGroupUiEvent
+
+    // Why: its "Ver na Atividade", where both changes show.
+    data object OnSimplifyConflictActivityClicked : EditGroupUiEvent
 }

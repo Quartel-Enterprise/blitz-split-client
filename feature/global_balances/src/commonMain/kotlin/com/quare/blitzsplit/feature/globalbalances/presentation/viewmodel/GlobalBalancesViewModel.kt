@@ -38,6 +38,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.idOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
@@ -390,6 +391,14 @@ class GlobalBalancesViewModel(
         hasPixKey = pixKey != null,
         pixKeyChoice = previous?.pixKeyChoice,
         editedMessage = previous?.editedMessage,
+        reroutes = person.groups
+            .filter { it.amountMinor > 0 && it.insteadOfNames.isNotEmpty() }
+            .map {
+                ChargeReroute(
+                    groupName = it.groupName,
+                    insteadOfNames = it.insteadOfNames,
+                )
+            },
     )
 
     private fun updateCharge(change: (ChargeDraft) -> ChargeDraft) {

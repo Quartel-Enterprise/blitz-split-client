@@ -33,6 +33,10 @@ internal fun LazyListScope.balanceItems(
         state = state,
         onAction = onAction,
     )
+    simplificationItems(
+        state = state,
+        onEvent = onEvent,
+    )
     withYouItems(
         state = state,
         money = money,
@@ -65,6 +69,25 @@ internal fun LazyListScope.balancesStateItems(
                 onAction = onAction,
             )
         }
+    }
+}
+
+// Why: "Dívidas simplificadas" at the top of the pairs (13.4), on every size.
+internal fun LazyListScope.simplificationItems(
+    state: GroupDetailUiState,
+    onEvent: (GroupDetailUiEvent) -> Unit,
+) {
+    val simplification = state.simplification?.takeIf { state.showsSimplificationCard } ?: return
+    item(key = "balances-simplified") {
+        SimplificationCard(
+            simplification = simplification,
+            onHowItWorksClick = { onEvent(GroupDetailUiEvent.OnSimplifyDebtsInfoClicked) },
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+            ),
+        )
     }
 }
 
@@ -106,7 +129,13 @@ internal fun LazyListScope.betweenOthersItems(
     if (state.showsDebtNote) {
         item(key = "balances-note") {
             Text(
-                text = stringResource(R.string.group_detail_balances_note),
+                text = stringResource(
+                    if (state.simplification != null) {
+                        R.string.group_detail_balances_note_simplified
+                    } else {
+                        R.string.group_detail_balances_note
+                    },
+                ),
                 modifier = Modifier.padding(
                     start = 20.dp,
                     end = 20.dp,

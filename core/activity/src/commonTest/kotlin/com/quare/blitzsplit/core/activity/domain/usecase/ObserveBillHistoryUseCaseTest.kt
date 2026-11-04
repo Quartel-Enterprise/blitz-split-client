@@ -100,6 +100,9 @@ class ObserveBillHistoryUseCaseTest {
         isPending = false,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = emptyList(),
+        debtsAfter = emptyList(),
+        memberNames = emptyMap(),
     )
 
     private fun prepareScenario(events: List<ActivityEvent>) {

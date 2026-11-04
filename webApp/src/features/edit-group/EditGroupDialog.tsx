@@ -12,8 +12,12 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
+import { SimplifyDebtsConfirmDialog } from '@/features/simplify-debts/SimplifyDebtsConfirmDialog'
+import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
+import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { defaultSplitModeLabel } from '@/features/split-bill/splitText'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -27,16 +31,21 @@ const nameHelpId = 'edit-group-name-help'
 const currencyId = 'edit-group-currency'
 const currencyNoteId = 'edit-group-currency-note'
 const iconColorId = 'edit-group-icon-color'
+const paymentsId = 'edit-group-payments'
+const simplifyId = 'edit-group-simplify'
+const simplifyStatusId = 'edit-group-simplify-status'
 
 /**
  * "Edit group", over the group: a dialog on desktop and tablet, a drawer with stacked buttons on the phone.
- * Closing it any way (Esc, the overlay, Cancel) is the ViewModel's close. "Divisão padrão" opens in its place, so it
- * stays mounted (closed) while `isCovered` and comes back with what was typed.
+ * Closing it any way (Esc, the overlay, Cancel) is the ViewModel's close. "Divisão padrão" and "Como funciona" open in
+ * its place, so it stays mounted (closed) while `isCovered` and comes back with what was typed. "Simplificar dívidas"
+ * asks first over it, and applies at once, apart from Salvar.
  */
 export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovered: boolean }) {
   const presenter = usePresenter(() => new EditGroupPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsEditGroupState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  useSimplifyConflictNotice(presenter, state?.simplifyConflict)
   if (!presenter || !state || isCovered) return null
   if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} title={t('editGroup_title')} onClose={() => presenter.close()} />
 
@@ -56,6 +65,16 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
   )
   const form = <EditGroupForm presenter={presenter} state={state} />
   const photoCrop = state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="rounded-square" />
+  const simplifyConfirmation = state.simplifyConfirmation && (
+    <SimplifyDebtsConfirmDialog
+      confirmation={state.simplifyConfirmation}
+      currency={state.currency}
+      fractionDigits={state.fractionDigits}
+      isBusy={state.isChangingSimplifyDebts}
+      isDesktop={isDesktop}
+      events={presenter}
+    />
+  )
 
   return isDesktop ? (
     <Dialog open={!isCovered} onOpenChange={onOpenChange}>
@@ -70,6 +89,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
           {save}
         </DialogFooter>
         {photoCrop}
+        {simplifyConfirmation}
       </DialogContent>
     </Dialog>
   ) : (
@@ -85,6 +105,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
           {cancel}
         </DrawerFooter>
         {photoCrop}
+        {simplifyConfirmation}
       </DrawerContent>
     </Drawer>
   )
@@ -207,7 +228,70 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
         <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
       </button>
 
-      <p className="text-[13px] text-muted-foreground">{t(state.showsOfflineNotice ? 'editGroup_offlineNote' : 'editGroup_note')}</p>
+      <SimplifyDebtsRow presenter={presenter} state={state} />
+
+      <p className="text-[13px] text-muted-foreground">
+        {t(state.showsSimplifyOfflineNotice ? 'editGroup_simplifyOfflineNote' : state.showsOfflineNotice ? 'editGroup_offlineNote' : 'editGroup_note')}
+      </p>
     </form>
+  )
+}
+
+/** The line under "Simplificar dívidas", by `simplifyStatus` (13.1, 13.1c, 13.1d). */
+function simplifyStatusText(state: JsEditGroupState): string {
+  switch (state.simplifyStatus) {
+    case 'pending':
+      return t(state.simplifiesDebts ? 'editGroup_simplifyPendingOn' : 'editGroup_simplifyPendingOff')
+    case 'needs-third-person':
+      return t('editGroup_simplifyNeedsThird')
+    case 'on': {
+      const simplification = state.simplification
+      if (!simplification || simplification.isAlreadyMinimal) return t('editGroup_simplifyOnMinimal')
+      return t('editGroup_simplifyOn', { count: simplification.paymentCount, before: simplification.unsimplifiedPaymentCount })
+    }
+    default:
+      return t('editGroup_simplifyOff')
+  }
+}
+
+/**
+ * "Pagamentos": the switch of "Simplificar dívidas" (13.1), which shows how the group has it and never flips by itself:
+ * a click opens the confirmation. "Como funciona" opens 13.2 in the dialog's place.
+ */
+function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
+  const isPending = state.simplifyStatus === 'pending'
+  return (
+    <section aria-labelledby={paymentsId} className="flex flex-col gap-2">
+      <h3 id={paymentsId} className="text-sm font-medium">
+        {t('editGroup_payments')}
+      </h3>
+      <div className="flex items-start gap-3 rounded-lg border px-3 py-3">
+        <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+          <SimplifyIcon />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <Label htmlFor={simplifyId}>{t('simplify_title')}</Label>
+          <span
+            id={simplifyStatusId}
+            className={cn('flex items-center gap-1.5 text-[13px] leading-[18px]', isPending ? 'text-amber-800 dark:text-amber-300' : 'text-muted-foreground')}
+          >
+            {isPending && <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-orange-500" />}
+            {simplifyStatusText(state)}
+          </span>
+          <Button type="button" variant="link" size="sm" className="h-auto self-start p-0 text-[13px]" onClick={() => presenter.openSimplifyDebtsInfo()}>
+            {t('simplify_howItWorks')}
+          </Button>
+        </span>
+        {/* Why: controlled by the group's state; the click asks first, so it never flips by itself. */}
+        <Switch
+          id={simplifyId}
+          checked={state.simplifiesDebts}
+          disabled={!state.canChangeSimplifyDebts || state.isSaving}
+          aria-describedby={simplifyStatusId}
+          onCheckedChange={() => presenter.clickSimplifyDebts()}
+          className="mt-0.5"
+        />
+      </div>
+    </section>
   )
 }

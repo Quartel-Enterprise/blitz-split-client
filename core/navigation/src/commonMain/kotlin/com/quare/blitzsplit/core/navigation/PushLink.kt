@@ -38,8 +38,14 @@ data class PushLink(
                 /*
                  * Why: the payments show in Despesas, and a kind a newer server adds opens the group. Unlike its item
                  * in Atividade, a deleted bill opens Despesas too: the notification already said who deleted it.
+                 * "Simplificar dívidas" turned on or off (13.7) opens Saldos, as its item does.
                  */
-                else -> listOf(buildGroupRoute(groupId, GroupTab.EXPENSES))
+                else -> listOf(
+                    buildGroupRoute(
+                        groupId = groupId,
+                        tab = if (kind.startsWith(SIMPLIFY_KIND_PREFIX)) GroupTab.BALANCES else GroupTab.EXPENSES,
+                    ),
+                )
             }
         }
 
@@ -61,6 +67,9 @@ data class PushLink(
         private const val MEMBER_JOINED = "member_joined"
         private const val SETTLE_REMINDER = "settle_reminder"
         private const val SETTLE_REMINDERS = "settle_reminders"
+
+        // Why: debts_simplified_* and debts_unsimplified_*, who now pays you, whom you now pay or neither (13.7).
+        private const val SIMPLIFY_KIND_PREFIX = "debts_"
 
         // Why: any host, as an invite's, since the web serves the path wherever it is hosted.
         private const val LINK_PATTERN = "^https?://[^/?#]+/n/?\\?([^#]*)(#.*)?$"

@@ -491,6 +491,10 @@ class GroupsRowActionsTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: Pierre and Bruno each owe Ana R$ 100,00.

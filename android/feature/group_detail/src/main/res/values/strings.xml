@@ -72,4 +72,12 @@
     <string name="group_detail_joined_message">Everything added for you shows up here.</string>
     <string name="group_detail_protect_title">Protect your access</string>
     <string name="group_detail_protect_message">You joined without an account. Save the code or connect Google or Apple.</string>
+    <plurals name="group_detail_simplified_text">
+        <item quantity="one">%1$d payment instead of %2$d. You may pay or receive from someone you never split a bill with.</item>
+        <item quantity="other">%1$d payments instead of %2$d. You may pay or receive from someone you never split a bill with.</item>
+    </plurals>
+    <string name="group_detail_simplified_minimal">Already the fewest payments. The next bills come in simplified.</string>
+    <string name="group_detail_simplified_how">How it works</string>
+    <string name="group_detail_simplified_pair">New pair from simplifying</string>
+    <string name="group_detail_balances_note_simplified">With simplified debts, the app suggests the fewest payments. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).</string>
 </resources>

@@ -7,6 +7,8 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -437,6 +439,12 @@ class GroupMapperImplTest {
                 shape = "square",
                 photoUrl = null,
                 pendingPhoto = null,
+                simplifyDebts = false,
+                simplifyDebtsAt = 0L,
+                simplifyDebtsBy = null,
+                simplifyDebtsChange = null,
+                simplifyDebtsPending = false,
+                simplifyDebtsConflictBy = null,
             ),
             entity,
         )
@@ -588,6 +596,10 @@ class GroupMapperImplTest {
                 defaultSplit = null,
                 shape = null,
                 photoUrl = null,
+                simplifyDebts = false,
+                simplifyDebtsAt = 0L,
+                simplifyDebtsBy = null,
+                simplifyDebtsChange = null,
             ),
             dto,
         )
@@ -654,6 +666,12 @@ class GroupMapperImplTest {
                 shape = null,
                 photoUrl = null,
                 pendingPhoto = null,
+                simplifyDebts = false,
+                simplifyDebtsAt = 0L,
+                simplifyDebtsBy = null,
+                simplifyDebtsChange = null,
+                simplifyDebtsPending = false,
+                simplifyDebtsConflictBy = null,
             ),
             entity,
         )
@@ -1287,6 +1305,10 @@ class GroupMapperImplTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     @Test
@@ -1892,6 +1914,187 @@ class GroupMapperImplTest {
         assertNull(entity.photoUrl)
     }
 
+    @Test
+    fun `GIVEN the switch turned on here and lost to someone WHEN mapping to the domain THEN carries it all`() {
+        // Given
+        val stored = groupEntity(id = "group-1").copy(
+            simplifyDebts = true,
+            simplifyDebtsAt = 9L,
+            simplifyDebtsBy = "user-1",
+            simplifyDebtsChange = simplificationJson,
+            simplifyDebtsPending = true,
+            simplifyDebtsConflictBy = "user-2",
+        )
+
+        // When
+        val group = toDomain(listOf(stored))
+
+        // Then
+        assertTrue(group.simplifiesDebts)
+        assertTrue(group.isSimplifyDebtsPending)
+        assertEquals("user-1", group.simplifyDebtsChangedBy)
+        assertEquals("user-2", group.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN a group nobody ever simplified WHEN mapping to the domain THEN the switch is off and synced`() {
+        // Given
+        val stored = groupEntity(id = "group-1")
+
+        // When
+        val group = toDomain(listOf(stored))
+
+        // Then
+        assertFalse(group.simplifiesDebts)
+        assertFalse(group.isSimplifyDebtsPending)
+        assertNull(group.simplifyDebtsChangedBy)
+        assertNull(group.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN a server row with the switch on WHEN mapping it to an entity THEN keeps its stamp and author synced`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        ).copy(
+            simplifyDebts = true,
+            simplifyDebtsAt = 42L,
+            simplifyDebtsBy = "user-2",
+            simplifyDebtsChange = Json.parseToJsonElement(simplificationJson).jsonObject,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertTrue(entity.simplifyDebts)
+        assertEquals(42L, entity.simplifyDebtsAt)
+        assertEquals("user-2", entity.simplifyDebtsBy)
+        assertNull(entity.simplifyDebtsChange)
+        assertFalse(entity.simplifyDebtsPending)
+        assertNull(entity.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN a server without the switch WHEN mapping its row to an entity THEN reads it off and synced`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertFalse(entity.simplifyDebts)
+        assertEquals(0L, entity.simplifyDebtsAt)
+        assertNull(entity.simplifyDebtsBy)
+        assertFalse(entity.simplifyDebtsPending)
+        assertNull(entity.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN the switch changed here WHEN mapping the group to a DTO THEN sends the change and no author`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(
+            simplifyDebts = true,
+            simplifyDebtsAt = 9L,
+            simplifyDebtsBy = "user-1",
+            simplifyDebtsChange = simplificationJson,
+            simplifyDebtsPending = true,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals(true, dto.simplifyDebts)
+        assertEquals(9L, dto.simplifyDebtsAt)
+        assertNull(dto.simplifyDebtsBy)
+        assertEquals(Json.parseToJsonElement(simplificationJson).jsonObject, dto.simplifyDebtsChange)
+    }
+
+    @Test
+    fun `GIVEN the switch the server already has WHEN mapping the group to a DTO THEN sends no change and no author`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(
+            simplifyDebts = true,
+            simplifyDebtsAt = 4L,
+            simplifyDebtsBy = "user-2",
+            simplifyDebtsChange = simplificationJson,
+            simplifyDebtsPending = false,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals(true, dto.simplifyDebts)
+        assertEquals(4L, dto.simplifyDebtsAt)
+        assertNull(dto.simplifyDebtsBy)
+        assertNull(dto.simplifyDebtsChange)
+    }
+
+    @Test
+    fun `GIVEN the pairs before and after simplifying WHEN encoding the change THEN writes the server JSON`() {
+        // Given
+        val change = SimplifyDebtsChange(
+            before = listOf(
+                SimplifyDebtsPair(
+                    fromMemberId = "m-2",
+                    toMemberId = "m-1",
+                    amountMinor = 3_000L,
+                ),
+                SimplifyDebtsPair(
+                    fromMemberId = "m-3",
+                    toMemberId = "m-2",
+                    amountMinor = 3_000L,
+                ),
+            ),
+            after = listOf(
+                SimplifyDebtsPair(
+                    fromMemberId = "m-3",
+                    toMemberId = "m-1",
+                    amountMinor = 3_000L,
+                ),
+            ),
+        )
+
+        // When
+        val encoded = mapper.encode(change)
+
+        // Then
+        assertEquals(Json.parseToJsonElement(simplificationJson), Json.parseToJsonElement(encoded))
+    }
+
+    @Test
+    fun `GIVEN a change with no pairs WHEN encoding it THEN writes both lists empty`() {
+        // Given
+        val change = SimplifyDebtsChange(
+            before = emptyList(),
+            after = emptyList(),
+        )
+
+        // When
+        val encoded = mapper.encode(change)
+
+        // Then
+        assertEquals(Json.parseToJsonElement("""{"before":[],"after":[]}"""), Json.parseToJsonElement(encoded))
+    }
+
+    private val simplificationJson =
+        """{"before":[{"from":"m-2","to":"m-1","amount":3000},{"from":"m-3","to":"m-2","amount":3000}],""" +
+            """"after":[{"from":"m-3","to":"m-1","amount":3000}]}"""
     private val photoJpeg = byteArrayOf(1, 2, 3)
     private val groupPhotoUrl = "https://cdn.test/group-photos/group-1/photo.jpg?v=1"
 
@@ -1916,6 +2119,10 @@ class GroupMapperImplTest {
         defaultSplit = defaultSplit,
         shape = null,
         photoUrl = null,
+        simplifyDebts = null,
+        simplifyDebtsAt = null,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
     )
 
     private fun photo(
@@ -1957,6 +2164,12 @@ class GroupMapperImplTest {
         shape = shape,
         photoUrl = photoUrl,
         pendingPhoto = pendingPhoto,
+        simplifyDebts = false,
+        simplifyDebtsAt = 0L,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun memberEntity(
@@ -2001,6 +2214,10 @@ class GroupMapperImplTest {
         defaultSplit = null,
         shape = null,
         photoUrl = null,
+        simplifyDebts = null,
+        simplifyDebtsAt = null,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
     )
 
     private fun memberDto(

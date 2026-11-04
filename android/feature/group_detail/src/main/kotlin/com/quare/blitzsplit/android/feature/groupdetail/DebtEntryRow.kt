@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.debtColorOf
+import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -36,7 +38,7 @@ private val debtFaceSize = 32.dp
 
 /*
  * Why: a pair of Saldos: both faces, "Você deve a Bruno", the amount and "Acertar", "Recebi" or "Já pagou"; the whole
- * row and the button open Registrar pagamento for it.
+ * row and the button open Registrar pagamento for it. A pair "Simplificar dívidas" made carries its icon (13.4).
  */
 @Composable
 internal fun DebtEntryRow(
@@ -73,13 +75,30 @@ internal fun DebtEntryRow(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                Text(
-                    text = debtSentenceOf(debt),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = debtSentenceOf(debt),
+                        modifier = Modifier.weight(
+                            weight = 1f,
+                            fill = false,
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (debt.isSimplified) {
+                        Icon(
+                            imageVector = simplifyDebtsIcon(),
+                            contentDescription = stringResource(R.string.group_detail_simplified_pair),
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
                 Text(
                     text = when (debt.kind) {
                         DebtKind.YOU_OWE -> money.toSignedText(-debt.amountMinor)

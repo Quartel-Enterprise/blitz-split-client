@@ -55,7 +55,10 @@ interface ActivityDao {
     )
     fun observeQueuedPayments(): Flow<List<QueuedPaymentRow>>
 
-    @Query("SELECT id, name, type, inviteCode IS NULL AS isNew, updatedAt FROM split_group WHERE pendingSync = 1")
+    @Query(
+        "SELECT id, name, type, inviteCode IS NULL AS isNew, updatedAt, simplifyDebtsPending, simplifyDebts " +
+            "FROM split_group WHERE pendingSync = 1",
+    )
     fun observeQueuedGroups(): Flow<List<QueuedGroupRow>>
 
     // Why: a bill no longer here was deleted, so its events keep their row with the trash icon and open nothing.

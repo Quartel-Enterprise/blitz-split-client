@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -284,6 +285,176 @@ class EditGroupUiStateTest {
         assertEquals(AvatarColor.entries to GroupShape.entries, choices)
     }
 
+    @Test
+    fun `GIVEN a change of the switch waiting to go up WHEN reading its line THEN says it is pending`() {
+        // Given
+        val state = state(
+            simplifiesDebts = true,
+            isSimplifyDebtsPending = true,
+            memberCount = 2,
+        )
+
+        // When
+        val status = state.simplifyStatus
+
+        // Then
+        assertEquals(SimplifyDebtsStatus.PENDING, status)
+    }
+
+    @Test
+    fun `GIVEN the switch on with 2 people WHEN reading its line THEN says it is on`() {
+        // Given
+        val state = state(
+            simplifiesDebts = true,
+            memberCount = 2,
+        )
+
+        // When
+        val status = state.simplifyStatus
+
+        // Then
+        assertEquals(SimplifyDebtsStatus.ON, status)
+    }
+
+    @Test
+    fun `GIVEN the switch off with 2 people WHEN reading its line THEN asks for a third person`() {
+        // Given
+        val state = state(memberCount = 2)
+
+        // When
+        val status = state.simplifyStatus
+
+        // Then
+        assertEquals(SimplifyDebtsStatus.NEEDS_THIRD_PERSON, status)
+    }
+
+    @Test
+    fun `GIVEN the switch off with 3 people WHEN reading its line THEN says it is off`() {
+        // Given
+        val state = state(memberCount = 3)
+
+        // When
+        val status = state.simplifyStatus
+
+        // Then
+        assertEquals(SimplifyDebtsStatus.OFF, status)
+    }
+
+    @Test
+    fun `GIVEN the switch off with 3 people WHEN reading the switch THEN it can change`() {
+        // Given
+        val state = state(memberCount = 3)
+
+        // When
+        val canChange = state.canChangeSimplifyDebts
+
+        // Then
+        assertTrue(canChange)
+    }
+
+    @Test
+    fun `GIVEN the switch off with 2 people WHEN reading the switch THEN it cannot change`() {
+        // Given
+        val state = state(memberCount = 2)
+
+        // When
+        val canChange = state.canChangeSimplifyDebts
+
+        // Then
+        assertFalse(canChange)
+    }
+
+    @Test
+    fun `GIVEN the switch on with 2 people WHEN reading the switch THEN it can still be turned off`() {
+        // Given
+        val state = state(
+            simplifiesDebts = true,
+            memberCount = 2,
+        )
+
+        // When
+        val canChange = state.canChangeSimplifyDebts
+
+        // Then
+        assertTrue(canChange)
+    }
+
+    @Test
+    fun `GIVEN a form not loaded yet WHEN reading the switch THEN it cannot change`() {
+        // Given
+        val state = state(
+            isLoaded = false,
+            memberCount = 3,
+        )
+
+        // When
+        val canChange = state.canChangeSimplifyDebts
+
+        // Then
+        assertFalse(canChange)
+    }
+
+    @Test
+    fun `GIVEN a change of the switch being applied WHEN reading the switch THEN it cannot change`() {
+        // Given
+        val state = state(
+            memberCount = 3,
+            isChangingSimplifyDebts = true,
+        )
+
+        // When
+        val canChange = state.canChangeSimplifyDebts
+
+        // Then
+        assertFalse(canChange)
+    }
+
+    @Test
+    fun `GIVEN no internet and a pending switch WHEN reading its note THEN shows the offline notice`() {
+        // Given
+        val state = state(
+            isOnline = false,
+            simplifiesDebts = true,
+            isSimplifyDebtsPending = true,
+        )
+
+        // When
+        val showsNotice = state.showsSimplifyOfflineNotice
+
+        // Then
+        assertTrue(showsNotice)
+    }
+
+    @Test
+    fun `GIVEN internet and a pending switch WHEN reading its note THEN hides the offline notice`() {
+        // Given
+        val state = state(
+            simplifiesDebts = true,
+            isSimplifyDebtsPending = true,
+        )
+
+        // When
+        val showsNotice = state.showsSimplifyOfflineNotice
+
+        // Then
+        assertFalse(showsNotice)
+    }
+
+    @Test
+    fun `GIVEN no internet and nothing pending WHEN reading the switch note THEN hides the offline notice`() {
+        // Given
+        val state = state(
+            isOnline = false,
+            simplifiesDebts = true,
+        )
+
+        // When
+        val showsNotice = state.showsSimplifyOfflineNotice
+
+        // Then
+        assertFalse(showsNotice)
+    }
+
     private fun state(
         name: String = "Viagem Floripa",
         isLoaded: Boolean = true,
@@ -292,6 +463,10 @@ class EditGroupUiStateTest {
         hasChanges: Boolean = true,
         photo: ProfilePhoto? = null,
         isPreparingPhoto: Boolean = false,
+        simplifiesDebts: Boolean = false,
+        isSimplifyDebtsPending: Boolean = false,
+        memberCount: Int = 0,
+        isChangingSimplifyDebts: Boolean = false,
     ): EditGroupUiState = EditGroupUiState(
         name = name,
         initials = "VF",
@@ -311,5 +486,12 @@ class EditGroupUiStateTest {
         isSaving = isSaving,
         showsSaveError = false,
         hasChanges = hasChanges,
+        simplifiesDebts = simplifiesDebts,
+        isSimplifyDebtsPending = isSimplifyDebtsPending,
+        simplification = null,
+        memberCount = memberCount,
+        simplifyConfirmation = null,
+        isChangingSimplifyDebts = isChangingSimplifyDebts,
+        simplifyConflict = null,
     )
 }

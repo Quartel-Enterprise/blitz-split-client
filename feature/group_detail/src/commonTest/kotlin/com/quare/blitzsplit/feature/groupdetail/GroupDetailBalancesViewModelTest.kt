@@ -41,6 +41,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
@@ -359,6 +360,7 @@ class GroupDetailBalancesViewModelTest {
                         toFace = GroupFace("B", AvatarColor.GREEN, photoUrl = null),
                         amountMinor = 3_000,
                         kind = DebtKind.YOU_OWE,
+                        isSimplified = false,
                     ),
                 ),
                 state.myDebts,
@@ -504,6 +506,7 @@ class GroupDetailBalancesViewModelTest {
                         toFace = GroupFace("C", AvatarColor.LILAC, photoUrl = null),
                         amountMinor = 10_000,
                         kind = DebtKind.BETWEEN_OTHERS,
+                        isSimplified = false,
                     ),
                     DebtRow(
                         fromMemberId = BRUNO,
@@ -514,6 +517,7 @@ class GroupDetailBalancesViewModelTest {
                         toFace = GroupFace("A", AvatarColor.PEACH, photoUrl = null),
                         amountMinor = 4_000,
                         kind = DebtKind.BETWEEN_OTHERS,
+                        isSimplified = false,
                     ),
                 ),
                 state.otherDebts,
@@ -996,6 +1000,10 @@ class GroupDetailBalancesViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(
@@ -1099,6 +1107,7 @@ class GroupDetailBalancesViewModelTest {
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
+            consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             teachUseCases = CategoryTeachUseCases(

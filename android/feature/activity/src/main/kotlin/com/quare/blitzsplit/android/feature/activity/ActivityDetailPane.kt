@@ -93,7 +93,17 @@ internal fun ActivityDetailPane(
                 }
             }
         }
-        if (item.changes.isNotEmpty()) {
+        val showsChanges = item.changes.isNotEmpty() || item.simplification?.myChanges?.isNotEmpty() == true
+        // Why: a bill's edit says its first change, which the list repeats; "Simplificar dívidas" sums up its own.
+        if (!showsChanges || item.simplification != null) {
+            detailTextOf(item)?.let { detail ->
+                Text(
+                    text = detail,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+        if (showsChanges) {
             Text(
                 text = stringResource(R.string.activity_detail_what_changed),
                 style = MaterialTheme.typography.titleSmall,
@@ -106,13 +116,6 @@ internal fun ActivityDetailPane(
                 ChangeList(
                     item = item,
                     modifier = Modifier.padding(16.dp),
-                )
-            }
-        } else {
-            detailTextOf(item)?.let { detail ->
-                Text(
-                    text = detail,
-                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }

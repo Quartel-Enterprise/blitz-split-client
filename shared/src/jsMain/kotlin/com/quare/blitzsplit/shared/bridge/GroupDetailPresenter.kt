@@ -120,6 +120,11 @@ class JsGroupDetailState(
     val showsProtectAccess: Boolean,
     // Why: the home tab the group was opened from, which the sidebar selects ("home", "groups"…).
     val homeTab: String,
+    // Why: Saldos' "Dívidas simplificadas" (13.4) while the group's "Simplificar dívidas" is on; null while off.
+    val simplification: JsDebtSimplification?,
+    val showsSimplificationCard: Boolean,
+    // Why: 13.1e's toast, until dismissed.
+    val simplifyConflict: JsSimplifyConflict?,
 )
 
 class GroupDetailPresenter(
@@ -171,6 +176,9 @@ class GroupDetailPresenter(
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
                 homeTab = toJsHomeTab(state.homeTab),
+                simplification = state.simplification?.let(::toJsDebtSimplification),
+                showsSimplificationCard = state.showsSimplificationCard,
+                simplifyConflict = state.simplifyConflict?.let(::toJsSimplifyConflict),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -302,6 +310,20 @@ class GroupDetailPresenter(
 
     fun confirmTeach() {
         viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+    }
+
+    // Why: "Como funciona" on Saldos' "Dívidas simplificadas" (13.4).
+    fun openSimplifyDebtsInfo() {
+        viewModel.onEvent(GroupDetailUiEvent.OnSimplifyDebtsInfoClicked)
+    }
+
+    fun dismissSimplifyConflict() {
+        viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictDismissed)
+    }
+
+    // Why: the toast's "Ver na Atividade".
+    fun openSimplifyConflictActivity() {
+        viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictActivityClicked)
     }
 
     fun dispose() {

@@ -31,4 +31,15 @@ data class Group(
     val defaultSplit: GroupDefaultSplit?,
     // Why: when the group itself last changed, in epoch millis: its last activity on the home until it has a bill.
     val updatedAt: Long,
+    /*
+     * Why: "Simplificar dívidas" (13.1): its pairs become the fewest payments that keep each one's total, on this
+     * device at once, offline too.
+     */
+    val simplifiesDebts: Boolean,
+    // Why: changed here and not up yet: "Ligado neste aparelho · aguardando envio" (13.1d).
+    val isSimplifyDebtsPending: Boolean,
+    // Why: the account that last changed it, "Ana simplificou as dívidas agora há pouco" (13.5c); null for nobody yet.
+    val simplifyDebtsChangedBy: String?,
+    // Why: someone changed it after this device did, which lost (13.1e); null once a screen said so.
+    val simplifyDebtsConflictBy: String?,
 )

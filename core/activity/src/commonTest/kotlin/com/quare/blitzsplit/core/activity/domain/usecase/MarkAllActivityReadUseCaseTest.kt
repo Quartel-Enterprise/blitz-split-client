@@ -134,6 +134,9 @@ class MarkAllActivityReadUseCaseTest {
         isPending = seq == null,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = emptyList(),
+        debtsAfter = emptyList(),
+        memberNames = emptyMap(),
     )
 
     private fun prepareScenario(events: List<ActivityEvent>) {

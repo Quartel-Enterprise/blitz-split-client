@@ -2,10 +2,17 @@ package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -13,9 +20,11 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
@@ -24,12 +33,14 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEven
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -38,8 +49,11 @@ class EditGroupViewModel(
     private val route: Route.EditGroup,
     private val navigator: Navigator,
     private val updateGroup: UpdateGroup,
+    private val setSimplifiesDebts: SetSimplifiesDebts,
+    private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
     connectivityObserver: NetworkConnectivityObserver,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
@@ -65,6 +79,13 @@ class EditGroupViewModel(
                 isSaving = false,
                 showsSaveError = false,
                 hasChanges = false,
+                simplifiesDebts = false,
+                isSimplifyDebtsPending = false,
+                simplification = null,
+                memberCount = 0,
+                simplifyConfirmation = null,
+                isChangingSimplifyDebts = false,
+                simplifyConflict = null,
             ),
         )
 
@@ -78,6 +99,13 @@ class EditGroupViewModel(
 
     // Why: the group as Room has it now, a sync from another member included.
     private var latest: Group? = null
+
+    // Why: the pairs as each bill makes them and the payments on the device, which "Simplificar dívidas" reads.
+    private var rawBalances: GroupBalances? = null
+    private var settlements: List<Settlement> = emptyList()
+
+    // Why: the conflict shows once, not again from an emission that came before its consume landed.
+    private var isConsumingConflict = false
 
     // Why: the group's photo is the same 512x512 JPEG as a profile's.
     private val photoPicker = ProfilePhotoPicker(
@@ -96,9 +124,11 @@ class EditGroupViewModel(
      * currency still follows the group's once a bill locks it, since the bill is in that currency.
      */
     init {
+        // Why: one read of the bills for the currency's lock and the switch's pairs alike.
+        val expenses = observeExpenses(route.groupId).shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         combine(
             observeGroup(route.groupId),
-            observeExpenses(route.groupId)
+            expenses
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged(),
             ::Pair,
@@ -107,8 +137,22 @@ class EditGroupViewModel(
             if (group == null) leave() else show(group, hasExpenses)
         }.launchIn(viewModelScope)
         navigator.backStack
-            .onEach { if (isGroupGone) leave() }
-            .launchIn(viewModelScope)
+            .onEach {
+                if (isGroupGone) leave() else latest?.let(::showConflict)
+            }.launchIn(viewModelScope)
+        /*
+         * Why: the switch's line and its open confirmation follow the pairs as bills, payments and syncs change them,
+         * so what it says is always what confirming applies.
+         */
+        combine(
+            expenses,
+            observeSettlements(route.groupId),
+            ::Pair,
+        ).onEach { (expenses, settlements) ->
+            rawBalances = GroupBalances.of(expenses, settlements)
+            this.settlements = settlements
+            latest?.let(::showSimplification)
+        }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -159,6 +203,18 @@ class EditGroupViewModel(
             EditGroupUiEvent.OnDefaultSplitClicked -> openDefaultSplit()
 
             EditGroupUiEvent.OnSaveClicked -> save()
+
+            EditGroupUiEvent.OnSimplifyDebtsClicked -> openSimplifyConfirmation()
+
+            EditGroupUiEvent.OnSimplifyDebtsConfirmed -> confirmSimplifyDebts()
+
+            EditGroupUiEvent.OnSimplifyDebtsDismissed -> uiState.update { it.copy(simplifyConfirmation = null) }
+
+            EditGroupUiEvent.OnSimplifyDebtsInfoClicked -> openSimplifyDebtsInfo()
+
+            EditGroupUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
+
+            EditGroupUiEvent.OnSimplifyConflictActivityClicked -> openActivity()
         }
     }
 
@@ -191,6 +247,88 @@ class EditGroupViewModel(
                 currency = if (hasExpenses) group.currency else filled.currency,
             )
         }
+        showSimplification(group)
+        showConflict(group)
+    }
+
+    // Why: the switch is the group's, as Room has it, a sync's change included; it is no change of the form's.
+    private fun showSimplification(group: Group) {
+        val raw = rawBalances
+        val shown = raw?.takeIf { group.simplifiesDebts }?.toSimplified(group.members.map { it.id })
+        uiState.update { state ->
+            state.copy(
+                simplifiesDebts = group.simplifiesDebts,
+                isSimplifyDebtsPending = group.isSimplifyDebtsPending,
+                simplification = shown?.let(DebtSimplificationSummary::ofOrNull),
+                memberCount = group.members.size,
+                // Why: a sync turning it the other way meanwhile closes the question, which no longer asks the same.
+                simplifyConfirmation = state.simplifyConfirmation
+                    ?.takeIf { it.isTurningOn != group.simplifiesDebts && raw != null }
+                    ?.let { simplifyConfirmationOf(group, checkNotNull(raw), settlements) },
+            )
+        }
+    }
+
+    // Why: 13.1e shows on whichever screen of the group is on top first, once.
+    private fun showConflict(group: Group) {
+        if (navigator.backStack.value.lastOrNull() != route) return
+        if (isConsumingConflict) return
+        val notice = SimplifyDebtsConflicts.noticeOrNull(group) ?: return
+        isConsumingConflict = true
+        uiState.update { it.copy(simplifyConflict = notice) }
+        viewModelScope.launch {
+            consumeSimplifyDebtsConflict(route.groupId)
+            isConsumingConflict = false
+        }
+    }
+
+    private fun openSimplifyConfirmation() {
+        val state = uiState.value
+        val group = latest ?: return
+        val raw = rawBalances ?: return
+        if (!state.canChangeSimplifyDebts) return
+        uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raw, settlements)) }
+    }
+
+    private fun confirmSimplifyDebts() {
+        val confirmation = uiState.value.simplifyConfirmation ?: return
+        if (uiState.value.isChangingSimplifyDebts) return
+        uiState.update {
+            it.copy(
+                isChangingSimplifyDebts = true,
+                showsSaveError = false,
+            )
+        }
+        viewModelScope.launch {
+            val result = setSimplifiesDebts(
+                groupId = route.groupId,
+                simplifiesDebts = confirmation.isTurningOn,
+            )
+            uiState.update {
+                it.copy(
+                    isChangingSimplifyDebts = false,
+                    simplifyConfirmation = null,
+                    showsSaveError = result.isFailure,
+                )
+            }
+        }
+    }
+
+    // Why: only from the form on top, as "Divisão padrão".
+    private fun openSimplifyDebtsInfo() {
+        val state = uiState.value
+        if (!state.isLoaded || navigator.backStack.value.lastOrNull() != route) return
+        navigator.navigate(Route.SimplifyDebtsInfo(state.currency))
+    }
+
+    /*
+     * Why: Atividade's tab lists both changes, on top of its Hoje; the form, its group and whatever else is above the
+     * home close as any tab opening does, so no platform draws a tab's screen inside a sheet.
+     */
+    private fun openActivity() {
+        uiState.update { it.copy(simplifyConflict = null) }
+        if (navigator.backStack.value.lastOrNull() != route) return
+        navigator.openHomeTab(HomeTab.ACTIVITY)
     }
 
     private fun openIconEditor() {

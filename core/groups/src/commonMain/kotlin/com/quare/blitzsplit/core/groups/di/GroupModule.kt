@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
@@ -44,6 +45,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
@@ -91,6 +93,7 @@ val groupModule = module {
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
     factoryOf(::ObserveGroupDeletionsUseCase).bind<ObserveGroupDeletions>()
     factoryOf(::ConsumeGroupDeletionUseCase).bind<ConsumeGroupDeletion>()
+    factoryOf(::ConsumeSimplifyDebtsConflictUseCase).bind<ConsumeSimplifyDebtsConflict>()
     singleOf(::RoomGroupPinLocalDataSource).bind<GroupPinLocalDataSource>()
     singleOf(::SupabaseGroupPinRemoteDataSource).bind<GroupPinRemoteDataSource>()
     singleOf(::GroupPinRepositoryImpl).bind<GroupPinRepository>()

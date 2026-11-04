@@ -43,8 +43,9 @@ final class EditGroupModel {
 
 /// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar, the canvas' 540 pt
 /// form sheet with an iPad's room. The same fields as "New group": the icon is a color or a photo (EditGroupIconSection),
-/// and the currency locks once the group has a bill. An iPhone lying down puts the avatar and "Change icon or photo" in
-/// one compact row.
+/// and the currency locks once the group has a bill. "Simplify debts" (13.1) applies apart from Save: its confirmation
+/// is a sheet over the form on iPhone and iPad, and takes the form's place on the Mac. An iPhone lying down draws two
+/// columns and puts the avatar and "Change icon or photo" in one compact row.
 struct EditGroupView: View {
     let route: RouteEditGroup
 
@@ -53,38 +54,57 @@ struct EditGroupView: View {
 
     var body: some View {
         Group {
+            #if os(macOS)
+            // The Mac's confirmation takes the place of the form in the same sheet, as its board draws it
+            if let model, let confirmation = model.state.simplifyConfirmation {
+                SimplifyDebtsConfirmationView(
+                    confirmation: confirmation,
+                    currency: model.state.currency,
+                    isChanging: model.state.isChangingSimplifyDebts,
+                    onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
+                    onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
+                )
+            } else if let model, model.state.isLoaded {
+                EditGroupForm(model: model)
+            } else {
+                shimmer
+            }
+            #else
             if let model, model.state.isLoaded {
                 EditGroupForm(model: model)
             } else {
-                // The group not read yet: its icon and fields shimmer in place
-                ShimmerScreen {
-                    ShimmerBlock(width: 88, height: 88, cornerRadius: 28)
-                        .frame(maxWidth: .infinity)
-                    ShimmerForm(fieldCount: 3)
-                }
-                .background(Palette.groupedBackground.ignoresSafeArea())
+                shimmer
             }
+            #endif
         }
-        .navigationTitle("Edit group")
+        .navigationTitle(showsConfirmationInPlace ? "" : String(localized: "Edit group"))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel", systemImage: "xmark", role: .cancel) {
-                    model?.send(EditGroupUiEventOnCloseClicked.shared)
+            if !showsConfirmationInPlace {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel) {
+                        model?.send(EditGroupUiEventOnCloseClicked.shared)
+                    }
+                    .disabled(model?.state.isSaving == true)
                 }
-                .disabled(model?.state.isSaving == true)
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save", systemImage: "checkmark") {
-                    model?.send(EditGroupUiEventOnSaveClicked.shared)
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", systemImage: "checkmark") {
+                        model?.send(EditGroupUiEventOnSaveClicked.shared)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .disabled(model?.state.canSave != true)
                 }
-                .buttonStyle(.glassProminent)
-                .disabled(model?.state.canSave != true)
             }
         }
-        .interactiveDismissDisabled(model?.state.isSaving == true)
+        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isChangingSimplifyDebts == true)
+        // "Ana turned it off after you" (13.1e), over the form
+        .simplifyConflictBanner(
+            model?.state.simplifyConflict,
+            onActivity: { model?.send(EditGroupUiEventOnSimplifyConflictActivityClicked.shared) },
+            onDismiss: { model?.send(EditGroupUiEventOnSimplifyConflictDismissed.shared) },
+        )
         #if os(iOS)
         .formSheetSizing()
         #endif
@@ -95,14 +115,37 @@ struct EditGroupView: View {
             if model == nil { model = EditGroupModel(route: route) }
         }
     }
+
+    /// The Mac draws the confirmation in the form's place, with its own buttons instead of the bar's.
+    private var showsConfirmationInPlace: Bool {
+        #if os(macOS)
+        model?.state.simplifyConfirmation != nil
+        #else
+        false
+        #endif
+    }
+
+    /// The group not read yet: its icon and fields shimmer in place.
+    private var shimmer: some View {
+        ShimmerScreen {
+            ShimmerBlock(width: 88, height: 88, cornerRadius: 28)
+                .frame(maxWidth: .infinity)
+            ShimmerForm(fieldCount: 3)
+        }
+        .background(Palette.groupedBackground.ignoresSafeArea())
+    }
 }
 
+/// One grouped form, or two in an iPhone's sheet lying down, as the boards draw it: the icon and the name, then the
+/// type, currency, default split and "Simplify debts" (13.1), each column scrolling on its own.
 private struct EditGroupForm: View {
     let model: EditGroupModel
 
     #if os(iOS)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     #endif
+    /// The sheet's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
 
     private var state: EditGroupUiState {
         model.state
@@ -117,90 +160,141 @@ private struct EditGroupForm: View {
         #endif
     }
 
+    private var usesTwoColumns: Bool {
+        #if os(iOS)
+        layout.usesTwoColumns
+        #else
+        false
+        #endif
+    }
+
     var body: some View {
-        Form {
-            if state.showsSaveError {
-                Section {
-                    Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
-                        .foregroundStyle(Palette.negative)
+        Group {
+            if usesTwoColumns {
+                TwoColumnsLayout(spacing: 8) {
+                    Form { groupSections }
+                        .formStyle(.grouped)
+                } second: {
+                    Form { settingsSections }
+                        .formStyle(.grouped)
+                }
+            } else {
+                Form {
+                    groupSections
+                    settingsSections
+                }
+                .formStyle(.grouped)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
+        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(EditGroupUiEventOnPhotoCrop(event: $0)) }
+        #if os(iOS)
+        // "Simplify debts?" over the form; the Mac draws it in the form's place (EditGroupView)
+        .sheet(isPresented: simplifyConfirmationShown) {
+            if let confirmation = state.simplifyConfirmation {
+                SimplifyDebtsConfirmationView(
+                    confirmation: confirmation,
+                    currency: state.currency,
+                    isChanging: state.isChangingSimplifyDebts,
+                    onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
+                    onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
+                )
+                .presentationDetents(confirmation.people.isEmpty ? [.medium, .large] : [.large])
+                .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled(state.isChangingSimplifyDebts)
+            }
+        }
+        #endif
+    }
+
+    /// The error, the avatar and the name.
+    @ViewBuilder
+    private var groupSections: some View {
+        if state.showsSaveError {
+            Section {
+                Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
+                    .foregroundStyle(Palette.negative)
+            }
+        }
+        Section {
+            EditGroupIconSection(model: model, usesCompactIcon: usesCompactIcon)
+                .listRowBackground(Color.clear)
+        }
+        Section {
+            HStack(spacing: 8) {
+                TextField("Group name", text: nameBinding)
+                    .accessibilityHint(state.showsNameError ? Text(nameErrorText) : Text(""))
+                Text(verbatim: "\(state.nameLength)/\(state.maxNameLength)")
+                    .font(.subheadline)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+        } header: {
+            Text("Group name")
+        } footer: {
+            if state.showsNameError {
+                Text(nameErrorText)
+                    .fontWeight(.medium)
+                    .foregroundStyle(Palette.negative)
+            } else {
+                Text("Everyone in the group sees the new name.")
+            }
+        }
+    }
+
+    /// The type, the currency, the default split, and "Payments" with "Simplify debts".
+    @ViewBuilder
+    private var settingsSections: some View {
+        Section {
+            Picker("Type", selection: typeBinding) {
+                ForEach(state.types, id: \.self) { type in
+                    Text(type.title).tag(type)
                 }
             }
-            Section {
-                EditGroupIconSection(model: model, usesCompactIcon: usesCompactIcon)
-                    .listRowBackground(Color.clear)
+            if state.isCurrencyLocked {
+                LabeledContent("Currency") {
+                    HStack(spacing: 6) {
+                        Text(verbatim: state.currency.label)
+                        Image(systemName: "lock")
+                            .accessibilityLabel("Locked")
+                    }
+                }
+            } else {
+                Picker("Currency", selection: currencyBinding) {
+                    CurrencyOptions(currencies: state.currencies)
+                }
             }
-            Section {
+            // Pushes "Default split" inside this sheet, which keeps what is typed here
+            Button {
+                model.send(EditGroupUiEventOnDefaultSplitClicked.shared)
+            } label: {
                 HStack(spacing: 8) {
-                    TextField("Group name", text: nameBinding)
-                        .accessibilityHint(state.showsNameError ? Text(nameErrorText) : Text(""))
-                    Text(verbatim: "\(state.nameLength)/\(state.maxNameLength)")
-                        .font(.subheadline)
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
+                    LabeledContent("Default split") {
+                        Text(verbatim: DefaultSplitCopy.modeLabel(state.defaultSplitMode))
+                    }
+                    Image(systemName: "chevron.forward")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
                 }
-            } header: {
-                Text("Group name")
-            } footer: {
-                if state.showsNameError {
-                    Text(nameErrorText)
-                        .fontWeight(.medium)
-                        .foregroundStyle(Palette.negative)
-                } else {
-                    Text("Everyone in the group sees the new name.")
-                }
+                .contentShape(.rect)
             }
-            Section {
-                Picker("Type", selection: typeBinding) {
-                    ForEach(state.types, id: \.self) { type in
-                        Text(type.title).tag(type)
-                    }
-                }
-                if state.isCurrencyLocked {
-                    LabeledContent("Currency") {
-                        HStack(spacing: 6) {
-                            Text(verbatim: state.currency.label)
-                            Image(systemName: "lock")
-                                .accessibilityLabel("Locked")
-                        }
-                    }
-                } else {
-                    Picker("Currency", selection: currencyBinding) {
-                        CurrencyOptions(currencies: state.currencies)
-                    }
-                }
-                // Pushes "Default split" inside this sheet, which keeps what is typed here
-                Button {
-                    model.send(EditGroupUiEventOnDefaultSplitClicked.shared)
-                } label: {
-                    HStack(spacing: 8) {
-                        LabeledContent("Default split") {
-                            Text(verbatim: DefaultSplitCopy.modeLabel(state.defaultSplitMode))
-                        }
-                        Image(systemName: "chevron.forward")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                            .accessibilityHidden(true)
-                    }
-                    .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-                .disabled(state.isSaving)
-                .accessibilityHint("How new expenses split")
-            } footer: {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("The currency doesn’t change after the first expense.")
-                    if state.showsOfflineNotice {
-                        Text(
-                            "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",
-                        )
-                    } else {
-                        Text("Anyone in the group can change the name, the icon and the type.")
-                    }
+            .buttonStyle(.plain)
+            .disabled(state.isSaving)
+            .accessibilityHint("How new expenses split")
+        } footer: {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("The currency doesn’t change after the first expense.")
+                if state.showsOfflineNotice {
+                    Text(
+                        "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",
+                    )
                 }
             }
         }
-        .formStyle(.grouped)
-        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(EditGroupUiEventOnPhotoCrop(event: $0)) }
+        EditGroupPaymentsSection(model: model)
     }
 
     private var nameErrorText: LocalizedStringKey {
@@ -225,6 +319,85 @@ private struct EditGroupForm: View {
         Binding(
             get: { model.state.currency },
             set: { model.send(EditGroupUiEventOnCurrencySelected(currency: $0)) },
+        )
+    }
+
+    /// Closing the confirmation any other way than its buttons (a swipe down) is "Not now".
+    private var simplifyConfirmationShown: Binding<Bool> {
+        Binding(
+            get: { model.state.simplifyConfirmation != nil },
+            set: { shown in
+                if !shown, model.current.simplifyConfirmation != nil {
+                    model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared)
+                }
+            },
+        )
+    }
+}
+
+/// "Payments" (13.1): "Simplify debts" with its switch, which only opens the confirmation and never flips by itself,
+/// the line saying how it stands (the orange dot while it waits to go up), "How it works" and who may change it. It
+/// applies at once, apart from Save. The Mac's switch is the small one of its forms.
+private struct EditGroupPaymentsSection: View {
+    let model: EditGroupModel
+
+    private var state: EditGroupUiState {
+        model.state
+    }
+
+    private var isAvailable: Bool {
+        state.simplifyStatus != .needsThirdPerson
+    }
+
+    var body: some View {
+        Section {
+            HStack(alignment: .top, spacing: 12) {
+                SimplifyDebtsTile(isEnabled: isAvailable)
+                    .padding(.top, 1)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Simplify debts")
+                        .foregroundStyle(isAvailable ? .primary : .secondary)
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        if state.simplifyStatus == .pending {
+                            SimplifyPendingDot()
+                        }
+                        Text(verbatim: SimplifyDebtsCopy.status(state))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                .accessibilityHidden(true)
+                Toggle(isOn: switchBinding) {
+                    Text("Simplify debts")
+                }
+                .labelsHidden()
+                .toggleStyle(.switch)
+                #if os(macOS)
+                .controlSize(.small)
+                #endif
+                .disabled(!state.canChangeSimplifyDebts)
+                .accessibilityLabel(Text("Simplify debts"))
+                .accessibilityHint(Text(verbatim: SimplifyDebtsCopy.status(state)))
+            }
+            Button("How it works") {
+                model.send(EditGroupUiEventOnSimplifyDebtsInfoClicked.shared)
+            }
+            .disabled(!state.isLoaded)
+        } header: {
+            Text("Payments")
+        } footer: {
+            Text(verbatim: SimplifyDebtsCopy.note(state))
+        }
+    }
+
+    /// Reads the group's setting; a tap only asks for the confirmation, so the switch stays as it was until it applies.
+    private var switchBinding: Binding<Bool> {
+        Binding(
+            get: { model.state.simplifiesDebts },
+            set: { _ in model.send(EditGroupUiEventOnSimplifyDebtsClicked.shared) },
         )
     }
 }

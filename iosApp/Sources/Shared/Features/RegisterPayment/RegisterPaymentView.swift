@@ -93,8 +93,15 @@ struct RegisterPaymentView: View {
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                // Paying someone with a key opens "Pay Ana" (4.5); anything else records a payment made outside
-                if model.state.showsReceiverKeys {
+                // Paying someone with a key opens "Pay Ana" (4.5); anything else records a payment made outside. Once
+                // someone changed "Simplify debts" and the pair owes nothing anymore, 13.5c takes the place of both
+                if let change = model.state.simplifyChange {
+                    #if os(macOS)
+                    MacSimplifyChanged(model: model, change: change)
+                    #else
+                    PhoneSimplifyChanged(model: model, change: change)
+                    #endif
+                } else if model.state.showsReceiverKeys {
                     #if os(macOS)
                     MacPayWithKey(model: model)
                     #else
@@ -166,6 +173,13 @@ private enum RegisterPaymentCopy {
         case .paid: String(localized: "Did you pay \(to(state))?")
         default: String(localized: "Did \(from(state)) pay \(to(state))?")
         }
+    }
+
+    /// The debt under the question, with "· simplified debt" for a pair "Simplify debts" made or grew (13.5).
+    static func subtitle(_ state: RegisterPaymentUiState) -> String {
+        let debt = Self.debt(state)
+        guard state.simplifiedNote != nil else { return debt }
+        return String(localized: "\(debt) · simplified debt", comment: "Record payment: the debt of a simplified pair")
     }
 
     /// "Ana owes you $162.30", "You owe Bruno $118.00" or "Diego owes Bruno $64.00".
@@ -256,12 +270,17 @@ private struct MethodPicker: View {
     }
 }
 
-/// "It becomes a payment in the group…", who it is recorded for when neither is this person, and the offline note.
+/// Why a simplified pair is this one, "It becomes a payment in the group…", who it is recorded for when neither is this
+/// person, and the offline note.
 private struct PaymentNotes: View {
     let state: RegisterPaymentUiState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Why this pair: one "Simplify debts" made or grew (13.5)
+            if let note = state.simplifiedNote {
+                Text(verbatim: SimplifyDebtsCopy.pairNote(note, from: state.from, to: state.to))
+            }
             Text("It becomes a payment in the group: it shows in Expenses and can be undone.")
             if state.kind == .betweenOthers {
                 Text("You're recording this for \(RegisterPaymentCopy.from(state)) and \(RegisterPaymentCopy.to(state)).")
@@ -388,7 +407,7 @@ private struct PhoneRegisterPayment: View {
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
                     .accessibilityAddTraits(.isHeader)
-                Text(verbatim: RegisterPaymentCopy.debt(state))
+                Text(verbatim: RegisterPaymentCopy.subtitle(state))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -466,7 +485,7 @@ private struct MacRegisterPayment: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: RegisterPaymentCopy.title(state))
                         .font(.title2.bold())
-                    Text(verbatim: RegisterPaymentCopy.debt(state))
+                    Text(verbatim: RegisterPaymentCopy.subtitle(state))
                         .foregroundStyle(.secondary)
                 }
             }

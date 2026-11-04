@@ -142,6 +142,7 @@ internal fun RegisterPaymentDetailsColumn(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             )
         }
+        SimplifiedNoteLine(state)
         InfoLine(state)
         if (state.showsOfflineNotice) {
             OfflineNoticeBanner(

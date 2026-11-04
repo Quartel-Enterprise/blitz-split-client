@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Info, Loader2 } from 'lucide-react'
-import { RegisterPaymentPresenter, type JsPaymentPerson, type JsRegisterPaymentState, type JsRoute } from 'blitzsplit-shared'
+import { RegisterPaymentPresenter, type JsPaymentPerson, type JsRegisterPaymentState, type JsRoute, type JsSimplifiedPairNote } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -15,9 +15,12 @@ import { ProfileFace } from '@/features/register-payment/PaymentFaces'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { formatMoney } from '@/lib/money'
+import { formatMoney, formatNames } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { simplifyName } from '@/features/simplify-debts/simplify'
+import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { payWithKeyPane } from './PayWithKeyPane'
+import { simplifyChangePane } from './SimplifyChangePane'
 
 const formId = 'register-payment-form'
 const amountId = 'register-payment-amount'
@@ -81,8 +84,11 @@ export function RegisterPaymentDialog({ route, isCovered = false }: { route: JsR
   // Why: the person the sentence is about, the other one besides "você" when one of them is this person.
   const names = { name: state.kind === 'received' ? from : to, from, to }
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
-  // Why: paying someone with a key opens "Pagar Ana" (4.5); anything else records a payment made outside.
-  const pane: PaneParts = state.showsReceiverKeys ? payWithKeyPane(presenter, state, money) : {
+  // Why: paying someone with a key opens "Pagar Ana" (4.5); anything else records a payment made outside. Someone
+  // turning "Simplificar dívidas" the other way while it was open takes the place of both (13.5c).
+  const pane: PaneParts = state.simplifyChange
+    ? simplifyChangePane(presenter, state, state.simplifyChange, money)
+    : state.showsReceiverKeys ? payWithKeyPane(presenter, state, money) : {
     leading: <PairFaces presenter={presenter} from={state.from} to={state.to} />,
     title: t(words.title, names),
     description: t(words.debt, { ...names, amount: money(state.debtMinor) }),
@@ -238,6 +244,7 @@ function PaymentForm({
         onChange={(millis) => presenter.changePaidAt(millis)}
       />
 
+      {state.simplifiedNote && <SimplifiedNote note={state.simplifiedNote} state={state} />}
       <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
         <Info aria-hidden className="mt-px size-4 shrink-0" />
         <span>
@@ -252,6 +259,30 @@ function PaymentForm({
         </p>
       )}
     </form>
+  )
+}
+
+/**
+ * "Dívida simplificada: Diego paga a você o que devia a Bruno." for a pair no bill made, "…: inclui o que Ana devia a
+ * você." for one that grew (13.5).
+ */
+function SimplifiedNote({ note, state }: { note: JsSimplifiedPairNote; state: JsRegisterPaymentState }) {
+  const insteadOf = formatNames(note.insteadOf.map(simplifyName))
+  const payer = state.from ? simplifyName(state.from) : nameOrFormer(null)
+  const receiver = state.to ? simplifyName(state.to) : nameOrFormer(null)
+  const text =
+    note.insteadOf.length === 0
+      ? t('registerPayment_simplifiedPlain')
+      : !note.isNewPair
+        ? t('registerPayment_simplifiedGrown', { payer, insteadOf })
+        : state.from?.isMe
+          ? t('registerPayment_simplifiedNewPairMe', { receiver, insteadOf })
+          : t('registerPayment_simplifiedNewPair', { payer, receiver, insteadOf })
+  return (
+    <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
+      <SimplifyIcon className="mt-px" />
+      <span>{text}</span>
+    </p>
   )
 }
 

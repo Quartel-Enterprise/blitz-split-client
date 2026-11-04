@@ -13,6 +13,8 @@ data class DebtRow(
     val toFace: GroupFace?,
     val amountMinor: Long,
     val kind: DebtKind,
+    // Why: the icon of 13.4 on a pair "Simplificar dívidas" made, which no bill did: "Diego → você".
+    val isSimplified: Boolean,
 )
 
 // Why: a pair as Saldos and the dialogs of "Sair do grupo" and "Apagar grupo" show it.
@@ -20,6 +22,7 @@ fun debtRowOf(
     debt: Debt,
     group: Group,
     meId: String?,
+    balances: GroupBalances,
 ): DebtRow {
     val from = group.members.firstOrNull { it.id == debt.fromMemberId }
     val to = group.members.firstOrNull { it.id == debt.toMemberId }
@@ -36,5 +39,6 @@ fun debtRowOf(
             debt.toMemberId -> DebtKind.OWES_YOU
             else -> DebtKind.BETWEEN_OTHERS
         },
+        isSimplified = balances.isSimplifiedPair(debt),
     )
 }

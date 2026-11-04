@@ -2797,6 +2797,10 @@ class MembersViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")

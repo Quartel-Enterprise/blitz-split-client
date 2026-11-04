@@ -26,4 +26,12 @@ data class GroupDto(
      * knows) go back up untouched with any change this device pushes.
      */
     @SerialName("default_split") val defaultSplit: JsonObject?,
+    // Why: "Simplificar dívidas"; null from a server that doesn't have it yet, which reads as off.
+    @SerialName("simplify_debts") val simplifyDebts: Boolean?,
+    // Why: its own Last-Write-Wins stamp, which the server compares apart from updated_at.
+    @SerialName("simplify_debts_at") val simplifyDebtsAt: Long?,
+    // Why: the server writes who changed it, whatever a push sends, which is always null.
+    @SerialName("simplify_debts_by") val simplifyDebtsBy: String?,
+    // Why: the pairs the change moved, sent with a change not up yet and null otherwise.
+    @SerialName("simplify_debts_change") val simplifyDebtsChange: JsonObject?,
 )

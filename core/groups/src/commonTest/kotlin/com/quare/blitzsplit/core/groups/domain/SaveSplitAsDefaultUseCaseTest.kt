@@ -258,6 +258,10 @@ class SaveSplitAsDefaultUseCaseTest {
             isCreatedByMe = true,
             defaultSplit = defaultSplit,
             updatedAt = 0L,
+            simplifiesDebts = false,
+            isSimplifyDebtsPending = false,
+            simplifyDebtsChangedBy = null,
+            simplifyDebtsConflictBy = null,
         )
         repository = FakeGroupRepository(listOf(group)).also {
             it.savedIncomes[GROUP_ID] = incomes

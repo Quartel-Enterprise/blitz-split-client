@@ -16,6 +16,8 @@ class JsDebtRow(
     val amountMinor: Double,
     // Why: "you-owe", "owes-you" or "between-others".
     val kind: String,
+    // Why: a pair "Simplificar dívidas" made, which no bill did, with the icon of 13.4.
+    val isSimplified: Boolean,
 )
 
 internal fun toJsDebtRow(row: DebtRow): JsDebtRow = JsDebtRow(
@@ -31,4 +33,5 @@ internal fun toJsDebtRow(row: DebtRow): JsDebtRow = JsDebtRow(
         DebtKind.OWES_YOU -> "owes-you"
         DebtKind.BETWEEN_OTHERS -> "between-others"
     },
+    isSimplified = row.isSimplified,
 )

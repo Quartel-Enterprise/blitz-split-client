@@ -850,6 +850,10 @@ class PayReceiverViewModelTest {
             isCreatedByMe = true,
             defaultSplit = null,
             updatedAt = 0L,
+            simplifiesDebts = false,
+            isSimplifyDebtsPending = false,
+            simplifyDebtsChangedBy = null,
+            simplifyDebtsConflictBy = null,
         )
         firstDownload = MutableStateFlow(downloading)
         paymentKeys = FakePaymentKeyRepository().also {
@@ -918,7 +922,7 @@ class PayReceiverViewModelTest {
             },
             encodeQrCode = encodeQrCode,
             observeGroup = ObserveGroupUseCase(groups),
-            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
+            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements, groups),
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             observeBitcoinInSats = { flowOf(false) },

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
+import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -40,7 +42,39 @@ data class EditGroupUiState(
     val showsSaveError: Boolean,
     // Why: Salvar stays off until something differs from what the form opened with, so a save always changes the group.
     val hasChanges: Boolean,
+    // Why: "Simplificar dívidas" (13.1) as the group has it now; it applies at once, apart from Salvar.
+    val simplifiesDebts: Boolean,
+    // Why: changed on this device and not up yet (13.1d).
+    val isSimplifyDebtsPending: Boolean,
+    // Why: "Ligado · 5 pagamentos em vez de 7"; null while it is off.
+    val simplification: DebtSimplificationSummary?,
+    // Why: with 2 people it is already one payment (13.1c).
+    val memberCount: Int,
+    // Why: the confirmation the switch opens (13.3, 13.3b); null while closed.
+    val simplifyConfirmation: SimplifyDebtsConfirmation?,
+    val isChangingSimplifyDebts: Boolean,
+    // Why: "Ana desligou depois de você" (13.1e), until it is dismissed.
+    val simplifyConflict: SimplifyDebtsConflictNotice?,
 ) {
+    // Why: off and unavailable with fewer than 3 people, though a group already on can still turn it off.
+    val canChangeSimplifyDebts: Boolean
+        get() = isLoaded && !isChangingSimplifyDebts && (simplifiesDebts || memberCount >= MIN_PEOPLE_TO_SIMPLIFY)
+
+    val simplifyStatus: SimplifyDebtsStatus
+        get() = when {
+            isSimplifyDebtsPending -> SimplifyDebtsStatus.PENDING
+            simplifiesDebts -> SimplifyDebtsStatus.ON
+            memberCount < MIN_PEOPLE_TO_SIMPLIFY -> SimplifyDebtsStatus.NEEDS_THIRD_PERSON
+            else -> SimplifyDebtsStatus.OFF
+        }
+
+    /*
+     * Why: "Sem internet: os pagamentos sugeridos já mudaram neste aparelho. O grupo vê quando ele reconectar." in
+     * place of the switch's note (13.1d).
+     */
+    val showsSimplifyOfflineNotice: Boolean
+        get() = !isOnline && isSimplifyDebtsPending
+
     val types: List<GroupType>
         get() = GroupType.entries
 
@@ -76,4 +110,9 @@ data class EditGroupUiState(
     // Why: the change holds on this device now and reaches the others once it reconnects (6.4c).
     val showsOfflineNotice: Boolean
         get() = !isOnline
+
+    companion object {
+        // Why: two people are already one payment at most.
+        const val MIN_PEOPLE_TO_SIMPLIFY = 3
+    }
 }

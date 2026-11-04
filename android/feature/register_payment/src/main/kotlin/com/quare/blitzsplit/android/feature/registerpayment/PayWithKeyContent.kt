@@ -463,6 +463,7 @@ private fun PayNoteSection(
     state: RegisterPaymentUiState,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
+    SimplifiedNoteLine(state)
     Text(
         text = if (state.shownKeyMethod == PaymentMethod.PIX) {
             stringResource(R.string.register_payment_pay_note_pix, nameOf(state.to))

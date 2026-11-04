@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -57,6 +58,15 @@ class FakeGroupRepository(
     // Why: while set, a save of the default split waits for it, so a test can act while it is in flight.
     var defaultSplitGate: CompletableDeferred<Unit>? = null
     var incomesError: Throwable? = null
+
+    // Why: "Simplificar dívidas" turned on or off, with the change it carried and when.
+    val simplifyDebtsChanges = mutableListOf<Triple<String, Boolean, SimplifyDebtsChange>>()
+    val simplifyDebtsChangeTimes = mutableListOf<Long>()
+    var simplifyDebtsError: Throwable? = null
+
+    // Why: while set, turning "Simplificar dívidas" on or off waits for it, so a test can act while it is in flight.
+    var simplifyDebtsGate: CompletableDeferred<Unit>? = null
+    val consumedSimplifyConflictGroupIds = mutableListOf<String>()
 
     // Why: one knob for the three member edits, which fail alike.
     var memberChangeError: Throwable? = null
@@ -116,6 +126,38 @@ class FakeGroupRepository(
         savedIncomes[groupId] = incomes
         groups.value = groups.value.map { group ->
             if (group.id == groupId) group.copy(defaultSplit = defaultSplit) else group
+        }
+        return Result.success(Unit)
+    }
+
+    override suspend fun updateSimplifiesDebts(
+        groupId: String,
+        simplifiesDebts: Boolean,
+        change: SimplifyDebtsChange,
+        changedAt: Long,
+    ): Result<Unit> {
+        simplifyDebtsGate?.await()
+        simplifyDebtsError?.let { return Result.failure(it) }
+        simplifyDebtsChanges += Triple(groupId, simplifiesDebts, change)
+        simplifyDebtsChangeTimes += changedAt
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) {
+                group.copy(
+                    simplifiesDebts = simplifiesDebts,
+                    isSimplifyDebtsPending = true,
+                    simplifyDebtsConflictBy = null,
+                )
+            } else {
+                group
+            }
+        }
+        return Result.success(Unit)
+    }
+
+    override suspend fun consumeSimplifyDebtsConflict(groupId: String): Result<Unit> {
+        consumedSimplifyConflictGroupIds += groupId
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) group.copy(simplifyDebtsConflictBy = null) else group
         }
         return Result.success(Unit)
     }
