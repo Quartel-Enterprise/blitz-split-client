@@ -490,6 +490,7 @@ private struct ActivityRow: View {
             #if os(macOS)
             summary
                 .overlay(alignment: .topLeading) { actorButton }
+                .accessibilityActions { actorAction }
             #else
             Button {
                 model.send(ActivityUiEventOnItemClicked(itemId: item.id))
@@ -499,6 +500,8 @@ private struct ActivityRow: View {
             .buttonStyle(.plain)
             // Over the row's button rather than inside its label, so the face's tap never reaches the row
             .overlay(alignment: .topLeading) { actorButton }
+            // On the button itself, not its label, so VoiceOver's Actions keep it
+            .accessibilityActions { actorAction }
             #endif
             if item.hasChangesToShow, !showsDetail {
                 ActivityRowChanges(model: model, item: item, isExpanded: isExpanded)
@@ -545,11 +548,13 @@ private struct ActivityRow: View {
         .contentShape(.rect)
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnread ? Text("Unread") : Text(verbatim: ""))
-        // VoiceOver reaches the face's tap as an action of the row
-        .accessibilityActions {
-            if let openActor {
-                Button(ActivityCopy.openActorLabel(item), action: openActor)
-            }
+    }
+
+    /// VoiceOver reaches the face's tap as an action of the row.
+    @ViewBuilder
+    private var actorAction: some View {
+        if let openActor {
+            Button(ActivityCopy.openActorLabel(item), action: openActor)
         }
     }
 

@@ -1056,7 +1056,7 @@ class GroupStatsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a bill over the statistics WHEN a person tap reaches them THEN nothing more opens`() =
+    fun `GIVEN Maior despesa beside the statistics WHEN tapping a person THEN their profile takes the bill place`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1066,7 +1066,35 @@ class GroupStatsViewModelTest {
             viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(ANA))
 
             // Then
-            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat"), navigator.backStack.value)
+            assertEquals(statsStack + Route.ContactProfile("name:ana"), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Maior despesa beside the statistics WHEN tapping your own row THEN Perfil opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(PIERRE))
+
+            // Then
+            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat") + Route.Profile, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a profile over the statistics WHEN a late person tap arrives THEN nothing more opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(statsStack + Route.Profile, navigator.backStack.value)
         }
 
     private val route = Route.GroupStats(GROUP_ID)

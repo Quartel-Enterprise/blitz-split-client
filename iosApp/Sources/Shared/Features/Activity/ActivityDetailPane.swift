@@ -108,7 +108,8 @@ private struct ActivityItemDetail: View {
             if item.actor.opensProfile {
                 ActivityFace(item: item, size: Self.faceSize)
                     .opensProfile { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
-                    .accessibilityLabel(Text(verbatim: ActivityCopy.openActorLabel(item)))
+                    // The name alone: the hint already says the tap opens the profile
+                    .accessibilityLabel(Text(verbatim: ActivityCopy.actor(item)))
             } else {
                 ActivityFace(item: item, size: Self.faceSize)
             }

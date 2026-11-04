@@ -91,6 +91,7 @@ class MembersViewModel(
     )
 
     private var expenses: List<Expense> = emptyList()
+
     // Why: the group's members as last read, whose account or name keys the profile a row opens.
     private var groupMembers: List<GroupMember> = emptyList()
 

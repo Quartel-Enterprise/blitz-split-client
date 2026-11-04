@@ -138,14 +138,32 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
 /**
  * A person's face and name, which open their profile while `onOpen` is set (beta feedback 18): the one Contatos opens,
  * or Perfil for this device's user. Someone with no profile to open (no longer in the group) gets them as plain text.
+ * `isRound` is a face alone, named by `label` for a screen reader since it shows no name.
  */
-export function PersonButton({ onOpen, className, children }: { onOpen?: (() => void) | null; className?: string; children: ReactNode }) {
+export function PersonButton({
+  onOpen,
+  label,
+  isRound = false,
+  className,
+  children,
+}: {
+  onOpen?: (() => void) | null
+  label?: string
+  isRound?: boolean
+  className?: string
+  children?: ReactNode
+}) {
   if (!onOpen) return <span className={className}>{children}</span>
   return (
     <button
       type="button"
+      aria-label={label}
       onClick={onOpen}
-      className={cn('cursor-pointer rounded-md text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50', className)}
+      className={cn(
+        'cursor-pointer text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        isRound ? 'rounded-full' : 'rounded-md',
+        className,
+      )}
     >
       {children}
     </button>

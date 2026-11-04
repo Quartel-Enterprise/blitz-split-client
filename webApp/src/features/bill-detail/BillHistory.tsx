@@ -1,7 +1,7 @@
 import { ArrowRight, ImageMinus, ImagePlus, Link2, Pencil, Plus, Receipt, Tag } from 'lucide-react'
 import type { JsBillHistoryEntry, JsBillHistoryDay } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
@@ -114,18 +114,14 @@ function HistoryLine({
       {/* Why: a line joins the faces of one day, as the canvas draws it. */}
       {hasRail && <span aria-hidden className="absolute top-8 bottom-0.5 left-[13.5px] w-px bg-border" />}
       <span className="relative size-7 shrink-0">
-        {openActor ? (
-          <button
-            type="button"
-            aria-label={entry.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: historyActor(entry) })}
-            onClick={openActor}
-            className="flex rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />
-          </button>
-        ) : (
+        <PersonButton
+          isRound
+          label={entry.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: historyActor(entry) })}
+          onOpen={openActor}
+          className="flex"
+        >
           <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />
-        )}
+        </PersonButton>
         <span aria-hidden className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 border-card bg-foreground text-background [&>svg]:size-2 [&>svg]:stroke-[3.2]">
           {kindIcon(entry)}
         </span>
