@@ -63,8 +63,9 @@ internal fun NewMemberSheet(
                     bottom = 24.dp,
                 ),
         )
+        // Why: the sheet and the dialog compose in their own window, so the field exists only from here on.
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
 @Composable
