@@ -22,6 +22,8 @@
     <string name="designsystem_currency_value">%1$s (%2$s)</string>
     <string name="designsystem_currency_bitcoin">Bitcoin</string>
     <string name="designsystem_currency_ether">Ethereum</string>
+    <string name="designsystem_money_sats">%1$s sats</string>
+    <string name="designsystem_money_sats_symbol">sats</string>
     <string name="designsystem_currency_crypto_section">Cryptocurrencies</string>
     <string name="designsystem_avatar_color_blue">Blue</string>
     <string name="designsystem_avatar_color_peach">Peach</string>

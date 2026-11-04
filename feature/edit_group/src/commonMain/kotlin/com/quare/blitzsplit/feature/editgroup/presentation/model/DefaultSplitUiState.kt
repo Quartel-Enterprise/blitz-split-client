@@ -11,7 +11,7 @@ data class DefaultSplitUiState(
     // Why: "Apê 302 · para as despesas novas".
     val groupName: String,
     val currency: GroupCurrency,
-    // Why: incomes in bitcoin typed in whole satoshis, as Preferências' "Bitcoin em satoshis" was when it opened.
+    // Why: incomes in bitcoin typed in whole satoshis while Preferências' "Bitcoin em satoshis" is on.
     val showsSats: Boolean,
     val mode: DefaultSplitMode,
     // Why: in the order they were added to the group, the creator first.

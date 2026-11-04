@@ -212,7 +212,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnAppearanceClicked -> openAppearance()
             ProfileUiEvent.OnDynamicColorsInfoClicked -> openDynamicColorsInfo()
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
-            is ProfileUiEvent.OnBitcoinInSatsToggled -> viewModelScope.launch { updateBitcoinInSats(event.isOn) }
+            is ProfileUiEvent.OnBitcoinInSatsToggled -> toggleBitcoinInSats(event.isOn)
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
@@ -365,6 +365,10 @@ class ProfileViewModel(
     }
 
     // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
+    private fun toggleBitcoinInSats(isOn: Boolean) {
+        viewModelScope.launch { updateBitcoinInSats(isOn) }
+    }
+
     private fun toggleDynamicColors(isOn: Boolean) {
         if (!uiState.value.showsDynamicColors) return
         viewModelScope.launch { updateDynamicColors(isOn) }

@@ -136,18 +136,22 @@ class RegisterPaymentViewModel(
             .map { it?.toUserId }
             .distinctUntilChanged()
             .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
-        // Why: the field keeps bitcoin's unit as the form opened, so what was typed never changes its meaning.
+        // Why: the form opens once bitcoin's unit is known, so the debt is never filled in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(targets, keys, observeFirstDownload(), showsSats) { target, (userId, receiverKeys), download, sats ->
             KeyedTarget(target, userId, receiverKeys, download, sats)
         }.filter { it.target?.toUserId == it.userId }
             .onEach { keyed ->
-                if (!hasRead) uiState.update { it.copy(showsSats = keyed.showsSats) }
+                uiState.update { it.withShowsSats(keyed.showsSats) }
                 hasRead = true
                 receiverKeys = keyed.keys
                 firstDownload = keyed.download
                 handle(keyed.target)
             }.launchIn(viewModelScope)
+        // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): the amount keeps its value.
+        observeBitcoinInSats()
+            .onEach { sats -> uiState.update { it.withShowsSats(sats) } }
+            .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isDebtGone) leave() }
             .launchIn(viewModelScope)
@@ -491,6 +495,11 @@ class RegisterPaymentViewModel(
         currency = currency,
         showsSats = showsSats,
         decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
+    )
+
+    private fun RegisterPaymentUiState.withShowsSats(showsSats: Boolean): RegisterPaymentUiState = copy(
+        showsSats = showsSats,
+        amountText = TypedText.toUnit(amountText, currency, this.showsSats, showsSats, decimalSeparator()),
     )
 
     private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(

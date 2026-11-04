@@ -37,7 +37,7 @@ data class SplitBillUiState(
     // Why: the "Rachar em qual grupo?" sheet, open while not null, with what is marked in it until "Continuar".
     val groupSelection: GroupSelection?,
     val currency: GroupCurrency,
-    // Why: bitcoin typed in whole satoshis, as Preferências' "Bitcoin em satoshis" was when the form opened.
+    // Why: bitcoin typed in whole satoshis while Preferências' "Bitcoin em satoshis" is on.
     val showsSats: Boolean,
     // Why: in the order they were added to the group, the creator first.
     val people: List<BillPerson>,

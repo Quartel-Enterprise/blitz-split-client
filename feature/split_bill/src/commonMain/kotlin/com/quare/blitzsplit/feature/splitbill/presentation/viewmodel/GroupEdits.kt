@@ -2,7 +2,9 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -15,6 +17,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 
@@ -81,11 +85,113 @@ internal fun createInitialBillState(
     )
 }
 
-// Why: nothing is typed before the form loads, so the fields take bitcoin's unit before anything is in them.
-internal fun SplitBillUiState.withShowsSats(showsSats: Boolean): SplitBillUiState = copy(
+/*
+ * Why: Preferências' "Bitcoin em satoshis" as the form opens, or changed while it is open (the Mac's Ajustes is a
+ * window of its own): every amount typed keeps its value in the new unit, as the fields and lists now draw it.
+ */
+internal fun SplitBillUiState.withShowsSats(
+    showsSats: Boolean,
+    decimalSeparator: Char,
+): SplitBillUiState {
+    if (showsSats == this.showsSats) return this
+    val showedSats = this.showsSats
+    val inUnit = { text: String, currency: GroupCurrency ->
+        TypedText.toUnit(text, currency, showedSats, showsSats, decimalSeparator)
+    }
+    return copy(
+        showsSats = showsSats,
+        amountText = inUnit(amountText, currency),
+        severalPayers = severalPayers?.toUnit(showsSats, inUnit),
+        payerAmounts = payerAmounts?.toUnit(showsSats, inUnit),
+        split = split.toUnit(showsSats, inUnit),
+        splitEditor = splitEditor?.toUnit(showsSats, inUnit),
+        itemsEditor = itemsEditor?.copy(showsSats = showsSats),
+        itemEditor = itemEditor?.let { editor ->
+            editor.copy(
+                showsSats = showsSats,
+                unitPriceText = inUnit(editor.unitPriceText, editor.currency),
+                rows = editor.rows.map { row ->
+                    if (editor.mode ==
+                        ItemSplitMode.AMOUNT
+                    ) {
+                        row.copy(valueText = inUnit(row.valueText, editor.currency))
+                    } else {
+                        row
+                    }
+                },
+            )
+        },
+        feeEditor = feeEditor?.let { editor ->
+            editor.copy(
+                showsSats = showsSats,
+                valueText = if (editor.fee ==
+                    ItemsFee.COUVERT
+                ) {
+                    inUnit(editor.valueText, editor.currency)
+                } else {
+                    editor.valueText
+                },
+            )
+        },
+    )
+}
+
+private fun PayerAmounts.toUnit(
+    showsSats: Boolean,
+    inUnit: (String, GroupCurrency) -> String,
+): PayerAmounts = copy(
     showsSats = showsSats,
-    split = split.copy(showsSats = showsSats),
+    rows = rows.map { it.copy(amountText = inUnit(it.amountText, currency)) },
 )
+
+private fun SplitEditor.toUnit(
+    showsSats: Boolean,
+    inUnit: (String, GroupCurrency) -> String,
+): SplitEditor = copy(
+    showsSats = showsSats,
+    rows = rows.map { row ->
+        if (mode ==
+            SplitMode.AMOUNT
+        ) {
+            row.copy(valueText = inUnit(row.valueText, currency))
+        } else {
+            row
+        }
+    },
+)
+
+/*
+ * Why: Início's "Ler cupom fiscal" for a bill whose group splits in a cryptocurrency, once no other group is being
+ * picked: the bill opens alone, and the camera doesn't open later when the bill moves to another group.
+ */
+internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState =
+    if (isReceiptCameraRequested && currency.isCrypto && isLoaded && groups.isNotEmpty() && groupSelection == null) {
+        copy(isReceiptCameraRequested = false)
+    } else {
+        this
+    }
+
+// Why: "Continuar" closes the question; the same group picked again shows nothing new, so the receipt's request settles.
+internal fun SplitBillUiState.withGroupConfirmed(pickedGroupId: String): SplitBillUiState {
+    val closed = copy(groupSelection = null)
+    return if (pickedGroupId == groupId) closed.withReceiptRequestSettled() else closed
+}
+
+/*
+ * Why: the split and the several payers add up to the bill's amount, 0 while the field holds no valid amount. What
+ * several people paid stays as typed, so Salvar waits until someone makes it add up again.
+ */
+internal fun SplitBillUiState.withBillTotal(
+    amountAnchor: Pair<Long, List<SplitEntry>>?,
+    decimalSeparator: Char,
+): SplitBillUiState {
+    val total = amountMinor?.takeIf { isAmountValid } ?: 0L
+    return copy(
+        split = split.withTotal(total, amountAnchor, decimalSeparator),
+        severalPayers = severalPayers?.copy(totalMinor = total),
+        payerAmounts = payerAmounts?.copy(totalMinor = total),
+    )
+}
 
 // Why: everyone in, equally, until the group's people arrive.
 internal fun createEmptySplit(

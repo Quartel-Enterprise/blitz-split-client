@@ -21,7 +21,7 @@ extension GroupCurrency {
     /// "₿" and "Ξ" where the language puts a currency's symbol, with only the decimals the amount needs ("₿ 0,00125"),
     /// and bitcoin in satoshis is whole sats ("125.000 sats").
     func format(_ minor: Int64) -> String {
-        if showsSats { return "\(formatPlain(minor)) sats" }
+        if showsSats { return String(localized: "\(formatPlain(minor)) sats") }
         if let cryptoSymbol {
             return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
                 .string(from: decimal(of: minor) as NSDecimalNumber) ?? formatPlain(minor)
@@ -50,7 +50,7 @@ extension GroupCurrency {
     /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it; "₿", "Ξ", or
     /// "sats" for bitcoin in satoshis).
     var symbol: String {
-        if showsSats { return "sats" }
+        if showsSats { return String(localized: "sats") }
         if let cryptoSymbol { return cryptoSymbol }
         if let symbol = Self.symbols[code] { return symbol }
         let formatter = NumberFormatter()

@@ -28,7 +28,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberSatsText
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -48,8 +50,10 @@ internal fun GroupsSummaryCard(
     isStacked: Boolean = false,
 ) {
     val locale = LocalLocale.current.platformLocale
-    val formatters = remember(summary.totals, locale) {
-        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale) }
+    val showsSats = LocalShowsBitcoinInSats.current
+    val satsText = rememberSatsText()
+    val formatters = remember(summary.totals, locale, showsSats, satsText) {
+        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale, showsSats, satsText) }
     }
     val signed = { currency: GroupCurrency, minor: Long -> formatters.getValue(currency).toSignedText(minor) }
     Surface(

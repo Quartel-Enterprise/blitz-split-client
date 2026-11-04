@@ -747,6 +747,8 @@ export const en = {
   profile_appearance: 'Appearance',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
+  money_sats: '{amount} sats',
+  money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Cryptocurrencies',
   profile_themeSystem: 'System',
   profile_themeLight: 'Light',

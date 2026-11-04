@@ -18022,6 +18022,28 @@
           }
         }
       }
+    },
+    "%@ sats" : {
+      "comment" : "A bitcoin amount in satoshis, \"125.000 sats\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ sats"
+          }
+        }
+      }
+    },
+    "sats" : {
+      "comment" : "The symbol of an amount field in bitcoin while Bitcoin in satoshis is on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sats"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

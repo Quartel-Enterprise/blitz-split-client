@@ -63,6 +63,27 @@ object TypedText {
         }
     }
 
+    /*
+     * Why: an amount field's text once Preferências' "Bitcoin em satoshis" changes while a form is open: the same
+     * amount in the other unit ("0,00012345" bitcoin is "12.345" sats), so what was typed keeps its value. Any other
+     * currency types the same either way and keeps its text.
+     */
+    fun toUnit(
+        text: String,
+        currency: GroupCurrency,
+        showedSats: Boolean,
+        showsSats: Boolean,
+        decimalSeparator: Char,
+    ): String {
+        if (currency.getTypedFractionDigits(showedSats) == currency.getTypedFractionDigits(showsSats)) return text
+        val amountMinor = AmountInput.parse(text, currency, showedSats) ?: return ""
+        return if (amountMinor == 0L) {
+            ""
+        } else {
+            AmountInput.format(amountMinor, currency, showsSats, amountSeparatorOf(decimalSeparator))
+        }
+    }
+
     // Why: a whole percentage, 0 to 100.
     fun toPercentText(text: String): String = text.filter { it.isDigit() }.take(PERCENT_MAX_LENGTH)
 

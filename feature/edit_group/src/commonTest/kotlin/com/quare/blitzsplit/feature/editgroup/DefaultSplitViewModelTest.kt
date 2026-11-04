@@ -24,7 +24,6 @@ import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSpli
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -160,6 +159,23 @@ class DefaultSplitViewModelTest {
             // Then
             assertEquals(100L, viewModel.uiState.value.exampleTotalMinor)
             assertEquals(mapOf(PIERRE to 9_000L, ANA to 3_000L), groups.savedIncomes[GROUP_ID])
+        }
+
+    @Test
+    fun `GIVEN incomes typed in bitcoin WHEN sats turn on while open THEN each keeps its value in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(currency = GroupCurrency.BTC))
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "0,00009"))
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("9.000", state.people.first { it.id == PIERRE }.incomeText)
         }
 
     @Test
@@ -574,12 +590,15 @@ class DefaultSplitViewModelTest {
         ),
     )
 
+    private val bitcoinInSats = MutableStateFlow(false)
+
     private fun prepareScenario(
         storedGroup: Group = home,
         storedIncomes: Map<String, Long> = emptyMap(),
         online: Boolean = true,
         showsSats: Boolean = false,
     ) {
+        bitcoinInSats.value = showsSats
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
@@ -602,7 +621,7 @@ class DefaultSplitViewModelTest {
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
-            observeBitcoinInSats = { flowOf(showsSats) },
+            observeBitcoinInSats = { bitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
     }

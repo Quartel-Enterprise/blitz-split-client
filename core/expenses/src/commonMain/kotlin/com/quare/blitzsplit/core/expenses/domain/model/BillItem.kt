@@ -14,7 +14,7 @@ data class BillItem(
     val entries: List<SplitEntry>,
 ) {
     val totalMinor: Long
-        get() = quantity * unitPriceMinor
+        get() = quantity.toSaturatedProduct(unitPriceMinor)
 
     // Why: 7.5c, an item nobody is marked in, which keeps "Pronto" disabled and shows in red.
     val hasNobody: Boolean

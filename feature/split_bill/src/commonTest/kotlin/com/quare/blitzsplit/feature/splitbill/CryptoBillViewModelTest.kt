@@ -224,7 +224,7 @@ class CryptoBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN sats typed WHEN Bitcoin em satoshis turns off meanwhile THEN the amount keeps its meaning`() =
+    fun `GIVEN sats typed WHEN Bitcoin em satoshis turns off meanwhile THEN the amount keeps its value in bitcoin`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(sats = true)
@@ -235,14 +235,14 @@ class CryptoBillViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertTrue(state.showsSats)
-            assertTrue(state.split.showsSats)
-            assertEquals("12.345", state.amountText)
+            assertFalse(state.showsSats)
+            assertFalse(state.split.showsSats)
+            assertEquals("0,00012345", state.amountText)
             assertEquals(12_345L, state.amountMinor)
         }
 
     @Test
-    fun `GIVEN Bitcoin em satoshis turned off while open WHEN typing a digit more THEN it still types sats`() =
+    fun `GIVEN Bitcoin em satoshis turned off while open WHEN typing a digit more THEN it types 8 decimals`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(sats = true)
@@ -250,16 +250,16 @@ class CryptoBillViewModelTest {
             bitcoinInSats.value = false
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("123"))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("0,000000123"))
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("123", state.amountText)
+            assertEquals("0,00000123", state.amountText)
             assertEquals(123L, state.amountMinor)
         }
 
     @Test
-    fun `GIVEN Bitcoin em satoshis turned on while open WHEN typing 1 THEN it still types 8 decimals`() =
+    fun `GIVEN Bitcoin em satoshis turned on while open WHEN typing 1 THEN it types whole sats`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(sats = false)
@@ -270,8 +270,8 @@ class CryptoBillViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertFalse(state.showsSats)
-            assertEquals("0,00000001", state.amountText)
+            assertTrue(state.showsSats)
+            assertEquals("1", state.amountText)
             assertEquals(1L, state.amountMinor)
         }
 

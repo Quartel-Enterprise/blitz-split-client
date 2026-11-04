@@ -87,13 +87,33 @@ class DefaultSplitViewModel(
      * the people follow it: who joins comes in as the rules start them, who is removed goes.
      */
     init {
-        // Why: the incomes keep bitcoin's unit as the form opened, so what was typed never changes its meaning.
+        // Why: the form opens once bitcoin's unit is known, so no income is filled in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(observeGroup(route.groupId), showsSats, ::Pair)
             .onEach { (group, sats) ->
                 if (opened == null) uiState.update { it.copy(showsSats = sats) }
                 isGroupGone = group == null
                 if (group == null) leave() else show(group)
+            }.launchIn(viewModelScope)
+        // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): each income keeps its value.
+        observeBitcoinInSats()
+            .onEach { sats ->
+                updateForm { state ->
+                    state.copy(
+                        showsSats = sats,
+                        people = state.people.map { person ->
+                            person.copy(
+                                incomeText = TypedText.toUnit(
+                                    text = person.incomeText,
+                                    currency = state.currency,
+                                    showedSats = state.showsSats,
+                                    showsSats = sats,
+                                    decimalSeparator = decimalSeparator(),
+                                ),
+                            )
+                        },
+                    )
+                }
             }.launchIn(viewModelScope)
         observeCategoryTree(route.groupId)
             .onEach { tree -> uiState.update { it.copy(categories = tree) } }

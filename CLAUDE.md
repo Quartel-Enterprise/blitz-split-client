@@ -74,7 +74,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8 ("0,00000001"). Perfil › Preferências' "Bitcoin em
     satoshis" (always shown, Ajustes on the Mac), kept per device and never synced (`showsBitcoinInSats` in
     `device_settings`), shows every bitcoin amount as whole sats ("125.000 sats", the field's symbol "sats") and
-    types them so (`GroupCurrency.getTypedFractionDigits`); a form keeps the unit it opened with. "Ler cupom fiscal"
+    types them so (`GroupCurrency.getTypedFractionDigits`); a form open when it changes (the Mac's Ajustes is a window
+    of its own) turns what was typed into the new unit, keeping its value (`TypedText.toUnit`). "Ler cupom fiscal"
     isn't offered in a group in either (no receipt is printed in them), and Início's shortcut opens such a bill
     without the camera; the reader refuses them too.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with

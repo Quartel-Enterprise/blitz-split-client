@@ -39,7 +39,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.logoIcon
+import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberSatsText
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
@@ -153,8 +156,10 @@ private fun CoverBrandRow(isOffline: Boolean) {
 private fun CoverBalanceCard(state: GroupsUiState) {
     val summary = state.summary
     val locale = LocalLocale.current.platformLocale
-    val formatters = remember(summary.totals, locale) {
-        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale) }
+    val showsSats = LocalShowsBitcoinInSats.current
+    val satsText = rememberSatsText()
+    val formatters = remember(summary.totals, locale, showsSats, satsText) {
+        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale, showsSats, satsText) }
     }
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -210,8 +215,7 @@ private fun CoverBalanceCard(state: GroupsUiState) {
 // Why: "Última atividade": "Ana lançou Uber aeroporto, R$ 87,60, em Viagem Floripa".
 @Composable
 private fun CoverLatestBillSection(bill: LatestBill) {
-    val locale = LocalLocale.current.platformLocale
-    val amount = remember(bill, locale) { MoneyFormatter(bill.currency, locale).toText(bill.amountMinor) }
+    val amount = rememberMoneyFormatter(bill.currency).toText(bill.amountMinor)
     Column(
         modifier = Modifier.padding(horizontal = 4.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),

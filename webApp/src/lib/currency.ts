@@ -10,12 +10,8 @@ export const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-
 // Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
 const currencyLabels = new Map<string, string>()
 
-/** The cryptocurrencies, as `GroupCurrency.isCrypto` has them: "Moeda" lists them under their own header. */
+/** Bitcoin and ether, which no browser names: "Moeda" lists them under "Criptomoedas" (`cryptoCurrencies`). */
 const cryptoLabels: Record<string, string> = { BTC: 'Bitcoin (₿)', ETH: 'Ethereum (Ξ)' }
-
-export function isCryptoCurrency(code: string): boolean {
-  return code in cryptoLabels
-}
 
 /**
  * A group's currency as the picker names it, in the app's language: "Brazilian Real (R$)", "Bitcoin (₿)". Falls back

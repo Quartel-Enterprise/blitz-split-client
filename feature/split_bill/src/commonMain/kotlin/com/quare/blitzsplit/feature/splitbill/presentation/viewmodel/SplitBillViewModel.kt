@@ -187,15 +187,18 @@ class SplitBillViewModel(
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        // Why: bitcoin's unit as the form opens; the fields keep it, so what was typed never changes its meaning.
+        // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(group, expenseFlow, showsSats, ::Triple)
             .onEach { (group, expense, sats) ->
-                if (!uiState.value.isLoaded) uiState.update { it.withShowsSats(sats) }
+                uiState.update { it.withShowsSats(sats, separator) }
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
         categoryEditing.observe(groupId)
+        observeBitcoinInSats()
+            .onEach { sats -> uiState.update { it.withShowsSats(sats, separator) } }
+            .launchIn(viewModelScope)
         if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
@@ -335,18 +338,19 @@ class SplitBillViewModel(
         val asks = route.picksGroupFirst && !hasAskedForGroup && groups.size > 1
         hasAskedForGroup = true
         uiState.update {
-            it.withGroups(
-                groups = groups.map(::toBillGroup),
-                asks = asks,
-                billGroupId = groupId.value,
-            )
+            it
+                .withGroups(
+                    groups = groups.map(::toBillGroup),
+                    asks = asks,
+                    billGroupId = groupId.value,
+                ).withReceiptRequestSettled()
         }
     }
 
     private fun confirmGroup() {
         val state = uiState.value
         val picked = state.groupSelection?.groupId ?: return
-        uiState.update { it.copy(groupSelection = null) }
+        uiState.update { it.withGroupConfirmed(picked) }
         if (!state.isSaving && state.groups.any { it.id == picked }) groupId.value = picked
     }
 
@@ -368,7 +372,9 @@ class SplitBillViewModel(
             else -> {
                 isBillMissing = false
                 val previous = editedExpense
-                if (previous == null) {
+                if (previous ==
+                    null
+                ) {
                     fill(group, expense)
                 } else {
                     uiState.update { it.withChangeNoticed(group, previous, expense) }
@@ -449,6 +455,7 @@ class SplitBillViewModel(
                 .withItemsAmong(people)
                 .withBillTotal()
                 .withSplitAsDefaultSettled()
+                .withReceiptRequestSettled()
         }
     }
 
@@ -472,18 +479,7 @@ class SplitBillViewModel(
         }
     }
 
-    /*
-     * Why: the split and the several payers add up to the bill's amount, 0 while the field holds no valid amount.
-     * What several people paid stays as typed, so Salvar waits until someone makes it add up again.
-     */
-    private fun SplitBillUiState.withBillTotal(): SplitBillUiState {
-        val total = amountMinor?.takeIf { isAmountValid } ?: 0L
-        return copy(
-            split = split.withTotal(total, amountAnchor, separator),
-            severalPayers = severalPayers?.copy(totalMinor = total),
-            payerAmounts = payerAmounts?.copy(totalMinor = total),
-        )
-    }
+    private fun SplitBillUiState.withBillTotal(): SplitBillUiState = withBillTotal(amountAnchor, separator)
 
     private fun editSplit(change: (SplitEditor) -> SplitEditor) {
         uiState.update { state ->

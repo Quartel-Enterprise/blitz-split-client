@@ -14,7 +14,7 @@ import software.quare.loadable.valueOrNull
 
 data class RegisterPaymentUiState(
     val currency: GroupCurrency,
-    // Why: bitcoin typed in whole satoshis, as Preferências' "Bitcoin em satoshis" was when the form opened.
+    // Why: bitcoin typed in whole satoshis while Preferências' "Bitcoin em satoshis" is on.
     val showsSats: Boolean,
     // Why: null until Room is read, and for someone no longer in the group ("Ex-membro").
     val from: PaymentPerson?,

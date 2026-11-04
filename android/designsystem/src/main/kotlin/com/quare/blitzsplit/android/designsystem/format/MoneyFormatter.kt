@@ -5,6 +5,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.res.stringResource
+import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.core.model.GroupCurrency
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -27,7 +29,9 @@ val LocalShowsBitcoinInSats = staticCompositionLocalOf { false }
 class MoneyFormatter(
     private val currency: GroupCurrency,
     private val locale: Locale,
-    private val showsSats: Boolean = false,
+    private val showsSats: Boolean,
+    // Why: "%1$s sats" and "sats", in the UI's language, from the composition that builds it.
+    private val satsText: SatsText,
 ) {
     private val isSats: Boolean = currency == GroupCurrency.BTC && showsSats
 
@@ -38,7 +42,7 @@ class MoneyFormatter(
 
     // Why: the symbol a field shows before what is typed in it.
     val symbol: String = when {
-        isSats -> SATS
+        isSats -> satsText.symbol
         currency == GroupCurrency.BTC -> BITCOIN_SYMBOL
         currency == GroupCurrency.ETH -> ETHER_SYMBOL
         else -> Currency.getInstance(currency.code).getSymbol(locale)
@@ -50,7 +54,7 @@ class MoneyFormatter(
     }
 
     fun toText(amountMinor: Long): String {
-        if (isSats) return "${toAmountText(amountMinor)} $SATS"
+        if (isSats) return satsText.amount.format(toAmountText(amountMinor))
         val digits = currency.getDisplayFractionDigits(amountMinor, showsSats)
         return formats.getOrPut(digits) { createCurrencyFormat(digits) }.format(amountMinor.toDecimal())
     }
@@ -93,19 +97,27 @@ class MoneyFormatter(
         const val PLUS_SIGN = "+"
         const val BITCOIN_SYMBOL = "₿"
         const val ETHER_SYMBOL = "Ξ"
-        const val SATS = "sats"
     }
+}
+
+@Composable
+fun rememberSatsText(): SatsText {
+    val amount = stringResource(R.string.designsystem_money_sats)
+    val symbol = stringResource(R.string.designsystem_money_sats_symbol)
+    return remember(amount, symbol) { SatsText(amount, symbol) }
 }
 
 @Composable
 fun rememberMoneyFormatter(currency: GroupCurrency): MoneyFormatter {
     val locale = LocalLocale.current.platformLocale
     val showsSats = LocalShowsBitcoinInSats.current
-    return remember(currency, locale, showsSats) {
+    val satsText = rememberSatsText()
+    return remember(currency, locale, showsSats, satsText) {
         MoneyFormatter(
             currency = currency,
             locale = locale,
             showsSats = showsSats,
+            satsText = satsText,
         )
     }
 }

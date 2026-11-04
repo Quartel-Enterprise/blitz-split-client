@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 
 // Why: lists redraw every row on each keystroke, and building the Intl formatters each time is costly.
@@ -65,7 +66,7 @@ function shownNumber(minor: number, fractionDigits: number, currency?: string): 
  * browser doesn't know the currency.
  */
 export function formatMoney(minor: number, currency: string, fractionDigits: number): string {
-  if (isSats(currency)) return `${formatPlainMoney(minor, fractionDigits, currency)} sats`
+  if (isSats(currency)) return t('money_sats', { amount: formatPlainMoney(minor, fractionDigits, currency) })
   const major = shownNumber(minor, fractionDigits, currency)
   const digits = shownDigits(minor, fractionDigits, currency)
   try {
@@ -113,7 +114,7 @@ export function formatPlainMoney(minor: number, fractionDigits: number, currency
 
 /** The symbol before an amount field: "R$", "$", or "US$" for dollars in Portuguese; "₿", "Ξ" or "sats". */
 export function currencySymbol(currency: string): string {
-  if (isSats(currency)) return 'sats'
+  if (isSats(currency)) return t('money_satsSymbol')
   const crypto = cryptoSymbols[currency]
   if (crypto !== undefined) return crypto
   try {

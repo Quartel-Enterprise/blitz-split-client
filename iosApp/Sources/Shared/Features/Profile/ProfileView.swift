@@ -287,6 +287,7 @@ private struct PreferencesSection: View {
                 Text("Bitcoin in satoshis")
                 Text("Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).")
             }
+            .disabled(!model.state.isLoaded)
             #if os(iOS)
             Button {
                 model.send(ProfileUiEventOnNotificationsClicked.shared)

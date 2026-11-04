@@ -181,7 +181,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
-              <CurrencyMenuItems currencies={state.currencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
+              <CurrencyMenuItems currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

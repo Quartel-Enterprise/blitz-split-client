@@ -253,6 +253,23 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
+    fun `GIVEN an amount typed in bitcoin WHEN sats turn on while open THEN it keeps its value in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BTC))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("0,0001623"))
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("1.623", state.amountText)
+            assertEquals(1_623L, state.amountMinor)
+        }
+
+    @Test
     fun `GIVEN a group in bitcoin WHEN the screen opens THEN fills in the debt with its 8 decimals`() =
         runTest(testDispatcher) {
             // Given
@@ -1748,6 +1765,8 @@ class RegisterPaymentViewModelTest {
         updatedAt = 0L,
     )
 
+    private val bitcoinInSats = MutableStateFlow(false)
+
     private fun TestScope.prepareScenario(
         from: String = ANA,
         to: String = PIERRE,
@@ -1763,6 +1782,7 @@ class RegisterPaymentViewModelTest {
         recordGate: CompletableDeferred<Unit>? = null,
         showsSats: Boolean = false,
     ) {
+        bitcoinInSats.value = showsSats
         clockMillis = nowMillis
         route = Route.RegisterPayment(
             GROUP_ID,
@@ -1813,7 +1833,7 @@ class RegisterPaymentViewModelTest {
             },
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
-            observeBitcoinInSats = { flowOf(showsSats) },
+            observeBitcoinInSats = { bitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
