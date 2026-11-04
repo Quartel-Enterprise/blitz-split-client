@@ -62,6 +62,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SettleUpViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var route: Route.SettleUp
@@ -595,6 +596,7 @@ class SettleUpViewModelTest {
         }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { NOW },

@@ -1,9 +1,71 @@
 package com.quare.blitzsplit.feature.globalbalances.presentation.model
 
 import com.quare.blitzsplit.core.model.BalancesFilter
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface GlobalBalancesUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "global_balances"
+
+sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            is OnFilterChanged -> EventAnalytics.Automatic(
+                "balances_filter_selected",
+                mapOf("filter" to filter, "source" to SOURCE),
+            )
+
+            // Why: a toggle, sent with where it ended up.
+            is OnPersonExpandToggled -> EventAnalytics.Manual("balances_person_expand_toggled")
+
+            is OnPersonSelected -> EventAnalytics.Automatic("balances_person_selected")
+
+            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+
+            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
+
+            is OnSettleClicked -> EventAnalytics.Automatic("settle_clicked", mapOf("source" to SOURCE))
+
+            is OnReceivedClicked -> EventAnalytics.Automatic("received_clicked", mapOf("source" to SOURCE))
+
+            is OnChargeClicked -> EventAnalytics.Automatic("charge_clicked", mapOf("source" to SOURCE))
+
+            // Why: a toggle, sent only while the switch takes it, since it locks once the message was edited.
+            is OnChargePixKeyToggled -> EventAnalytics.Manual("charge_pix_key_toggled")
+
+            // Why: typed letter by letter; whether it was edited shows when the message goes.
+            is OnChargeMessageChanged -> EventAnalytics.NotTracked
+
+            is OnChargeShareClicked -> EventAnalytics.Automatic("charge_share_clicked")
+
+            is OnChargeCopyClicked -> EventAnalytics.Automatic("charge_copy_clicked")
+
+            // Why: a close, which each platform also does its own way: where it went is its screen view.
+            OnChargeDismissed -> EventAnalytics.NotTracked
+
+            OnEmptyActionClicked -> EventAnalytics.Automatic("balances_empty_action_clicked")
+
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnHomeTabClicked,
+            OnGroupsTabClicked,
+            OnContactsTabClicked,
+            OnActivityTabClicked,
+            -> EventAnalytics.NotTracked
+
+            OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
+
+            // Why: only a search that opens, never one refused over Cobrar.
+            OnSearchClicked -> EventAnalytics.Manual("search_opened")
+
+            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+
+            // Why: a notice that went away, which nobody tapped.
+            OnRecordedPaymentNoticeShown -> EventAnalytics.NotTracked
+        }
+
     // Why: "Tudo", "Você deve" or "Te devem".
     data class OnFilterChanged(
         val filter: BalancesFilter,

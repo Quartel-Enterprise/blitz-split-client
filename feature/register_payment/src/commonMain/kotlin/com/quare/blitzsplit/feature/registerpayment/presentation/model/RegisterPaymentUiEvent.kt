@@ -2,9 +2,43 @@ package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.PaymentMethod
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface RegisterPaymentUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "register_payment"
+
+sealed interface RegisterPaymentUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: typed letter by letter; what was typed shows in the payment recorded.
+            is OnAmountChanged -> EventAnalytics.NotTracked
+
+            OnFullDebtClicked -> EventAnalytics.Automatic("payment_full_debt_clicked")
+
+            is OnMethodPicked -> EventAnalytics.Automatic("payment_method_selected", mapOf("method" to method))
+
+            OnPaidAtOpened -> EventAnalytics.Automatic("payment_date_clicked")
+
+            is OnPaidAtChanged -> EventAnalytics.Automatic("payment_date_selected")
+
+            // Why: the tap, then the payment once it is saved.
+            OnConfirmClicked -> EventAnalytics.Manual(setOf("payment_confirm_clicked", "payment_recorded"))
+
+            is OnKeyMethodPicked -> EventAnalytics.Automatic("payment_key_method_selected", mapOf("method" to method))
+
+            OnMarkAsPaidClicked -> EventAnalytics.Manual(setOf("payment_mark_as_paid_clicked", "payment_recorded"))
+
+            OnPayOtherwiseClicked -> EventAnalytics.Automatic("payment_pay_otherwise_clicked")
+
+            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+
+            // Why: a close, which each platform also does its own way: where it went is its screen view.
+            OnCloseClicked -> EventAnalytics.NotTracked
+
+            OnPaidAnywayClicked -> EventAnalytics.Manual(setOf("payment_paid_anyway_clicked", "payment_recorded"))
+        }
+
     // Why: "Valor pago", as typed.
     data class OnAmountChanged(
         val text: String,

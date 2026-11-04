@@ -81,6 +81,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GlobalBalancesViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2004,6 +2005,7 @@ class GlobalBalancesViewModelTest {
         activity = FakeActivityRepository()
         val accountStatus = ObserveAccountStatus { flowOf(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)) }
         viewModel = GlobalBalancesViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = opened,
             navigator = navigator,
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),

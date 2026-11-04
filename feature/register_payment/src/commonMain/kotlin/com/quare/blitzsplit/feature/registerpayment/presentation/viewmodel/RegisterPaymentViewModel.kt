@@ -1,13 +1,9 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
-import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
@@ -16,27 +12,24 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
-import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupMember
-import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openPersonProfile
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
-import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
@@ -65,7 +58,6 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
 import software.quare.loadable.toLoaded
-import kotlin.math.abs
 
 /*
  * Why: one pair of a group (Route.RegisterPayment), or the whole net with someone across groups from the global
@@ -89,7 +81,8 @@ class RegisterPaymentViewModel(
     observeFirstDownload: ObserveFirstDownload,
     observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<RegisterPaymentUiEvent>(trackEvent) {
     val uiState: StateFlow<RegisterPaymentUiState>
         field = MutableStateFlow(createInitialState())
 
@@ -167,7 +160,7 @@ class RegisterPaymentViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: RegisterPaymentUiEvent) {
+    override fun handleEvent(event: RegisterPaymentUiEvent) {
         when (event) {
             is RegisterPaymentUiEvent.OnAmountChanged -> if (!uiState.value.isAmountLocked) {
                 uiState.update {
@@ -197,14 +190,20 @@ class RegisterPaymentViewModel(
 
             is RegisterPaymentUiEvent.OnPaidAtChanged -> changePaidAt(event.epochMillis)
 
-            RegisterPaymentUiEvent.OnConfirmClicked -> confirm()
+            RegisterPaymentUiEvent.OnConfirmClicked -> {
+                trackEvent("payment_confirm_clicked", emptyMap())
+                confirm()
+            }
 
             is RegisterPaymentUiEvent.OnKeyMethodPicked -> {
                 uiState.update { it.copy(keyMethod = event.method) }
                 refreshPixCode()
             }
 
-            RegisterPaymentUiEvent.OnMarkAsPaidClicked -> markAsPaid()
+            RegisterPaymentUiEvent.OnMarkAsPaidClicked -> {
+                trackEvent("payment_mark_as_paid_clicked", emptyMap())
+                markAsPaid()
+            }
 
             RegisterPaymentUiEvent.OnPayOtherwiseClicked -> {
                 uiState.update { it.copy(prefersForm = true) }
@@ -216,7 +215,10 @@ class RegisterPaymentViewModel(
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
 
-            RegisterPaymentUiEvent.OnPaidAnywayClicked -> payAnyway()
+            RegisterPaymentUiEvent.OnPaidAnywayClicked -> {
+                trackEvent("payment_paid_anyway_clicked", emptyMap())
+                payAnyway()
+            }
         }
     }
 
@@ -233,6 +235,7 @@ class RegisterPaymentViewModel(
                 else -> SettlementMethod.OTHER
             },
             paidAt = currentTimeMillis(),
+            way = "paid_anyway",
         )
     }
 
@@ -301,70 +304,6 @@ class RegisterPaymentViewModel(
         is Route.SettleUp -> observePeopleBalances().map { people -> personTargetOf(route, people) }
 
         else -> flowOf(null)
-    }
-
-    // Why: a debt with someone removed from the group stays until it is paid, "Ex-membro" on the form.
-    private fun pairTargetOf(
-        route: Route.RegisterPayment,
-        group: Group,
-        balances: GroupBalances,
-    ): PaymentTarget {
-        val debtMinor = balances.debtOf(route.fromMemberId, route.toMemberId)
-        val receiver = group.members.firstOrNull { it.id == route.toMemberId }
-        return PaymentTarget(
-            currency = group.currency,
-            from = group.members.firstOrNull { it.id == route.fromMemberId }?.let(::toPerson),
-            to = receiver?.let(::toPerson),
-            toUserId = receiver?.userId,
-            debtMinor = debtMinor,
-            groupName = group.name,
-            legs = listOf(
-                SettlementLeg(
-                    groupId = route.groupId,
-                    fromMemberId = route.fromMemberId,
-                    toMemberId = route.toMemberId,
-                    amountMinor = debtMinor,
-                ),
-            ),
-            groupParts = emptyList(),
-            simplifiedNote = simplifiedPairNoteOrNull(route, group, balances),
-            simplifiesDebts = group.simplifiesDebts,
-            simplifyChangedByName = group.simplifyDebtsChangedBy?.let { userId ->
-                group.members.firstOrNull { it.userId == userId }?.name
-            },
-        )
-    }
-
-    // Why: the net decides who pays whom; each group's payment goes the way that group's pair owes.
-    private fun personTargetOf(
-        route: Route.SettleUp,
-        people: PeopleBalances,
-    ): PaymentTarget? {
-        val person = people.findPersonOrNull(route.personKey, route.currency.code) ?: return null
-        val me = people.me?.let(::toPerson)
-        val other = PaymentPerson(
-            id = person.groups.first().memberId,
-            name = person.name.orEmpty(),
-            initials = person.name?.let(Initials::of).orEmpty(),
-            avatarColor = person.face?.color ?: AvatarColor.default,
-            photoUrl = person.face?.photoUrl,
-            isMe = false,
-            personKey = person.key,
-        ).takeIf { person.name != null }
-        val owesMe = person.netMinor > 0
-        return PaymentTarget(
-            currency = person.currency,
-            from = if (owesMe) other else me,
-            to = if (owesMe) me else other,
-            toUserId = if (owesMe) null else PeopleBalances.userIdOf(person.key),
-            debtMinor = abs(person.netMinor),
-            groupName = person.groups.singleOrNull()?.groupName,
-            legs = person.legs,
-            groupParts = person.groups,
-            simplifiedNote = null,
-            simplifiesDebts = null,
-            simplifyChangedByName = null,
-        )
     }
 
     private fun handle(target: PaymentTarget?) {
@@ -471,6 +410,7 @@ class RegisterPaymentViewModel(
             amountMinor = state.amountMinor ?: return,
             method = state.method,
             paidAt = state.paidAt,
+            way = "form",
         )
     }
 
@@ -482,6 +422,7 @@ class RegisterPaymentViewModel(
             amountMinor = state.debtMinor,
             method = if (state.shownKeyMethod == PaymentMethod.PIX) SettlementMethod.PIX else SettlementMethod.OTHER,
             paidAt = currentTimeMillis(),
+            way = "mark_as_paid",
         )
     }
 
@@ -489,6 +430,8 @@ class RegisterPaymentViewModel(
         amountMinor: Long,
         method: SettlementMethod,
         paidAt: Long,
+        // Why: which button recorded it, the form's, "Pagar Ana"'s or 13.5c's, as payment_recorded's way says.
+        way: String,
     ) {
         val state = uiState.value
         val target = latest ?: return
@@ -519,6 +462,16 @@ class RegisterPaymentViewModel(
             }
             result
                 .onSuccess { settlementIds ->
+                    trackEvent(
+                        "payment_recorded",
+                        mapOf(
+                            "method" to method,
+                            "way" to way,
+                            "kind" to state.kind,
+                            "groups" to settlementIds.size,
+                            "is_full_debt" to (amountMinor == state.debtMinor),
+                        ),
+                    )
                     dropNoticeOfGoneOpener(settlementIds)
                     leave()
                 }.onFailure {
@@ -529,16 +482,6 @@ class RegisterPaymentViewModel(
                 }
         }
     }
-
-    private fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
-        id = member.id,
-        name = member.name,
-        initials = Initials.ofMember(member.name, member.isMe),
-        avatarColor = member.avatarColor,
-        photoUrl = member.photoUrl,
-        isMe = member.isMe,
-        personKey = PeopleBalances.keyOf(member),
-    )
 
     // Why: the form stays under the profile, so back finds it; a payment being saved finishes first.
     private fun openPerson(personId: String) {

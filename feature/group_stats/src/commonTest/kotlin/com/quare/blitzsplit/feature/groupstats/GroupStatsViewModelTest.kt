@@ -59,6 +59,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class GroupStatsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
     private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
@@ -1340,6 +1341,7 @@ class GroupStatsViewModelTest {
         chart = MutableStateFlow(keptChart)
         keptCharts = mutableListOf()
         viewModel = GroupStatsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             currentTimeMillis = { today },

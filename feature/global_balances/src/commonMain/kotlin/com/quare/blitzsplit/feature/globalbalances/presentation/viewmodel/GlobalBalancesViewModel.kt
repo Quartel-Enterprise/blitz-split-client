@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
@@ -29,9 +28,11 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.idOf
@@ -73,7 +74,8 @@ class GlobalBalancesViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeHasGroups: ObserveHasGroups,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
     val uiState: StateFlow<GlobalBalancesUiState>
         field = MutableStateFlow(
             GlobalBalancesUiState(
@@ -175,7 +177,7 @@ class GlobalBalancesViewModel(
         )
     }
 
-    fun onEvent(event: GlobalBalancesUiEvent) {
+    override fun handleEvent(event: GlobalBalancesUiEvent) {
         when (event) {
             is GlobalBalancesUiEvent.OnFilterChanged -> changeFilter(event.filter)
 
@@ -199,8 +201,12 @@ class GlobalBalancesViewModel(
 
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
-            is GlobalBalancesUiEvent.OnChargePixKeyToggled -> updateCharge { charge ->
-                if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
+            // Why: read before the update, whose block may run again, so the event goes once.
+            is GlobalBalancesUiEvent.OnChargePixKeyToggled -> if (uiState.value.charge?.canTogglePixKey == true) {
+                trackEvent("charge_pix_key_toggled", mapOf("is_included" to event.isIncluded))
+                updateCharge { charge ->
+                    if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
+                }
             }
 
             // Why: the switch locks as it is once the message is the person's, whatever key loads later.
@@ -236,6 +242,7 @@ class GlobalBalancesViewModel(
 
             // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
             GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
+                trackEvent("search_opened", mapOf("source" to "global_balances"))
                 navigator.openSearchOver(
                     HomeTab.BALANCES,
                 )
@@ -312,6 +319,7 @@ class GlobalBalancesViewModel(
         val row = uiState.value.people
             .valueOrNull()
             ?.firstOrNull { it.id == personId } ?: return
+        trackEvent("balances_person_expand_toggled", mapOf("is_expanded" to !row.isExpanded))
         expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
     }

@@ -39,6 +39,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PaymentKeyViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakePaymentKeyRepository
     private lateinit var navigator: BackStackNavigator
@@ -1547,6 +1548,7 @@ class PaymentKeyViewModelTest {
         }
         val save = SavePaymentKeyUseCase(repository) { NOW }
         viewModel = PaymentKeyViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             validatePaymentKey = ValidatePaymentKeyUseCase(),

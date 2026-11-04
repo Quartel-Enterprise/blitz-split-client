@@ -63,6 +63,7 @@ import kotlin.time.Instant
 
 // Why: "Simplificar dívidas" on Registrar pagamento of one group's pair (13.5, 13.5b, 13.5c).
 class RegisterPaymentSimplifyDebtsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -785,6 +786,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             it.navigate(route)
         }
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { clockMillis },

@@ -55,6 +55,7 @@ import kotlin.test.assertTrue
 
 // Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" from the map (9.4): always a group's category.
 class CategoryMapCategoriesTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var categories: FakeCategoryRepository
     private lateinit var viewModel: CategoryMapViewModel
     private val actions = mutableListOf<CategoryMapUiAction>()
@@ -1215,6 +1216,7 @@ class CategoryMapCategoriesTest {
         val deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW }
         val navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.CategoryMap) }
         viewModel = CategoryMapViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },

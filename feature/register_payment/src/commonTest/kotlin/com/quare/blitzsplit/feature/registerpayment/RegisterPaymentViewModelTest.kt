@@ -65,6 +65,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class RegisterPaymentViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val paymentKeys = FakePaymentKeyRepository()
     private lateinit var groups: FakeGroupRepository
@@ -2081,6 +2082,7 @@ class RegisterPaymentViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val balancesNeverAnswer = MutableSharedFlow<GroupBalances>()
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(

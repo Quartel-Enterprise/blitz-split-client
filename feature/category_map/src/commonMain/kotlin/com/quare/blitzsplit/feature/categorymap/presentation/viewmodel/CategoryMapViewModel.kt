@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
@@ -18,7 +17,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -53,7 +54,8 @@ class CategoryMapViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<CategoryMapUiEvent>(trackEvent) {
     val uiState: StateFlow<CategoryMapUiState>
         field = MutableStateFlow(
             CategoryMapUiState(
@@ -86,6 +88,7 @@ class CategoryMapViewModel(
         saveGroupCategory = saveGroupCategory,
         deleteGroupCategory = deleteGroupCategory,
         emit = uiAction::emit,
+        trackEvent = trackEvent,
     )
 
     init {
@@ -127,7 +130,7 @@ class CategoryMapViewModel(
         categoryEditing.observe(observeExpenses)
     }
 
-    fun onEvent(event: CategoryMapUiEvent) {
+    override fun handleEvent(event: CategoryMapUiEvent) {
         if (!uiState.value.canEditMap && event.isMapChange()) return
         when (event) {
             CategoryMapUiEvent.OnBackClicked -> leave()
@@ -160,7 +163,10 @@ class CategoryMapViewModel(
                 )
             }
 
-            CategoryMapUiEvent.OnTermSaveClicked -> saveTerm()
+            CategoryMapUiEvent.OnTermSaveClicked -> {
+                trackEvent("category_term_save_clicked", emptyMap())
+                saveTerm()
+            }
 
             CategoryMapUiEvent.OnTermRemoveClicked -> removeTerm()
 
@@ -180,9 +186,15 @@ class CategoryMapViewModel(
 
             CategoryMapUiEvent.OnRestoreClicked -> uiState.update { it.copy(isRestoreConfirmOpen = true) }
 
-            CategoryMapUiEvent.OnRestoreConfirmed -> restore()
+            CategoryMapUiEvent.OnRestoreConfirmed -> {
+                if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_confirmed", emptyMap())
+                restore()
+            }
 
-            CategoryMapUiEvent.OnRestoreDismissed -> uiState.update { it.copy(isRestoreConfirmOpen = false) }
+            CategoryMapUiEvent.OnRestoreDismissed -> {
+                if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_cancelled", emptyMap())
+                uiState.update { it.copy(isRestoreConfirmOpen = false) }
+            }
 
             is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
         }
@@ -260,6 +272,7 @@ class CategoryMapViewModel(
                 categoryId = form.categoryId,
                 replacedTerm = form.original?.term,
             ).onSuccess {
+                trackEvent("category_term_saved", mapOf("is_new" to (form.original == null)))
                 uiState.update {
                     it.copy(
                         termForm = null,

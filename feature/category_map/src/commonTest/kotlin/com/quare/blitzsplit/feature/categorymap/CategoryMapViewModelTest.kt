@@ -49,6 +49,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CategoryMapViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var terms: FakeCategoryTermRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: CategoryMapViewModel
@@ -471,6 +472,7 @@ class CategoryMapViewModelTest {
             it.navigate(Route.CategoryMap)
         }
         viewModel = CategoryMapViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },

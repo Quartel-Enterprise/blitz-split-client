@@ -44,6 +44,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PickPaymentViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -758,6 +759,7 @@ class PickPaymentViewModelTest {
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         val roomNeverAnswers = MutableSharedFlow<List<Group>>()
         viewModel = PickPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             observeGroupsByActivity = if (isRoomRead) {
                 ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money)

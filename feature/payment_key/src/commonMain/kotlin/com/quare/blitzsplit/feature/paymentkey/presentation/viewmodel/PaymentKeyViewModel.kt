@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyError
@@ -8,6 +7,7 @@ import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKeyInput
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.SavePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEvent
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ class PaymentKeyViewModel(
     private val savePaymentKey: SavePaymentKey,
     private val deletePaymentKey: DeletePaymentKey,
     observePaymentKeys: ObservePaymentKeys,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<PaymentKeyUiEvent>(trackEvent) {
     val uiState: StateFlow<PaymentKeyUiState>
         field = MutableStateFlow(
             PaymentKeyUiState(
@@ -79,7 +81,7 @@ class PaymentKeyViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: PaymentKeyUiEvent) {
+    override fun handleEvent(event: PaymentKeyUiEvent) {
         when (event) {
             PaymentKeyUiEvent.OnBackClicked -> leave()
 
@@ -93,13 +95,19 @@ class PaymentKeyViewModel(
 
             is PaymentKeyUiEvent.OnDefaultChanged -> changeDefault(event.isDefault)
 
-            PaymentKeyUiEvent.OnSaveClicked -> save()
+            PaymentKeyUiEvent.OnSaveClicked -> {
+                trackEvent("payment_key_save_clicked", emptyMap())
+                save()
+            }
 
             PaymentKeyUiEvent.OnDeleteClicked -> if (route.keyId != null && !uiState.value.isSaving) {
                 showDeleteConfirmation(true)
             }
 
-            PaymentKeyUiEvent.OnDeleteDismissed -> showDeleteConfirmation(false)
+            PaymentKeyUiEvent.OnDeleteDismissed -> if (uiState.value.isDeleteConfirmationShown) {
+                trackEvent("payment_key_delete_cancelled", emptyMap())
+                showDeleteConfirmation(false)
+            }
 
             PaymentKeyUiEvent.OnDeleteConfirmed -> delete()
         }
@@ -264,6 +272,7 @@ class PaymentKeyViewModel(
 
     private fun changeDefault(isDefault: Boolean) {
         if (uiState.value.isDefaultLocked) return
+        trackEvent("payment_key_default_toggled", mapOf("is_default" to isDefault))
         uiState.update { it.copy(isDefault = isDefault) }
     }
 
@@ -279,6 +288,10 @@ class PaymentKeyViewModel(
                 value = value,
                 isDefault = state.isDefault,
             )
+            trackEvent(
+                "payment_key_saved",
+                mapOf("type" to state.type, "is_new" to (route.keyId == null), "is_default" to state.isDefault),
+            )
             leave()
         }
     }
@@ -290,6 +303,7 @@ class PaymentKeyViewModel(
     private fun delete() {
         val keyId = route.keyId ?: return
         if (!uiState.value.isDeleteConfirmationShown || uiState.value.isSaving) return
+        trackEvent("payment_key_delete_confirmed", emptyMap())
         uiState.update {
             it.copy(
                 isSaving = true,

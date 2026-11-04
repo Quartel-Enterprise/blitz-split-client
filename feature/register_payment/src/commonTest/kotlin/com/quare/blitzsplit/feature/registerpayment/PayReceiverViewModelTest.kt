@@ -66,6 +66,7 @@ import kotlin.time.Instant
 
 // Why: "Pagar Ana" (4.5) of a pair of one group, Registrar pagamento showing the receiver's keys instead of the form.
 class PayReceiverViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val encodeQrCode = EncodeQrCodeUseCase()
     private lateinit var paymentKeys: FakePaymentKeyRepository
@@ -901,6 +902,7 @@ class PayReceiverViewModelTest {
             it.navigate(route)
         }
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(
