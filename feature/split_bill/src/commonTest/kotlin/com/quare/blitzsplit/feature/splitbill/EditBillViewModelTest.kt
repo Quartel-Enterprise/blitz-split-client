@@ -62,6 +62,7 @@ import kotlin.time.Instant
 
 // Why: "Editar conta", SplitBillViewModel opened on a saved bill; SplitBillViewModelTest covers "Rachar conta".
 class EditBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1282,6 +1283,7 @@ class EditBillViewModelTest {
             navigator.navigate(screen)
         }
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

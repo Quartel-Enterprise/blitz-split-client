@@ -51,6 +51,7 @@ import kotlin.test.assertTrue
 
 // Why: "Rachar em qual grupo?" (7.1i), first from the home's "Rachar conta", then from the group's chip of a new bill.
 class PickGroupViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -565,6 +566,7 @@ class PickGroupViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW },

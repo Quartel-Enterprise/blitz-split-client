@@ -141,13 +141,30 @@ class TrackedViewModelTest {
         )
     }
 
-    private fun prepareScenario(failingHandler: Boolean = false) {
+    @Test
+    fun `GIVEN a screen refusing the event for now WHEN the UI sends an automatic event THEN handles it untracked`() {
+        // Given
+        prepareScenario(refusesEvents = true)
+        val event = TestUiEvent.OnBackClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf<Entry>(Entry.Handled(TestUiEvent.OnBackClicked)), log)
+    }
+
+    private fun prepareScenario(
+        failingHandler: Boolean = false,
+        refusesEvents: Boolean = false,
+    ) {
         log = mutableListOf()
         viewModel =
             TestViewModel(
                 trackEvent = { name, params -> log += Entry.Tracked(name, params) },
                 log = log,
                 failingHandler = failingHandler,
+                refusesEvents = refusesEvents,
             )
     }
 }
@@ -186,8 +203,11 @@ private sealed interface TestUiEvent : TrackedUiEvent {
 private class TestViewModel(
     private val log: MutableList<Entry>,
     private val failingHandler: Boolean,
+    private val refusesEvents: Boolean,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<TestUiEvent>(trackEvent) {
+    override fun isAccepted(event: TestUiEvent): Boolean = !refusesEvents
+
     override fun handleEvent(event: TestUiEvent) {
         log += Entry.Handled(event)
         if (failingHandler) error("handler failed")

@@ -54,6 +54,7 @@ import kotlin.test.assertTrue
 
 // Why: "Quem pagou" and "Várias pessoas pagaram" on "Rachar conta"; SplitBillViewModelTest covers the rest of it.
 class SeveralPayersViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -871,6 +872,7 @@ class SeveralPayersViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

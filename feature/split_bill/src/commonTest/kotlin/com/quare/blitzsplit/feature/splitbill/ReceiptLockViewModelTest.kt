@@ -60,6 +60,7 @@ import kotlin.test.assertTrue
 
 // Why: Rachar conta locked while "Ler cupom fiscal" reads a receipt (beta feedback 17), so the read overwrites nothing.
 class ReceiptLockViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
@@ -85,6 +86,7 @@ class ReceiptLockViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = newRoute,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

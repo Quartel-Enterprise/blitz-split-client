@@ -3,9 +3,206 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface SplitBillUiEvent : UiEvent {
+sealed interface SplitBillUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: typed letter by letter; what was typed shows in the bill saved.
+            is OnAmountChanged,
+            is OnDescriptionChanged,
+            is OnPayerAmountChanged,
+            is OnPersonValueChanged,
+            is OnItemNameChanged,
+            is OnItemQuantityChanged,
+            is OnItemPriceChanged,
+            is OnItemPersonValueChanged,
+            is OnFeeValueChanged,
+            is OnCategoryQueryChanged,
+            is OnCategoryNameChanged,
+            -> EventAnalytics.NotTracked
+
+            /*
+             * Why: Apple's and the web's pickers send each step of "Quando" (a day, the time wheel) as it turns, like
+             * typing; the tap that opened it counts.
+             */
+            is OnSpentAtChanged -> EventAnalytics.NotTracked
+
+            // Why: a close or a back, which each platform also does its own way: where it went is its screen view.
+            OnGroupDismissed,
+            OnPayerDismissed,
+            OnSeveralPayersDismissed,
+            OnSplitDismissed,
+            OnItemsDismissed,
+            OnItemDismissed,
+            OnFeeDismissed,
+            OnCategoryDismissed,
+            OnCategoryFormDismissed,
+            OnReceiptCameraDismissed,
+            OnCloseClicked,
+            -> EventAnalytics.NotTracked
+
+            OnGroupClicked -> EventAnalytics.Automatic("split_bill_group_clicked")
+
+            is OnGroupPicked -> EventAnalytics.Automatic("split_bill_group_picked")
+
+            // Why: only "Continuar" on a question still open, with whether it moved the bill to another group.
+            OnGroupDone -> EventAnalytics.Manual("split_bill_group_confirmed")
+
+            OnPayerClicked -> EventAnalytics.Automatic("split_bill_payer_clicked")
+
+            is OnPayerPicked -> EventAnalytics.Automatic("split_bill_payer_picked")
+
+            // Why: only "Pronto" on a sheet still open.
+            OnPayerDone -> EventAnalytics.Manual("split_bill_payer_confirmed")
+
+            OnSeveralPayersClicked -> EventAnalytics.Automatic("split_bill_several_payers_clicked")
+
+            // Why: only once the amounts add up, with how many paid.
+            OnSeveralPayersDone -> EventAnalytics.Manual("split_bill_several_payers_confirmed")
+
+            OnSpentAtOpened -> EventAnalytics.Automatic("split_bill_date_clicked")
+
+            OnSplitClicked -> EventAnalytics.Automatic("split_bill_split_clicked")
+
+            OnReceiptItemsClicked -> EventAnalytics.Automatic("receipt_items_clicked")
+
+            // Why: only another mode, never the one picked, as Apple's Picker reports only a change.
+            is OnSplitModeClicked -> EventAnalytics.Manual("split_bill_split_mode_selected")
+
+            // Why: toggles, sent with where they ended up.
+            is OnPersonToggled -> EventAnalytics.Manual("split_bill_person_toggled")
+
+            OnEveryoneToggled -> EventAnalytics.Manual("split_bill_everyone_toggled")
+
+            OnSplitAsDefaultToggled -> EventAnalytics.Manual("split_bill_split_as_default_toggled")
+
+            is OnPartsIncreased -> EventAnalytics.Automatic("split_bill_parts_changed", mapOf("direction" to "up"))
+
+            is OnPartsDecreased -> EventAnalytics.Automatic("split_bill_parts_changed", mapOf("direction" to "down"))
+
+            OnSplitResetToDefault -> EventAnalytics.Automatic("split_bill_split_reset_clicked")
+
+            // Why: only once the split adds up and Dividir closes, with the mode picked.
+            OnSplitDone -> EventAnalytics.Manual("split_bill_split_confirmed")
+
+            // Why: only once every item has someone and they close with the total.
+            OnItemsDone -> EventAnalytics.Manual("bill_items_confirmed")
+
+            OnAddItemClicked -> EventAnalytics.Automatic("bill_item_add_clicked")
+
+            OnAddDifferenceItemClicked -> EventAnalytics.Automatic("bill_items_difference_item_clicked")
+
+            // Why: only while there is a difference to share.
+            OnSplitDifferenceClicked -> EventAnalytics.Manual("bill_items_difference_split_clicked")
+
+            OnDifferenceRemoved -> EventAnalytics.Automatic("bill_items_difference_removed")
+
+            is OnItemClicked -> EventAnalytics.Automatic("bill_item_clicked")
+
+            OnItemQuantityIncreased -> EventAnalytics.Automatic(
+                "bill_item_quantity_changed",
+                mapOf("direction" to "up"),
+            )
+
+            OnItemQuantityDecreased -> EventAnalytics.Automatic(
+                "bill_item_quantity_changed",
+                mapOf("direction" to "down"),
+            )
+
+            // Why: only another way to split the item, never the one picked.
+            is OnItemModeClicked -> EventAnalytics.Manual("bill_item_mode_selected")
+
+            // Why: a toggle, sent with where it ended up.
+            is OnItemPersonToggled -> EventAnalytics.Manual("bill_item_person_toggled")
+
+            is OnItemPersonIncreased -> EventAnalytics.Automatic("bill_item_person_changed", mapOf("direction" to "up"))
+
+            is OnItemPersonDecreased -> EventAnalytics.Automatic(
+                "bill_item_person_changed",
+                mapOf("direction" to "down"),
+            )
+
+            // Why: only once the item has a name, a price and someone, with its mode and whether it is new.
+            OnItemDone -> EventAnalytics.Manual("bill_item_confirmed")
+
+            is OnItemDeleteClicked -> EventAnalytics.Automatic("bill_item_delete_clicked")
+
+            // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
+            OnItemDeleteConfirmed -> EventAnalytics.Manual("bill_item_delete_confirmed")
+
+            OnItemDeleteDismissed -> EventAnalytics.Manual("bill_item_delete_cancelled")
+
+            is OnFeeClicked -> EventAnalytics.Automatic("bill_items_fee_clicked", mapOf("fee" to fee))
+
+            // Why: only a value the field takes.
+            OnFeeDone -> EventAnalytics.Manual("bill_items_fee_confirmed")
+
+            // Why: only once the categories are read, since Categoria opens only then.
+            OnCategoryClicked -> EventAnalytics.Manual("bill_category_clicked")
+
+            // Why: a toggle, sent with where it ended up; Outros is picked instead, as OnCategoryPicked counts it.
+            is OnCategoryMainToggled -> EventAnalytics.Manual("bill_category_main_toggled")
+
+            is OnCategoryPicked -> EventAnalytics.Automatic("bill_category_picked")
+
+            OnCategoryMapClicked -> EventAnalytics.Automatic(
+                "category_map_clicked",
+                mapOf("source" to SPLIT_BILL_SOURCE),
+            )
+
+            is OnNewCategoryClicked -> EventAnalytics.Automatic(
+                "category_create_clicked",
+                mapOf("is_subcategory" to (parentId != null), "source" to SPLIT_BILL_SOURCE),
+            )
+
+            is OnEditCategoryClicked -> EventAnalytics.Automatic(
+                "category_edit_clicked",
+                mapOf("source" to SPLIT_BILL_SOURCE),
+            )
+
+            is OnCategoryParentPicked -> EventAnalytics.Automatic(
+                "category_parent_picked",
+                mapOf("source" to SPLIT_BILL_SOURCE),
+            )
+
+            is OnCategoryIconPicked -> EventAnalytics.Automatic(
+                "category_icon_picked",
+                mapOf("icon" to icon, "source" to SPLIT_BILL_SOURCE),
+            )
+
+            // Why: the tap, then the category once it is saved.
+            OnCategoryFormSaveClicked -> EventAnalytics.Manual(setOf("category_save_clicked", "category_saved"))
+
+            // Why: only when its question opens, an answer only while it is open and not deleting yet.
+            OnCategoryDeleteClicked -> EventAnalytics.Manual("category_delete_clicked")
+
+            OnCategoryDeleteConfirmed -> EventAnalytics.Manual("category_delete_confirmed")
+
+            OnCategoryDeleteDismissed -> EventAnalytics.Manual("category_delete_cancelled")
+
+            // Why: only while it can read one (online, not editing), as the camera opens only then.
+            OnScanReceiptClicked -> EventAnalytics.Manual("scan_receipt_clicked")
+
+            // Why: a photo handed back, which stands for the tap that opened the camera, then how the read ended.
+            is OnReceiptPhotoPicked -> EventAnalytics.Manual(setOf("photo_picked", "receipt_read"))
+
+            OnReceiptRetryClicked -> EventAnalytics.Manual(setOf("retry_clicked", "receipt_read"))
+
+            OnReceiptRemoved -> EventAnalytics.Automatic("receipt_removed")
+
+            // Why: the tap, then the bill once it is saved.
+            OnSaveClicked -> EventAnalytics.Manual(setOf("split_bill_save_clicked", "bill_saved"))
+
+            // Why: only when "Apagar esta conta?" opens, an answer only while it is open and not deleting yet.
+            OnDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
+
+            OnDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
+
+            OnDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
+        }
+
     data class OnAmountChanged(
         val text: String,
     ) : SplitBillUiEvent
@@ -27,32 +224,35 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: the sheet closed without "Continuar", which leaves the bill in its group.
     data object OnGroupDismissed : SplitBillUiEvent
 
+    // Why: what "Quem pagou" and "Várias pessoas pagaram" send, which PayerPicking handles.
+    sealed interface Payers : SplitBillUiEvent
+
     // Why: "Quem pagou", which opens the sheet with whoever paid marked, or "Várias pessoas".
-    data object OnPayerClicked : SplitBillUiEvent
+    data object OnPayerClicked : Payers
 
     data class OnPayerPicked(
         val memberId: String,
-    ) : SplitBillUiEvent
+    ) : Payers
 
     // Why: "Pronto" on the sheet.
-    data object OnPayerDone : SplitBillUiEvent
+    data object OnPayerDone : Payers
 
-    data object OnPayerDismissed : SplitBillUiEvent
+    data object OnPayerDismissed : Payers
 
     // Why: "Várias pessoas" on "Quem pagou", which opens "Várias pessoas pagaram" in its place.
-    data object OnSeveralPayersClicked : SplitBillUiEvent
+    data object OnSeveralPayersClicked : Payers
 
     // Why: how much one person paid, typed on "Várias pessoas pagaram".
     data class OnPayerAmountChanged(
         val memberId: String,
         val text: String,
-    ) : SplitBillUiEvent
+    ) : Payers
 
     // Why: "Pronto" on "Várias pessoas pagaram".
-    data object OnSeveralPayersDone : SplitBillUiEvent
+    data object OnSeveralPayersDone : Payers
 
     // Why: "Várias pessoas pagaram" closed without "Pronto", which leaves who paid as it was.
-    data object OnSeveralPayersDismissed : SplitBillUiEvent
+    data object OnSeveralPayersDismissed : Payers
 
     // Why: "Quando" opening its picker, which then stops at the day it is now, also once midnight passed meanwhile.
     data object OnSpentAtOpened : SplitBillUiEvent

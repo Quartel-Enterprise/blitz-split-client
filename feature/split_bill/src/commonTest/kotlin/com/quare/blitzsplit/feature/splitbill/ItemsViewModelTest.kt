@@ -60,6 +60,7 @@ import kotlin.test.assertTrue
 
 // Why: "Itens da conta" (7.5) and "Item" (7.6), Dividir's fifth mode.
 class ItemsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -548,6 +549,7 @@ class ItemsViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

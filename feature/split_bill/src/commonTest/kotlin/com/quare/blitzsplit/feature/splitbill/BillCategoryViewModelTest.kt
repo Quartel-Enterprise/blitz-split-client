@@ -66,6 +66,7 @@ import kotlin.test.assertTrue
 
 // Why: a bill's category (7.7): suggested by the map from its description, picked by hand, and the group's own (7.8).
 class BillCategoryViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -597,6 +598,7 @@ class BillCategoryViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW },

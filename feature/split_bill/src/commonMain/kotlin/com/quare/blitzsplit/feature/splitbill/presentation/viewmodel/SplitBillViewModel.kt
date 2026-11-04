@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
@@ -26,11 +25,13 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
-import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -74,7 +75,8 @@ class SplitBillViewModel(
     categoryUseCases: BillCategoryUseCases,
     observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<SplitBillUiEvent>(trackEvent) {
     val uiState: StateFlow<SplitBillUiState>
         field = MutableStateFlow(
             createInitialBillState(
@@ -100,6 +102,11 @@ class SplitBillViewModel(
 
     // Why: "Rachar em qual grupo?" (7.1i), whose "Continuar" moves a new bill to the group picked.
     private val groupPicking = GroupPicking(uiState, route, groupId)
+
+    private val tracking = SplitFormTracking(uiState, trackEvent)
+
+    // Why: "Quem pagou" and "Várias pessoas pagaram".
+    private val payers = PayerPicking(uiState, { separator }, trackEvent)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -132,6 +139,7 @@ class SplitBillViewModel(
             hasPickedSplit = true
             amountAnchor = null
         },
+        trackEvent = trackEvent,
     )
 
     // Why: the group as last shown, which a change of the bill's category shows again with that category's split.
@@ -148,6 +156,7 @@ class SplitBillViewModel(
         deleteGroupCategory = categoryUseCases.deleteGroupCategory,
         emit = { uiAction.emit(it) },
         onCategoryChanged = ::showCategorySplit,
+        trackEvent = trackEvent,
     )
 
     // Why: "Ler cupom fiscal" (7.1e): what it reads fills the bill, and the category follows it unless the map's words say.
@@ -164,6 +173,7 @@ class SplitBillViewModel(
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
         onReadStarted = items::forget,
+        trackEvent = trackEvent,
     )
 
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
@@ -224,13 +234,17 @@ class SplitBillViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: SplitBillUiEvent) {
-        handleEvent(event)
+    override fun handleEvent(event: SplitBillUiEvent) {
+        handleFormEvent(event)
         settledPairs?.refresh(uiState.value)
     }
 
-    private fun handleEvent(event: SplitBillUiEvent) {
-        if (uiState.value.isFormLocked && !event.isAllowedWhileReading()) return
+    // Why: while it reads a receipt the form takes only what isAllowedWhileReading lets through, so nothing else counts.
+    override fun isAccepted(event: SplitBillUiEvent): Boolean =
+        !uiState.value.isFormLocked || event.isAllowedWhileReading()
+
+    private fun handleFormEvent(event: SplitBillUiEvent) {
+        if (!isAccepted(event)) return
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
@@ -238,36 +252,16 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
-            SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()
+            SplitBillUiEvent.OnGroupDone -> {
+                tracking.trackGroupConfirmed()
+                groupPicking.confirm()
+            }
 
             SplitBillUiEvent.OnGroupDismissed -> groupPicking.dismiss()
 
             is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
-            SplitBillUiEvent.OnPayerClicked -> uiState.update {
-                it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
-            }
-
-            is SplitBillUiEvent.OnPayerPicked -> uiState.update { it.withPayerPicked(event.memberId) }
-
-            SplitBillUiEvent.OnPayerDone -> uiState.update { it.withPayerConfirmed() }
-
-            SplitBillUiEvent.OnPayerDismissed -> uiState.update { it.copy(payerSelection = null) }
-
-            SplitBillUiEvent.OnSeveralPayersClicked -> uiState.update { it.withSeveralPayersOpened(separator) }
-
-            is SplitBillUiEvent.OnPayerAmountChanged -> uiState.update {
-                it.withPayerAmount(
-                    event.memberId,
-                    event.text,
-                    separator,
-                )
-            }
-
-            // Why: only once the amounts add up.
-            SplitBillUiEvent.OnSeveralPayersDone -> uiState.update { it.withSeveralPayersConfirmed() }
-
-            SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
+            is SplitBillUiEvent.Payers -> payers.onEvent(event)
 
             SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
                 it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
@@ -279,21 +273,25 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnReceiptItemsClicked -> items.openFromReceipt()
 
-            is SplitBillUiEvent.OnSplitModeClicked -> if (event.mode == SplitMode.ITEMS) {
-                items.openInSplit()
-            } else {
-                editSplit { it.toMode(event.mode, separator) }
-            }
-
-            is SplitBillUiEvent.OnPersonToggled -> editSplit { editor ->
-                editor.withRows { row ->
-                    if (row.person.id == event.memberId) row.copy(isIncluded = !row.isIncluded) else row
+            is SplitBillUiEvent.OnSplitModeClicked -> {
+                tracking.trackSplitModeSelected(event.mode)
+                if (event.mode ==
+                    SplitMode.ITEMS
+                ) {
+                    items.openInSplit()
+                } else {
+                    editSplit { it.toMode(event.mode, separator) }
                 }
             }
 
-            SplitBillUiEvent.OnEveryoneToggled -> editSplit { editor ->
-                val include = !editor.isEveryoneIncluded
-                editor.withRows { it.copy(isIncluded = include) }
+            is SplitBillUiEvent.OnPersonToggled -> {
+                tracking.trackPersonToggled(event.memberId)
+                editSplit { it.withPersonToggled(event.memberId) }
+            }
+
+            SplitBillUiEvent.OnEveryoneToggled -> {
+                tracking.trackEveryoneToggled()
+                editSplit { it.withEveryoneToggled() }
             }
 
             is SplitBillUiEvent.OnPersonValueChanged -> editSplit {
@@ -306,9 +304,15 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
 
-            SplitBillUiEvent.OnSplitAsDefaultToggled -> uiState.update { it.withSplitAsDefaultToggled() }
+            SplitBillUiEvent.OnSplitAsDefaultToggled -> {
+                tracking.trackSplitAsDefaultToggled()
+                uiState.update { it.withSplitAsDefaultToggled() }
+            }
 
-            SplitBillUiEvent.OnSplitDone -> confirmSplit()
+            SplitBillUiEvent.OnSplitDone -> {
+                tracking.trackSplitConfirmed()
+                confirmSplit()
+            }
 
             SplitBillUiEvent.OnSplitDismissed -> {
                 items.forget()
@@ -323,14 +327,23 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnCategoryMapClicked -> exits.openCategoryMap()
 
-            SplitBillUiEvent.OnSaveClicked -> save()
+            SplitBillUiEvent.OnSaveClicked -> {
+                trackEvent("split_bill_save_clicked", emptyMap())
+                save()
+            }
 
             SplitBillUiEvent.OnDeleteClicked -> askToDelete()
 
-            SplitBillUiEvent.OnDeleteConfirmed -> delete()
+            SplitBillUiEvent.OnDeleteConfirmed -> {
+                tracking.trackDeleteAnswered(isConfirmed = true)
+                delete()
+            }
 
             // Why: the question stays while the bill is being deleted, whatever closes it.
-            SplitBillUiEvent.OnDeleteDismissed -> uiState.update { if (it.isDeleting) it else it.copy(deletion = null) }
+            SplitBillUiEvent.OnDeleteDismissed -> {
+                tracking.trackDeleteAnswered(isConfirmed = false)
+                uiState.update { if (it.isDeleting) it else it.copy(deletion = null) }
+            }
 
             SplitBillUiEvent.OnCloseClicked -> exits.leave()
         }
@@ -531,6 +544,11 @@ class SplitBillViewModel(
             }
             result
                 .onSuccess { teachOffer ->
+                    tracking.trackSaved(
+                        state,
+                        isNew = expenseId == null,
+                        payers = payers.size,
+                    )
                     // Why: "Ensinar ao mapa?" (9.3e) only on the group the bill lands on, never later.
                     if (expenseId == null && exits.isLandingOnGroup(state.groupId)) {
                         teachOffer?.let(offerCategoryTeach::invoke)
@@ -546,6 +564,7 @@ class SplitBillViewModel(
     private fun askToDelete() {
         val expense = editedExpense ?: return
         if (!uiState.value.canDelete) return
+        trackEvent("bill_delete_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
         val meId = uiState.value.people
             .firstOrNull { it.isMe }
             ?.id

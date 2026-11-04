@@ -12,9 +12,15 @@ abstract class TrackedViewModel<E : TrackedUiEvent>(
 ) : ViewModel() {
     fun onEvent(event: E) {
         val analytics = event.analytics
-        if (analytics is EventAnalytics.Automatic) trackEvent(analytics.name, analytics.params)
+        if (analytics is EventAnalytics.Automatic && isAccepted(event)) trackEvent(analytics.name, analytics.params)
         handleEvent(event)
     }
 
     protected abstract fun handleEvent(event: E)
+
+    /*
+     * Why: a screen that refuses whole kinds of events for a while (Rachar conta while it reads a receipt) says so,
+     * so their Automatic events never count a tap the screen didn't take.
+     */
+    protected open fun isAccepted(event: E): Boolean = true
 }

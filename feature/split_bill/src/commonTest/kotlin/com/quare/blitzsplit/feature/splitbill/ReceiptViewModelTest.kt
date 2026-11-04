@@ -78,6 +78,7 @@ import kotlin.test.assertTrue
 
 // Why: "Ler cupom fiscal" (7.1e to 7.1g) on Rachar conta: the camera, the reading, what it fills and the photo saved.
 class ReceiptViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2033,6 +2034,7 @@ class ReceiptViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

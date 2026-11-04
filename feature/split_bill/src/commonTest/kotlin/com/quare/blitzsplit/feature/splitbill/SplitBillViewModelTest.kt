@@ -66,6 +66,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 class SplitBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2474,6 +2475,7 @@ class SplitBillViewModelTest {
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { now },

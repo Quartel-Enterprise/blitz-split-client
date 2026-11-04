@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemPersonRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
@@ -27,6 +28,7 @@ internal class ItemsEditing(
     // Why: a receipt read's items (7.1e) in the bill's currency, which Itens opens with until the bill has its own.
     private val receiptItems: (GroupCurrency) -> BillItems?,
     private val onItemsDone: () -> Unit,
+    private val trackEvent: TrackEvent,
 ) {
     // Why: the items as "Voltar" left them, until another mode's "Pronto" or Dividir closing forgets them.
     private var draft: BillItems? = null
@@ -107,7 +109,12 @@ internal class ItemsEditing(
         when (event) {
             SplitBillUiEvent.OnItemsDismissed -> dismiss()
 
-            SplitBillUiEvent.OnItemsDone -> confirm()
+            SplitBillUiEvent.OnItemsDone -> {
+                uiState.value.itemsEditor?.takeIf { it.addsUp }?.let { items ->
+                    trackEvent("bill_items_confirmed", mapOf("items" to items.items.size))
+                }
+                confirm()
+            }
 
             SplitBillUiEvent.OnAddItemClicked -> openItem(
                 itemId = null,
@@ -116,12 +123,11 @@ internal class ItemsEditing(
 
             SplitBillUiEvent.OnAddDifferenceItemClicked -> addDifferenceItem()
 
-            SplitBillUiEvent.OnSplitDifferenceClicked -> editItems { items ->
-                if (items.canSplitDifference) {
-                    items.withSplit { it.copy(extraMinor = it.extraMinor + items.remainingMinor) }
-                } else {
-                    items
+            SplitBillUiEvent.OnSplitDifferenceClicked -> {
+                if (uiState.value.itemsEditor?.canSplitDifference == true) {
+                    trackEvent("bill_items_difference_split_clicked", emptyMap())
                 }
+                splitDifference()
             }
 
             SplitBillUiEvent.OnDifferenceRemoved -> editItems { items -> items.withSplit { it.copy(extraMinor = 0L) } }
@@ -153,11 +159,20 @@ internal class ItemsEditing(
                 it.withTotal(it.quantity, unitPriceText, separator())
             }
 
-            is SplitBillUiEvent.OnItemModeClicked -> editItem { it.toMode(event.mode, separator()) }
+            is SplitBillUiEvent.OnItemModeClicked -> {
+                val editor = uiState.value.itemEditor
+                if (editor != null && editor.mode != event.mode) {
+                    trackEvent("bill_item_mode_selected", mapOf("mode" to event.mode))
+                }
+                editItem { it.toMode(event.mode, separator()) }
+            }
 
-            is SplitBillUiEvent.OnItemPersonToggled -> editPerson(
-                event.memberId,
-            ) { it.copy(isIncluded = !it.isIncluded) }
+            is SplitBillUiEvent.OnItemPersonToggled -> {
+                uiState.value.itemEditor?.rows?.firstOrNull { it.person.id == event.memberId }?.let { row ->
+                    trackEvent("bill_item_person_toggled", mapOf("is_included" to !row.isIncluded))
+                }
+                editPerson(event.memberId) { it.copy(isIncluded = !it.isIncluded) }
+            }
 
             is SplitBillUiEvent.OnItemPersonIncreased -> changeCount(event.memberId) { it + 1 }
 
@@ -165,7 +180,12 @@ internal class ItemsEditing(
 
             is SplitBillUiEvent.OnItemPersonValueChanged -> changeValue(event.memberId, event.text)
 
-            SplitBillUiEvent.OnItemDone -> confirmItem()
+            SplitBillUiEvent.OnItemDone -> {
+                uiState.value.itemEditor?.takeIf { it.canSave && uiState.value.itemsEditor != null }?.let { editor ->
+                    trackEvent("bill_item_confirmed", mapOf("mode" to editor.mode, "is_new" to (editor.itemId == null)))
+                }
+                confirmItem()
+            }
 
             SplitBillUiEvent.OnItemDismissed -> uiState.update { it.copy(itemEditor = null) }
 
@@ -173,9 +193,16 @@ internal class ItemsEditing(
                 it.copy(itemDeletion = it.itemsEditor?.deletionOf(event.itemId))
             }
 
-            SplitBillUiEvent.OnItemDeleteConfirmed -> deleteItem()
+            // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
+            SplitBillUiEvent.OnItemDeleteConfirmed -> {
+                if (uiState.value.itemDeletion != null) trackEvent("bill_item_delete_confirmed", emptyMap())
+                deleteItem()
+            }
 
-            SplitBillUiEvent.OnItemDeleteDismissed -> uiState.update { it.copy(itemDeletion = null) }
+            SplitBillUiEvent.OnItemDeleteDismissed -> {
+                if (uiState.value.itemDeletion != null) trackEvent("bill_item_delete_cancelled", emptyMap())
+                uiState.update { it.copy(itemDeletion = null) }
+            }
 
             is SplitBillUiEvent.OnFeeClicked -> uiState.update {
                 it.copy(feeEditor = it.itemsEditor?.feeEditorOf(event.fee, separator()))
@@ -191,12 +218,17 @@ internal class ItemsEditing(
                 state.copy(feeEditor = editor.copy(valueText = text))
             }
 
-            SplitBillUiEvent.OnFeeDone -> uiState.update { state ->
-                val editor = state.feeEditor?.takeIf { it.canSave } ?: return@update state
-                state.copy(
-                    itemsEditor = state.itemsEditor?.withFee(editor),
-                    feeEditor = null,
-                )
+            SplitBillUiEvent.OnFeeDone -> {
+                uiState.value.feeEditor?.takeIf { it.canSave }?.let { editor ->
+                    trackEvent("bill_items_fee_confirmed", mapOf("fee" to editor.fee))
+                }
+                uiState.update { state ->
+                    val editor = state.feeEditor?.takeIf { it.canSave } ?: return@update state
+                    state.copy(
+                        itemsEditor = state.itemsEditor?.withFee(editor),
+                        feeEditor = null,
+                    )
+                }
             }
 
             SplitBillUiEvent.OnFeeDismissed -> uiState.update { it.copy(feeEditor = null) }
@@ -267,6 +299,16 @@ internal class ItemsEditing(
                 itemEditor = state.itemEditor?.takeIf { it.itemId != deletion.itemId },
                 itemDeletion = null,
             )
+        }
+    }
+
+    private fun splitDifference() {
+        editItems { items ->
+            if (items.canSplitDifference) {
+                items.withSplit { it.copy(extraMinor = it.extraMinor + items.remainingMinor) }
+            } else {
+                items
+            }
         }
     }
 

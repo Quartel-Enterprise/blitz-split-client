@@ -59,6 +59,7 @@ import kotlin.time.Instant
 
 // Why: 7.4b, "Editar conta" on a bill a payment settled afterwards; EditBillViewModelTest covers the rest of it.
 class EditAfterPaymentViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -349,6 +350,7 @@ class EditAfterPaymentViewModelTest {
             it.navigate(route)
         }
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

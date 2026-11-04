@@ -66,6 +66,7 @@ import kotlin.test.assertTrue
 
 // Why: a new bill opens with the group's "Divisão padrão" (6.7, 7.1j, 7.2f), which Dividir may change for it (7.2h).
 class DefaultSplitBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1193,6 +1194,7 @@ class DefaultSplitBillViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW },

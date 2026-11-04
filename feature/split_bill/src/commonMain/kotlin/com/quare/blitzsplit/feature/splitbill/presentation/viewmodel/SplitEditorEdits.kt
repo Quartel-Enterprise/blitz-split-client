@@ -189,6 +189,16 @@ internal fun SplitEditor.toMode(
 
 internal fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
 
+// Why: the checkbox of "Igual".
+internal fun SplitEditor.withPersonToggled(memberId: String): SplitEditor =
+    withRows { row -> if (row.person.id == memberId) row.copy(isIncluded = !row.isIncluded) else row }
+
+// Why: "Marcar todos" or "Desmarcar todos".
+internal fun SplitEditor.withEveryoneToggled(): SplitEditor {
+    val include = !isEveryoneIncluded
+    return withRows { it.copy(isIncluded = include) }
+}
+
 // Why: what was typed in one person's Valores or % field, kept as that field's rules keep it.
 internal fun SplitEditor.withValueTyped(
     memberId: String,
