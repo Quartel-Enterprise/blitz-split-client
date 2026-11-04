@@ -67,7 +67,7 @@ The `jvm` target exists only so `commonTest` runs fast on the JVM and Kover can 
 | Android | `:android:feature:x` → `:feature:x` | Plain Gradle dependency; the screen gets its ViewModel with `koinViewModel()` |
 | Android app | `:shared`, `:core:navigation`, `:core:provider:supabase`, `:core:provider:crashlytics`, `:core:provider:analytics`, every `:android:*` | `startBlitzSplitKoin`, `AppViewModel`, `handleDeeplinks`, `startCrashReporting`, `AnalyticsHub.attach` |
 | SwiftUI | the static framework `Shared` | `:shared` exports the modules listed in `exportedToApple` (`shared/build.gradle.kts`): `core:model`, `core:presentation`, `core:navigation`, `core:provider:analytics` and every `feature:*`. Swift reaches the ViewModels through `BlitzSplitApple` |
-| React | the npm package `blitzsplit-shared` | `:shared`'s JS library with TypeScript definitions. Only the `@JsExport` declarations of `shared/src/jsMain/.../bridge` cross: `startBlitzSplit`, `AppPresenter`, one `XPresenter` per screen and their plain `JsXState` classes |
+| React | the npm package `blitzsplit-shared` | `:shared`'s JS library with TypeScript definitions. Only the `@JsExport` declarations of `shared/src/jsMain/.../bridge` cross: `startBlitzSplit`, `attachAnalytics`, `AppPresenter`, one `XPresenter` per screen and their plain `JsXState` classes |
 
 ## Dependency rules
 

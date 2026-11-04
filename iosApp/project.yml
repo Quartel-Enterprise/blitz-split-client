@@ -20,6 +20,11 @@ packages:
     from: 13.1.1
 
 settings:
+  configs:
+    Debug:
+      ANALYTICS_COLLECTION_ENABLED: NO
+    Release:
+      ANALYTICS_COLLECTION_ENABLED: YES
   base:
     PRODUCT_NAME: BoraRachar
     PRODUCT_MODULE_NAME: BoraRachar
@@ -106,6 +111,8 @@ targetTemplates:
         CFBundleURLTypes:
           - CFBundleURLName: com.quare.blitzsplit.auth
             CFBundleURLSchemes: [borarachar]
+        # A debug build collects nothing from its first launch on (FirebaseSetup also sets it on every launch)
+        FIREBASE_ANALYTICS_COLLECTION_ENABLED: $(ANALYTICS_COLLECTION_ENABLED)
         # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers
         FirebaseAutomaticScreenReportingEnabled: false
         GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS: false

@@ -2,7 +2,6 @@ package com.quare.blitzsplit.core.provider.analytics
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class TrackEventUseCaseTest {
     private val logged = mutableListOf<Pair<String, Map<String, Any>>>()
@@ -10,15 +9,28 @@ class TrackEventUseCaseTest {
     private val trackEvent = TrackEventUseCase(hub)
 
     @Test
-    fun `GIVEN no service attached WHEN tracking THEN the event goes nowhere`() {
+    fun `GIVEN events tracked before a service attaches WHEN it attaches THEN sends them in order`() {
         // Given
-        AnalyticsHub().attach(RecordingService(logged))
+        trackEvent("screen_viewed", mapOf("screen" to "home"))
+        trackEvent("bill_saved", emptyMap())
 
         // When
-        trackEvent("bill_saved", mapOf("is_new" to true))
+        hub.attach(RecordingService(logged))
 
         // Then
-        assertTrue(logged.isEmpty())
+        assertEquals(listOf("screen_viewed", "bill_saved"), logged.map { it.first })
+    }
+
+    @Test
+    fun `GIVEN a service never attaches WHEN tracking many events THEN keeps only the first 50`() {
+        // Given
+        repeat(60) { index -> trackEvent("event_$index", emptyMap()) }
+
+        // When
+        hub.attach(RecordingService(logged))
+
+        // Then
+        assertEquals((0 until 50).map { "event_$it" }, logged.map { it.first })
     }
 
     @Test
@@ -37,16 +49,34 @@ class TrackEventUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a service attached WHEN tracking a Float THEN sends it as a Double`() {
+    fun `GIVEN a service attached WHEN tracking a Float and an enum THEN sends a Double and the enum name`() {
         // Given
         hub.attach(RecordingService(logged))
 
         // When
-        trackEvent("stats_opened", mapOf("ratio" to 0.5f))
+        trackEvent("stats_opened", mapOf("ratio" to 0.5f, "grain" to Grain.WEEK))
 
         // Then
-        assertEquals(listOf("stats_opened" to mapOf<String, Any>("ratio" to 0.5)), logged)
+        assertEquals(listOf("stats_opened" to mapOf<String, Any>("ratio" to 0.5, "grain" to "week")), logged)
     }
+
+    @Test
+    fun `GIVEN a service attached WHEN tracking a domain object THEN leaves that param out`() {
+        // Given
+        hub.attach(RecordingService(logged))
+
+        // When
+        trackEvent("payment_recorded", mapOf("payer" to Person("Ana"), "method" to "pix"))
+
+        // Then
+        assertEquals(listOf("payment_recorded" to mapOf<String, Any>("method" to "pix")), logged)
+    }
+
+    private enum class Grain { WEEK }
+
+    private data class Person(
+        val name: String,
+    )
 
     private class RecordingService(
         private val logged: MutableList<Pair<String, Map<String, Any>>>,
