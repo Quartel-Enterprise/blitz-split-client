@@ -427,6 +427,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                             event.stopPropagation()
                             open(bill)
                           }}
+                          title={bill.description}
                           className="truncate rounded-sm text-left font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
                         >
                           {bill.description}
