@@ -106,6 +106,8 @@ export function HomeShell({
   const select = (tab: HomeTab) => {
     if (tab !== selected || isOutsideTabs) onTab(tab)
   }
+  // Why: a screen whose presenter can't count the logo yet opens Início as its tab does.
+  const openBrand = onBrand ?? (() => select('home'))
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
   const unreadOf = (tab: HomeTab) => (tab === 'activity' ? activityUnreadCount : 0)
   // Why: "Atividade, 3 não lidas": the badge is hidden from screen readers, so the tab's name says it.
@@ -115,7 +117,7 @@ export function HomeShell({
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <button
           aria-label={t('appName')}
-          onClick={() => (onBrand ? onBrand() : select('home'))}
+          onClick={openBrand}
           className="rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
@@ -198,7 +200,7 @@ export function HomeShell({
           <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
             <button
               aria-label={t('appName')}
-              onClick={() => (onBrand ? onBrand() : select('home'))}
+              onClick={openBrand}
               className="mr-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <BrandMark />

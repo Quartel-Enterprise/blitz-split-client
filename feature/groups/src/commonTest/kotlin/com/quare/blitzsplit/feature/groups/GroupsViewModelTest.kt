@@ -2976,6 +2976,21 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the search open WHEN tapping the logo THEN closes the search and goes back to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBrandClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.search.isOpen)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the groups WHEN tapping the avatar THEN tracks profile_avatar_clicked from the groups`() =
         runTest(testDispatcher) {
             // Given

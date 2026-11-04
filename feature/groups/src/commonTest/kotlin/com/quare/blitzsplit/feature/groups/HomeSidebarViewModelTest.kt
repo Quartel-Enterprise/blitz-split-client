@@ -598,6 +598,18 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
+    fun `GIVEN a group opened from Grupos WHEN tapping the logo THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio")))
+
+        // When
+        viewModel.onEvent(HomeSidebarUiEvent.OnBrandClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN the sidebar WHEN tapping the logo THEN tracks brand_clicked from the sidebar`() =
         runTest(testDispatcher) {
             // Given
