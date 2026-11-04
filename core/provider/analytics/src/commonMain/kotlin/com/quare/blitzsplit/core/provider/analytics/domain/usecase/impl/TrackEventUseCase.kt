@@ -1,4 +1,8 @@
-package com.quare.blitzsplit.core.provider.analytics
+package com.quare.blitzsplit.core.provider.analytics.domain.usecase.impl
+
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsEvent
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 
 /*
  * Why: GA4 takes strings and numbers only, so a Boolean goes as "true" or "false", a whole number as a Long, any

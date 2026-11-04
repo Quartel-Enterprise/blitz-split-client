@@ -27,6 +27,12 @@ if (hasFirebaseConfig) {
     )
 }
 
+/*
+ * Firebase Analytics collects nothing yet, in any build: whether the app asks first is Pierre's call, still open
+ * (docs/analytics/README.md#consent). Once it is settled, this turns collection on for release builds.
+ */
+val collectsAnalytics = false
+
 android {
     namespace = "com.quare.blitzsplit"
     compileSdk = libs.versions.android.compileSdk
@@ -68,12 +74,12 @@ android {
         }
     }
     buildTypes {
-        // Firebase Analytics only collects from a release build, from its first launch on
+        // Firebase Analytics never collects from a debug build, from its first launch on
         getByName("debug") {
             manifestPlaceholders["analyticsCollectionEnabled"] = false
         }
         getByName("release") {
-            manifestPlaceholders["analyticsCollectionEnabled"] = true
+            manifestPlaceholders["analyticsCollectionEnabled"] = collectsAnalytics
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

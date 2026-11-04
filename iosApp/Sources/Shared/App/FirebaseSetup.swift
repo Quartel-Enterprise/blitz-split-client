@@ -11,6 +11,10 @@ enum FirebaseSetup {
     private static let isDebug = false
     #endif
 
+    /// Firebase Analytics collects nothing yet, in any build: whether the app asks first is Pierre's call, still
+    /// open (docs/analytics/README.md#consent). Once it is settled, this turns collection on for release builds.
+    private static let collectsAnalytics = false
+
     private static var isConfigured: Bool {
         Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil
     }
@@ -20,13 +24,13 @@ enum FirebaseSetup {
         guard isConfigured else { return }
         FirebaseApp.configure()
         // Analytics keeps the setting on the device, so every launch sets it again
-        Analytics.setAnalyticsCollectionEnabled(!isDebug)
+        Analytics.setAnalyticsCollectionEnabled(collectsAnalytics && !isDebug)
         BlitzSplitApple.shared.startCrashReporting(isDebug: isDebug)
     }
 
     /// Once the shared code started: the events it tracks reach Firebase from then on.
     static func attachAnalytics() {
-        guard isConfigured, !isDebug else { return }
+        guard isConfigured, collectsAnalytics, !isDebug else { return }
         BlitzSplitApple.shared.attachAnalytics(service: FirebaseAnalyticsService())
     }
 }

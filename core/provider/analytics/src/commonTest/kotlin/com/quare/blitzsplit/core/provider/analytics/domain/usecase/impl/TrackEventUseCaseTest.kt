@@ -1,5 +1,7 @@
-package com.quare.blitzsplit.core.provider.analytics
+package com.quare.blitzsplit.core.provider.analytics.domain.usecase.impl
 
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

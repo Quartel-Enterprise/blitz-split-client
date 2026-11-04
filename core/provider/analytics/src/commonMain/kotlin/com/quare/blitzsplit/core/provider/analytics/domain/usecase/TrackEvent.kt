@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.core.provider.analytics
+package com.quare.blitzsplit.core.provider.analytics.domain.usecase
 
 /*
  * Why: how the shared code tracks a user action (docs/analytics/README.md). Never a name, an amount nor an id in

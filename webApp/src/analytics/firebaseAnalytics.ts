@@ -14,8 +14,14 @@ const config = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID ?? '',
 }
 
+/**
+ * Firebase Analytics collects nothing yet: whether the app asks first is Pierre's call, still open
+ * (docs/analytics/README.md#consent). Once it is settled, this turns it on for production builds.
+ */
+const collectsAnalytics = false
+
 export async function startAnalytics(): Promise<void> {
-  if (import.meta.env.DEV || Object.values(config).some((value) => value === '')) return
+  if (!collectsAnalytics || import.meta.env.DEV || Object.values(config).some((value) => value === '')) return
   try {
     // Why: loaded only here, so a build without the config, or a page that never gets this far, downloads no Firebase
     const [{ initializeApp }, { initializeAnalytics, isSupported, logEvent }] = await Promise.all([
