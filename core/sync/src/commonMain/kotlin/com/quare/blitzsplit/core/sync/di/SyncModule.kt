@@ -81,6 +81,7 @@ val syncModule = module {
             firstDownload = get(),
             appForeground = get(),
             connectivityObserver = get(),
+            crashReporter = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }

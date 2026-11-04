@@ -25,7 +25,9 @@ struct BoraRacharApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        FirebaseSetup.start()
         BlitzSplitApple.shared.start()
+        FirebaseSetup.attachAnalytics()
         _app = State(initialValue: AppModel())
     }
 

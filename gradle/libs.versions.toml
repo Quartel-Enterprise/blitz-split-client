@@ -44,6 +44,9 @@ coil = "3.6.3"
 googleid = "1.2.1"
 play-services-code-scanner = "16.1.0"
 firebase-bom = "35.0.2"
+firebase-crashlytics-plugin = "3.0.8"
+google-services = "4.5.0"
+crashkios = "0.10.1"
 play-services-mlkit-barcode-scanning = "18.3.1"
 kermit = "2.2.0"
 koin = "4.2.2"
@@ -80,6 +83,10 @@ androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", versi
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+# Crashlytics from Kotlin: Android's SDK and Apple's, the Kotlin stack included, no-op on the web and the jvm
+crashkios-crashlytics = { module = "co.touchlab.crashkios:crashlytics", version.ref = "crashkios" }
 # ML Kit's barcode model from Play services (not bundled in the APK), for the invite reader's own camera
 play-services-mlkit-barcodeScanning = { module = "com.google.android.gms:play-services-mlkit-barcode-scanning", version.ref = "play-services-mlkit-barcode-scanning" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
@@ -162,6 +169,8 @@ android-kotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.li
 androidx-room = { id = "androidx.room3", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 jraska-module-graph-assertion = { id = "com.jraska.module.graph.assertion", version.ref = "jraska-modules-graph-assert" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferenc
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.sync.domain.model.RemoteChange
 import com.quare.blitzsplit.core.sync.domain.model.RemotePull
 import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
@@ -62,6 +63,7 @@ class SyncCoordinator(
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
+    crashReporter: CrashReporter,
     remoteChangeRepository: RemoteChangeRepository,
     appForeground: AppForeground,
 ) {
@@ -88,7 +90,7 @@ class SyncCoordinator(
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
-    private val lastSyncFailed = MutableStateFlow(false)
+    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver)
 
     /*
      * Why: how many syncs began reading the groups, the bills and the rest real time tells of, so a channel that joined
@@ -100,7 +102,7 @@ class SyncCoordinator(
     // Why: offline, a failed sync is expected and only a change still waiting on the device is worth telling.
     fun observeState(): Flow<SyncState> = combine(
         requestedSyncs,
-        lastSyncFailed,
+        outcomes.lastSyncFailed,
         observeHasPendingChanges(),
         connectivityObserver.observe(),
     ) { requested, failed, hasPendingChanges, isOnline ->
@@ -170,8 +172,7 @@ class SyncCoordinator(
             accountRepository.updateAwaitsFullSync(false)
         }
     }.also { result ->
-        lastSyncFailed.value = result.isFailure
-        if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
+        outcomes.onSyncEnded(result)
     }
 
     // Why: returns the user it synced, whose copy it completed.

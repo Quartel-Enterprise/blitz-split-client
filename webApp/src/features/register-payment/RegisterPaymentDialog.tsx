@@ -3,7 +3,6 @@ import { RegisterPaymentPresenter, type JsPaymentPerson, type JsRegisterPaymentS
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
 import { AmountInput, WhenField } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PersonGroupsList } from '@/components/PersonGroupsList'
@@ -12,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { nameOrFormer, paymentMethodCodes, paymentMethodLabel } from '@/features/balances/BalanceCard'
+import { ProfileFace } from '@/features/register-payment/PaymentFaces'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
@@ -56,14 +56,15 @@ const sentences: Record<string, { title: MessageKey; debt: MessageKey; remaining
  * desktop and tablet, a drawer on the phone, like "Rachar conta". Closing it any way is the ViewModel's close; it
  * closes by itself once saved, and when the debt is gone.
  */
-export function RegisterPaymentDialog({ route }: { route: JsRoute }) {
+export function RegisterPaymentDialog({ route, isCovered = false }: { route: JsRoute; isCovered?: boolean }) {
   const presenter = usePresenter(() => new RegisterPaymentPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsRegisterPaymentState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'save-error') toast(t('registerPayment_saveError'))
   })
-  if (!presenter || !state) return null
+  // Why: a profile opened from a face covers the dialog, which stays mounted (closed) and comes back with what was typed.
+  if (!presenter || !state || isCovered) return null
   if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} onClose={() => presenter.close()} className="sm:max-w-[480px]" />
   // Why: whether "Pagar Ana" or the form opens waits for Ana's keys, which a restored account's full sync brings.
   if (state.isLoadingReceiverKeys) {
@@ -88,7 +89,7 @@ export function RegisterPaymentDialog({ route }: { route: JsRoute }) {
   const pane: PaneParts = state.simplifyChange
     ? simplifyChangePane(presenter, state, state.simplifyChange, money)
     : state.showsReceiverKeys ? payWithKeyPane(presenter, state, money) : {
-    leading: <PairFaces from={state.from} to={state.to} />,
+    leading: <PairFaces presenter={presenter} from={state.from} to={state.to} />,
     title: t(words.title, names),
     description: t(words.debt, { ...names, amount: money(state.debtMinor) }),
     body: <PaymentForm presenter={presenter} state={state} words={words} names={names} money={money} />,
@@ -120,19 +121,21 @@ function personName(person: JsPaymentPerson | null | undefined): string {
   return nameOrFormer(person?.name)
 }
 
-/** A member's face, blank for someone no longer in the group, as Saldos draws them; also "Quem pagou a quem?"'s. */
-export function PersonFace({ person, className = 'size-10 text-sm' }: { person: JsPaymentPerson | null | undefined; className?: string }) {
-  if (!person) return <span className={cn('rounded-full bg-muted', className)} />
-  return <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={className} />
-}
-
-/** Whoever paid → whoever received, at the top. */
-function PairFaces({ from, to }: { from: JsPaymentPerson | null | undefined; to: JsPaymentPerson | null | undefined }) {
+/** Whoever paid → whoever received, at the top, each face opening their profile. */
+function PairFaces({
+  presenter,
+  from,
+  to,
+}: {
+  presenter: RegisterPaymentPresenter
+  from: JsPaymentPerson | null | undefined
+  to: JsPaymentPerson | null | undefined
+}) {
   return (
-    <span aria-hidden className="mb-1 flex items-center gap-2">
-      <PersonFace person={from} />
-      <ArrowRight className="size-4 text-muted-foreground" />
-      <PersonFace person={to} />
+    <span className="mb-1 flex items-center gap-2">
+      <ProfileFace presenter={presenter} person={from} />
+      <ArrowRight aria-hidden className="size-4 text-muted-foreground" />
+      <ProfileFace presenter={presenter} person={to} />
     </span>
   )
 }

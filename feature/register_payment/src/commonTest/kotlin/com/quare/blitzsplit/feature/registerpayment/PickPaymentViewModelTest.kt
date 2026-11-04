@@ -140,6 +140,7 @@ class PickPaymentViewModelTest {
                     avatarColor = AvatarColor.BLUE,
                     photoUrl = null,
                     isMe = true,
+                    personKey = "name:pierre vieira",
                 ),
                 pair.from,
             )
@@ -151,6 +152,7 @@ class PickPaymentViewModelTest {
                     avatarColor = AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
+                    personKey = "name:ana paula",
                 ),
                 pair.to,
             )

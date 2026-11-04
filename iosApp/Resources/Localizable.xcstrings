@@ -1028,24 +1028,46 @@
         }
       }
     },
-    "%@ is a guest without the app: they don't hear about what you note. Click to see their profile." : {
+    "%@ is a guest without the app. Click to note what they paid you; they get no notice." : {
       "comment" : "Home on the Mac: a guest's hover; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app: não fica sabendo do que você anota. Clique para ver o perfil."
+            "value" : "%@ é convidado e não tem o app. Clique para anotar o que ele te pagou; ele não recebe aviso."
           }
         }
       }
     },
-    "%@ is a guest without the app: they don't hear about what you note. Tap to see their profile." : {
+    "%@ is a guest without the app. Click to note what you paid them; they get no notice." : {
+      "comment" : "Home on the Mac: the hover of a guest this device's user owes; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Clique para anotar o que você pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
+    "%@ is a guest without the app. Tap to note what they paid you; they get no notice." : {
       "comment" : "Home: a guest's long press; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app: não fica sabendo do que você anota. Toque para ver o perfil."
+            "value" : "%@ é convidado e não tem o app. Toque para anotar o que ele te pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
+    "%@ is a guest without the app. Tap to note what you paid them; they get no notice." : {
+      "comment" : "Home: the long press of a guest this device's user owes; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Toque para anotar o que você pagou; ele não recebe aviso."
           }
         }
       }
@@ -4733,17 +4755,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir Perfil"
-          }
-        }
-      }
-    },
-    "Open profile" : {
-      "comment" : "Home: a face's menu item",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir perfil"
           }
         }
       }

@@ -11,6 +11,7 @@ private val exportedToApple = listOf(
     projects.core.expenses,
     projects.core.activity,
     projects.core.contacts,
+    projects.core.provider.analytics,
     projects.feature.welcome,
     projects.feature.profileSetup,
     projects.feature.restore,
@@ -67,6 +68,7 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.image)
+            implementation(projects.core.provider.crashlytics)
             implementation(libs.quare.connectivity)
             implementation(libs.kermit)
             api(project.dependencies.platform(libs.koin.bom))

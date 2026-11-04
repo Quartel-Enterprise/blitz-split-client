@@ -12,6 +12,22 @@ export interface PaneParts {
   footer: ReactNode
 }
 
+const FOCUSABLE = 'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), a[href]'
+
+/**
+ * Why: the top may hold buttons (Registrar pagamento's faces open a profile), which opening the form must not focus,
+ * or a keyboard's Enter would leave it; the first field or button past them takes the focus instead.
+ */
+function focusPastLeading(event: Event) {
+  const content = event.currentTarget as HTMLElement
+  const leading = content.querySelector('[data-dialog-leading]')
+  if (!leading?.querySelector(FOCUSABLE)) return
+  const first = Array.from(content.querySelectorAll<HTMLElement>(FOCUSABLE)).find((element) => !leading.contains(element))
+  if (!first) return
+  event.preventDefault()
+  first.focus()
+}
+
 /**
  * A form over the page: a dialog on desktop and tablet, a drawer on the phone, whose footer puts the main action first,
  * under the thumb. Closing it any way goes to `onOpenChange(false)`, the ViewModel's close.
@@ -29,9 +45,11 @@ export function ResponsiveDialog({
 }) {
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
-      <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto', className)}>
+      <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto', className)} onOpenAutoFocus={focusPastLeading}>
         <DialogHeader className="pr-8">
-          {pane.leading}
+          <div data-dialog-leading className="contents">
+            {pane.leading}
+          </div>
           <DialogTitle>{pane.title}</DialogTitle>
           <DialogDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DialogDescription>
         </DialogHeader>
@@ -41,9 +59,11 @@ export function ResponsiveDialog({
     </Dialog>
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
-      <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
+      <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]" onOpenAutoFocus={focusPastLeading}>
         <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
-          {pane.leading}
+          <div data-dialog-leading className="contents">
+            {pane.leading}
+          </div>
           <DrawerTitle>{pane.title}</DrawerTitle>
           <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
         </DrawerHeader>

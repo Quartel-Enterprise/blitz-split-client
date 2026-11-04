@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
@@ -41,7 +42,6 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverK
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
-import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -211,6 +211,8 @@ class RegisterPaymentViewModel(
                 refreshPixCode()
             }
 
+            is RegisterPaymentUiEvent.OnPersonClicked -> openPerson(event.personId)
+
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
 
@@ -347,6 +349,7 @@ class RegisterPaymentViewModel(
             avatarColor = person.face?.color ?: AvatarColor.default,
             photoUrl = person.face?.photoUrl,
             isMe = false,
+            personKey = person.key,
         ).takeIf { person.name != null }
         val owesMe = person.netMinor > 0
         return PaymentTarget(
@@ -416,25 +419,11 @@ class RegisterPaymentViewModel(
         refreshPixCode()
     }
 
-    /*
-     * Why: 13.5c: the pair owes nothing only because someone turned "Simplificar dívidas" the other way meanwhile, so
-     * the form stays and says so; the Pix may already be gone.
-     */
+    // Why: 13.5c: the form stays and says so, rather than closing; the Pix may already be gone.
     private fun showsSimplifyChange(target: PaymentTarget?): Boolean {
-        val simplifies = target?.simplifiesDebts ?: return false
-        val shown = shownSimplifies ?: return false
-        if (target.debtMinor != 0L || simplifies == shown || shownDebtMinor == 0L) return false
+        val notice = simplifyChangedNoticeOrNull(target, shownSimplifies, shownDebtMinor) ?: return false
         isDebtGone = false
-        uiState.update {
-            it.copy(
-                simplifyChange = SimplifyChangedNotice(
-                    changedByName = target.simplifyChangedByName,
-                    simplifiesDebts = simplifies,
-                    groupName = target.groupName.orEmpty(),
-                    previousDebtMinor = shownDebtMinor,
-                ),
-            )
-        }
+        uiState.update { it.copy(simplifyChange = notice) }
         return true
     }
 
@@ -548,7 +537,16 @@ class RegisterPaymentViewModel(
         avatarColor = member.avatarColor,
         photoUrl = member.photoUrl,
         isMe = member.isMe,
+        personKey = PeopleBalances.keyOf(member),
     )
+
+    // Why: the form stays under the profile, so back finds it; a payment being saved finishes first.
+    private fun openPerson(personId: String) {
+        val state = uiState.value
+        if (state.isSaving || !isOnTop()) return
+        val person = listOfNotNull(state.from, state.to).firstOrNull { it.id == personId } ?: return
+        navigator.openPersonProfile(person.personKey, person.isMe)
+    }
 
     // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private fun toAmountText(

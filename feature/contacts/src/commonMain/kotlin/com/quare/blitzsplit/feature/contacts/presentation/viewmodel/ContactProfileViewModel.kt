@@ -237,13 +237,21 @@ class ContactProfileViewModel(
     private fun ContactProfileUiState.canHideWith(contact: Contact?): Boolean =
         contact?.isSettled == true && !contact.isHidden
 
+    /*
+     * Why: a profile opened from that same settling up's face goes back to it, keeping what was typed, rather than
+     * stacking a second, equal form whose twin under it would close it once the debt settles.
+     */
     private fun openSettleUp(contact: Contact) {
-        navigate(
-            Route.SettleUp(
-                personKey = contact.key,
-                currency = contact.net.currency,
-            ),
+        val settleUp = Route.SettleUp(
+            personKey = contact.key,
+            currency = contact.net.currency,
         )
+        val stack = navigator.backStack.value
+        if (isOwnRouteOnTop() && stack.getOrNull(stack.lastIndex - 1) == settleUp) {
+            navigator.navigateBack()
+        } else {
+            navigate(settleUp)
+        }
     }
 
     private fun openGroup(groupId: String) {

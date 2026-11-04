@@ -278,7 +278,8 @@ struct PhonePayWithKey: View {
         HStack(spacing: 14) {
             if let person = state.to {
                 AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 48)
-                    .accessibilityHidden(true)
+                    .opensProfile { model.openPerson(person) }
+                    .accessibilityLabel(PaymentFaces.label(person))
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("Pay \(PayWithKeyCopy.name(state))")

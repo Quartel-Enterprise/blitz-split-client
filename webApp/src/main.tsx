@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from '@/app/App'
+import { startAnalytics } from '@/analytics/firebaseAnalytics'
 import { AppSkeleton } from '@/components/PageSkeletons'
 import { OpenInAnotherTabScreen } from '@/app/OpenInAnotherTabScreen'
 import { startShared } from '@/bridge/shared'
@@ -23,4 +24,5 @@ void startShared(() => root.render(<OpenInAnotherTabScreen />)).then(() => {
   )
   listenToNotificationTaps()
   void startWebPush()
+  void startAnalytics()
 })

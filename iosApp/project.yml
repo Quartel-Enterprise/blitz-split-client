@@ -12,6 +12,13 @@ options:
     iOS: "26.0"
     macOS: "26.0"
 
+# Crashlytics and Analytics (docs/crash-reporting.md, docs/analytics/README.md): the app starts Firebase only when
+# Resources/GoogleService-Info.plist is there
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 13.1.1
+
 settings:
   base:
     PRODUCT_NAME: BoraRachar
@@ -30,9 +37,10 @@ settings:
     # The Gradle task below runs outside the sandbox
     ENABLE_USER_SCRIPT_SANDBOXING: NO
     # Shared is a static framework, so it is linked and never embedded. Room's sqlite-framework
-    # driver comes along with the bundled one and needs the system SQLite at link time.
+    # driver comes along with the bundled one and needs the system SQLite at link time. -ObjC keeps
+    # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
-    OTHER_LDFLAGS: [-framework, Shared, -lsqlite3]
+    OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
     # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
@@ -68,12 +76,42 @@ targetTemplates:
         basedOnDependencyAnalysis: false
         script: |
           /usr/bin/python3 -I "$SRCROOT/check-localized-keys.py" "$OBJECT_FILE_DIR_normal"
+    # The last phase, as Crashlytics asks: a release build with the Firebase config uploads its dSYM, which holds
+    # the Shared framework's symbols too, since it is linked in
+    postBuildScripts:
+      - name: Upload the dSYM to Crashlytics
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
+        script: |
+          if [ "$CONFIGURATION" != "Release" ] || [ ! -f "$SRCROOT/Resources/GoogleService-Info.plist" ]; then
+            exit 0
+          fi
+          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+    dependencies:
+      - package: Firebase
+        product: FirebaseCore
+      - package: Firebase
+        product: FirebaseCrashlytics
+      # Without FirebaseAnalyticsIdentitySupport, so no advertising id is ever collected
+      - package: Firebase
+        product: FirebaseAnalytics
     info:
       properties:
         # borarachar://auth-callback brings back the browser sign in (Google)
         CFBundleURLTypes:
           - CFBundleURLName: com.quare.blitzsplit.auth
             CFBundleURLSchemes: [borarachar]
+        # Nothing is collected from the first launch on; FirebaseSetup turns it on, once it collects at all, on every
+        # launch of a release build
+        FIREBASE_ANALYTICS_COLLECTION_ENABLED: false
+        # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers
+        FirebaseAutomaticScreenReportingEnabled: false
+        GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS: false
 
 targets:
   BoraRachar-iOS:
@@ -117,6 +155,9 @@ targets:
       - path: Sources/macOS
     info:
       path: Generated/macOS-Info.plist
+      properties:
+        # Crashlytics on the Mac: an uncaught Objective-C exception crashes the app instead of being swallowed
+        NSApplicationCrashOnExceptions: true
     entitlements:
       path: Generated/macOS.entitlements
       properties:

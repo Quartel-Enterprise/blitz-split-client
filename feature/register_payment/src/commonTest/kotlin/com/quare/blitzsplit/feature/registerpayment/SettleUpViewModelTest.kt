@@ -376,6 +376,108 @@ class SettleUpViewModelTest {
             assertEquals(listOf(9_800L), settlements.recordedSettlements.map { it.amountMinor })
         }
 
+    @Test
+    fun `GIVEN Carla with an account owes you WHEN settling up opens THEN each face carries its profile key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("user:$CARLA_USER", state.from?.personKey)
+            assertFalse(state.from?.isMe == true)
+            assertEquals("user:$ME_USER", state.to?.personKey)
+            assertTrue(state.to?.isMe == true)
+        }
+
+    @Test
+    fun `GIVEN you owe Carla who is a guest WHEN settling up opens THEN her face carries her name key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaUserId = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("name:carla", state.to?.personKey)
+            assertEquals("user:$ME_USER", state.from?.personKey)
+        }
+
+    @Test
+    fun `GIVEN Carla owes you across groups WHEN tapping her face THEN opens her profile over settling up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaFaceId = checkNotNull(viewModel.uiState.value.from).id
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(carlaFaceId))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    route,
+                    Route.ContactProfile(route.personKey),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe Carla who is a guest WHEN tapping her face THEN opens her guest profile over settling up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaUserId = null,
+            )
+            val carlaFaceId = checkNotNull(viewModel.uiState.value.to).id
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(carlaFaceId))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    route,
+                    Route.ContactProfile("name:carla"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla owes you across groups WHEN tapping your own face THEN opens Perfil over settling up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val myFaceId = checkNotNull(viewModel.uiState.value.to).id
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(myFaceId))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    route,
+                    Route.Profile,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
     private val carlaPhoneKey = PaymentKey(
         id = "carla-phone",
         type = PaymentKeyType.PHONE,
@@ -437,7 +539,7 @@ class SettleUpViewModelTest {
                 AvatarColor.GREEN,
                 isMe = true,
                 hasJoined = true,
-                userId = "pierre",
+                userId = ME_USER,
                 inviteCode = null,
                 photoUrl = null,
             ),
@@ -521,6 +623,7 @@ class SettleUpViewModelTest {
         const val NOW = 1_000L
         const val LATER = 5_000L
         const val CARLA_USER = "carla"
+        const val ME_USER = "pierre"
         const val FLORIPA = "floripa"
         const val APE = "ape"
         const val CHURRASCO = "churrasco"

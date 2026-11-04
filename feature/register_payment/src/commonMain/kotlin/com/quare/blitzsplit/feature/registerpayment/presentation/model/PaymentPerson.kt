@@ -11,4 +11,6 @@ data class PaymentPerson(
     // Why: the profile photo over the initials, null for someone with none or nobody joined as.
     val photoUrl: String?,
     val isMe: Boolean,
+    // Why: Saldos' person key (PeopleBalances.keyOf), the profile tapping the face opens; this device's user opens Perfil.
+    val personKey: String,
 )

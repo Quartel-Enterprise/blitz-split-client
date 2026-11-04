@@ -112,12 +112,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     per tab by `measuringNarrowWindow()`).
   - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
     with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
-    the largest first in each, hidden when nobody owes anybody; a face opens the person's profile
-    (`Route.ContactProfile`, Pierre's call, beta feedback 18), an ex-member's settling up for the net
-    (`Route.SettleUp`), and a guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é
-    convidado e não tem o app: não fica sabendo do que você anota. Toque para ver o perfil." "Saldo geral" as Grupos'
-    (big in the first currency with a net, a line for each other one with a net, `HomeSummary.main` and `others`),
-    with "Te devem" and "Você deve", each in the first currency with something that
+    the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net
+    (`Route.SettleUp`, Pierre's call: it stays so after beta feedback 18), whose two faces open the profiles, and a
+    guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é convidado e não tem o app…".
+    "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
+    `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
     one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal", which opens Rachar conta as
     "Rachar conta" does (asking the group first) and its camera at once (7.1e, `Route.SplitBill.scansReceipt`;
@@ -394,12 +393,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - A person tapped wherever a bill, a list or the feed shows them opens their profile, as Contatos opens it (Pierre's
     call, beta feedback 18, `Route.ContactProfile` by Saldos' person key, `openPersonProfile`): Conta's split rows,
     its lone payer ("Ana pagou"; several payers each have their row), a comment's author and a Histórico line's
-    face, Membros' rows, Início's faces, Saldos' people, Atividade's actor face (the rest of the row still opens the
-    item; VoiceOver has it as the row's action), and Estatísticas' "Por pessoa". This device's own user opens Perfil
-    (the Mac's Ajustes); someone no longer in the group opens nothing. The group's Saldos pairs and Despesas' rows
-    stay as they were. Conta drawn outside the window's stack (an iPad's sheet, the Mac's inspector) closes while the
-    profile shows and opens again on back; the web keeps it mounted under the profile, whose back says "Voltar"
-    (the tab's name only right above a tab).
+    face, Membros' rows, Saldos' people, Atividade's actor face (the rest of the row still opens the item; VoiceOver
+    has it as the row's action), Estatísticas' "Por pessoa", and Registrar pagamento's two faces (whoever paid →
+    whoever received, and "Pagar Ana"'s, `RegisterPaymentUiEvent.OnPersonClicked`), over the form, which back finds
+    again. This device's own user opens Perfil (the Mac's Ajustes); someone no longer in the group opens nothing.
+    Início's faces, the group's Saldos pairs and Despesas' rows stay as they were (whatever opened `Route.SettleUp`
+    still does, Pierre's call). What Apple draws outside the window's stack (Registrar pagamento's sheet, Conta with an
+    iPad's room or in the Mac's inspector) closes while the profile shows and opens again on back, Registrar pagamento starting over
+    there (the whole debt, Pix, now, "Pagar Ana" again); Android keeps it as it was, and the web keeps Conta and
+    Registrar pagamento mounted under the profile, whose back says "Voltar" (the tab's name only right above a tab).
+    A profile opened from settling up goes back to that form on its Acertar or Recebi rather than opening another;
+    opened from one group's Registrar pagamento, they open settling up for the net over it (Pierre's call).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0 · quitado") and "3 grupos" or the group's

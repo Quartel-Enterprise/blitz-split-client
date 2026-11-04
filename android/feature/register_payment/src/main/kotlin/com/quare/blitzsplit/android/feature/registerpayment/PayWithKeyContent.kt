@@ -97,6 +97,7 @@ internal fun PayWithKeyContent(
         PayHeader(
             state = state,
             money = money,
+            onEvent = onEvent,
         )
         if (state.showsKeyMethodPicker) {
             KeyMethodPicker(
@@ -210,13 +211,17 @@ internal fun PayWithKeyContent(
 private fun PayHeader(
     state: RegisterPaymentUiState,
     money: MoneyFormatter,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PersonFaceBadge(state.to)
+        PersonFaceBadge(
+            person = state.to,
+            onClick = state.to?.let { { onEvent(RegisterPaymentUiEvent.OnPersonClicked(it.id)) } },
+        )
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(2.dp),

@@ -51,10 +51,16 @@ sign ins, the Google and Apple providers with their authorized client ids, the r
 
 ### Push notifications
 
-Every build runs without them. Android gets them only once its Firebase config is set (`FIREBASE_APP_ID`,
-`FIREBASE_API_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_SENDER_ID`, read like the settings above) and the web once
-`VITE_VAPID_PUBLIC_KEY` is; the Apple app needs nothing here. The server's side and the rest are in
-[push-notifications.md](push-notifications.md).
+Every build runs without them. Android gets them only once the Firebase project's `google-services.json` is in
+`androidApp/` and the web once `VITE_VAPID_PUBLIC_KEY` is set; the Apple app needs nothing here. The server's side and
+the rest are in [push-notifications.md](push-notifications.md).
+
+### Crash reporting
+
+Every build runs without it too. Android reports to Crashlytics once `androidApp/google-services.json` is there, the
+Apple app once `iosApp/Resources/GoogleService-Info.plist` is, and only release builds: see
+[crash-reporting.md](crash-reporting.md). Analytics reads the same files, and on the web the `VITE_FIREBASE_*` settings
+of a production build: see [analytics/README.md](analytics/README.md).
 
 ## Build and run the Android app
 
