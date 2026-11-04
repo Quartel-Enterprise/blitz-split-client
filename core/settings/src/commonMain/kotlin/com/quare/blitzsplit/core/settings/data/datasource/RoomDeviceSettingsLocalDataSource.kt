@@ -16,6 +16,7 @@ class RoomDeviceSettingsLocalDataSource(
         groupGridSize = null,
         statsChartType = null,
         statsGrain = null,
+        usesDynamicColors = false,
     )
 
     override fun observe(): Flow<DeviceSettingsEntity?> = dao.observe()

@@ -4,15 +4,19 @@ import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDat
 import com.quare.blitzsplit.core.settings.data.datasource.RoomDeviceSettingsLocalDataSource
 import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsRepositoryImpl
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
@@ -30,4 +34,6 @@ val settingsModule = module {
     factoryOf(::UpdateGroupsLayoutUseCase).bind<UpdateGroupsLayout>()
     factoryOf(::ObserveStatsChartPreferencesUseCase).bind<ObserveStatsChartPreferences>()
     factoryOf(::UpdateStatsChartPreferencesUseCase).bind<UpdateStatsChartPreferences>()
+    factoryOf(::ObserveDynamicColorsUseCase).bind<ObserveDynamicColors>()
+    factoryOf(::UpdateDynamicColorsUseCase).bind<UpdateDynamicColors>()
 }
