@@ -45,7 +45,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     layout rule is the window's size (`ScreenLayout`), never the idiom, so an iPhone Duo open gets an iPad's list and
     detail and
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
-    [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+    [docs/architecture/responsive-layouts.md](../architecture/responsive-layouts.md).
   - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
     buttons, the avatar and "Rachar conta" (only its +, the group's Adicionar pessoa too) over the tabs
     (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.

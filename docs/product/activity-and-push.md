@@ -30,7 +30,7 @@ The feed, unread state, real time and push notifications.
     the page visible); coming back to the front, back online or with the socket back syncs once to catch up. The
     server's Realtime only says what changed and the device pulls it as its sync does, so Room stays the one source
     of truth (`RemoteChange`, `RemotePull`, the inserts of `activity_events` and the updates of `profiles`; see
-    [docs/architecture/data-sources-and-sync.md](docs/architecture/data-sources-and-sync.md#real-time)).
+    [docs/architecture/data-sources-and-sync.md](../architecture/data-sources-and-sync.md#real-time)).
   - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
     event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
     grupos" for a bill created, edited or deleted while you are its payer or in its split (before the change too) and
