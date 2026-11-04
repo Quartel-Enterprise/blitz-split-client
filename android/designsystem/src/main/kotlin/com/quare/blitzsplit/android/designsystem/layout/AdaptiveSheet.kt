@@ -27,8 +27,9 @@ private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape
  * tablet and an upright foldable, the book's right half with the screen under the scrim. The dialog adds the top space
  * the sheet's drag handle gives, and the title TalkBack says as it opens, as Material's dialogs do. The defaults are
  * that look; the options only keep what the sheets drawn before it already did: a dialog on fewer devices
- * (usesDialog), a sheet that opens half way or narrower lying down, a narrower dialog, its shape and color, a dialog
- * that a tap outside leaves open (the sheet's scrim still closes it), and no pane title.
+ * (usesDialog), a sheet that opens half way or narrower lying down, a narrower dialog (dialogMaxWidth only narrows it:
+ * with a title the pane stays within 560dp), its shape and color, a dialog that a tap outside leaves open (the sheet's
+ * scrim still closes it), and no pane title.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

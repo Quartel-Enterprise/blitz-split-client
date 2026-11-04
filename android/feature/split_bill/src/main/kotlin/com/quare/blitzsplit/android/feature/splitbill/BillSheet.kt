@@ -3,8 +3,7 @@ package com.quare.blitzsplit.android.feature.splitbill
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
-import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
-import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFoldDialog
 
 /*
  * Why: "Quem pagou", "Várias pessoas pagaram" and "Rachar em qual grupo?" rise from the bottom over the bill, but a
@@ -21,7 +20,7 @@ internal fun BillSheet(
     AdaptiveSheet(
         title = title,
         onDismissRequest = onDismissRequest,
-        usesDialog = rememberDialogPlacement() != DialogPlacement.Centered,
+        usesDialog = rememberUsesFoldDialog(),
         dialogShape = MaterialTheme.shapes.extraLarge,
         dialogColor = MaterialTheme.colorScheme.surfaceContainerLow,
         content = content,

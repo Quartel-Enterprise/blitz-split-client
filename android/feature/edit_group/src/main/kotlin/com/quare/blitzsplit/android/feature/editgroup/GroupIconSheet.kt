@@ -74,8 +74,10 @@ internal fun GroupIconSheet(
             onEvent = onEvent,
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,
-            // Why: a phone lying down is shorter than the sheet's content, so it scrolls there too. The
-            // dialog's window keeps off the navigation bar by itself, so its padding only lifts the sheet.
+            /*
+             * Why: a phone lying down is shorter than the sheet's content, so it scrolls there too. The
+             * dialog's window keeps off the navigation bar by itself, so its padding only lifts the sheet.
+             */
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .navigationBarsPadding()

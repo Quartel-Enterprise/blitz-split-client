@@ -38,9 +38,8 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
-import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFoldDialog
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -62,7 +61,7 @@ internal fun PersonalInviteSheet(
     AdaptiveSheet(
         title = stringResource(R.string.members_personal_invite, invite.member.name),
         onDismissRequest = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) },
-        usesDialog = rememberDialogPlacement() != DialogPlacement.Centered,
+        usesDialog = rememberUsesFoldDialog(),
         dialogShape = MaterialTheme.shapes.extraLarge,
         dialogColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
