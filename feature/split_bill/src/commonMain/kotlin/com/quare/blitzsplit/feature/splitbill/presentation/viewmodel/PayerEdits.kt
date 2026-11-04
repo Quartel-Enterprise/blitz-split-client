@@ -190,6 +190,13 @@ internal fun SplitBillUiState.withPayerAmount(
     return copy(payerAmounts = amounts.withAmountText(memberId, amountText))
 }
 
-// Why: "Quem pagou" marks one person until Pronto; someone no longer in the group can't be marked.
+/*
+ * Why: "Quem pagou" marks one person until Pronto, only while it is open, so a late tap once it closed opens nothing;
+ * someone no longer in the group can't be marked.
+ */
 internal fun SplitBillUiState.withPayerPicked(memberId: String): SplitBillUiState =
-    if (people.none { it.id == memberId }) this else copy(payerSelection = PayerSelection(memberId = memberId))
+    if (payerSelection == null || people.none { it.id == memberId }) {
+        this
+    } else {
+        copy(payerSelection = PayerSelection(memberId = memberId))
+    }

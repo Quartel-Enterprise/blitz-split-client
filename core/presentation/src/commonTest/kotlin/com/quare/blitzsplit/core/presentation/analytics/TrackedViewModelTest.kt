@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class TrackedViewModelTest {
     private lateinit var log: MutableList<Entry>
@@ -141,13 +142,30 @@ class TrackedViewModelTest {
         )
     }
 
-    private fun prepareScenario(failingHandler: Boolean = false) {
+    @Test
+    fun `GIVEN a screen refusing the event for now WHEN the UI sends it THEN neither tracks nor handles it`() {
+        // Given
+        prepareScenario(refusesEvents = true)
+        val event = TestUiEvent.OnBackClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(log.isEmpty())
+    }
+
+    private fun prepareScenario(
+        failingHandler: Boolean = false,
+        refusesEvents: Boolean = false,
+    ) {
         log = mutableListOf()
         viewModel =
             TestViewModel(
                 trackEvent = { name, params -> log += Entry.Tracked(name, params) },
                 log = log,
                 failingHandler = failingHandler,
+                refusesEvents = refusesEvents,
             )
     }
 }
@@ -186,8 +204,11 @@ private sealed interface TestUiEvent : TrackedUiEvent {
 private class TestViewModel(
     private val log: MutableList<Entry>,
     private val failingHandler: Boolean,
+    private val refusesEvents: Boolean,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<TestUiEvent>(trackEvent) {
+    override fun isAccepted(event: TestUiEvent): Boolean = !refusesEvents
+
     override fun handleEvent(event: TestUiEvent) {
         log += Entry.Handled(event)
         if (failingHandler) error("handler failed")

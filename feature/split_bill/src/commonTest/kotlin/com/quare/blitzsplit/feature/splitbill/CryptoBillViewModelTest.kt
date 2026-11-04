@@ -59,6 +59,7 @@ import kotlin.test.assertTrue
 
 // Why: Rachar conta in a group that splits in bitcoin or ether, with or without Preferências' "Bitcoin em satoshis".
 class CryptoBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1590,6 +1591,7 @@ class CryptoBillViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },

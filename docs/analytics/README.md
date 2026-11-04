@@ -99,7 +99,7 @@ every new user action. The `add-analytics-event` skill walks through it.
 
 | `analytics` | When | Sent by |
 | --- | --- | --- |
-| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it |
+| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it. A screen that refuses whole kinds of events for a while (Rachar conta reading a receipt) overrides `isAccepted`, and `onEvent` then neither tracks nor handles those events |
 | `EventAnalytics.Manual(name)` | It needs what only handling it tells: the result of a save, the `UiState` (`setOf(…)` for a branch that may send more than one) | A `trackEvent("name", …)` call in the branch, with the same name |
 | `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does, or ends the funnel a tap began, as the native sign in failing or closed does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, and a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front: where either went is its screen view | Nothing |
 
@@ -132,13 +132,13 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill` |
 | `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
-| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join` |
+| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
@@ -219,7 +219,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`, `global_balances`) | "Desfazer" on "Pagamento de Ana registrado." | `:feature:groups`, `:feature:group_detail`, `:feature:global_balances` |
 | `home_see_balances_clicked` | none | "Ver saldos" over Início's faces | `:feature:groups` |
 | `balance_face_clicked` | `source` (`home`) | A face of "Saldos com pessoas", which opens settling up with them for the net | `:feature:groups` |
-| `scan_receipt_clicked` | `source` (`home`) | "Ler cupom fiscal" | `:feature:groups` |
+| `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Ler cupom fiscal" | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Início's "Registrar pagamento" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "Ver todos" over "Seus grupos" | `:feature:groups` |
 | `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`) | A bill's row, which opens its Conta | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
@@ -312,13 +312,58 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_restore_clicked` | none | "Restaurar padrão", which asks first, once the map is read | `:feature:category_map` |
 | `category_map_restore_confirmed` | none | Its question confirmed, while it was open | `:feature:category_map` |
 | `category_map_restore_cancelled` | none | Its question closed without confirming, while it was open | `:feature:category_map` |
-| `category_create_clicked` | `is_subcategory`, `source` (`category_map`) | "Nova categoria" or "Nova subcategoria em Transporte", once the map is read and there is a group | `:feature:category_map` |
-| `category_edit_clicked` | `source` (`category_map`) | A group's category's pencil, once the map is read | `:feature:category_map` |
+| `category_create_clicked` | `is_subcategory`, `source` (`category_map`, `split_bill`) | "Nova categoria" or "Nova subcategoria em Transporte" in the map, once it is read and there is a group; in Categoria, "Nova", "Nova em Alimentação" or "Criar “Pet”" from a search | `:feature:category_map`, `:feature:split_bill` |
+| `category_edit_clicked` | `source` (`category_map`, `split_bill`) | A group's category opened to edit, when its form opens: its pencil in the map, once read; a long press or right click in Categoria | `:feature:category_map`, `:feature:split_bill` |
 | `category_group_picked` | `source` (`category_map`) | The new category's Grupo | `:feature:category_map` |
-| `category_parent_picked` | `source` (`category_map`) | The category's "Dentro de" | `:feature:category_map` |
-| `category_icon_picked` | `icon`, `source` (`category_map`) | One of the 18 icons | `:feature:category_map` |
-| `category_save_clicked` | `source` (`category_map`) | The category's Salvar, also when it can't save yet | `:feature:category_map` |
-| `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`) | A category saved | `:feature:category_map` |
-| `category_delete_clicked` | `source` (`category_map`) | The category's Apagar, which asks first | `:feature:category_map` |
-| `category_delete_confirmed` | `source` (`category_map`) | "Apagar “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map` |
-| `category_delete_cancelled` | `source` (`category_map`) | "Apagar “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map` |
+| `category_parent_picked` | `source` (`category_map`, `split_bill`) | The category's "Dentro de" | `:feature:category_map`, `:feature:split_bill` |
+| `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill` |
+| `category_save_clicked` | `source` (`category_map`, `split_bill`) | The category's Salvar, also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
+| `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`, `split_bill`) | A category saved | `:feature:category_map`, `:feature:split_bill` |
+| `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Apagar, which asks first | `:feature:category_map`, `:feature:split_bill` |
+| `category_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Apagar “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
+| `category_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Apagar “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
+| `split_bill_group_clicked` | none | The new bill's group, which opens "Rachar em qual grupo?" | `:feature:split_bill` |
+| `split_bill_group_picked` | none | A group marked in "Rachar em qual grupo?", while it is open, another than the one marked | `:feature:split_bill` |
+| `split_bill_group_confirmed` | `is_another` | "Continuar" on it, while it is open, the group still there and the bill not saving | `:feature:split_bill` |
+| `split_bill_payer_clicked` | none | "Quem pagou" | `:feature:split_bill` |
+| `split_bill_payer_picked` | none | A person picked in "Quem pagou", while it is open | `:feature:split_bill` |
+| `split_bill_payer_confirmed` | none | "Pronto" on "Quem pagou", while it is open | `:feature:split_bill` |
+| `split_bill_several_payers_clicked` | none | "Várias pessoas" | `:feature:split_bill` |
+| `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Pronto" on "Várias pessoas pagaram", once the amounts add up | `:feature:split_bill` |
+| `split_bill_date_clicked` | none | "Quando", opening its picker | `:feature:split_bill` |
+| `split_bill_split_clicked` | none | "Divisão", which opens Dividir | `:feature:split_bill` |
+| `receipt_items_clicked` | none | "14 itens" beside "Lido do cupom", which opens Itens, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
+| `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Igual, Valores, %, Partes or Itens, another than the one picked | `:feature:split_bill` |
+| `split_bill_person_toggled` | `is_included` | A person in or out of Igual, with where they ended up | `:feature:split_bill` |
+| `split_bill_everyone_toggled` | `is_included` | "Marcar todos" or "Desmarcar todos" | `:feature:split_bill` |
+| `split_bill_parts_changed` | `direction` (`up`, `down`) | A part added or taken | `:feature:split_bill` |
+| `split_bill_split_reset_clicked` | none | "Voltar ao padrão" | `:feature:split_bill` |
+| `split_bill_split_as_default_toggled` | `is_checked` | "Usar como padrão do grupo", while it shows | `:feature:split_bill` |
+| `split_bill_split_confirmed` | `mode`, `is_split_as_default` | Dividir's "Pronto", once the split adds up (Itens has its own) | `:feature:split_bill` |
+| `bill_items_confirmed` | `items` (how many) | "Pronto" on "Itens da conta", once the items add up | `:feature:split_bill` |
+| `bill_item_add_clicked` | none | "Adicionar item" | `:feature:split_bill` |
+| `bill_items_difference_item_clicked` | none | "Adicionar item de R$ 15" | `:feature:split_bill` |
+| `bill_items_difference_split_clicked` | none | "Dividir a diferença", while there is one | `:feature:split_bill` |
+| `bill_items_difference_removed` | none | The difference shared taken off | `:feature:split_bill` |
+| `bill_item_clicked` | none | An item, which opens "Item" | `:feature:split_bill` |
+| `bill_item_quantity_changed` | `direction` (`up`, `down`) | "Quantidade"'s stepper | `:feature:split_bill` |
+| `bill_item_mode_selected` | `mode` | Igual, Unidades, Partes, Valor or %, another than the one picked | `:feature:split_bill` |
+| `bill_item_person_toggled` | `is_included` | A person in or out of the item's Igual, with where they ended up | `:feature:split_bill` |
+| `bill_item_person_changed` | `direction` (`up`, `down`) | A unit or a part added or taken for someone | `:feature:split_bill` |
+| `bill_item_confirmed` | `mode`, `is_new` | "Pronto" on "Item", once it has a name, a price and someone | `:feature:split_bill` |
+| `bill_item_delete_clicked` | none | "Apagar item", when its question opens | `:feature:split_bill` |
+| `bill_item_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:split_bill` |
+| `bill_item_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:split_bill` |
+| `bill_items_fee_clicked` | `fee` (`service`, `couvert`) | The row of "Serviço" or "Couvert", when its field opens | `:feature:split_bill` |
+| `bill_items_fee_confirmed` | `fee` | Its field's Pronto, with a value it takes | `:feature:split_bill` |
+| `bill_category_clicked` | none | The icon beside "Descrição", which opens Categoria once the categories are read | `:feature:split_bill` |
+| `bill_category_main_toggled` | `is_expanded` | A main category shown or hidden in "Todas as categorias" | `:feature:split_bill` |
+| `bill_category_picked` | none | A category picked for the bill (a suggestion, a subcategory, "Só Alimentação", a result, Outros), one still there | `:feature:split_bill` |
+| `category_map_clicked` | `source` (`split_bill`) | The "Mapa de categorias" card | `:feature:split_bill` |
+| `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Ler cupom fiscal" began | `:feature:split_bill` |
+| `receipt_removed` | none | × on "Foto do cupom" | `:feature:split_bill` |
+| `split_bill_save_clicked` | none | Rachar conta's Salvar, also when it can't save yet | `:feature:split_bill` |
+| `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
+| `bill_delete_clicked` | `source` (`split_bill`) | "Apagar conta", when its question opens | `:feature:split_bill` |
+| `bill_delete_confirmed` | `source` (`split_bill`) | "Apagar esta conta?" confirmed, while it was open and not deleting yet | `:feature:split_bill` |
+| `bill_delete_cancelled` | `source` (`split_bill`) | "Apagar esta conta?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill` |

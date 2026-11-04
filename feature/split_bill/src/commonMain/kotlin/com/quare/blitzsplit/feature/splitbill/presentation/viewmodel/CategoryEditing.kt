@@ -10,6 +10,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -38,6 +40,7 @@ internal class CategoryEditing(
     private val deleteGroupCategory: DeleteGroupCategory,
     private val emit: suspend (SplitBillUiAction) -> Unit,
     private val onCategoryChanged: () -> Unit,
+    private val trackEvent: TrackEvent,
 ) {
     // Why: the person's map (flow 9), whose words suggest a bill's category from its description.
     var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
@@ -75,17 +78,23 @@ internal class CategoryEditing(
 
     fun onEvent(event: SplitBillUiEvent.Categories) {
         when (event) {
-            SplitBillUiEvent.OnCategoryClicked -> uiState.update {
-                if (it.isLoaded) it.withCategoryPickerOpened() else it
+            SplitBillUiEvent.OnCategoryClicked -> {
+                if (uiState.value.isLoaded) trackEvent("bill_category_clicked", emptyMap())
+                uiState.update { if (it.isLoaded) it.withCategoryPickerOpened() else it }
             }
 
             is SplitBillUiEvent.OnCategoryQueryChanged -> uiState.update { state ->
                 state.copy(categoryPicker = state.categoryPicker?.copy(query = event.text.take(MAX_QUERY_LENGTH)))
             }
 
-            is SplitBillUiEvent.OnCategoryMainToggled -> change { it.withCategoryMainToggled(event.categoryId) }
+            is SplitBillUiEvent.OnCategoryMainToggled -> toggleMain(event.categoryId)
 
-            is SplitBillUiEvent.OnCategoryPicked -> change { it.withCategoryPicked(event.categoryId) }
+            // Why: only a category still there, never one a sync just deleted.
+            is SplitBillUiEvent.OnCategoryPicked -> {
+                val before = uiState.value
+                change { it.withCategoryPicked(event.categoryId) }
+                if (uiState.value != before) trackEvent("bill_category_picked", emptyMap())
+            }
 
             SplitBillUiEvent.OnCategoryDismissed -> uiState.update {
                 it.copy(
@@ -101,7 +110,14 @@ internal class CategoryEditing(
                 )
             }
 
-            is SplitBillUiEvent.OnEditCategoryClicked -> uiState.update { it.withEditCategoryForm(event.categoryId) }
+            // Why: only a category its form opens for, one of the group's still there.
+            is SplitBillUiEvent.OnEditCategoryClicked -> {
+                val before = uiState.value.categoryForm
+                uiState.update { it.withEditCategoryForm(event.categoryId) }
+                if (uiState.value.categoryForm.let { it != null && it != before }) {
+                    trackEvent("category_edit_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
+                }
+            }
 
             is SplitBillUiEvent.OnCategoryNameChanged -> uiState.update { state ->
                 state.copy(categoryForm = state.categoryForm?.withName(event.text))
@@ -115,7 +131,10 @@ internal class CategoryEditing(
                 state.copy(categoryForm = state.categoryForm?.withIcon(event.icon))
             }
 
-            SplitBillUiEvent.OnCategoryFormSaveClicked -> save()
+            SplitBillUiEvent.OnCategoryFormSaveClicked -> {
+                trackEvent("category_save_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
+                save()
+            }
 
             SplitBillUiEvent.OnCategoryFormDismissed -> uiState.update {
                 if (it.categoryForm?.isSaving == true) it else it.copy(categoryForm = null)
@@ -125,9 +144,31 @@ internal class CategoryEditing(
 
             SplitBillUiEvent.OnCategoryDeleteConfirmed -> delete()
 
-            SplitBillUiEvent.OnCategoryDeleteDismissed -> uiState.update {
-                if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
+            // Why: only a question still open and not deleting yet.
+            SplitBillUiEvent.OnCategoryDeleteDismissed -> {
+                val deletion = uiState.value.categoryDeletion
+                if (deletion != null && !deletion.isDeleting) {
+                    trackEvent("category_delete_cancelled", mapOf("source" to SPLIT_BILL_SOURCE))
+                }
+                uiState.update {
+                    if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
+                }
             }
+        }
+    }
+
+    /*
+     * Why: a main category shown or hidden again, with where it ended up. Outros, which has no subcategories, is picked
+     * instead and closes the picker, so it counts as a pick.
+     */
+    private fun toggleMain(mainId: String) {
+        val before = uiState.value.categoryPicker ?: return
+        change { it.withCategoryMainToggled(mainId) }
+        val after = uiState.value.categoryPicker
+        if (after == null) {
+            trackEvent("bill_category_picked", emptyMap())
+        } else if (after.openMainId != before.openMainId) {
+            trackEvent("bill_category_main_toggled", mapOf("is_expanded" to (after.openMainId == mainId)))
         }
     }
 
@@ -147,6 +188,14 @@ internal class CategoryEditing(
         scope.launch {
             saveGroupCategory(form, meId)
                 .onSuccess { id ->
+                    trackEvent(
+                        "category_saved",
+                        mapOf(
+                            "is_new" to !form.isEditing,
+                            "is_subcategory" to (form.parentId != null),
+                            "source" to SPLIT_BILL_SOURCE,
+                        ),
+                    )
                     if (form.isEditing) {
                         uiState.update { it.copy(categoryForm = null) }
                     } else {
@@ -170,6 +219,7 @@ internal class CategoryEditing(
 
     private fun askToDelete() {
         val deletion = uiState.value.categoryEditor?.findDeletionOrNull() ?: return
+        trackEvent("category_delete_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
         uiState.update { it.copy(categoryDeletion = deletion) }
     }
 
@@ -177,6 +227,7 @@ internal class CategoryEditing(
     private fun delete() {
         val before = uiState.value
         val deletion = before.categoryDeletion?.takeIf { !it.isDeleting } ?: return
+        trackEvent("category_delete_confirmed", mapOf("source" to SPLIT_BILL_SOURCE))
         // Why: read before the delete, as Room's tombstone may reach the tree, and re-resolve the bill, first.
         val wasBills = before.category.id == deletion.category.id || before.category.parentId == deletion.category.id
         uiState.update { it.copy(categoryDeletion = deletion.copy(isDeleting = true)) }

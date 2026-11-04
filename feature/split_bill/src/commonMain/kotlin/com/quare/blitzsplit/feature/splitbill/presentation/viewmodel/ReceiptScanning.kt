@@ -12,10 +12,12 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.mapper.toReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +43,7 @@ internal class ReceiptScanning(
     private val onRemoved: () -> Unit,
     // Why: the form locks while it reads and its open editors close (`withEditorsClosed`), Itens' draft with them.
     private val onReadStarted: () -> Unit,
+    private val trackEvent: TrackEvent,
 ) {
     // Why: the photo of a receipt read, which the bill attaches as it was read; held here, never in the state.
     private var photo: BillImage? = null
@@ -65,14 +68,24 @@ internal class ReceiptScanning(
 
     fun onEvent(event: SplitBillUiEvent.Receipt) {
         when (event) {
-            SplitBillUiEvent.OnScanReceiptClicked -> uiState.update {
-                if (it.canScanReceipt) it.copy(isReceiptCameraRequested = true) else it
+            SplitBillUiEvent.OnScanReceiptClicked -> {
+                if (uiState.value.canScanReceipt) {
+                    trackEvent(
+                        "scan_receipt_clicked",
+                        mapOf("source" to SPLIT_BILL_SOURCE),
+                    )
+                }
+                uiState.update { if (it.canScanReceipt) it.copy(isReceiptCameraRequested = true) else it }
             }
 
-            is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo)
+            is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo) {
+                trackEvent("photo_picked", mapOf("source" to RECEIPT_SOURCE))
+            }
 
             SplitBillUiEvent.OnReceiptRetryClicked -> unansweredSource?.let { source ->
-                if (uiState.value.offersReceiptRetry && uiState.value.canScanReceipt) read(source)
+                if (uiState.value.offersReceiptRetry && uiState.value.canScanReceipt) {
+                    read(source) { trackEvent("retry_clicked", mapOf("source" to RECEIPT_SOURCE)) }
+                }
             }
 
             SplitBillUiEvent.OnReceiptCameraDismissed -> uiState.update { it.copy(isReceiptCameraRequested = false) }
@@ -96,9 +109,14 @@ internal class ReceiptScanning(
         )
     }
 
-    private fun read(source: ByteArray) {
+    // Why: a photo arriving while the bill is edited or saving is dropped; onStarted counts the tap it stands for.
+    private fun read(
+        source: ByteArray,
+        onStarted: () -> Unit = {},
+    ) {
         val state = uiState.value
         if (state.isEditing || state.isSaving) return
+        onStarted()
         reading?.cancel()
         photo = null
         items = null
@@ -132,6 +150,7 @@ internal class ReceiptScanning(
                 return@launch
             }
             val read = scanned.reading
+            trackEvent("receipt_read", mapOf("result" to "read", "items" to read.items.size))
             photo = scanned.photo
             items = read.toBillItems()
             itemsCurrency = state.currency
@@ -154,6 +173,7 @@ internal class ReceiptScanning(
         source: ByteArray,
     ) {
         val error = failure.toReceiptError()
+        trackEvent("receipt_read", mapOf("result" to error, "items" to 0))
         unansweredSource = source.takeIf { error.canRetry }
         uiState.update {
             it.copy(
@@ -197,5 +217,10 @@ internal class ReceiptScanning(
             extraMinor = 0L,
             isFromReceipt = true,
         )
+    }
+
+    private companion object {
+        // Why: the photo and its retry, as photo_picked's and retry_clicked's source say, apart from the form's taps.
+        const val RECEIPT_SOURCE = "receipt"
     }
 }
