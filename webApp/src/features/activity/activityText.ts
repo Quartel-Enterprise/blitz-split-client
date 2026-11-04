@@ -1,5 +1,5 @@
-import type { JsActivityChange, JsActivityDeletion, JsActivityItem, JsActivityValue } from 'blitzsplit-shared'
-import { paymentMethodLabel } from '@/features/balances/BalanceCard'
+import type { JsActivityChange, JsActivityDebtChange, JsActivityDeletion, JsActivityItem, JsActivitySimplification, JsActivityValue } from 'blitzsplit-shared'
+import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
 import { locale, t, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
@@ -36,7 +36,10 @@ const verbs: Record<string, MessageKey> = {
 }
 
 // Why: these kinds are about the group itself, named by the group rather than by the item's subject.
-const groupKinds = new Set(['group_edited', 'invite_link_changed', 'member_joined', 'member_left'])
+const groupKinds = new Set(['group_edited', 'invite_link_changed', 'member_joined', 'member_left', 'simplify_debts_changed'])
+
+// Why: "ligou Simplificar dívidas em" or "desligou…" (13.7), by the event's code.
+const SIMPLIFY_KIND = 'simplify_debts_changed'
 
 const fieldLabels: Record<string, MessageKey> = {
   amount: 'activity_fieldAmount',
@@ -97,7 +100,13 @@ export function actorName(item: JsActivityItem): string {
 export function headline(item: JsActivityItem): Headline {
   const isDefaultSplitOnly = item.kind === 'group_edited' && item.changes.length === 1 && item.changes[0].field === 'default_split'
   // Why: a comment deleted since reads "Ana apagou um comentário em Jantar", with no text under it.
-  const verbKey = isDefaultSplitOnly ? 'activity_groupDefaultSplit' : item.isCommentDeleted ? 'activity_commentDeleted' : (verbs[item.kind] ?? 'activity_billEdited')
+  const verbKey = isDefaultSplitOnly
+    ? 'activity_groupDefaultSplit'
+    : item.isCommentDeleted
+      ? 'activity_commentDeleted'
+      : item.kind === SIMPLIFY_KIND
+        ? item.isSimplifyTurnedOn ? 'activity_simplifyOn' : 'activity_simplifyOff'
+        : (verbs[item.kind] ?? 'activity_billEdited')
   const verb = t(verbKey)
   const isPayment = item.kind === 'payment_recorded' || item.kind === 'payment_undone'
   const subject = isPayment ? null : groupKinds.has(item.kind) ? item.groupName : (item.subject ?? item.groupName)
@@ -152,6 +161,67 @@ function changesSummary(item: JsActivityItem): string | null {
   return `${line} · ${t(more === 1 ? 'activity_moreChangesOne' : 'activity_moreChangesOther', { count: more })}`
 }
 
+/**
+ * "7 pagamentos viraram 5. Agora Diego te paga R$ 64, e Ana não te deve mais." (13.7): the largest pair that came and
+ * the largest that went for this browser's user. Nothing while it waits to go up, which the meta already says.
+ */
+function simplificationDetail(item: JsActivityItem, simplification: JsActivitySimplification | null | undefined): string {
+  if (!simplification) return ''
+  const money = (minor: number) => (item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : '')
+  const counts = t('activity_simplifyCounts', { before: simplification.paymentsBefore, after: simplification.paymentsAfter })
+  const added = simplification.newPair
+  const gone = simplification.gonePair
+  const now = added
+    ? t(added.afterMinor > 0 ? 'activity_simplifyNowPaysYou' : 'activity_simplifyNowYouPay', { name: nameOrFormer(added.name), amount: money(added.afterMinor) })
+    : null
+  const goneOwedMe = gone != null && gone.beforeMinor > 0
+  const goneName = { name: nameOrFormer(gone?.name) }
+  if (now && gone) return `${counts} ${now}, ${t(goneOwedMe ? 'activity_simplifyAndNoLongerOwesYou' : 'activity_simplifyAndYouNoLongerOwe', goneName)}.`
+  if (now) return `${counts} ${now}.`
+  if (gone) return `${counts} ${t(goneOwedMe ? 'activity_simplifyNoLongerOwesYou' : 'activity_simplifyYouNoLongerOwe', goneName)}.`
+  return counts
+}
+
+/** One side of a "Ver mudanças" line of 13.7b: "te devia R$ 64", "você deve R$ 20", "não te devia", "não deve mais". */
+function debtSideText(item: JsActivityItem, minor: number, isAfter: boolean): string {
+  if (minor === 0) return t(isAfter ? 'activity_debtOwesNothing' : 'activity_debtDidntOweYou')
+  const amount = item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : ''
+  if (minor > 0) return t(isAfter ? 'activity_debtOwesYou' : 'activity_debtOwedYou', { amount })
+  return t(isAfter ? 'activity_debtYouOwe' : 'activity_debtYouOwed', { amount })
+}
+
+/** A line of "Ver mudanças" or the desktop's table: what changed (a field, or a person for 13.7b), before and after. */
+export interface ChangeRow {
+  key: string
+  label: string
+  before: string
+  after: string
+}
+
+/** A bill's or a group's edit by field, or what "Simplificar dívidas" changed for this browser's user by person. */
+export function changeRows(item: JsActivityItem): ChangeRow[] {
+  if (item.simplification) {
+    return item.simplification.myChanges.map((change: JsActivityDebtChange, index) => ({
+      key: `${index}`,
+      label: nameOrFormer(change.name),
+      before: debtSideText(item, change.beforeMinor, false),
+      after: debtSideText(item, change.afterMinor, true),
+    }))
+  }
+  return item.changes.map((change) => ({
+    key: change.field,
+    label: fieldLabel(change.field),
+    before: valueText(change.field, change.before),
+    after: valueText(change.field, change.after),
+  }))
+}
+
+/** "Mudanças em Jantar", or "O que mudou para você em Viagem Floripa" for 13.7b. */
+export function changesRegionLabel(item: JsActivityItem): string {
+  if (item.kind === SIMPLIFY_KIND) return t('activity_simplifyChangesLabel', { group: item.groupName ?? '' })
+  return t('activity_changesIn', { subject: item.subject ?? '' })
+}
+
 /** The line under the headline: the amount and split, a payment's two people, an edit's first change… */
 export function detailLine(item: JsActivityItem): string {
   const amount = amountOf(item)
@@ -189,6 +259,8 @@ export function detailLine(item: JsActivityItem): string {
       return t('activity_detailChargeSent', { amount })
     case 'comment_added':
       return item.body && !item.isCommentDeleted ? `“${item.body}”` : ''
+    case SIMPLIFY_KIND:
+      return simplificationDetail(item, item.simplification)
     default:
       return amount
   }
@@ -199,6 +271,7 @@ const isPaymentKind = (kind: string) => kind === 'payment_recorded' || kind === 
 /** "Abrir conta", "Ver pagamento", "Abrir grupo"…, or "Conta apagada" / "Grupo apagado" once it is gone. */
 export function openLabel(item: JsActivityItem): string {
   if (item.deletion) return t(item.deletion.isGroup ? 'activity_groupGone' : 'activity_billGone')
+  if (item.kind === SIMPLIFY_KIND) return t('activity_openGroupBalances')
   switch (item.target) {
     case 'bill':
       return t('activity_openBill')

@@ -192,12 +192,16 @@ private struct OtherKeysList: View {
     }
 }
 
-/// Where to pay, and the offline note: marking as paid waits on the device.
+/// Why the pair is a simplified one, where to pay, and the offline note: marking as paid waits on the device.
 private struct PayNotes: View {
     let state: RegisterPaymentUiState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Why this pair: one "Simplify debts" made or grew (13.5)
+            if let note = state.simplifiedNote {
+                Text(verbatim: SimplifyDebtsCopy.pairNote(note, from: state.from, to: state.to))
+            }
             Text(verbatim: PayWithKeyCopy.note(state))
             if state.showsOfflineNotice {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {

@@ -70,4 +70,5 @@
     <string name="global_balances_key_phone">Celular</string>
     <string name="global_balances_key_email">E-mail</string>
     <string name="global_balances_key_random">Chave aleatória</string>
+    <string name="global_balances_message_reroute">A %1$s simplificou as dívidas, então em vez de pagar %2$s você paga direto para mim; o seu total não mudou.</string>
 </resources>

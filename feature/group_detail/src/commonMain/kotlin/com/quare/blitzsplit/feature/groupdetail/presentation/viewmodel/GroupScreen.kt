@@ -81,6 +81,7 @@ internal class GroupScreen(
     private var balances = GroupBalances(
         debts = emptyList(),
         hasBills = false,
+        unsimplifiedDebts = null,
     )
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
@@ -119,7 +120,7 @@ internal class GroupScreen(
                 exit.update(null)
                 closeGone()
             } else {
-                balances = GroupBalances.of(expenses, settlements)
+                balances = GroupBalances.of(group, expenses, settlements)
                 exit.update(
                     GroupExitTarget(
                         group = group,

@@ -27,7 +27,7 @@ enum ActivityCopy {
         let group = item.groupName ?? item.subject
         let name: String? = switch item.kind {
         case .groupCreated, .groupEdited, .groupDeleted: item.subject ?? item.groupName
-        case .inviteLinkChanged, .memberJoined, .memberLeft: group
+        case .inviteLinkChanged, .memberJoined, .memberLeft, .simplifyDebtsChanged: group
         default: item.subject
         }
         return name ?? "—"
@@ -59,6 +59,10 @@ enum ActivityCopy {
         case .memberReleased:
             return Text("\(who) released the name \(what)", comment: "Activity: the creator released a member's name")
         case .memberRenamed: return Text("\(who) renamed \(what)", comment: "Activity: someone renamed a member")
+        case .simplifyDebtsChanged:
+            return item.isSimplifyTurnedOn
+                ? Text("\(who) turned on Simplify debts in \(what)", comment: "Activity: someone turned on Simplify debts")
+                : Text("\(who) turned off Simplify debts in \(what)", comment: "Activity: someone turned off Simplify debts")
         case .commentAdded:
             // A comment deleted since keeps its row, with no text
             if item.isCommentDeleted {
@@ -113,6 +117,9 @@ enum ActivityCopy {
             return String(localized: "Whoever joined as \(object(item)) left the group")
         case .memberRenamed:
             return nil
+        case .simplifyDebtsChanged:
+            // A change still waiting to go up has no counts yet: its meta line already says "Waiting to send"
+            return item.simplification.map { simplification($0, currency: item.currency) }
         case .commentAdded:
             return item.isCommentDeleted ? nil : item.body.map { "“\($0)”" }
         default:
@@ -164,6 +171,7 @@ enum ActivityCopy {
         case .groupCreated: return "plus"
         case .groupEdited, .memberRenamed: return "pencil"
         case .inviteLinkChanged: return "link"
+        case .simplifyDebtsChanged: return SimplifyDebtsCopy.icon
         case .memberAdded, .memberJoined: return "person.badge.plus"
         case .memberLeft, .memberRemoved, .memberReleased: return "person.badge.minus"
         default: return "paperplane"
@@ -176,6 +184,8 @@ enum ActivityCopy {
         if item.isTargetDeleted || item.kind == .billDeleted || item.kind == .groupDeleted {
             return (Palette.errorContainer, Palette.onErrorContainer)
         }
+        // Simplify debts in the secondary container, as its board draws it
+        if item.kind == .simplifyDebtsChanged { return (Palette.infoContainer, Palette.onInfoContainer) }
         switch item.kind.type {
         case .bills, .comments, .charges: return (Palette.pixTile, Palette.onPixTile)
         case .payments: return (Palette.infoContainer, Palette.onInfoContainer)
@@ -254,6 +264,56 @@ enum ActivityCopy {
         let before = value(change.before, field: change.field)
         let after = value(change.after, field: change.field)
         return "\(field(change.field)) \(before) → \(after)"
+    }
+
+    // MARK: - Simplify debts (13.7)
+
+    /// "7 payments became 5. Now Diego pays you $64, and Ana no longer owes you."
+    static func simplification(_ simplification: ActivitySimplification, currency: GroupCurrency?) -> String {
+        let counts = String(
+            localized: "\(Int(simplification.paymentsBefore)) payments became \(Int(simplification.paymentsAfter)).",
+            comment: "Activity: how many payments before Simplify debts changed, and after; the verb agrees with the first",
+        )
+        var after = ""
+        if let pair = simplification.newPair {
+            let name = PaymentCopy.name(pair.name)
+            let amount = debtAmount(abs(pair.afterMinor), currency: currency)
+            after = pair.afterMinor > 0
+                ? String(localized: "Now \(name) pays you \(amount)", comment: "Activity: a pair Simplify debts made")
+                : String(localized: "Now you pay \(name) \(amount)", comment: "Activity: a pair Simplify debts made")
+        }
+        if let pair = simplification.gonePair {
+            let name = PaymentCopy.name(pair.name)
+            let gone = pair.beforeMinor > 0
+                ? String(localized: "\(name) no longer owes you", comment: "Activity: a pair Simplify debts took away")
+                : String(localized: "you no longer owe \(name)", comment: "Activity: a pair Simplify debts took away")
+            after = after.isEmpty
+                ? String(localized: "Now \(gone)", comment: "Activity: only a pair that went, after the counts")
+                : String(localized: "\(after), and \(gone)", comment: "Activity: a new pair and one that went")
+        }
+        return after.isEmpty ? counts : "\(counts) \(after)."
+    }
+
+    /// One side of "See changes" of Simplify debts: "owed you $20", "you owe $64", "didn't owe you".
+    static func debtSide(_ minor: Int64, isBefore: Bool, currency: GroupCurrency?) -> String {
+        let amount = debtAmount(abs(minor), currency: currency)
+        if minor > 0 {
+            return isBefore
+                ? String(localized: "owed you \(amount)", comment: "Activity: what someone owed this device's user before")
+                : String(localized: "owes you \(amount)", comment: "Activity: what someone owes this device's user now")
+        }
+        if minor < 0 {
+            return isBefore
+                ? String(localized: "you owed \(amount)", comment: "Activity: what this device's user owed someone before")
+                : String(localized: "you owe \(amount)", comment: "Activity: what this device's user owes someone now")
+        }
+        return isBefore
+            ? String(localized: "didn't owe you", comment: "Activity: nobody owed anything before")
+            : String(localized: "owes nothing now", comment: "Activity: nobody owes anything now")
+    }
+
+    private static func debtAmount(_ minor: Int64, currency: GroupCurrency?) -> String {
+        currency?.format(minor) ?? minor.formatted()
     }
 
     // MARK: - A deleted bill or group

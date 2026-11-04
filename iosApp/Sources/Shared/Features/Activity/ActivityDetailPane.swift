@@ -45,11 +45,24 @@ private struct ActivityItemDetail: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
-            if !item.changes.isEmpty {
+            if let simplification = item.simplification {
+                // Simplify debts: the counts, then what changed for this device's user (13.7b)
+                Text(verbatim: ActivityCopy.simplification(simplification, currency: item.currency))
+                    .font(.body)
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Palette.card, in: .rect(cornerRadius: 16))
+                if !simplification.myChanges.isEmpty {
+                    Text("What changed")
+                        .font(.headline)
+                        .accessibilityAddTraits(.isHeader)
+                    ActivityChangesTable(changes: ActivityBeforeAfter.of(item), firstColumn: "Person")
+                }
+            } else if !item.changes.isEmpty {
                 Text("What changed")
                     .font(.headline)
                     .accessibilityAddTraits(.isHeader)
-                ActivityChangesTable(changes: item.changes)
+                ActivityChangesTable(changes: ActivityBeforeAfter.of(item), firstColumn: "Field")
             } else if item.deletion == nil, let detail = ActivityCopy.detail(item) {
                 Text(verbatim: detail)
                     .font(.body)
@@ -147,16 +160,19 @@ private struct ActivityItemDetail: View {
     }
 }
 
-/// The fields an edit changed: before, struck through, and after. A table with its header on the Mac, as the bill's
-/// history draws it; the rows of the row's "See changes" on iPhone and iPad.
+/// The fields an edit changed, or what Simplify debts changed with each person: before, struck through, and after. A
+/// table with its header on the Mac, as the bill's history draws it; the rows of the row's "See changes" on iPhone and
+/// iPad.
 private struct ActivityChangesTable: View {
-    let changes: [ActivityChangeRow]
+    let changes: [ActivityBeforeAfter]
+    /// "Field" for an edit, "Person" for Simplify debts.
+    let firstColumn: LocalizedStringKey
 
     var body: some View {
         #if os(macOS)
         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 0) {
             GridRow {
-                Text("Field")
+                Text(firstColumn)
                 Text("Before")
                 Text("After")
             }
@@ -165,12 +181,12 @@ private struct ActivityChangesTable: View {
             .padding(.vertical, 6)
             ForEach(Array(changes.enumerated()), id: \.offset) { index, change in
                 GridRow {
-                    Text(verbatim: ActivityCopy.field(change.field))
+                    Text(verbatim: change.label)
                         .foregroundStyle(.secondary)
-                    Text(verbatim: ActivityCopy.value(change.before, field: change.field))
+                    Text(verbatim: change.before)
                         .strikethrough()
                         .foregroundStyle(.secondary)
-                    Text(verbatim: ActivityCopy.value(change.after, field: change.field))
+                    Text(verbatim: change.after)
                         .fontWeight(.semibold)
                 }
                 .padding(.vertical, 8)

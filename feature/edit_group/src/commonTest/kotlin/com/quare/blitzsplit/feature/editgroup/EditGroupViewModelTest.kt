@@ -1,15 +1,25 @@
 package com.quare.blitzsplit.feature.editgroup
 
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetSimplifiesDebtsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -26,6 +36,10 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsStatus
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyName
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyQueuedPayment
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +55,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -48,6 +63,7 @@ class EditGroupViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: EditGroupViewModel
@@ -1804,6 +1820,935 @@ class EditGroupViewModelTest {
             assertNull(saved.photo)
         }
 
+    @Test
+    fun `GIVEN a group of three simplifying WHEN the screen opens THEN shows the switch on with its payments`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifiesDebts = true),
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.simplifiesDebts)
+            assertEquals(SimplifyDebtsStatus.ON, state.simplifyStatus)
+            assertEquals(3, state.memberCount)
+            assertEquals(
+                DebtSimplificationSummary(
+                    paymentCount = 1,
+                    unsimplifiedPaymentCount = 2,
+                ),
+                state.simplification,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group of three not simplifying WHEN the screen opens THEN shows it off with no payments line`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.simplifiesDebts)
+            assertEquals(SimplifyDebtsStatus.OFF, state.simplifyStatus)
+            assertNull(state.simplification)
+            assertTrue(state.canChangeSimplifyDebts)
+        }
+
+    @Test
+    fun `GIVEN a group of two not simplifying WHEN the screen opens THEN asks for a third person to change it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(2, state.memberCount)
+            assertEquals(SimplifyDebtsStatus.NEEDS_THIRD_PERSON, state.simplifyStatus)
+            assertFalse(state.canChangeSimplifyDebts)
+        }
+
+    @Test
+    fun `GIVEN no internet and a switch change not up yet WHEN the screen opens THEN says it is pending and offline`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(
+                    simplifiesDebts = true,
+                    isSimplifyDebtsPending = true,
+                ),
+                online = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SimplifyDebtsStatus.PENDING, state.simplifyStatus)
+            assertTrue(state.showsSimplifyOfflineNotice)
+        }
+
+    @Test
+    fun `GIVEN the switch on WHEN a new bill arrives THEN the payments line follows it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople.copy(simplifiesDebts = true),
+            storedExpenses = listOf(pierrePaidForBruno),
+        )
+
+        // When
+        expenses.expenses.value = listOf(pierrePaidForBruno, brunoPaidForAna)
+
+        // Then
+        assertEquals(
+            DebtSimplificationSummary(
+                paymentCount = 1,
+                unsimplifiedPaymentCount = 2,
+            ),
+            viewModel.uiState.value.simplification,
+        )
+    }
+
+    @Test
+    fun `GIVEN the switch on WHEN a payment is recorded THEN the payments line follows it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople.copy(simplifiesDebts = true),
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+        )
+
+        // When
+        settlements.settlements.value = listOf(
+            payment(
+                from = ANA,
+                to = BRUNO,
+                amountMinor = 3_000,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            DebtSimplificationSummary(
+                paymentCount = 1,
+                unsimplifiedPaymentCount = 1,
+            ),
+            viewModel.uiState.value.simplification,
+        )
+    }
+
+    @Test
+    fun `GIVEN the switch off WHEN a sync turns it on THEN shows it on with its payments line`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            groups.groups.value = listOf(threePeople.copy(simplifiesDebts = true))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.simplifiesDebts)
+            assertEquals(
+                DebtSimplificationSummary(
+                    paymentCount = 1,
+                    unsimplifiedPaymentCount = 2,
+                ),
+                state.simplification,
+            )
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN the switch on WHEN a sync turns it off THEN shows it off with no payments line`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifiesDebts = true),
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            groups.groups.value = listOf(threePeople)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.simplifiesDebts)
+            assertNull(state.simplification)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping the switch THEN no confirmation opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.simplifyConfirmation)
+    }
+
+    @Test
+    fun `GIVEN a group of two not simplifying WHEN tapping the switch THEN no confirmation opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.simplifyConfirmation)
+        }
+
+    @Test
+    fun `GIVEN a group of two simplifying WHEN tapping the switch THEN asks to turn it off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(simplifiesDebts = true),
+                storedExpenses = listOf(dinner),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertEquals(
+                false,
+                viewModel.uiState.value.simplifyConfirmation
+                    ?.isTurningOn,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group of three not simplifying WHEN tapping the switch THEN asks to turn it on with what changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
+            assertTrue(confirmation.isTurningOn)
+            assertEquals("Viagem Floripa", confirmation.groupName)
+            assertEquals(2, confirmation.paymentsBefore)
+            assertEquals(1, confirmation.paymentsAfter)
+            assertFalse(confirmation.isAlreadyMinimal)
+            assertEquals(0, confirmation.othersChangingCount)
+            assertEquals(listOf(PIERRE, ANA, BRUNO), confirmation.people.map { it.memberId })
+            assertEquals(listOf(false, true, false), confirmation.people.map { it.isGuest })
+            val me = confirmation.people.first()
+            assertEquals(
+                SimplifyName(
+                    name = "Pierre",
+                    isMe = true,
+                ),
+                me.person,
+            )
+            assertEquals(
+                listOf(
+                    SimplifyName(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                ),
+                me.receivesFrom,
+            )
+            assertEquals(
+                listOf(
+                    SimplifyName(
+                        name = "Bruno",
+                        isMe = false,
+                    ),
+                ),
+                me.stopsReceivingFrom,
+            )
+            val ana = confirmation.people[1]
+            assertEquals(
+                listOf(
+                    SimplifyAmount(
+                        to = me.person,
+                        amountMinor = 3_000,
+                    ),
+                ),
+                ana.pays,
+            )
+            assertEquals(
+                listOf(
+                    SimplifyAmount(
+                        to = SimplifyName(
+                            name = "Bruno",
+                            isMe = false,
+                        ),
+                        amountMinor = 3_000,
+                    ),
+                ),
+                ana.stopsPaying,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group of three not simplifying WHEN tapping the switch THEN the switch itself stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.simplifiesDebts)
+            assertTrue(groups.simplifyDebtsChanges.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN bills already at their fewest payments WHEN tapping the switch THEN says it is at the minimum`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(pierrePaidForEveryone),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
+            assertTrue(confirmation.isAlreadyMinimal)
+            assertEquals(2, confirmation.paymentsBefore)
+            assertEquals(2, confirmation.paymentsAfter)
+            assertEquals(emptyList(), confirmation.people)
+        }
+
+    @Test
+    fun `GIVEN a group of three simplifying WHEN tapping the switch THEN asks to turn it off naming only you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifiesDebts = true),
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
+            assertFalse(confirmation.isTurningOn)
+            assertEquals(1, confirmation.paymentsBefore)
+            assertEquals(2, confirmation.paymentsAfter)
+            assertEquals(listOf(PIERRE), confirmation.people.map { it.memberId })
+            assertEquals(2, confirmation.othersChangingCount)
+            assertFalse(confirmation.isAlreadyMinimal)
+        }
+
+    @Test
+    fun `GIVEN a payment in the queue WHEN tapping the switch THEN the confirmation lists only the queued one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+                storedSettlements = listOf(
+                    payment(
+                        from = ANA,
+                        to = BRUNO,
+                        amountMinor = 1_000,
+                        isPending = true,
+                    ),
+                    payment(
+                        from = BRUNO,
+                        to = PIERRE,
+                        amountMinor = 500,
+                        isPending = false,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    SimplifyQueuedPayment(
+                        from = SimplifyName(
+                            name = "Ana",
+                            isMe = false,
+                        ),
+                        to = SimplifyName(
+                            name = "Bruno",
+                            isMe = false,
+                        ),
+                        amountMinor = 1_000,
+                    ),
+                ),
+                viewModel.uiState.value.simplifyConfirmation
+                    ?.queuedPayments,
+            )
+        }
+
+    @Test
+    fun `GIVEN the confirmation to turn it on WHEN a sync turns it on THEN the confirmation closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            groups.groups.value = listOf(threePeople.copy(simplifiesDebts = true))
+
+            // Then
+            assertNull(viewModel.uiState.value.simplifyConfirmation)
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN a new bill arrives THEN it counts the payments again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            expenses.expenses.value = listOf(pierrePaidForBruno, brunoPaidForAna)
+
+            // Then
+            val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
+            assertEquals(2, confirmation.paymentsBefore)
+            assertEquals(1, confirmation.paymentsAfter)
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN a sync renames the group THEN it stays open with the new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            groups.groups.value = listOf(threePeople.copy(name = "Futebol de quinta"))
+
+            // Then
+            assertEquals(
+                "Futebol de quinta",
+                viewModel.uiState.value.simplifyConfirmation
+                    ?.groupName,
+            )
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN dismissing it THEN it closes and the switch stays as it was`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.simplifyConfirmation)
+            assertFalse(state.simplifiesDebts)
+            assertTrue(groups.simplifyDebtsChanges.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the confirmation to turn it on WHEN confirming THEN turns it on with the pairs before and after`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Triple(
+                        GROUP_ID,
+                        true,
+                        SimplifyDebtsChange(
+                            before = listOf(
+                                SimplifyDebtsPair(
+                                    fromMemberId = ANA,
+                                    toMemberId = BRUNO,
+                                    amountMinor = 3_000,
+                                ),
+                                SimplifyDebtsPair(
+                                    fromMemberId = BRUNO,
+                                    toMemberId = PIERRE,
+                                    amountMinor = 3_000,
+                                ),
+                            ),
+                            after = listOf(
+                                SimplifyDebtsPair(
+                                    fromMemberId = ANA,
+                                    toMemberId = PIERRE,
+                                    amountMinor = 3_000,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                groups.simplifyDebtsChanges,
+            )
+            val state = viewModel.uiState.value
+            assertTrue(state.simplifiesDebts)
+            assertEquals(SimplifyDebtsStatus.PENDING, state.simplifyStatus)
+            assertNull(state.simplifyConfirmation)
+            assertFalse(state.isChangingSimplifyDebts)
+            assertFalse(state.showsSaveError)
+        }
+
+    @Test
+    fun `GIVEN the confirmation to turn it on WHEN confirming THEN Salvar stays disabled and the form is not saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.hasChanges)
+            assertFalse(state.canSave)
+            assertTrue(groups.updatedGroupIds.isEmpty())
+            assertEquals(listOf(Route.Groups, groupDetail, editGroup), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a new name typed WHEN confirming the switch THEN the name stays unsaved with Salvar enabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("Churrasco", state.name)
+            assertTrue(state.canSave)
+            assertTrue(state.simplifiesDebts)
+            assertTrue(groups.updatedGroupIds.isEmpty())
+            assertEquals(
+                "Viagem Floripa",
+                groups.groups.value
+                    .single()
+                    .name,
+            )
+        }
+
+    @Test
+    fun `GIVEN the switch confirmed WHEN tapping Salvar on a new name THEN the save sends no switch change`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+            viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, groups.simplifyDebtsChanges.size)
+            assertEquals(listOf(GROUP_ID), groups.updatedGroupIds)
+            val saved = groups.groups.value.single()
+            assertEquals("Churrasco", saved.name)
+            assertTrue(saved.simplifiesDebts)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN confirming the switch THEN turns it on on the device`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople,
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            online = false,
+        )
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+        // Then
+        assertEquals(listOf(true), groups.simplifyDebtsChanges.map { it.second })
+        val state = viewModel.uiState.value
+        assertTrue(state.simplifiesDebts)
+        assertTrue(state.showsSimplifyOfflineNotice)
+    }
+
+    @Test
+    fun `GIVEN the confirmation to turn it off WHEN confirming THEN turns it off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople.copy(simplifiesDebts = true),
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+        )
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+        // Then
+        assertEquals(listOf(false), groups.simplifyDebtsChanges.map { it.second })
+        val state = viewModel.uiState.value
+        assertFalse(state.simplifiesDebts)
+        assertNull(state.simplification)
+        assertNull(state.simplifyConfirmation)
+    }
+
+    @Test
+    fun `GIVEN the device fails to change it WHEN confirming the switch THEN shows the save error and closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+                simplifyError = IllegalStateException("disk full"),
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSaveError)
+            assertNull(state.simplifyConfirmation)
+            assertFalse(state.isChangingSimplifyDebts)
+            assertFalse(state.simplifiesDebts)
+        }
+
+    @Test
+    fun `GIVEN a switch change in flight WHEN reading the switch THEN it cannot change until it ends`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople,
+                storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+                isSimplifyHeld = true,
+            )
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isChangingSimplifyDebts)
+            assertFalse(state.canChangeSimplifyDebts)
+        }
+
+    @Test
+    fun `GIVEN a switch change in flight WHEN confirming again THEN changes it only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople,
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+            isSimplifyHeld = true,
+        )
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+        groups.simplifyDebtsGate?.complete(Unit)
+
+        // Then
+        assertEquals(1, groups.simplifyDebtsChanges.size)
+        assertNull(viewModel.uiState.value.simplifyConfirmation)
+    }
+
+    @Test
+    fun `GIVEN no confirmation open WHEN confirming the switch THEN changes nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = threePeople,
+            storedExpenses = listOf(brunoPaidForAna, pierrePaidForBruno),
+        )
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsConfirmed)
+
+        // Then
+        assertTrue(groups.simplifyDebtsChanges.isEmpty())
+        assertFalse(viewModel.uiState.value.simplifiesDebts)
+    }
+
+    @Test
+    fun `GIVEN the form on top WHEN tapping Como funciona THEN opens it in the group currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople)
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, groupDetail, editGroup, Route.SimplifyDebtsInfo(GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another currency picked in the form WHEN tapping Como funciona THEN opens it in the currency picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople)
+            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+
+            // Then
+            assertEquals(Route.SimplifyDebtsInfo(GroupCurrency.USD), navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN another screen over the form WHEN tapping Como funciona THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = threePeople)
+        navigator.navigate(Route.DefaultSplit(GROUP_ID))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, groupDetail, editGroup, Route.DefaultSplit(GROUP_ID)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Como funciona THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupDetail, editGroup), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Bruno changed the switch after this device WHEN the form opens on top THEN says so once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                SimplifyDebtsConflictNotice(
+                    changedByName = "Bruno",
+                    simplifiesDebts = false,
+                ),
+                state.simplifyConflict,
+            )
+            assertEquals(listOf(GROUP_ID), groups.consumedSimplifyConflictGroupIds)
+        }
+
+    @Test
+    fun `GIVEN a change after this device by someone no longer in the group WHEN the form opens THEN names nobody`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(
+                    simplifiesDebts = true,
+                    simplifyDebtsConflictBy = "user-gone",
+                ),
+            )
+
+            // When
+            val notice = viewModel.uiState.value.simplifyConflict
+
+            // Then
+            assertEquals(
+                SimplifyDebtsConflictNotice(
+                    changedByName = null,
+                    simplifiesDebts = true,
+                ),
+                notice,
+            )
+        }
+
+    @Test
+    fun `GIVEN the form open WHEN a sync brings a later change by Bruno THEN says so once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = threePeople)
+
+        // When
+        groups.groups.value = listOf(threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+        // Then
+        assertEquals(
+            "Bruno",
+            viewModel.uiState.value.simplifyConflict
+                ?.changedByName,
+        )
+        assertEquals(listOf(GROUP_ID), groups.consumedSimplifyConflictGroupIds)
+    }
+
+    @Test
+    fun `GIVEN another screen over the form WHEN a sync brings a later change THEN the form says nothing yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople)
+            navigator.navigate(Route.DefaultSplit(GROUP_ID))
+
+            // When
+            groups.groups.value = listOf(threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+            // Then
+            assertNull(viewModel.uiState.value.simplifyConflict)
+            assertTrue(groups.consumedSimplifyConflictGroupIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a later change while another screen covered the form WHEN that screen closes THEN says so once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople)
+            navigator.navigate(Route.DefaultSplit(GROUP_ID))
+            groups.groups.value = listOf(threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.simplifyConflict
+                    ?.changedByName,
+            )
+            assertEquals(listOf(GROUP_ID), groups.consumedSimplifyConflictGroupIds)
+        }
+
+    @Test
+    fun `GIVEN the later change shown WHEN another screen opens and closes THEN it is not consumed again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+            navigator.navigate(Route.DefaultSplit(GROUP_ID))
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.consumedSimplifyConflictGroupIds)
+        }
+
+    @Test
+    fun `GIVEN the later change shown WHEN it is dismissed THEN it goes away`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER))
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.simplifyConflict)
+    }
+
+    @Test
+    fun `GIVEN the later change shown WHEN tapping Ver na Atividade THEN opens Atividade right above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER),
+                isAboveHome = true,
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.simplifyConflict)
+        }
+
+    @Test
+    fun `GIVEN the later change shown under another screen WHEN tapping Ver na Atividade THEN only hides it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(simplifyDebtsConflictBy = BRUNO_USER),
+                isAboveHome = true,
+            )
+            navigator.navigate(Route.DefaultSplit(GROUP_ID))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, groupDetail, editGroup, Route.DefaultSplit(GROUP_ID)),
+                navigator.backStack.value,
+            )
+            assertNull(viewModel.uiState.value.simplifyConflict)
+        }
+
     private val editGroup = Route.EditGroup(GROUP_ID)
 
     private val groupDetail = Route.GroupDetail(
@@ -1847,6 +2792,10 @@ class EditGroupViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private val remotePhoto = ProfilePhoto.Remote("https://example.com/group-photos/group-1/photo.jpg?v=1")
@@ -1888,6 +2837,74 @@ class EditGroupViewModelTest {
         isPending = false,
         updatedAt = 1_000L,
         updatedByMemberId = null,
+    )
+
+    private val bruno = GroupMember(
+        id = BRUNO,
+        name = "Bruno",
+        avatarColor = AvatarColor.LILAC,
+        isMe = false,
+        hasJoined = true,
+        userId = BRUNO_USER,
+        inviteCode = null,
+        photoUrl = null,
+    )
+
+    // Why: three people, so "Simplificar dívidas" can be turned on.
+    private val threePeople = trip.copy(members = trip.members + bruno)
+
+    // Why: Ana owes Bruno R$ 30, and with pierrePaidForBruno Bruno owes Pierre R$ 30: one payment, Ana to Pierre.
+    private val brunoPaidForAna = bill(
+        id = "expense-2",
+        payerId = BRUNO,
+        shares = mapOf(ANA to 3_000L, BRUNO to 3_000L),
+    )
+
+    private val pierrePaidForBruno = bill(
+        id = "expense-3",
+        payerId = PIERRE,
+        shares = mapOf(PIERRE to 3_000L, BRUNO to 3_000L),
+    )
+
+    // Why: Ana and Bruno each owe Pierre, already the fewest payments.
+    private val pierrePaidForEveryone = bill(
+        id = "expense-4",
+        payerId = PIERRE,
+        shares = mapOf(PIERRE to 3_000L, ANA to 3_000L, BRUNO to 3_000L),
+    )
+
+    private fun bill(
+        id: String,
+        payerId: String,
+        shares: Map<String, Long>,
+    ): Expense = dinner.copy(
+        id = id,
+        amountMinor = shares.values.sum(),
+        payers = listOf(ExpensePayer(payerId, shares.values.sum())),
+        shares = shares.map { (memberId, amountMinor) ->
+            ExpenseShare(
+                memberId = memberId,
+                amountMinor = amountMinor,
+                weight = 1,
+            )
+        },
+    )
+
+    private fun payment(
+        from: String,
+        to: String,
+        amountMinor: Long,
+        isPending: Boolean = false,
+    ): Settlement = Settlement(
+        id = "settlement-$from-$to",
+        groupId = GROUP_ID,
+        fromMemberId = from,
+        toMemberId = to,
+        amountMinor = amountMinor,
+        method = SettlementMethod.PIX,
+        paidAt = 2_000L,
+        isPending = isPending,
+        updatedAt = 2_000L,
     )
 
     @Test
@@ -1937,14 +2954,22 @@ class EditGroupViewModelTest {
         isSaveHeld: Boolean = false,
         isPhotoHeld: Boolean = false,
         photoError: Throwable? = null,
+        storedSettlements: List<Settlement> = emptyList(),
+        simplifyError: Throwable? = null,
+        isSimplifyHeld: Boolean = false,
+        isAboveHome: Boolean = false,
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.updateGroupError = updateError
             it.updateGroupGate = if (isSaveHeld) CompletableDeferred() else null
+            it.simplifyDebtsError = simplifyError
+            it.simplifyDebtsGate = if (isSimplifyHeld) CompletableDeferred() else null
         }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         isOnline = MutableStateFlow(online)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = if (isAboveHome) Route.Home else Route.Groups).also {
+            if (isAboveHome) it.navigate(Route.Groups)
             it.navigate(groupDetail)
             it.navigate(editGroup)
         }
@@ -1954,8 +2979,11 @@ class EditGroupViewModelTest {
             route = editGroup,
             navigator = navigator,
             updateGroup = UpdateGroupUseCase(groups) { 1_000L },
+            setSimplifiesDebts = SetSimplifiesDebtsUseCase(groups, expenses, settlements) { 1_000L },
+            consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = ObserveSettlementsUseCase(settlements),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             loadCropPhoto = { source ->
                 Result.success(
@@ -1977,5 +3005,7 @@ class EditGroupViewModelTest {
         const val GROUP_ID = "group-1"
         const val PIERRE = "member-1"
         const val ANA = "member-2"
+        const val BRUNO = "member-3"
+        const val BRUNO_USER = "user-bruno"
     }
 }

@@ -126,6 +126,10 @@ private fun BalancesTabletopPairsLayout(
             modifier = Modifier.weight(1f),
             contentPadding = contentPadding,
         ) {
+            simplificationItems(
+                state = state,
+                onEvent = onEvent,
+            )
             withYouItems(
                 state = state,
                 money = money,

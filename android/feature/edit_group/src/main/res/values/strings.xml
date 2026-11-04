@@ -19,7 +19,7 @@
     <string name="edit_group_currency">Currency</string>
     <string name="edit_group_currency_lock">Doesn\'t change after the first expense</string>
     <string name="edit_group_currency_locked">Locked</string>
-    <string name="edit_group_note">Anyone in the group can change the name, the icon and the type.</string>
+    <string name="edit_group_note">Anyone in the group can change the name, icon, type and Simplify debts. Activity shows who changed it.</string>
     <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects. A new photo goes up with it.</string>
     <string name="edit_group_save_error">Couldn’t save the group. Try again.</string>
     <string name="edit_group_default_split">Default split</string>
@@ -103,4 +103,82 @@
     </plurals>
     <string name="default_split_exception_shares_two">%1$d to %2$d</string>
     <string name="default_split_exception_percent_value">%d%%</string>
+    <string name="simplify_section">Payments</string>
+    <string name="simplify_title">Simplify debts</string>
+    <string name="simplify_status_off">Combines the group\'s debts into fewer payments. Nobody pays or receives more.</string>
+    <plurals name="simplify_status_on">
+        <item quantity="one">On · %1$d payment instead of %2$d</item>
+        <item quantity="other">On · %1$d payments instead of %2$d</item>
+    </plurals>
+    <string name="simplify_status_on_minimal">On · already the fewest payments</string>
+    <string name="simplify_status_pending_on">On on this device · waiting to upload</string>
+    <string name="simplify_status_pending_off">Off on this device · waiting to upload</string>
+    <string name="simplify_status_needs_third">With 2 people it\'s already a single payment. Available once a third person joins.</string>
+    <string name="simplify_how_it_works">How it works</string>
+    <string name="simplify_offline_note">No internet: the suggested payments already changed on this device. The group sees it once it reconnects.</string>
+    <string name="simplify_confirm_title_on">Simplify debts?</string>
+    <string name="simplify_confirm_title_off">Turn off Simplify debts?</string>
+    <plurals name="simplify_payments_label">
+        <item quantity="one">payment</item>
+        <item quantity="other">payments</item>
+    </plurals>
+    <plurals name="simplify_payments">
+        <item quantity="one">%d payment</item>
+        <item quantity="other">%d payments</item>
+    </plurals>
+    <string name="simplify_confirm_counts">%1$s become %2$s</string>
+    <string name="simplify_confirm_body_on">Everyone keeps paying or receiving the same total. Only who pays whom changes.</string>
+    <string name="simplify_confirm_body_off">Payments go back to being between whoever split each bill. Totals don\'t change.</string>
+    <string name="simplify_confirm_body_minimal">%s already has the fewest payments. Turn it on anyway and the next bills come in simplified.</string>
+    <string name="simplify_confirm_what_changes">What changes</string>
+    <string name="simplify_change_guest">%s · guest</string>
+    <string name="simplify_change_amount_to">%1$s to %2$s</string>
+    <string name="simplify_change_amount_to_you">%s to you</string>
+    <string name="simplify_change_stops_paying">No longer pays %s.</string>
+    <string name="simplify_change_stops_paying_me">No longer pay %s.</string>
+    <string name="simplify_change_pays">Pays %s.</string>
+    <string name="simplify_change_pays_me">Pay %s.</string>
+    <string name="simplify_change_stops_receiving">No longer receives from %s.</string>
+    <string name="simplify_change_stops_receiving_me">No longer receive from %s.</string>
+    <string name="simplify_change_receives">Receives from %s.</string>
+    <string name="simplify_change_receives_me">Receive from %s.</string>
+    <string name="simplify_change_guest_note">Doesn\'t have the app: let them know with Charge.</string>
+    <string name="simplify_you_lowercase">you</string>
+    <string name="simplify_queued_one">You have 1 payment in the queue: %s. The simplification counts it; if it changes, the suggested payments adjust by themselves.</string>
+    <string name="simplify_queued_paid_you">%1$s paid you %2$s</string>
+    <string name="simplify_queued_you_paid">you paid %2$s %1$s</string>
+    <string name="simplify_queued_paid">%1$s paid %3$s %2$s</string>
+    <plurals name="simplify_queued_several">
+        <item quantity="one">You have %d payment in the queue. The simplification counts it; if it changes, the suggested payments adjust by themselves.</item>
+        <item quantity="other">You have %d payments in the queue. The simplification counts them; if they change, the suggested payments adjust by themselves.</item>
+    </plurals>
+    <string name="simplify_confirm_foot_on">Everyone sees it in Activity. Whoever now pays or receives from someone else gets a notification. You can turn it off anytime.</string>
+    <string name="simplify_confirm_foot_minimal">Everyone sees it in Activity. You can turn it off anytime.</string>
+    <string name="simplify_confirm_foot_off_none">Everyone sees it in Activity.</string>
+    <plurals name="simplify_confirm_foot_off">
+        <item quantity="one">%d more person changes. Everyone sees it in Activity, and whoever changes gets a notification.</item>
+        <item quantity="other">%d more people change. Everyone sees it in Activity, and whoever changes gets a notification.</item>
+    </plurals>
+    <string name="simplify_confirm_not_now">Not now</string>
+    <string name="simplify_confirm_cancel">Cancel</string>
+    <string name="simplify_confirm_on">Simplify</string>
+    <string name="simplify_confirm_minimal">Turn on anyway</string>
+    <string name="simplify_confirm_off">Turn off</string>
+    <string name="simplify_info_back">Back</string>
+    <string name="simplify_info_intro">In a group, each bill creates debts between two people. Over time, money goes in circles. Simplifying combines those debts and suggests fewer payments.</string>
+    <string name="simplify_info_example">An example</string>
+    <string name="simplify_info_example_text">Carla owes Elisa %1$s, and Elisa owes you %1$s.</string>
+    <string name="simplify_info_before">Before</string>
+    <string name="simplify_info_after">Simplified</string>
+    <string name="simplify_info_before_a11y">Before: Carla pays Elisa %1$s and Elisa pays you %1$s. 2 payments.</string>
+    <string name="simplify_info_after_a11y">Simplified: Carla pays you %1$s directly. Elisa pays nothing. 1 payment.</string>
+    <string name="simplify_info_example_result">Simplified, Carla pays you %s directly, and Elisa pays nothing.</string>
+    <string name="simplify_info_total_title">Totals don\'t change</string>
+    <string name="simplify_info_total_text">Whoever owed %1$s in the group still owes %1$s. Only where the money goes changes.</string>
+    <string name="simplify_info_stranger_title">You may owe someone you never split a bill with</string>
+    <string name="simplify_info_stranger_text">In the group\'s Balances, the Simplified debts label tells you when that happens.</string>
+    <string name="simplify_info_anyone_title">Anyone can turn it on or off</string>
+    <string name="simplify_info_anyone_text">In Edit group. Activity shows who changed it, and whoever now pays or receives from someone else gets a notification.</string>
+    <string name="simplify_info_undo_title">Turning it off goes back</string>
+    <string name="simplify_info_undo_text">Payments go back to being between whoever split each bill. No bill or recorded payment changes.</string>
 </resources>

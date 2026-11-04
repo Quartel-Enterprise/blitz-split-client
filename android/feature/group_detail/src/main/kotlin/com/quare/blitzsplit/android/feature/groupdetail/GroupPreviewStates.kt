@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
@@ -81,6 +82,8 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     joinedAs = null,
     isAccountUnprotected = false,
     activityUnreadCount = 0,
+    simplification = null,
+    simplifyConflict = null,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(
@@ -172,6 +175,7 @@ internal fun createPreviewBalancesState(): GroupDetailUiState = createPreviewGro
             toFace = previewFaces[2],
             amountMinor = 11_800L,
             kind = DebtKind.YOU_OWE,
+            isSimplified = false,
         ),
         DebtRow(
             fromMemberId = "ana",
@@ -182,6 +186,7 @@ internal fun createPreviewBalancesState(): GroupDetailUiState = createPreviewGro
             toFace = previewFaces[0],
             amountMinor = 16_230L,
             kind = DebtKind.OWES_YOU,
+            isSimplified = false,
         ),
     ),
     otherDebts = listOf(
@@ -194,6 +199,19 @@ internal fun createPreviewBalancesState(): GroupDetailUiState = createPreviewGro
             toFace = previewFaces[2],
             amountMinor = 6_400L,
             kind = DebtKind.BETWEEN_OTHERS,
+            isSimplified = false,
         ),
     ),
 )
+
+// Why: 13.4, "Simplificar dívidas" on: the card over the pairs and the icon on the pair no bill made.
+internal fun createPreviewSimplifiedBalancesState(): GroupDetailUiState {
+    val state = createPreviewBalancesState()
+    return state.copy(
+        myDebts = state.myDebts.mapIndexed { index, debt -> debt.copy(isSimplified = index == 1) },
+        simplification = DebtSimplificationSummary(
+            paymentCount = 5,
+            unsimplifiedPaymentCount = 7,
+        ),
+    )
+}

@@ -88,7 +88,7 @@ class PickPaymentViewModel(
         group: Group,
         money: GroupMoney,
     ): PickPaymentGroup? {
-        val debts = GroupBalances.of(money.expenses, money.settlements).debts
+        val debts = GroupBalances.of(group, money.expenses, money.settlements).debts
         if (debts.isEmpty()) return null
         val meId = group.members.firstOrNull { it.isMe }?.id
         val pairs = debts

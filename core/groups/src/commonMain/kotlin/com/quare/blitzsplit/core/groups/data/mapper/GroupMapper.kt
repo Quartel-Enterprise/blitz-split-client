@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
@@ -72,6 +73,9 @@ interface GroupMapper {
         defaultSplit: GroupDefaultSplit,
         over: String?,
     ): String
+
+    // Why: the JSON Room keeps a change of "Simplificar dívidas" in until it goes up, as the server reads it.
+    fun encode(change: SimplifyDebtsChange): String
 
     // Why: the incomes "Pela renda" was typed with, which only this device keeps; null when there are none.
     fun encodeIncomes(incomes: Map<String, Long>): String?

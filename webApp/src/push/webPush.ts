@@ -28,6 +28,13 @@ const kinds: Record<string, MessageKey> = {
   settle_reminders: 'push_settleReminders',
   added_to_group: 'push_addedToGroup',
   member_joined: 'push_memberJoined',
+  // Why: "Simplificar dívidas" turned on or off (13.7): who now pays you, whom you now pay, or neither.
+  debts_simplified_to_you: 'push_debtsSimplifiedToYou',
+  debts_simplified_from_you: 'push_debtsSimplifiedFromYou',
+  debts_simplified_other: 'push_debtsSimplifiedOther',
+  debts_unsimplified_to_you: 'push_debtsUnsimplifiedToYou',
+  debts_unsimplified_from_you: 'push_debtsUnsimplifiedFromYou',
+  debts_unsimplified_other: 'push_debtsUnsimplifiedOther',
 }
 
 function isSupported(): boolean {

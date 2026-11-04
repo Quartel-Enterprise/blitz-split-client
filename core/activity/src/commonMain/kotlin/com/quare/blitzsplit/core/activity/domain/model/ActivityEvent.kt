@@ -34,4 +34,14 @@ data class ActivityEvent(
     val isCommentDeleted: Boolean,
     // Why: a charge sent here and not up yet.
     val isPending: Boolean,
-)
+    // Why: the group's pairs right before and right after "Simplificar dívidas" changed; empty for anything else.
+    val debtsBefore: List<ActivityDebt>,
+    val debtsAfter: List<ActivityDebt>,
+    // Why: who each member of those pairs was then, so the item still names them once they left.
+    val memberNames: Map<String, String>,
+) {
+    companion object {
+        const val SIMPLIFY_ON = "on"
+        const val SIMPLIFY_OFF = "off"
+    }
+}

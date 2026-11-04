@@ -11,6 +11,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKi
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
 import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,6 +20,45 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RegisterPaymentUiStateTest {
+    @Test
+    fun `GIVEN the switch changed under the form WHEN reading whether it can pay anyway THEN it can`() {
+        // Given
+        val state = state(simplifyChange = switchedOn)
+
+        // When
+        val canPayAnyway = state.canPayAnyway
+
+        // Then
+        assertTrue(canPayAnyway)
+    }
+
+    @Test
+    fun `GIVEN the switch changed and the payment being saved WHEN reading whether it can pay anyway THEN it cannot`() {
+        // Given
+        val state = state(
+            simplifyChange = switchedOn,
+            isSaving = true,
+        )
+
+        // When
+        val canPayAnyway = state.canPayAnyway
+
+        // Then
+        assertFalse(canPayAnyway)
+    }
+
+    @Test
+    fun `GIVEN no switch change WHEN reading whether it can pay anyway THEN it cannot`() {
+        // Given
+        val state = state(simplifyChange = null)
+
+        // When
+        val canPayAnyway = state.canPayAnyway
+
+        // Then
+        assertFalse(canPayAnyway)
+    }
+
     @Test
     fun `GIVEN the device user receives WHEN reading the kind THEN it is received`() {
         // Given
@@ -542,6 +582,8 @@ class RegisterPaymentUiStateTest {
             memberId = "member-1",
             meMemberId = "member-2",
             amountMinor = 8_115L,
+            isSimplified = false,
+            insteadOfNames = emptyList(),
         )
     }
 
@@ -552,6 +594,13 @@ class RegisterPaymentUiStateTest {
         AvatarColor.SAND,
         photoUrl = null,
         isMe = false,
+    )
+
+    private val switchedOn = SimplifyChangedNotice(
+        changedByName = "Ana",
+        simplifiesDebts = true,
+        groupName = "Viagem Floripa",
+        previousDebtMinor = 8_000L,
     )
 
     private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)
@@ -586,6 +635,7 @@ class RegisterPaymentUiStateTest {
         receiverKeys: List<ReceiverKey> = emptyList(),
         keyMethod: PaymentMethod = PaymentMethod.PIX,
         offersReceiverKeys: Boolean = true,
+        simplifyChange: SimplifyChangedNotice? = null,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
         showsSats = false,
@@ -609,5 +659,7 @@ class RegisterPaymentUiStateTest {
         prefersForm = false,
         pixCode = null,
         pixQrCode = null,
+        simplifiedNote = null,
+        simplifyChange = simplifyChange,
     )
 }

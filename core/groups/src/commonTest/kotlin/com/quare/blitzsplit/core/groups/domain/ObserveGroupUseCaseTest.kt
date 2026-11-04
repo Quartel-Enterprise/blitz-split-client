@@ -104,6 +104,10 @@ class ObserveGroupUseCaseTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
     private val home = Group(
         id = "group-2",
@@ -119,6 +123,10 @@ class ObserveGroupUseCaseTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun prepareScenario(storedGroups: List<Group>) {

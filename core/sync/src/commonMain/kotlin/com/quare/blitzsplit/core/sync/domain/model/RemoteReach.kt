@@ -27,6 +27,7 @@ enum class RemoteReach {
             ActivityKind.GROUP_EDITED,
             ActivityKind.INVITE_LINK_CHANGED,
             ActivityKind.MEMBER_RENAMED,
+            ActivityKind.SIMPLIFY_DEBTS_CHANGED,
             -> GROUP
 
             /*

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groupdetail
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -297,6 +298,74 @@ class GroupDetailUiStateTest {
         assertTrue(showsSplitBillButton)
     }
 
+    @Test
+    fun `GIVEN the switch on and a pair between others WHEN reading the simplification card THEN it shows`() {
+        // Given
+        val state = balancesState(
+            otherDebts = listOf(debt(DebtKind.BETWEEN_OTHERS)),
+            simplification = simplified,
+        )
+
+        // When
+        val showsCard = state.showsSimplificationCard
+
+        // Then
+        assertTrue(showsCard)
+    }
+
+    @Test
+    fun `GIVEN the switch on and a pair with me WHEN reading the simplification card THEN it shows`() {
+        // Given
+        val state = balancesState(
+            myDebts = listOf(debt(DebtKind.OWES_YOU)),
+            simplification = simplified,
+        )
+
+        // When
+        val showsCard = state.showsSimplificationCard
+
+        // Then
+        assertTrue(showsCard)
+    }
+
+    @Test
+    fun `GIVEN the switch on and no pair left WHEN reading the simplification card THEN it hides`() {
+        // Given
+        val state = balancesState(
+            hasBills = true,
+            simplification = DebtSimplificationSummary(
+                paymentCount = 0,
+                unsimplifiedPaymentCount = 2,
+            ),
+        )
+
+        // When
+        val showsCard = state.showsSimplificationCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    @Test
+    fun `GIVEN the switch off and pairs WHEN reading the simplification card THEN it hides`() {
+        // Given
+        val state = balancesState(
+            myDebts = listOf(debt(DebtKind.YOU_OWE)),
+            otherDebts = listOf(debt(DebtKind.BETWEEN_OTHERS)),
+        )
+
+        // When
+        val showsCard = state.showsSimplificationCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    private val simplified = DebtSimplificationSummary(
+        paymentCount = 1,
+        unsimplifiedPaymentCount = 2,
+    )
+
     private fun debt(kind: DebtKind): DebtRow = DebtRow(
         fromMemberId = "member-1",
         toMemberId = "member-2",
@@ -306,6 +375,7 @@ class GroupDetailUiStateTest {
         toFace = null,
         amountMinor = 5_000,
         kind = kind,
+        isSimplified = false,
     )
 
     private fun balancesState(
@@ -313,6 +383,7 @@ class GroupDetailUiStateTest {
         hasBills: Boolean = false,
         myDebts: List<DebtRow> = emptyList(),
         otherDebts: List<DebtRow> = emptyList(),
+        simplification: DebtSimplificationSummary? = null,
     ): GroupDetailUiState = state(
         isLoaded = isLoaded,
         hasBills = hasBills,
@@ -320,6 +391,7 @@ class GroupDetailUiStateTest {
         tab = GroupTab.BALANCES,
         myDebts = myDebts,
         otherDebts = otherDebts,
+        simplification = simplification,
     )
 
     private fun state(
@@ -362,6 +434,8 @@ class GroupDetailUiStateTest {
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
         activityUnreadCount = 0,
+        simplification = null,
+        simplifyConflict = null,
     )
 
     private val day = ExpenseDay(

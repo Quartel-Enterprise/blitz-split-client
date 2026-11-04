@@ -42,6 +42,7 @@ private val groupObjectKinds = setOf(
     ActivityKind.INVITE_LINK_CHANGED,
     ActivityKind.MEMBER_JOINED,
     ActivityKind.MEMBER_LEFT,
+    ActivityKind.SIMPLIFY_DEBTS_CHANGED,
 )
 
 @StringRes
@@ -77,6 +78,12 @@ private fun sentenceOf(item: ActivityItem): Int = when (item.kind) {
     ActivityKind.MEMBER_RENAMED -> R.string.activity_kind_member_renamed
 
     ActivityKind.CHARGE_SENT -> R.string.activity_kind_charge_sent
+
+    ActivityKind.SIMPLIFY_DEBTS_CHANGED -> if (item.isSimplifyTurnedOn) {
+        R.string.activity_kind_simplify_on
+    } else {
+        R.string.activity_kind_simplify_off
+    }
 
     // Why: "Ana apagou um comentário em Jantar" once the comment is gone, with no text under it.
     ActivityKind.COMMENT_ADDED -> if (item.isCommentDeleted) {
@@ -176,6 +183,9 @@ internal fun detailTextOf(item: ActivityItem): String? {
         ActivityKind.MEMBER_RELEASED -> stringResource(R.string.activity_detail_released)
 
         ActivityKind.CHARGE_SENT -> amount?.let { stringResource(R.string.activity_detail_charge, it) }
+
+        // Why: a change still in the queue has no pairs yet; its time already says "Aguardando envio".
+        ActivityKind.SIMPLIFY_DEBTS_CHANGED -> item.simplification?.let { simplificationDetailOf(it, money) }
 
         // Why: "“A cerveja que ficou comigo foi do Bruno…”", the comment under "Carla comentou em Jantar".
         ActivityKind.COMMENT_ADDED ->
@@ -326,6 +336,7 @@ internal fun openLabelOf(item: ActivityItem): String {
         return stringResource(if (deletion.isGroup) R.string.activity_group_deleted else R.string.activity_bill_deleted)
     }
     val isPayment = item.kind == ActivityKind.PAYMENT_RECORDED || item.kind == ActivityKind.PAYMENT_UNDONE
+    if (item.kind == ActivityKind.SIMPLIFY_DEBTS_CHANGED) return stringResource(R.string.activity_open_group_balances)
     return stringResource(
         when (item.target) {
             ActivityTarget.BILL -> R.string.activity_open_bill

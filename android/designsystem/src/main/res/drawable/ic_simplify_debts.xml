@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Simplificar dívidas" (page 13): three people joined, the boards' icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M4,5a2,2 0,1 0,4 0a2,2 0,1 0,-4 0M16,5a2,2 0,1 0,4 0a2,2 0,1 0,-4 0M10,19a2,2 0,1 0,4 0a2,2 0,1 0,-4 0M7,7L11,17M17,7L13,17"
+        android:strokeWidth="2"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.activity.data.mapper
 
 import com.quare.blitzsplit.core.activity.data.dto.ActivityEventDto
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -61,6 +62,9 @@ class ActivityMapperImplTest {
                 isPending = false,
                 commentId = null,
                 isCommentDeleted = false,
+                debtsBefore = emptyList(),
+                debtsAfter = emptyList(),
+                memberNames = emptyMap(),
             ),
             event,
         )
@@ -112,6 +116,82 @@ class ActivityMapperImplTest {
         assertEquals("pix", event?.code)
         assertEquals("ana", event?.fromMemberId)
         assertEquals("bruno", event?.toMemberId)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas turned on WHEN reading it THEN keeps the pairs before and after and the names`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """
+                {"name":"Viagem Floripa","simplify_debts":true,
+                "before":[{"from":"diego","to":"bruno","amount":6400},{"from":"bruno","to":"pierre","amount":6400}],
+                "after":[{"from":"diego","to":"pierre","amount":6400},{"from":"x","amount":1}],
+                "names":{"diego":"Diego","bruno":"Bruno","pierre":"Pierre"}}
+            """,
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(ActivityKind.SIMPLIFY_DEBTS_CHANGED, event?.kind)
+        assertEquals(ActivityEvent.SIMPLIFY_ON, event?.code)
+        assertEquals("Viagem Floripa", event?.subject)
+        assertEquals(
+            listOf(ActivityDebt("diego", "bruno", 6_400L), ActivityDebt("bruno", "pierre", 6_400L)),
+            event?.debtsBefore,
+        )
+        assertEquals(listOf(ActivityDebt("diego", "pierre", 6_400L)), event?.debtsAfter)
+        assertEquals(mapOf("diego" to "Diego", "bruno" to "Bruno", "pierre" to "Pierre"), event?.memberNames)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas turned off WHEN reading it THEN its code is off`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """{"name":"Viagem Floripa","simplify_debts":false,"before":[],"after":[]}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(ActivityEvent.SIMPLIFY_OFF, event?.code)
+        assertEquals(emptyMap(), event?.memberNames)
+    }
+
+    @Test
+    fun `GIVEN a group with Simplificar dividas changed here WHEN reading it queued THEN it is that change`() {
+        // Given
+        val row = groupRow(isNew = false).copy(
+            simplifyDebtsPending = true,
+            simplifyDebts = true,
+        )
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals(ActivityKind.SIMPLIFY_DEBTS_CHANGED, queued.kind)
+        assertEquals(ActivityEvent.SIMPLIFY_ON, queued.code)
+    }
+
+    @Test
+    fun `GIVEN a new group turned on before going up WHEN reading it queued THEN it is still a group created`() {
+        // Given
+        val row = groupRow(isNew = true).copy(
+            simplifyDebtsPending = true,
+            simplifyDebts = true,
+        )
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals(ActivityKind.GROUP_CREATED, queued.kind)
+        assertEquals("home", queued.code)
     }
 
     @Test
@@ -1045,6 +1125,8 @@ class ActivityMapperImplTest {
         type = "home",
         isNew = isNew,
         updatedAt = 6_000L,
+        simplifyDebtsPending = false,
+        simplifyDebts = false,
     )
 
     private companion object {

@@ -41,6 +41,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverK
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -112,6 +113,10 @@ class RegisterPaymentViewModel(
 
     // Why: while the account's copy is not whole, a receiver with no key cached may still have some coming.
     private var firstDownload: FirstDownloadProgress? = null
+
+    // Why: the group's "Simplificar dívidas" and the debt as the form last showed them (13.5c).
+    private var shownSimplifies: Boolean? = null
+    private var shownDebtMinor = 0L
 
     /*
      * Why: the screen under the form, owed the notice of what it records. The entry itself, not an equal route: a
@@ -208,7 +213,25 @@ class RegisterPaymentViewModel(
 
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
+
+            RegisterPaymentUiEvent.OnPaidAnywayClicked -> payAnyway()
         }
+    }
+
+    // Why: what was owed as the form opened, paid now, the way the form or "Pagar Ana" would have recorded it.
+    private fun payAnyway() {
+        val state = uiState.value
+        val notice = state.simplifyChange ?: return
+        if (!state.canPayAnyway) return
+        save(
+            amountMinor = notice.previousDebtMinor,
+            method = when {
+                !state.offersReceiverKeys || state.prefersForm -> state.method
+                state.shownKeyMethod == PaymentMethod.PIX -> SettlementMethod.PIX
+                else -> SettlementMethod.OTHER
+            },
+            paidAt = currentTimeMillis(),
+        )
     }
 
     private fun createInitialState(): RegisterPaymentUiState {
@@ -236,6 +259,8 @@ class RegisterPaymentViewModel(
             prefersForm = false,
             pixCode = null,
             pixQrCode = null,
+            simplifiedNote = null,
+            simplifyChange = null,
         )
     }
 
@@ -260,11 +285,15 @@ class RegisterPaymentViewModel(
         observeGroupBalances: ObserveGroupBalances,
         observePeopleBalances: ObservePeopleBalances,
     ): Flow<PaymentTarget?> = when (route) {
+        /*
+         * Why: the balances follow the group's "Simplificar dívidas" one read after the group does, so the pairs are
+         * shown with this group's switch, never taken as paid for a moment (13.5c).
+         */
         is Route.RegisterPayment -> combine(observeGroup(route.groupId), observeGroupBalances(route.groupId)) {
             group,
             balances,
             ->
-            group?.let { pairTargetOf(route, it, balances) }
+            group?.let { pairTargetOf(route, it, balances.toShownFor(it)) }
         }
 
         is Route.SettleUp -> observePeopleBalances().map { people -> personTargetOf(route, people) }
@@ -296,6 +325,11 @@ class RegisterPaymentViewModel(
                 ),
             ),
             groupParts = emptyList(),
+            simplifiedNote = simplifiedPairNoteOrNull(route, group, balances),
+            simplifiesDebts = group.simplifiesDebts,
+            simplifyChangedByName = group.simplifyDebtsChangedBy?.let { userId ->
+                group.members.firstOrNull { it.userId == userId }?.name
+            },
         )
     }
 
@@ -324,6 +358,9 @@ class RegisterPaymentViewModel(
             groupName = person.groups.singleOrNull()?.groupName,
             legs = person.legs,
             groupParts = person.groups,
+            simplifiedNote = null,
+            simplifiesDebts = null,
+            simplifyChangedByName = null,
         )
     }
 
@@ -331,11 +368,14 @@ class RegisterPaymentViewModel(
         latest = target
         // Why: once saved, the debt drops by the payment; the form is on its way out and keeps what it shows.
         if (uiState.value.isSaving) return
+        if (showsSimplifyChange(target)) return
         isDebtGone = target == null || target.debtMinor == 0L
         if (target == null || isDebtGone) {
             leave()
             return
         }
+        shownDebtMinor = target.debtMinor
+        shownSimplifies = target.simplifiesDebts
         val download = firstDownload
         /*
          * Why: someone with no account has no key to wait for; one with keys cached already shows them. Offline nothing
@@ -362,6 +402,8 @@ class RegisterPaymentViewModel(
                  */
                 prefersForm = it.prefersForm || (!wereKeysKnown && keys.isLoaded() && receiverKeys.isEmpty()),
                 groupName = target.groupName,
+                simplifiedNote = target.simplifiedNote,
+                simplifyChange = null,
                 // Why: until something is typed, the field follows the whole debt as a sync changes it.
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {
                     it.amountText
@@ -372,6 +414,28 @@ class RegisterPaymentViewModel(
             )
         }
         refreshPixCode()
+    }
+
+    /*
+     * Why: 13.5c: the pair owes nothing only because someone turned "Simplificar dívidas" the other way meanwhile, so
+     * the form stays and says so; the Pix may already be gone.
+     */
+    private fun showsSimplifyChange(target: PaymentTarget?): Boolean {
+        val simplifies = target?.simplifiesDebts ?: return false
+        val shown = shownSimplifies ?: return false
+        if (target.debtMinor != 0L || simplifies == shown || shownDebtMinor == 0L) return false
+        isDebtGone = false
+        uiState.update {
+            it.copy(
+                simplifyChange = SimplifyChangedNotice(
+                    changedByName = target.simplifyChangedByName,
+                    simplifiesDebts = simplifies,
+                    groupName = target.groupName.orEmpty(),
+                    previousDebtMinor = shownDebtMinor,
+                ),
+            )
+        }
+        return true
     }
 
     // Why: a QR code is only encoded again once the code it draws changed: another key, debt or method.

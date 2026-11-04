@@ -72,4 +72,12 @@
     <string name="group_detail_joined_message">Tudo que for lançado para você aparece aqui.</string>
     <string name="group_detail_protect_title">Proteja seu acesso</string>
     <string name="group_detail_protect_message">Você entrou sem conta. Guarde o código ou conecte Google ou Apple.</string>
+    <plurals name="group_detail_simplified_text">
+        <item quantity="one">%1$d pagamento em vez de %2$d. Você pode pagar ou receber de quem não dividiu conta com você.</item>
+        <item quantity="other">%1$d pagamentos em vez de %2$d. Você pode pagar ou receber de quem não dividiu conta com você.</item>
+    </plurals>
+    <string name="group_detail_simplified_minimal">Já está no mínimo de pagamentos. As próximas contas já entram simplificadas.</string>
+    <string name="group_detail_simplified_how">Como funciona</string>
+    <string name="group_detail_simplified_pair">Par novo da simplificação</string>
+    <string name="group_detail_balances_note_simplified">Com as dívidas simplificadas, o app sugere o menor número de pagamentos. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência).</string>
 </resources>

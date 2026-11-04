@@ -18,6 +18,7 @@ import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { BalancesTab } from '@/features/balances/BalancesTab'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
+import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -51,6 +52,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   }, [presenter, showsBillDeletedNotice])
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   useCategoryTeachNotice(presenter, state?.teach)
+  useSimplifyConflictNotice(presenter, state?.simplifyConflict)
   if (!presenter || !state) return null
   if (!state.isLoaded) return <GroupPageSkeleton groupId={route.groupId ?? ''} homeTab={state.homeTab as HomeTab} onBack={() => presenter.back()} />
 

@@ -64,7 +64,14 @@ data class RegisterPaymentUiState(
      */
     val pixCode: String?,
     val pixQrCode: QrCode?,
+    // Why: the pair is one "Simplificar dívidas" made or grew (13.5); null otherwise and across groups.
+    val simplifiedNote: SimplifiedPairNote?,
+    // Why: 13.5c, which takes the place of the form or "Pagar Ana" until closed or paid anyway.
+    val simplifyChange: SimplifyChangedNotice?,
 ) {
+    val canPayAnyway: Boolean
+        get() = simplifyChange != null && !isSaving
+
     /*
      * Why: "Pagar Ana" instead of the form while this device's user pays someone with a key: copy it, pay in the bank
      * or the wallet, and "Marcar como pago" records the whole debt.

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.activity.presentation.model
 
+import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -47,14 +48,24 @@ data class ActivityItem(
     val deletion: ActivityDeletion?,
     // Why: the bill or member it is about, which "Mais em Jantar" gathers the other events of.
     val targetId: String?,
+    // Why: "Simplificar dívidas" turned on or off (13.7); null for anything else and while it waits to go up.
+    val simplification: ActivitySimplification?,
 ) {
     // Why: "Valor R$ 612,00 → R$ 642,00 · mais 2 mudanças", the first change and how many others.
     val moreChangesCount: Int
         get() = (changes.size - 1).coerceAtLeast(0)
 
-    // Why: "Ver mudanças" only for a bill's edit, whose rows are the bill's history.
+    /*
+     * Why: "Ver mudanças" for a bill's edit, whose rows are the bill's history, and for "Simplificar dívidas", whose
+     * rows are what changed for this device's user (13.7b).
+     */
     val hasChangesToShow: Boolean
-        get() = kind == ActivityKind.BILL_EDITED && changes.isNotEmpty()
+        get() = (kind == ActivityKind.BILL_EDITED && changes.isNotEmpty()) ||
+            simplification?.myChanges?.isNotEmpty() == true
+
+    // Why: "ligou Simplificar dívidas em" rather than "desligou".
+    val isSimplifyTurnedOn: Boolean
+        get() = code == ActivityEvent.SIMPLIFY_ON
 
     val isTargetDeleted: Boolean
         get() = deletion != null

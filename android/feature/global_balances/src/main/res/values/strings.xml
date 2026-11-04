@@ -70,4 +70,5 @@
     <string name="global_balances_key_phone">Phone</string>
     <string name="global_balances_key_email">Email</string>
     <string name="global_balances_key_random">Random key</string>
+    <string name="global_balances_message_reroute">%1$s simplified its debts, so instead of paying %2$s you pay me directly; your total didn\'t change.</string>
 </resources>

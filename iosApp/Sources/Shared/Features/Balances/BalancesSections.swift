@@ -2,8 +2,8 @@ import Shared
 import SwiftUI
 
 /// "Balances", the group's tab with who owes whom, each pair once and already netted, under the group's header:
-/// "Nobody owes anything yet" before the first bill, "Everyone's settled up" once nobody owes, then "With you" and
-/// "Between the others", and the note on how the pairs are netted. A pair opens "Record payment" over the group.
+/// "Nobody owes anything yet" before the first bill, "Everyone's settled up" once nobody owes, "Simplified debts" while
+/// the group simplifies them, then "With you" and "Between the others", and the note on how the pairs are netted. A pair opens "Record payment" over the group.
 struct BalancesSections: View {
     let model: GroupDetailModel
 
@@ -35,6 +35,14 @@ struct BalancesSections: View {
                 }
             }
         }
+        // "Simplified debts" (13.4) at the top of the pairs, why someone may owe a person they never split a bill with
+        if state.showsSimplificationCard, let simplification = state.simplification {
+            Section {
+                SimplifiedDebtsCard(simplification: simplification) {
+                    model.send(GroupDetailUiEventOnSimplifyDebtsInfoClicked.shared)
+                }
+            }
+        }
         if !state.myDebts.isEmpty {
             Section {
                 debtRows(state.myDebts)
@@ -63,10 +71,16 @@ struct BalancesSections: View {
         }
         if state.showsDebtNote {
             Section {
-                Text("Each pair's debts are already netted: if Ana owes you and you owe her, only the difference shows. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                Group {
+                    if state.simplification != nil {
+                        Text("With simplified debts, the app suggests the fewest payments. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).")
+                    } else {
+                        Text("Each pair's debts are already netted: if Ana owes you and you owe her, only the difference shows. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).")
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             }
             .listRowBackground(Color.clear)
         }
@@ -158,8 +172,14 @@ private struct DebtRowView: View {
             HStack(spacing: 12) {
                 DebtFaces(from: row.fromFace, to: row.toFace)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: sentence)
-                        .lineLimit(2)
+                    HStack(alignment: .firstTextBaseline, spacing: 5) {
+                        Text(verbatim: sentence)
+                            .lineLimit(2)
+                        // A pair "Simplify debts" made, which no bill did (13.4)
+                        if row.isSimplified {
+                            SimplifiedPairIcon()
+                        }
+                    }
                     Text(verbatim: amount)
                         .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
@@ -177,7 +197,9 @@ private struct DebtRowView: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: "\(sentence), \(amount)"))
+        .accessibilityLabel(row.isSimplified
+            ? Text(verbatim: "\(sentence), \(amount), \(String(localized: "New pair from simplifying"))")
+            : Text(verbatim: "\(sentence), \(amount)"))
         .accessibilityHint(Text(buttonTitle))
         .accessibilityAddTraits(.isButton)
     }

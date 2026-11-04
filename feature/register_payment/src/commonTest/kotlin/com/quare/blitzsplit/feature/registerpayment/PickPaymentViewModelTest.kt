@@ -550,6 +550,66 @@ class PickPaymentViewModelTest {
         assertEquals(listOf(Route.Home, Route.PickPayment, Route.Profile), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN a group with Simplificar dividas on WHEN the picker opens THEN lists the simplified pairs`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(group(TRIP, "Viagem Floripa", simplifiesDebts = true)))
+
+            // When
+            val pairs = viewModel.uiState.value.groups
+                .single()
+                .pairs
+
+            // Then
+            assertEquals(simplifiedTripPairs, pairs.map { Triple(it.fromMemberId, it.toMemberId, it.amountMinor) })
+        }
+
+    @Test
+    fun `GIVEN the picker open WHEN someone turns Simplificar dividas on THEN lists the simplified pairs`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            groups.groups.update { list -> list.map { it.copy(simplifiesDebts = true) } }
+
+            // Then
+            val pairs = viewModel.uiState.value.groups
+                .single()
+                .pairs
+            assertEquals(simplifiedTripPairs, pairs.map { Triple(it.fromMemberId, it.toMemberId, it.amountMinor) })
+        }
+
+    @Test
+    fun `GIVEN Simplificar dividas on WHEN tapping a pair only the simplification made THEN opens the form for it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(group(TRIP, "Viagem Floripa", simplifiesDebts = true)))
+            val tap = PickPaymentUiEvent.OnPairClicked(
+                TRIP,
+                fromMemberId = DIEGO,
+                toMemberId = ANA,
+            )
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.RegisterPayment(
+                        TRIP,
+                        fromMemberId = DIEGO,
+                        toMemberId = ANA,
+                        offersReceiverKeys = false,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
     private val pierre = member(PIERRE, "Pierre Vieira", AvatarColor.BLUE, isMe = true)
     private val ana = member(ANA, "Ana Paula", AvatarColor.PEACH)
     private val bruno = member(BRUNO, "Bruno", AvatarColor.LILAC)
@@ -590,6 +650,16 @@ class PickPaymentViewModelTest {
         ),
     )
 
+    /*
+     * Why: tripBills simplified, nets Diego -80, Pierre -20, Ana +40 and Bruno +60: Diego pays Bruno 60,00, then Pierre
+     * and Diego pay Ana 20,00 each (Pierre first, joined before), three payments instead of four; yours first.
+     */
+    private val simplifiedTripPairs = listOf(
+        Triple(PIERRE, ANA, 2_000L),
+        Triple(DIEGO, BRUNO, 6_000L),
+        Triple(DIEGO, ANA, 2_000L),
+    )
+
     private fun member(
         id: String,
         name: String,
@@ -610,6 +680,7 @@ class PickPaymentViewModelTest {
         id: String,
         name: String,
         updatedAt: Long = 0L,
+        simplifiesDebts: Boolean = false,
     ): Group = Group(
         id = id,
         name = name,
@@ -624,6 +695,10 @@ class PickPaymentViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = updatedAt,
+        simplifiesDebts = simplifiesDebts,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: a bill the payer paid whole for the debtor alone, so the debtor owes the payer all of it.

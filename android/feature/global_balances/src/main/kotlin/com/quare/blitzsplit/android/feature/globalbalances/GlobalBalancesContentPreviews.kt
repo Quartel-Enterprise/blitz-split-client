@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
 import software.quare.loadable.Loadable
@@ -50,7 +51,12 @@ private val previewPeople = listOf(
         "Carla",
         3_290L,
         listOf(
-            createPreviewPart("Viagem Floripa", previewInitialsOf("Viagem Floripa"), 9_840L),
+            createPreviewPart(
+                name = "Viagem Floripa",
+                initials = previewInitialsOf("Viagem Floripa"),
+                amountMinor = 9_840L,
+                insteadOf = listOf("Elisa"),
+            ),
             createPreviewPart("Apê 302", "A3", -9_800L),
             createPreviewPart("Churrasco de sábado", "CS", 3_250L),
         ),
@@ -72,6 +78,12 @@ private val previewCharge = ChargeDraft(
     hasPixKey = true,
     pixKeyChoice = null,
     editedMessage = null,
+    reroutes = listOf(
+        ChargeReroute(
+            groupName = "Viagem Floripa",
+            insteadOfNames = listOf("Elisa"),
+        ),
+    ),
 )
 private val previewPixKey = PaymentKey(
     id = "pix",
@@ -85,6 +97,8 @@ private fun createPreviewPart(
     name: String,
     initials: String,
     amountMinor: Long,
+    // Why: a group whose "Simplificar dívidas" made this pair, instead of paying whom (13.6).
+    insteadOf: List<String> = emptyList(),
 ): PersonGroupBalance = PersonGroupBalance(
     groupId = name,
     groupName = name,
@@ -93,6 +107,8 @@ private fun createPreviewPart(
     memberId = "member",
     meMemberId = "me",
     amountMinor = amountMinor,
+    isSimplified = insteadOf.isNotEmpty(),
+    insteadOfNames = insteadOf,
 )
 
 private fun createPreviewRow(

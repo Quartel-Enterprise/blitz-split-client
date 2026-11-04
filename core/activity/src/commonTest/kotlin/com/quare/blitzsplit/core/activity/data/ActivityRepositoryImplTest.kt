@@ -1615,6 +1615,8 @@ class ActivityRepositoryImplTest {
         type = "home",
         isNew = true,
         updatedAt = updatedAt,
+        simplifyDebtsPending = false,
+        simplifyDebts = false,
     )
 
     private fun prepareScenario(

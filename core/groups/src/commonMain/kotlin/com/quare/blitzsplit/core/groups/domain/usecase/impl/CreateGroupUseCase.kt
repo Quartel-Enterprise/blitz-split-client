@@ -57,6 +57,11 @@ class CreateGroupUseCase(
                     isCreatedByMe = true,
                     defaultSplit = null,
                     updatedAt = createdAt,
+                    // Why: off in every new group (13.1).
+                    simplifiesDebts = false,
+                    isSimplifyDebtsPending = false,
+                    simplifyDebtsChangedBy = null,
+                    simplifyDebtsConflictBy = null,
                 ),
                 createdAt = createdAt,
             ).map { id }

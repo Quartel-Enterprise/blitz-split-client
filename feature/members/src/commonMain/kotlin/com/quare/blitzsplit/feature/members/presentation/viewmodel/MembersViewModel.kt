@@ -88,6 +88,7 @@ class MembersViewModel(
     private var balances = GroupBalances(
         debts = emptyList(),
         hasBills = false,
+        unsimplifiedDebts = null,
     )
 
     private var expenses: List<Expense> = emptyList()
@@ -105,7 +106,9 @@ class MembersViewModel(
             observeExpenses(route.groupId),
             observeSettlements(route.groupId),
         ) { group, expenses, settlements ->
-            this.balances = GroupBalances.of(expenses, settlements)
+            this.balances = group
+                ?.let { GroupBalances.of(it, expenses, settlements) }
+                ?: GroupBalances.of(expenses, settlements)
             this.expenses = expenses
             if (group != null) show(group)
         }.launchIn(viewModelScope)

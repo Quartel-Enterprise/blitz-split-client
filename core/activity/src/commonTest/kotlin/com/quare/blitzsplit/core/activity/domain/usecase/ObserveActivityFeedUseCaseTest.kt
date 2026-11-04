@@ -167,6 +167,9 @@ class ObserveActivityFeedUseCaseTest {
         isPending = false,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = emptyList(),
+        debtsAfter = emptyList(),
+        memberNames = emptyMap(),
     )
 
     private fun prepareScenario(status: AccountStatus) {

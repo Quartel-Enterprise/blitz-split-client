@@ -34,6 +34,7 @@ import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
+import { SimplifyDebtsInfoDialog } from '@/features/simplify-debts/SimplifyDebtsInfoDialog'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { t } from '@/i18n'
@@ -132,14 +133,17 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   const isEditGroup = top.name === 'edit-group'
   // Why: "Divisão padrão" takes Editar grupo's place, which stays mounted under it with what was typed.
   const isDefaultSplit = top.name === 'default-split'
-  const editGroup = isEditGroup ? top : isDefaultSplit && stack[stack.length - 2]?.name === 'edit-group' ? stack[stack.length - 2] : undefined
+  // Why: "Como funciona" of "Simplificar dívidas" takes Editar grupo's place the same way, or opens over the group's Saldos.
+  const isSimplifyDebtsInfo = top.name === 'simplify-debts-info'
+  const isOverEditGroup = (isDefaultSplit || isSimplifyDebtsInfo) && stack[stack.length - 2]?.name === 'edit-group'
+  const editGroup = isEditGroup ? top : isOverEditGroup ? stack[stack.length - 2] : undefined
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
-  let pageIndex = stack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
+  let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = stack[pageIndex]?.name === 'bill-detail' ? stack[pageIndex] : undefined
@@ -172,8 +176,9 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
           <StackLayers backStack={backStack.slice(mapIndex)} />
         </div>
       )}
-      {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
+      {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isOverEditGroup} />}
       {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
+      {isSimplifyDebtsInfo && <SimplifyDebtsInfoDialog key={top.currency ?? ''} route={top} />}
       {isPickPayment && <PickPaymentDialog />}
       {isRegisterPayment && (
         <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
