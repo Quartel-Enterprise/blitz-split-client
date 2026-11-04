@@ -106,9 +106,10 @@ class AppViewModel(
         viewModelScope.launch {
             val hasProfile = observeProfile().first() != null
             navigator.replaceAll(if (hasProfile) Route.Home else Route.Welcome)
-            startScreenViews()
             isThemeKnown.await()
             uiState.value = AppUiState.READY
+            // Why: only once the first screen is drawn, so a link opening over it before it stayed never counts it.
+            startScreenViews()
         }
     }
 
