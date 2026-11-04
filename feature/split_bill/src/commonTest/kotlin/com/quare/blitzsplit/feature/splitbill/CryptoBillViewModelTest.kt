@@ -39,6 +39,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -52,6 +54,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 // Why: Rachar conta in a group that splits in bitcoin or ether, with or without Preferências' "Bitcoin em satoshis".
@@ -60,6 +63,7 @@ class CryptoBillViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var bitcoinInSats: MutableStateFlow<Boolean>
+    private lateinit var groupsRead: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
 
@@ -834,6 +838,535 @@ class CryptoBillViewModelTest {
             assertEquals(1_250_000_000L, state.amountMinor)
         }
 
+    @Test
+    fun `GIVEN 8 decimals typed WHEN Bitcoin em satoshis turns on meanwhile THEN the amount keeps its value in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = false)
+            typeDigits("12345")
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertTrue(state.split.showsSats)
+            assertEquals("12.345", state.amountText)
+            assertEquals(12_345L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN sats typed in English WHEN Bitcoin em satoshis turns off THEN the amount has a dot before 8 decimals`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sats = true,
+                decimalSeparator = '.',
+            )
+            typeDigits("12345")
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("0.00012345", state.amountText)
+            assertEquals(12_345L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN 12 reais and 50 typed WHEN Bitcoin em satoshis turns on THEN the text stays as typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip),
+                route = newRoute(TRIP_ID),
+                sats = false,
+            )
+            typeAmount("12,50")
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("12,50", state.amountText)
+            assertEquals(1_250L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN an ether amount typed WHEN Bitcoin em satoshis turns off THEN the text stays as typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(ether),
+                route = newRoute(ETH_ID),
+                sats = true,
+            )
+            typeDigits("12345")
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("0,00012345", state.amountText)
+            assertEquals(12_345L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN Varias pessoas pagaram open in sats WHEN Bitcoin em satoshis turns off THEN each row keeps its value`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(PIERRE, "600"))
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "400"))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val sheet = sheet()
+            assertFalse(sheet.showsSats)
+            assertEquals(mapOf(PIERRE to "0,00000600", ANA to "0,00000400", BRUNO to ""), sheet.amountByMember())
+            assertEquals(listOf(ExpensePayer(PIERRE, 600L), ExpensePayer(ANA, 400L)), sheet.payers)
+            assertTrue(sheet.addsUp)
+        }
+
+    @Test
+    fun `GIVEN Varias pessoas pagaram open in sats turned off WHEN typing a row THEN it types 8 decimals`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+            bitcoinInSats.value = false
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "1"))
+
+            // Then
+            val sheet = sheet()
+            assertEquals("0,00000001", sheet.rows.first { it.memberId == ANA }.amountText)
+            assertTrue(sheet.payers.contains(ExpensePayer(ANA, 1L)))
+        }
+
+    @Test
+    fun `GIVEN several payers confirmed in sats WHEN Bitcoin em satoshis turns off THEN each keeps what they paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(PIERRE, "600"))
+            viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "400"))
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val several = assertNotNull(viewModel.uiState.value.severalPayers)
+            assertFalse(several.showsSats)
+            assertEquals(mapOf(PIERRE to "0,00000600", ANA to "0,00000400", BRUNO to ""), several.amountByMember())
+            assertEquals(listOf(ExpensePayer(PIERRE, 600L), ExpensePayer(ANA, 400L)), several.payers)
+            assertTrue(several.addsUp)
+        }
+
+    @Test
+    fun `GIVEN Valores open in sats WHEN Bitcoin em satoshis turns off THEN each part keeps its value`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.AMOUNT))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(PIERRE, "600"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "400"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(BRUNO, ""))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val editor = editor()
+            assertFalse(editor.showsSats)
+            assertEquals(mapOf(PIERRE to "0,00000600", ANA to "0,00000400", BRUNO to ""), editor.valueByMember())
+            assertEquals(mapOf(PIERRE to 600L, ANA to 400L, BRUNO to null), editor.shareByMember())
+            assertTrue(editor.addsUp)
+        }
+
+    @Test
+    fun `GIVEN a bill split by Valores in sats WHEN Bitcoin em satoshis turns off THEN its split keeps each part`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.AMOUNT))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(PIERRE, "600"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "400"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(BRUNO, ""))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val split = viewModel.uiState.value.split
+            assertEquals(SplitMode.AMOUNT, split.mode)
+            assertFalse(split.showsSats)
+            assertEquals(mapOf(PIERRE to "0,00000600", ANA to "0,00000400", BRUNO to ""), split.valueByMember())
+            assertEquals(mapOf(PIERRE to 600L, ANA to 400L, BRUNO to null), split.shareByMember())
+            assertTrue(split.addsUp)
+        }
+
+    @Test
+    fun `GIVEN Porcentagem open in sats WHEN Bitcoin em satoshis turns off THEN the percentages stay as typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.PERCENT))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(PIERRE, "60"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(ANA, "40"))
+            viewModel.onEvent(SplitBillUiEvent.OnPersonValueChanged(BRUNO, ""))
+            val sharesBefore = editor().shareByMember()
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val editor = editor()
+            assertFalse(editor.showsSats)
+            assertEquals(mapOf(PIERRE to "60", ANA to "40", BRUNO to ""), editor.valueByMember())
+            assertEquals(sharesBefore, editor.shareByMember())
+        }
+
+    @Test
+    fun `GIVEN Partes open in sats WHEN Bitcoin em satoshis turns off THEN the parts stay as they were`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            val partsBefore = editor().valueByMember()
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val editor = editor()
+            assertFalse(editor.showsSats)
+            assertEquals(partsBefore, editor.valueByMember())
+        }
+
+    @Test
+    fun `GIVEN an item priced in sats WHEN Bitcoin em satoshis turns off THEN its price keeps its value`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("1000"))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val state = viewModel.uiState.value
+            val item = assertNotNull(state.itemEditor)
+            assertFalse(assertNotNull(state.itemsEditor).showsSats)
+            assertFalse(item.showsSats)
+            assertEquals("0,00001000", item.unitPriceText)
+            assertEquals(1_000L, item.unitPriceMinor)
+        }
+
+    @Test
+    fun `GIVEN an item split by Valor in sats WHEN Bitcoin em satoshis turns off THEN each part keeps its value`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("1000"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.AMOUNT))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonValueChanged(PIERRE, "600"))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val item = assertNotNull(viewModel.uiState.value.itemEditor)
+            assertEquals("0,00000600", item.rows.first { it.person.id == PIERRE }.valueText)
+        }
+
+    @Test
+    fun `GIVEN an item split by Porcentagem in sats WHEN Bitcoin em satoshis turns off THEN the percentages stay`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("1000"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.PERCENT))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonValueChanged(PIERRE, "60"))
+            val valuesBefore = assertNotNull(viewModel.uiState.value.itemEditor).rows.map { it.valueText }
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val item = assertNotNull(viewModel.uiState.value.itemEditor)
+            assertEquals("60", item.rows.first { it.person.id == PIERRE }.valueText)
+            assertEquals(valuesBefore, item.rows.map { it.valueText })
+        }
+
+    @Test
+    fun `GIVEN the couvert typed in sats WHEN Bitcoin em satoshis turns off THEN it keeps its value`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.COUVERT))
+            viewModel.onEvent(SplitBillUiEvent.OnFeeValueChanged("50"))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val fee = assertNotNull(viewModel.uiState.value.feeEditor)
+            assertFalse(fee.showsSats)
+            assertEquals("0,00000050", fee.valueText)
+            assertEquals(50L, fee.value)
+        }
+
+    @Test
+    fun `GIVEN the service percentage open in sats WHEN Bitcoin em satoshis turns off THEN it stays as typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeAmount("1000")
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.SERVICE))
+            viewModel.onEvent(SplitBillUiEvent.OnFeeValueChanged("12"))
+
+            // When
+            bitcoinInSats.value = false
+
+            // Then
+            val fee = assertNotNull(viewModel.uiState.value.feeEditor)
+            assertEquals("12", fee.valueText)
+            assertEquals(12L, fee.value)
+        }
+
+    @Test
+    fun `GIVEN Inicio Ler cupom fiscal on the only bitcoin group WHEN Rachar conta opens THEN the camera is dropped`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = fromHome(BTC_ID, scansReceipt = true))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertNull(state.groupSelection)
+            assertFalse(state.isReceiptCameraRequested)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN a bitcoin bill from Ler cupom fiscal WHEN moving to a real group a sync brought THEN no camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = fromHome(BTC_ID, scansReceipt = true))
+            groups.groups.value = listOf(bitcoin, trip)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN Ler cupom fiscal on a bitcoin group not asking WHEN moving to a real group THEN no camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = newRoute(BTC_ID, scansReceipt = true),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN Inicio Ler cupom fiscal WHEN the question opens on a bitcoin group THEN the request waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(BTC_ID, assertNotNull(state.groupSelection).groupId)
+            assertTrue(state.isReceiptCameraRequested)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN the question open on a bitcoin group WHEN Continuar keeps it THEN the request is dropped`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(BTC_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(BTC_ID, state.groupId)
+            assertNull(state.groupSelection)
+            assertFalse(state.isReceiptCameraRequested)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN Continuar kept the bitcoin group WHEN the bill later moves to a real group THEN no camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN the question closed on a bitcoin group WHEN the bill moves to a real group THEN no camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDismissed)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN the question open on a real group WHEN Continuar keeps it THEN the camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip, bitcoin),
+                route = fromHome(TRIP_ID, scansReceipt = true),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertTrue(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN Inicio Ler cupom fiscal on a bitcoin group WHEN the groups are not read yet THEN the request waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+                areGroupsRead = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertTrue(state.isReceiptCameraRequested)
+            assertFalse(state.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN the groups read after a bitcoin bill showed WHEN picking a real group THEN the camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+                areGroupsRead = false,
+            )
+            groupsRead.value = true
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertTrue(state.showsReceiptCamera)
+        }
+
     // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
@@ -860,6 +1393,8 @@ class CryptoBillViewModelTest {
     private fun SplitEditor.shareByMember(): Map<String, Long?> = rows.associate { it.person.id to it.shareMinor }
 
     private fun SplitEditor.valueByMember(): Map<String, String> = rows.associate { it.person.id to it.valueText }
+
+    private fun PayerAmounts.amountByMember(): Map<String, String> = rows.associate { it.memberId to it.amountText }
 
     private fun newRoute(
         groupId: String = BTC_ID,
@@ -962,8 +1497,10 @@ class CryptoBillViewModelTest {
         sats: Boolean = true,
         storedBills: List<Expense> = emptyList(),
         decimalSeparator: Char = ',',
+        areGroupsRead: Boolean = true,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
+        groupsRead = MutableStateFlow(areGroupsRead)
         expenses = FakeExpenseRepository(initialExpenses = storedBills)
         bitcoinInSats = MutableStateFlow(sats)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
@@ -991,7 +1528,7 @@ class CryptoBillViewModelTest {
             decimalSeparator = { decimalSeparator },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
-            observeGroupsByActivity = { groups.groups },
+            observeGroupsByActivity = { groupsRead.filter { it }.flatMapLatest { groups.groups } },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
             categoryUseCases = BillCategoryUseCases(

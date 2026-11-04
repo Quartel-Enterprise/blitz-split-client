@@ -238,7 +238,12 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupDone -> confirmGroup()
 
-            SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
+            SplitBillUiEvent.OnGroupDismissed -> uiState.update {
+                it
+                    .copy(
+                        groupSelection = null,
+                    ).withReceiptRequestSettled()
+            }
 
             is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 

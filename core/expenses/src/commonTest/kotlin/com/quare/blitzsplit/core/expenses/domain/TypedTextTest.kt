@@ -994,6 +994,173 @@ class TypedTextTest {
         assertEquals("12.345", moved)
     }
 
+    @Test
+    fun `GIVEN a fraction of a bitcoin WHEN switching to satoshis THEN writes the same amount in whole sats`() {
+        // Given
+        val text = "0,00012345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("12.345", converted)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN switching to bitcoin THEN writes the same amount with 8 decimals`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("0,00012345", converted)
+    }
+
+    @Test
+    fun `GIVEN one satoshi WHEN switching to bitcoin THEN it is the eighth decimal`() {
+        // Given
+        val text = "1"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("0,00000001", converted)
+    }
+
+    @Test
+    fun `GIVEN a device with the dot WHEN switching bitcoin to satoshis THEN groups sats with the comma`() {
+        // Given
+        val text = "1.5"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, '.')
+
+        // Then
+        assertEquals("150,000,000", converted)
+    }
+
+    @Test
+    fun `GIVEN 21 million bitcoin WHEN switching to satoshis and back THEN keeps the amount`() {
+        // Given
+        val text = "21.000.000,00000000"
+
+        // When
+        val sats = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+        val bitcoin = TypedText.toUnit(sats, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("2.100.000.000.000.000", sats)
+        assertEquals(text, bitcoin)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN switching bitcoin to satoshis THEN it stays empty`() {
+        // Given
+        val text = ""
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN a text that is no amount WHEN switching satoshis to bitcoin THEN the field is empty`() {
+        // Given
+        val text = "abc"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN zero bitcoin WHEN switching to satoshis THEN the field is empty`() {
+        // Given
+        val text = "0,00000000"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN ether WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "0,00012345"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.ETH, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.ETH, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN reais WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "1.234,56"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.BRL, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.BRL, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN yen WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "1.234"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.JPY, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.JPY, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in the same unit as before WHEN converting the unit THEN keeps the text as it is`() {
+        // Given
+        val sats = "12.345"
+        val bitcoin = "0,5"
+
+        // When
+        val keptSats = TypedText.toUnit(sats, GroupCurrency.BTC, true, true, ',')
+        val keptBitcoin = TypedText.toUnit(bitcoin, GroupCurrency.BTC, false, false, ',')
+
+        // Then
+        assertEquals(sats, keptSats)
+        assertEquals(bitcoin, keptBitcoin)
+    }
+
+    @Test
+    fun `GIVEN an Arabic decimal separator WHEN switching satoshis to bitcoin THEN writes the dot as decimal`() {
+        // Given
+        val text = "12345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, '٫')
+
+        // Then
+        assertEquals("0.00012345", converted)
+    }
+
     // Why: what the field holds after each key, as the ViewModel stores it and hands it back as the previous text.
     private fun typeOneByOne(
         keys: String,
