@@ -15,6 +15,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillPart
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CommentOnSharedBillUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSharedBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadSharedBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeBillShareLinkRepository
@@ -34,6 +37,15 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillStat
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,15 +59,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Instant
 
 class SharedBillViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -507,6 +510,7 @@ class SharedBillViewModelTest {
                     Route.BillDetail(
                         groupId = GROUP_ID,
                         expenseId = EXPENSE_ID,
+                        focusCommentId = null,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1064,7 +1068,7 @@ class SharedBillViewModelTest {
             assertEquals("photo-2", viewModel.uiState.value.viewedAttachmentId)
         }
 
-    private val route = Route.SharedBill(code = CODE)
+    private val route = Route.SharedBill(code = CODE, commentId = null)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlyToday = Instant.parse("2026-10-30T01:00:00Z").toEpochMilliseconds()
@@ -1156,6 +1160,10 @@ class SharedBillViewModelTest {
         viaLink = viaLink,
         postedAt = yesterdayEvening,
         isPending = false,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     // Why: by default Bruno paid R$ 642 split equally among Ana, Bruno and Carla, seen by someone signed in.
@@ -1213,6 +1221,9 @@ class SharedBillViewModelTest {
             navigator = navigator,
             loadSharedBill = LoadSharedBillUseCase(links),
             commentOnSharedBill = CommentOnSharedBillUseCase(links),
+            editSharedBillComment = EditSharedBillCommentUseCase(links),
+            deleteSharedBillComment = DeleteSharedBillCommentUseCase(links),
+            likeSharedBillComment = LikeSharedBillCommentUseCase(links),
             observeExpense = ObserveExpenseUseCase(expenses),
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccountStatus = ObserveAccountStatusUseCase(FakeAccountRepository(accountStatus)),

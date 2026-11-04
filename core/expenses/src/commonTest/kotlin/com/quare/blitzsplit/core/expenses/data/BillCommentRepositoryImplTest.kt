@@ -3,12 +3,21 @@ package com.quare.blitzsplit.core.expenses.data
 import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.dto.BillCommentDto
+import com.quare.blitzsplit.core.expenses.data.dto.BillCommentLikeDto
+import com.quare.blitzsplit.core.expenses.data.dto.RemoteBillCommentLikeDto
 import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.BillCommentRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -17,11 +26,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 class BillCommentRepositoryImplTest {
     private lateinit var local: FakeBillCommentLocalDataSource
@@ -93,6 +97,10 @@ class BillCommentRepositoryImplTest {
                 viaLink = false,
                 postedAt = 1L,
                 isPending = true,
+                editedAt = null,
+                isDeleted = false,
+                isMine = false,
+                likes = emptyList(),
             ),
             comment,
         )
@@ -506,6 +514,10 @@ class BillCommentRepositoryImplTest {
         viaLink = false,
         postedAt = 1L,
         isPending = true,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     private fun entity(
@@ -529,6 +541,8 @@ class BillCommentRepositoryImplTest {
         viaLink = false,
         postedAt = postedAt,
         pendingSync = pendingSync,
+        editedAt = null,
+        isDeleted = false,
     )
 
     private fun dto(id: String): BillCommentDto = BillCommentDto(
@@ -543,6 +557,8 @@ class BillCommentRepositoryImplTest {
         body = "Já paguei",
         viaLink = false,
         postedAt = 1L,
+        editedAt = null,
+        isDeleted = false,
     )
 
     private fun prepareScenario(
@@ -592,10 +608,67 @@ private class FakeBillCommentLocalDataSource(
         list.filter { it.expenseId == expenseId }
     }
 
-    override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }
+    val likes = MutableStateFlow(emptyList<BillCommentLikeEntity>())
+    val replacedLikes = mutableListOf<Pair<String, List<BillCommentLikeEntity>>>()
+
+    override fun observeLikes(expenseId: String): Flow<List<BillCommentLikeEntity>> =
+        combine(entities, likes) { comments, likes ->
+            val ids = comments.filter { it.expenseId == expenseId }.map { it.id }.toSet()
+            likes.filter { it.commentId in ids && it.isLiked }
+        }
+
+    override fun observeHasPending(): Flow<Boolean> = combine(entities, likes) { comments, likes ->
+        comments.any { it.pendingSync } || likes.any { it.pendingSync }
+    }
 
     override fun observePendingIds(): Flow<List<String>> = entities.map { list ->
         list.filter { it.pendingSync }.map { it.id }
+    }
+
+    override fun observePendingLikeVersions(): Flow<List<Long>> = likes.map { list ->
+        list.filter { it.pendingSync }.map { it.updatedAt }
+    }
+
+    override suspend fun getPendingLikes(ownerUserId: String): List<BillCommentLikeEntity> =
+        likes.value.filter { it.pendingSync && groupOwners[it.groupId] == ownerUserId }
+
+    override suspend fun editComment(
+        id: String,
+        body: String,
+        editedAt: Long,
+    ): Boolean {
+        val comment = entities.value.firstOrNull { it.id == id && !it.isDeleted } ?: return false
+        entities.update { list ->
+            list.map { if (it.id == comment.id) it.copy(body = body, editedAt = editedAt, pendingSync = true) else it }
+        }
+        return true
+    }
+
+    override suspend fun deleteComment(id: String): Boolean {
+        if (entities.value.none { it.id == id }) return false
+        entities.update { list ->
+            list.map { if (it.id == id) it.copy(body = "", isDeleted = true, pendingSync = true) else it }
+        }
+        return true
+    }
+
+    override suspend fun upsertMyLike(entity: BillCommentLikeEntity) {
+        check(entities.value.any { it.id == entity.commentId }) { "No comment" }
+        likes.update { list ->
+            list.filterNot { it.commentId == entity.commentId && it.likerKey == entity.likerKey } + entity
+        }
+    }
+
+    override suspend fun replaceSyncedLikes(
+        ownerUserId: String,
+        entities: List<BillCommentLikeEntity>,
+    ) {
+        replacedLikes += ownerUserId to entities
+        likes.update { list -> list.filter { it.pendingSync } + entities }
+    }
+
+    override suspend fun markLikesSynced(entities: List<BillCommentLikeEntity>) {
+        likes.update { list -> list.map { if (it in entities) it.copy(pendingSync = false) else it } }
     }
 
     override suspend fun getPendingComments(ownerUserId: String): List<BillCommentEntity> {
@@ -614,9 +687,10 @@ private class FakeBillCommentLocalDataSource(
         this.entities.update { list -> list.filterNot { it.id in ids } + entities }
     }
 
-    override suspend fun markSynced(ids: List<String>) {
+    override suspend fun markSynced(entities: List<BillCommentEntity>) {
+        val ids = entities.map { it.id }
         markedSynced += ids
-        entities.update { list -> list.map { if (it.id in ids) it.copy(pendingSync = false) else it } }
+        this.entities.update { list -> list.map { if (it.id in ids) it.copy(pendingSync = false) else it } }
     }
 
     override suspend fun deleteGoneFromServer(
@@ -640,7 +714,19 @@ private class FakeBillCommentRemoteDataSource(
     val inserted = mutableListOf<List<BillCommentDto>>()
     var insertCalls = 0
 
-    override suspend fun insertComments(comments: List<BillCommentDto>) {
+    val upsertedLikes = mutableListOf<List<BillCommentLikeDto>>()
+    var likeRows: List<RemoteBillCommentLikeDto> = emptyList()
+
+    override suspend fun upsertLikes(likes: List<BillCommentLikeDto>) {
+        upsertedLikes += likes
+    }
+
+    override suspend fun fetchLikes(): List<RemoteBillCommentLikeDto> {
+        fetchError?.let { throw it }
+        return likeRows
+    }
+
+    override suspend fun upsertComments(comments: List<BillCommentDto>) {
         insertCalls++
         insertError?.let { throw it }
         inserted += comments

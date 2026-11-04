@@ -15,7 +15,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
@@ -50,6 +53,15 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAc
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,15 +77,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 
 // Conta's "Anexos" (7.3g): the tiles, the signed URLs, adding and removing a photo and the viewer.
 class BillDetailAttachmentsTest {
@@ -1067,6 +1070,7 @@ class BillDetailAttachmentsTest {
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
+        focusCommentId = null,
     )
     private val groupRoute = Route.GroupDetail(
         GROUP_ID,
@@ -1227,6 +1231,9 @@ class BillDetailAttachmentsTest {
             observeSettlements = ObserveSettlementsUseCase(FakeSettlementRepository()),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            deleteBillComment = DeleteBillCommentUseCase(comments),
+            likeBillComment = LikeBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
             loadBillHistory = LoadBillHistoryUseCase(activity),
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },

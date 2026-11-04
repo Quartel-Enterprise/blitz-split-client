@@ -59,6 +59,8 @@ class ActivityMapperImplTest {
                 sharesCount = null,
                 body = null,
                 isPending = false,
+                commentId = null,
+                isCommentDeleted = false,
             ),
             event,
         )

@@ -504,7 +504,7 @@ class GroupStatsViewModelTest {
                     tab = GroupTab.EXPENSES,
                 ),
                 route,
-                Route.BillDetail(GROUP_ID, "boat"),
+                Route.BillDetail(GROUP_ID, "boat", focusCommentId = null),
             ),
             navigator.backStack.value,
         )
@@ -1080,7 +1080,7 @@ class GroupStatsViewModelTest {
             viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(PIERRE))
 
             // Then
-            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat") + Route.Profile, navigator.backStack.value)
+            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat", focusCommentId = null) + Route.Profile, navigator.backStack.value)
         }
 
     @Test

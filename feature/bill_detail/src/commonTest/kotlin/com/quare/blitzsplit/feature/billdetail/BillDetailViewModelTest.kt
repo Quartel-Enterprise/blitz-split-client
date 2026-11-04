@@ -28,7 +28,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
@@ -68,6 +71,15 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarge
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -84,15 +96,6 @@ import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 
 class BillDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -2784,6 +2787,7 @@ class BillDetailViewModelTest {
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
+        focusCommentId = null,
     )
     private val groupRoute = Route.GroupDetail(
         GROUP_ID,
@@ -2921,6 +2925,10 @@ class BillDetailViewModelTest {
         viaLink = false,
         postedAt = postedAt,
         isPending = false,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     // Why: Bruno asked something and Ana answered him.
@@ -2963,6 +2971,8 @@ class BillDetailViewModelTest {
         sharesCount = 3.takeIf { kind == ActivityKind.BILL_CREATED },
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun descriptionEdit(
@@ -3107,6 +3117,9 @@ class BillDetailViewModelTest {
             observeSettlements = ObserveSettlementsUseCase(settlements),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            deleteBillComment = DeleteBillCommentUseCase(comments),
+            likeBillComment = LikeBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
             loadBillHistory = LoadBillHistory { billId ->
                 historyGate?.await()

@@ -6,6 +6,9 @@ import com.quare.blitzsplit.core.expenses.data.dto.BillAttachmentDto
 import com.quare.blitzsplit.core.expenses.data.dto.BillLinkResultDto
 import com.quare.blitzsplit.core.expenses.data.dto.BillShareLinkDto
 import com.quare.blitzsplit.core.expenses.data.dto.CommentOnSharedBillParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.DeleteSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.EditSharedBillCommentParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.LikeSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillAttachmentDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillExpenseDto
@@ -16,7 +19,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -24,6 +26,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlinx.coroutines.test.runTest
 
 class BillShareLinkRepositoryImplTest {
     private lateinit var remote: FakeBillShareLinkRemoteDataSource
@@ -530,6 +533,26 @@ private class FakeBillShareLinkRemoteDataSource(
     override suspend fun createSharedBillComment(params: CommentOnSharedBillParamsDto): SharedBillStatusDto {
         error?.let { throw it }
         sentComments += params
+        return SharedBillStatusDto(status = commentStatus)
+    }
+
+    val sentChanges = mutableListOf<Any>()
+
+    override suspend fun editSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto {
+        error?.let { throw it }
+        sentChanges += params
+        return SharedBillStatusDto(status = commentStatus)
+    }
+
+    override suspend fun deleteSharedBillComment(params: DeleteSharedBillCommentParamsDto): SharedBillStatusDto {
+        error?.let { throw it }
+        sentChanges += params
+        return SharedBillStatusDto(status = commentStatus)
+    }
+
+    override suspend fun likeSharedBillComment(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto {
+        error?.let { throw it }
+        sentChanges += params
         return SharedBillStatusDto(status = commentStatus)
     }
 }

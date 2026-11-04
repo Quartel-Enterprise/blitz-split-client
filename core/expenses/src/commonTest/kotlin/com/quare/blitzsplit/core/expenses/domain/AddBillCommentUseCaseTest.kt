@@ -46,6 +46,10 @@ class AddBillCommentUseCaseTest {
                 viaLink = false,
                 postedAt = 7_000L,
                 isPending = true,
+                editedAt = null,
+                isDeleted = false,
+                isMine = false,
+                likes = emptyList(),
             ),
             saved,
         )

@@ -396,7 +396,7 @@ class ActivityViewModelTest {
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
                 ),
-                Route.BillDetail(APE, BILL_JANTAR),
+                Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null),
             ),
             navigator.backStack.value,
         )
@@ -657,7 +657,7 @@ class ActivityViewModelTest {
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
                     ),
-                    Route.BillDetail(APE, BILL_MERCADO),
+                    Route.BillDetail(APE, BILL_MERCADO, focusCommentId = null),
                 ),
                 navigator.backStack.value,
             )
@@ -2331,7 +2331,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(opened, navigator.backStack.value)
-        assertEquals(Route.BillDetail(APE, BILL_JANTAR), navigator.backStack.value.last())
+        assertEquals(Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null), navigator.backStack.value.last())
     }
 
     @Test
@@ -2671,6 +2671,8 @@ class ActivityViewModelTest {
         sharesCount = null,
         body = null,
         isPending = isPending,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun queued(

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSourc
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpensePayerDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseShareDto
+import com.quare.blitzsplit.core.expenses.data.dto.ServerBillDto
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -13,6 +14,12 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -22,12 +29,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class ExpenseRepositoryImplTest {
     private lateinit var local: FakeExpenseLocalDataSource
@@ -865,5 +866,10 @@ private class FakeExpenseRemoteDataSource(
     override suspend fun fetchExpenses(groupId: String): List<ExpenseDto> {
         fetchError?.let { throw it }
         return rows.filter { it.groupId == groupId }
+    }
+
+    override suspend fun fetchServerBill(id: String): ServerBillDto? {
+        fetchError?.let { throw it }
+        return rows.firstOrNull { it.id == id }?.let { ServerBillDto(groupId = it.groupId, isDeleted = it.isDeleted) }
     }
 }

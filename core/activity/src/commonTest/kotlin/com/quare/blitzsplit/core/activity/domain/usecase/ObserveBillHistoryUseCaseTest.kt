@@ -98,6 +98,8 @@ class ObserveBillHistoryUseCaseTest {
         sharesCount = null,
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun prepareScenario(events: List<ActivityEvent>) {

@@ -15,7 +15,7 @@ class BillCommentMapperImplTest {
         val entity = entity(pendingSync = true)
 
         // When
-        val comment = mapper.toDomain(entity)
+        val comment = mapper.toDomain(entity, likes = emptyList())
 
         // Then
         assertEquals(comment(isPending = true), comment)
@@ -27,7 +27,7 @@ class BillCommentMapperImplTest {
         val entity = entity(pendingSync = false)
 
         // When
-        val comment = mapper.toDomain(entity)
+        val comment = mapper.toDomain(entity, likes = emptyList())
 
         // Then
         assertEquals(comment(isPending = false), comment)
@@ -43,7 +43,7 @@ class BillCommentMapperImplTest {
         )
 
         // When
-        val comment = mapper.toDomain(entity)
+        val comment = mapper.toDomain(entity, likes = emptyList())
 
         // Then
         assertEquals(
@@ -171,6 +171,10 @@ class BillCommentMapperImplTest {
         viaLink = viaLink,
         postedAt = 7_000L,
         isPending = isPending,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     private fun entity(
@@ -191,6 +195,8 @@ class BillCommentMapperImplTest {
         viaLink = viaLink,
         postedAt = 7_000L,
         pendingSync = pendingSync,
+        editedAt = null,
+        isDeleted = false,
     )
 
     private fun dto(
@@ -209,6 +215,8 @@ class BillCommentMapperImplTest {
         body = "Já paguei",
         viaLink = viaLink,
         postedAt = 7_000L,
+        editedAt = null,
+        isDeleted = false,
     )
 
     private companion object {

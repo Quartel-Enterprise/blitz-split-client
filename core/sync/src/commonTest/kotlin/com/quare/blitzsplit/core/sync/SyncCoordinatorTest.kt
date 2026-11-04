@@ -6804,6 +6804,10 @@ class SyncCoordinatorTest {
         viaLink = false,
         postedAt = 1L,
         isPending = true,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     private fun photo(

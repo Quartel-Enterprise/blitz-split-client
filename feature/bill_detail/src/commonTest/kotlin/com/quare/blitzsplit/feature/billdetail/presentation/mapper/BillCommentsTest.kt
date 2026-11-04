@@ -505,6 +505,10 @@ class BillCommentsTest {
         viaLink = viaLink,
         postedAt = postedAt,
         isPending = isPending,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     private companion object {
