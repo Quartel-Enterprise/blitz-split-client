@@ -1,9 +1,12 @@
 package com.quare.blitzsplit.core.sync.di
 
+import com.quare.blitzsplit.core.sync.AppForeground
 import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.SyncCoordinator
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
+import com.quare.blitzsplit.core.sync.data.datasource.RemoteChangeRemoteDataSource
+import com.quare.blitzsplit.core.sync.data.datasource.SupabaseRemoteChangeRemoteDataSource
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapper
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
@@ -16,6 +19,9 @@ import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
+import com.quare.blitzsplit.core.sync.data.repository.RemoteChangeRepositoryImpl
+import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
+import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
@@ -32,6 +38,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.JoinGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.LeaveGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveSyncStateUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ReportAppForegroundUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.RetrySyncUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutWhenSyncedUseCase
@@ -49,6 +56,9 @@ import org.koin.dsl.module
 
 val syncModule = module {
     single { FirstDownload() }
+    single { AppForeground() }
+    factoryOf(::SupabaseRemoteChangeRemoteDataSource).bind<RemoteChangeRemoteDataSource>()
+    factoryOf(::RemoteChangeRepositoryImpl).bind<RemoteChangeRepository>()
     single {
         SyncCoordinator(
             accountRepository = get(),
@@ -66,7 +76,9 @@ val syncModule = module {
             activityRepository = get(),
             hiddenContactRepository = get(),
             pushDeviceRepository = get(),
+            remoteChangeRepository = get(),
             firstDownload = get(),
+            appForeground = get(),
             connectivityObserver = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
@@ -80,6 +92,7 @@ val syncModule = module {
     factoryOf(::ObserveSyncStateUseCase).bind<ObserveSyncState>()
     factoryOf(::ObserveFirstDownloadUseCase).bind<ObserveFirstDownload>()
     factoryOf(::RetrySyncUseCase).bind<RetrySync>()
+    factoryOf(::ReportAppForegroundUseCase).bind<ReportAppForeground>()
     factoryOf(::SignOutUseCase).bind<SignOut>()
     factoryOf(::SignOutWhenSyncedUseCase).bind<SignOutWhenSynced>()
     factoryOf(::CancelSignOutWhenSyncedUseCase).bind<CancelSignOutWhenSynced>()

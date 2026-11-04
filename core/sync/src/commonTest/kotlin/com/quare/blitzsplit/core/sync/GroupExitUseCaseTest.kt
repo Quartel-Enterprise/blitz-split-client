@@ -123,7 +123,9 @@ class GroupExitUseCaseTest {
             activityRepository = FakeActivityRepository(),
             hiddenContactRepository = FakeHiddenContactRepository(),
             pushDeviceRepository = FakePushDeviceRepository(),
+            remoteChangeRepository = FakeRemoteChangeRepository(),
             firstDownload = FirstDownload(),
+            appForeground = AppForeground(),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
             scope = backgroundScope,
         )

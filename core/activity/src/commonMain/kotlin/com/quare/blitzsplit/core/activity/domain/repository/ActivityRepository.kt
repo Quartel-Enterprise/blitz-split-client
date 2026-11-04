@@ -46,5 +46,8 @@ interface ActivityRepository {
 
     suspend fun downloadActivity(userId: String): Result<Unit>
 
+    // Why: the newest event the device downloaded, so a change it already has (its own, heard again in real time) pulls nothing.
+    suspend fun getNewestSeq(): Long?
+
     suspend fun clear()
 }

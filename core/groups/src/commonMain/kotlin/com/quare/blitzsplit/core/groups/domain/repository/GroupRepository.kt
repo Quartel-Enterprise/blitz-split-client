@@ -112,6 +112,9 @@ interface GroupRepository {
         groupId: String,
     ): Result<suspend () -> Unit>
 
+    // Why: a member's photo changed, heard in real time: the faces take the server's photos, as each group download does.
+    suspend fun downloadMemberPhotos(): Result<Unit>
+
     // Why: a sign out leaves no group on the device.
     suspend fun clear()
 }

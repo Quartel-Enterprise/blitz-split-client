@@ -34,8 +34,9 @@ changes included. Once a schema has shipped, change it with a migration instead.
 ### Supabase: the remote
 
 `:core:provider:supabase` builds one `SupabaseClient` (`createBlitzSplitSupabaseClient()`) with Auth, Postgrest,
-Functions and Storage, and binds each plugin on its own so data sources depend on `Auth`, `Postgrest`, `Functions`
-or `Storage`, never on the client. The URL, the publishable key and the Google web client id come from the BuildKonfig object
+Functions, Storage and Realtime, and binds each plugin on its own so data sources depend on `Auth`, `Postgrest`,
+`Functions`, `Storage` or `Realtime`, never on the client. `Realtime` is wrapped in `SerializedRemovalRealtime`, which
+serializes channel removals around supabase-kt#1414 (a deferred disconnect that would drop a live channel). The URL, the publishable key and the Google web client id come from the BuildKonfig object
 `SupabaseConfig` (see [getting-started.md](../getting-started.md#supabase)).
 
 | Remote data source | Talks to |
@@ -50,6 +51,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseHiddenContactRemoteDataSource` | the `hidden_contacts` table (Postgrest): the people the user hid from Contatos |
 | `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
+| `SupabaseRemoteChangeRemoteDataSource` (`:core:sync`) | Realtime: one channel with the inserts of `activity_events` and the updates of `profiles`, which the server's row level security filters per subscriber |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
 The tables, functions and dashboard settings are documented in the `blitz-split-api` repository (`docs/auth.md`,
@@ -80,7 +82,8 @@ so nothing above it sees an HTTP status:
    their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
-5. `accountRepository.keepAppleTokens()`: hands the server Apple's refresh token after each browser sign in with
+5. `followRemoteChanges()`: real time, below.
+6. `accountRepository.keepAppleTokens()`: hands the server Apple's refresh token after each browser sign in with
    Apple, so deleting the account can revoke it, as the App Store asks. The native sheet sends its authorization
    code at sign in instead.
 
@@ -159,6 +162,37 @@ suspend fun syncNow(): Result<Unit> {
     }
 }
 ```
+
+#### Real time
+
+Another device's change reaches this one while the app is open (beta feedback 13), without waiting for the next sync,
+and Room stays the one source of truth: what real time hears only says what to pull, and the rows come down through
+the tables as the sync brings them.
+
+- **What it listens to**: one Realtime channel (`RemoteChangeRepository`), with the inserts of `activity_events`, which
+  the server's triggers write for everything done in a group (bills, payments, comments, photos, members, the group),
+  and the updates of `profiles`. No filter: the server's row level security decides what each subscriber hears
+  (`blitz-split-api`'s `20261125120000_publish_realtime_changes`). The payload is never applied; only an event's `seq`,
+  `group_id` and `kind`, and a profile's `id`, are read (`RemoteChange`).
+- **When**: only while the app is in front (`AppForeground`, which `ReportAppForeground` sets from Android's
+  `ProcessLifecycleOwner`, Apple's scene phase other than `.background` and the page's `visibilitychange`), online,
+  with an account and a profile. Bible Planner learned the first: a token refreshed in the background reaches a dead
+  socket, which supabase-kt's `setAuth` crashes on. Leaving any of them leaves the channel; a channel that fails
+  listens again 30 seconds later.
+- **Catching up**: each time the channel joins (coming to the front, back online, the socket back after it dropped)
+  a full sync brings what nobody heard meanwhile, unless one began since the join (`startedSyncs`), which already read
+  after it: the launch's, or the one coming back online starts.
+- **The pull** (`RemotePull`): what is heard within half a second pulls once, under the sync lock, so the device's
+  newest event (`ActivityRepository.getNewestSeq`) is read after any sync in flight. An event up to it is already on
+  the device: this device's own, heard back after the sync that pushed it brought it down. A bill, a payment, a
+  group's edit, its link or a rename pulls that group alone (`downloadGroup`: the group and members, categories, bills
+  and payments, read together and written in Room's foreign key order, as the first download does); a comment pulls
+  the comments, a photo the attachments; then Atividade's new events come down, so the feed and its badge follow. A
+  member added, joined, gone or released, a group deleted, and a kind this version doesn't know take the full sync,
+  the only one that drops what the server no longer has (and brings a group the user was just added to, a joined
+  member's keys and photo, "Grupo apagado"). A profile changed pulls this user's profile when it is theirs (another
+  of their devices), the members' photos otherwise. A pull doesn't count as a sync for the badge; one that fails goes
+  to the full sync, which tries again and reports it.
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet

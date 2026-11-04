@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
@@ -114,6 +115,11 @@ fun setPushDevice(
             webAuth = auth,
         ),
     )
+}
+
+// Why: real time listens only while the page is visible (document.visibilityState).
+fun setAppForeground(isForeground: Boolean) {
+    KoinPlatform.getKoin().get<ReportAppForeground>().invoke(isForeground)
 }
 
 // Why: a notification tapped while a tab is open, which the service worker hands to it instead of opening another.
