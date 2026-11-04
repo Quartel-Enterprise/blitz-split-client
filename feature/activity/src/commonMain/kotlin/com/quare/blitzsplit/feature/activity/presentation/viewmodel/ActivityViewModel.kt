@@ -201,9 +201,8 @@ class ActivityViewModel(
 
             is ActivityUiEvent.OnItemClicked -> clickItem(event.itemId)
 
-            is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.takeIf { isOnTop() }?.let { item ->
-                trackEvent("activity_open_target_clicked", mapOf("kind" to item.kind))
-                openTarget(item)
+            is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let { item ->
+                if (openTarget(item)) trackEvent("activity_open_target_clicked", mapOf("kind" to item.kind))
             }
 
             is ActivityUiEvent.OnActorClicked -> itemOrNull(event.itemId)
@@ -233,7 +232,11 @@ class ActivityViewModel(
                 viewModelScope.launch { markAllActivityRead() }
             }
 
-            ActivityUiEvent.OnFilterClicked -> openFilter()
+            // Why: only a sheet that opens, Atividade on top and the sheet not open yet.
+            ActivityUiEvent.OnFilterClicked -> if (isOnTop() && uiState.value.filterDraft == null) {
+                trackEvent("activity_filter_clicked", emptyMap())
+                openFilter()
+            }
 
             is ActivityUiEvent.OnDraftGroupPicked -> uiState.value.filterDraft?.let { draft ->
                 if (draft.groupId != event.groupId) {
@@ -262,8 +265,9 @@ class ActivityViewModel(
                 changeFilter(draft)
             }
 
-            ActivityUiEvent.OnFilterCleared -> {
-                if (uiState.value.filterDraft != null) trackEvent("activity_filters_cleared", mapOf("entry" to "sheet"))
+            // Why: the sheet's own Limpar, so a late tap once the sheet closed leaves the chips applied.
+            ActivityUiEvent.OnFilterCleared -> if (uiState.value.filterDraft != null) {
+                trackEvent("activity_filters_cleared", mapOf("entry" to "sheet"))
                 changeFilter(ActivityFilter.none)
             }
 
@@ -372,16 +376,17 @@ class ActivityViewModel(
         }
     }
 
-    private fun openTarget(item: ActivityItem) {
-        if (!isOnTop()) return
+    // Why: says whether it opened something (the deleted notice included), which Analytics counts.
+    private fun openTarget(item: ActivityItem): Boolean {
+        if (!isOnTop()) return false
         val deletion = item.deletion
         if (deletion != null) {
             uiState.update { it.copy(deletedNotice = deletion) }
-            return
+            return true
         }
         when (item.target) {
             ActivityTarget.BILL -> {
-                val billId = item.targetId ?: return
+                val billId = item.targetId ?: return false
                 openGroup(item.groupId, GroupTab.EXPENSES)
                 navigator.navigate(
                     Route.BillDetail(
@@ -398,6 +403,7 @@ class ActivityViewModel(
 
             ActivityTarget.BALANCES -> openGroup(item.groupId, GroupTab.BALANCES)
         }
+        return true
     }
 
     private fun openGroup(

@@ -28,14 +28,14 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
             OnContactsTabClicked,
             -> EventAnalytics.NotTracked
 
-            OnFilterClicked -> EventAnalytics.Automatic("activity_filter_clicked")
-
             OnEmptyActionClicked -> EventAnalytics.Automatic("activity_empty_action_clicked")
 
             /*
              * Why: each counts only when the screen takes it (an item still listed, the sheet still open, a filter there
              * to clear, Atividade on top), never a late tap, as the ViewModel checks before acting.
              */
+            OnFilterClicked -> EventAnalytics.Manual("activity_filter_clicked")
+
             is OnItemClicked -> EventAnalytics.Manual("activity_item_clicked")
 
             is OnOpenTargetClicked -> EventAnalytics.Manual("activity_open_target_clicked")

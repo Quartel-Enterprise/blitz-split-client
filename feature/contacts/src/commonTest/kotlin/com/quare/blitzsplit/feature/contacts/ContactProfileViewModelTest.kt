@@ -1980,6 +1980,25 @@ class ContactProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the request failed and then the internet went away WHEN Tentar de novo is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            merges.requestError = IllegalStateException("500")
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            merges.requestError = null
+            isOnline.value = false
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeRetryClicked)
+
+            // Then
+            assertEquals(1, merges.requestedMemberIds.size)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the personal link made WHEN Tentar de novo arrives THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(personKey = DIEGO_KEY)

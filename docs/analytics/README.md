@@ -205,7 +205,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "To get back" or "Owed to you" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "To pay" or "You owe" | `:feature:groups` |
-| `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`) | "New group" | `:feature:groups`, `:feature:contacts` |
+| `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`, `personal_invite` for a guest's own invite) | "New group" | `:feature:groups`, `:feature:contacts` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Join with a link or QR code" | `:feature:groups` |
 | `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, a group of a person's "By group" on Balances, an item's group in Activity, or "Groups in common" on a contact | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `settled_groups_toggled` | `is_shown` | Settled up expanded or collapsed, or its tab | `:feature:groups` |
@@ -389,7 +389,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_link_disable_clicked` | none | "Turn off link", while the link can change | `:feature:bill_detail` |
 | `shared_bill_sign_in_clicked` | none | The shared page's "Sign in" or "Sign in to comment" | `:feature:bill_detail` |
 | `shared_bill_open_in_app_clicked` | none | The shared page's "Open in the app" | `:feature:bill_detail` |
-| `activity_filter_clicked` | none | "Filter activity" | `:feature:activity` |
+| `activity_filter_clicked` | none | "Filter activity", which opens its sheet, with Activity on top and the sheet not open yet | `:feature:activity` |
 | `activity_empty_action_clicked` | none | "See groups" of "Nothing here yet" | `:feature:activity` |
 | `activity_item_clicked` | `kind` (the event's kind), `is_unread` | An item of the feed, still listed | `:feature:activity` |
 | `activity_open_target_clicked` | `kind` | "Open bill", "Open group"… of the detail or the open changes, with Activity on top | `:feature:activity` |

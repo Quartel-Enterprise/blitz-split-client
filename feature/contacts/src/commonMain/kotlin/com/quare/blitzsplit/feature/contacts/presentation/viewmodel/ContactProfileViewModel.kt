@@ -119,10 +119,11 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnBackClicked -> if (isOwnRouteOnTop()) navigator.navigateBack()
 
             ContactProfileUiEvent.OnChargeClicked -> findContactIf { uiState.value.canCharge }?.let { contact ->
-                val charge = BalancesCharge(contact.key, contact.net.currency)
-                if (navigate(Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = charge))) {
-                    trackEvent("charge_clicked", sourceParams)
-                }
+                val balances = Route.GlobalBalances(
+                    BalancesFilter.OWES_YOU,
+                    charge = BalancesCharge(contact.key, contact.net.currency),
+                )
+                if (navigate(balances)) trackEvent("charge_clicked", sourceParams)
             }
 
             ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let { contact ->
@@ -184,23 +185,18 @@ class ContactProfileViewModel(
             }
 
             ContactProfileUiEvent.OnInviteGuestClicked -> findContactIf { it.isGuest }?.let { contact ->
-                if (navigate(
-                        Route.ContactInvite(
-                            personKey = contact.key,
-                            name = contact.name,
-                        ),
-                    )
-                ) {
-                    trackEvent("contact_invite_guest_clicked", emptyMap())
-                }
+                val invite = Route.ContactInvite(
+                    personKey = contact.key,
+                    name = contact.name,
+                )
+                if (navigate(invite)) trackEvent("contact_invite_guest_clicked", emptyMap())
             }
 
             ContactProfileUiEvent.OnMergeClicked -> openMerge()
 
             ContactProfileUiEvent.OnMergeRetryClicked -> {
-                if (uiState.value.merge?.hasFailed == true) trackEvent("retry_clicked", mergeParams)
                 uiState.update { state -> state.copy(merge = state.merge?.copy(hasFailed = false)) }
-                requestMergeIfDue()
+                if (requestMergeIfDue()) trackEvent("retry_clicked", mergeParams)
             }
 
             ContactProfileUiEvent.OnMergeCopyClicked -> uiState.value.merge?.merge?.let { merge ->
@@ -356,11 +352,12 @@ class ContactProfileViewModel(
     }
 
     // Why: the server makes the request and its link once the sheet is open and online, never twice at once.
-    private fun requestMergeIfDue() {
+    // Why: says whether it asked the server, which a retry's Analytics counts.
+    private fun requestMergeIfDue(): Boolean {
         val state = uiState.value
-        val sheet = state.merge ?: return
-        val contact = state.contact?.takeIf { it.isGuest } ?: return
-        if (!state.isOnline || sheet.merge != null || sheet.isRequesting || sheet.hasFailed) return
+        val sheet = state.merge ?: return false
+        val contact = state.contact?.takeIf { it.isGuest } ?: return false
+        if (!state.isOnline || sheet.merge != null || sheet.isRequesting || sheet.hasFailed) return false
         uiState.update { it.copy(merge = sheet.copy(isRequesting = true)) }
         viewModelScope.launch {
             val result = requestGuestMerge(contact)
@@ -379,6 +376,7 @@ class ContactProfileViewModel(
                 )
             }
         }
+        return true
     }
 
     private fun refreshPendingMerge() {

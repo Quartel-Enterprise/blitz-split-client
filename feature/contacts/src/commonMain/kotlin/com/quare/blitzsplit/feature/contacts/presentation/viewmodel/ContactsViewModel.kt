@@ -153,12 +153,10 @@ class ContactsViewModel(
                 trackEvent("search_opened", sourceParams)
             }
 
-            ContactsUiEvent.OnHiddenToggled -> {
-                val state = uiState.value
-                if (state.hiddenContacts.isNotEmpty()) {
-                    trackEvent("contacts_hidden_toggled", mapOf("is_expanded" to !state.isHiddenExpanded))
-                }
-                uiState.update { it.copy(isHiddenExpanded = !it.isHiddenExpanded && it.hiddenContacts.isNotEmpty()) }
+            ContactsUiEvent.OnHiddenToggled -> if (uiState.value.hiddenContacts.isNotEmpty()) {
+                val isExpanded = !uiState.value.isHiddenExpanded
+                trackEvent("contacts_hidden_toggled", mapOf("is_expanded" to isExpanded))
+                uiState.update { it.copy(isHiddenExpanded = isExpanded) }
             }
 
             is ContactsUiEvent.OnShowContactClicked -> show(event.key)
@@ -185,14 +183,12 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnAgendaClicked -> openAgenda()
 
-            ContactsUiEvent.OnInviteWithLinkClicked -> if (openFromList(
-                    Route.ContactInvite(
-                        personKey = null,
-                        name = null,
-                    ),
+            ContactsUiEvent.OnInviteWithLinkClicked -> {
+                val invite = Route.ContactInvite(
+                    personKey = null,
+                    name = null,
                 )
-            ) {
-                trackEvent("contacts_invite_with_link_clicked", sourceParams)
+                if (openFromList(invite)) trackEvent("contacts_invite_with_link_clicked", sourceParams)
             }
 
             ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)

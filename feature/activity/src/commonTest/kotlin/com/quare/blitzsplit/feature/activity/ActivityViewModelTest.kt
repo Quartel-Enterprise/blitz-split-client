@@ -2513,7 +2513,7 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `GIVEN Filtrar atividade and Ver grupos WHEN reading their analytics THEN each sends its event on its own`() {
+    fun `GIVEN Filtrar atividade and Ver grupos WHEN reading their analytics THEN the filter waits for its sheet`() {
         // Given
         val events = listOf(ActivityUiEvent.OnFilterClicked, ActivityUiEvent.OnEmptyActionClicked)
 
@@ -2523,7 +2523,7 @@ class ActivityViewModelTest {
         // Then
         assertEquals(
             listOf(
-                EventAnalytics.Automatic("activity_filter_clicked"),
+                EventAnalytics.Manual("activity_filter_clicked"),
                 EventAnalytics.Automatic("activity_empty_action_clicked"),
             ),
             analytics,
@@ -2756,6 +2756,41 @@ class ActivityViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a bill item without its bill id WHEN tapping Abrir conta THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            val withoutBillId = event(
+                id = "bill-without-id",
+                seq = 9L,
+                targetId = null,
+            )
+            prepareScenario(storedEvents = listOf(withoutBillId) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked("bill-without-id"))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill someone deleted WHEN tapping Abrir conta THEN sends the open target clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(pastelDeleted, pastelCreated) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(PASTEL_CREATED))
+
+            // Then
+            assertEquals(
+                listOf("activity_open_target_clicked" to mapOf<String, Any>("kind" to ActivityKind.BILL_CREATED)),
+                trackedEvents,
+            )
+        }
 
     @Test
     fun `GIVEN an item by a guest WHEN tapping the face THEN sends the person clicked from Atividade`() =
@@ -3161,6 +3196,64 @@ class ActivityViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a filter applied and Filtrar closed WHEN a late Limpar of the sheet arrives THEN keeps the filter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            applyFilter(groupId = FLORIPA)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterCleared)
+
+            // Then
+            assertEquals(FLORIPA, viewModel.uiState.value.filter.groupId)
+            assertEquals(
+                listOf(DIEGO_ADDED),
+                viewModel.uiState.value.items
+                    .map { it.id },
+            )
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Filtrar open and changed WHEN tapping Filtrar again THEN keeps what was picked and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+            // Then
+            assertEquals(
+                APE,
+                viewModel.uiState.value.filterDraft
+                    ?.groupId,
+            )
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping Filtrar late THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.filterDraft)
+            assertFalse(viewModel.uiState.value.isFilterOpen)
+            assertTrue(trackedEvents.isEmpty())
+        }
 
     @Test
     fun `GIVEN a filter WHEN tapping Limpar next to the chips THEN sends the filters cleared from the chips`() =

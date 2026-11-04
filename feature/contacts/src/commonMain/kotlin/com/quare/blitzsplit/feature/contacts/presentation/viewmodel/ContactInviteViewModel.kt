@@ -39,8 +39,9 @@ class ContactInviteViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactInviteUiEvent>(trackEvent) {
-    // Why: the screen these events come from, as their source param says.
-    private val sourceParams: Map<String, Any> = mapOf("source" to "contact_invite")
+    // Why: the screen these events come from, as their source param says: a guest's own invite, as Membros names it, or a group's.
+    private val sourceParams: Map<String, Any> =
+        mapOf("source" to if (route.personKey != null) "personal_invite" else "contact_invite")
 
     val uiState: StateFlow<ContactInviteUiState>
         field = MutableStateFlow(

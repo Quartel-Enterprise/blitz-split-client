@@ -627,9 +627,59 @@ class ContactInviteViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Copiar is tapped THEN sends the link copy clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to personalInviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Compartilhar is tapped THEN sends the link share clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_share_clicked" to personalInviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Novo grupo is tapped THEN sends the create group clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
+
+            // Then
+            assertEquals(listOf("create_group_clicked" to personalInviteSource), trackedEvents)
+        }
+
     // endregion
 
     private val inviteSource: Map<String, Any> = mapOf("source" to "contact_invite")
+
+    private val personalInviteSource: Map<String, Any> = mapOf("source" to "personal_invite")
 
     private fun TestScope.prepareScenario(
         personKey: String? = null,
