@@ -136,6 +136,90 @@ class ExpenseRulesTest {
     }
 
     @Test
+    fun `GIVEN bitcoin and ether WHEN reading the limit THEN it is 21 million and 90 million in satoshis`() {
+        // Given
+        val currencies = listOf(GroupCurrency.BTC, GroupCurrency.ETH)
+
+        // When
+        val limits = currencies.map(ExpenseRules::maxAmountMinorFor)
+
+        // Then
+        assertEquals(listOf(2_100_000_000_000_000L, 9_000_000_000_000_000L), limits)
+    }
+
+    @Test
+    fun `GIVEN exactly 21 million bitcoin WHEN checking it THEN it is valid`() {
+        // Given
+        val amountMinor = 2_100_000_000_000_000L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.BTC)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN one satoshi over 21 million bitcoin WHEN checking it THEN it is invalid`() {
+        // Given
+        val amountMinor = 2_100_000_000_000_001L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.BTC)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
+    fun `GIVEN one satoshi WHEN checking it THEN it is valid`() {
+        // Given
+        val amountMinor = 1L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.BTC)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN exactly 90 million ether WHEN checking it THEN it is valid`() {
+        // Given
+        val amountMinor = 9_000_000_000_000_000L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.ETH)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN one minor unit over 90 million ether WHEN checking it THEN it is invalid`() {
+        // Given
+        val amountMinor = 9_000_000_000_000_001L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.ETH)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
+    fun `GIVEN 22 million bitcoin within the ether cap WHEN checking it as bitcoin THEN it is invalid`() {
+        // Given
+        val amountMinor = 2_200_000_000_000_000L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.BTC)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
     fun `GIVEN an empty description WHEN checking it THEN it is invalid`() {
         // Given
         val description = ""

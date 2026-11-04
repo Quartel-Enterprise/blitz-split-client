@@ -33,7 +33,7 @@ export function lastActivityText(group: JsGroupRow): string {
     case 'QUEUED':
       return group.pendingBillDescription ? `${when} · ${t('groups_metaQueuedBill', { bill: group.pendingBillDescription })}` : when
     case 'MIXED':
-      return `${when} · ${t('groups_metaMixed', { receives: formatPlainMoney(group.receivesMinor, group.fractionDigits), owes: formatPlainMoney(group.owesMinor, group.fractionDigits) })}`
+      return `${when} · ${t('groups_metaMixed', { receives: formatPlainMoney(group.receivesMinor, group.fractionDigits, group.currency), owes: formatPlainMoney(group.owesMinor, group.fractionDigits, group.currency) })}`
     case 'OTHERS_STILL_SETTLING':
       return `${when} · ${t('groups_metaOthersSettling')}`
     case 'INVITE_SOMEONE':

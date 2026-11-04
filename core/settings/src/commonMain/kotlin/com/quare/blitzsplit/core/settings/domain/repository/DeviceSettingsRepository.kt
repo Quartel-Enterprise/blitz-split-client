@@ -21,4 +21,8 @@ interface DeviceSettingsRepository {
     fun observeDynamicColors(): Flow<Boolean>
 
     suspend fun updateDynamicColors(isOn: Boolean)
+
+    fun observeBitcoinInSats(): Flow<Boolean>
+
+    suspend fun updateBitcoinInSats(isOn: Boolean)
 }

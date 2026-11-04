@@ -24,6 +24,7 @@ internal fun splitEditorOf(
     expense: Expense,
     people: List<BillPerson>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     decimalSeparator: Char,
 ): SplitEditor {
     val weights = expense.shares.associate { it.memberId to it.weight }
@@ -38,6 +39,7 @@ internal fun splitEditorOf(
                 expense.splitMode == SplitMode.AMOUNT -> AmountInput.format(
                     amountMinor = weight,
                     currency = currency,
+                    showsSats = showsSats,
                     decimalSeparator = decimalSeparator,
                 )
 
@@ -53,6 +55,7 @@ internal fun splitEditorOf(
         totalMinor = expense.amountMinor,
         payerIds = expense.payers.map { it.memberId },
         currency = currency,
+        showsSats = showsSats,
         items = expense.items?.toItemsAmong(people, isWholeGroupAtTable = false),
     )
 }
@@ -76,6 +79,7 @@ internal fun GroupMember.toBillPerson(): BillPerson = BillPerson(
 internal fun SplitEditor.withPeople(
     people: List<BillPerson>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     payerIds: List<String>,
     includesNewcomers: Boolean,
     decimalSeparator: Char,
@@ -84,7 +88,9 @@ internal fun SplitEditor.withPeople(
     val byId = rows
         .map { row ->
             if (mode != SplitMode.AMOUNT) return@map row
-            row.copy(valueText = TypedText.toCurrency(row.valueText, this.currency, currency, decimalSeparator))
+            row.copy(
+                valueText = TypedText.toCurrency(row.valueText, this.currency, currency, showsSats, decimalSeparator),
+            )
         }.associateBy { it.person.id }
     val rows = people.map { person ->
         byId[person.id]?.copy(person = person) ?: newcomerRows[person.id]?.copy(person = person) ?: SplitRow(
@@ -98,6 +104,7 @@ internal fun SplitEditor.withPeople(
     return copy(
         rows = rows,
         currency = currency,
+        showsSats = showsSats,
         payerIds = payerIds,
         // Why: the couvert's table is the group when the items were split, so whoever joins after never pays it.
         items = items?.toItemsAmong(people, isWholeGroupAtTable = false),
@@ -189,7 +196,9 @@ internal fun SplitEditor.withValueTyped(
     decimalSeparator: Char,
 ): SplitEditor = withRows { row ->
     if (row.person.id == memberId) {
-        row.copy(valueText = TypedText.toSplitValueText(row.valueText, typed, mode, currency, decimalSeparator))
+        row.copy(
+            valueText = TypedText.toSplitValueText(row.valueText, typed, mode, currency, showsSats, decimalSeparator),
+        )
     } else {
         row
     }
@@ -226,6 +235,7 @@ internal fun SplitEditor.formatAmount(
 ): String = AmountInput.format(
     amountMinor = amountMinor,
     currency = currency,
+    showsSats = showsSats,
     decimalSeparator = decimalSeparator,
 )
 
@@ -250,6 +260,7 @@ internal fun billDefaultSplitOf(
     default: GroupDefaultSplit?,
     people: List<BillPerson>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     payerIds: List<String>,
     totalMinor: Long,
     exceptionCategoryId: String?,
@@ -275,6 +286,7 @@ internal fun billDefaultSplitOf(
         totalMinor = totalMinor,
         payerIds = payerIds,
         currency = currency,
+        showsSats = showsSats,
         items = null,
     ).withShares()
     return BillDefaultSplit(
@@ -310,6 +322,7 @@ internal fun SplitBillUiState.withSplitAmong(
             default = exception?.asDefault ?: defaultSplit?.takeUnless { it.isEveryoneEqually },
             people = people,
             currency = currency,
+            showsSats = showsSats,
             payerIds = payerIds,
             totalMinor = split.totalMinor,
             exceptionCategoryId = exception?.categoryId,
@@ -317,11 +330,10 @@ internal fun SplitBillUiState.withSplitAmong(
     }
     val bill = if (followsDefault) {
         billDefault?.editor
-            ?: createEmptySplit(
-                currency,
-            ).withPeople(people, currency, payerIds, includesNewcomers = true, decimalSeparator)
+            ?: createEmptySplit(currency, showsSats)
+                .withPeople(people, currency, showsSats, payerIds, includesNewcomers = true, decimalSeparator)
     } else {
-        split.withPeople(people, currency, payerIds, !isEditing, decimalSeparator)
+        split.withPeople(people, currency, showsSats, payerIds, !isEditing, decimalSeparator)
     }
     return copy(
         split = bill,
@@ -330,6 +342,7 @@ internal fun SplitBillUiState.withSplitAmong(
             editor.withPeople(
                 people = people,
                 currency = currency,
+                showsSats = showsSats,
                 payerIds = payerIds,
                 includesNewcomers = !isEditing,
                 decimalSeparator = decimalSeparator,

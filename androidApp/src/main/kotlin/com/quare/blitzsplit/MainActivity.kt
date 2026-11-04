@@ -8,10 +8,12 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
 import com.quare.blitzsplit.android.designsystem.layout.FoldLayoutRoot
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
             val appViewModel: AppViewModel = koinViewModel()
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val usesDynamicColors by appViewModel.usesDynamicColors.collectAsStateWithLifecycle()
+            val showsBitcoinInSats by appViewModel.showsBitcoinInSats.collectAsStateWithLifecycle()
             val isDark = when (theme) {
                 ThemePreference.SYSTEM -> isSystemInDarkTheme()
                 ThemePreference.LIGHT -> false
@@ -61,8 +64,10 @@ class MainActivity : ComponentActivity() {
                 isDark = isDark,
                 usesDynamicColors = usesDynamicColors,
             ) {
-                FoldLayoutRoot {
-                    AppNavDisplay(appViewModel = appViewModel)
+                CompositionLocalProvider(LocalShowsBitcoinInSats provides showsBitcoinInSats) {
+                    FoldLayoutRoot {
+                        AppNavDisplay(appViewModel = appViewModel)
+                    }
                 }
                 val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()
                 NotificationPermissionEffect(top = backStack.lastOrNull())

@@ -208,9 +208,9 @@ class ItemEditorTest {
     @Test
     fun `GIVEN the service field WHEN typing over 100 or a couvert past the limit THEN it cannot be saved`() {
         // Given
-        val service = FeeEditor(ItemsFee.SERVICE, "101", GroupCurrency.BRL)
-        val couvert = FeeEditor(ItemsFee.COUVERT, "100000001", GroupCurrency.BRL)
-        val empty = FeeEditor(ItemsFee.SERVICE, "", GroupCurrency.BRL)
+        val service = FeeEditor(ItemsFee.SERVICE, "101", GroupCurrency.BRL, false)
+        val couvert = FeeEditor(ItemsFee.COUVERT, "100000001", GroupCurrency.BRL, false)
+        val empty = FeeEditor(ItemsFee.SERVICE, "", GroupCurrency.BRL, false)
 
         // When
         val canSave = listOf(service, couvert, empty).map { it.canSave }
@@ -218,6 +218,94 @@ class ItemEditorTest {
         // Then
         assertEquals(listOf(false, false, true), canSave)
         assertEquals(0L, empty.value)
+    }
+
+    @Test
+    fun `GIVEN an item of a bitcoin bill in sats WHEN reading its price THEN it is whole sats`() {
+        // Given
+        val editor = editor(
+            ItemSplitMode.EQUAL,
+            "1.000",
+            quantity = 2L,
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val price = editor.unitPriceMinor
+
+        // Then
+        assertEquals(1_000L, price)
+        assertEquals(2_000L, editor.totalMinor)
+    }
+
+    @Test
+    fun `GIVEN an item of a bitcoin bill not in sats WHEN reading its price THEN it has 8 decimals`() {
+        // Given
+        val editor = editor(ItemSplitMode.EQUAL, "0,00001", currency = GroupCurrency.BTC)
+
+        // When
+        val price = editor.unitPriceMinor
+
+        // Then
+        assertEquals(1_000L, price)
+    }
+
+    @Test
+    fun `GIVEN an item by value in sats WHEN the parts close THEN reads each part as whole sats`() {
+        // Given
+        val editor = editor(
+            ItemSplitMode.AMOUNT,
+            "1.000",
+            values = mapOf(PIERRE to "600", ANA to "400"),
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val status = editor.status
+
+        // Then
+        assertEquals(ItemStatus.AmountAddsUp(1_000L), status)
+    }
+
+    @Test
+    fun `GIVEN a couvert in bitcoin WHEN typing sats or 8 decimals THEN both read the same sats`() {
+        // Given
+        val inSats = FeeEditor(ItemsFee.COUVERT, "500", GroupCurrency.BTC, showsSats = true)
+        val inBitcoin = FeeEditor(ItemsFee.COUVERT, "0,000005", GroupCurrency.BTC, showsSats = false)
+
+        // When
+        val values = listOf(inSats.value, inBitcoin.value)
+
+        // Then
+        assertEquals(listOf(500L, 500L), values)
+    }
+
+    @Test
+    fun `GIVEN a couvert in sats WHEN typing over 21 million bitcoin THEN it cannot be saved`() {
+        // Given
+        val limit = FeeEditor(ItemsFee.COUVERT, "2100000000000000", GroupCurrency.BTC, showsSats = true)
+        val over = FeeEditor(ItemsFee.COUVERT, "2100000000000001", GroupCurrency.BTC, showsSats = true)
+
+        // When
+        val canSave = listOf(limit, over).map { it.canSave }
+
+        // Then
+        assertEquals(listOf(true, false), canSave)
+    }
+
+    @Test
+    fun `GIVEN a couvert in ether WHEN typing over 90 million ether THEN it cannot be saved`() {
+        // Given
+        val limit = FeeEditor(ItemsFee.COUVERT, "90000000,00000000", GroupCurrency.ETH, showsSats = false)
+        val over = FeeEditor(ItemsFee.COUVERT, "90000000,00000001", GroupCurrency.ETH, showsSats = false)
+
+        // When
+        val canSave = listOf(limit, over).map { it.canSave }
+
+        // Then
+        assertEquals(listOf(true, false), canSave)
     }
 
     private val people = listOf(
@@ -233,6 +321,8 @@ class ItemEditorTest {
         included: List<String> = emptyList(),
         counts: Map<String, Long> = emptyMap(),
         values: Map<String, String> = emptyMap(),
+        currency: GroupCurrency = GroupCurrency.BRL,
+        showsSats: Boolean = false,
     ): ItemEditor = ItemEditor(
         itemId = "item",
         name = "Pizza",
@@ -249,7 +339,8 @@ class ItemEditorTest {
         },
         lastEditedMemberId = null,
         payerIds = listOf(PIERRE),
-        currency = GroupCurrency.BRL,
+        currency = currency,
+        showsSats = showsSats,
     )
 
     private fun itemsEditor(
@@ -277,6 +368,7 @@ class ItemEditorTest {
         totalMinor = totalMinor,
         payerIds = listOf(PIERRE),
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     private fun person(

@@ -71,6 +71,10 @@ sealed interface ProfileUiEvent : UiEvent {
         val isOn: Boolean,
     ) : ProfileUiEvent
 
+    data class OnBitcoinInSatsToggled(
+        val isOn: Boolean,
+    ) : ProfileUiEvent
+
     // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.
     data object OnNotificationsClicked : ProfileUiEvent
 

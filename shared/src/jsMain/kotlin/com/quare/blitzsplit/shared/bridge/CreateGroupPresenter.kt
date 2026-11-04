@@ -38,6 +38,8 @@ class JsCreateGroupState(
     // Why: the ISO 4217 code ("BRL"); each UI names it in its own language.
     val currency: String,
     val currencies: Array<String>,
+    // Why: the ones among currencies "Moeda" lists under "Criptomoedas".
+    val cryptoCurrencies: Array<String>,
     val members: Array<JsCreateGroupMember>,
     val draft: String,
     val takenName: String?,
@@ -72,6 +74,7 @@ class CreateGroupPresenter {
                 types = state.types.toCodes(),
                 currency = state.currency.code,
                 currencies = state.currencies.toCurrencyCodes(),
+                cryptoCurrencies = state.currencies.toCryptoCurrencyCodes(),
                 members = state.members
                     .map { member ->
                         JsCreateGroupMember(

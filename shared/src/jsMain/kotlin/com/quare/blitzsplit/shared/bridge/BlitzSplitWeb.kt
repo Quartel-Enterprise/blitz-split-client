@@ -187,6 +187,12 @@ class AppPresenter {
         return JsWatch(watch::cancel)
     }
 
+    // Why: Preferências' "Bitcoin em satoshis", which every bitcoin amount the page writes follows.
+    fun observeBitcoinInSats(onChange: (Boolean) -> Unit): JsWatch {
+        val watch = FlowWatcher(holder.viewModel.showsBitcoinInSats).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
     fun navigateBack() {
         navigator.navigateBack()
     }

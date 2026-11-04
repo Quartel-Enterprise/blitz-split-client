@@ -102,6 +102,7 @@ internal fun itemEditorOf(
     people: List<BillPerson>,
     payerIds: List<String>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     decimalSeparator: Char,
     priceMinor: Long?,
 ): ItemEditor {
@@ -112,7 +113,7 @@ internal fun itemEditorOf(
         name = item?.name.orEmpty(),
         quantity = item?.quantity ?: 1L,
         unitPriceText = (item?.unitPriceMinor ?: priceMinor)
-            ?.let { AmountInput.format(it, currency, decimalSeparator) }
+            ?.let { AmountInput.format(it, currency, showsSats, decimalSeparator) }
             .orEmpty(),
         mode = mode,
         rows = people.map { person ->
@@ -121,12 +122,13 @@ internal fun itemEditorOf(
                 person = person,
                 isIncluded = value > 0,
                 count = if (mode == ItemSplitMode.UNITS || mode == ItemSplitMode.SHARES) value else 0L,
-                valueText = valueTextOf(mode, value, currency, decimalSeparator),
+                valueText = valueTextOf(mode, value, currency, showsSats, decimalSeparator),
             )
         },
         lastEditedMemberId = null,
         payerIds = payerIds,
         currency = currency,
+        showsSats = showsSats,
     )
 }
 
@@ -163,7 +165,7 @@ internal fun ItemEditor.toMode(
         row.copy(
             isIncluded = row.person.id in inItem,
             count = if (mode == ItemSplitMode.UNITS || mode == ItemSplitMode.SHARES) value else row.count,
-            valueText = valueTextOf(mode, value, currency, decimalSeparator),
+            valueText = valueTextOf(mode, value, currency, showsSats, decimalSeparator),
         )
     }
 }
@@ -193,7 +195,7 @@ internal fun ItemEditor.withTotal(
             payerIds = payerIds,
         ).associate { it.memberId to it.value }
     return changed.withRows { row ->
-        row.copy(valueText = valueTextOf(mode, scaled[row.person.id] ?: 0L, currency, decimalSeparator))
+        row.copy(valueText = valueTextOf(mode, scaled[row.person.id] ?: 0L, currency, showsSats, decimalSeparator))
     }
 }
 
@@ -213,10 +215,11 @@ internal fun ItemsEditor.feeEditorOf(
         ItemsFee.COUVERT ->
             split.couvertMinor
                 .takeIf { it > 0 }
-                ?.let { AmountInput.format(it, currency, decimalSeparator) }
+                ?.let { AmountInput.format(it, currency, showsSats, decimalSeparator) }
                 .orEmpty()
     },
     currency = currency,
+    showsSats = showsSats,
 )
 
 internal fun ItemsEditor.withFee(editor: FeeEditor): ItemsEditor {
@@ -233,10 +236,11 @@ private fun valueTextOf(
     mode: ItemSplitMode,
     value: Long,
     currency: GroupCurrency,
+    showsSats: Boolean,
     decimalSeparator: Char,
 ): String = when {
     value <= 0 -> ""
-    mode == ItemSplitMode.AMOUNT -> AmountInput.format(value, currency, decimalSeparator)
+    mode == ItemSplitMode.AMOUNT -> AmountInput.format(value, currency, showsSats, decimalSeparator)
     mode == ItemSplitMode.PERCENT -> value.toString()
     else -> ""
 }
