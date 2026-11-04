@@ -274,6 +274,7 @@ class HomeViewModel(
 
             // Why: never over the recovery code's prompt, which is no route, so ⌘K on the web can't stack the search on it.
             HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.showsRecoveryCodePrompt) {
+                trackEvent("search_opened", mapOf("source" to "home"))
                 navigator.openSearchOver(HomeTab.HOME)
             }
 

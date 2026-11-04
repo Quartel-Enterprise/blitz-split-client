@@ -375,7 +375,12 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnDisplayChanged -> layoutPicker.changeDisplay(event.display)
 
-            is GroupsUiEvent.OnGridSizeChanged -> layoutPicker.changeGridSize(event.size)
+            is GroupsUiEvent.OnGridSizeChanged -> {
+                if (layoutPicker.isNewGridSize(event.size)) {
+                    trackEvent("groups_grid_size_changed", mapOf("size" to event.size))
+                }
+                layoutPicker.changeGridSize(event.size)
+            }
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
@@ -424,6 +429,7 @@ class GroupsViewModel(
      */
     private fun openSearch() {
         if (!uiState.value.canSearch || !isListShown()) return
+        trackEvent("search_opened", mapOf("source" to "groups"))
         uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
         search { it }
     }

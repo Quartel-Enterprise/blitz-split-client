@@ -2990,7 +2990,7 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the groups WHEN tapping each home tab THEN tracks home_tab_clicked naming each tab`() =
+    fun `GIVEN the groups WHEN tapping each home tab THEN sends nothing since where it went is its screen view`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -3003,12 +3003,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(
-                listOf("home", "balances", "groups", "contacts", "activity").map { tab ->
-                    "home_tab_clicked" to mapOf<String, Any>("tab" to tab, "source" to "groups")
-                },
-                trackedEvents,
-            )
+            assertEquals(emptyList(), trackedEvents)
         }
 
     @Test

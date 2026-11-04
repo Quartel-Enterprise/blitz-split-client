@@ -22,39 +22,16 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
             // Why: the window drawing the group beside the list or not, never a tap.
             is OnDetailPaneChanged -> EventAnalytics.NotTracked
 
-            OnHomeTabClicked -> EventAnalytics.Automatic("home_tab_clicked", mapOf("tab" to "home", "source" to SOURCE))
-
-            OnBalancesTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "balances",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnGroupsTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "groups",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnContactsTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "contacts",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnActivityTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "activity",
-                    "source" to SOURCE,
-                ),
-            )
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnHomeTabClicked,
+            OnBalancesTabClicked,
+            OnGroupsTabClicked,
+            OnContactsTabClicked,
+            OnActivityTabClicked,
+            -> EventAnalytics.NotTracked
 
             OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
 
@@ -72,7 +49,8 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
 
             is OnDisplayChanged -> EventAnalytics.Automatic("groups_display_changed", mapOf("display" to display))
 
-            is OnGridSizeChanged -> EventAnalytics.Automatic("groups_grid_size_changed", mapOf("size" to size))
+            // Why: only a size the grid takes, once per size the Mac's slider passes.
+            is OnGridSizeChanged -> EventAnalytics.Manual("groups_grid_size_changed")
 
             is OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to SOURCE))
 
@@ -90,7 +68,8 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
 
             OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
 
-            OnSearchOpened -> EventAnalytics.Automatic("search_opened", mapOf("source" to SOURCE))
+            // Why: only a search that opens, never ⌘K over a dialog nor the search tab over a pushed screen.
+            OnSearchOpened -> EventAnalytics.Manual("search_opened")
 
             OnSearchTabLeft -> EventAnalytics.NotTracked
 

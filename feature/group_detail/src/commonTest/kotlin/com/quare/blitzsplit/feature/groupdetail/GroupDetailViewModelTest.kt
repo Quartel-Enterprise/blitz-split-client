@@ -2417,6 +2417,18 @@ class GroupDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN no Grupo apagado notice WHEN Voltar para Grupos arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN Apagar este acerto asked WHEN confirming THEN tracks payment_delete_confirmed with no params`() =
         runTest(testDispatcher) {
             // Given
@@ -2506,20 +2518,16 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN tracks home_tab_clicked with the tab`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(GroupDetailUiEvent.OnRailTabClicked(HomeTab.CONTACTS))
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnRailTabClicked(HomeTab.CONTACTS))
 
-            // Then
-            assertEquals(
-                listOf("home_tab_clicked" to mapOf<String, Any>("tab" to HomeTab.CONTACTS, "source" to "group_detail")),
-                trackedEvents,
-            )
-        }
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
 
     @Test
     fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio THEN tracks group_pin_toggled as pinned`() =

@@ -2511,7 +2511,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN someone owes you WHEN tapping their face THEN tracks person_clicked with only the source`() =
+    fun `GIVEN someone owes you WHEN tapping their face THEN tracks balance_face_clicked with only the source`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -2528,7 +2528,7 @@ class HomeViewModelTest {
             )
 
             // Then
-            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+            assertEquals(listOf("balance_face_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
         }
 
     @Test
@@ -2673,7 +2673,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping each other home tab THEN tracks home_tab_clicked naming each tab`() =
+    fun `GIVEN Inicio WHEN tapping each other home tab THEN sends nothing since where it went is its screen view`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -2685,12 +2685,7 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(
-                listOf("groups", "balances", "contacts", "activity").map { tab ->
-                    "home_tab_clicked" to mapOf<String, Any>("tab" to tab, "source" to "home")
-                },
-                trackedEvents,
-            )
+            assertEquals(emptyList(), trackedEvents)
         }
 
     private val everyone = listOf("Pierre", "Ana", "Bruno")

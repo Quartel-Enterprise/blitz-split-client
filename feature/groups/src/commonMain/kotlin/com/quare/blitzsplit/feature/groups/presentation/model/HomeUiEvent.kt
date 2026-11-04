@@ -12,13 +12,14 @@ sealed interface HomeUiEvent : TrackedUiEvent {
         get() = when (this) {
             OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
 
-            OnSearchClicked -> EventAnalytics.Automatic("search_opened", mapOf("source" to SOURCE))
+            // Why: only a search that opens, never ⌘K over the recovery code's prompt.
+            OnSearchClicked -> EventAnalytics.Manual("search_opened")
 
             OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
 
             OnRefresh -> EventAnalytics.Automatic("pull_to_refresh", mapOf("source" to SOURCE))
 
-            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+            is OnPersonClicked -> EventAnalytics.Automatic("balance_face_clicked", mapOf("source" to SOURCE))
 
             OnSeeBalancesClicked -> EventAnalytics.Automatic("home_see_balances_clicked")
 
@@ -55,37 +56,15 @@ sealed interface HomeUiEvent : TrackedUiEvent {
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked
 
-            OnGroupsTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "groups",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnBalancesTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "balances",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnContactsTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "contacts",
-                    "source" to SOURCE,
-                ),
-            )
-
-            OnActivityTabClicked -> EventAnalytics.Automatic(
-                "home_tab_clicked",
-                mapOf(
-                    "tab" to "activity",
-                    "source" to SOURCE,
-                ),
-            )
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnGroupsTabClicked,
+            OnBalancesTabClicked,
+            OnContactsTabClicked,
+            OnActivityTabClicked,
+            -> EventAnalytics.NotTracked
         }
 
     data object OnProfileClicked : HomeUiEvent

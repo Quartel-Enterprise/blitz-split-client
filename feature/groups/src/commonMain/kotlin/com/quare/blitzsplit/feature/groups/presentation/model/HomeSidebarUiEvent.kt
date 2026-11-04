@@ -11,7 +11,13 @@ sealed interface HomeSidebarUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
-            is OnTabClicked -> EventAnalytics.Automatic("home_tab_clicked", mapOf("tab" to tab, "source" to SOURCE))
+
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            is OnTabClicked -> EventAnalytics.NotTracked
+
             OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
         }
 

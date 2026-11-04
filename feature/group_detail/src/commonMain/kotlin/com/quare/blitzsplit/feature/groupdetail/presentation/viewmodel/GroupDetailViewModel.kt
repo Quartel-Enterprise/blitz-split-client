@@ -226,7 +226,10 @@ class GroupDetailViewModel(
                 screen.exit.dismiss()
             }
 
-            GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
+            GroupDetailUiEvent.OnBackToGroupsClicked -> {
+                if (screen.exit.state.value.deletedNotice != null) trackEvent("group_deleted_back_clicked", emptyMap())
+                screen.closeDeletedNotice()
+            }
 
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
 

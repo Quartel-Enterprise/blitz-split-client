@@ -12,7 +12,8 @@ sealed interface DefaultSplitUiEvent : TrackedUiEvent {
 
             is OnModeSelected -> EventAnalytics.Automatic("default_split_mode_selected", mapOf("mode" to mode))
 
-            is OnPersonToggled -> EventAnalytics.Automatic("default_split_person_toggled")
+            // Why: a toggle, sent with where it ended up.
+            is OnPersonToggled -> EventAnalytics.Manual("default_split_person_toggled")
 
             is OnPartsIncreased -> EventAnalytics.Automatic("default_split_parts_changed", mapOf("direction" to "up"))
 
@@ -33,7 +34,7 @@ sealed interface DefaultSplitUiEvent : TrackedUiEvent {
                 mapOf("mode" to mode),
             )
 
-            is OnExceptionPersonToggled -> EventAnalytics.Automatic("default_split_exception_person_toggled")
+            is OnExceptionPersonToggled -> EventAnalytics.Manual("default_split_exception_person_toggled")
 
             is OnExceptionPartsIncreased -> EventAnalytics.Automatic(
                 "default_split_exception_parts_changed",

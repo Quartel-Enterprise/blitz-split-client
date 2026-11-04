@@ -22,7 +22,11 @@ sealed interface GroupDetailUiEvent : TrackedUiEvent {
 
             is OnTabSelected -> EventAnalytics.Automatic("group_tab_clicked", mapOf("tab" to tab))
 
-            is OnRailTabClicked -> EventAnalytics.Automatic("home_tab_clicked", mapOf("tab" to tab, "source" to SOURCE))
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            is OnRailTabClicked -> EventAnalytics.NotTracked
 
             OnEditGroupClicked -> EventAnalytics.Automatic("edit_group_clicked")
 
@@ -38,7 +42,8 @@ sealed interface GroupDetailUiEvent : TrackedUiEvent {
 
             OnGroupExitDismissed -> EventAnalytics.Manual("group_exit_cancelled")
 
-            OnBackToGroupsClicked -> EventAnalytics.Automatic("group_deleted_back_clicked")
+            // Why: only while "Grupo apagado" shows, since Apple's alert also closes itself after its button.
+            OnBackToGroupsClicked -> EventAnalytics.Manual("group_deleted_back_clicked")
 
             is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
 

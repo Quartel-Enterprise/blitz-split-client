@@ -614,7 +614,25 @@ class DefaultSplitViewModelTest {
     }
 
     @Test
-    fun `GIVEN Igual WHEN leaving Ana out THEN sends the person toggled without who`() = runTest(testDispatcher) {
+    fun `GIVEN Ana left out of Igual WHEN putting her back THEN sends the person toggled in`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+
+            // Then
+            assertEquals(
+                listOf("default_split_person_toggled" to mapOf<String, Any>("is_included" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Igual WHEN leaving Ana out THEN sends the person toggled out without who`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -622,7 +640,10 @@ class DefaultSplitViewModelTest {
         viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
 
         // Then
-        assertEquals(listOf("default_split_person_toggled" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(
+            listOf("default_split_person_toggled" to mapOf<String, Any>("is_included" to false)),
+            trackedEvents,
+        )
     }
 
     @Test
@@ -762,7 +783,7 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
-    fun `GIVEN the Mercado exception open WHEN leaving Ana out THEN sends the exception person toggled`() =
+    fun `GIVEN the Mercado exception open WHEN leaving Ana out THEN sends the exception person toggled out`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
@@ -774,7 +795,7 @@ class DefaultSplitViewModelTest {
 
             // Then
             assertEquals(
-                listOf("default_split_exception_person_toggled" to emptyMap<String, Any>()),
+                listOf("default_split_exception_person_toggled" to mapOf<String, Any>("is_included" to false)),
                 trackedEvents,
             )
         }

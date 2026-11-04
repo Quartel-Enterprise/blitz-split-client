@@ -136,8 +136,11 @@ class DefaultSplitViewModel(
 
             is DefaultSplitUiEvent.OnModeSelected -> updateForm { it.toMode(event.mode) }
 
-            is DefaultSplitUiEvent.OnPersonToggled -> updatePerson(event.memberId) {
-                it.copy(isIncluded = !it.isIncluded)
+            is DefaultSplitUiEvent.OnPersonToggled -> {
+                updatePerson(event.memberId) { it.copy(isIncluded = !it.isIncluded) }
+                uiState.value.people.firstOrNull { it.id == event.memberId }?.let { person ->
+                    trackEvent("default_split_person_toggled", mapOf("is_included" to person.isIncluded))
+                }
             }
 
             is DefaultSplitUiEvent.OnPartsIncreased -> updatePerson(event.memberId) {
@@ -176,8 +179,13 @@ class DefaultSplitViewModel(
 
             is DefaultSplitUiEvent.OnExceptionModeSelected -> uiState.update { it.withExceptionMode(event.mode) }
 
-            is DefaultSplitUiEvent.OnExceptionPersonToggled -> uiState.update { state ->
-                state.withExceptionPerson(event.memberId) { it.copy(isIncluded = !it.isIncluded) }
+            is DefaultSplitUiEvent.OnExceptionPersonToggled -> {
+                uiState.update { state ->
+                    state.withExceptionPerson(event.memberId) { it.copy(isIncluded = !it.isIncluded) }
+                }
+                uiState.value.exceptionEditor?.people?.firstOrNull { it.id == event.memberId }?.let { person ->
+                    trackEvent("default_split_exception_person_toggled", mapOf("is_included" to person.isIncluded))
+                }
             }
 
             is DefaultSplitUiEvent.OnExceptionPartsIncreased -> uiState.update { state ->

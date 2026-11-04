@@ -37,6 +37,9 @@ internal class GroupsLayoutPicker(
     }
 
     // Why: the size is disabled while the list is picked, so a late tap on it doesn't change the grid unseen.
+    // Why: a size the grid would take, which Analytics counts: only while the grid shows, and not the one it has.
+    fun isNewGridSize(size: GroupGridSize): Boolean = canPickGridSize() && current().gridSize != size
+
     fun changeGridSize(size: GroupGridSize) {
         if (!canPickGridSize()) return
         save(current().copy(gridSize = size))

@@ -585,7 +585,7 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
-    fun `GIVEN the sidebar WHEN tapping Atividade THEN tracks home_tab_clicked with that tab`() =
+    fun `GIVEN the sidebar WHEN tapping Atividade THEN sends nothing since where it went is its screen view`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -594,10 +594,7 @@ class HomeSidebarViewModelTest {
             viewModel.onEvent(HomeSidebarUiEvent.OnTabClicked(HomeTab.ACTIVITY))
 
             // Then
-            assertEquals(
-                listOf("home_tab_clicked" to mapOf<String, Any>("tab" to HomeTab.ACTIVITY, "source" to "sidebar")),
-                trackedEvents,
-            )
+            assertEquals(emptyList(), trackedEvents)
         }
 
     @Test
