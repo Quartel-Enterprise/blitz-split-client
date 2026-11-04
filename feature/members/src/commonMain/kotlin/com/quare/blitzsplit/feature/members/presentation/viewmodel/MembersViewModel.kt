@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -26,7 +25,9 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
@@ -60,7 +61,8 @@ class MembersViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<MembersUiEvent>(trackEvent) {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
             MembersUiState(
@@ -114,7 +116,7 @@ class MembersViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: MembersUiEvent) {
+    override fun handleEvent(event: MembersUiEvent) {
         when (event) {
             // Why: over the group, or in the place of its bill the Mac draws beside it.
             MembersUiEvent.OnShareClicked -> navigator.openFromGroupScreen(
@@ -144,7 +146,7 @@ class MembersViewModel(
 
             MembersUiEvent.OnRemoveConfirmed -> remove()
 
-            MembersUiEvent.OnRemoveDismissed -> uiState.update { it.copy(memberToRemove = null) }
+            MembersUiEvent.OnRemoveDismissed -> dismissRemove()
 
             is MembersUiEvent.OnReleaseClicked -> askToRelease(event.memberId)
 
@@ -389,6 +391,7 @@ class MembersViewModel(
     // Why: the confirmation closes right away; the write is local, and only a failure has something to say.
     private fun remove() {
         val member = uiState.value.memberToRemove ?: return
+        trackEvent("member_remove_confirmed", emptyMap())
         uiState.update { it.copy(memberToRemove = null) }
         viewModelScope.launch {
             removeMember(member.id).onFailure { uiAction.emit(MembersUiAction.ShowChangeError) }
@@ -404,9 +407,18 @@ class MembersViewModel(
         if (member.canBeReleased) uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = member) }
     }
 
+    private fun dismissRemove() {
+        if (uiState.value.memberToRemove == null) return
+        trackEvent("member_remove_cancelled", emptyMap())
+        uiState.update { it.copy(memberToRemove = null) }
+    }
+
     // Why: a release on its way can't be called back, so its confirmation waits for the answer.
     private fun dismissRelease() {
-        uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = null) }
+        val state = uiState.value
+        if (state.memberToRelease == null || state.isReleasing) return
+        trackEvent("member_release_cancelled", emptyMap())
+        uiState.update { it.copy(memberToRelease = null) }
     }
 
     // Why: online only, so the confirmation stays open until the server answers, and closes either way.
@@ -414,6 +426,7 @@ class MembersViewModel(
         val state = uiState.value
         val member = state.memberToRelease ?: return
         if (state.isReleasing) return
+        trackEvent("member_release_confirmed", emptyMap())
         uiState.update { it.copy(isReleasing = true) }
         viewModelScope.launch {
             val result = releaseMember(member.id)

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.invite.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -14,7 +13,9 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroup
 import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -41,7 +42,8 @@ class InviteViewModel(
     observeGroup: ObserveGroup,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<InviteUiEvent>(trackEvent) {
     val uiState: StateFlow<InviteUiState>
         field = MutableStateFlow(
             InviteUiState(
@@ -92,7 +94,7 @@ class InviteViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: InviteUiEvent) {
+    override fun handleEvent(event: InviteUiEvent) {
         when (event) {
             InviteUiEvent.OnCloseClicked -> leave()
 
@@ -118,7 +120,7 @@ class InviteViewModel(
 
             InviteUiEvent.OnChangeLinkConfirmed -> changeLink()
 
-            InviteUiEvent.OnChangeLinkDismissed -> uiState.update { it.copy(isConfirmingLinkChange = false) }
+            InviteUiEvent.OnChangeLinkDismissed -> dismissChangeLink()
         }
     }
 
@@ -187,6 +189,7 @@ class InviteViewModel(
     // Why: the new link shows once the use case wrote it to Room; a failure keeps the old one, which still works.
     private fun changeLink() {
         if (!uiState.value.isConfirmingLinkChange) return
+        trackEvent("invite_link_change_confirmed", emptyMap())
         uiState.update {
             it.copy(
                 isConfirmingLinkChange = false,
@@ -206,5 +209,11 @@ class InviteViewModel(
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {
         if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
+    }
+
+    private fun dismissChangeLink() {
+        if (!uiState.value.isConfirmingLinkChange) return
+        trackEvent("invite_link_change_cancelled", emptyMap())
+        uiState.update { it.copy(isConfirmingLinkChange = false) }
     }
 }

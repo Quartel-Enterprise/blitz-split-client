@@ -26,6 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class JoinWithLinkViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: JoinWithLinkViewModel
@@ -993,6 +994,205 @@ class JoinWithLinkViewModelTest {
             assertEquals(listOf(Route.Home, groupSkippingReader), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the reader WHEN the platform answers the camera permission THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN the camera opens THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the reader WHEN the camera is unavailable THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the camera denied WHEN opening the settings THEN sends camera settings from the reader`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenSettingsClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_settings_clicked" to mapOf<String, Any>("source" to "join_with_link")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a camera with a flashlight WHEN tapping the torch THEN sends it toggled on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+        // Then
+        assertEquals(listOf("join_with_link_torch_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a camera without a flashlight WHEN tapping the torch THEN sends it toggled off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // Then
+            assertEquals(listOf("join_with_link_torch_toggled" to mapOf<String, Any>("is_on" to false)), trackedEvents)
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN the camera reads an invite THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned("https://blitzsplit.com/g/$CODE"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the reader WHEN the camera reads a QR that is not an invite THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned("https://example.com/menu"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN typing a link THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnLinkChanged("https://blitzsplit.com/g/$CODE"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the reader WHEN pasting an invite THEN sends the paste event without the text`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnPasted("https://blitzsplit.com/g/$CODE"))
+
+            // Then
+            assertEquals(listOf("join_with_link_paste_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an empty clipboard WHEN pasting THEN still sends the paste event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(""))
+
+        // Then
+        assertEquals(listOf("join_with_link_paste_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a link typed WHEN clearing it THEN sends the clear event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnLinkChanged("blitzsplit.com/g/"))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnClearClicked)
+
+        // Then
+        assertEquals(listOf("join_with_link_clear_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an invite typed WHEN tapping open THEN sends the open event without the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnLinkChanged("https://blitzsplit.com/g/$CODE"))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
+
+            // Then
+            assertEquals(listOf("join_with_link_open_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an empty field WHEN tapping open THEN still sends the open event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
+
+        // Then
+        assertEquals(listOf("join_with_link_open_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the reader WHEN closing it THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     // Why: the reader "Escanear outro QR" reopens after the group link of CODE failed.
     private val groupSkippingReader = Route.JoinWithLink(
         skippedCode = CODE,
@@ -1034,6 +1234,7 @@ class JoinWithLinkViewModelTest {
             navigator.navigate(route)
         }
         viewModel = JoinWithLinkViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
         )

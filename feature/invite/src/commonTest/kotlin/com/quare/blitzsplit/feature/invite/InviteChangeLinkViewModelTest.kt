@@ -39,6 +39,7 @@ import kotlin.test.assertTrue
 
 // Why: "Trocar link" and its confirmation; the rest of Convidar is in InviteViewModelTest.
 class InviteChangeLinkViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -450,6 +451,164 @@ class InviteChangeLinkViewModelTest {
         assertTrue(state.isLinkCopied)
     }
 
+    @Test
+    fun `GIVEN change link offered WHEN change link is tapped THEN sends the change link event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_change_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group someone else created WHEN change link is tapped THEN still sends the change link event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = creatorsTrip.copy(isCreatedByMe = false))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_change_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN change link is tapped THEN still sends the change link event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_change_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN it is confirmed THEN sends the confirmed event after the tap one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(rotateGate = CompletableDeferred())
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no confirmation open WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the link being changed WHEN the server fails THEN sends no event of its own`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                rotateError = IllegalStateException("server down"),
+                rotateGate = gate,
+            )
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the link changed WHEN the Apple alert then closes itself THEN sends no cancelled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN it is dismissed twice THEN sends one cancelled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_cancelled" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN it is dismissed THEN sends the cancelled event after the tap one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_cancelled" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
     private val pierre = GroupMember(
         "member-1",
         "Pierre",
@@ -528,6 +687,7 @@ class InviteChangeLinkViewModelTest {
             }
         }
         viewModel = InviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode { text ->

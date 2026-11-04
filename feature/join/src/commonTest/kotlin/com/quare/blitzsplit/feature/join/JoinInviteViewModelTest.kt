@@ -44,6 +44,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class JoinInviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var invites: FakeInviteRepository
     private lateinit var groups: FakeGroupRepository
@@ -1422,6 +1423,186 @@ class JoinInviteViewModelTest {
             assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the invite could not open offline WHEN the device goes online THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                fetchError = IllegalStateException("offline"),
+                online = false,
+            )
+            invites.fetchError = null
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, viewModel.uiState.value.status)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a valid invite WHEN joining THEN sends the join event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(listOf("join_invite_join_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN joining as Carla THEN sends the join event without who she is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf("join_invite_join_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the invite on its way WHEN joining THEN still sends the join event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(fetchGate = CompletableDeferred())
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(listOf("join_invite_join_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf(Route.Home, groupLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN tapping not Carla THEN sends the not me event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+
+        // Then
+        assertEquals(listOf("join_invite_not_me_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the invite on top WHEN the Android back leaves it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the invite on top WHEN tapping not now THEN sends the not now event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnNotNowClicked)
+
+        // Then
+        assertEquals(listOf("join_invite_not_now_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN another screen over the invite WHEN tapping not now THEN still sends the not now event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnNotNowClicked)
+
+            // Then
+            assertEquals(listOf("join_invite_not_now_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the invite could not open offline WHEN trying again THEN sends retry from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                fetchError = IllegalStateException("offline"),
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "join_invite")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the invite on screen WHEN trying again THEN still sends retry from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "join_invite")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an invalid invite WHEN going home THEN sends the go home event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(invite = null)
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnGoHomeClicked)
+
+        // Then
+        assertEquals(listOf("join_invite_go_home_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an invalid invite WHEN scanning another QR THEN sends the scan another event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = null)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf("join_invite_scan_another_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a valid invite WHEN scanning another QR THEN still sends the scan another event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf("join_invite_scan_another_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf(Route.Home, groupLink), navigator.backStack.value)
+        }
+
     private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
     private val ana = InviteMember("member-2", "Ana", AvatarColor.PEACH, hasJoined = true)
     private val bruno = InviteMember("member-3", "Bruno", AvatarColor.GREEN, hasJoined = false)
@@ -1528,6 +1709,7 @@ class JoinInviteViewModelTest {
             navigator.navigate(route)
         }
         viewModel = JoinInviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),

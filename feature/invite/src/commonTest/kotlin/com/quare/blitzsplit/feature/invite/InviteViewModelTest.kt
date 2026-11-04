@@ -44,6 +44,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class InviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -53,6 +54,7 @@ class InviteViewModelTest {
     private lateinit var viewModel: InviteViewModel
     private val encodedTexts = mutableListOf<String>()
     private val actions = mutableListOf<InviteUiAction>()
+    private val linkCopiedWhenTracked = mutableListOf<Boolean>()
 
     @BeforeTest
     fun setUp() {
@@ -926,6 +928,190 @@ class InviteViewModelTest {
             assertEquals(0, syncRetries)
         }
 
+    @Test
+    fun `GIVEN the screen on top WHEN close is tapped THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group whose link a sync brings WHEN the screen shows it THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = null))
+
+            // When
+            groups.groups.value = listOf(trip.copy(inviteCode = "7Hk2pQ"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a link WHEN copy is tapped THEN sends the copy event from the invite without the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = "7Hk2pQ"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a link WHEN copy is tapped THEN sends the event before it shows copied`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(inviteCode = "7Hk2pQ"))
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnCopyClicked)
+
+        // Then
+        assertEquals(listOf(false), linkCopiedWhenTracked)
+        assertTrue(viewModel.uiState.value.isLinkCopied)
+    }
+
+    @Test
+    fun `GIVEN a pending link WHEN copy is tapped THEN still sends the copy event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(inviteCode = null))
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnCopyClicked)
+
+        // Then
+        assertEquals(listOf("invite_link_copy_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a link WHEN share is tapped THEN sends the share event from the invite`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(inviteCode = "7Hk2pQ"))
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnShareClicked)
+
+        // Then
+        assertEquals(listOf("invite_link_share_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a pending link WHEN share is tapped THEN still sends the share event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(inviteCode = null))
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnShareClicked)
+
+        // Then
+        assertEquals(listOf("invite_link_share_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the screen on top WHEN see who joined is tapped THEN sends the see who joined event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+            // Then
+            assertEquals(listOf("invite_see_who_joined_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN see who joined is tapped THEN still sends the see who joined event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+            // Then
+            assertEquals(listOf("invite_see_who_joined_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a pending link WHEN go to the group is tapped THEN sends the go to group event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = null))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
+
+            // Then
+            assertEquals(listOf("invite_go_to_group_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the link failed WHEN retry is tapped THEN sends the retry event from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(inviteCode = null),
+                online = true,
+                sync = SyncState.FAILED,
+            )
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a pending link offline and a failed sync WHEN retry is tapped THEN still sends the retry event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(inviteCode = null),
+                online = false,
+                sync = SyncState.FAILED,
+            )
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(0, syncRetries)
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "invite")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a link WHEN copy then share are tapped THEN sends one event per tap in order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = "7Hk2pQ"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnCopyClicked)
+            viewModel.onEvent(InviteUiEvent.OnShareClicked)
+            viewModel.onEvent(InviteUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_copy_clicked" to mapOf<String, Any>("source" to "invite"),
+                    "invite_link_share_clicked" to mapOf<String, Any>("source" to "invite"),
+                    "invite_link_copy_clicked" to mapOf<String, Any>("source" to "invite"),
+                ),
+                trackedEvents,
+            )
+        }
+
     private val pierre = GroupMember(
         "member-1",
         "Pierre",
@@ -1023,6 +1209,10 @@ class InviteViewModelTest {
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val connectivityNeverAnswers = MutableSharedFlow<Boolean>()
         viewModel = InviteViewModel(
+            trackEvent = { name, params ->
+                trackedEvents += name to params
+                linkCopiedWhenTracked += viewModel.uiState.value.isLinkCopied
+            },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode { text ->

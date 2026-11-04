@@ -174,8 +174,9 @@ function PastePanel({ presenter, state }: { presenter: JoinWithLinkPresenter; st
     navigator.clipboard
       .readText()
       .then((text) => presenter.paste(text))
-      // The browser refused to read the clipboard (permission denied): the field stays as it is
-      .catch(() => {})
+      // The browser refused to read the clipboard (permission denied): an empty paste, as an empty clipboard is on
+      // Android and iOS, so the tap still counts and the field stays as it is
+      .catch(() => presenter.paste(''))
   }
 
   return (

@@ -23,7 +23,7 @@ fun JoinInviteScreen(
             JoinInviteUiAction.ShowJoinError -> R.string.join_pick_error
         }
     }
-    BackHandler { viewModel.onEvent(JoinInviteUiEvent.OnNotNowClicked) }
+    BackHandler { viewModel.onEvent(JoinInviteUiEvent.OnBackClicked) }
     JoinInviteContent(
         state = state,
         snackbarHostState = snackbarHostState,

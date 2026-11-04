@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.creategroup.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -16,11 +15,13 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
@@ -41,7 +42,8 @@ class CreateGroupViewModel(
     deviceRegion: DeviceRegion,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<CreateGroupUiEvent>(trackEvent) {
     val uiState: StateFlow<CreateGroupUiState>
         field = MutableStateFlow(
             CreateGroupUiState(
@@ -106,7 +108,7 @@ class CreateGroupViewModel(
         }
     }
 
-    fun onEvent(event: CreateGroupUiEvent) {
+    override fun handleEvent(event: CreateGroupUiEvent) {
         when (event) {
             // Why: leaving clears the ViewModel, which would cancel a save in flight.
             CreateGroupUiEvent.OnCloseClicked -> if (!uiState.value.isCreating) leave()
@@ -253,6 +255,7 @@ class CreateGroupViewModel(
     }
 
     private fun create() {
+        trackEvent("create_group_create_clicked", emptyMap())
         val state = uiState.value
         if (!state.canCreate) return
         val draft = checkOf(state.draft) as? MemberNameCheck.Available
@@ -286,15 +289,25 @@ class CreateGroupViewModel(
                 photo = state.photo,
                 currency = state.currency,
                 members = members,
-            ).onSuccess(::openInvite)
-                .onFailure {
-                    uiState.update {
-                        it.copy(
-                            isCreating = false,
-                            showsCreateError = true,
-                        )
-                    }
+            ).onSuccess { groupId ->
+                trackEvent(
+                    "group_created",
+                    mapOf(
+                        "type" to state.type,
+                        "currency" to state.currency,
+                        "members" to members.size,
+                        "has_photo" to (state.photo != null),
+                    ),
+                )
+                openInvite(groupId)
+            }.onFailure {
+                uiState.update {
+                    it.copy(
+                        isCreating = false,
+                        showsCreateError = true,
+                    )
                 }
+            }
         }
     }
 
