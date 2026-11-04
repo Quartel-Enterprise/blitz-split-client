@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
@@ -90,7 +89,12 @@ internal class CategoryEditing(
 
             is SplitBillUiEvent.OnCategoryMainToggled -> toggleMain(event.categoryId)
 
-            is SplitBillUiEvent.OnCategoryPicked -> change { it.withCategoryPicked(event.categoryId) }
+            // Why: only a category still there, never one a sync just deleted.
+            is SplitBillUiEvent.OnCategoryPicked -> {
+                val before = uiState.value
+                change { it.withCategoryPicked(event.categoryId) }
+                if (uiState.value != before) trackEvent("bill_category_picked", emptyMap())
+            }
 
             SplitBillUiEvent.OnCategoryDismissed -> uiState.update {
                 it.copy(
@@ -108,11 +112,11 @@ internal class CategoryEditing(
 
             // Why: only a category its form opens for, one of the group's still there.
             is SplitBillUiEvent.OnEditCategoryClicked -> {
-                val state = uiState.value
-                if (CategoryForm.editingOrNull(state.categories, state.groupId, event.categoryId) != null) {
+                val before = uiState.value.categoryForm
+                uiState.update { it.withEditCategoryForm(event.categoryId) }
+                if (uiState.value.categoryForm.let { it != null && it != before }) {
                     trackEvent("category_edit_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
                 }
-                uiState.update { it.withEditCategoryForm(event.categoryId) }
             }
 
             is SplitBillUiEvent.OnCategoryNameChanged -> uiState.update { state ->

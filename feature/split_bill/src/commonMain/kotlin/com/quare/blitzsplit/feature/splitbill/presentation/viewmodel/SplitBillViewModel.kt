@@ -101,7 +101,7 @@ class SplitBillViewModel(
     private var shownGroupId: String? = null
 
     // Why: "Rachar em qual grupo?" (7.1i), whose "Continuar" moves a new bill to the group picked.
-    private val groupPicking = GroupPicking(uiState, route, groupId)
+    private val groupPicking = GroupPicking(uiState, route, groupId, trackEvent)
 
     private val tracking = SplitFormTracking(uiState, trackEvent)
 
@@ -244,7 +244,6 @@ class SplitBillViewModel(
         !uiState.value.isFormLocked || event.isAllowedWhileReading()
 
     private fun handleFormEvent(event: SplitBillUiEvent) {
-        if (!isAccepted(event)) return
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
@@ -252,10 +251,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
-            SplitBillUiEvent.OnGroupDone -> {
-                tracking.trackGroupConfirmed()
-                groupPicking.confirm()
-            }
+            SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()
 
             SplitBillUiEvent.OnGroupDismissed -> groupPicking.dismiss()
 
@@ -307,10 +303,7 @@ class SplitBillViewModel(
                 uiState.update { it.withSplitAsDefaultToggled() }
             }
 
-            SplitBillUiEvent.OnSplitDone -> {
-                tracking.trackSplitConfirmed()
-                confirmSplit()
-            }
+            SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
             SplitBillUiEvent.OnSplitDismissed -> {
                 items.forget()
@@ -493,6 +486,7 @@ class SplitBillViewModel(
     private fun confirmSplit() {
         val editor = uiState.value.splitEditor?.takeIf { it.addsUp } ?: return
         if (editor.mode == SplitMode.ITEMS) return
+        tracking.trackSplitConfirmed(editor)
         items.forget()
         hasPickedSplit = true
         amountAnchor = if (editor.mode == SplitMode.AMOUNT) editor.totalMinor to editor.entries else null

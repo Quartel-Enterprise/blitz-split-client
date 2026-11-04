@@ -2118,6 +2118,43 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN no receipt read WHEN a tap on its items arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(scan = scanOf(reading()))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.itemsEditor)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt read and the bill moved to another currency WHEN its items are tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = false),
+                storedGroups = listOf(dinner, trip),
+                scan = scanOf(reading()),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+            // Then
+            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a receipt read WHEN saving THEN the bill saved says it came from a receipt`() = runTest(testDispatcher) {
         // Given
         prepareScenario(scan = scanOf(reading()))

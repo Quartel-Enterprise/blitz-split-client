@@ -68,6 +68,7 @@ internal class ItemsEditing(
      */
     fun openFromReceipt() {
         if (receiptItems(uiState.value.currency) == null) return
+        trackEvent("receipt_items_clicked", emptyMap())
         uiState.update { it.withSplitOpened() }
         openInSplit()
     }
@@ -76,6 +77,7 @@ internal class ItemsEditing(
     fun confirm() {
         val state = uiState.value
         val items = state.itemsEditor?.takeIf { it.addsUp } ?: return
+        trackEvent("bill_items_confirmed", mapOf("items" to items.items.size))
         draft = null
         uiState.update {
             it.copy(
@@ -109,12 +111,7 @@ internal class ItemsEditing(
         when (event) {
             SplitBillUiEvent.OnItemsDismissed -> dismiss()
 
-            SplitBillUiEvent.OnItemsDone -> {
-                uiState.value.itemsEditor?.takeIf { it.addsUp }?.let { items ->
-                    trackEvent("bill_items_confirmed", mapOf("items" to items.items.size))
-                }
-                confirm()
-            }
+            SplitBillUiEvent.OnItemsDone -> confirm()
 
             SplitBillUiEvent.OnAddItemClicked -> openItem(
                 itemId = null,
@@ -189,8 +186,10 @@ internal class ItemsEditing(
 
             SplitBillUiEvent.OnItemDismissed -> uiState.update { it.copy(itemEditor = null) }
 
-            is SplitBillUiEvent.OnItemDeleteClicked -> uiState.update {
-                it.copy(itemDeletion = it.itemsEditor?.deletionOf(event.itemId))
+            // Why: only when its question opens, an item still in the list.
+            is SplitBillUiEvent.OnItemDeleteClicked -> {
+                uiState.update { it.copy(itemDeletion = it.itemsEditor?.deletionOf(event.itemId)) }
+                if (uiState.value.itemDeletion != null) trackEvent("bill_item_delete_clicked", emptyMap())
             }
 
             // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
@@ -204,8 +203,10 @@ internal class ItemsEditing(
                 uiState.update { it.copy(itemDeletion = null) }
             }
 
-            is SplitBillUiEvent.OnFeeClicked -> uiState.update {
-                it.copy(feeEditor = it.itemsEditor?.feeEditorOf(event.fee, separator()))
+            // Why: only when its field opens, over "Itens da conta".
+            is SplitBillUiEvent.OnFeeClicked -> {
+                uiState.update { it.copy(feeEditor = it.itemsEditor?.feeEditorOf(event.fee, separator())) }
+                if (uiState.value.feeEditor != null) trackEvent("bill_items_fee_clicked", mapOf("fee" to event.fee))
             }
 
             is SplitBillUiEvent.OnFeeValueChanged -> uiState.update { state ->
@@ -218,18 +219,7 @@ internal class ItemsEditing(
                 state.copy(feeEditor = editor.copy(valueText = text))
             }
 
-            SplitBillUiEvent.OnFeeDone -> {
-                uiState.value.feeEditor?.takeIf { it.canSave }?.let { editor ->
-                    trackEvent("bill_items_fee_confirmed", mapOf("fee" to editor.fee))
-                }
-                uiState.update { state ->
-                    val editor = state.feeEditor?.takeIf { it.canSave } ?: return@update state
-                    state.copy(
-                        itemsEditor = state.itemsEditor?.withFee(editor),
-                        feeEditor = null,
-                    )
-                }
-            }
+            SplitBillUiEvent.OnFeeDone -> confirmFee()
 
             SplitBillUiEvent.OnFeeDismissed -> uiState.update { it.copy(feeEditor = null) }
         }
@@ -298,6 +288,18 @@ internal class ItemsEditing(
                 itemsEditor = state.itemsEditor?.toItemsWithout(deletion.itemId),
                 itemEditor = state.itemEditor?.takeIf { it.itemId != deletion.itemId },
                 itemDeletion = null,
+            )
+        }
+    }
+
+    // Why: a value the field takes goes to the items, its field closing.
+    private fun confirmFee() {
+        val editor = uiState.value.feeEditor?.takeIf { it.canSave } ?: return
+        trackEvent("bill_items_fee_confirmed", mapOf("fee" to editor.fee))
+        uiState.update {
+            it.copy(
+                itemsEditor = it.itemsEditor?.withFee(editor),
+                feeEditor = null,
             )
         }
     }

@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class TrackedViewModelTest {
     private lateinit var log: MutableList<Entry>
@@ -142,7 +143,7 @@ class TrackedViewModelTest {
     }
 
     @Test
-    fun `GIVEN a screen refusing the event for now WHEN the UI sends an automatic event THEN handles it untracked`() {
+    fun `GIVEN a screen refusing the event for now WHEN the UI sends it THEN neither tracks nor handles it`() {
         // Given
         prepareScenario(refusesEvents = true)
         val event = TestUiEvent.OnBackClicked
@@ -151,7 +152,7 @@ class TrackedViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<Entry>(Entry.Handled(TestUiEvent.OnBackClicked)), log)
+        assertTrue(log.isEmpty())
     }
 
     private fun prepareScenario(

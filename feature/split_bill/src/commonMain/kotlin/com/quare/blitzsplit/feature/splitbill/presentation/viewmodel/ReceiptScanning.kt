@@ -78,15 +78,13 @@ internal class ReceiptScanning(
                 uiState.update { if (it.canScanReceipt) it.copy(isReceiptCameraRequested = true) else it }
             }
 
-            is SplitBillUiEvent.OnReceiptPhotoPicked -> if (canRead()) {
+            is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo) {
                 trackEvent("photo_picked", mapOf("source" to RECEIPT_SOURCE))
-                read(event.photo)
             }
 
             SplitBillUiEvent.OnReceiptRetryClicked -> unansweredSource?.let { source ->
-                if (uiState.value.offersReceiptRetry && uiState.value.canScanReceipt && canRead()) {
-                    trackEvent("retry_clicked", mapOf("source" to RECEIPT_SOURCE))
-                    read(source)
+                if (uiState.value.offersReceiptRetry && uiState.value.canScanReceipt) {
+                    read(source) { trackEvent("retry_clicked", mapOf("source" to RECEIPT_SOURCE)) }
                 }
             }
 
@@ -111,12 +109,14 @@ internal class ReceiptScanning(
         )
     }
 
-    // Why: a photo arriving while the bill is edited or saving is dropped, so it counts only otherwise.
-    private fun canRead(): Boolean = !uiState.value.isEditing && !uiState.value.isSaving
-
-    private fun read(source: ByteArray) {
+    // Why: a photo arriving while the bill is edited or saving is dropped; onStarted counts the tap it stands for.
+    private fun read(
+        source: ByteArray,
+        onStarted: () -> Unit = {},
+    ) {
         val state = uiState.value
-        if (!canRead()) return
+        if (state.isEditing || state.isSaving) return
+        onStarted()
         reading?.cancel()
         photo = null
         items = null

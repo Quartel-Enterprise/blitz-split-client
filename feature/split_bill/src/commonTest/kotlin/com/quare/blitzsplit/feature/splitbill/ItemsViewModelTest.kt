@@ -790,6 +790,30 @@ class ItemsViewModelTest {
         }
 
     @Test
+    fun `GIVEN an item just deleted WHEN a late Apagar item of it arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            addItem(
+                name = "Pizza",
+                price = "50,00",
+                consumers = listOf(PIERRE),
+            )
+            val deletedId = itemId()
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(deletedId))
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(deletedId))
+
+            // Then
+            assertNull(viewModel.uiState.value.itemDeletion)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN Apagar item asking WHEN confirming THEN sends the item delete confirmed`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -881,6 +905,23 @@ class ItemsViewModelTest {
                 listOf("bill_items_fee_clicked" to mapOf<String, Any>("fee" to ItemsFee.SERVICE)),
                 trackedEvents,
             )
+        }
+
+    @Test
+    fun `GIVEN Itens closed back to Dividir WHEN a late tap on the Couvert row arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnItemsDismissed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.COUVERT))
+
+            // Then
+            assertNull(viewModel.uiState.value.feeEditor)
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

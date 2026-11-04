@@ -19,7 +19,12 @@ internal class PayerPicking(
                 it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
             }
 
-            is SplitBillUiEvent.OnPayerPicked -> uiState.update { it.withPayerPicked(event.memberId) }
+            // Why: only a pick the sheet takes, never a late tap once it closed.
+            is SplitBillUiEvent.OnPayerPicked -> {
+                val before = uiState.value
+                uiState.update { it.withPayerPicked(event.memberId) }
+                if (uiState.value != before) trackEvent("split_bill_payer_picked", emptyMap())
+            }
 
             // Why: only "Pronto" on a sheet still open counts.
             SplitBillUiEvent.OnPayerDone -> {

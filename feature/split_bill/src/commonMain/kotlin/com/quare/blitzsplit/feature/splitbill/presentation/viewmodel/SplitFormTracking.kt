@@ -5,24 +5,18 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import kotlinx.coroutines.flow.StateFlow
 
 /*
- * Why: Rachar conta's Manual events (docs/analytics/README.md), each read from the form before it changes, so a
- * pick or a confirmation counts only when the form takes it, never a late tap on a sheet already closed.
+ * Why: Rachar conta's Manual events (docs/analytics/README.md). A pick or a toggle is read from the form before it
+ * changes, so it counts only when the form takes it; bill_saved is sent once the save succeeds, from the form as
+ * Salvar found it.
  */
 internal class SplitFormTracking(
     private val uiState: StateFlow<SplitBillUiState>,
     private val trackEvent: TrackEvent,
 ) {
-    // Why: as GroupPicking.confirm takes it: the group still listed, the bill not saving.
-    fun trackGroupConfirmed() {
-        val state = uiState.value
-        val picked = state.groupSelection?.groupId ?: return
-        if (state.isSaving || state.groups.none { it.id == picked }) return
-        trackEvent("split_bill_group_confirmed", mapOf("is_another" to (picked != state.groupId)))
-    }
-
     fun trackSplitModeSelected(mode: SplitMode) {
         val editor = uiState.value.splitEditor ?: return
         if (editor.mode != mode) trackEvent("split_bill_split_mode_selected", mapOf("mode" to mode))
@@ -47,10 +41,9 @@ internal class SplitFormTracking(
         trackEvent("split_bill_split_as_default_toggled", mapOf("is_checked" to !state.isSplitEditorAsDefaultChecked))
     }
 
-    // Why: as Pronto takes it: a split that adds up, Itens having its own Pronto.
-    fun trackSplitConfirmed() {
+    // Why: the split Pronto took, once it added up (Itens has its own Pronto).
+    fun trackSplitConfirmed(editor: SplitEditor) {
         val state = uiState.value
-        val editor = state.splitEditor?.takeIf { it.addsUp && it.mode != SplitMode.ITEMS } ?: return
         trackEvent(
             "split_bill_split_confirmed",
             mapOf(

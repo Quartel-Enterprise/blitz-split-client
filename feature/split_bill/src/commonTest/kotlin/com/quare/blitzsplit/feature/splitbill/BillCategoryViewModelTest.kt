@@ -647,6 +647,22 @@ class BillCategoryViewModelTest {
     }
 
     @Test
+    fun `GIVEN a group category a sync deleted with the picker open WHEN picking it THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(groupCategories = listOf(churrasco))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        categories.groupCategories.value = listOf(churrasco.copy(isDeleted = true))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked("churrasco"))
+
+        // Then
+        assertFalse(viewModel.uiState.value.isCategoryPicked)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the picker WHEN searching a category THEN sends nothing`() = runTest {
         // Given
         prepareScenario()

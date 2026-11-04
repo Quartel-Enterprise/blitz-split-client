@@ -2361,6 +2361,23 @@ class SplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the payer sheet closed by Pronto WHEN a late payer pick arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerDone)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(ANA))
+
+            // Then
+            assertEquals(emptyList(), trackedEvents)
+            assertNull(viewModel.uiState.value.payerSelection)
+        }
+
+    @Test
     fun `GIVEN the payer sheet open WHEN tapping Pronto THEN sends the payer confirmed`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

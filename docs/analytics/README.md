@@ -99,7 +99,7 @@ every new user action. The `add-analytics-event` skill walks through it.
 
 | `analytics` | When | Sent by |
 | --- | --- | --- |
-| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it. A screen that refuses whole kinds of events for a while (Rachar conta reading a receipt) overrides `isAccepted` and checks it at the top of `handleEvent`, so neither its Automatic nor its Manual events count then |
+| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it. A screen that refuses whole kinds of events for a while (Rachar conta reading a receipt) overrides `isAccepted`, and `onEvent` then neither tracks nor handles those events |
 | `EventAnalytics.Manual(name)` | It needs what only handling it tells: the result of a save, the `UiState` (`setOf(…)` for a branch that may send more than one) | A `trackEvent("name", …)` call in the branch, with the same name |
 | `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does, or ends the funnel a tap began, as the native sign in failing or closed does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, and a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front: where either went is its screen view | Nothing |
 
@@ -323,16 +323,16 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Apagar “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Apagar “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
 | `split_bill_group_clicked` | none | The new bill's group, which opens "Rachar em qual grupo?" | `:feature:split_bill` |
-| `split_bill_group_picked` | none | A group marked in "Rachar em qual grupo?" | `:feature:split_bill` |
+| `split_bill_group_picked` | none | A group marked in "Rachar em qual grupo?", while it is open, another than the one marked | `:feature:split_bill` |
 | `split_bill_group_confirmed` | `is_another` | "Continuar" on it, while it is open, the group still there and the bill not saving | `:feature:split_bill` |
 | `split_bill_payer_clicked` | none | "Quem pagou" | `:feature:split_bill` |
-| `split_bill_payer_picked` | none | A person picked in "Quem pagou" | `:feature:split_bill` |
+| `split_bill_payer_picked` | none | A person picked in "Quem pagou", while it is open | `:feature:split_bill` |
 | `split_bill_payer_confirmed` | none | "Pronto" on "Quem pagou", while it is open | `:feature:split_bill` |
 | `split_bill_several_payers_clicked` | none | "Várias pessoas" | `:feature:split_bill` |
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Pronto" on "Várias pessoas pagaram", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "Quando", opening its picker | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Divisão", which opens Dividir | `:feature:split_bill` |
-| `receipt_items_clicked` | none | "14 itens" beside "Lido do cupom", which opens Itens | `:feature:split_bill` |
+| `receipt_items_clicked` | none | "14 itens" beside "Lido do cupom", which opens Itens, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
 | `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Igual, Valores, %, Partes or Itens, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Igual, with where they ended up | `:feature:split_bill` |
 | `split_bill_everyone_toggled` | `is_included` | "Marcar todos" or "Desmarcar todos" | `:feature:split_bill` |
@@ -351,14 +351,14 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_item_person_toggled` | `is_included` | A person in or out of the item's Igual, with where they ended up | `:feature:split_bill` |
 | `bill_item_person_changed` | `direction` (`up`, `down`) | A unit or a part added or taken for someone | `:feature:split_bill` |
 | `bill_item_confirmed` | `mode`, `is_new` | "Pronto" on "Item", once it has a name, a price and someone | `:feature:split_bill` |
-| `bill_item_delete_clicked` | none | "Apagar item", which asks first | `:feature:split_bill` |
+| `bill_item_delete_clicked` | none | "Apagar item", when its question opens | `:feature:split_bill` |
 | `bill_item_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:split_bill` |
 | `bill_item_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:split_bill` |
-| `bill_items_fee_clicked` | `fee` (`service`, `couvert`) | The row of "Serviço" or "Couvert" | `:feature:split_bill` |
+| `bill_items_fee_clicked` | `fee` (`service`, `couvert`) | The row of "Serviço" or "Couvert", when its field opens | `:feature:split_bill` |
 | `bill_items_fee_confirmed` | `fee` | Its field's Pronto, with a value it takes | `:feature:split_bill` |
 | `bill_category_clicked` | none | The icon beside "Descrição", which opens Categoria once the categories are read | `:feature:split_bill` |
 | `bill_category_main_toggled` | `is_expanded` | A main category shown or hidden in "Todas as categorias" | `:feature:split_bill` |
-| `bill_category_picked` | none | A category picked for the bill (a suggestion, a subcategory, "Só Alimentação", a result, Outros) | `:feature:split_bill` |
+| `bill_category_picked` | none | A category picked for the bill (a suggestion, a subcategory, "Só Alimentação", a result, Outros), one still there | `:feature:split_bill` |
 | `category_map_clicked` | `source` (`split_bill`) | The "Mapa de categorias" card | `:feature:split_bill` |
 | `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Ler cupom fiscal" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Foto do cupom" | `:feature:split_bill` |

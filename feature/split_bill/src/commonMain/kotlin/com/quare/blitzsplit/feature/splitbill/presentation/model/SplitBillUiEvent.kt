@@ -45,14 +45,16 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
 
             OnGroupClicked -> EventAnalytics.Automatic("split_bill_group_clicked")
 
-            is OnGroupPicked -> EventAnalytics.Automatic("split_bill_group_picked")
+            // Why: only a pick the sheet takes, never a late tap once it closed.
+            is OnGroupPicked -> EventAnalytics.Manual("split_bill_group_picked")
 
             // Why: only "Continuar" on a question still open, with whether it moved the bill to another group.
             OnGroupDone -> EventAnalytics.Manual("split_bill_group_confirmed")
 
             OnPayerClicked -> EventAnalytics.Automatic("split_bill_payer_clicked")
 
-            is OnPayerPicked -> EventAnalytics.Automatic("split_bill_payer_picked")
+            // Why: only a pick the sheet takes, never a late tap once it closed.
+            is OnPayerPicked -> EventAnalytics.Manual("split_bill_payer_picked")
 
             // Why: only "Pronto" on a sheet still open.
             OnPayerDone -> EventAnalytics.Manual("split_bill_payer_confirmed")
@@ -66,7 +68,8 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
 
             OnSplitClicked -> EventAnalytics.Automatic("split_bill_split_clicked")
 
-            OnReceiptItemsClicked -> EventAnalytics.Automatic("receipt_items_clicked")
+            // Why: only while the receipt's items are there to open, in the bill's currency.
+            OnReceiptItemsClicked -> EventAnalytics.Manual("receipt_items_clicked")
 
             // Why: only another mode, never the one picked, as Apple's Picker reports only a change.
             is OnSplitModeClicked -> EventAnalytics.Manual("split_bill_split_mode_selected")
@@ -127,14 +130,16 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
             // Why: only once the item has a name, a price and someone, with its mode and whether it is new.
             OnItemDone -> EventAnalytics.Manual("bill_item_confirmed")
 
-            is OnItemDeleteClicked -> EventAnalytics.Automatic("bill_item_delete_clicked")
+            // Why: only when its question opens, an item still in the list.
+            is OnItemDeleteClicked -> EventAnalytics.Manual("bill_item_delete_clicked")
 
             // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
             OnItemDeleteConfirmed -> EventAnalytics.Manual("bill_item_delete_confirmed")
 
             OnItemDeleteDismissed -> EventAnalytics.Manual("bill_item_delete_cancelled")
 
-            is OnFeeClicked -> EventAnalytics.Automatic("bill_items_fee_clicked", mapOf("fee" to fee))
+            // Why: only when its field opens, over "Itens da conta".
+            is OnFeeClicked -> EventAnalytics.Manual("bill_items_fee_clicked")
 
             // Why: only a value the field takes.
             OnFeeDone -> EventAnalytics.Manual("bill_items_fee_confirmed")
@@ -147,7 +152,8 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
                 setOf("bill_category_main_toggled", "bill_category_picked"),
             )
 
-            is OnCategoryPicked -> EventAnalytics.Automatic("bill_category_picked")
+            // Why: only a category still there, never one a sync just deleted.
+            is OnCategoryPicked -> EventAnalytics.Manual("bill_category_picked")
 
             OnCategoryMapClicked -> EventAnalytics.Automatic(
                 "category_map_clicked",

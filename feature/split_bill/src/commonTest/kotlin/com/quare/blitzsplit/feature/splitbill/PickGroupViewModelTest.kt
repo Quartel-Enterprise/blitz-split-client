@@ -482,6 +482,35 @@ class PickGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN the question open WHEN marking the group already marked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(screen = fromHome)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+        // Then
+        assertEquals(GroupSelection(groupId = TRIP_ID), viewModel.uiState.value.groupSelection)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the question closed by Continuar WHEN a late group pick arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(screen = fromHome)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+
+            // Then
+            assertNull(viewModel.uiState.value.groupSelection)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN another group marked WHEN tapping Continuar THEN sends the group confirmed as another`() =
         runTest(testDispatcher) {
             // Given
