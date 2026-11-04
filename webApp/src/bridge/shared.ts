@@ -1,4 +1,5 @@
 import { startBlitzSplit } from 'blitzsplit-shared'
+import { uiTag } from '@/lib/currency'
 
 const DATABASE_LOCK = 'borarachar-database'
 
@@ -40,7 +41,7 @@ async function start(onWaiting: () => void) {
   }
   const worker = new Worker(new URL('../sqlite/worker.js', import.meta.url), { type: 'module' })
   releaseOnPageCache(worker)
-  startBlitzSplit(worker)
+  startBlitzSplit(worker, uiTag)
 }
 
 function untilVisible(): Promise<void> {
