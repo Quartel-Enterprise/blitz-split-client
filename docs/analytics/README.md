@@ -151,8 +151,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Excluir conta's Cancelar, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |
-| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copiar on Convidar or on a personal invite | `:feature:invite`, `:feature:members`, `:feature:contacts` |
-| `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Convidar's "Compartilhar link" or "Compartilhar com Carla" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
+| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copiar on Convidar, a personal invite, "Convidar com link ou QR" or "Juntar com uma conta" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
+| `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Convidar's "Compartilhar link", "Compartilhar com Carla", or the share of "Convidar com link ou QR" and "Juntar com uma conta" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Convidar's "Ver quem já entrou" | `:feature:invite` |
 | `invite_go_to_group_clicked` | none | Convidar's "Ir para o grupo" | `:feature:invite` |
 | `invite_link_change_clicked` | none | "Trocar link", which asks first | `:feature:invite` |
@@ -207,7 +207,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "A pagar" or "Você deve" | `:feature:groups` |
 | `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`) | "Novo grupo" | `:feature:groups`, `:feature:contacts` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Entrar com link ou QR" | `:feature:groups` |
-| `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, or a group of a person's "Por grupo" on Saldos | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
+| `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, a group of a person's "Por grupo" on Saldos, an item's group in Atividade, or "Grupos em comum" on a contact | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `settled_groups_toggled` | `is_shown` | Quitados expanded or collapsed, or its tab | `:feature:groups` |
 | `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade", for another way than the one showing | `:feature:groups` |
 | `groups_grid_size_changed` | `size` | Another size the grid takes: Compacto, Padrão or Grande, once per size the Mac's slider passes | `:feature:groups` |
@@ -232,7 +232,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_group_clicked` | none | "Editar grupo" | `:feature:group_detail` |
 | `group_pin_toggled` | `is_pinned` | "Fixar na Início" or "Desafixar da Início" | `:feature:group_detail` |
 | `group_deleted_back_clicked` | none | "Voltar para Grupos" on "Grupo apagado", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
-| `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Acertar" on "Seu saldo neste grupo" or on a person of Saldos | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
+| `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Acertar" on "Seu saldo neste grupo", on a person of Saldos, or on a contact | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Acertar", "Recebi" or "Já pagou" on a pair of Saldos | `:feature:group_detail` |
 | `payment_clicked` | `source` (`group_detail`) | A payment of Despesas, which asks "Apagar este acerto?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed, while it was open | `:feature:group_detail` |

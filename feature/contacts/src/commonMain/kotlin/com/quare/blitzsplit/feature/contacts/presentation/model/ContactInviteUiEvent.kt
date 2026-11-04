@@ -10,8 +10,8 @@ sealed interface ContactInviteUiEvent : TrackedUiEvent {
             OnCloseClicked -> EventAnalytics.NotTracked
 
             /*
-             * Why: each counts only when the screen takes it (someone still listed, the screen still on top or beside
-             * Contatos, a question still open), never a late tap, as the ViewModel checks before acting.
+             * Why: each counts only when the invite takes it (a group still listed, a link there, the invite on top),
+             * never a late tap, as the ViewModel checks before acting.
              */
             is OnGroupPicked -> EventAnalytics.Manual("contact_invite_group_picked")
 

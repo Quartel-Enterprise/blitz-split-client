@@ -241,21 +241,24 @@ class ContactsViewModel(
     }
 
     private fun openAgenda() {
-        if (uiState.value.isDetailPaneShown || isOnTop()) trackEvent("contacts_agenda_clicked", emptyMap())
-        if (uiState.value.isDetailPaneShown) {
+        val isOpened = if (uiState.value.isDetailPaneShown) {
             uiState.update {
                 it.copy(
                     pickedKey = null,
                     isAgendaPicked = true,
                 )
             }
+            true
         } else {
             openFromList(Route.ContactsAgenda)
         }
+        if (isOpened) trackEvent("contacts_agenda_clicked", emptyMap())
     }
 
-    // Why: only Contatos on top takes taps, so a late tap never stacks a second screen.
-    // Why: says whether it opened, which Analytics counts.
+    /*
+     * Why: only Contatos on top takes taps, so a late tap never stacks a second screen. Says whether it opened, which
+     * Analytics counts.
+     */
     private fun openFromList(route: Route): Boolean {
         if (!isOnTop()) return false
         navigator.navigate(route)

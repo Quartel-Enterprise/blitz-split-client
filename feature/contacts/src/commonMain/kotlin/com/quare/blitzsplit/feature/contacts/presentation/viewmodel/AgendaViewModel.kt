@@ -78,25 +78,19 @@ class AgendaViewModel(
                 val contact = uiState.value.contacts
                     .valueOrNull()
                     ?.firstOrNull { it.id == event.contactId } ?: return
-                if (navigate(
-                        Route.ContactInvite(
-                            personKey = null,
-                            name = contact.name,
-                        ),
-                    )
-                ) {
-                    trackEvent("agenda_invite_clicked", emptyMap())
-                }
+                val invite = Route.ContactInvite(
+                    personKey = null,
+                    name = contact.name,
+                )
+                if (navigate(invite)) trackEvent("agenda_invite_clicked", emptyMap())
             }
 
-            AgendaUiEvent.OnInviteWithLinkClicked -> if (navigate(
-                    Route.ContactInvite(
-                        personKey = null,
-                        name = null,
-                    ),
+            AgendaUiEvent.OnInviteWithLinkClicked -> {
+                val invite = Route.ContactInvite(
+                    personKey = null,
+                    name = null,
                 )
-            ) {
-                trackEvent("contacts_invite_with_link_clicked", sourceParams)
+                if (navigate(invite)) trackEvent("contacts_invite_with_link_clicked", sourceParams)
             }
 
             AgendaUiEvent.OnBackClicked -> if (navigator.backStack.value.lastOrNull() == Route.ContactsAgenda) {

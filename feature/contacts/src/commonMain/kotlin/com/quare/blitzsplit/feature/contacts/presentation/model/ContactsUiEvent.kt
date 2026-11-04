@@ -6,24 +6,21 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 sealed interface ContactsUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            // Why: the window deciding the layout, or a back that closes the pane: nobody tapped to act.
+            /*
+             * Why: the window deciding the layout, a back that closes the pane, or a home tab (bar, rail, sidebar) each
+             * platform routes through the screen in front: nobody tapped to act here, and where it went is its screen view.
+             */
             is OnDetailPaneChanged,
+            OnActivityTabClicked,
+            OnBalancesTabClicked,
+            OnGroupsTabClicked,
+            OnHomeTabClicked,
             OnPaneBackClicked,
             -> EventAnalytics.NotTracked
 
             /*
-             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
-             * where it went is its screen view.
-             */
-            OnHomeTabClicked,
-            OnGroupsTabClicked,
-            OnBalancesTabClicked,
-            OnActivityTabClicked,
-            -> EventAnalytics.NotTracked
-
-            /*
-             * Why: each counts only when the screen takes it (someone still listed, the screen still on top or beside
-             * Contatos, a question still open), never a late tap, as the ViewModel checks before acting.
+             * Why: each counts only when Contatos takes it (someone still listed, someone hidden to show, Contatos on top
+             * or the pane beside it), never a late tap, as the ViewModel checks before acting.
              */
             is OnContactClicked -> EventAnalytics.Manual("contact_clicked")
 

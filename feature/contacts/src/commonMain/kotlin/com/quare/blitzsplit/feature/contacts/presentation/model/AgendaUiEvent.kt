@@ -17,8 +17,8 @@ sealed interface AgendaUiEvent : TrackedUiEvent {
             -> EventAnalytics.NotTracked
 
             /*
-             * Why: each counts only when the screen takes it (someone still listed, the screen still on top or beside
-             * Contatos, a question still open), never a late tap, as the ViewModel checks before acting.
+             * Why: each counts only when the agenda takes it (the access in the state the button is for, a contact still
+             * listed, the agenda or Contatos on top), never a late tap, as the ViewModel checks before acting.
              */
             OnAllowAccessClicked -> EventAnalytics.Manual("agenda_allow_access_clicked")
 

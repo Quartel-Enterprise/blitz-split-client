@@ -86,11 +86,8 @@ class ContactInviteViewModel(
     override fun handleEvent(event: ContactInviteUiEvent) {
         when (event) {
             is ContactInviteUiEvent.OnGroupPicked -> if (uiState.value.groups.any { it.groupId == event.groupId }) {
-                if (event.groupId !=
-                    uiState.value.selectedGroupId
-                ) {
-                    trackEvent("contact_invite_group_picked", emptyMap())
-                }
+                val isAnother = event.groupId != uiState.value.selectedGroupId
+                if (isAnother) trackEvent("contact_invite_group_picked", emptyMap())
                 uiState.update {
                     it.copy(
                         selectedGroupId = event.groupId,
