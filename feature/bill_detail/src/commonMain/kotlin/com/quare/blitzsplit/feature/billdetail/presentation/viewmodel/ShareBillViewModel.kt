@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.billdetail.presentation.model.SHARE_BILL_SOURCE
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillError
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillUiEvent
@@ -126,11 +127,8 @@ class ShareBillViewModel(
 
             ShareBillUiEvent.OnRetryClicked -> if (uiState.value.isOnline) {
                 // Why: only a retry that reads the link again, never one while a read is under way.
-                if (uiState.value.link == null &&
-                    !isFetching
-                ) {
-                    trackEvent("retry_clicked", mapOf("source" to "share_bill"))
-                }
+                val readsAgain = uiState.value.link == null && !isFetching
+                if (readsAgain) trackEvent("retry_clicked", mapOf("source" to SHARE_BILL_SOURCE))
                 uiState.update { it.copy(hasFailed = false) }
                 loadOnce()
             }

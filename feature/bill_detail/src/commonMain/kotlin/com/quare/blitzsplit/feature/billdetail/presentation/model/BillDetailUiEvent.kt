@@ -23,27 +23,16 @@ sealed interface BillDetailUiEvent : TrackedUiEvent {
             // Why: a swipe through the viewer, like a scroll.
             is OnViewerPageChanged -> EventAnalytics.NotTracked
 
-            /*
-             * Why: each counts only when the screen takes it (a comment still there and open to it, a question still
-             * open), never a late tap, as the ViewModel checks before acting.
-             */
-            OnSendCommentClicked -> EventAnalytics.Manual("comment_send_clicked")
-
-            is OnReplyClicked -> EventAnalytics.Manual("comment_reply_clicked")
-
-            is OnCommentEditClicked -> EventAnalytics.Manual("comment_edit_clicked")
-
-            is OnCommentDeleteClicked -> EventAnalytics.Manual("comment_delete_clicked")
-
-            OnCommentDeleteConfirmed -> EventAnalytics.Manual("comment_delete_confirmed")
-
-            OnCommentDeleteDismissed -> EventAnalytics.Manual("comment_delete_cancelled")
-
-            is OnCommentLikeClicked -> EventAnalytics.Manual("comment_like_toggled")
-
-            is OnCommentLikesClicked -> EventAnalytics.Manual("comment_likes_clicked")
-
-            is OnCommentShareClicked -> EventAnalytics.Manual("comment_share_clicked")
+            OnSendCommentClicked,
+            is OnReplyClicked,
+            is OnCommentEditClicked,
+            is OnCommentDeleteClicked,
+            OnCommentDeleteConfirmed,
+            OnCommentDeleteDismissed,
+            is OnCommentLikeClicked,
+            is OnCommentLikesClicked,
+            is OnCommentShareClicked,
+            -> commentAnalytics
 
             is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
 
@@ -64,7 +53,7 @@ sealed interface BillDetailUiEvent : TrackedUiEvent {
             // Why: a photo handed back, which stands for the tap that opened the camera or the picker.
             is OnPhotoPicked -> EventAnalytics.Manual("photo_picked")
 
-            // Why: the platform failing to read the file, which the photo picked already counted.
+            // Why: the picker handing back an item the UI couldn't read, not a tap.
             OnPhotoUnreadable -> EventAnalytics.NotTracked
 
             is OnRemoveAttachmentClicked -> EventAnalytics.Manual("bill_attachment_removed")

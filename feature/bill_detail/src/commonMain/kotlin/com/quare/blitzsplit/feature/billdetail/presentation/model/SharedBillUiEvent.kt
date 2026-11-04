@@ -6,8 +6,17 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 sealed interface SharedBillUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            // Why: the page's back or its logo, which each platform also does its own way.
-            OnCloseClicked -> EventAnalytics.NotTracked
+            // Why: the comments' taps, as Conta's send them, each once the page takes it.
+            OnSendCommentClicked,
+            is OnReplyClicked,
+            is OnCommentEditClicked,
+            is OnCommentDeleteClicked,
+            OnCommentDeleteConfirmed,
+            OnCommentDeleteDismissed,
+            is OnCommentLikeClicked,
+            is OnCommentLikesClicked,
+            is OnCommentShareClicked,
+            -> commentAnalytics
 
             OnRetryClicked -> EventAnalytics.Manual("retry_clicked")
 
@@ -15,43 +24,22 @@ sealed interface SharedBillUiEvent : TrackedUiEvent {
 
             OnOpenInAppClicked -> EventAnalytics.Manual("shared_bill_open_in_app_clicked")
 
-            // Why: typed letter by letter; what was typed shows in the comment sent.
-            is OnCommentChanged -> EventAnalytics.NotTracked
+            is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
 
-            // Why: a close, or a comment a link opened at shown, which nobody tapped.
+            /*
+             * Why: nobody tapped these to act: a value typed letter by letter (what was typed shows in the comment
+             * sent), a swipe through the viewer, a close (the page's back or logo, a reply's or an edit's ✕, the
+             * viewer or "Curtidas" closed), or a comment a link opened at shown.
+             */
+            is OnCommentChanged,
+            is OnViewerPageChanged,
+            OnCloseClicked,
             OnReplyCancelled,
             OnCommentEditCancelled,
             OnCommentLikesDismissed,
-            OnFocusedCommentShown,
             OnViewerDismissed,
+            OnFocusedCommentShown,
             -> EventAnalytics.NotTracked
-
-            // Why: a swipe through the viewer, like a scroll.
-            is OnViewerPageChanged -> EventAnalytics.NotTracked
-
-            /*
-             * Why: each counts only when the screen takes it (a comment still there and open to it, a question still
-             * open), never a late tap, as the ViewModel checks before acting.
-             */
-            OnSendCommentClicked -> EventAnalytics.Manual("comment_send_clicked")
-
-            is OnReplyClicked -> EventAnalytics.Manual("comment_reply_clicked")
-
-            is OnCommentEditClicked -> EventAnalytics.Manual("comment_edit_clicked")
-
-            is OnCommentDeleteClicked -> EventAnalytics.Manual("comment_delete_clicked")
-
-            OnCommentDeleteConfirmed -> EventAnalytics.Manual("comment_delete_confirmed")
-
-            OnCommentDeleteDismissed -> EventAnalytics.Manual("comment_delete_cancelled")
-
-            is OnCommentLikeClicked -> EventAnalytics.Manual("comment_like_toggled")
-
-            is OnCommentLikesClicked -> EventAnalytics.Manual("comment_likes_clicked")
-
-            is OnCommentShareClicked -> EventAnalytics.Manual("comment_share_clicked")
-
-            is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
         }
 
     data object OnRetryClicked : SharedBillUiEvent
