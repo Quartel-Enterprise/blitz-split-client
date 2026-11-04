@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -24,9 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,33 +45,21 @@ internal fun PreferencesSection(
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     Section(title = R.string.profile_section_preferences) {
+        // Why: opens Aparência (the theme's previews and "Cores dinâmicas"), as Bible Planner's theme row does.
         SectionRow(
             icon = Icons.Outlined.Palette,
             headline = stringResource(R.string.profile_appearance),
+            modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnAppearanceClicked) },
+            supporting = appearanceSummary(state),
+            isSupportingLoading = !state.isLoaded,
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
         )
-        val themeModifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp,
-            )
-        if (state.isLoaded) {
-            SingleChoiceSegmentedButtonRow(modifier = themeModifier) {
-                ThemePreference.entries.forEachIndexed { index, theme ->
-                    SegmentedButton(
-                        selected = state.theme == theme,
-                        onClick = { onEvent(ProfileUiEvent.OnThemeSelected(theme)) },
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = ThemePreference.entries.size,
-                        ),
-                    ) { Text(stringResource(theme.labelRes)) }
-                }
-            }
-        } else {
-            ThemePickerSkeleton(modifier = themeModifier)
-        }
         HorizontalDivider()
         SectionRow(
             icon = Icons.Outlined.Notifications,
@@ -233,8 +217,15 @@ internal fun DeleteAccountButton(onEvent: (ProfileUiEvent) -> Unit) {
     }
 }
 
+// Why: "Sistema", or "Sistema · cores dinâmicas" while the wallpaper's colors are on.
+@Composable
+private fun appearanceSummary(state: ProfileUiState): String {
+    val theme = stringResource(state.theme.labelRes)
+    return if (state.usesDynamicColors) stringResource(R.string.profile_appearance_dynamic_summary, theme) else theme
+}
+
 @get:StringRes
-private val ThemePreference.labelRes: Int
+internal val ThemePreference.labelRes: Int
     get() = when (this) {
         ThemePreference.SYSTEM -> R.string.profile_theme_system
         ThemePreference.LIGHT -> R.string.profile_theme_light

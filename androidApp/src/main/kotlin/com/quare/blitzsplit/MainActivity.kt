@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val appViewModel: AppViewModel = koinViewModel()
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
+            val usesDynamicColors by appViewModel.usesDynamicColors.collectAsStateWithLifecycle()
             val isDark = when (theme) {
                 ThemePreference.SYSTEM -> isSystemInDarkTheme()
                 ThemePreference.LIGHT -> false
@@ -56,7 +57,10 @@ class MainActivity : ComponentActivity() {
                     navigationBarStyle = barStyle,
                 )
             }
-            BlitzSplitTheme(isDark = isDark) {
+            BlitzSplitTheme(
+                isDark = isDark,
+                usesDynamicColors = usesDynamicColors,
+            ) {
                 FoldLayoutRoot {
                     AppNavDisplay(appViewModel = appViewModel)
                 }

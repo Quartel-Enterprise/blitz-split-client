@@ -17,4 +17,8 @@ interface DeviceSettingsRepository {
     fun observeStatsChart(): Flow<StatsChartPreferences>
 
     suspend fun updateStatsChart(preferences: StatsChartPreferences)
+
+    fun observeDynamicColors(): Flow<Boolean>
+
+    suspend fun updateDynamicColors(isOn: Boolean)
 }

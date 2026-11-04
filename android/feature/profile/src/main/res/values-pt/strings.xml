@@ -54,6 +54,13 @@
     <string name="profile_theme_system">Sistema</string>
     <string name="profile_theme_light">Claro</string>
     <string name="profile_theme_dark">Escuro</string>
+    <string name="profile_dynamic_colors">Cores dinâmicas</string>
+    <string name="profile_dynamic_colors_detail">Usa as cores do seu papel de parede no app</string>
+    <string name="profile_appearance_dynamic_summary">%1$s · cores dinâmicas</string>
+    <string name="profile_dynamic_colors_info">Sobre as cores dinâmicas</string>
+    <string name="profile_dynamic_colors_info_body">As cores dinâmicas combinam o app com o seu papel de parede: botões, fundos e destaques usam as cores que o Android tira dele, e mudam quando o papel de parede muda.</string>
+    <string name="profile_dynamic_colors_info_note">Grupos, avatares e categorias mantêm as próprias cores, para você continuar distinguindo cada um. Vale só neste aparelho.</string>
+    <string name="profile_dynamic_colors_info_ok">Entendi</string>
     <string name="profile_section_about">Privacidade e sobre</string>
     <string name="profile_privacy_policy">Política de privacidade</string>
     <string name="profile_terms">Termos de uso</string>

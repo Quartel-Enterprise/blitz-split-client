@@ -397,9 +397,10 @@ private struct PhoneRegisterPayment: View {
                 Button {
                     model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
                 } label: {
-                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
+                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark" : "arrow.uturn.backward")
                 }
-                .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
+                // A plain action, as the Mac's, not a picked option competing with "How it was paid"
+                .disabled(state.isFullDebt)
             } header: {
                 Text("Amount paid")
             } footer: {

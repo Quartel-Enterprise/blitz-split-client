@@ -795,7 +795,6 @@ export const pt: Record<MessageKey, string> = {
   editProfile_avatarColor: 'Cor do avatar',
   editProfile_avatarColorHint: 'Aparece quando você está sem foto.',
   editProfile_nameLabel: 'Seu nome',
-  editProfile_nameHint: 'De {min} a {max} caracteres',
   editProfile_nameTooShort: 'Digite pelo menos {min} letras.',
   editProfile_nameTooLong: 'Use até {max} caracteres.',
   editProfile_accountNotice: 'Nome e foto vieram da sua conta {provider}. Mudar aqui vale só no Bora Rachar e não altera sua conta {provider}.',

@@ -11,7 +11,6 @@
     <string name="edit_profile_avatar_color">Cor do avatar</string>
     <string name="edit_profile_avatar_color_hint">Aparece quando você está sem foto.</string>
     <string name="edit_profile_name_label">Seu nome</string>
-    <string name="edit_profile_name_hint">De %1$d a %2$d caracteres</string>
     <string name="edit_profile_name_count">%1$d/%2$d</string>
     <string name="edit_profile_name_too_short">Digite pelo menos %d letras.</string>
     <string name="edit_profile_name_too_long">Use até %d caracteres.</string>

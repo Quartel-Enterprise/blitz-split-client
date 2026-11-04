@@ -127,33 +127,21 @@ struct TintedButton: View {
     }
 }
 
-/// The tile with the device's currency symbol ("R$" in Brazil, "$" in the US) that heads the
-/// welcome pitch.
-struct CurrencyBadge: View {
+/// The tile with the app's logo that heads the welcome pitch.
+struct LogoBadge: View {
     var size: CGFloat = 72
 
     var body: some View {
-        Text(verbatim: Self.symbol(for: .current))
-            .font(.system(size: size * 0.39, weight: .heavy))
+        Image(decorative: "Logo")
+            .resizable()
+            .scaledToFit()
             .foregroundStyle(Palette.onAccent)
-            // Symbols like "CHF" or "kr" shrink to fit the tile instead of being clipped
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .padding(.horizontal, size * 0.12)
+            .padding(size * 0.2)
             .frame(width: size, height: size)
             .background(Palette.accent, in: .rect(cornerRadius: size / 4))
             .glassEffect(.regular.tint(Palette.accent), in: .rect(cornerRadius: size / 4))
             .shadow(color: Palette.accent.opacity(0.35), radius: 15, y: 12)
             .accessibilityHidden(true)
-    }
-
-    /// A locale without a region, or a region without a currency (the generic "¤"), shows "$".
-    static func symbol(for locale: Locale) -> String {
-        guard locale.region != nil,
-              let symbol = locale.currencySymbol,
-              !symbol.isEmpty,
-              symbol != "¤" else { return "$" }
-        return symbol
     }
 }
 

@@ -1,6 +1,6 @@
 import { ChartPie, Minus, Plus } from 'lucide-react'
 import type { JsSplitBillState, JsSplitEditor, JsSplitRow, SplitBillPresenter } from 'blitzsplit-shared'
-import { Avatar } from '@/components/common'
+import { Avatar, segmentClass } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
@@ -92,7 +92,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
             onClick={() => presenter.changeSplitMode(mode)}
             className={cn(
               'flex items-center justify-center rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              editor.mode === mode ? 'bg-background text-foreground shadow-sm dark:bg-input/30' : 'hover:text-foreground',
+              segmentClass(editor.mode === mode),
             )}
           >
             {t(label)}

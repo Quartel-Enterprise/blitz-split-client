@@ -64,4 +64,14 @@ class DeviceSettingsRepositoryImpl(
             )
         }
     }
+
+    // Why: no row yet keeps the brand's colors.
+    override fun observeDynamicColors(): Flow<Boolean> = local
+        .observe()
+        .map { entity -> entity?.usesDynamicColors ?: false }
+        .distinctUntilChanged()
+
+    override suspend fun updateDynamicColors(isOn: Boolean) {
+        local.update { entity -> entity.copy(usesDynamicColors = isOn) }
+    }
 }

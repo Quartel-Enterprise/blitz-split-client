@@ -194,8 +194,10 @@ private struct EditProfileNameSections: View {
             Text("Your name")
         } footer: {
             HStack {
-                Text(nameHint(state))
-                    .foregroundStyle(state.nameError != nil ? Palette.negative : .secondary)
+                if let error = nameError(state) {
+                    Text(error)
+                        .foregroundStyle(Palette.negative)
+                }
                 Spacer()
                 Text(verbatim: "\(state.nameLength)/\(state.nameMaxLength)")
                     .monospacedDigit()
@@ -226,11 +228,11 @@ private struct EditProfileNameSections: View {
         }
     }
 
-    private func nameHint(_ state: EditProfileUiState) -> LocalizedStringKey {
+    private func nameError(_ state: EditProfileUiState) -> LocalizedStringKey? {
         switch state.nameError {
         case .tooShort: "Type at least \(Int(state.nameMinLength)) letters."
         case .tooLong: "Use up to \(Int(state.nameMaxLength)) characters."
-        default: "From \(Int(state.nameMinLength)) to \(Int(state.nameMaxLength)) characters"
+        default: nil
         }
     }
 }
