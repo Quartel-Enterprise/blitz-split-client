@@ -59,9 +59,12 @@ internal class ItemsEditing(
         uiState.update { it.withSplitAsDefaultSettled() }
     }
 
-    // Why: "14 itens" beside "Lido do cupom": Dividir opens under the items, so their back goes to it.
+    /*
+     * Why: "14 itens" beside "Lido do cupom": Dividir opens under the items, so their back goes to it. Nothing opens
+     * once the bill moved to a group of another currency, whose Itens would otherwise open empty.
+     */
     fun openFromReceipt() {
-        if ((uiState.value.receipt?.itemCount ?: 0) == 0) return
+        if (receiptItems(uiState.value.currency) == null) return
         uiState.update { it.withSplitOpened() }
         openInSplit()
     }
