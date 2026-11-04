@@ -3826,6 +3826,72 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN photos on the device WHEN downloading the member photos THEN the server photos with one take their place`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedPhotos = listOf(
+                    MemberPhotoEntity(
+                        userId = "user-2",
+                        photoUrl = "https://photos/ana-old.jpg",
+                    ),
+                    MemberPhotoEntity(
+                        userId = "user-3",
+                        photoUrl = "https://photos/bruno.jpg",
+                    ),
+                ),
+                remoteMemberPhotos = listOf(
+                    MemberPhotoDto(
+                        userId = "user-2",
+                        photoUrl = "https://photos/ana-new.jpg",
+                    ),
+                    MemberPhotoDto(
+                        userId = "user-3",
+                        photoUrl = null,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadMemberPhotos()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    MemberPhotoEntity(
+                        userId = "user-2",
+                        photoUrl = "https://photos/ana-new.jpg",
+                    ),
+                ),
+                local.photos.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the photos fail to load WHEN downloading the member photos THEN it fails and keeps the device's`() =
+        runTest {
+            // Given
+            val storedPhotos = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana.jpg",
+                ),
+            )
+            prepareScenario(
+                storedPhotos = storedPhotos,
+                memberPhotosError = IllegalStateException("server down"),
+            )
+
+            // When
+            val result = repository.downloadMemberPhotos()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(storedPhotos, local.photos.value)
+        }
+
+    @Test
     fun `GIVEN the groups are observed WHEN a member photo changes on the device THEN the group shows the new photo`() =
         runTest {
             // Given

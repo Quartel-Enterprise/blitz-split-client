@@ -1260,6 +1260,48 @@ class ActivityRepositoryImplTest {
         assertTrue(repository.observeEventsAbout(BILL_ID).first().isEmpty())
     }
 
+    @Test
+    fun `GIVEN events downloaded and a charge not up yet WHEN reading the newest seq THEN answers the newest downloaded`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    entity(
+                        id = "older",
+                        seq = 7L,
+                    ),
+                    entity(
+                        id = "newest",
+                        seq = 12L,
+                    ),
+                    entity(
+                        id = "charge",
+                        seq = null,
+                        kind = "charge_sent",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            val newestSeq = repository.getNewestSeq()
+
+            // Then
+            assertEquals(12L, newestSeq)
+        }
+
+    @Test
+    fun `GIVEN no event on the device WHEN reading the newest seq THEN answers none`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val newestSeq = repository.getNewestSeq()
+
+        // Then
+        assertNull(newestSeq)
+    }
+
     private fun page(
         from: Long,
         size: Int,
