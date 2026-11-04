@@ -12,7 +12,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class CategoryEditorTest {
@@ -185,10 +184,10 @@ class CategoryEditorTest {
         val subject = editor(form, usage = 3)
 
         // When
-        val asked = subject.withDeletionAsked()
+        val deletion = subject.findDeletionOrNull()
 
         // Then
-        val deletion = assertNotNull(asked.deletion)
+        assertNotNull(deletion)
         assertEquals("churrasco", deletion.category.id)
         assertEquals(3, deletion.billCount)
         assertEquals(AppCategory.FOOD.key, deletion.movesTo.id)
@@ -202,10 +201,10 @@ class CategoryEditorTest {
         val subject = editor(form, usage = 1)
 
         // When
-        val asked = subject.withDeletionAsked()
+        val deletion = subject.findDeletionOrNull()
 
         // Then
-        assertEquals("praia", asked.deletion?.movesTo?.id)
+        assertEquals("praia", deletion?.movesTo?.id)
     }
 
     @Test
@@ -215,24 +214,37 @@ class CategoryEditorTest {
         val subject = editor(form, usage = 5)
 
         // When
-        val asked = subject.withDeletionAsked()
+        val deletion = subject.findDeletionOrNull()
 
         // Then
-        assertEquals(AppCategory.OTHER.key, asked.deletion?.movesTo?.id)
-        assertEquals(5, asked.deletion?.billCount)
+        assertEquals(AppCategory.OTHER.key, deletion?.movesTo?.id)
+        assertEquals(5, deletion?.billCount)
     }
 
     @Test
-    fun `GIVEN a new category WHEN asking to delete it THEN nothing changes`() {
+    fun `GIVEN a new category WHEN asking to delete it THEN there is nothing to delete`() {
         // Given
         val subject = editor(newMain())
 
         // When
-        val asked = subject.withDeletionAsked()
+        val deletion = subject.findDeletionOrNull()
 
         // Then
-        assertSame(subject, asked)
-        assertNull(asked.deletion)
+        assertNull(deletion)
+    }
+
+    @Test
+    fun `GIVEN an edited category whose bills are not read yet WHEN asking to delete it THEN it waits`() {
+        // Given
+        val form = CategoryForm.editingOrNull(tree, GROUP_ID, "praia")!!
+        val subject = editor(form, usage = null)
+
+        // When
+        val deletion = subject.findDeletionOrNull()
+
+        // Then
+        assertFalse(subject.canDelete)
+        assertNull(deletion)
     }
 
     @Test
@@ -288,7 +300,7 @@ class CategoryEditorTest {
     private fun editor(
         form: CategoryForm,
         categories: CategoryTree = tree,
-        usage: Int = 0,
+        usage: Int? = 0,
         isOnline: Boolean = true,
     ): CategoryEditor = CategoryEditor(
         form = form,

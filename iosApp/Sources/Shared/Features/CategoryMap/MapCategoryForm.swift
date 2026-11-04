@@ -23,6 +23,7 @@ struct MapCategoryFormView: View {
                 dismiss: { model.send(CategoryMapUiEventOnCategoryFormDismissed.shared) },
                 askToDelete: { model.send(CategoryMapUiEventOnCategoryDeleteClicked.shared) },
             ),
+            isSheet: true,
         ) {
             if model.state.canPickCategoryGroup {
                 Section {
@@ -58,23 +59,35 @@ struct MapCategoryFormView: View {
 }
 
 extension View {
-    /// The map's category form as a sheet: a form sheet with an iPad's room, a sheet on the Mac's Settings window.
-    func mapCategorySheet(model: CategoryMapModel) -> some View {
+    /// The map's forms in one sheet: "New term" and "Edit term" (9.2), and the category's form (9.4), which a new
+    /// category swaps for "New term" in place, since SwiftUI can't dismiss one sheet and present another at once. A form
+    /// sheet with an iPad's room, a sheet on the Mac's Settings window.
+    func mapFormSheet(model: CategoryMapModel) -> some View {
         sheet(
             isPresented: Binding(
-                get: { model.state.categoryForm != nil },
+                get: { model.state.categoryForm != nil || model.state.termForm != nil },
                 set: { shown in
-                    if !shown, model.current.categoryForm != nil {
+                    guard !shown else { return }
+                    if model.current.categoryForm != nil {
                         model.send(CategoryMapUiEventOnCategoryFormDismissed.shared)
+                    } else if model.current.termForm != nil {
+                        model.send(CategoryMapUiEventOnTermDismissed.shared)
                     }
                 },
             ),
         ) {
-            NavigationStack { MapCategoryFormView(model: model) }
+            let isCategory = model.state.categoryForm != nil
+            NavigationStack {
+                if isCategory {
+                    MapCategoryFormView(model: model)
+                } else {
+                    TermFormView(model: model)
+                }
+            }
             #if os(macOS)
-                .frame(width: 520, height: 600)
+            .frame(width: isCategory ? 520 : 460, height: isCategory ? 600 : 420)
             #else
-                .formSheetSizing()
+            .formSheetSizing()
             #endif
         }
         .glassToast("Couldn't save the category. Try again.", trigger: model.categorySaveErrorCount)

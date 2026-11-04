@@ -26,9 +26,11 @@ class JsCategoryForm(
     val isNameTaken: Boolean,
     val isParentLocked: Boolean,
     val parents: Array<JsCategory>,
-    // Why: the group's bills with it or one of its subcategories, "usada em 3 contas".
-    val usage: Int,
+    // Why: the group's bills with it or one of its subcategories, "usada em 3 contas"; null until they are read.
+    val usage: Int?,
     val canSave: Boolean,
+    // Why: "Apagar categoria" waits for the bills it would move.
+    val canDelete: Boolean,
     val showsOfflineNotice: Boolean,
 )
 
@@ -59,6 +61,7 @@ internal fun toJsCategoryForm(editor: CategoryEditor): JsCategoryForm {
         parents = editor.parents.map(::toJsCategory).toTypedArray(),
         usage = editor.usage,
         canSave = editor.canSave,
+        canDelete = editor.canDelete,
         showsOfflineNotice = editor.showsOfflineNotice,
     )
 }

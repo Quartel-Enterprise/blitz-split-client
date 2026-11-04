@@ -13,9 +13,9 @@ enum CategoryEditorCopy {
             return String(localized: "\(name) already exists. Pick another name.")
         }
         if editor.form.isEditing {
-            let used = String(localized: "used in \(Int(editor.usage)) bills")
-            guard let creator = editor.creatorName else { return used }
-            return "\(String(localized: "Created by \(creator)")) · \(used)"
+            let used = editor.usage.map { String(localized: "used in \($0.intValue) bills") }
+            let creator = editor.creatorName.map { String(localized: "Created by \($0)") }
+            return [creator, used].compactMap(\.self).joined(separator: " · ")
         }
         return String(localized: "Up to 30 letters. It can't repeat inside the same category.")
     }
@@ -29,9 +29,9 @@ enum CategoryEditorCopy {
     }
 
     static func groupNote(_ editor: CategoryEditor) -> String {
-        if editor.form.isEditing {
+        if editor.form.isEditing, let usage = editor.usage {
             let name = editor.form.name.trimmingCharacters(in: .whitespaces)
-            return String(localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(Int(editor.usage)) bills that already use \(name).")
+            return String(localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(usage.intValue) bills that already use \(name).")
         }
         return String(localized: "It belongs to all of \(editor.groupName): anyone in the group can use, edit and delete it.")
     }
@@ -60,10 +60,12 @@ struct CategoryEditorActions {
 
 /// "New category", "New subcategory" or "Edit category" (7.8), pushed over a bill's "Category" or opened over the map
 /// (9.4): the name and where it goes, the icon of a main category, what it looks like on bills and who it is for.
-/// `groupField` is the map's "Group", above the name.
+/// `groupField` is the map's "Group", above the name. `isSheet` is for a form opened as its own sheet, which needs a
+/// way out on iOS where a pushed one has the back button.
 struct CategoryEditorForm<GroupField: View>: View {
     let editor: CategoryEditor?
     let actions: CategoryEditorActions
+    var isSheet = false
     @ViewBuilder let groupField: () -> GroupField
 
     private let iconColumns = [GridItem(.adaptive(minimum: 44), spacing: 8)]
@@ -120,6 +122,7 @@ struct CategoryEditorForm<GroupField: View>: View {
                 if form.isEditing {
                     Section {
                         Button("Delete category", role: .destructive, action: actions.askToDelete)
+                            .disabled(!editor.canDelete)
                     }
                 }
             }
@@ -132,6 +135,12 @@ struct CategoryEditorForm<GroupField: View>: View {
             #if os(macOS)
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel", action: actions.dismiss)
+            }
+            #else
+            if isSheet {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel, action: actions.dismiss)
+                }
             }
             #endif
             ToolbarItem(placement: .confirmationAction) {

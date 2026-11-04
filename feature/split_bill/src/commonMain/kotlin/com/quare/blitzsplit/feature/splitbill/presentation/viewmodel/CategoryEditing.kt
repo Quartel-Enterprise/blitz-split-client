@@ -169,9 +169,7 @@ internal class CategoryEditing(
     }
 
     private fun askToDelete() {
-        val deletion = uiState.value.categoryEditor
-            ?.withDeletionAsked()
-            ?.deletion ?: return
+        val deletion = uiState.value.categoryEditor?.findDeletionOrNull() ?: return
         uiState.update { it.copy(categoryDeletion = deletion) }
     }
 

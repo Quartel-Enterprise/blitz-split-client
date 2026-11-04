@@ -34,8 +34,8 @@ data class CategoryMapUiState(
     // Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" (9.4), a group's, as a bill's Categoria opens it.
     val categoryForm: CategoryForm?,
     val categoryDeletion: CategoryDeletion?,
-    // Why: how many of the form's group's bills each category has, by the category they read as.
-    val categoryUsage: Map<String, Int>,
+    // Why: the form's group's bills, null until they are read; "usada em 3 contas" counts them.
+    val categoryBills: GroupBills?,
     val isOnline: Boolean,
     // Why: with Google or Apple the map reaches the person's other devices; otherwise it stays on this one (9.1h).
     val isConnected: Boolean,
@@ -167,19 +167,23 @@ data class CategoryMapUiState(
         get() = canEditMap && groups.isNotEmpty()
 
     // Why: "Nova categoria" (9.4) as a bill's Categoria draws it, checked against the categories of its group alone.
-    val categoryEditor: CategoryEditor?
-        get() = categoryForm?.let(::categoryEditorOf)
-
-    // Why: also the form a sheet still closing holds, once categoryForm is gone.
-    fun categoryEditorOf(form: CategoryForm): CategoryEditor {
+    // Why: once per state, as each platform reads it several times while drawing the form.
+    val categoryEditor: CategoryEditor? by lazy {
+        val form = categoryForm ?: return@lazy null
         val group = groups.firstOrNull { it.id == form.groupId }
         val tree = categories.ofGroup(form.groupId)
-        return CategoryEditor(
+        // Why: counted against the tree as it is now, so a category a sync deleted reads as where its bills went.
+        val bills = categoryBills?.takeIf { it.groupId == form.groupId }
+        CategoryEditor(
             form = form,
             categories = tree,
             groupName = group?.name.orEmpty(),
             creatorName = form.createdByMemberId?.let { group?.memberNames?.get(it) },
-            usage = CategoryEditor.usageOf(tree, form.categoryId, categoryUsage),
+            usage = when {
+                form.categoryId == null -> 0
+                bills == null -> null
+                else -> CategoryEditor.usageOf(tree, form.categoryId, tree.usageOf(bills.expenses))
+            },
             deletion = categoryDeletion,
             isOnline = isOnline,
         )

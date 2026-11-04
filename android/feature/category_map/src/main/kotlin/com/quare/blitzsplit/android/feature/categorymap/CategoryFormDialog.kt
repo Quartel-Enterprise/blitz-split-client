@@ -68,7 +68,14 @@ internal fun CategoryFormDialog(
         )
     }
     if (isDialog) {
-        FoldDialog(onDismissRequest = actions.onDismiss) { content() }
+        // Why: a tap beside the dialog never throws away what was typed, as Rachar conta's half pages.
+        FoldDialog(
+            onDismissRequest = actions.onDismiss,
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) { content() }
     } else {
         Dialog(
             onDismissRequest = actions.onDismiss,

@@ -43,7 +43,7 @@ export function categoryFormPane(actions: CategoryFormActions, form: JsCategoryF
     footer: (
       <>
         {form.isEditing && (
-          <Button key="category-delete" variant="ghost" className="text-destructive sm:mr-auto" onClick={() => actions.askToDelete()}>
+          <Button key="category-delete" variant="ghost" className="text-destructive sm:mr-auto" disabled={!form.canDelete} onClick={() => actions.askToDelete()}>
             {t('splitBill_categoryDelete')}
           </Button>
         )}
@@ -72,7 +72,7 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
     : form.isEditing
       ? [
           form.creatorName && t('splitBill_categoryCreatedBy', { name: form.creatorName }),
-          form.usage === 1 ? t('splitBill_categoryUsedInOne') : t('splitBill_categoryUsedIn', { count: form.usage }),
+          form.usage == null ? null : form.usage === 1 ? t('splitBill_categoryUsedInOne') : t('splitBill_categoryUsedIn', { count: form.usage }),
         ]
           .filter(Boolean)
           .join(' · ')
@@ -83,11 +83,13 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
       ? t('splitBill_categoryParentHelpSub', { name: categoryName(parent) })
       : t('splitBill_categoryParentHelp')
   const Icon = categoryIconOf(form.icon)
-  const note = form.isEditing
-    ? form.usage === 1
-      ? t('splitBill_categoryEditNoteOne', { group: form.groupName, name: trimmed })
-      : t('splitBill_categoryEditNote', { group: form.groupName, count: form.usage, name: trimmed })
-    : t('splitBill_categoryGroupNote', { group: form.groupName })
+  const usage = form.isEditing ? (form.usage ?? null) : null
+  const note =
+    usage === null
+      ? t('splitBill_categoryGroupNote', { group: form.groupName })
+      : usage === 1
+        ? t('splitBill_categoryEditNoteOne', { group: form.groupName, name: trimmed })
+        : t('splitBill_categoryEditNote', { group: form.groupName, count: usage, name: trimmed })
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8">
       <div className="flex min-w-0 flex-col gap-4">

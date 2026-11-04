@@ -14,8 +14,11 @@ data class CategoryEditor(
     val groupName: String,
     // Why: "Criada por Ana", for one being edited whose creator is still in the group.
     val creatorName: String?,
-    // Why: "usada em 3 contas": the group's bills with it or a subcategory of it.
-    val usage: Int,
+    /*
+     * Why: "usada em 3 contas": the group's bills with it or a subcategory of it; null while those bills aren't read
+     * yet, so nothing says 0 before its time.
+     */
+    val usage: Int?,
     val deletion: CategoryDeletion?,
     val isOnline: Boolean,
 ) {
@@ -42,17 +45,19 @@ data class CategoryEditor(
     val showsOfflineNotice: Boolean
         get() = !isOnline
 
+    // Why: "Apagar categoria" waits for the bills it would move, so its question never counts them as none.
+    val canDelete: Boolean
+        get() = form.isEditing && usage != null && !form.isSaving
+
     // Why: "Apagar “Churrasco”?" says where its bills go: its parent, or Outros for a main category (7.8f).
-    fun withDeletionAsked(): CategoryEditor {
-        val category = categories.findOrNull(form.categoryId) ?: return this
-        val movesTo = category.parentId?.let(categories::resolve) ?: categories.other
-        return copy(
-            deletion = CategoryDeletion(
-                category = category,
-                billCount = usage,
-                movesTo = movesTo,
-                isDeleting = false,
-            ),
+    fun findDeletionOrNull(): CategoryDeletion? {
+        if (!canDelete) return null
+        val category = categories.findOrNull(form.categoryId) ?: return null
+        return CategoryDeletion(
+            category = category,
+            billCount = usage ?: 0,
+            movesTo = category.parentId?.let(categories::resolve) ?: categories.other,
+            isDeleting = false,
         )
     }
 

@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
+import com.quare.blitzsplit.feature.categorymap.presentation.model.GroupBills
 import com.quare.blitzsplit.feature.categorymap.presentation.model.TermForm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,16 +37,13 @@ internal class MapCategoryEditing(
         uiState
             .map { it.categoryForm?.groupId }
             .distinctUntilChanged()
-            .flatMapLatest { groupId -> groupId?.let(observeExpenses::invoke) ?: flowOf(emptyList()) }
-            .onEach { expenses ->
-                uiState.update { state ->
-                    val groupId = state.categoryForm?.groupId ?: return@update state.copy(categoryUsage = emptyMap())
-                    state.copy(categoryUsage = state.categories.ofGroup(groupId).usageOf(expenses))
-                }
-            }.launchIn(scope)
+            .flatMapLatest { groupId ->
+                groupId?.let { id -> observeExpenses(id).map { GroupBills(id, it) } } ?: flowOf(null)
+            }.onEach { bills -> uiState.update { it.copy(categoryBills = bills) } }
+            .launchIn(scope)
     }
 
-    fun onEvent(event: CategoryMapUiEvent) {
+    fun onEvent(event: CategoryMapUiEvent.Categories) {
         when (event) {
             is CategoryMapUiEvent.OnNewCategoryClicked -> openNew(event.parentId)
 
@@ -76,7 +74,7 @@ internal class MapCategoryEditing(
             }
 
             CategoryMapUiEvent.OnCategoryDeleteClicked -> uiState.update { state ->
-                state.copy(categoryDeletion = state.categoryEditor?.withDeletionAsked()?.deletion)
+                state.copy(categoryDeletion = state.categoryEditor?.findDeletionOrNull())
             }
 
             CategoryMapUiEvent.OnCategoryDeleteConfirmed -> delete()
@@ -84,8 +82,6 @@ internal class MapCategoryEditing(
             CategoryMapUiEvent.OnCategoryDeleteDismissed -> uiState.update {
                 if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
             }
-
-            else -> Unit
         }
     }
 

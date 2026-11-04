@@ -76,11 +76,7 @@ struct MacCategoryMapSettings: View {
                 }
             }
         }
-        .sheet(isPresented: termShown) {
-            NavigationStack { TermFormView(model: model) }
-                .frame(width: 460, height: 420)
-        }
-        .mapCategorySheet(model: model)
+        .mapFormSheet(model: model)
         .restoreMapAlert(model: model)
         .glassToast("Couldn't save the map. Try again.", trigger: model.saveErrorCount)
         .safeAreaInset(edge: .bottom) {
@@ -169,15 +165,6 @@ struct MacCategoryMapSettings: View {
             get: { model.state.selectedSection?.category.id },
             set: { id in
                 if let id { model.send(CategoryMapUiEventOnSectionSelected(categoryId: id)) }
-            },
-        )
-    }
-
-    private var termShown: Binding<Bool> {
-        Binding(
-            get: { model.state.termForm != nil },
-            set: { shown in
-                if !shown, model.current.termForm != nil { model.send(CategoryMapUiEventOnTermDismissed.shared) }
             },
         )
     }

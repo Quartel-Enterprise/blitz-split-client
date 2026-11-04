@@ -68,7 +68,7 @@ class CategoryMapViewModel(
                 isRestoreConfirmOpen = false,
                 categoryForm = null,
                 categoryDeletion = null,
-                categoryUsage = emptyMap(),
+                categoryBills = null,
                 isOnline = true,
                 isConnected = false,
             ),
@@ -97,19 +97,24 @@ class CategoryMapViewModel(
             observeAccount().map { account -> account.status is AccountStatus.Connected }.distinctUntilChanged(),
             observeFirstDownload().map { it == null }.distinctUntilChanged(),
         ) { map, tree, groups, isConnected, isWhole ->
+            val mapGroups = groups.map { group ->
+                MapGroup(
+                    id = group.id,
+                    name = group.name,
+                    memberNames = group.members.associate { member -> member.id to member.name },
+                    meId = group.members.firstOrNull { member -> member.isMe }?.id,
+                )
+            }
             uiState.update {
+                // Why: a form whose group left the device (deleted or left elsewhere) has nowhere to save to.
+                val form = it.categoryForm?.takeIf { form -> mapGroups.any { group -> group.id == form.groupId } }
                 it.copy(
                     isLoaded = isWhole,
                     map = map,
                     categories = tree,
-                    groups = groups.map { group ->
-                        MapGroup(
-                            id = group.id,
-                            name = group.name,
-                            memberNames = group.members.associate { member -> member.id to member.name },
-                            meId = group.members.firstOrNull { member -> member.isMe }?.id,
-                        )
-                    },
+                    groups = mapGroups,
+                    categoryForm = form,
+                    categoryDeletion = it.categoryDeletion?.takeIf { form != null },
                     isConnected = isConnected,
                 )
             }
@@ -178,7 +183,7 @@ class CategoryMapViewModel(
 
             CategoryMapUiEvent.OnRestoreDismissed -> uiState.update { it.copy(isRestoreConfirmOpen = false) }
 
-            else -> categoryEditing.onEvent(event)
+            is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
         }
     }
 

@@ -34,7 +34,9 @@ import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryM
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -59,6 +61,12 @@ class CategoryMapCategoriesTest {
 
     // Why: completed by nobody, so a save or delete started while it holds stays in progress.
     private val writeGate = CompletableDeferred<Unit>()
+
+    // Why: the groups on the device, which a sync may change while the map is open.
+    private val groupsOnDevice = MutableStateFlow<List<Group>>(emptyList())
+
+    // Why: null holds every group's bills back, as a read Room hasn't answered yet.
+    private val billsByGroup = MutableStateFlow<Map<String, List<Expense>>?>(emptyMap())
 
     @BeforeTest
     fun setUp() {
@@ -857,6 +865,92 @@ class CategoryMapCategoriesTest {
         }
 
     @Test
+    fun `GIVEN the bills of Praia not read yet WHEN Apagar THEN nothing asks with a guessed zero`() = runTest {
+        // Given
+        prepareScenario(holdsBills = true)
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+
+        // Then
+        val editor = assertNotNull(viewModel.uiState.value.categoryEditor)
+        assertNull(editor.usage)
+        assertFalse(editor.canDelete)
+        assertNull(viewModel.uiState.value.categoryDeletion)
+    }
+
+    @Test
+    fun `GIVEN the bills of Praia not read yet WHEN they arrive THEN its usage counts them`() = runTest {
+        // Given
+        prepareScenario(holdsBills = true)
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+
+        // When
+        billsByGroup.value =
+            mapOf(TRIP_ID to listOf(bill("trip-1", TRIP_ID, PRAIA_ID), bill("trip-2", TRIP_ID, SURF_ID)))
+
+        // Then
+        assertEquals(
+            2,
+            viewModel.uiState.value.categoryEditor
+                ?.usage,
+        )
+    }
+
+    @Test
+    fun `GIVEN Editar Praia with a bill in Surf WHEN a sync deletes Surf THEN Praia still counts that bill`() =
+        runTest {
+            // Given
+            prepareScenario(expenses = mapOf(TRIP_ID to listOf(bill("trip-1", TRIP_ID, SURF_ID))))
+            viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+
+            // When
+            categories.groupCategories.value = categories.groupCategories.value.map {
+                if (it.id == SURF_ID) it.copy(isDeleted = true) else it
+            }
+
+            // Then
+            assertEquals(
+                1,
+                viewModel.uiState.value.categoryEditor
+                    ?.usage,
+            )
+        }
+
+    @Test
+    fun `GIVEN Nova categoria in Ape 302 WHEN a sync takes the group off the device THEN the form closes`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryGroupPicked(HOUSE_ID))
+
+        // When
+        groupsOnDevice.value = listOf(trip)
+
+        // Then
+        assertNull(viewModel.uiState.value.categoryForm)
+        assertNull(viewModel.uiState.value.categoryEditor)
+    }
+
+    @Test
+    fun `GIVEN Nova categoria in the trip WHEN a sync takes the other group off THEN the form stays`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+
+        // When
+        groupsOnDevice.value = listOf(trip)
+
+        // Then
+        assertEquals(
+            TRIP_ID,
+            viewModel.uiState.value.categoryForm
+                ?.groupId,
+        )
+    }
+
+    @Test
     fun `GIVEN Praia picked beside the list and asked to delete WHEN confirming THEN it is a tombstone and unpicked`() =
         runTest {
             // Given
@@ -1106,7 +1200,10 @@ class CategoryMapCategoriesTest {
         isWhole: Boolean = true,
         writeError: Throwable? = null,
         holdsWrites: Boolean = false,
+        holdsBills: Boolean = false,
     ) {
+        groupsOnDevice.value = groups
+        billsByGroup.value = if (holdsBills) null else expenses
         val terms = FakeCategoryTermRepository()
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories).also {
             it.saveError = writeError
@@ -1129,8 +1226,8 @@ class CategoryMapCategoriesTest {
             },
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             observeMapCategories = ObserveMapCategoriesUseCase(categories),
-            observeGroupsByActivity = { flowOf(groups) },
-            observeExpenses = { groupId -> flowOf(expenses[groupId].orEmpty()) },
+            observeGroupsByActivity = { groupsOnDevice },
+            observeExpenses = { groupId -> billsByGroup.filterNotNull().map { it[groupId].orEmpty() } },
             observeAccount = {
                 flowOf(
                     AccountSnapshot(

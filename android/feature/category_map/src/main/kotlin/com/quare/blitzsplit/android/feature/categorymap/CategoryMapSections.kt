@@ -184,17 +184,10 @@ private fun TermsLine(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        val editLabel = stringResource(R.string.category_map_edit_category, categoryName(row.category))
-        val isEditable = state.canCreateCategory && row.category.isGroupCategory && !row.isOnlyMain
         Column(
             modifier = Modifier
                 .width(rowLabelWidth)
-                .clickable(
-                    enabled = isEditable,
-                    onClickLabel = editLabel,
-                    role = Role.Button,
-                    onClick = { onEvent(CategoryMapUiEvent.OnEditCategoryClicked(row.category.id)) },
-                ).padding(top = 7.dp),
+                .padding(top = 7.dp),
         ) {
             Text(
                 text = rowLabelOf(row),
@@ -221,6 +214,14 @@ private fun TermsLine(
                     onClick = { onEvent(CategoryMapUiEvent.OnTermClicked(term.key)) },
                 )
             }
+        }
+        // Why: a group's subcategory edits from its line, as its main category does from the header (9.4).
+        if (!row.isOnlyMain) {
+            EditCategoryButton(
+                category = row.category,
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }

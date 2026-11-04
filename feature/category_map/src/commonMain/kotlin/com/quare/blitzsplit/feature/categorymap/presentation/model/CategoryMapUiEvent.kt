@@ -57,42 +57,45 @@ sealed interface CategoryMapUiEvent : UiEvent {
 
     data object OnRestoreDismissed : CategoryMapUiEvent
 
+    // Why: creating, editing and deleting a group's category from the map (9.4), which MapCategoryEditing handles.
+    sealed interface Categories : CategoryMapUiEvent
+
     /*
      * Why: "Nova categoria" (the bar's menu, parentId null) and "Nova subcategoria" in a main category (9.4), in a
      * group: the category's own, else the most recent one.
      */
     data class OnNewCategoryClicked(
         val parentId: String?,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
     // Why: "Editar categoria" on a group's category (9.4); the app's can't be edited.
     data class OnEditCategoryClicked(
         val categoryId: String,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
     data class OnCategoryNameChanged(
         val text: String,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
     data class OnCategoryGroupPicked(
         val groupId: String,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
     data class OnCategoryParentPicked(
         val parentId: String?,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
     data class OnCategoryIconPicked(
         val icon: CategoryIcon,
-    ) : CategoryMapUiEvent
+    ) : Categories
 
-    data object OnCategoryFormSaveClicked : CategoryMapUiEvent
+    data object OnCategoryFormSaveClicked : Categories
 
-    data object OnCategoryFormDismissed : CategoryMapUiEvent
+    data object OnCategoryFormDismissed : Categories
 
-    data object OnCategoryDeleteClicked : CategoryMapUiEvent
+    data object OnCategoryDeleteClicked : Categories
 
-    data object OnCategoryDeleteConfirmed : CategoryMapUiEvent
+    data object OnCategoryDeleteConfirmed : Categories
 
-    data object OnCategoryDeleteDismissed : CategoryMapUiEvent
+    data object OnCategoryDeleteDismissed : Categories
 }

@@ -150,7 +150,10 @@ fun CategoryFormContent(
                 )
             }
             if (form.isEditing) {
-                TextButton(onClick = actions.onDelete) {
+                TextButton(
+                    onClick = actions.onDelete,
+                    enabled = editor.canDelete,
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = null,
@@ -185,11 +188,7 @@ private fun NameField(
 
         form.isEditing -> listOfNotNull(
             editor.creatorName?.let { stringResource(R.string.designsystem_category_created_by, it) },
-            pluralStringResource(
-                R.plurals.designsystem_category_used_in,
-                editor.usage,
-                editor.usage,
-            ),
+            editor.usage?.let { pluralStringResource(R.plurals.designsystem_category_used_in, it, it) },
         ).joinToString(" · ")
 
         else -> stringResource(R.string.designsystem_category_name_help)
@@ -386,18 +385,21 @@ private fun NoteText(text: String) {
     )
 }
 
-// Why: "Fica para todo o Viagem Floripa…", or what an edit changes, with the bills that already use it.
+// Why: "Fica para todo o Viagem Floripa…", or what an edit changes, with the bills that already use it once read.
 @Composable
-private fun groupNoteOf(editor: CategoryEditor): String = if (editor.form.isEditing) {
-    pluralStringResource(
-        R.plurals.designsystem_category_edit_note,
-        editor.usage,
-        editor.groupName,
-        editor.usage,
-        editor.form.name.trim(),
-    )
-} else {
-    stringResource(R.string.designsystem_category_group_note, editor.groupName)
+private fun groupNoteOf(editor: CategoryEditor): String {
+    val usage = editor.usage
+    return if (editor.form.isEditing && usage != null) {
+        pluralStringResource(
+            R.plurals.designsystem_category_edit_note,
+            usage,
+            editor.groupName,
+            usage,
+            editor.form.name.trim(),
+        )
+    } else {
+        stringResource(R.string.designsystem_category_group_note, editor.groupName)
+    }
 }
 
 // Why: "Apagar “Churrasco”?" says where its bills go (7.8f).
