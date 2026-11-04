@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.sync.domain.model.RemoteChange
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -796,6 +797,7 @@ class SyncCoordinatorRealtimeTest {
             firstDownload = FirstDownload(),
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            crashReporter = CrashReporter {},
             scope = backgroundScope,
         )
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

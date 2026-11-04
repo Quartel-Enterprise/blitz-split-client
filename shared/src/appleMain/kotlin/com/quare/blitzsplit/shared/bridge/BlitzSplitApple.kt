@@ -66,6 +66,7 @@ import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.create
 import platform.posix.memcpy
+import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting as startCrashlytics
 
 /*
  * Why: the single entry point SwiftUI calls. Swift can't call reified Koin functions, so each
@@ -80,6 +81,11 @@ object BlitzSplitApple : KoinComponent {
 
     fun start() {
         startBlitzSplitKoin()
+    }
+
+    // Why: right after FirebaseApp.configure(), which only a build with its GoogleService-Info.plist calls.
+    fun startCrashReporting(isDebug: Boolean) {
+        startCrashlytics(isDebug = isDebug)
     }
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }

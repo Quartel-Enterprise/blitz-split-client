@@ -25,6 +25,7 @@ struct BoraRacharApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        CrashReporting.start()
         BlitzSplitApple.shared.start()
         _app = State(initialValue: AppModel())
     }

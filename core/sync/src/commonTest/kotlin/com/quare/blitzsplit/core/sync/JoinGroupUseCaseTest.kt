@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.JoinGroupUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -536,6 +537,7 @@ class JoinGroupUseCaseTest {
                 firstDownload = FirstDownload(),
                 appForeground = AppForeground(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
+                crashReporter = CrashReporter {},
                 scope = backgroundScope,
             ),
         )

@@ -1,6 +1,9 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 /*
@@ -10,12 +13,19 @@ plugins {
 val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
 /*
- * Atividade's push notifications (FCM): the Firebase project's public config, from a Gradle property or an
- * environment variable of the same name. Until all four are set the app never starts Firebase, so a build without
- * them runs as before, with no notifications.
+ * Firebase (Atividade's push notifications and Crashlytics): the Firebase project's google-services.json, git-ignored,
+ * next to this file. Without it the app never starts Firebase, so a build without it, CI's included, runs with no
+ * notifications nor crash reports. The google-services plugin turns it into the resources Firebase starts from, and
+ * Crashlytics needs that plugin to upload R8's mapping.
  */
-val firebaseConfig = listOf("FIREBASE_APP_ID", "FIREBASE_API_KEY", "FIREBASE_PROJECT_ID", "FIREBASE_SENDER_ID")
-    .associateWith { key -> providers.gradleProperty(key).orNull ?: System.getenv(key).orEmpty() }
+val hasFirebaseConfig = file("google-services.json").exists()
+if (hasFirebaseConfig) {
+    apply(
+        plugin = libs.plugins.google.services
+            .get()
+            .pluginId,
+    )
+}
 
 android {
     namespace = "com.quare.blitzsplit"
@@ -33,7 +43,7 @@ android {
             .toInt()
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
-        firebaseConfig.forEach { (key, value) -> buildConfigField("String", key, "\"$value\"") }
+        buildConfigField("boolean", "HAS_FIREBASE", "$hasFirebaseConfig")
     }
     buildFeatures {
         buildConfig = true
@@ -67,6 +77,9 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = hasFirebaseConfig
+            }
         }
     }
 }
@@ -78,6 +91,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.provider.supabase)
     implementation(projects.core.profile)
+    implementation(projects.core.provider.crashlytics)
     implementation(projects.core.sync)
     implementation(projects.android.platform)
 
@@ -108,7 +122,7 @@ dependencies {
     implementation(projects.android.feature.notificationSettings)
     implementation(projects.android.feature.categoryMap)
 
-    // Atividade's push notifications
+    // Atividade's push notifications (Crashlytics comes with :core:provider:crashlytics)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
 

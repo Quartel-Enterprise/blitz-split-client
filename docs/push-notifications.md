@@ -54,18 +54,11 @@ Nothing breaks without these: each platform simply gets no notifications.
 
 ### Android
 
-A Firebase project with an Android app `com.quare.blitzsplit`. The app starts Firebase from its public config, not a
-`google-services.json`, read like the Supabase settings: a Gradle property (`~/.gradle/gradle.properties`) or an
-environment variable of the same name, for every build that should get notifications (a release build too):
+A Firebase project with an Android app `com.quare.blitzsplit`, whose `google-services.json` goes in
+`androidApp/google-services.json` (git-ignored), for every build that should get notifications (a release build too).
+The same file turns on Crashlytics ([crash-reporting.md](crash-reporting.md)).
 
-```properties
-FIREBASE_APP_ID=1:<sender id>:android:<hash>
-FIREBASE_API_KEY=<the Android app's API key>
-FIREBASE_PROJECT_ID=<project id>
-FIREBASE_SENDER_ID=<sender id>
-```
-
-Until all four are set, the app never starts Firebase nor asks for the notification permission.
+Until it is there, the app never starts Firebase nor asks for the notification permission.
 
 ### iOS and macOS
 

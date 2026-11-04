@@ -48,7 +48,12 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
+import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.url
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,6 +70,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -94,6 +100,7 @@ class SyncCoordinatorTest {
     private lateinit var pullGate: CompletableDeferred<Unit>
     private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
     private val pendingAtGroupsFullDownload = mutableListOf<Boolean>()
+    private val reportedFailures = mutableListOf<Throwable>()
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -586,6 +593,196 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(SyncState.FAILED, coordinator.observeState().first())
     }
+
+    @Test
+    fun `GIVEN online and the pull fails WHEN syncing THEN reports the failure by its kind only`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = IllegalStateException("server down for Pierre")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf("IllegalStateException"), reportedFailures.map { it.message })
+    }
+
+    @Test
+    fun `GIVEN offline and the pull fails WHEN syncing THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        profile.pullError = IllegalStateException("no internet")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online WHEN a sync succeeds THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online and the pull gets no answer WHEN syncing THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = noAnswer
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online and the pull fails because a request got no answer WHEN syncing THEN reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("pull failed", noAnswer)
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(emptyList(), reportedFailures)
+        }
+
+    @Test
+    fun `GIVEN online and the failure holds an id and a name WHEN syncing THEN the report holds neither`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = IllegalStateException(
+            "bill-42 of Pierre refused",
+            IllegalArgumentException("Pierre owes 312 in group-7"),
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        val message = reportedFailures.single().message.orEmpty()
+        assertEquals("IllegalStateException ← IllegalArgumentException", message)
+        assertFalse("bill-42" in message || "group-7" in message || "Pierre" in message)
+    }
+
+    @Test
+    fun `GIVEN online WHEN a sync fails THEN the report has no cause`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = IllegalStateException("server down", IllegalArgumentException("refused"))
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        val reported = reportedFailures.single()
+        assertIs<ReportableFailure>(reported)
+        assertNull(reported.cause)
+    }
+
+    @Test
+    fun `GIVEN a failure already reported WHEN the next sync fails online THEN reports nothing more`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = IllegalStateException("server down")
+        coordinator.syncNow()
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(1, reportedFailures.size)
+    }
+
+    @Test
+    fun `GIVEN a failure already reported WHEN another kind of failure follows online THEN reports nothing more`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("server down")
+            coordinator.syncNow()
+            profile.pullError = IllegalArgumentException("refused")
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(listOf("IllegalStateException"), reportedFailures.map { it.message })
+        }
+
+    @Test
+    fun `GIVEN a failure reported and then a sync that got through WHEN a sync fails online THEN reports it again`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("server down")
+            coordinator.syncNow()
+            profile.pullError = null
+            coordinator.syncNow()
+            profile.pullError = IllegalArgumentException("refused")
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(
+                listOf("IllegalStateException", "IllegalArgumentException"),
+                reportedFailures.map { it.message },
+            )
+        }
+
+    @Test
+    fun `GIVEN a sync that failed offline WHEN a sync fails online THEN reports the online one`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        profile.pullError = IllegalStateException("no internet")
+        coordinator.syncNow()
+        isOnline.value = true
+        profile.pullError = IllegalArgumentException("refused")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf("IllegalArgumentException"), reportedFailures.map { it.message })
+    }
+
+    @Test
+    fun `GIVEN a sync whose request got no answer WHEN a sync fails online for another reason THEN reports it`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = noAnswer
+            coordinator.syncNow()
+            profile.pullError = IllegalArgumentException("refused")
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(listOf("IllegalArgumentException"), reportedFailures.map { it.message })
+        }
 
     @Test
     fun `GIVEN a sync that failed WHEN a retry succeeds THEN the sync state is synced`() = runTest {
@@ -6730,6 +6927,10 @@ class SyncCoordinatorTest {
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val noConnection = IllegalStateException("no connection")
+    private val noAnswer = HttpRequestException(
+        message = "timeout",
+        request = HttpRequestBuilder().apply { url("https://example.supabase.co/rest/v1/expenses?id=eq.bill-42") },
+    )
     private val androidDevice = PushDevice(
         token = "fcm-token",
         platform = PushPlatform.ANDROID,
@@ -6992,6 +7193,7 @@ class SyncCoordinatorTest {
             firstDownload = firstDownload,
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            crashReporter = CrashReporter { reportedFailures += it },
             scope = backgroundScope,
         )
     }

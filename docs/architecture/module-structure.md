@@ -20,7 +20,8 @@ core/
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
     ├── supabase/       # SupabaseClient, Auth / Postgrest / Functions / Storage, SupabaseConfig (BuildKonfig)
-    └── image/          # AvatarImageEncoder: the square framed in "Ajustar foto" (CropTransform) to a 512x512 JPEG, per platform
+    ├── image/          # AvatarImageEncoder: the square framed in "Ajustar foto" (CropTransform) to a 512x512 JPEG, per platform
+    └── crashlytics/    # CrashReporter and startCrashReporting, through CrashKiOS (docs/crash-reporting.md)
 feature/                # Presentation only: ViewModel, UiState, UiEvent, UiAction, Koin module
 ├── welcome/
 ├── profile_setup/
@@ -63,7 +64,7 @@ The `jvm` target exists only so `commonTest` runs fast on the JVM and Kover can 
 | UI | Consumes | How |
 | --- | --- | --- |
 | Android | `:android:feature:x` → `:feature:x` | Plain Gradle dependency; the screen gets its ViewModel with `koinViewModel()` |
-| Android app | `:shared`, `:core:navigation`, `:core:provider:supabase`, every `:android:*` | `startBlitzSplitKoin`, `AppViewModel`, `handleDeeplinks` |
+| Android app | `:shared`, `:core:navigation`, `:core:provider:supabase`, `:core:provider:crashlytics`, every `:android:*` | `startBlitzSplitKoin`, `AppViewModel`, `handleDeeplinks`, `startCrashReporting` |
 | SwiftUI | the static framework `Shared` | `:shared` exports the modules listed in `exportedToApple` (`shared/build.gradle.kts`): `core:model`, `core:presentation`, `core:navigation` and every `feature:*`. Swift reaches the ViewModels through `BlitzSplitApple` |
 | React | the npm package `blitzsplit-shared` | `:shared`'s JS library with TypeScript definitions. Only the `@JsExport` declarations of `shared/src/jsMain/.../bridge` cross: `startBlitzSplit`, `AppPresenter`, one `XPresenter` per screen and their plain `JsXState` classes |
 
