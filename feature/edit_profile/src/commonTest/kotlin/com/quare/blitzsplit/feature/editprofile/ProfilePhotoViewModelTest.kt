@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.feature.editprofile
 
+import androidx.lifecycle.ViewModelStore
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountPhotoUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -430,6 +432,24 @@ class ProfilePhotoViewModelTest {
 
             // When
             viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val expected = pierre.copy(photo = ProfilePhoto.Pending(jpegOf(photoSource)))
+            assertEquals(listOf(expected), profiles.savedProfiles)
+        }
+
+    @Test
+    fun `GIVEN a confirmed photo still being saved WHEN the viewer closes THEN the photo is still saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnDismissed)
+            ViewModelStore().apply { put("viewer", viewModel) }.clear()
+            heldSave.complete(Unit)
 
             // Then
             val expected = pierre.copy(photo = ProfilePhoto.Pending(jpegOf(photoSource)))
@@ -907,11 +927,13 @@ class ProfilePhotoViewModelTest {
                 },
             ),
             observeProfile = ObserveProfileUseCase(profiles),
-            getSessionUser = GetSessionUser {
-                heldSession.await()
-                GetSessionUserUseCase(account)()
-            },
-            observeAccount = ObserveAccountUseCase(account),
+            observeAccountPhoto = ObserveAccountPhotoUseCase(
+                observeAccount = ObserveAccountUseCase(account),
+                getSessionUser = GetSessionUser {
+                    heldSession.await()
+                    GetSessionUserUseCase(account)()
+                },
+            ),
         )
     }
 

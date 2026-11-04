@@ -2,8 +2,7 @@ package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -21,7 +20,6 @@ import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
-import com.quare.blitzsplit.feature.editprofile.presentation.model.observeAccountPhoto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -37,8 +35,7 @@ class EditProfileViewModel(
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
-    getSessionUser: GetSessionUser,
-    observeAccount: ObserveAccount,
+    observeAccountPhoto: ObserveAccountPhoto,
 ) : ViewModel() {
     val uiState: StateFlow<EditProfileUiState>
         field = MutableStateFlow(
@@ -82,7 +79,7 @@ class EditProfileViewModel(
             .filterNotNull()
             .onEach(::onSavedProfileChanged)
             .launchIn(viewModelScope)
-        observeAccountPhoto(observeAccount, getSessionUser)
+        observeAccountPhoto()
             .onEach { account ->
                 // Why: the notice names the provider at once; the picture follows once the session is read.
                 isAccountRead = true

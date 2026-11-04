@@ -1,7 +1,9 @@
-package com.quare.blitzsplit.feature.editprofile.presentation.model
+package com.quare.blitzsplit.core.account.domain
 
+import com.quare.blitzsplit.core.account.domain.model.AccountPhoto
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountPhotoUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -14,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class AccountPhotoTest {
+class ObserveAccountPhotoUseCaseTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var heldSession: CompletableDeferred<Unit>
@@ -289,14 +291,14 @@ class AccountPhotoTest {
         if (!holdsSession) heldSession.complete(Unit)
         sessionReads = 0
         emitted = mutableListOf()
-        val photos = observeAccountPhoto(
+        val photos = ObserveAccountPhotoUseCase(
             observeAccount = ObserveAccountUseCase(account),
             getSessionUser = GetSessionUser {
                 sessionReads++
                 heldSession.await()
                 account.sessionUser
             },
-        )
+        )()
         backgroundScope.launch { photos.collect(emitted::add) }
     }
 

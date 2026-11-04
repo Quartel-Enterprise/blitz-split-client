@@ -1,11 +1,11 @@
 import { Camera, ImageIcon, Loader2, Trash2, XIcon } from 'lucide-react'
-import { useRef, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { ProfilePhotoPresenter, type JsProfilePhotoState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, ProviderLogo, providerLabel } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { usePhotoInput } from '@/hooks/usePhotoInput'
 import { t } from '@/i18n'
 import { onPhotoFile } from '@/lib/photoFile'
 import type { AccountProvider } from '@/lib/platform'
@@ -25,7 +25,8 @@ export function ProfilePhotoDialog() {
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[#08080e]/55 backdrop-blur-md data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 text-white outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+          // Why: m-auto centers the photo and still scrolls it whole where the window is short (a phone lying down).
+          className="fixed inset-0 z-50 flex overflow-y-auto p-4 text-white outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
           // Why: a click on the backdrop, around the photo and its shortcuts, closes it as a tap outside does.
           onClick={(event) => event.target === event.currentTarget && presenter.dismiss()}
         >
@@ -46,25 +47,17 @@ export function ProfilePhotoDialog() {
 }
 
 function ProfilePhotoBody({ presenter, state }: { presenter: ProfilePhotoPresenter; state: JsProfilePhotoState }) {
-  const photoInput = useRef<HTMLInputElement>(null)
-  // Why: only a touch device has a camera the "capture" attribute can open; a desktop browser shows a file chooser.
-  const canTakePhoto = useMediaQuery('(pointer: coarse)')
-  const choosePhoto = (useCamera: boolean) => {
-    const input = photoInput.current
-    if (!input) return
-    if (useCamera) input.setAttribute('capture', 'user')
-    else input.removeAttribute('capture')
-    input.click()
-  }
+  const { ref: photoInput, canTakePhoto, choosePhoto } = usePhotoInput()
   const accountProvider = state.accountPhotoProvider as AccountProvider | null
   return (
-    <div className="flex flex-col items-center gap-7">
+    <div className="m-auto flex flex-col items-center gap-7 py-4">
       <div className="relative">
         <Avatar
           initial={state.avatarInitial}
           color={state.avatarColor}
           photoUrl={state.photoUrl}
-          className="size-[200px] text-[84px] shadow-2xl sm:size-[260px] sm:text-[110px]"
+          // Why: 260 px only where both sides have 600, so a phone lying down keeps the compact photo.
+          className="size-[200px] text-[84px] shadow-2xl [@media(min-width:600px)_and_(min-height:600px)]:size-[260px] [@media(min-width:600px)_and_(min-height:600px)]:text-[110px]"
         />
         {state.isPreparingPhoto && (
           <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">

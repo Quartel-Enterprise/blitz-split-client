@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.editprofile
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountPhotoUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -1651,12 +1652,14 @@ class EditProfileViewModelTest {
             },
             navigator = navigator,
             observeProfile = ObserveProfileUseCase(profiles),
-            getSessionUser = GetSessionUser {
-                sessionReads++
-                heldSession.await()
-                GetSessionUserUseCase(account)()
-            },
-            observeAccount = ObserveAccountUseCase(account),
+            observeAccountPhoto = ObserveAccountPhotoUseCase(
+                observeAccount = ObserveAccountUseCase(account),
+                getSessionUser = GetSessionUser {
+                    sessionReads++
+                    heldSession.await()
+                    GetSessionUserUseCase(account)()
+                },
+            ),
         )
     }
 

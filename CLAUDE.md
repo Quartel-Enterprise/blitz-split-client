@@ -269,13 +269,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     once no profile is left. The web's is a page.
   - The profile's avatar (Perfil's on Android and iOS, the inline form's on the web and the Mac, never Editar
     perfil's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
-    `ProfilePhotoViewModel`), the initial on its color too when there is no photo: 200 pt/dp/px (260 from 600 wide)
-    over the dimmed, blurred profile, with its shortcuts under it, the account's photo ("Google" or "Apple", while
-    it isn't the one shown), "Câmera" where there is one, "Galeria" and "Remover" (with a photo). Each saves the
-    profile's photo at once, offline too, with no Salvar, and the viewer stays open showing the new one; a photo
-    picked opens "Ajustar foto" over it first. ✕, a tap outside, back and Esc close it. Android draws it as a dialog
-    over the whole window (a book's right half), iOS covers the screen, the Mac opens it as a sheet on Ajustes and
-    the web as a dialog over the profile.
+    `ProfilePhotoViewModel`), the initial on its color too when there is no photo: 200 pt/dp/px (260 once both sides
+    have 600, so a phone lying down keeps 200, scrolling where it still doesn't fit) over the dimmed, blurred
+    profile, with its shortcuts under it, the account's photo (its logo, "Google" or "Apple", while it isn't the one
+    shown), "Câmera" where there is one, "Galeria" and "Remover" (with a photo). Each saves the profile's photo at
+    once, offline too, with no Salvar, and the viewer stays open showing the new one; a photo picked opens "Ajustar
+    foto" over it first, and is still saved when the viewer closes while it is prepared. ✕, a tap outside, back and
+    Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
+    the Mac opens it as a sheet on Ajustes and the web as a dialog over the profile.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

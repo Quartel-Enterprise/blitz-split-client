@@ -33,5 +33,5 @@ data class ProfilePhotoUiState(
 
     // Why: names whose picture is offered, so the UIs check this one value instead of the URL and the provider.
     val accountPhotoProvider: AccountProvider?
-        get() = accountProvider.takeIf { accountPhotoUrl != null && photo != ProfilePhoto.Remote(accountPhotoUrl) }
+        get() = accountProvider.takeIf { isAccountPhotoOffered(accountPhotoUrl, photo) }
 }

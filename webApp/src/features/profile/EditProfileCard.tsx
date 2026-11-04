@@ -1,5 +1,4 @@
 import { Camera, ImageIcon, Info, Loader2, Pencil, Trash2, UserRound } from 'lucide-react'
-import { useRef } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { usePhotoInput } from '@/hooks/usePhotoInput'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
 import { onPhotoFile } from '@/lib/photoFile'
@@ -32,16 +31,7 @@ export function EditProfileCard({ isPending }: { isPending: boolean }) {
 
 function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfilePresenter; state: JsEditProfileState; isPending: boolean }) {
   const [name, setName] = useDraft(state.name, (value) => presenter.changeName(value))
-  const photoInput = useRef<HTMLInputElement>(null)
-  // Why: only a touch device has a camera the "capture" attribute can open; a desktop browser shows a file chooser.
-  const canTakePhoto = useMediaQuery('(pointer: coarse)')
-  const choosePhoto = (useCamera: boolean) => {
-    const input = photoInput.current
-    if (!input) return
-    if (useCamera) input.setAttribute('capture', 'user')
-    else input.removeAttribute('capture')
-    input.click()
-  }
+  const { ref: photoInput, canTakePhoto, choosePhoto } = usePhotoInput()
   const nameError = state.nameError ? nameErrors[state.nameError] : null
   return (
     <Card>

@@ -2,8 +2,7 @@ package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -17,7 +16,9 @@ import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiState
-import com.quare.blitzsplit.feature.editprofile.presentation.model.observeAccountPhoto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -37,8 +38,7 @@ class ProfilePhotoViewModel(
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
-    getSessionUser: GetSessionUser,
-    observeAccount: ObserveAccount,
+    observeAccountPhoto: ObserveAccountPhoto,
 ) : ViewModel() {
     val uiState: StateFlow<ProfilePhotoUiState>
         field = MutableStateFlow(
@@ -61,10 +61,16 @@ class ProfilePhotoViewModel(
 
     private var isSaving = false
 
+    /*
+     * Why: a photo chosen is framed, prepared and saved even when the viewer closes meanwhile (✕, back, Esc), which
+     * clears viewModelScope with the entry; only the state nobody draws any more is updated in vain.
+     */
+    private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     private val photoPicker = ProfilePhotoPicker(
         loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
-        scope = viewModelScope,
+        scope = saveScope,
         showStatus = ::showPhotoStatus,
         showEditor = ::showPhotoCrop,
         onPrepared = ::savePhoto,
@@ -85,7 +91,7 @@ class ProfilePhotoViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        observeAccountPhoto(observeAccount, getSessionUser)
+        observeAccountPhoto()
             .onEach { account ->
                 uiState.update {
                     it.copy(
@@ -132,7 +138,7 @@ class ProfilePhotoViewModel(
                 showsPhotoError = false,
             )
         }
-        viewModelScope.launch {
+        saveScope.launch {
             saveProfile(profile.copy(photo = photo))
             isSaving = false
         }

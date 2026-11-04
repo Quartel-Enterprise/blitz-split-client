@@ -55,14 +55,21 @@ struct ProfilePhotoView: View {
 
     #if os(iOS)
     private var content: some View {
-        ZStack {
-            Color.black.opacity(0.3)
-                .ignoresSafeArea()
-                .contentShape(.rect)
-                .onTapGesture(perform: dismiss)
-                .accessibilityHidden(true)
-            photo
+        GeometryReader { proxy in
+            // Scrolls the photo whole where the screen is short (an iPhone lying down with the error line)
+            ScrollView {
+                photo
+                    // A tap between the shortcuts stays on the photo; only one around it closes the viewer
+                    .contentShape(.rect)
+                    .onTapGesture {}
+                    .padding(.vertical, 16)
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+                    .contentShape(.rect)
+                    .onTapGesture(perform: dismiss)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
+        .background(Color.black.opacity(0.3).ignoresSafeArea())
         .overlay(alignment: .topTrailing) {
             Button("Close", systemImage: "xmark", action: dismiss)
                 .labelStyle(.iconOnly)
@@ -72,7 +79,8 @@ struct ProfilePhotoView: View {
                 .padding(14)
         }
         .environment(\.colorScheme, .dark)
-        .onGeometryChange(for: Bool.self, of: { $0.size.width >= 600 }) { isWide = $0 }
+        // The smaller side, so an iPhone lying down keeps the compact photo and its shortcuts fit
+        .onGeometryChange(for: Bool.self, of: { min($0.size.width, $0.size.height) >= 600 }) { isWide = $0 }
         .presentationBackground(.ultraThinMaterial)
     }
     #else
