@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.feature.restore.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
 import com.quare.blitzsplit.core.sync.signin.ProviderSignInController
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
@@ -31,7 +32,8 @@ class RestoreViewModel(
     private val navigator: Navigator,
     providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<RestoreUiEvent>(trackEvent) {
     val uiState: StateFlow<RestoreUiState>
         field = MutableStateFlow(
             RestoreUiState(
@@ -67,10 +69,10 @@ class RestoreViewModel(
         signIn.observeBrowserSignIn(isShown = { navigator.backStack.value.lastOrNull() == Route.Restore })
     }
 
-    fun onEvent(event: RestoreUiEvent) {
+    override fun handleEvent(event: RestoreUiEvent) {
         when (event) {
             is RestoreUiEvent.OnCodeChanged -> updateCode(event.code)
-            RestoreUiEvent.OnRestoreClicked -> restore()
+            RestoreUiEvent.OnRestoreClicked -> handleRestoreClicked()
             RestoreUiEvent.OnScanQrClicked -> emitAction(RestoreUiAction.OpenQrScanner)
             is RestoreUiEvent.OnQrScanned -> handleQrScanned(event.content)
             is RestoreUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
@@ -95,6 +97,15 @@ class RestoreViewModel(
 
     private fun handleQrScanned(content: String) {
         updateCode(content.toRecoveryCodeFromQr())
+        restore()
+    }
+
+    private fun handleRestoreClicked() {
+        if (uiState.value.isOnline) {
+            trackEvent("restore_code_submitted", emptyMap())
+        } else {
+            trackEvent("retry_clicked", mapOf("source" to "restore"))
+        }
         restore()
     }
 

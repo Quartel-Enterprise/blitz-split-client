@@ -2,9 +2,40 @@ package com.quare.blitzsplit.feature.profilesetup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEvent
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
+import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
-sealed interface ProfileSetupUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "profile_setup"
+
+sealed interface ProfileSetupUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            is OnNameChanged -> EventAnalytics.NotTracked
+
+            is OnAvatarColorSelected -> EventAnalytics.Automatic(
+                "avatar_color_selected",
+                mapOf("color" to color, "source" to SOURCE),
+            )
+
+            // Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for it.
+            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
+
+            is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
+
+            // Why: the picker handing back an item the UI couldn't read, not a tap.
+            OnPhotoUnreadable -> EventAnalytics.NotTracked
+
+            OnContinueClicked -> EventAnalytics.Automatic("profile_setup_continue_clicked")
+
+            /*
+             * Why: each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, so a
+             * back counts alike only as the screen_view of where it went.
+             */
+            OnBackClicked -> EventAnalytics.NotTracked
+        }
+
     data class OnNameChanged(
         val name: String,
     ) : ProfileSetupUiEvent

@@ -34,6 +34,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DeleteAccountViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -479,6 +480,136 @@ class DeleteAccountViewModelTest {
             assertFalse(state.canDelete)
         }
 
+    @Test
+    fun `GIVEN the screen WHEN it opens THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val events = trackedEvents.toList()
+
+        // Then
+        assertTrue(events.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN back or Cancelar is tapped THEN tracks the deletion cancelled`() = runTest(
+        testDispatcher,
+    ) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(listOf("delete_account_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN the box is checked THEN tracks the toggle as checked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+        // Then
+        assertEquals(listOf(confirmToggled(isChecked = true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the box checked WHEN it is unchecked THEN tracks one toggle each way`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = false))
+
+        // Then
+        assertEquals(
+            listOf(confirmToggled(isChecked = true), confirmToggled(isChecked = false)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN the box is checked THEN sends nothing since the box stays unchecked`() = runTest(
+        testDispatcher,
+    ) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the box checked WHEN delete is tapped THEN tracks the delete click with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(deleteHangs = true)
+            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(listOf(confirmToggled(isChecked = true), deleteClicked), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the box unchecked WHEN delete is tapped THEN still tracks the delete click`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+
+        // Then
+        assertEquals(listOf(deleteClicked), trackedEvents)
+        assertEquals(0, deletions)
+    }
+
+    @Test
+    fun `GIVEN the box checked and then no internet WHEN delete is tapped THEN still tracks the delete click`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(listOf(confirmToggled(isChecked = true), deleteClicked), trackedEvents)
+            assertEquals(0, deletions)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN export is tapped THEN tracks the export click from delete account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnExportClicked)
+
+            // Then
+            assertEquals(listOf(exportClicked), trackedEvents)
+        }
+
+    private val deleteClicked = "delete_account_clicked" to emptyMap<String, Any>()
+    private val exportClicked = "data_export_clicked" to mapOf<String, Any>("source" to "delete_account")
+
+    private fun confirmToggled(isChecked: Boolean): Pair<String, Map<String, Any>> =
+        "delete_account_confirm_toggled" to mapOf("is_checked" to isChecked)
+
     private val googleAccount = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val appleAccount = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
     private val exportedJson = """{"profile":{"displayName":"Pierre"}}"""
@@ -499,6 +630,7 @@ class DeleteAccountViewModelTest {
         this@DeleteAccountViewModelTest.deleteResult = deleteResult
         deleteGate = if (deleteHangs) CompletableDeferred() else null
         viewModel = DeleteAccountViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             deleteAccount = DeleteAccount {
                 deletions++

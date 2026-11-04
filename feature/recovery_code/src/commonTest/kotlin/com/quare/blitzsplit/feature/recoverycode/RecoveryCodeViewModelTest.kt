@@ -35,6 +35,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RecoveryCodeViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var viewModel: RecoveryCodeViewModel
@@ -406,6 +407,233 @@ class RecoveryCodeViewModelTest {
             assertNull(viewModel.uiState.value.connectingProvider)
         }
 
+    @Test
+    fun `GIVEN the code WHEN copying THEN tracks the copy without the code`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
+
+        // Then
+        assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no code yet WHEN copying THEN still tracks the copy`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = null,
+            prompt = RecoveryCodePrompt.NOT_DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
+
+        // Then
+        assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the code WHEN saving to the password manager THEN tracks the save without the code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnSaveToPasswordManagerClicked)
+
+            // Then
+            assertEquals(listOf("recovery_code_password_manager_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sheet WHEN choosing to connect an account instead THEN tracks it with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnConnectInsteadClicked)
+
+            // Then
+            assertEquals(listOf("recovery_code_connect_instead_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Google is not native WHEN choosing Google THEN tracks the provider click from the recovery code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.GOOGLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Apple is native WHEN choosing Apple THEN tracks Apple as the provider`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+            native = setOf(AccountProvider.APPLE),
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+        // Then
+        assertEquals(listOf(providerClicked(AccountProvider.APPLE)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a native Apple sign in WHEN the ID token arrives THEN tracks nothing more and never the token`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            viewModel.onEvent(
+                RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", "code"),
+            )
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.APPLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no provider click WHEN an ID token arrives THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN it fails THEN tracks the failure from the recovery code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnNativeSignInFailed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.APPLE),
+                    "native_sign_in_failed" to mapOf<String, Any>("source" to "recovery_code"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN the person cancels THEN tracks the cancel from the recovery code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnNativeSignInCancelled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.APPLE),
+                    "native_sign_in_cancelled" to mapOf<String, Any>("source" to "recovery_code"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the sheet WHEN reminding later THEN tracks the snooze with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
+
+        // Then
+        assertEquals(listOf("recovery_code_remind_later_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a saved code opened for review WHEN reminding later THEN still tracks the snooze`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.REVIEW,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
+
+            // Then
+            assertEquals(listOf("recovery_code_remind_later_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sheet WHEN confirming it was saved THEN tracks the save confirmation with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnSavedClicked)
+
+            // Then
+            assertEquals(listOf("recovery_code_saved_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
+        "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "recovery_code")
+
     private fun TestScope.prepareScenario(
         code: String?,
         prompt: RecoveryCodePrompt,
@@ -419,6 +647,7 @@ class RecoveryCodeViewModelTest {
             it.connectResult = connectResult
         }
         viewModel = RecoveryCodeViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),

@@ -6,6 +6,9 @@ import SwiftUI
 final class RecoveryCodeModel {
     private(set) var state: RecoveryCodeUiState
     private(set) var didCopy = false
+    /// "I've saved it" or "Remind me later" answered the prompt, so closing the sheet afterwards answers nothing more,
+    /// even while the account's prompt hasn't caught up yet.
+    private(set) var hasAnswered = false
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createRecoveryCodeViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -23,6 +26,9 @@ final class RecoveryCodeModel {
     }
 
     func send(_ event: any RecoveryCodeUiEvent) {
+        if event is RecoveryCodeUiEventOnSavedClicked || event is RecoveryCodeUiEventOnRemindLaterClicked {
+            hasAnswered = true
+        }
         holder.viewModel.onEvent(event: event)
     }
 
@@ -87,7 +93,7 @@ struct RecoveryCodeSheet: View {
         #endif
         .interactiveDismissDisabled(false)
         .onDisappear {
-            if model.state.isPromptDue {
+            if !model.hasAnswered, model.state.isPromptDue {
                 model.send(RecoveryCodeUiEventOnRemindLaterClicked.shared)
             }
         }

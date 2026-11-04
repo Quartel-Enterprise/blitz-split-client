@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -8,6 +7,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiState
@@ -33,7 +34,8 @@ class ProfileSetupViewModel(
     private val navigator: Navigator,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ProfileSetupUiEvent>(trackEvent) {
     val uiState: StateFlow<ProfileSetupUiState>
         field = MutableStateFlow(
             ProfileSetupUiState(
@@ -66,7 +68,7 @@ class ProfileSetupViewModel(
         prefill()
     }
 
-    fun onEvent(event: ProfileSetupUiEvent) {
+    override fun handleEvent(event: ProfileSetupUiEvent) {
         when (event) {
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }

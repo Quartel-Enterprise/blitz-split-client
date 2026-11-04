@@ -26,6 +26,7 @@ Rules:
 
 ```kotlin
 class RestoreViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var navigator: BackStackNavigator
@@ -47,6 +48,7 @@ class RestoreViewModelTest {
         }
         navigator = BackStackNavigator(startRoute = Route.Welcome).also { it.navigate(Route.Restore) }
         viewModel = RestoreViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),

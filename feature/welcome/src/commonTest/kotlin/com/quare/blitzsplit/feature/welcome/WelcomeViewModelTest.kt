@@ -38,6 +38,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WelcomeViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var navigator: BackStackNavigator
@@ -377,6 +378,155 @@ class WelcomeViewModelTest {
             assertNull(viewModel.uiState.value.connectingProvider)
         }
 
+    @Test
+    fun `GIVEN the welcome screen WHEN clicking Google THEN tracks the provider click from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.GOOGLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Google is native here WHEN clicking Apple THEN tracks Apple as the provider`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertEquals(listOf(providerClicked(AccountProvider.APPLE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN clicking Google THEN still tracks the provider click`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+        // Then
+        assertEquals(listOf(providerClicked(AccountProvider.GOOGLE)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a Google sign in in progress WHEN clicking Apple THEN tracks each click once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertEquals(
+                listOf(providerClicked(AccountProvider.GOOGLE), providerClicked(AccountProvider.APPLE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN it fails THEN tracks the failure from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnNativeSignInFailed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.GOOGLE),
+                    "native_sign_in_failed" to mapOf<String, Any>("source" to "welcome"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a native sign in in progress WHEN the person cancels THEN tracks the cancel from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnNativeSignInCancelled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    providerClicked(AccountProvider.GOOGLE),
+                    "native_sign_in_cancelled" to mapOf<String, Any>("source" to "welcome"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the welcome screen WHEN using without an account THEN tracks it with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnUseWithoutAccountClicked)
+
+            // Then
+            assertEquals(listOf("welcome_use_without_account_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the welcome screen WHEN choosing another device THEN tracks the restore click with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnUsedOnAnotherDeviceClicked)
+
+            // Then
+            assertEquals(listOf("welcome_restore_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sign in error shown WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
+        viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnErrorDismissed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the welcome screen WHEN the ID token arrives THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", "Pierre", "code"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
+        "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "welcome")
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         native: Set<AccountProvider> = emptySet(),
@@ -390,6 +540,7 @@ class WelcomeViewModelTest {
         navigator = BackStackNavigator(startRoute = Route.Welcome)
         isOnline = MutableStateFlow(online)
         viewModel = WelcomeViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),

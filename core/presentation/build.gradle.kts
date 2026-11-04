@@ -11,6 +11,8 @@ kotlin {
             api(libs.quare.loadable)
             // Why: TrackedViewModel's TrackEvent, which every feature's ViewModel hands it.
             api(projects.core.provider.analytics)
+            // Why: the photo editor's events, PhotoCropEvent, which PhotoCropAnalytics names.
+            api(projects.core.model)
         }
     }
 }
