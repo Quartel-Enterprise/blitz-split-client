@@ -22,10 +22,10 @@ private val dialogMaxWidth = 560.dp
 private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape)
 
 /*
- * Why: a short sheet over the app, the same on every screen that opens one: a bottom sheet on a phone (centered at up
- * to 640dp lying down), a 560dp dialog on a tablet and an upright foldable, the book's right half with the screen
- * under the scrim. The dialog adds the top space the sheet's drag handle gives, and the title TalkBack says as it
- * opens, as Material's dialogs do. The sheets drawn before it keep their own look: a dialog on fewer devices
+ * Why: a short sheet over the app: a bottom sheet on a phone (centered at up to 640dp lying down), a 560dp dialog on a
+ * tablet and an upright foldable, the book's right half with the screen under the scrim. The dialog adds the top space
+ * the sheet's drag handle gives, and the title TalkBack says as it opens, as Material's dialogs do. The defaults are
+ * that look; the options only keep what the sheets drawn before it already did: a dialog on fewer devices
  * (usesDialog), a sheet that opens half way or narrower lying down, the dialog's shape and color, and no pane title.
  */
 @OptIn(ExperimentalMaterial3Api::class)
