@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -27,6 +28,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenVi
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
@@ -60,6 +62,8 @@ class AppViewModel(
     private val syncNow: SyncNow,
     private val locateBill: LocateBill,
     private val noticeBillGone: NoticeBillGone,
+    private val observeAppForeground: ObserveAppForeground,
+    private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
     startSync: StartSync,
 ) : ViewModel() {
@@ -100,6 +104,7 @@ class AppViewModel(
         returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
         openInviteLinks()
+        offerUpdatesInFront()
     }
 
     private fun resolveStartRoute() {
@@ -140,6 +145,19 @@ class AppViewModel(
             .onEach {
                 uiState.first { it == AppUiState.READY }
                 if (navigator.backStack.value.lastOrNull() == Route.Home) navigator.navigate(Route.Profile)
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: each time the app comes to the front, as Bible Planner does, a newer version is offered (at most once an
+     * hour) once the first screen is in place, so the start route never replaces the sheet.
+     */
+    private fun offerUpdatesInFront() {
+        observeAppForeground()
+            .filter { isForeground -> isForeground }
+            .onEach {
+                uiState.first { it == AppUiState.READY }
+                requestUpdatePromptIfNeeded()
             }.launchIn(viewModelScope)
     }
 

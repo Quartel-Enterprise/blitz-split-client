@@ -126,3 +126,5 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 
 | Event | Params | Sent when | Feature |
 | --- | --- | --- | --- |
+| `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
+| `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |

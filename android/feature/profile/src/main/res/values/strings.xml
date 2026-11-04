@@ -67,6 +67,12 @@
     <string name="profile_privacy_policy">Privacy policy</string>
     <string name="profile_terms">Terms of use</string>
     <string name="profile_version">Version</string>
+    <string name="profile_check_for_updates">Check for updates</string>
+    <string name="profile_check_for_updates_version">Version %1$s</string>
+    <string name="profile_check_for_updates_checking">Checking…</string>
+    <string name="profile_check_for_updates_up_to_date">You already have the latest version.</string>
+    <string name="profile_check_for_updates_downloading">The update is already downloading.</string>
+    <string name="profile_check_for_updates_failed">Couldn\'t check for updates. Check your connection and try again.</string>
     <string name="profile_sign_out">Sign out</string>
     <string name="profile_erase_and_sign_out">Erase profile and sign out</string>
     <string name="profile_sign_out_title">Sign out?</string>

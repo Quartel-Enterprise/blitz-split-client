@@ -85,6 +85,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data object OnTermsClicked : ProfileUiEvent
 
+    // Why: "Buscar atualizações", in the place of "Versão" on Android, iOS and macOS.
+    data object OnCheckForUpdatesClicked : ProfileUiEvent
+
     data object OnSignOutClicked : ProfileUiEvent
 
     data object OnSignOutConfirmed : ProfileUiEvent

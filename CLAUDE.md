@@ -310,6 +310,21 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     foto" over it first, and is still saved when the viewer closes while it is prepared. ✕, a tap outside, back and
     Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
     the Mac opens it as a sheet on Ajustes and the web as a dialog over the profile.
+  - In-app update, as Bible Planner's (`:core:in_app_update`, `:feature:in_app_update`): each time the app comes to
+    the front (`AppViewModel`, once the first screen is in place) a newer version is offered at most once an hour,
+    kept per device (`lastUpdatePromptAt` in `device_settings`), and the offer waits until a home tab or a group's
+    screen is on top, never over a form, a sheet or a cover. Android hands it to Google Play's flexible update,
+    whose download shows "Baixando atualização… 42%" at the bottom of every screen (taps still reach what is under
+    it) and installs (the app restarts) as soon as it ends, one already downloaded installing again after 15
+    minutes; iOS and macOS read the App Store's version by bundle id (none until the app is published; the iPhone
+    and Mac apps are one purchase with one listing, whose version both read) and open "Atualização disponível"
+    ("Versão 2.1.0", "Abrir na App Store", "Agora não", only its buttons and Esc closing it) over the app, a sheet as
+    tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Ajustes when its check
+    opened it). Perfil's "Privacidade e sobre" ends in "Buscar atualizações" with "Versão 2.0.0" under it in the
+    place of "Versão" (Pierre's call; the Mac's row keeps "Versão 2.0.0" with the button), "Verificando…" while it
+    asks, which offers the update even within the hour, or says "Você já tem a versão mais recente.", "A atualização
+    já está baixando." (Android) or that it couldn't check. The web always serves the latest, so it never checks and
+    keeps "Versão".
   - Android's Perfil › Preferências › "Aparência" is a row ("Sistema", "Sistema · cores dinâmicas") opening a sheet
     as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
     (Sistema half light, half dark, in the wallpaper's colors while they are on), then "Cores dinâmicas" with an ⓘ

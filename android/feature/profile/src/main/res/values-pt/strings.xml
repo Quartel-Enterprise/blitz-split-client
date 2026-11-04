@@ -65,6 +65,12 @@
     <string name="profile_privacy_policy">Política de privacidade</string>
     <string name="profile_terms">Termos de uso</string>
     <string name="profile_version">Versão</string>
+    <string name="profile_check_for_updates">Buscar atualizações</string>
+    <string name="profile_check_for_updates_version">Versão %1$s</string>
+    <string name="profile_check_for_updates_checking">Verificando…</string>
+    <string name="profile_check_for_updates_up_to_date">Você já tem a versão mais recente.</string>
+    <string name="profile_check_for_updates_downloading">A atualização já está baixando.</string>
+    <string name="profile_check_for_updates_failed">Não deu para buscar atualizações. Confira a conexão e tente de novo.</string>
     <string name="profile_sign_out">Sair</string>
     <string name="profile_erase_and_sign_out">Apagar perfil e sair</string>
     <string name="profile_sign_out_title">Sair da conta?</string>

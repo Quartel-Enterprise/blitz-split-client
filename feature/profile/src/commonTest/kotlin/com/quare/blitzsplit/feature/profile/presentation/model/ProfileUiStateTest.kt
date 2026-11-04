@@ -542,6 +542,8 @@ class ProfileUiStateTest {
         usesDynamicColors = false,
         showsBitcoinInSats = false,
         activeNotificationCount = 3.toLoaded(),
+        showsCheckForUpdates = true,
+        isCheckingForUpdates = false,
         dialog = null,
         hasConfirmedCodeSaved = hasConfirmedCodeSaved,
         isConnectExpanded = isConnectExpanded,

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -19,8 +20,10 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -121,6 +124,7 @@ internal fun PreferencesSection(
 
 @Composable
 internal fun AboutSection(
+    state: ProfileUiState,
     appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
@@ -158,17 +162,52 @@ internal fun AboutSection(
             modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnTermsClicked) },
         )
         HorizontalDivider()
-        SectionRow(
-            icon = Icons.Outlined.Info,
-            headline = stringResource(R.string.profile_version),
-            trailing = {
-                Text(
-                    text = appVersion,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            },
-        )
+        if (state.showsCheckForUpdates) {
+            CheckForUpdatesRow(
+                appVersion = appVersion,
+                isChecking = state.isCheckingForUpdates,
+                onEvent = onEvent,
+            )
+        } else {
+            SectionRow(
+                icon = Icons.Outlined.Info,
+                headline = stringResource(R.string.profile_version),
+                trailing = {
+                    Text(
+                        text = appVersion,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
+            )
+        }
     }
+}
+
+// Why: "Buscar atualizações" in the place of "Versão", with the version under it, as Bible Planner's.
+@Composable
+private fun CheckForUpdatesRow(
+    appVersion: String,
+    isChecking: Boolean,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    SectionRow(
+        icon = Icons.Outlined.SystemUpdate,
+        headline = stringResource(R.string.profile_check_for_updates),
+        modifier = Modifier.clickable(enabled = !isChecking) { onEvent(ProfileUiEvent.OnCheckForUpdatesClicked) },
+        supporting = if (isChecking) {
+            stringResource(R.string.profile_check_for_updates_checking)
+        } else {
+            stringResource(R.string.profile_check_for_updates_version, appVersion)
+        },
+        trailing = {
+            if (isChecking) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                )
+            }
+        },
+    )
 }
 
 @Composable

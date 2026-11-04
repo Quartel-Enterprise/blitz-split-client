@@ -25,11 +25,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,18 +53,10 @@ import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.PaymentKeyFormat
-import com.quare.blitzsplit.core.model.PaymentKeyType
-import com.quare.blitzsplit.core.model.ThemePreference
-import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
-import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import software.quare.loadable.Loadable
-import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
@@ -78,9 +73,11 @@ fun ProfileContent(
     appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.profile_title)) },
@@ -159,6 +156,7 @@ private fun ProfileSingleColumn(
                 onEvent = onEvent,
             )
             AboutSection(
+                state = state,
                 appVersion = appVersion,
                 onEvent = onEvent,
             )
@@ -258,6 +256,7 @@ private fun ProfileStartColumn(
             onEvent = onEvent,
         )
         AboutSection(
+            state = state,
             appVersion = appVersion,
             onEvent = onEvent,
         )
@@ -464,70 +463,6 @@ internal fun SectionRow(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     )
 }
-
-internal fun createPreviewProfileState(
-    accountProvider: AccountProvider? = AccountProvider.GOOGLE,
-    isOnline: Boolean = true,
-    syncStatus: ProfileSyncStatus? = null,
-): ProfileUiState = ProfileUiState(
-    displayName = "Pierre Vieira",
-    avatarColor = AvatarColor.BLUE,
-    photoUrl = null,
-    accountProvider = accountProvider,
-    hasAnonymousId = true,
-    maskedEmail = accountProvider?.let { "p•••@gmail.com" },
-    formattedRecoveryCode = if (accountProvider == null) "K7QM-4XPA-9TRE" else null,
-    showsRecoveryCodePrompt = false,
-    isOnline = isOnline,
-    syncStatus = syncStatus,
-    pendingChanges = if (syncStatus == null) emptyList() else listOf(PendingChange.PROFILE),
-    isLoaded = true,
-    paymentKeys = listOf(
-        PaymentKeyItem(
-            id = "pix-phone",
-            type = PaymentKeyType.PHONE,
-            format = PaymentKeyFormat.PHONE,
-            maskedValue = "+55 (11) 9••••-4321",
-            isDefault = true,
-        ),
-        PaymentKeyItem(
-            id = "pix-email",
-            type = PaymentKeyType.EMAIL,
-            format = PaymentKeyFormat.EMAIL,
-            maskedValue = "pie•••@email.com",
-            isDefault = false,
-        ),
-        PaymentKeyItem(
-            id = "btc-lightning",
-            type = PaymentKeyType.LIGHTNING,
-            format = PaymentKeyFormat.LIGHTNING_ADDRESS,
-            maskedValue = "pierre@carteira.app",
-            isDefault = true,
-        ),
-        PaymentKeyItem(
-            id = "btc-onchain",
-            type = PaymentKeyType.ONCHAIN,
-            format = PaymentKeyFormat.TAPROOT,
-            maskedValue = "bc1p5d7r…sxg3297",
-            isDefault = false,
-        ),
-    ).toLoaded(),
-    isSignOutScheduled = false,
-    theme = ThemePreference.SYSTEM,
-    showsDynamicColors = true,
-    usesDynamicColors = false,
-    showsBitcoinInSats = false,
-    activeNotificationCount = 3.toLoaded(),
-    dialog = null,
-    hasConfirmedCodeSaved = false,
-    isConnectExpanded = false,
-    connectingProvider = null,
-    hasSignInFailed = false,
-    isSigningOut = false,
-    hasSignOutFailed = false,
-    isUnlinking = false,
-    hasUnlinkFailed = false,
-)
 
 @DevicePreviews
 @Composable

@@ -33,6 +33,7 @@ import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarVie
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.SearchViewModel
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
+import com.quare.blitzsplit.feature.inappupdate.presentation.viewmodel.InAppUpdateViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
@@ -121,6 +122,10 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(CreateGroupViewModel::class) { get() }
 
     fun createProfileViewModel(): ViewModelHolder<ProfileViewModel> = ViewModelHolder(ProfileViewModel::class) { get() }
+
+    // Why: "Atualização disponível" over wherever the app is, the App Store's newer version.
+    fun createInAppUpdateViewModel(route: Route.InAppUpdate): ViewModelHolder<InAppUpdateViewModel> =
+        ViewModelHolder(InAppUpdateViewModel::class) { get { parametersOf(route) } }
 
     fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
         ViewModelHolder(EditProfileViewModel::class) { get() }

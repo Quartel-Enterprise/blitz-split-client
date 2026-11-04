@@ -19639,6 +19639,94 @@
           }
         }
       }
+    },
+    "Update available" : {
+      "comment" : "Update available sheet: its title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualização disponível"
+          }
+        }
+      }
+    },
+    "Version %@" : {
+      "comment" : "Update available sheet and Profile: the version number",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versão %@"
+          }
+        }
+      }
+    },
+    "You'll be taken to the App Store to install the new version." : {
+      "comment" : "Update available sheet: what the button does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você será levado à App Store para instalar a nova versão."
+          }
+        }
+      }
+    },
+    "Open in the App Store" : {
+      "comment" : "Update available sheet: opens the app's page in the App Store",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir na App Store"
+          }
+        }
+      }
+    },
+    "Check for updates" : {
+      "comment" : "Profile: asks the App Store for a newer version",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar atualizações"
+          }
+        }
+      }
+    },
+    "Checking…" : {
+      "comment" : "Profile: while the App Store is asked for a newer version",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificando…"
+          }
+        }
+      }
+    },
+    "You already have the latest version." : {
+      "comment" : "Profile: Check for updates found nothing newer",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já tem a versão mais recente."
+          }
+        }
+      }
+    },
+    "Couldn't check for updates. Check your connection and try again." : {
+      "comment" : "Profile: Check for updates failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para buscar atualizações. Confira a conexão e tente de novo."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
