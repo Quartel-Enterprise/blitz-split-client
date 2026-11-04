@@ -191,6 +191,11 @@ class HomePresenter {
         viewModel.onEvent(HomeUiEvent.OnProfileClicked)
     }
 
+    // Why: the logo, which opens Início.
+    fun openBrand() {
+        viewModel.onEvent(HomeUiEvent.OnBrandClicked)
+    }
+
     // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
     fun openSearch() {
         viewModel.onEvent(HomeUiEvent.OnSearchClicked)

@@ -292,6 +292,11 @@ class GlobalBalancesPresenter(
         viewModel.onEvent(GlobalBalancesUiEvent.OnProfileClicked)
     }
 
+    // Why: the logo, which opens Início.
+    fun openBrand() {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnBrandClicked)
+    }
+
     // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
     fun openSearch() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)

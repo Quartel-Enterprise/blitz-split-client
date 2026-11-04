@@ -91,6 +91,7 @@ class HomeSidebarViewModel(
             is HomeSidebarUiEvent.OnGroupClicked -> openGroup(event.groupId)
             is HomeSidebarUiEvent.OnTabClicked -> navigator.openHomeTab(event.tab)
             HomeSidebarUiEvent.OnProfileClicked -> navigator.navigate(Route.Profile)
+            HomeSidebarUiEvent.OnBrandClicked -> navigator.openHomeTab(Route.Home)
         }
     }
 

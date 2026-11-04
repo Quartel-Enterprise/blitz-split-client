@@ -2964,6 +2964,18 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the groups WHEN tapping the logo THEN tracks brand_clicked from the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnBrandClicked)
+
+        // Then
+        assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN the groups WHEN tapping the avatar THEN tracks profile_avatar_clicked from the groups`() =
         runTest(testDispatcher) {
             // Given

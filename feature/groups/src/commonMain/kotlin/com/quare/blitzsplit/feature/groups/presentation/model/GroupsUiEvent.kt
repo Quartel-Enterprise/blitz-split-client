@@ -19,6 +19,9 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
 
             OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
 
+            // Why: the web's logo, which opens Início; the tabs it stands beside are not tracked, their screen view is.
+            OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to SOURCE))
+
             // Why: the window drawing the group beside the list or not, never a tap.
             is OnDetailPaneChanged -> EventAnalytics.NotTracked
 
@@ -86,6 +89,9 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
     ) : GroupsUiEvent
 
     data object OnProfileClicked : GroupsUiEvent
+
+    // Why: the web's logo, which opens Início as its tab does.
+    data object OnBrandClicked : GroupsUiEvent
 
     /*
      * Why: the UI draws, or stops drawing, the group beside the list, as its window decides (a tablet lying down, an

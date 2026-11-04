@@ -2139,6 +2139,18 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN Saldos WHEN tapping the logo THEN sends brand_clicked from Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnBrandClicked)
+
+        // Then
+        assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "global_balances")), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN Saldos WHEN tapping the profile THEN sends the avatar clicked from Saldos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
