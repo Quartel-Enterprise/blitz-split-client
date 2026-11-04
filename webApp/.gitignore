@@ -1,3 +1,5 @@
 node_modules
 dist
 *.tsbuildinfo
+# Vite's local settings (VITE_FIREBASE_*, VITE_VAPID_PUBLIC_KEY), never committed
+*.local

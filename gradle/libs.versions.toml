@@ -84,6 +84,7 @@ play-services-code-scanner = { module = "com.google.android.gms:play-services-co
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 # Crashlytics from Kotlin: Android's SDK and Apple's, the Kotlin stack included, no-op on the web and the jvm
 crashkios-crashlytics = { module = "co.touchlab.crashkios:crashlytics", version.ref = "crashkios" }
 # ML Kit's barcode model from Play services (not bundled in the APK), for the invite reader's own camera

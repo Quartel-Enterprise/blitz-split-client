@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
+import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
@@ -86,6 +88,11 @@ object BlitzSplitApple : KoinComponent {
     // Why: right after FirebaseApp.configure(), which only a build with its GoogleService-Info.plist calls.
     fun startCrashReporting(isDebug: Boolean) {
         startCrashlytics(isDebug = isDebug)
+    }
+
+    // Why: Firebase Analytics in Swift, attached only by a release build with its GoogleService-Info.plist.
+    fun attachAnalytics(service: AnalyticsService) {
+        get<AnalyticsHub>().attach(service)
     }
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }

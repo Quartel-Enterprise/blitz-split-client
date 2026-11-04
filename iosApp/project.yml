@@ -12,7 +12,8 @@ options:
     iOS: "26.0"
     macOS: "26.0"
 
-# Crashlytics (docs/crash-reporting.md): the app starts Firebase only when Resources/GoogleService-Info.plist is there
+# Crashlytics and Analytics (docs/crash-reporting.md, docs/analytics/README.md): the app starts Firebase only when
+# Resources/GoogleService-Info.plist is there
 packages:
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
@@ -96,12 +97,18 @@ targetTemplates:
         product: FirebaseCore
       - package: Firebase
         product: FirebaseCrashlytics
+      # Without FirebaseAnalyticsIdentitySupport, so no advertising id is ever collected
+      - package: Firebase
+        product: FirebaseAnalytics
     info:
       properties:
         # borarachar://auth-callback brings back the browser sign in (Google)
         CFBundleURLTypes:
           - CFBundleURLName: com.quare.blitzsplit.auth
             CFBundleURLSchemes: [borarachar]
+        # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers
+        FirebaseAutomaticScreenReportingEnabled: false
+        GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS: false
 
 targets:
   BoraRachar-iOS:

@@ -68,7 +68,12 @@ android {
         }
     }
     buildTypes {
+        // Firebase Analytics only collects from a release build, from its first launch on
+        getByName("debug") {
+            manifestPlaceholders["analyticsCollectionEnabled"] = false
+        }
         getByName("release") {
+            manifestPlaceholders["analyticsCollectionEnabled"] = true
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -92,6 +97,7 @@ dependencies {
     implementation(projects.core.provider.supabase)
     implementation(projects.core.profile)
     implementation(projects.core.provider.crashlytics)
+    implementation(projects.core.provider.analytics)
     implementation(projects.core.sync)
     implementation(projects.android.platform)
 

@@ -59,7 +59,8 @@ the rest are in [push-notifications.md](push-notifications.md).
 
 Every build runs without it too. Android reports to Crashlytics once `androidApp/google-services.json` is there, the
 Apple app once `iosApp/Resources/GoogleService-Info.plist` is, and only release builds: see
-[crash-reporting.md](crash-reporting.md).
+[crash-reporting.md](crash-reporting.md). Analytics reads the same files, and on the web the `VITE_FIREBASE_*` settings
+of a production build: see [analytics/README.md](analytics/README.md).
 
 ## Build and run the Android app
 

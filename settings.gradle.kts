@@ -59,6 +59,7 @@ include(":core:provider:room")
 include(":core:provider:supabase")
 include(":core:provider:image")
 include(":core:provider:crashlytics")
+include(":core:provider:analytics")
 
 // Features: presentation (ViewModel, UiState, UiEvent, UiAction) shared by every UI
 include(":feature:welcome")
