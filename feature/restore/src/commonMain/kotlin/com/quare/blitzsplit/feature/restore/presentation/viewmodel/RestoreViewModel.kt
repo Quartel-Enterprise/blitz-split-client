@@ -72,7 +72,7 @@ class RestoreViewModel(
     override fun handleEvent(event: RestoreUiEvent) {
         when (event) {
             is RestoreUiEvent.OnCodeChanged -> updateCode(event.code)
-            RestoreUiEvent.OnRestoreClicked -> restore()
+            RestoreUiEvent.OnRestoreClicked -> handleRestoreClicked()
             RestoreUiEvent.OnScanQrClicked -> emitAction(RestoreUiAction.OpenQrScanner)
             is RestoreUiEvent.OnQrScanned -> handleQrScanned(event.content)
             is RestoreUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
@@ -97,6 +97,15 @@ class RestoreViewModel(
 
     private fun handleQrScanned(content: String) {
         updateCode(content.toRecoveryCodeFromQr())
+        restore()
+    }
+
+    private fun handleRestoreClicked() {
+        if (uiState.value.isOnline) {
+            trackEvent("restore_code_submitted", emptyMap())
+        } else {
+            trackEvent("retry_clicked", mapOf("source" to "restore"))
+        }
         restore()
     }
 

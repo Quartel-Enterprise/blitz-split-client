@@ -126,7 +126,8 @@ class WelcomeViewModel(
     private val navigator: Navigator,
     providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<WelcomeUiEvent>(trackEvent) {
     val uiState: StateFlow<WelcomeUiState>
         field = MutableStateFlow(
             WelcomeUiState(
@@ -159,7 +160,7 @@ class WelcomeViewModel(
         signIn.observeBrowserSignIn(isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome })
     }
 
-    fun onEvent(event: WelcomeUiEvent) {
+    override fun handleEvent(event: WelcomeUiEvent) {
         when (event) {
             is WelcomeUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
             is WelcomeUiEvent.OnIdTokenReceived -> handleIdToken(event)
@@ -181,10 +182,11 @@ class WelcomeViewModel(
 - **`stateWatcher` and `actionWatcher`** are declared right after the flows they wrap: they are what SwiftUI
   observes. A ViewModel without `uiAction` has no `actionWatcher`.
 - **One `onEvent(event)`** with an exhaustive `when`. Each branch is one call; the work goes in a private function.
-  A feature moved to Analytics' tracked events (the `add-analytics-event` skill, [analytics](../analytics/README.md))
-  extends `TrackedViewModel<XUiEvent>(trackEvent)` instead, its `XUiEvent` a `TrackedUiEvent` whose cases declare
-  `analytics`, and writes that `when` in `override fun handleEvent(event)`: the UIs keep calling `onEvent`, which sends
-  the case's `Automatic` event first. Every feature moves to it, and new ones start there.
+  A feature moved to Analytics' tracked events (the `add-analytics-event` skill, [analytics](../analytics/README.md)),
+  as `WelcomeViewModel` above, extends `TrackedViewModel<XUiEvent>(trackEvent)` instead, its `XUiEvent` a
+  `TrackedUiEvent` whose cases declare `analytics`, and writes that `when` in `override fun handleEvent(event)`: the
+  UIs keep calling `onEvent`, which sends the case's `Automatic` event first. Every feature moves to it, and new ones
+  start there.
 - Long-lived observation starts in `init` with `.onEach { }.launchIn(viewModelScope)`; one-shot work in
   `viewModelScope.launch { }`. Results come back as `Result` and are handled with `onSuccess` / `onFailure` (see
   [coroutine-error-handling.md](coroutine-error-handling.md)).

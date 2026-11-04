@@ -78,6 +78,7 @@ class DeleteAccountViewModel(
 
     private fun confirm(isChecked: Boolean) {
         if (!uiState.value.isConfirmEnabled) return
+        trackEvent("delete_account_confirm_toggled", mapOf("is_checked" to isChecked))
         uiState.update { it.copy(hasConfirmed = isChecked) }
     }
 

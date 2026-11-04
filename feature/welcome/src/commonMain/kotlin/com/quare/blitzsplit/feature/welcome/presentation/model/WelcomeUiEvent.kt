@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.welcome.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
@@ -10,23 +11,21 @@ private const val SOURCE = "welcome"
 sealed interface WelcomeUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            is OnProviderClicked -> EventAnalytics.Automatic(
-                "sign_in_provider_clicked",
-                mapOf("provider" to provider, "source" to SOURCE),
-            )
+            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
 
             // Why: the platform's sheet handing back the token, whose sign in the server then completes.
             is OnIdTokenReceived -> EventAnalytics.NotTracked
 
-            OnNativeSignInFailed -> EventAnalytics.Automatic("native_sign_in_failed", mapOf("source" to SOURCE))
+            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(SOURCE)
 
-            OnNativeSignInCancelled -> EventAnalytics.Automatic("native_sign_in_cancelled", mapOf("source" to SOURCE))
+            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(SOURCE)
 
             OnUseWithoutAccountClicked -> EventAnalytics.Automatic("welcome_use_without_account_clicked")
 
             OnUsedOnAnotherDeviceClicked -> EventAnalytics.Automatic("welcome_restore_clicked")
 
-            OnErrorDismissed -> EventAnalytics.Automatic("error_dismissed", mapOf("source" to SOURCE))
+            // Why: no UI sends it today: an error goes away with the screen's next action.
+            OnErrorDismissed -> EventAnalytics.NotTracked
         }
 
     data class OnProviderClicked(
