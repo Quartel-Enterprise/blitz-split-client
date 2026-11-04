@@ -1,9 +1,9 @@
 import { Camera, Check, ChevronDown, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
-import { useRef } from 'react'
 import { CreateGroupPresenter, type JsCreateGroupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
+import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -17,7 +17,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
-import { onPhotoFile } from '@/lib/photoFile'
 
 const formId = 'create-group-form'
 const nameId = 'create-group-name'
@@ -98,7 +97,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
     return presenter.getDraft()
   })
   const members = state.members.length
-  const photoInput = useRef<HTMLInputElement>(null)
+  const photo = usePhotoPicker()
   return (
     <form
       id={formId}
@@ -127,7 +126,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
             <GroupAvatar initials={state.initials} color={state.color} photoUrl={state.photoUrl} className="size-16 text-xl" />
           </button>
           {state.isPreparingPhoto && <Loader2 aria-hidden className="absolute inset-0 m-auto size-6 animate-spin text-foreground" />}
-          <input ref={photoInput} type="file" accept="image/*" hidden onChange={(event) => void onPhotoFile(presenter, event)} />
+          <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -142,7 +141,12 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem onSelect={() => photoInput.current?.click()}>
+              {photo.hasCamera && (
+                <DropdownMenuItem onSelect={photo.takePhoto}>
+                  <Camera /> {t('createGroup_takePhoto')}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onSelect={photo.chooseFile}>
                 <ImageIcon /> {t('createGroup_choosePhoto')}
               </DropdownMenuItem>
               {state.hasPhoto && (

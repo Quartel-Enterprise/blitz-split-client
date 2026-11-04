@@ -5,9 +5,8 @@ import { ProfilePhotoPresenter, type JsProfilePhotoState } from 'blitzsplit-shar
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, ProviderLogo, providerLabel } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
-import { usePhotoInput } from '@/hooks/usePhotoInput'
+import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { t } from '@/i18n'
-import { onPhotoFile } from '@/lib/photoFile'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
@@ -47,7 +46,7 @@ export function ProfilePhotoDialog() {
 }
 
 function ProfilePhotoBody({ presenter, state }: { presenter: ProfilePhotoPresenter; state: JsProfilePhotoState }) {
-  const { ref: photoInput, canTakePhoto, choosePhoto } = usePhotoInput()
+  const photo = usePhotoPicker()
   const accountProvider = state.accountPhotoProvider as AccountProvider | null
   return (
     <div className="m-auto flex flex-col items-center gap-7 py-4">
@@ -81,12 +80,12 @@ function ProfilePhotoBody({ presenter, state }: { presenter: ProfilePhotoPresent
             <ProviderLogo provider={accountProvider} />
           </PhotoShortcut>
         )}
-        {canTakePhoto && (
-          <PhotoShortcut label={t('profilePhoto_camera')} accessibleLabel={t('editProfile_takePhoto')} onClick={() => choosePhoto(true)}>
+        {photo.hasCamera && (
+          <PhotoShortcut label={t('profilePhoto_camera')} accessibleLabel={t('editProfile_takePhoto')} onClick={photo.takePhoto}>
             <Camera />
           </PhotoShortcut>
         )}
-        <PhotoShortcut label={t('profilePhoto_gallery')} accessibleLabel={t('editProfile_choosePhoto')} onClick={() => choosePhoto(false)}>
+        <PhotoShortcut label={t('profilePhoto_gallery')} accessibleLabel={t('editProfile_choosePhoto')} onClick={photo.chooseFile}>
           <ImageIcon />
         </PhotoShortcut>
         {state.hasPhoto && (
@@ -101,7 +100,7 @@ function ProfilePhotoBody({ presenter, state }: { presenter: ProfilePhotoPresent
           </PhotoShortcut>
         )}
       </div>
-      <input ref={photoInput} type="file" accept="image/*" hidden onChange={(event) => onPhotoFile(presenter, event)} />
+      <PhotoPickerInputs picker={photo} receiver={presenter} facing="user" />
     </div>
   )
 }

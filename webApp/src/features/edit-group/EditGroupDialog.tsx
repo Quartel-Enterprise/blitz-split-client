@@ -1,10 +1,10 @@
-import { Camera, Check, ChevronDown, ChevronRight, CircleAlert, Loader2, Lock } from 'lucide-react'
-import { useRef } from 'react'
+import { Camera, Check, ChevronDown, ChevronRight, CircleAlert, ImageIcon, Loader2, Lock } from 'lucide-react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker } from '@/components/common'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
+import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -19,7 +19,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
-import { onPhotoFile } from '@/lib/photoFile'
 
 const formId = 'edit-group-form'
 const nameId = 'edit-group-name'
@@ -90,9 +89,9 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
   )
 }
 
-// Why: "Usar uma foto" hands the file's bytes to the ViewModel, which makes the group's 512x512 JPEG.
+// Why: "Usar uma foto" and "Tirar foto" hand the photo's bytes to the ViewModel, which makes the group's 512x512 JPEG.
 function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
-  const photoInput = useRef<HTMLInputElement>(null)
+  const photo = usePhotoPicker()
   // Why: the ViewModel caps the name as it handles it, so the field reads the capped text back.
   const [name, setName] = useDraft(state.name, (value) => {
     presenter.changeName(value)
@@ -124,11 +123,19 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
             {t('editGroup_iconColor')}
           </span>
           <AvatarColorPicker colors={state.colors} selected={state.selectedColor ?? ''} onSelect={(code) => presenter.selectColor(code)} labelledBy={iconColorId} />
-          <input ref={photoInput} type="file" accept="image/*" hidden onChange={(event) => void onPhotoFile(presenter, event)} />
-          <Button type="button" variant="outline" size="sm" className="self-start" disabled={state.isSaving} onClick={() => photoInput.current?.click()}>
-            <Camera />
-            {t('editGroup_usePhoto')}
-          </Button>
+          <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" disabled={state.isSaving} onClick={photo.chooseFile}>
+              <ImageIcon />
+              {t('editGroup_usePhoto')}
+            </Button>
+            {photo.hasCamera && (
+              <Button type="button" variant="outline" size="sm" disabled={state.isSaving} onClick={photo.takePhoto}>
+                <Camera />
+                {t('editGroup_takePhoto')}
+              </Button>
+            )}
+          </div>
           {state.showsPhotoError && (
             <p role="alert" className="text-[13px] text-destructive">
               {t('editGroup_photoError')}
