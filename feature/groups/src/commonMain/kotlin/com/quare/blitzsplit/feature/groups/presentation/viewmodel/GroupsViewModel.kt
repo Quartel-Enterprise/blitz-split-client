@@ -429,7 +429,7 @@ class GroupsViewModel(
      */
     private fun openSearch() {
         if (!uiState.value.canSearch || !isListShown()) return
-        trackEvent("search_opened", mapOf("source" to "groups"))
+        if (!uiState.value.search.isOpen) trackEvent("search_opened", mapOf("source" to "groups"))
         uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
         search { it }
     }

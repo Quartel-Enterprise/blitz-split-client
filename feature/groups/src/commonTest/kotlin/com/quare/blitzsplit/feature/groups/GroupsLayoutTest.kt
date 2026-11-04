@@ -358,6 +358,98 @@ class GroupsLayoutTest {
             )
         }
 
+    @Test
+    fun `GIVEN the list WHEN picking a grid size THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(apartment))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the large grid WHEN picking Grande again THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            stored = largeGrid,
+            storedGroups = listOf(apartment),
+        )
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the standard grid WHEN picking Compacto then Grande THEN tracks each size`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            stored = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD),
+            storedGroups = listOf(apartment),
+        )
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.COMPACT))
+        viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+        // Then
+        assertEquals(
+            listOf(GroupGridSize.COMPACT, GroupGridSize.LARGE).map { size ->
+                "groups_grid_size_changed" to mapOf<String, Any>("size" to size)
+            },
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the standard grid and a slow store WHEN picking Grande twice THEN tracks the size once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD),
+                storesAtOnce = false,
+                storedGroups = listOf(apartment),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+            // Then
+            assertEquals(
+                listOf("groups_grid_size_changed" to mapOf<String, Any>("size" to GroupGridSize.LARGE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the list and a slow store WHEN picking the grid then Grande THEN tracks the display and the size`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storesAtOnce = false,
+                storedGroups = listOf(apartment),
+            )
+            viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(GroupsDisplay.GRID))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "groups_display_changed" to mapOf<String, Any>("display" to GroupsDisplay.GRID),
+                    "groups_grid_size_changed" to mapOf<String, Any>("size" to GroupGridSize.LARGE),
+                ),
+                trackedEvents,
+            )
+        }
+
     private val largeGrid = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)
 
     private val apartment = Group(

@@ -2382,6 +2382,78 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `GIVEN the recovery code prompt over Inicio WHEN Buscar is asked for THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.DUE,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no group WHEN a late tap on Buscar arrives THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            groupsRead = false,
+        )
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile over Inicio WHEN a late tap on Buscar arrives THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the search already open over Inicio WHEN a second tap on Buscar arrives THEN tracks only the first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Inicio WHEN tapping tentar de novo THEN tracks sync_retry_clicked from the home`() =
         runTest(testDispatcher) {
             // Given

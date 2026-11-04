@@ -528,6 +528,71 @@ class GroupsSearchTest {
             assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN no group yet WHEN opening the search THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            storedExpenses = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a screen pushed over the groups WHEN opening the search THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(
+                Route.JoinWithLink(
+                    skippedCode = null,
+                    skippedMemberCode = null,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a group open beside the list WHEN opening the search THEN tracks search_opened from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the search already open in the groups WHEN opening it again THEN tracks only the first opening`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
     private val churrasco = group(
         id = "churrasco",
         name = "Churrasco de sábado",
