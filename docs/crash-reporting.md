@@ -10,7 +10,7 @@ Firebase Crashlytics, on Android, iOS and macOS. The web has none: Firebase has 
 | `startCrashReporting(isDebug)` | `:core:provider:crashlytics` | Turns Crashlytics on, off for a debug build, and on Apple hooks the Kotlin exceptions nobody catches |
 | CrashKiOS | the module's `commonMain` | Calls Android's SDK and Apple's, so Apple's report holds the Kotlin stack, not only the abort |
 | `BlitzSplitApplication` | `androidApp` | Starts it before Koin, in a build with the Firebase config |
-| `CrashReporting.swift` | `iosApp/Sources/Shared/App` | `FirebaseApp.configure()`, then `BlitzSplitApple.startCrashReporting`, in a build with the Firebase config |
+| `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | `FirebaseApp.configure()`, then `BlitzSplitApple.startCrashReporting`, in a build with the Firebase config |
 
 Until `startCrashReporting` runs, `CrashReporter` records nothing, so a build without Firebase, the web and the tests
 need nothing of their own. Crashes are caught by each SDK by itself: the JVM's uncaught exceptions on Android, and on
