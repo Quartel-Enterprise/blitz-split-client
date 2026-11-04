@@ -21,9 +21,9 @@ sealed interface ProfilePhotoUiEvent : TrackedUiEvent {
 
             is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
 
-            OnPhotoRemoved -> EventAnalytics.Automatic("photo_removed", mapOf("source" to SOURCE))
+            // Why: only a photo the viewer takes: the account's while it has one, and never while another is saving.
+            OnPhotoRemoved -> EventAnalytics.Manual("photo_removed")
 
-            // Why: only while the account has a photo to use.
             OnAccountPhotoSelected -> EventAnalytics.Manual("account_photo_selected")
         }
 

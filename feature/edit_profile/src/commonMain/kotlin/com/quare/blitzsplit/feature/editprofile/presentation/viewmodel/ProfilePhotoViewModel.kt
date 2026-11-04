@@ -111,10 +111,17 @@ class ProfilePhotoViewModel(
     override fun handleEvent(event: ProfilePhotoUiEvent) {
         when (event) {
             is ProfilePhotoUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+
             is ProfilePhotoUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
+
             ProfilePhotoUiEvent.OnPhotoUnreadable -> photoPicker.fail()
+
             ProfilePhotoUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
-            ProfilePhotoUiEvent.OnPhotoRemoved -> replacePhoto(null)
+
+            ProfilePhotoUiEvent.OnPhotoRemoved -> if (replacePhoto(null)) {
+                trackEvent("photo_removed", mapOf("source" to "profile_photo"))
+            }
+
             ProfilePhotoUiEvent.OnDismissed -> navigator.navigateBack()
         }
     }
@@ -122,15 +129,18 @@ class ProfilePhotoViewModel(
     // Why: the account's picture is already a public URL, so nothing is prepared or uploaded.
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
-        trackEvent("account_photo_selected", mapOf("source" to "profile_photo"))
-        replacePhoto(ProfilePhoto.Remote(url))
+        if (replacePhoto(ProfilePhoto.Remote(url))) {
+            trackEvent("account_photo_selected", mapOf("source" to "profile_photo"))
+        }
     }
 
     // Why: whatever replaces the photo wins over a pick still being read or framed.
-    private fun replacePhoto(photo: ProfilePhoto?) {
-        if (isSaving) return
+    // Why: says whether it took the photo, which Analytics counts; one saving drops any other.
+    private fun replacePhoto(photo: ProfilePhoto?): Boolean {
+        if (isSaving) return false
         photoPicker.cancel()
         savePhoto(photo)
+        return true
     }
 
     private fun savePhoto(photo: ProfilePhoto?) {

@@ -860,6 +860,262 @@ class ProfilePhotoViewModelTest {
             assertNull(state.accountPhotoUrl)
         }
 
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN removing the photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN a photo is picked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN choosing the account photo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                status = googleStatus,
+                sessionUser = googleUser,
+            )
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnAccountPhotoSelected)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN tapping Girar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN dismissing THEN goes back and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedProfile = null)
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnDismissed)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the viewer WHEN a photo is picked THEN sends the photo picked from the viewer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+
+            // Then
+            assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the viewer WHEN the picked photo is unreadable THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoUnreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN tapping Girar THEN sends the turn from the viewer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_turned" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN tapping Horizontal THEN sends the horizontal mirror`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorHorizontallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to SOURCE, "axis" to "horizontal")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN tapping Vertical THEN sends the vertical mirror`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorVerticallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to SOURCE, "axis" to "vertical")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN tapping Pronto THEN sends the crop confirmed from the viewer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_confirmed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN closing it THEN sends the crop dismissed from the viewer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertEquals(listOf("photo_crop_dismissed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto over the viewer WHEN zooming with the slider THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(2f)))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a photo WHEN removing it THEN sends the removal from the viewer`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertEquals(listOf("photo_removed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a save in progress WHEN removing the photo again THEN sends nothing as the viewer drops it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a Google account with another picture WHEN choosing its photo THEN sends it from the viewer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = googleStatus,
+                sessionUser = googleUser,
+            )
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnAccountPhotoSelected)
+
+            // Then
+            assertEquals(listOf("account_photo_selected" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no account picture WHEN choosing the account photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnAccountPhotoSelected)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer WHEN dismissing THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfilePhotoUiEvent.OnDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val googleStatus = AccountStatus.Connected("u", AccountProvider.GOOGLE)
     private val googleUser = SessionUser(
         userId = "u",
@@ -944,5 +1200,6 @@ class ProfilePhotoViewModelTest {
         const val OTHER_GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/ana"
         const val UPLOADED_PHOTO_URL = "https://supabase/storage/avatars/pierre.jpg"
         const val OTHER_UPLOADED_PHOTO_URL = "https://supabase/storage/avatars/pierre.jpg?v=2"
+        const val SOURCE = "profile_photo"
     }
 }
