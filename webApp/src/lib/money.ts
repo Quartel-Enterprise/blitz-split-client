@@ -82,8 +82,8 @@ export function currencySymbol(currency: string): string {
 }
 
 /**
- * "0,00" or "0.00", an amount field's placeholder, with the decimal separator of the UI's language: the one
- * `startShared` hands the shared code, which fills the fields with it.
+ * "0,00" or "0.00", an amount field's placeholder, with the decimal separator of the UI's language: the tag
+ * `startShared` hands `startBlitzSplit`, whose shared code fills the fields with that separator.
  */
 export function amountPlaceholder(fractionDigits: number): string {
   try {

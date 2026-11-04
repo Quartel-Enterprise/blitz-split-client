@@ -50,11 +50,13 @@ fun startBlitzSplit(
 ) {
     // Why: read before Auth starts, since it removes the callback's error from the fragment.
     val launchUrl = window.location.href
+    // Why: the UI's language is picked once at startup, so its separator is read once too.
+    val decimalSeparator = decimalSeparatorOf(languageTag)
     startBlitzSplitKoin(
         extraModules = listOf(
             module {
                 single<Worker> { sqliteWorker }
-                single { DeviceDecimalSeparator { decimalSeparatorOf(languageTag) } }
+                single { DeviceDecimalSeparator { decimalSeparator } }
             },
         ),
     )
