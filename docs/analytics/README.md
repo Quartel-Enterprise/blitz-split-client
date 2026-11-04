@@ -398,7 +398,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `activity_filter_group_picked` | `is_all` | A group, or "Todos os grupos", another than the one picked, in the sheet | `:feature:activity` |
 | `activity_filter_type_toggled` | `type`, `is_included` | A type in or out, in the sheet | `:feature:activity` |
 | `activity_filter_applied` | `has_group`, `types` (how many), `has_person` | "Mostrar 4 resultados" | `:feature:activity` |
-| `activity_filters_cleared` | `entry` (`sheet`, `chips`) | The sheet's "Limpar", or "Limpar" next to the chips and "Limpar filtros", while something is filtered | `:feature:activity` |
+| `activity_filters_cleared` | `entry` (`sheet`, `chips`) | The sheet's "Limpar", while the sheet is open; "Limpar" next to the chips and "Limpar filtros", while something is filtered | `:feature:activity` |
 | `activity_filter_chip_removed` | `chip` (`group`, `type`, `person`) | A filter's chip removed, while it filters | `:feature:activity` |
 | `contact_clicked` | `is_hidden` | A row of Contatos or of Ocultos, still listed | `:feature:contacts` |
 | `contacts_hidden_toggled` | `is_expanded` | "Ocultos · 1" opened or closed, while someone is hidden | `:feature:contacts` |
