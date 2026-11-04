@@ -49,6 +49,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.exit.GroupExitDialogKind
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
@@ -508,7 +509,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_confirmed" to mapOf<String, Any>("dialog" to "confirm_leave", "source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -528,7 +530,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_confirmed" to mapOf<String, Any>("dialog" to "leave_blocked", "source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.LEAVE_BLOCKED, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -548,7 +551,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "delete_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_confirmed" to mapOf<String, Any>("dialog" to "confirm_delete", "source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_DELETE, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -568,7 +572,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "delete_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_cancelled" to mapOf<String, Any>("dialog" to "delete_blocked", "source" to "groups"),
+                    "group_exit_cancelled" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.DELETE_BLOCKED, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -588,7 +593,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_cancelled" to mapOf<String, Any>("dialog" to "confirm_leave", "source" to "groups"),
+                    "group_exit_cancelled" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -622,7 +628,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_confirmed" to mapOf<String, Any>("dialog" to "confirm_leave", "source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
                 ),
                 trackedEvents,
             )
@@ -644,7 +651,8 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to mapOf<String, Any>("source" to "groups"),
-                    "group_exit_confirmed" to mapOf<String, Any>("dialog" to "confirm_leave", "source" to "groups"),
+                    "group_exit_confirmed" to
+                        mapOf<String, Any>("dialog" to GroupExitDialogKind.CONFIRM_LEAVE, "source" to "groups"),
                 ),
                 trackedEvents,
             )

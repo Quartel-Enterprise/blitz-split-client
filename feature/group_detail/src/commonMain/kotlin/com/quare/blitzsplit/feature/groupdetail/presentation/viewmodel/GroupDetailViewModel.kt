@@ -203,28 +203,17 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnPinToggled -> {
-                if (screen.hasGroup) trackEvent("group_pin_toggled", mapOf("is_pinned" to !screen.isPinned))
-                screen.togglePin()
+            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()?.let { isPinned ->
+                trackEvent("group_pin_toggled", mapOf("is_pinned" to isPinned))
             }
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
             GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> {
-                screen.exit.findAnswerableDialog()?.let {
-                    trackEvent("group_exit_confirmed", mapOf("dialog" to it, "source" to "group_detail"))
-                }
-                screen.exit.confirm()
-            }
+            GroupDetailUiEvent.OnGroupExitConfirmed -> answerExit(isConfirmed = true)
 
-            GroupDetailUiEvent.OnGroupExitDismissed -> {
-                screen.exit.findAnswerableDialog()?.let {
-                    trackEvent("group_exit_cancelled", mapOf("dialog" to it, "source" to "group_detail"))
-                }
-                screen.exit.dismiss()
-            }
+            GroupDetailUiEvent.OnGroupExitDismissed -> answerExit(isConfirmed = false)
 
             GroupDetailUiEvent.OnBackToGroupsClicked -> {
                 if (screen.exit.state.value.deletedNotice != null) trackEvent("group_deleted_back_clicked", emptyMap())
@@ -255,11 +244,21 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnTeachClicked -> teaching.open()
 
-            GroupDetailUiEvent.OnTeachDismissed -> teaching.dismiss()
+            GroupDetailUiEvent.OnTeachDismissed -> if (teaching.dismiss()) {
+                trackEvent(
+                    "category_teach_dismissed",
+                    emptyMap(),
+                )
+            }
 
             is GroupDetailUiEvent.OnTeachWordPicked -> teaching.pick(event.key)
 
-            GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
+            GroupDetailUiEvent.OnTeachConfirmed -> if (teaching.save()) {
+                trackEvent(
+                    "category_teach_confirmed",
+                    emptyMap(),
+                )
+            }
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
 
@@ -414,5 +413,17 @@ class GroupDetailViewModel(
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
         screen.deletePayment(notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+    }
+
+    /*
+     * Why: Sair's and Apagar's dialogs answered here, counted only while the dialog can still be answered, since
+     * Apple's alert also closes itself after its button; Grupos' rows answer theirs as GroupExitAnswer does.
+     */
+    private fun answerExit(isConfirmed: Boolean) {
+        screen.exit.findAnswerableDialog()?.let { dialog ->
+            val params = mapOf("dialog" to dialog, "source" to "group_detail")
+            if (isConfirmed) trackEvent("group_exit_confirmed", params) else trackEvent("group_exit_cancelled", params)
+        }
+        if (isConfirmed) screen.exit.confirm() else screen.exit.dismiss()
     }
 }

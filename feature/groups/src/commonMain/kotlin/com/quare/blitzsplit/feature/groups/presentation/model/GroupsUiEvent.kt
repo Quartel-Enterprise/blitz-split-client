@@ -47,7 +47,8 @@ sealed interface GroupsUiEvent : TrackedUiEvent {
 
             is OnFilterChanged -> EventAnalytics.NotTracked
 
-            is OnDisplayChanged -> EventAnalytics.Automatic("groups_display_changed", mapOf("display" to display))
+            // Why: only another way to show the groups, never the one already showing.
+            is OnDisplayChanged -> EventAnalytics.Manual("groups_display_changed")
 
             // Why: only a size the grid takes, once per size the Mac's slider passes.
             is OnGridSizeChanged -> EventAnalytics.Manual("groups_grid_size_changed")

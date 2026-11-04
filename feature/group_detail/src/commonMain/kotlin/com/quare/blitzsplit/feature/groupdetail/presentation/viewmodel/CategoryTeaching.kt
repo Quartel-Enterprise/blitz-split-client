@@ -51,9 +51,12 @@ internal class CategoryTeaching(
         write(teach.copy(isPickingWord = true))
     }
 
-    fun dismiss() {
-        if (read()?.isSaving == true) return
+    // Why: whether an offer or its question was closed, which Analytics counts; one saving stays until it answers.
+    fun dismiss(): Boolean {
+        val teach = read() ?: return false
+        if (teach.isSaving) return false
         write(null)
+        return true
     }
 
     fun pick(key: String) {
@@ -62,10 +65,11 @@ internal class CategoryTeaching(
         write(teach.copy(selectedKey = key))
     }
 
-    fun confirm() {
-        val teach = read() ?: return
-        val word = teach.selectedWord ?: return
-        if (teach.isSaving) return
+    // Why: whether a word started saving, which Analytics counts, never a second tap while it saves.
+    fun save(): Boolean {
+        val teach = read() ?: return false
+        val word = teach.selectedWord ?: return false
+        if (teach.isSaving) return false
         write(teach.copy(isSaving = true))
         scope.launch {
             useCases
@@ -79,6 +83,7 @@ internal class CategoryTeaching(
                     showError()
                 }
         }
+        return true
     }
 
     private fun teachOf(

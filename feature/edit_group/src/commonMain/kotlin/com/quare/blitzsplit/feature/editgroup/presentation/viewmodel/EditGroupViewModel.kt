@@ -172,12 +172,14 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnIconDismissed -> uiState.update { it.copy(iconEditor = null) }
 
-            is EditGroupUiEvent.OnIconColorPicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(color = event.color))
+            is EditGroupUiEvent.OnIconColorPicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_color_picked", mapOf("color" to event.color))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(color = event.color)) }
             }
 
-            is EditGroupUiEvent.OnIconShapePicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape))
+            is EditGroupUiEvent.OnIconShapePicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_shape_picked", mapOf("shape" to event.shape))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape)) }
             }
 
             EditGroupUiEvent.OnIconConfirmed -> confirmIcon()
@@ -296,10 +298,12 @@ class EditGroupViewModel(
         updateForm { it.copy(currency = currency) }
     }
 
+    // Why: counted only while the question still asks, but it closes in any case, as it always did.
     private fun dismissSimplifyDebts() {
         val state = uiState.value
-        if (state.simplifyConfirmation == null || state.isChangingSimplifyDebts) return
-        trackEvent("simplify_debts_cancelled", emptyMap())
+        if (state.simplifyConfirmation != null && !state.isChangingSimplifyDebts) {
+            trackEvent("simplify_debts_cancelled", emptyMap())
+        }
         uiState.update { it.copy(simplifyConfirmation = null) }
     }
 

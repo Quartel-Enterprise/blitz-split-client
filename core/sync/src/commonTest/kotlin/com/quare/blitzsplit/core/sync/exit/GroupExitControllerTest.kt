@@ -43,7 +43,7 @@ class GroupExitControllerTest {
         val dialog = controller.findAnswerableDialog()
 
         // Then
-        assertEquals("confirm_leave", dialog)
+        assertEquals(GroupExitDialogKind.CONFIRM_LEAVE, dialog)
     }
 
     @Test
@@ -57,7 +57,7 @@ class GroupExitControllerTest {
             val dialog = controller.findAnswerableDialog()
 
             // Then
-            assertEquals("leave_blocked", dialog)
+            assertEquals(GroupExitDialogKind.LEAVE_BLOCKED, dialog)
         }
 
     @Test
@@ -71,7 +71,7 @@ class GroupExitControllerTest {
             val dialog = controller.findAnswerableDialog()
 
             // Then
-            assertEquals("confirm_delete", dialog)
+            assertEquals(GroupExitDialogKind.CONFIRM_DELETE, dialog)
         }
 
     @Test
@@ -85,7 +85,7 @@ class GroupExitControllerTest {
             val dialog = controller.findAnswerableDialog()
 
             // Then
-            assertEquals("delete_blocked", dialog)
+            assertEquals(GroupExitDialogKind.DELETE_BLOCKED, dialog)
         }
 
     @Test
@@ -152,7 +152,7 @@ class GroupExitControllerTest {
             val dialog = controller.findAnswerableDialog()
 
             // Then
-            assertEquals("leave_blocked", dialog)
+            assertEquals(GroupExitDialogKind.LEAVE_BLOCKED, dialog)
         }
 
     @Test
@@ -171,7 +171,7 @@ class GroupExitControllerTest {
             val dialog = controller.findAnswerableDialog()
 
             // Then
-            assertEquals("delete_blocked", dialog)
+            assertEquals(GroupExitDialogKind.DELETE_BLOCKED, dialog)
         }
 
     @Test

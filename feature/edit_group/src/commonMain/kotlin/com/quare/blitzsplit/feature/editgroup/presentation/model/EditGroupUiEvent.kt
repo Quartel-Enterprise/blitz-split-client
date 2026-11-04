@@ -23,9 +23,10 @@ sealed interface EditGroupUiEvent : TrackedUiEvent {
 
             OnIconDismissed -> EventAnalytics.NotTracked
 
-            is OnIconColorPicked -> EventAnalytics.Automatic("group_icon_color_picked", mapOf("color" to color))
+            // Why: only a pick "Ícone do grupo" takes, while it is open.
+            is OnIconColorPicked -> EventAnalytics.Manual("group_icon_color_picked")
 
-            is OnIconShapePicked -> EventAnalytics.Automatic("group_icon_shape_picked", mapOf("shape" to shape))
+            is OnIconShapePicked -> EventAnalytics.Manual("group_icon_shape_picked")
 
             OnIconConfirmed -> EventAnalytics.Automatic("group_icon_confirmed")
 
