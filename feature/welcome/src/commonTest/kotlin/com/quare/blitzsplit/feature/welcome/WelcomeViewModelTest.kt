@@ -500,18 +500,17 @@ class WelcomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN the sign in error shown WHEN dismissing it THEN tracks the dismiss from the welcome`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
+    fun `GIVEN the sign in error shown WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
+        viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
 
-            // When
-            viewModel.onEvent(WelcomeUiEvent.OnErrorDismissed)
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnErrorDismissed)
 
-            // Then
-            assertEquals(listOf("error_dismissed" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
-        }
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
 
     @Test
     fun `GIVEN the welcome screen WHEN the ID token arrives THEN tracks nothing`() = runTest(testDispatcher) {

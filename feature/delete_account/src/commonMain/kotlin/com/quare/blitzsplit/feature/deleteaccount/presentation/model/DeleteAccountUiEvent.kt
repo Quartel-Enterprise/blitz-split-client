@@ -9,16 +9,11 @@ private const val SOURCE = "delete_account"
 sealed interface DeleteAccountUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            /*
-             * Why: each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, so a
-             * back counts alike only as the screen_view of where it went.
-             */
-            OnBackClicked -> EventAnalytics.NotTracked
+            // Why: Cancelar, the back arrow and a native dismiss all leave without deleting.
+            OnBackClicked -> EventAnalytics.Automatic("delete_account_cancelled")
 
-            is OnConfirmChanged -> EventAnalytics.Automatic(
-                "delete_account_confirm_toggled",
-                mapOf("is_checked" to isChecked),
-            )
+            // Why: only a change the screen takes, never one offline or while deleting.
+            is OnConfirmChanged -> EventAnalytics.Manual("delete_account_confirm_toggled")
 
             OnDeleteClicked -> EventAnalytics.Automatic("delete_account_clicked")
 

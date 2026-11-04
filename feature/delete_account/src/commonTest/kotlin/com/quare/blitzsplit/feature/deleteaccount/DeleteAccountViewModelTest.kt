@@ -493,7 +493,9 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN back is tapped THEN sends no event`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN back or Cancelar is tapped THEN tracks the deletion cancelled`() = runTest(
+        testDispatcher,
+    ) {
         // Given
         prepareScenario()
 
@@ -501,7 +503,7 @@ class DeleteAccountViewModelTest {
         viewModel.onEvent(DeleteAccountUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(emptyList(), trackedEvents)
+        assertEquals(listOf("delete_account_cancelled" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
@@ -533,7 +535,9 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `GIVEN no internet WHEN the box is checked THEN tracks the toggle as passed`() = runTest(testDispatcher) {
+    fun `GIVEN no internet WHEN the box is checked THEN sends nothing since the box stays unchecked`() = runTest(
+        testDispatcher,
+    ) {
         // Given
         prepareScenario(online = false)
 
@@ -541,7 +545,7 @@ class DeleteAccountViewModelTest {
         viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
 
         // Then
-        assertEquals(listOf(confirmToggled(isChecked = true)), trackedEvents)
+        assertEquals(emptyList(), trackedEvents)
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.restore.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
@@ -12,23 +13,21 @@ sealed interface RestoreUiEvent : TrackedUiEvent {
         get() = when (this) {
             is OnCodeChanged -> EventAnalytics.NotTracked
 
-            OnRestoreClicked -> EventAnalytics.Automatic("restore_code_submitted")
+            // Why: the same button is "Tentar de novo" while offline, which submits nothing.
+            OnRestoreClicked -> EventAnalytics.Manual(setOf("restore_code_submitted", "retry_clicked"))
 
             OnScanQrClicked -> EventAnalytics.Automatic("restore_scan_qr_clicked")
 
             // Why: the camera handing back what it read, which OnRestoreClicked's path then checks.
             is OnQrScanned -> EventAnalytics.NotTracked
 
-            is OnProviderClicked -> EventAnalytics.Automatic(
-                "sign_in_provider_clicked",
-                mapOf("provider" to provider, "source" to SOURCE),
-            )
+            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
 
             is OnIdTokenReceived -> EventAnalytics.NotTracked
 
-            OnNativeSignInFailed -> EventAnalytics.Automatic("native_sign_in_failed", mapOf("source" to SOURCE))
+            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(SOURCE)
 
-            OnNativeSignInCancelled -> EventAnalytics.Automatic("native_sign_in_cancelled", mapOf("source" to SOURCE))
+            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(SOURCE)
 
             OnStartFreshClicked -> EventAnalytics.Automatic("restore_start_fresh_clicked")
 
@@ -38,7 +37,8 @@ sealed interface RestoreUiEvent : TrackedUiEvent {
              */
             OnBackClicked -> EventAnalytics.NotTracked
 
-            OnErrorDismissed -> EventAnalytics.Automatic("error_dismissed", mapOf("source" to SOURCE))
+            // Why: no UI sends it today: an error goes away with the screen's next action.
+            OnErrorDismissed -> EventAnalytics.NotTracked
         }
 
     data class OnCodeChanged(

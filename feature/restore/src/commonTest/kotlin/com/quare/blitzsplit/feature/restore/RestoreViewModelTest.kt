@@ -719,22 +719,35 @@ class RestoreViewModelTest {
     }
 
     @Test
-    fun `GIVEN an error on screen WHEN dismissing it THEN tracks the dismiss from the restore`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(restoreError = InvalidRecoveryCodeException())
-            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
-            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+    fun `GIVEN an error on screen WHEN dismissing it THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(restoreError = InvalidRecoveryCodeException())
+        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
-            // When
-            viewModel.onEvent(RestoreUiEvent.OnErrorDismissed)
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnErrorDismissed)
 
-            // Then
-            assertEquals(
-                listOf(codeSubmitted, "error_dismissed" to mapOf<String, Any>("source" to "restore")),
-                trackedEvents,
-            )
-        }
+        // Then
+        assertEquals(
+            listOf(codeSubmitted),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN the button is tapped THEN tracks a retry rather than a submit`() = runTest(
+        testDispatcher,
+    ) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // Then
+        assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "restore")), trackedEvents)
+    }
 
     private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
         "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "restore")
