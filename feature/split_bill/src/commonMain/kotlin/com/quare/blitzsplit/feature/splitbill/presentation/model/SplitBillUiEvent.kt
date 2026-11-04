@@ -142,8 +142,10 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
             // Why: only once the categories are read, since Categoria opens only then.
             OnCategoryClicked -> EventAnalytics.Manual("bill_category_clicked")
 
-            // Why: a toggle, sent with where it ended up; Outros is picked instead, as OnCategoryPicked counts it.
-            is OnCategoryMainToggled -> EventAnalytics.Manual("bill_category_main_toggled")
+            // Why: a toggle, sent with where it ended up; Outros is picked instead, so it counts as a pick.
+            is OnCategoryMainToggled -> EventAnalytics.Manual(
+                setOf("bill_category_main_toggled", "bill_category_picked"),
+            )
 
             is OnCategoryPicked -> EventAnalytics.Automatic("bill_category_picked")
 

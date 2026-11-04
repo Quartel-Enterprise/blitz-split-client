@@ -1784,6 +1784,388 @@ class ReceiptViewModelTest {
             assertEquals(CategoryHint.NO_TERM, state.categoryHint)
         }
 
+    @Test
+    fun `GIVEN a new bill online WHEN tapping Ler cupom fiscal THEN sends the scan clicked from Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertEquals(
+                listOf("scan_receipt_clicked" to mapOf<String, Any>("source" to "split_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new bill offline WHEN tapping Ler cupom fiscal THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Editar conta WHEN tapping Ler cupom fiscal THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(route = editRoute(scansReceipt = false))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the camera open WHEN it closes without a photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt with two items WHEN its photo is read THEN sends the photo picked and the read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = scanOf(reading()))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "photo_picked" to mapOf<String, Any>("source" to "receipt"),
+                    "receipt_read" to mapOf<String, Any>("result" to "read", "items" to 2),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a receipt that lists no items WHEN its photo is read THEN sends the read with no items`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = scanOf(reading(items = emptyList())))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                "receipt_read" to mapOf<String, Any>("result" to "read", "items" to 0),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a photo nothing could be read from WHEN it comes back THEN sends the read as unreadable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "photo_picked" to mapOf<String, Any>("source" to "receipt"),
+                    "receipt_read" to mapOf<String, Any>("result" to ReceiptError.UNREADABLE, "items" to 0),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the reader does not answer WHEN the read comes back THEN sends the read as reader unavailable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                "receipt_read" to mapOf<String, Any>("result" to ReceiptError.READER_UNAVAILABLE, "items" to 0),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the day limit of reads WHEN the read comes back THEN sends the read as limit reached`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.LIMIT_REACHED))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                "receipt_read" to mapOf<String, Any>("result" to ReceiptError.LIMIT_REACHED, "items" to 0),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the photo never reached the server WHEN the read comes back THEN sends the read as offline`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.OFFLINE))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            assertEquals(
+                "receipt_read" to mapOf<String, Any>("result" to ReceiptError.OFFLINE, "items" to 0),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN Editar conta WHEN a receipt photo arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = editRoute(scansReceipt = false),
+            scan = scanOf(reading()),
+        )
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill saving WHEN a receipt photo arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(scan = scanOf(reading()))
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+        expenses.createGate = CompletableDeferred()
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+        // Then
+        assertTrue(readSources.isEmpty())
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN a second photo is read THEN sends two photos and only the second read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(otherSource))
+
+            // When
+            answerRead(1, scanOf(reading()))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "photo_picked" to mapOf<String, Any>("source" to "receipt"),
+                    "photo_picked" to mapOf<String, Any>("source" to "receipt"),
+                    "receipt_read" to mapOf<String, Any>("result" to "read", "items" to 2),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a receipt read again in another currency WHEN that read ends THEN sends the read once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            groups.groups.value = listOf(dinner.copy(currency = GroupCurrency.USD))
+            answerRead(0, scanOf(reading()))
+
+            // When
+            answerRead(1, scanOf(reading()))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "photo_picked" to mapOf<String, Any>("source" to "receipt"),
+                    "receipt_read" to mapOf<String, Any>("result" to "read", "items" to 2),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the reader did not answer WHEN tapping Tentar de novo THEN sends the retry then how it ended`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "retry_clicked" to mapOf<String, Any>("source" to "receipt"),
+                    "receipt_read" to mapOf<String, Any>("result" to ReceiptError.READER_UNAVAILABLE, "items" to 0),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a photo nothing could be read from WHEN tapping Tentar de novo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a failed read and the device offline WHEN tapping Tentar de novo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            isOnline.value = false
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a failed read and the bill saving WHEN tapping Tentar de novo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN removing it THEN sends only the receipt removed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsReads = true)
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
+
+        // Then
+        assertEquals(listOf("receipt_removed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a receipt with items read WHEN its items are tapped THEN sends the receipt items clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = scanOf(reading()))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+            // Then
+            assertEquals(listOf("receipt_items_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a receipt read WHEN saving THEN the bill saved says it came from a receipt`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(scan = scanOf(reading()))
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "split_bill_save_clicked" to emptyMap(),
+                "bill_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "split_mode" to SplitMode.EQUAL,
+                    "payers" to 1,
+                    "is_from_receipt" to true,
+                    "is_category_picked" to false,
+                    "is_split_as_default" to false,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a receipt that could not be read WHEN saving the bill typed by hand THEN it is not from a receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                false,
+                trackedEvents
+                    .last()
+                    .second["is_from_receipt"],
+            )
+        }
+
     private fun TestScope.answerRead(
         index: Int,
         scan: ReceiptScan,

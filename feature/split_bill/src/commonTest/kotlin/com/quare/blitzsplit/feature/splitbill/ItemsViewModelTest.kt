@@ -423,6 +423,700 @@ class ItemsViewModelTest {
             assertTrue(editor.addsUp)
         }
 
+    @Test
+    fun `GIVEN Dividir of a new bill WHEN picking Itens THEN sends the mode selected with Itens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.ITEMS))
+
+            // Then
+            assertEquals(
+                listOf("split_bill_split_mode_selected" to mapOf<String, Any>("mode" to SplitMode.ITEMS)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Itens WHEN tapping Adicionar item THEN sends the item add clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+
+        // Then
+        assertEquals(listOf("bill_item_add_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new item WHEN typing its name quantity and price THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemNameChanged("Pizza"))
+        viewModel.onEvent(SplitBillUiEvent.OnItemQuantityChanged("2"))
+        viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("60,00"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new item WHEN adding a unit with the stepper THEN sends the quantity changed up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemQuantityIncreased)
+
+            // Then
+            assertEquals(
+                listOf("bill_item_quantity_changed" to mapOf<String, Any>("direction" to "up")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item of two units WHEN taking one with the stepper THEN sends the quantity changed down`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemQuantityIncreased)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemQuantityDecreased)
+
+            // Then
+            assertEquals(
+                listOf("bill_item_quantity_changed" to mapOf<String, Any>("direction" to "down")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item of two units on Igual WHEN picking Unidades THEN sends the item mode selected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemQuantityIncreased)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.UNITS))
+
+            // Then
+            assertEquals(
+                listOf("bill_item_mode_selected" to mapOf<String, Any>("mode" to ItemSplitMode.UNITS)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item on Igual WHEN picking Igual again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.EQUAL))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an item of one unit WHEN Unidades arrives THEN sends nothing as the item does not take it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.UNITS))
+
+            // Then
+            assertEquals(
+                ItemSplitMode.EQUAL,
+                viewModel.uiState.value.itemEditor
+                    ?.mode,
+            )
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a new item with nobody marked WHEN marking Ana THEN sends the item person toggled as included`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(ANA))
+
+            // Then
+            assertEquals(
+                listOf("bill_item_person_toggled" to mapOf<String, Any>("is_included" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana marked in an item WHEN unmarking her THEN sends the item person toggled as left out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(ANA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(ANA))
+
+            // Then
+            assertEquals(
+                listOf("bill_item_person_toggled" to mapOf<String, Any>("is_included" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no item open WHEN an item person toggle arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(ANA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an item by units WHEN adding and taking a unit THEN sends the person changed up then down`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemQuantityIncreased)
+            viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.UNITS))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonDecreased(PIERRE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "bill_item_person_changed" to mapOf<String, Any>("direction" to "up"),
+                    "bill_item_person_changed" to mapOf<String, Any>("direction" to "down"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item by value WHEN typing what someone consumed THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("60,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnItemModeClicked(ItemSplitMode.AMOUNT))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemPersonValueChanged(PIERRE, "30,00"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new item with its name price and someone WHEN tapping Pronto THEN sends the item confirmed as new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnItemNameChanged("Pizza"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("60,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnItemPersonToggled(PIERRE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemDone)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "bill_item_confirmed" to mapOf<String, Any>(
+                        "mode" to ItemSplitMode.EQUAL,
+                        "is_new" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new item with nobody marked WHEN tapping Pronto THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnItemNameChanged("Pizza"))
+        viewModel.onEvent(SplitBillUiEvent.OnItemPriceChanged("60,00"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemDone)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an item of the list WHEN tapping it THEN sends the item clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        addItem(
+            name = "Pizza",
+            price = "50,00",
+            consumers = listOf(PIERRE),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemClicked(itemId()))
+
+        // Then
+        assertEquals(listOf("bill_item_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an item of the list open WHEN tapping Pronto THEN sends the item confirmed as not new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            addItem(
+                name = "Pizza",
+                price = "50,00",
+                consumers = listOf(PIERRE),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnItemClicked(itemId()))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemDone)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "bill_item_confirmed" to mapOf<String, Any>(
+                        "mode" to ItemSplitMode.EQUAL,
+                        "is_new" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item open WHEN going back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnAddItemClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an item of the list WHEN tapping Apagar item THEN sends the item delete clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            addItem(
+                name = "Pizza",
+                price = "50,00",
+                consumers = listOf(PIERRE),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(itemId()))
+
+            // Then
+            assertEquals(listOf("bill_item_delete_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Apagar item asking WHEN confirming THEN sends the item delete confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        addItem(
+            name = "Pizza",
+            price = "50,00",
+            consumers = listOf(PIERRE),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(itemId()))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemDeleteConfirmed)
+
+        // Then
+        assertEquals(listOf("bill_item_delete_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Apagar item confirmed WHEN the Apple alert dismisses itself THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            addItem(
+                name = "Pizza",
+                price = "50,00",
+                consumers = listOf(PIERRE),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(itemId()))
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar item asking WHEN cancelling THEN sends the item delete cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        addItem(
+            name = "Pizza",
+            price = "50,00",
+            consumers = listOf(PIERRE),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnItemDeleteClicked(itemId()))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemDeleteDismissed)
+
+        // Then
+        assertEquals(listOf("bill_item_delete_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no question open WHEN a delete confirm arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemDeleteConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Itens WHEN tapping the Servico row THEN sends the fee clicked with the service`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.SERVICE))
+
+            // Then
+            assertEquals(
+                listOf("bill_items_fee_clicked" to mapOf<String, Any>("fee" to ItemsFee.SERVICE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the couvert typed WHEN tapping Pronto THEN sends the fee confirmed with the couvert only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.COUVERT))
+            trackedEvents.clear()
+            viewModel.onEvent(SplitBillUiEvent.OnFeeValueChanged("2,50"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnFeeDone)
+
+            // Then
+            assertEquals(
+                listOf("bill_items_fee_confirmed" to mapOf<String, Any>("fee" to ItemsFee.COUVERT)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a service over the limit typed WHEN tapping Pronto THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.SERVICE))
+        viewModel.onEvent(SplitBillUiEvent.OnFeeValueChanged("999"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnFeeDone)
+
+        // Then
+        assertNotNull(viewModel.uiState.value.feeEditor)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the service field open WHEN closing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        viewModel.onEvent(SplitBillUiEvent.OnFeeClicked(ItemsFee.SERVICE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnFeeDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN items short of the total WHEN tapping Adicionar item of the difference THEN sends its click`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            changeService("")
+            addItem(
+                name = "Pizza",
+                price = "60,00",
+                consumers = listOf(PIERRE),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnAddDifferenceItemClicked)
+
+            // Then
+            assertEquals(listOf("bill_items_difference_item_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN items short of the total WHEN tapping Dividir a diferenca THEN sends the difference split clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            changeService("")
+            addItem(
+                name = "Pizza",
+                price = "60,00",
+                consumers = listOf(PIERRE, ANA),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDifferenceClicked)
+
+            // Then
+            assertEquals(listOf("bill_items_difference_split_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN items that close with the total WHEN Dividir a diferenca arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            changeService("")
+            addItem(
+                name = "Pizza",
+                price = "100,00",
+                consumers = listOf(PIERRE, ANA),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDifferenceClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the difference shared WHEN taking it off THEN sends the difference removed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        changeService("")
+        addItem(
+            name = "Pizza",
+            price = "60,00",
+            consumers = listOf(PIERRE, ANA),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnSplitDifferenceClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDifferenceRemoved)
+
+        // Then
+        assertEquals(listOf("bill_items_difference_removed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN items that close with the total WHEN tapping Pronto THEN sends the items confirmed with how many`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            changeService("")
+            addItem(
+                name = "Pizza",
+                price = "60,00",
+                consumers = listOf(PIERRE, ANA),
+            )
+            addItem(
+                name = "Vinho",
+                price = "40,00",
+                consumers = listOf(ANA),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnItemsDone)
+
+            // Then
+            assertEquals(listOf("bill_items_confirmed" to mapOf<String, Any>("items" to 2)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN items short of the total WHEN tapping Pronto THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        changeService("")
+        addItem(
+            name = "Pizza",
+            price = "60,00",
+            consumers = listOf(PIERRE),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemsDone)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Itens WHEN going back to Dividir THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openItems()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnItemsDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a bill split by its items WHEN tapping Salvar THEN the bill saved says Itens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openItems()
+            changeService("")
+            addItem(
+                name = "Pizza",
+                price = "100,00",
+                consumers = listOf(PIERRE, ANA),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnItemsDone)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                "bill_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "split_mode" to SplitMode.ITEMS,
+                    "payers" to 1,
+                    "is_from_receipt" to false,
+                    "is_category_picked" to false,
+                    "is_split_as_default" to false,
+                ),
+                trackedEvents.last(),
+            )
+        }
+
+    private fun itemId(): String = viewModel.uiState.value.itemsEditor
+        ?.items
+        ?.first()
+        ?.id
+        .orEmpty()
+
     private fun openItems() {
         viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
         viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.ITEMS))

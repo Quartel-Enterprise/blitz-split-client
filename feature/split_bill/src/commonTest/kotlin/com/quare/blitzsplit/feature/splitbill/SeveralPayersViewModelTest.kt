@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
@@ -758,6 +759,148 @@ class SeveralPayersViewModelTest {
             assertEquals(listOf(ANA, PIERRE), state.payerIds)
             assertTrue(state.canSave)
         }
+
+    @Test
+    fun `GIVEN Quem pagou open WHEN tapping Varias pessoas THEN sends the several payers clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_several_payers_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Varias pessoas open WHEN typing what someone paid THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("312,00")
+        viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(ANA, "200,00"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN two amounts adding up WHEN tapping Pronto THEN sends the several payers confirmed with two payers`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            openSeveralPayers(ANA to "200,00", PIERRE to "112,00")
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_several_payers_confirmed" to mapOf<String, Any>("payers" to 2)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN only someone else with the whole total WHEN tapping Pronto THEN sends one payer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            openSeveralPayers(BRUNO to "312,00")
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_several_payers_confirmed" to mapOf<String, Any>("payers" to 1)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN amounts that do not add up WHEN tapping Pronto THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("312,00")
+        openSeveralPayers(ANA to "200,00", PIERRE to "100,00")
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Varias pessoas closed WHEN a late Pronto arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("312,00")
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN amounts typed WHEN dismissing Varias pessoas THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("312,00")
+        openSeveralPayers(ANA to "200,00", PIERRE to "112,00")
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN two people paid WHEN tapping Salvar THEN the bill saved counts two payers`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("312,00")
+        describe("Mercado")
+        paySeveral(ANA to "200,00", PIERRE to "112,00")
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "split_bill_save_clicked" to emptyMap(),
+                "bill_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "split_mode" to SplitMode.EQUAL,
+                    "payers" to 2,
+                    "is_from_receipt" to false,
+                    "is_category_picked" to false,
+                    "is_split_as_default" to false,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
 
     // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {

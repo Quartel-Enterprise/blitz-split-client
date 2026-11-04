@@ -161,7 +161,7 @@ internal class ItemsEditing(
 
             is SplitBillUiEvent.OnItemModeClicked -> {
                 val editor = uiState.value.itemEditor
-                if (editor != null && editor.mode != event.mode) {
+                if (editor != null && editor.mode != event.mode && event.mode in editor.modes) {
                     trackEvent("bill_item_mode_selected", mapOf("mode" to event.mode))
                 }
                 editItem { it.toMode(event.mode, separator()) }

@@ -32,6 +32,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -454,6 +455,110 @@ class PickGroupViewModelTest {
                 navigator.backStack.value,
             )
         }
+
+    @Test
+    fun `GIVEN a new bill WHEN tapping its group THEN sends the group clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(screen = fromGroup)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+
+        // Then
+        assertEquals(listOf("split_bill_group_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the question open WHEN marking another group THEN sends the group picked without it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(screen = fromHome)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+
+            // Then
+            assertEquals(listOf("split_bill_group_picked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN another group marked WHEN tapping Continuar THEN sends the group confirmed as another`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(screen = fromHome)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_group_confirmed" to mapOf<String, Any>("is_another" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bills own group marked WHEN tapping Continuar THEN sends the group confirmed as the same`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(screen = fromHome)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_group_confirmed" to mapOf<String, Any>("is_another" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the question closed WHEN a late Continuar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(screen = fromGroup)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the question open and the bill saving WHEN tapping Continuar THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(screen = fromHome)
+            fillIn()
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSaving)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another group marked WHEN closing the question THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(screen = fromHome)
+        viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnGroupDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
 
     private fun fillIn() {
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("90"))

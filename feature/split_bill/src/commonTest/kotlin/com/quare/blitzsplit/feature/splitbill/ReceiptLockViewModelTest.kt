@@ -525,6 +525,152 @@ class ReceiptLockViewModelTest {
             assertEquals(millisOf(2026, 10, 28, 12, 34), state.spentAt)
         }
 
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Quem pagou THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN the Mac pop-up picks a payer THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(ANA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Divisao THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN opening Quando THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN two groups and a receipt being read WHEN tapping the group THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping the category THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN the Mac menu picks a category THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.FOOD_MARKET.key))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Mapa de categorias THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN removing the photo THEN sends the receipt removed`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
+
+            // Then
+            assertEquals(listOf("receipt_removed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Salvar THEN sends only the tap`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(listOf("split_bill_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a receipt read WHEN tapping Quem pagou THEN sends the payer clicked`() = runTest(testDispatcher) {
+        // Given
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+        answerRead(scanOf(reading()))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+
+        // Then
+        assertEquals(listOf("split_bill_payer_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
     private fun TestScope.answerRead(scan: ReceiptScan) {
         pendingReads.last().complete(scan)
         runCurrent()

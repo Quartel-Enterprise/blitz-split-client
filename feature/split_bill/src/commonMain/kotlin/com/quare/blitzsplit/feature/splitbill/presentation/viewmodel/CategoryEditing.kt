@@ -145,12 +145,17 @@ internal class CategoryEditing(
         }
     }
 
-    // Why: a main category shown or hidden again, with where it ended up; Outros is picked instead, as a pick counts.
+    /*
+     * Why: a main category shown or hidden again, with where it ended up. Outros, which has no subcategories, is picked
+     * instead and closes the picker, so it counts as a pick.
+     */
     private fun toggleMain(mainId: String) {
         val before = uiState.value.categoryPicker ?: return
         change { it.withCategoryMainToggled(mainId) }
-        val after = uiState.value.categoryPicker ?: return
-        if (after.openMainId != before.openMainId) {
+        val after = uiState.value.categoryPicker
+        if (after == null) {
+            trackEvent("bill_category_picked", emptyMap())
+        } else if (after.openMainId != before.openMainId) {
             trackEvent("bill_category_main_toggled", mapOf("is_expanded" to (after.openMainId == mainId)))
         }
     }

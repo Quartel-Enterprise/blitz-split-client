@@ -1056,6 +1056,207 @@ class DefaultSplitBillViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN Usar como padrao do grupo offered WHEN checking it THEN sends it toggled as checked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_split_as_default_toggled" to mapOf<String, Any>("is_checked" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Usar como padrao do grupo checked WHEN unchecking it THEN sends it toggled as unchecked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_split_as_default_toggled" to mapOf<String, Any>("is_checked" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Dividir still on the default WHEN a toggle of Usar como padrao do grupo arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a saved bill being edited WHEN a toggle of Usar como padrao do grupo arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                expenseId = BILL_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the box checked on Partes 2 to 1 WHEN tapping Pronto THEN sends the split confirmed as the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(PIERRE))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "split_bill_split_confirmed" to mapOf<String, Any>(
+                        "mode" to SplitMode.SHARES,
+                        "is_split_as_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Dividir off the default WHEN tapping Voltar ao padrao THEN sends the reset clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitResetToDefault)
+
+            // Then
+            assertEquals(listOf("split_bill_split_reset_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the box checked and Voltar ao padrao WHEN tapping Pronto THEN the split is not the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            fillBill()
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitResetToDefault)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "split_bill_split_confirmed" to mapOf<String, Any>(
+                        "mode" to SplitMode.SHARES,
+                        "is_split_as_default" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bill made the group default WHEN tapping Salvar THEN the bill saved says it is the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home)
+            fillBill()
+            pickSharesAsDefault()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "split_bill_save_clicked" to emptyMap(),
+                    "bill_saved" to mapOf<String, Any>(
+                        "is_new" to true,
+                        "split_mode" to SplitMode.SHARES,
+                        "payers" to 1,
+                        "is_from_receipt" to false,
+                        "is_category_picked" to false,
+                        "is_split_as_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the box toggled on a bill being edited WHEN tapping Salvar THEN it is not the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home,
+                expenseId = BILL_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.SHARES))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
+            viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = trackedEvents.last()
+            assertEquals("bill_saved", saved.first)
+            assertEquals(false, saved.second["is_new"])
+            assertEquals(false, saved.second["is_split_as_default"])
+        }
+
     private val pierre = GroupMember(
         id = PIERRE,
         name = "Pierre",

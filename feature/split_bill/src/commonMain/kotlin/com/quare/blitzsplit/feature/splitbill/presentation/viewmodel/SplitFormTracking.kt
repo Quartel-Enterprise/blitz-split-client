@@ -80,7 +80,8 @@ internal class SplitFormTracking(
                 "split_mode" to state.split.mode,
                 "payers" to payers,
                 "is_from_receipt" to (state.receipt?.status == ReceiptStatus.READ),
-                "is_category_picked" to state.isCategoryPicked,
+                // Why: an edited bill opens with its category as picked, so it says something only for a new one.
+                "is_category_picked" to (isNew && state.isCategoryPicked),
                 "is_split_as_default" to (isNew && state.splitAsDefault != null),
             ),
         )

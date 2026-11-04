@@ -569,6 +569,482 @@ class BillCategoryViewModelTest {
         assertEquals(Route.CategoryMap, navigator.backStack.value.last())
     }
 
+    @Test
+    fun `GIVEN the categories read WHEN tapping the category THEN sends the category clicked`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+
+        // Then
+        assertEquals(listOf("bill_category_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN opening Transporte THEN sends the main toggled as expanded`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMainToggled(AppCategory.TRANSPORT.key))
+
+        // Then
+        assertEquals(
+            listOf("bill_category_main_toggled" to mapOf<String, Any>("is_expanded" to true)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Transporte open in the picker WHEN tapping it again THEN sends the main toggled as hidden`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMainToggled(AppCategory.TRANSPORT.key))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMainToggled(AppCategory.TRANSPORT.key))
+
+        // Then
+        assertEquals(
+            listOf("bill_category_main_toggled" to mapOf<String, Any>("is_expanded" to false)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping Outros in Todas as categorias THEN sends the category picked and no toggle`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryMainToggled(AppCategory.OTHER.key))
+
+            // Then
+            assertNull(viewModel.uiState.value.categoryPicker)
+            assertEquals(listOf("bill_category_picked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the picker WHEN picking Mercado THEN sends the category picked without it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.FOOD_MARKET.key))
+
+        // Then
+        assertEquals(listOf("bill_category_picked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN searching a category THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryQueryChanged("alug"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN closing it THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping the map card THEN sends the category map clicked from Rachar conta`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_map_clicked" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping Nova THEN sends the create clicked as a main category`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_create_clicked" to mapOf<String, Any>(
+                    "is_subcategory" to false,
+                    "source" to "split_bill",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping Nova em Alimentacao THEN sends the create clicked as a subcategory`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = AppCategory.FOOD.key,
+                name = "",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_create_clicked" to mapOf<String, Any>(
+                    "is_subcategory" to true,
+                    "source" to "split_bill",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group category in the picker WHEN editing it THEN sends the edit clicked without it`() = runTest {
+        // Given
+        prepareScenario(groupCategories = listOf(churrasco))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+
+        // Then
+        assertEquals(
+            listOf("category_edit_clicked" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new category WHEN typing its name THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryNameChanged("Pet"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new category WHEN picking Casa in Dentro de THEN sends the parent picked without it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryParentPicked(AppCategory.HOME.key))
+
+        // Then
+        assertEquals(
+            listOf("category_parent_picked" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new main category WHEN picking the paw icon THEN sends the icon picked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryIconPicked(CategoryIcon.PAW))
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_icon_picked" to mapOf<String, Any>(
+                    "icon" to CategoryIcon.PAW,
+                    "source" to "split_bill",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new main category WHEN tapping Salvar THEN sends the tap then the new category saved`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryIconPicked(CategoryIcon.PAW))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_save_clicked" to mapOf<String, Any>("source" to "split_bill"),
+                "category_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "is_subcategory" to false,
+                    "source" to "split_bill",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group subcategory renamed WHEN tapping Salvar THEN sends the tap then the category saved as edited`() =
+        runTest {
+            // Given
+            prepareScenario(groupCategories = listOf(churrasco))
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryNameChanged("Churrasquinho"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "category_save_clicked" to mapOf<String, Any>("source" to "split_bill"),
+                    "category_saved" to mapOf<String, Any>(
+                        "is_new" to false,
+                        "is_subcategory" to true,
+                        "source" to "split_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a name already in the category WHEN tapping Salvar THEN sends only the tap`() = runTest {
+        // Given
+        prepareScenario(groupCategories = listOf(churrasco))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = AppCategory.FOOD.key,
+                name = "churrasco",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_save_clicked" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new category WHEN closing its form THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryFormDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group category being edited WHEN tapping Apagar THEN sends the delete clicked`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(bill.copy(categoryId = "churrasco")),
+            groupCategories = listOf(churrasco),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_clicked" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Apagar asking about a group category WHEN confirming THEN sends the delete confirmed`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(bill.copy(categoryId = "churrasco")),
+            groupCategories = listOf(churrasco),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_confirmed" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Apagar asking about a group category WHEN cancelling THEN sends the delete cancelled`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(bill.copy(categoryId = "churrasco")),
+            groupCategories = listOf(churrasco),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteDismissed)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_cancelled" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN no category question open WHEN a confirm or a dismiss arrives THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(groupCategories = listOf(churrasco))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a category picked by hand WHEN saving the bill THEN the bill saved says it was picked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "split_bill_save_clicked" to emptyMap(),
+                "bill_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "split_mode" to SplitMode.EQUAL,
+                    "payers" to 1,
+                    "is_from_receipt" to false,
+                    "is_category_picked" to true,
+                    "is_split_as_default" to false,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
     private fun prepareScenario(
         storedGroup: Group = home,
         stored: List<Expense> = emptyList(),

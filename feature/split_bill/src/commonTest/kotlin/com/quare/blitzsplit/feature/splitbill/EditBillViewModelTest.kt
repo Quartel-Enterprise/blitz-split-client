@@ -1122,6 +1122,164 @@ class EditBillViewModelTest {
         assertFalse(viewModel.uiState.value.showsAnyoneCanEditHint)
     }
 
+    @Test
+    fun `GIVEN the bill being edited WHEN tapping Apagar conta THEN sends the delete clicked from Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_clicked" to mapOf<String, Any>("source" to "split_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new bill WHEN tapping Apagar conta THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            screen = Route.SplitBill(
+                GROUP_ID,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar esta conta open WHEN confirming THEN sends the delete confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+
+        // Then
+        assertEquals(
+            listOf("bill_delete_confirmed" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Apagar esta conta open WHEN cancelling THEN sends the delete cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
+
+        // Then
+        assertEquals(
+            listOf("bill_delete_cancelled" to mapOf<String, Any>("source" to "split_bill")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Apagar esta conta not open WHEN a confirm or a dismiss arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a delete in flight WHEN confirming again and dismissing THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(deleteGate = CompletableDeferred())
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill edited WHEN tapping Salvar THEN sends the tap then the bill saved as not new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "split_bill_save_clicked" to emptyMap(),
+                    "bill_saved" to mapOf<String, Any>(
+                        "is_new" to false,
+                        "split_mode" to SplitMode.EQUAL,
+                        "payers" to 1,
+                        "is_from_receipt" to false,
+                        "is_category_picked" to false,
+                        "is_split_as_default" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a saved Valores bill WHEN tapping Salvar THEN the bill saved says Valores`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = valoresBill)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            SplitMode.AMOUNT,
+            trackedEvents
+                .last()
+                .second["split_mode"],
+        )
+    }
+
+    @Test
+    fun `GIVEN the device fails to save the edit WHEN tapping Salvar THEN sends only the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateError = IllegalStateException("disk full"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
     // Why: a sync bringing a version of the bill someone saved on another device.
     private fun syncChange(
         updatedAt: Long,
