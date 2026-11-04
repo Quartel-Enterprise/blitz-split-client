@@ -1,44 +1,44 @@
 import { CircleAlert, Loader2, ScanText, X } from 'lucide-react'
 import type { JsBillReceipt, JsSplitBillState, SplitBillPresenter } from 'blitzsplit-shared'
-import { useEffect, useRef, type ChangeEvent, type RefObject } from 'react'
+import { useEffect } from 'react'
+import { PhotoPickerInputs, usePhotoPicker, type PhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { t, type MessageKey } from '@/i18n'
+import type { PhotoReceiver } from '@/lib/photoFile'
 
-/*
- * "Ler cupom fiscal" (7.1e to 7.1g) on the web: the browser has no camera of the app's own, so a file input picks the
- * receipt's photo (a phone's browser offers its camera there too). A file that can't be read goes as empty bytes,
- * which read as a receipt that couldn't be read.
- */
-export function useReceiptInput(presenter: SplitBillPresenter, state: JsSplitBillState): RefObject<HTMLInputElement | null> {
-  const input = useRef<HTMLInputElement>(null)
-  // Why: Início's "Ler cupom fiscal" opens the picker with the bill; the browser may refuse it without a fresh click,
-  // so the request is dropped either way and the button stays to try again.
-  useEffect(() => {
-    if (!state.showsReceiptCamera) return
-    input.current?.click()
-    presenter.dismissReceiptCamera()
-  }, [presenter, state.showsReceiptCamera])
-  return input
+/** Where the receipt's photo comes from, and `pick`, which opens the camera where the browser has one, else the files. */
+export interface ReceiptPicker extends PhotoPicker {
+  pick: () => void
 }
 
-export function ReceiptInput({ presenter, input }: { presenter: SplitBillPresenter; input: RefObject<HTMLInputElement | null> }) {
-  const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-    if (!file) return
-    let bytes: Int8Array
-    try {
-      bytes = new Int8Array(await file.arrayBuffer())
-    } catch {
-      bytes = new Int8Array(0)
-    }
-    presenter.receiptPicked(bytes)
+/*
+ * "Ler cupom fiscal" (7.1e to 7.1g) on the web: the browser's camera opens as the apps' does, with "Escolher arquivo" in
+ * it, wherever the browser lists one (a webcam too); without one a file input picks the receipt's photo. A file that
+ * can't be read goes as empty bytes, which read as a receipt that couldn't be read.
+ */
+export function useReceiptPicker(presenter: SplitBillPresenter, state: JsSplitBillState): ReceiptPicker {
+  const picker = usePhotoPicker()
+  const pick = picker.hasCamera ? picker.takePhoto : picker.chooseFile
+  // Why: Início's "Ler cupom fiscal" opens the camera with the bill, once the browser said whether it has one. A file
+  // chooser may be refused without a fresh click, so the request is dropped either way and the button stays to try again.
+  useEffect(() => {
+    if (!state.showsReceiptCamera || picker.hasCamera === null) return
+    pick()
+    presenter.dismissReceiptCamera()
+  }, [presenter, state.showsReceiptCamera, picker.hasCamera, pick])
+  return { ...picker, pick }
+}
+
+export function ReceiptInput({ presenter, picker }: { presenter: SplitBillPresenter; picker: ReceiptPicker }) {
+  const receiver: PhotoReceiver = {
+    photoPicked: (bytes) => presenter.receiptPicked(bytes),
+    photoUnreadable: () => presenter.receiptPicked(new Int8Array(0)),
   }
-  return <input ref={input} type="file" accept="image/*" className="hidden" tabIndex={-1} aria-hidden onChange={onChange} />
+  return <PhotoPickerInputs picker={picker} receiver={receiver} facing="environment" title={t('splitBill_scanReceipt')} />
 }
 
 /** Under "Divisão": "Ler cupom fiscal" until a receipt is picked, then "Foto do cupom", attached once saved, with ×. */
-export function ReceiptField({ presenter, state, input }: { presenter: SplitBillPresenter; state: JsSplitBillState; input: RefObject<HTMLInputElement | null> }) {
+export function ReceiptField({ presenter, state, picker }: { presenter: SplitBillPresenter; state: JsSplitBillState; picker: ReceiptPicker }) {
   const receipt = state.receipt
   if (receipt?.hasPhoto) {
     const isReading = receipt.status === 'reading'
@@ -59,7 +59,7 @@ export function ReceiptField({ presenter, state, input }: { presenter: SplitBill
   if (!state.showsScanReceipt) return null
   return (
     <div className="flex flex-col gap-1.5">
-      <Button type="button" variant="outline" className="self-start" disabled={!state.canScanReceipt} onClick={() => input.current?.click()}>
+      <Button type="button" variant="outline" className="self-start" disabled={!state.canScanReceipt} onClick={picker.pick}>
         <ScanText aria-hidden />
         {t('splitBill_scanReceipt')}
       </Button>
@@ -89,11 +89,11 @@ export function ReceiptReadChips({ receipt }: { receipt: JsBillReceipt | null | 
 export function ReceiptFailureAlert({
   state,
   presenter,
-  input,
+  picker,
 }: {
   state: JsSplitBillState
   presenter: Pick<SplitBillPresenter, 'retryReceipt'>
-  input: RefObject<HTMLInputElement | null>
+  picker: Pick<ReceiptPicker, 'pick'>
 }) {
   const error = state.receiptError
   if (!error) return null
@@ -105,7 +105,7 @@ export function ReceiptFailureAlert({
         <strong className="font-semibold">{t(copy.title)}</strong>
         <span>{t(copy.body)}</span>
         {state.offersReceiptRetake && (
-          <Button type="button" variant="link" className="h-auto p-0 text-destructive" disabled={!state.canScanReceipt} onClick={() => input.current?.click()}>
+          <Button type="button" variant="link" className="h-auto p-0 text-destructive" disabled={!state.canScanReceipt} onClick={picker.pick}>
             {t('splitBill_receiptRetake')}
           </Button>
         )}

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
+import { useCameraStream } from '@/hooks/useCameraStream'
 
 interface DetectedBarcode {
   rawValue: string
@@ -26,32 +27,27 @@ interface QrCameraOptions {
   readsContinuously: boolean
   onScanned: (content: string) => void
   onStarted?: () => void
+  isTorchOn?: boolean
 }
 
 // Why: reading continuously, the same QR in front of the camera is reported a few times a second, not on every frame.
 const continuousInterval = 250
 
 /**
- * Shows the back camera in `video` and reads QR codes from it through the browser's BarcodeDetector,
- * from the moment `isEnabled` turns on until it turns off or the component goes away.
+ * Shows the back camera in `video` (`useCameraStream`) and reads QR codes from it through the browser's
+ * BarcodeDetector, from the moment `isEnabled` turns on until it turns off or the component goes away.
  */
-export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabled, readsContinuously, onScanned, onStarted }: QrCameraOptions) {
-  const [problem, setProblem] = useState<QrCameraProblem | null>(null)
-  const [track, setTrack] = useState<MediaStreamTrack | null>(null)
-  // The latest callbacks, so a parent re-render never restarts the camera
-  const callbacks = useRef({ onScanned, onStarted })
-  callbacks.current = { onScanned, onStarted }
+export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabled, readsContinuously, onScanned, onStarted, isTorchOn }: QrCameraOptions) {
+  const isSupported = Boolean(window.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
+  const { problem, track, isPlaying, hasTorch } = useCameraStream(video, { isEnabled: isEnabled && isSupported, facingMode: 'environment', isTorchOn, onStarted })
+  // The latest callback, so a parent re-render never restarts the reading
+  const scanned = useRef(onScanned)
+  scanned.current = onScanned
 
   useEffect(() => {
-    if (!isEnabled) return
     const Detector = window.BarcodeDetector
-    if (!Detector || !navigator.mediaDevices?.getUserMedia) {
-      setProblem('unsupported')
-      return
-    }
-    setProblem(null)
+    if (!isPlaying || !Detector) return
     const detector = new Detector({ formats: ['qr_code'] })
-    let stream: MediaStream | null = null
     let timer = 0
     let frame = 0
     let isActive = true
@@ -66,7 +62,7 @@ export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabl
       try {
         const [code] = await detector.detect(video.current)
         if (isActive && code?.rawValue) {
-          callbacks.current.onScanned(code.rawValue)
+          scanned.current(code.rawValue)
           if (!readsContinuously) return
         }
       } catch {
@@ -74,43 +70,15 @@ export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabl
       }
       next()
     }
-
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: 'environment' } })
-      .then(async (media) => {
-        // Why: the camera may answer after the component went away, and its light would stay on.
-        if (!isActive) {
-          media.getTracks().forEach((each) => each.stop())
-          return
-        }
-        stream = media
-        callbacks.current.onStarted?.()
-        if (!video.current) return
-        video.current.srcObject = media
-        setTrack(media.getVideoTracks()[0] ?? null)
-        try {
-          await video.current.play()
-        } catch {
-          // Why: the camera was allowed, so a video that won't play is a failure, not a refusal of the camera.
-          if (isActive) setProblem('failed')
-          return
-        }
-        next()
-      })
-      .catch((error: unknown) => {
-        if (!isActive) return
-        const isRefused = error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'SecurityError')
-        setProblem(isRefused ? 'denied' : 'failed')
-      })
+    next()
 
     return () => {
       isActive = false
       window.clearTimeout(timer)
       cancelAnimationFrame(frame)
-      stream?.getTracks().forEach((each) => each.stop())
-      setTrack(null)
     }
-  }, [isEnabled, readsContinuously, video])
+  }, [isPlaying, readsContinuously, video])
 
-  return { problem, track }
+  const qrProblem: QrCameraProblem | null = isEnabled && !isSupported ? 'unsupported' : problem
+  return { problem: qrProblem, track, hasTorch }
 }

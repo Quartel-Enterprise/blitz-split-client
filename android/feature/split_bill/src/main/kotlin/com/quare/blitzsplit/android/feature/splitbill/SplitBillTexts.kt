@@ -67,10 +67,14 @@ internal fun splitSubtitleOrNull(
     money: MoneyFormatter,
     // Why: "Exceção do grupo para Mercado" in place of "Padrão do grupo" (7.1k).
     exceptionName: String? = null,
+    // Why: "Vira a exceção do grupo para Mercado" in place of "Vira o padrão do grupo" (beta feedback 11).
+    newExceptionName: String? = null,
 ): String? = summary
     .map { fact ->
         if (fact == SplitFact.GroupDefault && exceptionName != null) {
             stringResource(R.string.split_bill_group_exception, exceptionName)
+        } else if (fact == SplitFact.NewGroupDefault && newExceptionName != null) {
+            stringResource(R.string.split_bill_new_group_exception, newExceptionName)
         } else {
             factTextOf(
                 fact = fact,

@@ -33,6 +33,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.JoinWithLink -> "join-with-link"
     Route.Profile -> "profile"
     Route.EditProfile -> "edit-profile"
+    Route.ProfilePhoto -> "profile-photo"
     Route.DeleteAccount -> "delete-account"
     Route.NotificationSettings -> "notification-settings"
     Route.CategoryMap -> "category-map"

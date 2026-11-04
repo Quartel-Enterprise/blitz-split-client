@@ -69,6 +69,14 @@ data class SplitEditor(
     val includedCount: Int
         get() = included.size
 
+    // Why: everyone in with the same weight (Igual, Partes at 1 each), as a group without a "Divisão padrão" splits.
+    val splitsEquallyAmongEveryone: Boolean
+        get() = entries
+            .map { it.value }
+            .distinct()
+            .singleOrNull()
+            ?.let { it > 0 } == true
+
     // Why: "Desmarcar todos" once everyone is in, "Marcar todos" otherwise.
     val isEveryoneIncluded: Boolean
         get() = rows.all { it.isIncluded }

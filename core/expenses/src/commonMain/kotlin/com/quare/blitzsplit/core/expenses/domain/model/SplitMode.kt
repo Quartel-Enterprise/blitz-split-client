@@ -17,6 +17,15 @@ enum class SplitMode(
     ITEMS("items"),
     ;
 
+    // Why: the "Divisão padrão" a bill split this way makes (beta feedback 11); Valores and Itens are one bill's amounts.
+    val defaultMode: DefaultSplitMode?
+        get() = when (this) {
+            EQUAL -> DefaultSplitMode.EQUAL
+            SHARES -> DefaultSplitMode.SHARES
+            PERCENT -> DefaultSplitMode.PERCENT
+            AMOUNT, ITEMS -> null
+        }
+
     companion object {
         fun fromCodeOrNull(code: String): SplitMode? = entries.firstOrNull { it.code == code }
 

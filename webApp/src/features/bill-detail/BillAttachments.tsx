@@ -1,7 +1,8 @@
 import { ChevronLeft, ChevronRight, Download, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
 import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState } from 'blitzsplit-shared'
-import { useEffect, useReducer, useRef, type KeyboardEvent } from 'react'
+import { useEffect, useReducer, useRef, type ComponentProps, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
+import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
@@ -10,7 +11,6 @@ import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
 import { postedText } from './BillComments'
-import { onPhotoFile } from '@/lib/photoFile'
 
 /**
  * What "Anexos" and the viewer read and send: Conta's, or a bill's link page's, which adds and removes nothing (no
@@ -93,11 +93,11 @@ function sourceOf(attachment: JsBillAttachment, localUrls: LocalPhotoUrls): stri
 
 /**
  * "Anexos", with "2 de 5 fotos": the receipt the bill was read from first, then its photos, then "Adicionar foto"
- * while there is room for another. The add tile opens the browser's file chooser, which phones offer the camera in.
+ * while there is room for another. The add tile opens the browser's file chooser or, where the browser has a camera,
+ * asks whether to take the photo with it (`CameraCaptureDialog`).
  * A bill's link page has no limit to count against, nor the add tile.
  */
 export function BillAttachments({ presenter, state, localUrls }: { presenter: AttachmentsPresenter; state: AttachmentsState; localUrls: LocalPhotoUrls }) {
-  const input = useRef<HTMLInputElement>(null)
   return (
     <section aria-labelledby="bill-attachments-title" className="flex min-w-0 flex-col gap-2">
       <h3 id="bill-attachments-title" className="flex justify-between text-sm font-medium">
@@ -125,26 +125,48 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
         ))}
         {state.showsAddPhoto && (
           <li>
-            <button
-              type="button"
-              aria-label={t('billDetail_addPhoto')}
-              title={t('billDetail_addPhoto')}
-              disabled={!state.canAddPhoto}
-              onClick={() => input.current?.click()}
-              className={cn(tileClass, 'border-dashed text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50')}
-            >
-              {state.isAddingPhoto ? <Loader2 className="size-5 animate-spin" /> : <Plus className="size-5" />}
-            </button>
+            <AddPhoto presenter={presenter} state={state} />
           </li>
         )}
       </ul>
-      {state.showsAddPhoto && <input ref={input} type="file" accept="image/*" className="hidden" onChange={(event) => onPhotoFile(presenter, event)} />}
     </section>
   )
 }
 
 const tileClass =
   'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+
+/** "Adicionar foto": the file chooser, or a menu with the camera where the browser has one. */
+function AddPhoto({ presenter, state }: { presenter: AttachmentsPresenter; state: AttachmentsState }) {
+  const photo = usePhotoPicker()
+  return (
+    <>
+      <PhotoSourceMenu
+        picker={photo}
+        align="start"
+        takePhotoLabel={t('billDetail_takePhoto')}
+        choosePhotoLabel={t('billDetail_choosePhoto')}
+        renderTrigger={(props) => <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} {...props} />}
+      />
+      <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />
+    </>
+  )
+}
+
+// "Adicionar foto", a menu's trigger too, so it takes the trigger's props and ref.
+function AddPhotoTile({ isAdding, ...props }: { isAdding: boolean | undefined } & ComponentProps<'button'>) {
+  return (
+    <button
+      type="button"
+      aria-label={t('billDetail_addPhoto')}
+      title={t('billDetail_addPhoto')}
+      className={cn(tileClass, 'border-dashed text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50')}
+      {...props}
+    >
+      {isAdding ? <Loader2 className="size-5 animate-spin" /> : <Plus className="size-5" />}
+    </button>
+  )
+}
 
 /** A photo or the receipt, cropped to fill, with "Cupom" or "Na fila" in its corner; its name and who added it on hover. */
 function AttachmentTile({ attachment, src, isOnline, onClick }: { attachment: JsBillAttachment; src: string | undefined; isOnline: boolean; onClick: () => void }) {

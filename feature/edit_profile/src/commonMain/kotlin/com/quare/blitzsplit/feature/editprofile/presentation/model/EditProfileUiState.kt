@@ -63,7 +63,7 @@ data class EditProfileUiState(
 
     // Why: offered while the account has a picture that isn't the photo shown already.
     val showsUseAccountPhoto: Boolean
-        get() = accountPhotoUrl != null && photo != ProfilePhoto.Remote(accountPhotoUrl)
+        get() = isAccountPhotoOffered(accountPhotoUrl, photo)
 
     // Why: names whose picture is offered, so the UIs check this one value instead of the flag and the provider.
     val accountPhotoProvider: AccountProvider?

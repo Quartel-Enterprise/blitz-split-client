@@ -100,6 +100,11 @@ class EditProfilePresenter {
         viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
     }
 
+    // Why: the avatar of the form drawn inside the profile opens the photo big.
+    fun openPhoto() {
+        viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+    }
+
     fun save() {
         viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
     }

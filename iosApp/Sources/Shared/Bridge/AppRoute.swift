@@ -57,6 +57,8 @@ enum AppRoute: Hashable, Identifiable {
     case contactInvite(RouteContactInvite)
     case profile
     case editProfile
+    /// The profile's photo big, with the shortcuts that change it (Bible Planner's viewer).
+    case profilePhoto
     case deleteAccount
     case notificationSettings
     case categoryMap
@@ -93,6 +95,7 @@ enum AppRoute: Hashable, Identifiable {
         case let contactInvite as RouteContactInvite: self = .contactInvite(contactInvite)
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
+        case is RouteProfilePhoto: self = .profilePhoto
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteNotificationSettings: self = .notificationSettings
         case is RouteCategoryMap: self = .categoryMap
@@ -167,12 +170,12 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key and deleting the account show as
-    /// sheets on the Settings window there (`AppModel.settingsSheet`). Never off the Mac.
+    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key, the photo big and deleting the
+    /// account show as sheets on the Settings window there (`AppModel.settingsSheet`). Never off the Mac.
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .deleteAccount: true
+        case .paymentKey, .profilePhoto, .deleteAccount: true
         default: false
         }
         #else
@@ -215,11 +218,14 @@ enum AppRoute: Hashable, Identifiable {
         return false
     }
 
-    /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.
+    /// The invite reader's camera, which stays dark in both themes, and the profile's photo big over the blurred
+    /// profile, over the whole screen of an iPhone or iPad.
     var presentsFullScreen: Bool {
         #if os(iOS)
-        if case .joinWithLink = self { return true }
-        return false
+        switch self {
+        case .joinWithLink, .profilePhoto: return true
+        default: return false
+        }
         #else
         return false
         #endif

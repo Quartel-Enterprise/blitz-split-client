@@ -18,10 +18,6 @@ const formId = 'join-with-link-form'
 const inputId = 'join-with-link-input'
 const errorId = 'join-with-link-error'
 const linkPlaceholder = 'blitzsplit.com/g/…'
-// Why: Chrome on Android exposes the flashlight as a constraint of the camera's track; TypeScript doesn't know it yet.
-interface TorchCapabilities extends MediaTrackCapabilities {
-  torch?: boolean
-}
 
 /**
  * "Entrar com link ou QR": the camera reads an invite's QR through the browser's BarcodeDetector, and the
@@ -154,24 +150,20 @@ function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
  * The flashlight is a constraint of the camera's track in Chrome on Android.
  */
 function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: JoinWithLinkPresenter, state: JsJoinWithLinkState) {
-  const { problem, track } = useQrCamera(video, {
+  const { problem, track, hasTorch } = useQrCamera(video, {
     isEnabled: true,
     readsContinuously: true,
     onScanned: (content) => presenter.scan(content),
     onStarted: () => presenter.changeCameraAccess(true),
+    isTorchOn: state.isTorchOn,
   })
   useEffect(() => {
     if (problem === 'denied') presenter.changeCameraAccess(false)
     else if (problem === 'failed') presenter.failCamera()
   }, [problem, presenter])
   useEffect(() => {
-    if (!track) return
-    presenter.openCamera((track.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true)
-  }, [track, presenter])
-  useEffect(() => {
-    if (!track || !state.showsTorch) return
-    track.applyConstraints({ advanced: [{ torch: state.isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
-  }, [track, state.showsTorch, state.isTorchOn])
+    if (track) presenter.openCamera(hasTorch)
+  }, [track, hasTorch, presenter])
 
   return problem === 'unsupported'
 }

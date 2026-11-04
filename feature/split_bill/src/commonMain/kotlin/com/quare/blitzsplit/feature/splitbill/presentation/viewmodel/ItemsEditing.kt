@@ -61,6 +61,8 @@ internal class ItemsEditing(
         uiState.update {
             it.copy(
                 split = items.toSplitEditor(it.split),
+                // Why: a bill split by its items never becomes the group's default.
+                splitAsDefault = null,
                 splitEditor = null,
                 itemsEditor = null,
                 itemEditor = null,
