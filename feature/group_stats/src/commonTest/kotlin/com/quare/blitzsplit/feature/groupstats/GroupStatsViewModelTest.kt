@@ -6,11 +6,16 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -48,6 +53,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
@@ -58,6 +64,7 @@ class GroupStatsViewModelTest {
     private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var chart: MutableStateFlow<StatsChartPreferences>
     private lateinit var keptCharts: MutableList<StatsChartPreferences>
@@ -820,6 +827,120 @@ class GroupStatsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the trip with no payments WHEN the statistics open THEN Acertos ranks who settled all first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val settling = assertNotNull(viewModel.uiState.value.settling)
+
+            // Then
+            assertEquals(PIERRE, settling.fastest.memberId)
+            assertTrue(settling.fastest.isMe)
+            assertEquals(4, settling.fastest.averageDays)
+            assertEquals(0L, settling.fastest.openMinor)
+            assertEquals(BRUNO, settling.slowest.memberId)
+            assertEquals("Bruno", settling.slowest.name)
+            assertFalse(settling.slowest.isMe)
+            assertEquals(30_000L, settling.slowest.openMinor)
+        }
+
+    @Test
+    fun `GIVEN the payments not read yet WHEN the bills are THEN nothing is drawn with Acertos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(arePaymentsReadAtStart = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertNull(state.settling)
+        }
+
+    @Test
+    fun `GIVEN Acertos WHEN the payment of Ana arrives THEN she paid on the day with nothing open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            settlements.settlements.value = listOf(anaPaysTheBoat)
+
+            // Then
+            val fastest = viewModel.uiState.value.settling
+                ?.fastest
+            assertEquals(ANA, fastest?.memberId)
+            assertEquals(0, fastest?.averageDays)
+            assertEquals(0L, fastest?.openMinor)
+        }
+
+    @Test
+    fun `GIVEN a payment still in the queue WHEN the statistics open THEN Acertos counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(payments = listOf(anaPaysTheBoat.copy(isPending = true)))
+
+            // When
+            val fastest = viewModel.uiState.value.settling
+                ?.fastest
+
+            // Then
+            assertEquals(ANA, fastest?.memberId)
+            assertEquals(0, fastest?.averageDays)
+            assertEquals(0L, fastest?.openMinor)
+        }
+
+    @Test
+    fun `GIVEN the whole trip WHEN picking only the boat day THEN Acertos counts only the debts of that day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-10-28T10:00:00Z"),
+                    endMillis = millisOf("2026-10-28T10:00:00Z"),
+                ),
+            )
+
+            // Then
+            val settling = assertNotNull(viewModel.uiState.value.settling)
+            assertEquals(ANA, settling.fastest.memberId)
+            assertEquals(BRUNO, settling.slowest.memberId)
+            assertEquals(1, settling.slowest.averageDays)
+            assertEquals(20_000L, settling.slowest.openMinor)
+        }
+
+    @Test
+    fun `GIVEN the trip WHEN picking a month with no bills THEN Acertos is hidden`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.LAST_MONTH))
+
+        // Then
+        assertNull(viewModel.uiState.value.settling)
+    }
+
+    // Why: Ana pays Pierre the R$ 50 the boat left on her, the evening of the boat.
+    private val anaPaysTheBoat = Settlement(
+        id = "ana-boat",
+        groupId = GROUP_ID,
+        fromMemberId = ANA,
+        toMemberId = PIERRE,
+        amountMinor = 5_000,
+        method = SettlementMethod.PIX,
+        paidAt = millisOf("2026-10-28T18:00:00Z"),
+        isPending = false,
+        updatedAt = millisOf("2026-10-28T18:00:00Z"),
+    )
+
+    @Test
     fun `GIVEN Por pessoa with someone who left WHEN the statistics open THEN only the members open a profile`() =
         runTest(testDispatcher) {
             // Given
@@ -1163,11 +1284,14 @@ class GroupStatsViewModelTest {
         groupCategories: List<GroupCategory> = emptyList(),
         downloading: FirstDownloadProgress? = null,
         isDownloadReadAtStart: Boolean = true,
+        payments: List<Settlement> = emptyList(),
+        arePaymentsReadAtStart: Boolean = true,
     ) {
         firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
+        settlements = FakeSettlementRepository(initialSettlements = payments)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(
                 Route.GroupDetail(
@@ -1191,6 +1315,11 @@ class GroupStatsViewModelTest {
             },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = if (arePaymentsReadAtStart) {
+                ObserveSettlementsUseCase(settlements)
+            } else {
+                ObserveSettlements { emptyFlow() }
+            },
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },

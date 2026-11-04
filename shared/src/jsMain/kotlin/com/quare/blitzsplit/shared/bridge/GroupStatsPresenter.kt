@@ -14,6 +14,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
@@ -43,6 +44,24 @@ class JsStatsPerson(
     val barFraction: Double,
     // Why: the row opens their profile (openPerson), Perfil for isMe; "Ex-membro" has none.
     val opensProfile: Boolean,
+)
+
+// Why: a person of "Acertos": averageDays 0 is "no mesmo dia", openMinor 0 shows nothing open.
+class JsStatsSettler(
+    val memberId: String,
+    val name: String,
+    val initials: String,
+    val color: String,
+    val photoUrl: String?,
+    val isMe: Boolean,
+    val averageDays: Int,
+    val openMinor: Double,
+)
+
+// Why: "Acerta mais rápido" and "Demora mais para acertar", always two different people.
+class JsStatsSettling(
+    val fastest: JsStatsSettler,
+    val slowest: JsStatsSettler,
 )
 
 class JsStatsBar(
@@ -116,6 +135,8 @@ class JsGroupStatsState(
     val hasSparseLabels: Boolean,
     val grainNotes: Array<String>,
     val biggestExpense: JsStatsBiggestExpense?,
+    // Why: "Acertos", null until two people had a debt in the period.
+    val settling: JsStatsSettling?,
     // Why: "Por categoria" and the pie, the largest first.
     val categories: Array<JsStatsCategory>,
     val isGroupEmpty: Boolean,
@@ -256,6 +277,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
             isPending = expense.isPending,
         )
     },
+    settling = state.settling?.let { JsStatsSettling(toJsStatsSettler(it.fastest), toJsStatsSettler(it.slowest)) },
     categories = state.categories
         .map { row ->
             JsStatsCategory(
@@ -297,6 +319,17 @@ private fun toJsStatsPerson(row: StatsPersonRow): JsStatsPerson = JsStatsPerson(
     amountMinor = row.amountMinor.toDouble(),
     barFraction = row.barFraction,
     opensProfile = row.opensProfile,
+)
+
+private fun toJsStatsSettler(settler: StatsSettler): JsStatsSettler = JsStatsSettler(
+    memberId = settler.memberId,
+    name = settler.name,
+    initials = settler.initials,
+    color = settler.avatarColor.code,
+    photoUrl = settler.photoUrl,
+    isMe = settler.isMe,
+    averageDays = settler.averageDays,
+    openMinor = settler.openMinor.toDouble(),
 )
 
 private fun toJsStatsBar(bar: StatsBar): JsStatsBar = JsStatsBar(
