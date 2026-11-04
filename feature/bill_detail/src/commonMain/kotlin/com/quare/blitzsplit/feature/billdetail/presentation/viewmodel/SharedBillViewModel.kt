@@ -168,10 +168,8 @@ class SharedBillViewModel(
 
     override fun handleEvent(event: SharedBillUiEvent) {
         when (event) {
-            SharedBillUiEvent.OnRetryClicked -> {
-                if (loading?.isActive != true) trackEvent("retry_clicked", sourceParams)
-                load()
-            }
+            // Why: only a retry that reads the bill again, never one while a read is under way.
+            SharedBillUiEvent.OnRetryClicked -> if (load()) trackEvent("retry_clicked", sourceParams)
 
             SharedBillUiEvent.OnSignInClicked -> signIn()
 
@@ -187,9 +185,8 @@ class SharedBillViewModel(
 
             SharedBillUiEvent.OnReplyCancelled -> answer(null)
 
-            is SharedBillUiEvent.OnAttachmentClicked -> if (uiState.value.attachments.any { it.id == event.id }) {
+            is SharedBillUiEvent.OnAttachmentClicked -> if (view(event.id)) {
                 trackEvent("bill_attachment_clicked", sourceParams)
-                view(event.id)
             }
 
             is SharedBillUiEvent.OnViewerPageChanged -> view(event.id)
@@ -221,8 +218,9 @@ class SharedBillViewModel(
         }
     }
 
-    private fun load() {
-        if (loading?.isActive == true) return
+    // Why: whether it started a read, since one already under way takes it.
+    private fun load(): Boolean {
+        if (loading?.isActive == true) return false
         loading = viewModelScope.launch {
             if (shown == null) uiState.update { it.copy(status = SharedBillStatus.LOADING) }
             loadSharedBill(route.code)
@@ -230,6 +228,7 @@ class SharedBillViewModel(
                 // Why: a page already drawn keeps what it shows when a reload fails.
                 .onFailure { if (shown == null) uiState.update { it.copy(status = SharedBillStatus.FAILED) } }
         }
+        return true
     }
 
     // Why: a read already under way may have left before what changed (a comment up, a session), so it starts over.
@@ -556,8 +555,11 @@ class SharedBillViewModel(
         viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShareComment(share)) }
     }
 
-    private fun view(id: String) {
-        if (uiState.value.attachments.any { it.id == id }) uiState.update { it.copy(viewedAttachmentId = id) }
+    // Why: whether the viewer took it, so a tap on a tile counts only when it opens.
+    private fun view(id: String): Boolean {
+        if (uiState.value.attachments.none { it.id == id }) return false
+        uiState.update { it.copy(viewedAttachmentId = id) }
+        return true
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

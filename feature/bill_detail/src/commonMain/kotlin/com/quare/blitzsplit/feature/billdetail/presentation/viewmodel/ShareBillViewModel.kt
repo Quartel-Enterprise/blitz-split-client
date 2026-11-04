@@ -126,21 +126,22 @@ class ShareBillViewModel(
             ShareBillUiEvent.OnDisableClicked -> disable()
 
             ShareBillUiEvent.OnRetryClicked -> if (uiState.value.isOnline) {
-                // Why: only a retry that reads the link again, never one while a read is under way.
-                val readsAgain = uiState.value.link == null && !isFetching
-                if (readsAgain) trackEvent("retry_clicked", mapOf("source" to SHARE_BILL_SOURCE))
                 uiState.update { it.copy(hasFailed = false) }
-                loadOnce()
+                // Why: only a retry that reads the link again, never one while a read is under way.
+                if (loadOnce()) trackEvent("retry_clicked", mapOf("source" to SHARE_BILL_SOURCE))
             }
 
             ShareBillUiEvent.OnCloseClicked -> leave()
         }
     }
 
-    // Why: once per sheet, the first time it is online; again only after a failure, through "Tentar de novo".
-    private fun loadOnce() {
+    /*
+     * Why: once per sheet, the first time it is online; again only after a failure, through "Tentar de novo". Says
+     * whether it started a read.
+     */
+    private fun loadOnce(): Boolean {
         val state = uiState.value
-        if (state.link != null || isFetching || state.hasFailed) return
+        if (state.link != null || isFetching || state.hasFailed) return false
         isFetching = true
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
@@ -160,6 +161,7 @@ class ShareBillViewModel(
             }
             shown?.let(::show)
         }
+        return true
     }
 
     private fun changeVisibility(visibility: BillLinkVisibility) {

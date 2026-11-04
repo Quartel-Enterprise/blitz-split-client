@@ -110,6 +110,9 @@ class BillDetailViewModel(
     minuteTicks: MinuteTicks,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<BillDetailUiEvent>(trackEvent) {
+    // Why: the source param of Conta's events, apart from the shared page's.
+    private val sourceParams: Map<String, Any> = mapOf("source" to BILL_DETAIL_SOURCE)
+
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
             BillDetailUiState(
@@ -306,7 +309,7 @@ class BillDetailViewModel(
 
             // Why: the question stays while the bill is being deleted, whatever closes it.
             BillDetailUiEvent.OnDeleteDismissed -> if (uiState.value.deletion != null && !uiState.value.isDeleting) {
-                trackEvent("bill_delete_cancelled", mapOf("source" to BILL_DETAIL_SOURCE))
+                trackEvent("bill_delete_cancelled", sourceParams)
                 uiState.update { it.copy(deletion = null) }
             }
 
@@ -318,9 +321,8 @@ class BillDetailViewModel(
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))
             }
 
-            is BillDetailUiEvent.OnAttachmentClicked -> if (uiState.value.hasAttachment(event.id)) {
-                trackEvent("bill_attachment_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
-                view(event.id)
+            is BillDetailUiEvent.OnAttachmentClicked -> if (view(event.id)) {
+                trackEvent("bill_attachment_clicked", sourceParams)
             }
 
             is BillDetailUiEvent.OnViewerPageChanged -> view(event.id)
@@ -414,15 +416,17 @@ class BillDetailViewModel(
         .mapNotNull { attachment -> loadBillAttachmentImage(attachment.id).getOrNull()?.let { attachment.id to it } }
         .toMap()
 
-    private fun view(attachmentId: String) {
-        if (!uiState.value.hasAttachment(attachmentId)) return
+    // Why: whether the viewer took it, so a tap on a tile counts only when it opens.
+    private fun view(attachmentId: String): Boolean {
+        if (!uiState.value.hasAttachment(attachmentId)) return false
         uiState.update { it.copy(viewedAttachmentId = attachmentId) }
+        return true
     }
 
     // Why: on the device first, offline too, by this device's member; the sync takes it up.
     private fun addPhoto(source: ByteArray) {
         if (!uiState.value.canAddPhoto) return
-        trackEvent("photo_picked", mapOf("source" to BILL_DETAIL_SOURCE))
+        trackEvent("photo_picked", sourceParams)
         uiState.update { it.copy(isAddingPhoto = true) }
         viewModelScope.launch {
             val error = addBillAttachment(
@@ -528,7 +532,7 @@ class BillDetailViewModel(
     private fun openPerson(memberId: String) {
         val member = shownGroup?.members?.firstOrNull { it.id == memberId }
         if (member == null || !isOnTop()) return
-        trackEvent("person_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
+        trackEvent("person_clicked", sourceParams)
         navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
     }
 
@@ -548,14 +552,14 @@ class BillDetailViewModel(
     private fun askToDelete() {
         val expense = expense ?: return
         if (!uiState.value.areActionsEnabled) return
-        trackEvent("bill_delete_clicked", mapOf("source" to BILL_DETAIL_SOURCE))
+        trackEvent("bill_delete_clicked", sourceParams)
         uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair.value)) }
     }
 
     private fun delete() {
         val state = uiState.value
         if (state.deletion == null || state.isDeleting) return
-        trackEvent("bill_delete_confirmed", mapOf("source" to BILL_DETAIL_SOURCE))
+        trackEvent("bill_delete_confirmed", sourceParams)
         uiState.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
             deleteExpense(route.expenseId)
