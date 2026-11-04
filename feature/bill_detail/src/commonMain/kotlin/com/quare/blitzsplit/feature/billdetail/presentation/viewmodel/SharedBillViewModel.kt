@@ -499,9 +499,17 @@ class SharedBillViewModel(
         uiState.update { it.copy(commentToDelete = commentId) }
     }
 
+    /*
+     * Why: a delete the page can't make now (offline, or a change still on its way) closes the question and says so,
+     * as one the server refuses does (Pierre's call), and the edit of that comment goes on.
+     */
     private fun deleteComment() {
         val commentId = uiState.value.commentToDelete ?: return
         uiState.update { it.copy(commentToDelete = null) }
+        if (!uiState.value.canChangeComments) {
+            viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShowCommentChangeError) }
+            return
+        }
         if (uiState.value.editingCommentId == commentId) stopEditing()
         change(onStarted = { trackEvent("comment_delete_confirmed", sourceParams) }) {
             deleteSharedBillComment(route.code, commentId)

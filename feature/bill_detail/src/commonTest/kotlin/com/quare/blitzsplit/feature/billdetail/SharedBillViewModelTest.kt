@@ -1344,6 +1344,25 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Apagar comentario asks and the internet gone WHEN confirming THEN closes it and says it failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+            isOnline.value = false
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertNull(viewModel.uiState.value.commentToDelete)
+            assertTrue(links.deletedComments.isEmpty())
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentChangeError), actions)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN editing the comment Apagar asks about WHEN confirming THEN the edit ends too`() =
         runTest(testDispatcher) {
             // Given
