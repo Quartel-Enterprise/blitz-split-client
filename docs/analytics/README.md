@@ -372,9 +372,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_undo_clicked` | none | "Desfazer" on Histórico's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remover foto" in the viewer, on a photo it can remove | `:feature:bill_detail` |
-| `comment_send_clicked` | `is_reply`, `is_edit`, `source` (`bill_detail`, `shared_bill`) | "Enviar comentário", when the composer can send (offline too in Conta, where it waits in the queue) | `:feature:bill_detail` |
+| `comment_send_clicked` | `is_reply` (never with an edit, which saves only its text), `is_edit`, `source` (`bill_detail`, `shared_bill`) | "Enviar comentário", when the composer can send (offline too in Conta, where it waits in the queue) | `:feature:bill_detail` |
 | `comment_reply_clicked` | `source` (`bill_detail`, `shared_bill`) | "Responder", on a comment still there | `:feature:bill_detail` |
+| `comment_reply_cancelled` | `source` (`bill_detail`, `shared_bill`) | The ✕ of "Respondendo a Diego", while a reply is picked | `:feature:bill_detail` |
 | `comment_edit_clicked` | `source` (`bill_detail`, `shared_bill`) | "Editar" on the user's own comment, when the composer takes it | `:feature:bill_detail` |
+| `comment_edit_cancelled` | `source` (`bill_detail`, `shared_bill`) | The ✕ of "Editando comentário", while an edit is under way | `:feature:bill_detail` |
 | `comment_delete_clicked` | `source` (`bill_detail`, `shared_bill`) | "Apagar" on the user's own comment, when its question opens | `:feature:bill_detail` |
 | `comment_delete_confirmed` | `source` (`bill_detail`, `shared_bill`) | Its question confirmed, while it was open | `:feature:bill_detail` |
 | `comment_delete_cancelled` | `source` (`bill_detail`, `shared_bill`) | Its question closed without confirming, while it was open | `:feature:bill_detail` |

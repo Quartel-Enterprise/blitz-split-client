@@ -169,7 +169,7 @@ class SharedBillViewModel(
     override fun handleEvent(event: SharedBillUiEvent) {
         when (event) {
             // Why: only a retry that reads the bill again, never one while a read is under way.
-            SharedBillUiEvent.OnRetryClicked -> if (load()) trackEvent("retry_clicked", sourceParams)
+            SharedBillUiEvent.OnRetryClicked -> retry()
 
             SharedBillUiEvent.OnSignInClicked -> signIn()
 
@@ -183,19 +183,25 @@ class SharedBillViewModel(
 
             is SharedBillUiEvent.OnReplyClicked -> replyTo(event.commentId)
 
-            SharedBillUiEvent.OnReplyCancelled -> answer(null)
+            SharedBillUiEvent.OnReplyCancelled -> if (uiState.value.replyTarget != null) {
+                trackEvent("comment_reply_cancelled", sourceParams)
+                answer(null)
+            }
 
-            is SharedBillUiEvent.OnAttachmentClicked -> if (view(event.id)) {
+            is SharedBillUiEvent.OnAttachmentClicked -> if (openViewer(event.id)) {
                 trackEvent("bill_attachment_clicked", sourceParams)
             }
 
-            is SharedBillUiEvent.OnViewerPageChanged -> view(event.id)
+            is SharedBillUiEvent.OnViewerPageChanged -> openViewer(event.id)
 
             SharedBillUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
 
             is SharedBillUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
 
-            SharedBillUiEvent.OnCommentEditCancelled -> stopEditing()
+            SharedBillUiEvent.OnCommentEditCancelled -> if (uiState.value.isEditingComment) {
+                trackEvent("comment_edit_cancelled", sourceParams)
+                stopEditing()
+            }
 
             is SharedBillUiEvent.OnCommentDeleteClicked -> askToDeleteComment(event.commentId)
 
@@ -229,6 +235,15 @@ class SharedBillViewModel(
                 .onFailure { if (shown == null) uiState.update { it.copy(status = SharedBillStatus.FAILED) } }
         }
         return true
+    }
+
+    /*
+     * Why: "Tentar de novo" on a page that says it failed starts a new read even while an older one still hangs (the
+     * connection dropped mid-read), which would otherwise leave the button doing nothing until it times out.
+     */
+    private fun retry() {
+        if (uiState.value.status == SharedBillStatus.FAILED) loading?.cancel()
+        if (load()) trackEvent("retry_clicked", sourceParams)
     }
 
     // Why: a read already under way may have left before what changed (a comment up, a session), so it starts over.
@@ -372,7 +387,8 @@ class SharedBillViewModel(
         trackEvent(
             "comment_send_clicked",
             mapOf(
-                "is_reply" to (uiState.value.replyTarget != null),
+                // Why: an edit saves only its text, whatever reply was picked meanwhile.
+                "is_reply" to (!isEdit && uiState.value.replyTarget != null),
                 "is_edit" to isEdit,
                 "source" to SHARED_BILL_SOURCE,
             ),
@@ -556,7 +572,7 @@ class SharedBillViewModel(
     }
 
     // Why: whether the viewer took it, so a tap on a tile counts only when it opens.
-    private fun view(id: String): Boolean {
+    private fun openViewer(id: String): Boolean {
         if (uiState.value.attachments.none { it.id == id }) return false
         uiState.update { it.copy(viewedAttachmentId = id) }
         return true

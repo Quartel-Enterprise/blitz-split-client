@@ -59,11 +59,17 @@ internal class BillDetailComments(
 
             is BillDetailUiEvent.OnReplyClicked -> replyTo(event.commentId)
 
-            BillDetailUiEvent.OnReplyCancelled -> uiState.update { it.copy(replyTarget = null) }
+            BillDetailUiEvent.OnReplyCancelled -> if (uiState.value.replyTarget != null) {
+                trackEvent("comment_reply_cancelled", sourceParams)
+                uiState.update { it.copy(replyTarget = null) }
+            }
 
             is BillDetailUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
 
-            BillDetailUiEvent.OnCommentEditCancelled -> stopEditing()
+            BillDetailUiEvent.OnCommentEditCancelled -> if (uiState.value.isEditingComment) {
+                trackEvent("comment_edit_cancelled", sourceParams)
+                stopEditing()
+            }
 
             is BillDetailUiEvent.OnCommentDeleteClicked -> askToDelete(event.commentId)
 
@@ -143,7 +149,8 @@ internal class BillDetailComments(
         trackEvent(
             "comment_send_clicked",
             mapOf(
-                "is_reply" to (state.replyTarget != null),
+                // Why: an edit saves only its text, whatever reply was picked meanwhile.
+                "is_reply" to (state.replyTarget != null && state.editingCommentId == null),
                 "is_edit" to (state.editingCommentId != null),
                 "source" to BILL_DETAIL_SOURCE,
             ),
@@ -233,8 +240,10 @@ internal class BillDetailComments(
     }
 
     // Why: a tombstone, offline too; an edit of it under way ends with it.
+    // Why: never while the bill itself is being deleted, as every other comment action waits for it.
     private fun delete() {
         val commentId = uiState.value.commentToDelete ?: return
+        if (!uiState.value.areActionsEnabled) return
         trackEvent("comment_delete_confirmed", sourceParams)
         uiState.update { it.copy(commentToDelete = null) }
         if (uiState.value.editingCommentId == commentId) stopEditing()

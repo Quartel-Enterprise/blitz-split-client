@@ -13,8 +13,6 @@ sealed interface BillDetailUiEvent : TrackedUiEvent {
             is OnCommentChanged -> EventAnalytics.NotTracked
 
             // Why: a close, or a comment a link opened at shown, which nobody tapped.
-            OnReplyCancelled,
-            OnCommentEditCancelled,
             OnCommentLikesDismissed,
             OnFocusedCommentShown,
             OnViewerDismissed,
@@ -23,16 +21,27 @@ sealed interface BillDetailUiEvent : TrackedUiEvent {
             // Why: a swipe through the viewer, like a scroll.
             is OnViewerPageChanged -> EventAnalytics.NotTracked
 
-            OnSendCommentClicked,
-            is OnReplyClicked,
-            is OnCommentEditClicked,
-            is OnCommentDeleteClicked,
-            OnCommentDeleteConfirmed,
-            OnCommentDeleteDismissed,
-            is OnCommentLikeClicked,
-            is OnCommentLikesClicked,
-            is OnCommentShareClicked,
-            -> commentAnalytics
+            OnSendCommentClicked -> CommentTap.SEND.analytics
+
+            is OnReplyClicked -> CommentTap.REPLY.analytics
+
+            OnReplyCancelled -> CommentTap.REPLY_CANCEL.analytics
+
+            is OnCommentEditClicked -> CommentTap.EDIT.analytics
+
+            OnCommentEditCancelled -> CommentTap.EDIT_CANCEL.analytics
+
+            is OnCommentDeleteClicked -> CommentTap.DELETE.analytics
+
+            OnCommentDeleteConfirmed -> CommentTap.DELETE_CONFIRM.analytics
+
+            OnCommentDeleteDismissed -> CommentTap.DELETE_CANCEL.analytics
+
+            is OnCommentLikeClicked -> CommentTap.LIKE.analytics
+
+            is OnCommentLikesClicked -> CommentTap.LIKES.analytics
+
+            is OnCommentShareClicked -> CommentTap.SHARE.analytics
 
             is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
 

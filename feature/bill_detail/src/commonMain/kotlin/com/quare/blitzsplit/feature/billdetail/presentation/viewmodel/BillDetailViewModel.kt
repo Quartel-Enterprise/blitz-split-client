@@ -321,11 +321,11 @@ class BillDetailViewModel(
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))
             }
 
-            is BillDetailUiEvent.OnAttachmentClicked -> if (view(event.id)) {
+            is BillDetailUiEvent.OnAttachmentClicked -> if (openViewer(event.id)) {
                 trackEvent("bill_attachment_clicked", sourceParams)
             }
 
-            is BillDetailUiEvent.OnViewerPageChanged -> view(event.id)
+            is BillDetailUiEvent.OnViewerPageChanged -> openViewer(event.id)
 
             BillDetailUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
 
@@ -417,7 +417,7 @@ class BillDetailViewModel(
         .toMap()
 
     // Why: whether the viewer took it, so a tap on a tile counts only when it opens.
-    private fun view(attachmentId: String): Boolean {
+    private fun openViewer(attachmentId: String): Boolean {
         if (!uiState.value.hasAttachment(attachmentId)) return false
         uiState.update { it.copy(viewedAttachmentId = attachmentId) }
         return true
@@ -551,7 +551,8 @@ class BillDetailViewModel(
 
     private fun askToDelete() {
         val expense = expense ?: return
-        if (!uiState.value.areActionsEnabled) return
+        // Why: a second tap before the question draws opens it once.
+        if (!uiState.value.areActionsEnabled || uiState.value.deletion != null) return
         trackEvent("bill_delete_clicked", sourceParams)
         uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair.value)) }
     }

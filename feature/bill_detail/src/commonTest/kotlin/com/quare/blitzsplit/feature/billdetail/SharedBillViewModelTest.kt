@@ -311,6 +311,43 @@ class SharedBillViewModelTest {
     }
 
     @Test
+    fun `GIVEN the page failed while a read still hangs WHEN tapping Tentar de novo THEN reads the bill again`() =
+        runTest(testDispatcher) {
+            // Given
+            val hangingRead = CompletableDeferred<Unit>()
+            prepareScenario(loadGate = hangingRead)
+            isOnline.value = false
+            isOnline.value = true
+            links.loadGate = null
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            assertEquals(SharedBillStatus.OPEN, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN a retry over a hanging read WHEN the old read answers THEN the page keeps the new one`() =
+        runTest(testDispatcher) {
+            // Given
+            val hangingRead = CompletableDeferred<Unit>()
+            prepareScenario(loadGate = hangingRead)
+            isOnline.value = false
+            isOnline.value = true
+            links.loadGate = null
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+            links.sharedBills.value = emptyMap()
+
+            // When
+            hangingRead.complete(Unit)
+
+            // Then
+            assertEquals(SharedBillStatus.OPEN, viewModel.uiState.value.status)
+        }
+
+    @Test
     fun `GIVEN no internet WHEN the page opens THEN says it failed and asks the server nothing`() =
         runTest(testDispatcher) {
             // Given
@@ -1677,6 +1714,22 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the page failed while a read still hangs WHEN tapping Tentar de novo THEN sends the retry clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadGate = CompletableDeferred())
+            isOnline.value = false
+            isOnline.value = true
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN the bill being read WHEN tapping Tentar de novo THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(loadGate = CompletableDeferred())
@@ -1902,6 +1955,32 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN editing and then replying to Carla WHEN saving THEN the comment send clicked is not a reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno e Ana!"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to true,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
     fun `GIVEN a comment typed WHEN the internet goes and sending it THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1986,11 +2065,23 @@ class SharedBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN replying to Carla WHEN cancelling the reply THEN sends nothing`() = runTest(testDispatcher) {
+    fun `GIVEN replying to Carla WHEN cancelling the reply THEN sends the reply cancelled`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
         trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnReplyCancelled)
+
+        // Then
+        assertEquals(listOf("comment_reply_cancelled" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN replying to nobody WHEN cancelling the reply THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
         // When
         viewModel.onEvent(SharedBillUiEvent.OnReplyCancelled)
@@ -2042,11 +2133,23 @@ class SharedBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN editing a comment WHEN cancelling the edit THEN sends nothing`() = runTest(testDispatcher) {
+    fun `GIVEN editing a comment WHEN cancelling the edit THEN sends the edit cancelled`() = runTest(testDispatcher) {
         // Given
         prepareScenario(sharedBill = openBill(comments = withMine))
         viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
         trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditCancelled)
+
+        // Then
+        assertEquals(listOf("comment_edit_cancelled" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no comment being edited WHEN cancelling the edit THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
 
         // When
         viewModel.onEvent(SharedBillUiEvent.OnCommentEditCancelled)
