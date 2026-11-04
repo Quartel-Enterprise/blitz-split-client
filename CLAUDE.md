@@ -439,20 +439,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     no app".
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
-    on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos
-    (but in "Acertos"), so it works offline. Períodos (only this screen keeps one): a trip lists "Toda a viagem" (the default, from its first
+    on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
+    it works offline. Períodos (only this screen keeps one): a trip lists "Toda a viagem" (the default, from its first
     to its last day with a bill), "Este mês", "Mês passado" and "Escolher datas…"; any other group "Este ano", "Este
     mês", "Mês passado", "Todo o período" (the default, as the notes say) and "Escolher datas…" (each platform's date
     range picker, never after today). Total gasto, how many bills, "Média por pessoa" (the total over every member,
     who hasn't joined included), "Sua parte" and "Você pagou"; "Por pessoa" shows Consumo (each part as each bill
-    split it) or Pagou, the largest first, someone who left the group as "Ex-membro". "Acertos" (Pierre's call, beta
-    feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Acerta mais rápido" and who
-    "Demora mais para acertar" ("em média 2 dias", "no mesmo dia", "R$ 80 em aberto"): each member's bills and
-    payments of the group's whole history, the queue's too, go in date order, what a bill puts on them opening a
-    debt on its "Quando" and what they pay (a payment, or a later bill they paid more of than their part) covering
-    the oldest first, a debt still open counting up to today; only debts born of the period's bills count, the amount
-    weighting the average, whoever is still in the group (guests too, never an ex-member), and only once two people
-    had one and the two named don't tie (the same days and the same open amount hide the card). "Ao longo do tempo" is Barras or
+    split it) or Pagou, the largest first, someone who left the group as "Ex-membro". "Ao longo do tempo" is Barras or
     Linha by Dia, Semana (Monday to Sunday), Mês or Ano, kept per device for every group and never synced
     (`StatsChartPreferences` in `device_settings`): Dia only up to 3 months, the others once the period touches two of
     them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
@@ -466,12 +459,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
     categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
-    tempo" on top of the second, then "Por pessoa", "Acertos" and "Maior despesa"; on iOS both in one scroll, "Por
-    pessoa" and "Acertos" first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
+    tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
+    first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
     a small bar with the period, the total and "Ao longo do tempo" side by side in the top half, against the hinge,
-    and "Por categoria" beside "Por pessoa" and "Acertos" in the bottom half, scrolling, without the grains' note nor
-    "Maior despesa". The web from the tablet up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second
-    column, with four summary cards, "Acertos" under "Por pessoa".
+    and "Por categoria" and "Por pessoa" side by side in the bottom half, scrolling, without the grains' note nor
+    "Maior despesa". The web from the tablet
+    up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
