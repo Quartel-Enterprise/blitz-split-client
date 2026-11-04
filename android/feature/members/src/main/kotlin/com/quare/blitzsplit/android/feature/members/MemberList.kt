@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
@@ -105,7 +105,7 @@ private fun MemberRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .opensProfileWhen(isClickable = true) { onEvent(MembersUiEvent.OnMemberClicked(member.id)) }
+                .opensProfile { onEvent(MembersUiEvent.OnMemberClicked(member.id)) }
                 .heightIn(min = 64.dp)
                 .padding(
                     start = 16.dp,

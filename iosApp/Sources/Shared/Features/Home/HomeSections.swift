@@ -110,7 +110,7 @@ private struct PersonFace: View {
         .contextMenu {
             if person.isGuest {
                 Text(verbatim: HomeCopy.guestHint(person))
-                Button(HomeCopy.accessibilityHint(person), systemImage: "person.crop.circle", action: action)
+                Button(HomeCopy.actionTitle(person), systemImage: "person.crop.circle", action: action)
             }
         }
         #else

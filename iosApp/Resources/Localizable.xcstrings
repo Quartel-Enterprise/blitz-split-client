@@ -794,24 +794,24 @@
         }
       }
     },
-    "%@ is a guest without the app. Click to open their profile; they get no notice." : {
+    "%@ is a guest without the app: they don't hear about what you note. Click to see their profile." : {
       "comment" : "Home on the Mac: a guest's hover; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app. Clique para abrir o perfil; ele não recebe aviso."
+            "value" : "%@ é convidado e não tem o app: não fica sabendo do que você anota. Clique para ver o perfil."
           }
         }
       }
     },
-    "%@ is a guest without the app. Tap to open their profile; they get no notice." : {
+    "%@ is a guest without the app: they don't hear about what you note. Tap to see their profile." : {
       "comment" : "Home: a guest's long press; %@ is their name",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ é convidado e não tem o app. Toque para abrir o perfil; ele não recebe aviso."
+            "value" : "%@ é convidado e não tem o app: não fica sabendo do que você anota. Toque para ver o perfil."
           }
         }
       }
@@ -1312,39 +1312,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On-chain"
-          }
-        }
-      }
-    },
-    "Open %@'s profile" : {
-      "comment" : "Activity: what tapping someone's face does",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir o perfil de %@"
-          }
-        }
-      }
-    },
-    "Open your profile" : {
-      "comment" : "Activity: what tapping your own face does",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir seu perfil"
-          }
-        }
-      }
-    },
-    "Opens the profile" : {
-      "comment" : "What tapping a person's face or name does",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre o perfil"
           }
         }
       }
@@ -4335,6 +4302,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir Perfil"
+          }
+        }
+      }
+    },
+    "Open profile" : {
+      "comment" : "Home: a face's menu item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir perfil"
+          }
+        }
+      }
+    },
+    "Open %@'s profile" : {
+      "comment" : "Activity: what tapping someone's face does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir o perfil de %@"
+          }
+        }
+      }
+    },
+    "Open your profile" : {
+      "comment" : "Activity: what tapping your own face does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir seu perfil"
+          }
+        }
+      }
+    },
+    "Opens the profile" : {
+      "comment" : "What tapping a person's face or name does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o perfil"
           }
         }
       }

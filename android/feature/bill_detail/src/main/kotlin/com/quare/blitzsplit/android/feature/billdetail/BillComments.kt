@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -259,9 +259,7 @@ private fun CommentRow(
                 modifier = Modifier
                     .clip(CircleShape)
                     .semantics { if (row.authorMemberId != null) contentDescription = authorName }
-                    .opensProfileWhen(row.authorMemberId != null) {
-                        row.authorMemberId?.let { onEvent(BillDetailUiEvent.OnPersonClicked(it)) }
-                    },
+                    .opensProfile(row.authorMemberId?.let { id -> { onEvent(BillDetailUiEvent.OnPersonClicked(id)) } }),
             )
             Column(
                 modifier = Modifier.weight(1f),

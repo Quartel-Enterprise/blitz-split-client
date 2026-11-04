@@ -234,7 +234,7 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
 
 /** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
 export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
-  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote'>>
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId'>>
 
 /**
  * The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. A
@@ -257,8 +257,7 @@ export function BillBody({
 }) {
   const paid = paidText(state.payers)
   const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
-  // Why: several payers each have their row in the split below, which opens them; one alone opens from here too.
-  const lonePayer = state.payers.length === 1 && state.payers[0].opensProfile ? state.payers[0] : null
+  const lonePayerId = state.lonePayerId
   return (
     <div className="flex flex-col gap-6">
       <div className="flex min-w-0 flex-col gap-5">
@@ -274,7 +273,7 @@ export function BillBody({
         <div className="flex flex-col gap-1.5">
           <span className="text-[32px] leading-10 font-semibold tracking-tight tabular-nums">{money(state.totalMinor)}</span>
           <PersonButton
-            onOpen={onPerson && lonePayer ? () => onPerson(lonePayer.memberId) : null}
+            onOpen={onPerson && lonePayerId ? () => onPerson(lonePayerId) : null}
             className="flex items-center gap-2 self-start text-sm text-muted-foreground"
           >
             {faces.length > 0 && (

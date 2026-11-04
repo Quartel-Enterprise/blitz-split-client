@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.navigation.isRightAboveHomeTab
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
@@ -70,6 +71,7 @@ class ContactProfileViewModel(
                 hasMergeStatusFailed = false,
                 isCancellingMerge = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                isOverHomeTab = navigator.backStack.value.isRightAboveHomeTab(route),
             ),
         )
 

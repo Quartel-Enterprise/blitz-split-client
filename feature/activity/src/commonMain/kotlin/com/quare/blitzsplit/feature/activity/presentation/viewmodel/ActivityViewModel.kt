@@ -201,7 +201,7 @@ class ActivityViewModel(
             is ActivityUiEvent.OnActorClicked -> itemOrNull(event.itemId)
                 ?.actor
                 ?.takeIf { it.opensProfile && isOnTop() }
-                ?.let { actor -> navigator.openPersonProfile(actor.personKey.orEmpty(), actor.isMe) }
+                ?.let { actor -> navigator.openPersonProfile(actor.personKey, actor.isMe) }
 
             // Why: only a group still on the device; one deleted or left keeps its name, with nothing to open.
             is ActivityUiEvent.OnGroupClicked -> itemOrNull(event.itemId)

@@ -279,7 +279,7 @@ function PersonFace({
     person.isGuest ? t('home_guestSuffix') : '',
     '. ',
     // Why: a face opens the person's profile; a former member's settles up, as they have none.
-    person.name == null ? t(youOwe ? 'balance_settle' : 'home_recordPayment') : t('home_openProfile'),
+    person.opensProfile ? t('home_openProfile') : t(youOwe ? 'balance_settle' : 'home_recordPayment'),
   ].join('')
   const cancelLongPress = () => {
     if (longPress.current) window.clearTimeout(longPress.current.timer)

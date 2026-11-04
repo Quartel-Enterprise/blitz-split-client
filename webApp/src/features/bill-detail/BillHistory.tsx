@@ -1,7 +1,7 @@
 import { ArrowRight, ImageMinus, ImagePlus, Link2, Pencil, Plus, Receipt, Tag } from 'lucide-react'
 import type { JsBillHistoryEntry, JsBillHistoryDay } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
@@ -88,7 +88,7 @@ function kindIcon(entry: JsBillHistoryEntry): ReactNode {
 
 /**
  * "Ana trocou a categoria · 9:12", what changed under it, and the orange dot while it waits to go up. The actor's face
- * and name open their profile while they are in the group.
+ * opens their profile while they are in the group, as on Android and Apple.
  */
 function HistoryLine({
   entry,
@@ -114,9 +114,13 @@ function HistoryLine({
       {/* Why: a line joins the faces of one day, as the canvas draws it. */}
       {hasRail && <span aria-hidden className="absolute top-8 bottom-0.5 left-[13.5px] w-px bg-border" />}
       <span className="relative size-7 shrink-0">
-        {/* Why: the name is the one stop for the keyboard and a screen reader; the face is only a bigger target for the pointer. */}
         {openActor ? (
-          <button type="button" tabIndex={-1} aria-hidden onClick={openActor} className="flex rounded-full">
+          <button
+            type="button"
+            aria-label={entry.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: historyActor(entry) })}
+            onClick={openActor}
+            className="flex rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          >
             <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />
           </button>
         ) : (
@@ -129,10 +133,7 @@ function HistoryLine({
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1 pb-3.5">
         <span className="flex items-baseline gap-2">
           <span className="min-w-0 flex-1 text-sm leading-5">
-            <PersonButton onOpen={openActor} className="inline font-medium">
-              {historyActor(entry)}
-            </PersonButton>{' '}
-            <span className="text-muted-foreground">{historyVerb(entry)}</span>
+            <span className="font-medium">{historyActor(entry)}</span> <span className="text-muted-foreground">{historyVerb(entry)}</span>
           </span>
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
             {entry.isPending && (

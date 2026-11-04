@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
@@ -54,7 +54,6 @@ internal fun BillSummaryColumn(
     dates: DateTimeTextFormatter,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
-    val lonePayer = state.payers.singleOrNull()?.takeIf { it.opensProfile }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // Why: the bill's category over its title, "Alimentação › Mercado" (7.3).
         Row(
@@ -94,9 +93,9 @@ internal fun BillSummaryColumn(
         Row(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
-                .opensProfileWhen(lonePayer != null) {
-                    lonePayer?.let { onEvent(BillDetailUiEvent.OnPersonClicked(it.memberId)) }
-                },
+                .opensProfile(
+                    state.lonePayer?.let { payer -> { onEvent(BillDetailUiEvent.OnPersonClicked(payer.memberId)) } },
+                ),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -224,10 +223,8 @@ private fun ShareRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .opensProfileWhen(
-                    isClickable = row.opensProfile,
-                    onClick = onClick,
-                ).padding(
+                .opensProfile(onClick.takeIf { row.opensProfile })
+                .padding(
                     horizontal = 16.dp,
                     vertical = 12.dp,
                 ),

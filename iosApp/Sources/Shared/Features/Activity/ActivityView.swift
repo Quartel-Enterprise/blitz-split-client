@@ -489,6 +489,7 @@ private struct ActivityRow: View {
         VStack(alignment: .leading, spacing: 6) {
             #if os(macOS)
             summary
+                .overlay(alignment: .topLeading) { actorButton }
             #else
             Button {
                 model.send(ActivityUiEventOnItemClicked(itemId: item.id))
@@ -496,6 +497,8 @@ private struct ActivityRow: View {
                 summary
             }
             .buttonStyle(.plain)
+            // Over the row's button rather than inside its label, so the face's tap never reaches the row
+            .overlay(alignment: .topLeading) { actorButton }
             #endif
             if item.hasChangesToShow, !showsDetail {
                 ActivityRowChanges(model: model, item: item, isExpanded: isExpanded)
@@ -512,7 +515,7 @@ private struct ActivityRow: View {
                 .padding(.top, Self.faceSize / 2 - 4)
                 .accessibilityHidden(true)
             HStack(alignment: .top, spacing: 12) {
-                ActivityFace(item: item, size: Self.faceSize, onOpen: openActor)
+                ActivityFace(item: item, size: Self.faceSize)
                 VStack(alignment: .leading, spacing: 3) {
                     ActivityCopy.headline(item)
                         .font(rowFont)
@@ -547,6 +550,23 @@ private struct ActivityRow: View {
             if let openActor {
                 Button(ActivityCopy.openActorLabel(item), action: openActor)
             }
+        }
+    }
+
+    /// A clear button over the face, which opens whoever did it apart from the row; VoiceOver has it as the row's
+    /// action instead.
+    @ViewBuilder
+    private var actorButton: some View {
+        if let openActor {
+            Button(action: openActor) {
+                Color.clear
+                    .frame(width: Self.faceSize, height: Self.faceSize)
+                    .contentShape(.circle)
+            }
+            .buttonStyle(.plain)
+            // The unread dot and the face's inset come before it
+            .padding(.leading, 11)
+            .accessibilityHidden(true)
         }
     }
 
@@ -665,12 +685,10 @@ struct ActivityChangeLine: View {
     }
 }
 
-/// Who did it, with what happened on its corner: a bill, a payment, a person, a trash can once it is gone. With
-/// `onOpen`, a tap on the face opens whoever did it, before the row it sits in takes the tap.
+/// Who did it, with what happened on its corner: a bill, a payment, a person, a trash can once it is gone.
 struct ActivityFace: View {
     let item: ActivityItem
     let size: CGFloat
-    var onOpen: (() -> Void)?
 
     var body: some View {
         let colors = ActivityCopy.iconColors(item)
@@ -686,8 +704,6 @@ struct ActivityFace: View {
                     .offset(x: 5, y: 5)
             }
             .padding(.trailing, 4)
-            .contentShape(.circle)
-            .highPriorityGesture(TapGesture().onEnded { onOpen?() }, isEnabled: onOpen != nil)
             .accessibilityHidden(true)
     }
 }

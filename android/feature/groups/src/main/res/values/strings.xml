@@ -133,7 +133,7 @@
     <string name="groups_home_guest_you_owe_description">You owe %1$s %2$s, guest without the app. Open profile</string>
     <string name="groups_home_former_owes_you_description">%1$s owes you %2$s. Record payment</string>
     <string name="groups_home_former_you_owe_description">You owe %1$s %2$s. Settle up</string>
-    <string name="groups_home_guest_tip">%s is a guest and doesn\'t have the app. Tap to open their profile; they get no notice.</string>
+    <string name="groups_home_guest_tip">%s is a guest and doesn\'t have the app. They don\'t hear about what you note. Tap to see their profile.</string>
     <string name="groups_home_summary_to_receive_hint">to get back, already netted</string>
     <string name="groups_home_summary_to_pay_hint">to pay, already netted</string>
     <string name="groups_home_summary_settled_hint">all settled up</string>

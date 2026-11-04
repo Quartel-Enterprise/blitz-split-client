@@ -3,7 +3,7 @@ import { GlobalBalancesPresenter, type JsBalanceTotal, type JsGlobalBalancesStat
 import { useId } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, PersonButton } from '@/components/common'
 import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { PersonGroupsList } from '@/components/PersonGroupsList'
@@ -305,17 +305,9 @@ function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: s
   )
   return (
     <div className="flex items-center gap-3">
-      {onPersonClick && row.opensProfile ? (
-        <button
-          type="button"
-          onClick={onPersonClick}
-          className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-        >
-          {face}
-        </button>
-      ) : (
-        <span className="flex min-w-0 flex-1 items-center gap-3">{face}</span>
-      )}
+      <PersonButton onOpen={onPersonClick && row.opensProfile ? onPersonClick : null} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
+        {face}
+      </PersonButton>
       <span className="flex flex-col items-end">
         <span className={cn('font-semibold tabular-nums', balanceTone(row.netMinor))}>
           {formatSignedMoney(row.netMinor, row.currency, row.fractionDigits)}
@@ -402,17 +394,9 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
           an ex-member has no profile.
         */}
         <h2 aria-labelledby={nameId} className="flex min-w-0 flex-1">
-          {row.opensProfile ? (
-            <button
-              type="button"
-              onClick={() => presenter.openPerson(row.id)}
-              className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              {header}
-            </button>
-          ) : (
-            <span className="flex min-w-0 flex-1 items-center gap-3">{header}</span>
-          )}
+          <PersonButton onOpen={row.opensProfile ? () => presenter.openPerson(row.id) : null} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
+            {header}
+          </PersonButton>
         </h2>
         <span className="flex items-center gap-2">
           <PersonActions presenter={presenter} row={row} name={name} size="default" />

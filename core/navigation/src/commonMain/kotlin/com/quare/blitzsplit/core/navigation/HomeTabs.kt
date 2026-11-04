@@ -47,6 +47,15 @@ fun List<Route>.findHomeTabUnder(route: Route): HomeTab {
 }
 
 /*
+ * Why: whether a screen sits right above a home tab, so its back returns to that tab, which the web's back then names;
+ * a profile opened from a bill or a group goes back there instead.
+ */
+fun List<Route>.isRightAboveHomeTab(route: Route): Boolean {
+    val index = lastIndexOf(route)
+    return index > 0 && this[index - 1].homeTabOrNull() != null
+}
+
+/*
  * Why: "Buscar" opens over the tab it was asked from only while that tab is on top, so ⌘K over a dialog on the web
  * or a late tap over a screen the tab opened never covers it.
  */

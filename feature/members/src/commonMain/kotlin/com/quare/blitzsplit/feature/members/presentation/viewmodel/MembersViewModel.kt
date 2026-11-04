@@ -271,10 +271,11 @@ class MembersViewModel(
     // Why: over the group, or in the place of its bill the Mac draws beside it, as Convidar opens.
     private fun openProfile(memberId: String) {
         val member = members.firstOrNull { it.id == memberId } ?: return
+        val next = personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe) ?: return
         navigator.openFromGroupScreen(
             from = route,
             groupId = route.groupId,
-            next = personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe),
+            next = next,
         )
     }
 

@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
+import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -392,16 +393,14 @@ class HomeViewModel(
         key: String,
         currency: GroupCurrency,
     ) {
-        val person = peopleBalances.findPersonOrNull(key, currency.code) ?: return
+        val person = uiState.value.people
+            .valueOrNull()
+            ?.firstOrNull { it.key == key && it.currency == currency } ?: return
         open(
-            if (person.name == null) {
-                Route.SettleUp(
-                    personKey = key,
-                    currency = currency,
-                )
-            } else {
-                Route.ContactProfile(key)
-            },
+            personProfileRouteOf(key, isMe = false).takeIf { person.opensProfile } ?: Route.SettleUp(
+                personKey = key,
+                currency = currency,
+            ),
         )
     }
 

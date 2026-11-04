@@ -105,11 +105,13 @@ private struct ActivityItemDetail: View {
     private var header: some View {
         HStack(alignment: .top, spacing: 14) {
             // The face opens whoever did it, their profile or Profile for this device's user
-            ActivityFace(item: item, size: Self.faceSize)
-                .opensProfile(
-                    item.actor.opensProfile ? { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) } : nil,
-                )
-                .accessibilityLabel(Text(verbatim: ActivityCopy.openActorLabel(item)))
+            if item.actor.opensProfile {
+                ActivityFace(item: item, size: Self.faceSize)
+                    .opensProfile { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
+                    .accessibilityLabel(Text(verbatim: ActivityCopy.openActorLabel(item)))
+            } else {
+                ActivityFace(item: item, size: Self.faceSize)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 ActivityCopy.headline(item)
                     .font(.title3)

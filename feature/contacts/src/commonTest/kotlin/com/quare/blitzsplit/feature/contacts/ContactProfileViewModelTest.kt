@@ -310,6 +310,35 @@ class ContactProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN Carla in Contatos WHEN her profile opens over the list THEN it sits right above the tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            val isOverHomeTab = viewModel.uiState.value.isOverHomeTab
+
+            // Then
+            assertTrue(isOverHomeTab)
+        }
+
+    @Test
+    fun `GIVEN Carla in a bill WHEN her profile opens over it THEN it is not right above a tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                openedFrom = Route.BillDetail(FLORIPA, "dinner"),
+            )
+
+            // When
+            val isOverHomeTab = viewModel.uiState.value.isOverHomeTab
+
+            // Then
+            assertFalse(isOverHomeTab)
+        }
+
+    @Test
     fun `GIVEN Carla in Contatos WHEN her profile opens beside the list THEN its home tab is Contatos`() =
         runTest(testDispatcher) {
             // Given

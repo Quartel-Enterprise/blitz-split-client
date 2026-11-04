@@ -133,7 +133,7 @@
     <string name="groups_home_guest_you_owe_description">Você deve %2$s a %1$s, convidado sem app. Abrir perfil</string>
     <string name="groups_home_former_owes_you_description">%1$s te deve %2$s. Registrar pagamento</string>
     <string name="groups_home_former_you_owe_description">Você deve %2$s a %1$s. Acertar</string>
-    <string name="groups_home_guest_tip">%s é convidado e não tem o app. Toque para abrir o perfil; ele não recebe aviso.</string>
+    <string name="groups_home_guest_tip">%s é convidado e não tem o app: não fica sabendo do que você anota. Toque para ver o perfil.</string>
     <string name="groups_home_summary_to_receive_hint">a receber, já compensado</string>
     <string name="groups_home_summary_to_pay_hint">a pagar, já compensado</string>
     <string name="groups_home_summary_settled_hint">tudo acertado</string>

@@ -131,14 +131,15 @@ final class AppModel {
         return Array(windowStack.dropFirst().dropLast(modals + inspected))
     }
 
-    /// The Mac's bill under a screen it opened (a person's profile, item 18): the main window never pushes a bill, so
-    /// the inspector closes while that screen shows and opens again once it is popped. Never off the Mac.
+    /// A bill drawn outside the window's stack (a sheet with an iPad's room, the Mac's inspector) under a screen it
+    /// opened (a person's profile, item 18): it is never pushed as a page, so it closes while that screen shows, with
+    /// whatever sheet that screen opens over the window, and opens again once it is popped. An iPhone pushes the bill.
     private func isHiddenBill(_ route: AppRoute) -> Bool {
+        guard case .billDetail = route else { return false }
         #if os(macOS)
-        guard root == .home, case .billDetail = route else { return false }
-        return true
+        return root == .home
         #else
-        return false
+        return presentsAsSheet(route)
         #endif
     }
 

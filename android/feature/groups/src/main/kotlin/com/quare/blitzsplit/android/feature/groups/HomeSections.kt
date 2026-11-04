@@ -158,8 +158,8 @@ private fun PersonFaceItem(
     val owesYou = person.netMinor > 0
     val description = stringResource(
         when {
-            person.name == null && owesYou -> R.string.groups_home_former_owes_you_description
-            person.name == null -> R.string.groups_home_former_you_owe_description
+            !person.opensProfile && owesYou -> R.string.groups_home_former_owes_you_description
+            !person.opensProfile -> R.string.groups_home_former_you_owe_description
             owesYou && person.isGuest -> R.string.groups_home_guest_owes_you_description
             owesYou -> R.string.groups_home_person_owes_you_description
             person.isGuest -> R.string.groups_home_guest_you_owe_description

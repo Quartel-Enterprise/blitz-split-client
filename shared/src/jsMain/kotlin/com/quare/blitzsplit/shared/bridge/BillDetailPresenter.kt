@@ -124,6 +124,8 @@ class JsBillDetailState(
     val spentDay: String,
     // Why: this device's user first, then the group's order, then whoever left it.
     val payers: Array<JsBillPayer>,
+    // Why: the lone payer whose line opens their profile; null for several payers, who open from their rows.
+    val lonePayerId: String?,
     val isPending: Boolean,
     // Why: "Alimentação › Mercado" over the title.
     val category: JsCategory,
@@ -184,6 +186,7 @@ class BillDetailPresenter(
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
                 payers = state.payers.map(::toJsBillPayer).toTypedArray(),
+                lonePayerId = state.lonePayer?.memberId,
                 isPending = state.isPending,
                 category = toJsCategory(state.category),
                 categoryParent = state.categoryParent?.let(::toJsCategory),

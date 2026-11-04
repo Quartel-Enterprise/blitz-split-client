@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -319,10 +319,7 @@ private fun ActorAvatarIcon(
             modifier = Modifier
                 .clip(CircleShape)
                 .semantics { if (entry.actorMemberId != null) contentDescription = name }
-                .opensProfileWhen(
-                    isClickable = entry.actorMemberId != null,
-                    onClick = onClick,
-                ),
+                .opensProfile(onClick.takeIf { entry.actorMemberId != null }),
         )
         Box(
             modifier = Modifier

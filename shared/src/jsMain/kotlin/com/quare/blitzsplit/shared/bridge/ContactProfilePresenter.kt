@@ -121,6 +121,8 @@ class JsContactProfileState(
     val merge: JsGuestMergeSheet?,
     // Why: HomeTab's name in lowercase, the tab the frame selects and the back names.
     val homeTab: String,
+    // Why: right above that tab back names it; over a bill or a group it says "Voltar".
+    val isOverHomeTab: Boolean,
 )
 
 /*
@@ -310,6 +312,7 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     addToGroup = state.addToGroup?.let(::toJsAddToGroup),
     merge = state.merge?.let(::toJsGuestMergeSheet),
     homeTab = toJsHomeTab(state.homeTab),
+    isOverHomeTab = state.isOverHomeTab,
 )
 
 private fun toJsContact(

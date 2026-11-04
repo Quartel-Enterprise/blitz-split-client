@@ -220,12 +220,9 @@ struct BillDetailView: View {
 /// each have their row in the split, which opens them.
 private struct PayerLine: View {
     let payers: [BillPayer]
+    let lonePayer: BillPayer?
     let size: CGFloat
     let onPerson: (String) -> Void
-
-    private var lonePayer: BillPayer? {
-        payers.count == 1 && payers[0].opensProfile ? payers[0] : nil
-    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -446,7 +443,7 @@ private struct PhoneBillDetail: View {
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    PayerLine(payers: state.payers, size: 24, onPerson: openPerson)
+                    PayerLine(payers: state.payers, lonePayer: state.lonePayer, size: 24, onPerson: openPerson)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     if state.isPending {
@@ -744,7 +741,7 @@ private struct MacBillDetail: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                PayerLine(payers: state.payers, size: 20, onPerson: openPerson)
+                PayerLine(payers: state.payers, lonePayer: state.lonePayer, size: 20, onPerson: openPerson)
                     .foregroundStyle(.secondary)
                 if state.isPending {
                     PendingLine()

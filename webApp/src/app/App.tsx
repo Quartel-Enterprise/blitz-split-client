@@ -110,11 +110,18 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   const bill = stack[pageIndex]?.name === 'bill-detail' ? stack[pageIndex] : undefined
   if (bill) pageIndex -= 1
   const page = stack[pageIndex]
+  // Why: a person's profile (or Perfil) opened from Conta takes the page, and the panel stays mounted (closed) under
+  // it, as under Editar conta, so back finds the bill with what was typed.
+  const isProfilePage = page?.name === 'contact-profile' || page?.name === 'profile'
+  const billUnderPage = !bill && isProfilePage && stack[pageIndex - 1]?.name === 'bill-detail' ? stack[pageIndex - 1] : undefined
+  const panelBill = bill ?? billUnderPage
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
   return (
     <>
       <Screen name={pageName} route={page} />
-      {bill && <BillDetailSheet key={`bill:${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top && !isShareBill} />}
+      {panelBill && (
+        <BillDetailSheet key={`bill:${panelBill.groupId}/${panelBill.expenseId}`} route={panelBill} isCovered={panelBill !== top && !isShareBill} />
+      )}
       {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}

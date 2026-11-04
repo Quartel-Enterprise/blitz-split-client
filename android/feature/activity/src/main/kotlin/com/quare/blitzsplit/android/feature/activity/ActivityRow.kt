@@ -47,7 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
@@ -111,7 +111,9 @@ internal fun ActorAvatarIcon(
             modifier = Modifier
                 .clip(CircleShape)
                 .semantics { if (item.actor.opensProfile) contentDescription = name }
-                .opensProfileWhen(item.actor.opensProfile) { onEvent(ActivityUiEvent.OnActorClicked(item.id)) },
+                .opensProfile(
+                    { onEvent(ActivityUiEvent.OnActorClicked(item.id)) }.takeIf { item.actor.opensProfile },
+                ),
         )
         Box(
             modifier = Modifier

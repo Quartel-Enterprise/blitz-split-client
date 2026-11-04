@@ -21,4 +21,8 @@ data class HomePerson(
     val netMinor: Long,
     // Why: "convidado sem app": nobody joined as them, so they get no notice; the face wears the crossed-out phone.
     val isGuest: Boolean,
-)
+) {
+    // Why: the face opens their profile; someone no longer in the group has none, so it settles up with them instead.
+    val opensProfile: Boolean
+        get() = name != null
+}

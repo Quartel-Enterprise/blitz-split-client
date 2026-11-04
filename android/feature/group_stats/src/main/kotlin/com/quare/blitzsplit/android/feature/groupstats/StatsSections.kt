@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -316,9 +316,13 @@ internal fun StatsPeopleSection(
                     modifier = Modifier
                         .clip(shape)
                         .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
-                        .opensProfileWhen(person.opensProfile) {
-                            onEvent(GroupStatsUiEvent.OnPersonClicked(person.memberId))
-                        },
+                        .opensProfile(
+                            {
+                                onEvent(
+                                    GroupStatsUiEvent.OnPersonClicked(person.memberId),
+                                )
+                            }.takeIf { person.opensProfile },
+                        ),
                 )
             }
         }

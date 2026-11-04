@@ -181,7 +181,8 @@ class GroupStatsViewModel(
                 group
                     ?.members
                     ?.firstOrNull { it.id == event.memberId }
-                    ?.let { member -> open(personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe)) }
+                    ?.let { member -> personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe) }
+                    ?.let(::open)
 
             GroupStatsUiEvent.OnSplitBillClicked -> open(
                 Route.SplitBill(
