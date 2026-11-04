@@ -152,6 +152,8 @@ struct ProfileView: View {
                     .id(ProfileSettingsPane.keys)
                 AccountSection(model: model)
                     .id(ProfileSettingsPane.account)
+                // Right under the account it leaves, never at the end of the form (beta feedback 16)
+                SignOutSection(model: model)
                 PreferencesSection(model: model)
                     .id(ProfileSettingsPane.appearance)
                 // The Mac's settings show the toggles right here, as the canvas draws them
@@ -161,7 +163,6 @@ struct ProfileView: View {
                 }
                 AboutSection(model: model)
                     .id(ProfileSettingsPane.privacy)
-                SignOutSection(model: model)
                 if model.state.showsDeleteAccount {
                     DeleteAccountSection(model: model)
                 }
@@ -196,10 +197,10 @@ struct ProfileView: View {
                     OfflineSection(model: model)
                     IdentitySection(model: model)
                     AccountSection(model: model)
+                    SignOutSection(model: model)
                     PaymentKeysSection(model: model)
                     PreferencesSection(model: model)
                     AboutSection(model: model)
-                    SignOutSection(model: model)
                     if model.state.showsDeleteAccount {
                         DeleteAccountSection(model: model)
                     }
@@ -214,7 +215,7 @@ struct ProfileView: View {
         .readingFoldDivision($division)
     }
 
-    /// The first column lying down: who you are, the account, privacy and signing out. With an iPad's room and no
+    /// The first column lying down: who you are, the account with signing out right under it, and privacy. With an iPad's room and no
     /// fold down the middle it is the Settings split's panel, on glass, as the canvas draws it.
     @ViewBuilder
     private var identityForm: some View {
@@ -222,8 +223,8 @@ struct ProfileView: View {
             OfflineSection(model: model)
             IdentitySection(model: model)
             AccountSection(model: model)
-            AboutSection(model: model)
             SignOutSection(model: model)
+            AboutSection(model: model)
             if model.state.showsDeleteAccount {
                 DeleteAccountSection(model: model)
             }
@@ -333,40 +334,49 @@ private struct IdentitySection: View {
         #else
         let state = model.state
         Section {
-            Button {
-                model.send(ProfileUiEventOnEditClicked.shared)
-            } label: {
-                HStack(spacing: 14) {
+            HStack(spacing: 14) {
+                // The avatar opens the photo big, as Bible Planner's; the rest of the row edits the profile
+                Button {
+                    model.send(ProfileUiEventOnAvatarClicked.shared)
+                } label: {
                     AvatarPhoto(
                         initial: state.avatarInitial,
                         color: state.avatarColor,
                         photoUrl: state.photoUrl,
                         size: 60,
                     )
-                    .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(verbatim: state.displayName)
-                            .font(.title3.bold())
-                            .foregroundStyle(.primary)
-                        if state.showsProfilePending {
-                            Text("Changed · waiting to upload")
-                                .font(.subheadline)
-                                .foregroundStyle(Palette.negative)
-                        } else {
-                            Text("Name, photo and avatar color")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                    .contentShape(.circle)
                 }
-                .contentShape(.rect)
+                .buttonStyle(.plain)
+                .accessibilityLabel("View photo")
+                Button {
+                    model.send(ProfileUiEventOnEditClicked.shared)
+                } label: {
+                    HStack(spacing: 14) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(verbatim: state.displayName)
+                                .font(.title3.bold())
+                                .foregroundStyle(.primary)
+                            if state.showsProfilePending {
+                                Text("Changed · waiting to upload")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Palette.negative)
+                            } else {
+                                Text("Name, photo and avatar color")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Edit profile")
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Edit profile")
         }
         #endif
     }

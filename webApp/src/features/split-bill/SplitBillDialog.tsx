@@ -318,6 +318,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 split={state.split}
                 summary={state.splitSummary}
                 exceptionName={state.categories.defaultSplitException ? categoryName(state.categories.defaultSplitException) : undefined}
+                newExceptionName={state.categories.splitAsDefaultException ? categoryName(state.categories.splitAsDefaultException) : undefined}
                 money={money}
               />
             </div>
@@ -542,16 +543,18 @@ function SplitSummary({
   split,
   summary,
   exceptionName,
+  newExceptionName,
   money,
 }: {
   presenter: SplitBillPresenter
   split: JsSplitEditor
   summary: JsSplitFact[]
   exceptionName?: string
+  newExceptionName?: string
   money: Money
 }) {
   const title = t(splitTitles[split.mode] ?? 'splitBill_splitEqual', { count: split.includedCount })
-  const details = splitSummary(summary, money, exceptionName)
+  const details = splitSummary(summary, money, exceptionName, newExceptionName)
   const faces = split.included.slice(0, 3)
   const extra = split.included.length - faces.length
   return (

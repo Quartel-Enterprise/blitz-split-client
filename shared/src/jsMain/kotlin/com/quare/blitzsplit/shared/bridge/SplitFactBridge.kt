@@ -7,7 +7,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitFact
 /*
  * Why: a SplitFact, flat. kind is "each", "nobody", "nobody-checked", "nobody-has-parts", "among", "out",
  * "amount-left", "amount-over", "amount-adds-up", "parts-match-total", "amount-so-far", "without-value",
- * "percent-left", "percent-over", "percent-adds-up", "parts", "person-parts", "group-default", "items" or "loose-items",
+ * "percent-left", "percent-over", "percent-adds-up", "parts", "person-parts", "group-default", "new-group-default",
+ * "items" or "loose-items",
  * and only that fact's fields are set:
  * amountMinor is also the assigned amount of "amount-so-far" and the part's value of "parts", count the people of
  * "among", the parts of "parts" and "person-parts" and the items of "items" and "loose-items".
@@ -42,6 +43,7 @@ internal fun toJsSplitFact(fact: SplitFact): JsSplitFact {
         is SplitFact.Parts -> "parts"
         is SplitFact.PersonParts -> "person-parts"
         SplitFact.GroupDefault -> "group-default"
+        SplitFact.NewGroupDefault -> "new-group-default"
         is SplitFact.Items -> "items"
         is SplitFact.LooseItems -> "loose-items"
     }

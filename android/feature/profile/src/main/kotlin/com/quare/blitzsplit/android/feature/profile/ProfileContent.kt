@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.profile
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -30,8 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -158,7 +162,7 @@ private fun ProfileSingleColumn(
                 appVersion = appVersion,
                 onEvent = onEvent,
             )
-            ProfileSignOutContent(
+            ProfileDeleteAccountContent(
                 state = state,
                 onEvent = onEvent,
             )
@@ -167,8 +171,8 @@ private fun ProfileSingleColumn(
 }
 
 /*
- * Why: lying down there is little height, so who you are, your account and the privacy rows go left, the keys,
- * preferences and signing out right, each column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's
+ * Why: lying down there is little height, so who you are, your account with signing out under it and the privacy rows
+ * go left, the keys, preferences and deleting the account right, each column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's
  * centered container.
  */
 @Composable
@@ -276,7 +280,7 @@ private fun ProfileEndColumn(
             state = state,
             onEvent = onEvent,
         )
-        ProfileSignOutContent(
+        ProfileDeleteAccountContent(
             state = state,
             onEvent = onEvent,
         )
@@ -290,6 +294,7 @@ private fun ProfileIdentityContent(
 ) {
     if (!state.isLoaded) {
         ProfileIdentitySkeleton()
+        SignOutSkeleton()
         return
     }
     ProfileHeader(
@@ -297,6 +302,11 @@ private fun ProfileIdentityContent(
         onEvent = onEvent,
     )
     AccountSection(
+        state = state,
+        onEvent = onEvent,
+    )
+    // Why: right under the account it leaves, never at the end of a long column (beta feedback 16).
+    SignOutButton(
         state = state,
         onEvent = onEvent,
     )
@@ -317,20 +327,13 @@ private fun ProfileKeysContent(
     )
 }
 
+// Why: the last thing on the profile, apart from signing out.
 @Composable
-private fun ProfileSignOutContent(
+private fun ProfileDeleteAccountContent(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    if (!state.isLoaded) {
-        SignOutSkeleton()
-        return
-    }
-    SignOutButton(
-        state = state,
-        onEvent = onEvent,
-    )
-    if (state.showsDeleteAccount) DeleteAccountButton(onEvent = onEvent)
+    if (state.isLoaded && state.showsDeleteAccount) DeleteAccountButton(onEvent = onEvent)
 }
 
 @Composable
@@ -369,11 +372,19 @@ private fun IdentityCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Why: the avatar opens the photo big, as Bible Planner's; the rest of the card edits the profile.
             AvatarBadge(
                 initial = state.avatarInitial,
                 color = state.avatarColor,
                 size = 72.dp,
                 photoUrl = state.photoUrl,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(
+                        onClickLabel = stringResource(R.string.profile_photo_open),
+                        role = Role.Button,
+                        onClick = { onEvent(ProfileUiEvent.OnAvatarClicked) },
+                    ),
             )
             Column(
                 modifier = Modifier.weight(1f),
@@ -503,6 +514,8 @@ internal fun createPreviewProfileState(
     ).toLoaded(),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
+    showsDynamicColors = true,
+    usesDynamicColors = false,
     activeNotificationCount = 3.toLoaded(),
     dialog = null,
     hasConfirmedCodeSaved = false,

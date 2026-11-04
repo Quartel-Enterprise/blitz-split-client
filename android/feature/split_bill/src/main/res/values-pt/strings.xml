@@ -378,4 +378,9 @@
     <string name="split_bill_receipt_camera_permission">Permita a câmera para ler o cupom, ou escolha uma foto da galeria.</string>
     <string name="split_bill_receipt_camera_allow">Permitir câmera</string>
     <string name="split_bill_receipt_camera_settings">Abrir configurações</string>
+    <string name="split_bill_as_default">Usar como padrão do grupo</string>
+    <string name="split_bill_as_default_exception">Usar como padrão do grupo para %s</string>
+    <string name="split_bill_as_default_body">As novas contas do grupo começam assim quando esta for salva.</string>
+    <string name="split_bill_new_group_default">Vira o padrão do grupo</string>
+    <string name="split_bill_new_group_exception">Vira a exceção do grupo para %s</string>
 </resources>

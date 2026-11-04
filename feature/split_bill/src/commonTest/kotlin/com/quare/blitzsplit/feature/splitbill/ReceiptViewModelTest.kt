@@ -48,6 +48,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -1985,8 +1986,13 @@ class ReceiptViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
-            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
-            observeCategoryMap = ObserveCategoryMapUseCase(terms),
+            categoryUseCases = BillCategoryUseCases(
+                observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+                observeCategoryMap = ObserveCategoryMapUseCase(terms),
+                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                deleteGroupCategory = { Result.success(Unit) },
+            ),
+            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             readReceipt = { photo, currency, hints ->
                 readSources += photo.toList()
@@ -2002,8 +2008,6 @@ class ReceiptViewModelTest {
                 attachments += RecordedAttachment(expenseId, groupId, kind, image.jpeg.toList(), addedByMemberId)
                 attachResult
             },
-            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
-            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
     }

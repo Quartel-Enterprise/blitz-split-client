@@ -22,6 +22,7 @@ import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteA
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
+import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -109,6 +110,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
         ViewModelHolder(EditProfileViewModel::class) { get() }
+
+    fun createProfilePhotoViewModel(): ViewModelHolder<ProfilePhotoViewModel> =
+        ViewModelHolder(ProfilePhotoViewModel::class) { get() }
 
     fun createDeleteAccountViewModel(): ViewModelHolder<DeleteAccountViewModel> =
         ViewModelHolder(DeleteAccountViewModel::class) { get() }

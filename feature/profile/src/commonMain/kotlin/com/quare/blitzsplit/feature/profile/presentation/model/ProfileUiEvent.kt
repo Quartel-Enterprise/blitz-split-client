@@ -10,6 +10,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data object OnEditClicked : ProfileUiEvent
 
+    // Why: the avatar opens the photo big, apart from the rest of the card, which edits the profile.
+    data object OnAvatarClicked : ProfileUiEvent
+
     data object OnVisibilityInfoClicked : ProfileUiEvent
 
     data object OnDialogDismissed : ProfileUiEvent
@@ -58,6 +61,14 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data class OnThemeSelected(
         val theme: ThemePreference,
+    ) : ProfileUiEvent
+
+    data object OnAppearanceClicked : ProfileUiEvent
+
+    data object OnDynamicColorsInfoClicked : ProfileUiEvent
+
+    data class OnDynamicColorsToggled(
+        val isOn: Boolean,
     ) : ProfileUiEvent
 
     // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.

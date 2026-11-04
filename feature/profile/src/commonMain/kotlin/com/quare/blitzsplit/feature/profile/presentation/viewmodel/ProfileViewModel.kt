@@ -26,7 +26,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
+import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
@@ -68,6 +71,7 @@ class ProfileViewModel(
     private val providerConnector: ProviderConnector,
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val updateThemePreference: UpdateThemePreference,
+    private val updateDynamicColors: UpdateDynamicColors,
     private val retrySync: RetrySync,
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
@@ -82,6 +86,8 @@ class ProfileViewModel(
     observePendingPaymentKeyChanges: ObservePendingPaymentKeyChanges,
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
+    observeDynamicColors: ObserveDynamicColors,
+    dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
     observeFirstDownload: ObserveFirstDownload,
@@ -105,6 +111,8 @@ class ProfileViewModel(
                 paymentKeys = Loadable.Loading,
                 isSignOutScheduled = false,
                 theme = ThemePreference.SYSTEM,
+                showsDynamicColors = dynamicColorSupport(),
+                usesDynamicColors = false,
                 activeNotificationCount = Loadable.Loading,
                 dialog = null,
                 hasConfirmedCodeSaved = false,
@@ -127,7 +135,7 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        // Why: isLoaded once the profile, the account, the theme and what waits to go up each answered once.
+        // Why: isLoaded once the profile, account, theme, colors and what waits to go up each answered once.
         combine(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
@@ -139,7 +147,8 @@ class ProfileViewModel(
                 hasPendingPreferences = observePendingNotificationPreferenceChanges(),
                 isOnline = connectivityObserver.observe(),
             ),
-        ) { _, _, _, _ -> }
+            observeDynamicColors().onEach { isOn -> uiState.update { it.copy(usesDynamicColors = isOn) } },
+        ) { _, _, _, _, _ -> }
             .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
         val firstDownload = observeFirstDownload()
@@ -171,6 +180,7 @@ class ProfileViewModel(
         when (event) {
             ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
+            ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
             ProfileUiEvent.OnVisibilityInfoClicked -> showDialog(ProfileDialog.VISIBILITY_INFO)
             ProfileUiEvent.OnDialogDismissed -> closeDialog()
             ProfileUiEvent.OnConnectClicked -> expandConnect()
@@ -187,6 +197,9 @@ class ProfileViewModel(
             ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
+            ProfileUiEvent.OnAppearanceClicked -> openAppearance()
+            ProfileUiEvent.OnDynamicColorsInfoClicked -> openDynamicColorsInfo()
+            is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
@@ -325,6 +338,25 @@ class ProfileViewModel(
         viewModelScope.launch { updateThemePreference(theme) }
     }
 
+    // Why: the theme picked shows only once it was read, never the default guessed.
+    private fun openAppearance() {
+        if (uiState.value.isLoaded) showDialog(ProfileDialog.APPEARANCE)
+    }
+
+    // Why: only where the switch it explains shows, and over Aparência, where its button is.
+    private fun openDynamicColorsInfo() {
+        val state = uiState.value
+        if (state.showsDynamicColors && state.dialog == ProfileDialog.APPEARANCE) {
+            showDialog(ProfileDialog.DYNAMIC_COLORS_INFO)
+        }
+    }
+
+    // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
+    private fun toggleDynamicColors(isOn: Boolean) {
+        if (!uiState.value.showsDynamicColors) return
+        viewModelScope.launch { updateDynamicColors(isOn) }
+    }
+
     private fun cancelScheduledSignOut() {
         viewModelScope.launch { cancelSignOutWhenSynced() }
     }
@@ -373,11 +405,12 @@ class ProfileViewModel(
         }
     }
 
+    // Why: the dynamic colors' explanation opens over Aparência, so closing it leaves Aparência open.
     private fun closeDialog() {
         if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
         uiState.update {
             it.copy(
-                dialog = null,
+                dialog = if (it.dialog == ProfileDialog.DYNAMIC_COLORS_INFO) ProfileDialog.APPEARANCE else null,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
                 hasUnlinkFailed = false,

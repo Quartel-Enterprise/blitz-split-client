@@ -100,4 +100,7 @@ sealed interface SplitFact {
 
     // Why: Rachar conta's "Divisão" opened with the group's "Divisão padrão" and still follows it, "Padrão do grupo".
     data object GroupDefault : SplitFact
+
+    // Why: "Vira o padrão do grupo": the bill's split becomes the group's default once it is saved (beta feedback 11).
+    data object NewGroupDefault : SplitFact
 }

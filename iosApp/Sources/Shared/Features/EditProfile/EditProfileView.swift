@@ -247,16 +247,10 @@ private struct PhotoEditor: View {
     var body: some View {
         let state = model.state
         VStack(spacing: 10) {
-            AvatarPhoto(
-                initial: state.avatarInitial,
-                color: state.avatarColor,
-                photoUrl: state.photoUrl,
-                size: 96,
-            )
+            avatar
             .overlay {
                 if state.isPreparingPhoto { ProgressView() }
             }
-            .accessibilityHidden(true)
             .overlay(alignment: .bottomTrailing) {
                 Menu {
                     #if os(iOS)
@@ -300,6 +294,29 @@ private struct PhotoEditor: View {
         .photoLibraryPicker(isPresented: $showsPhotoPicker) { data in model.photoPicked(data) }
         #if os(iOS)
         .cameraCapture(isRequested: $takesPhoto) { data in model.photoPicked(data) }
+        #endif
+    }
+
+    @ViewBuilder
+    private var avatar: some View {
+        let state = model.state
+        let photo = AvatarPhoto(
+            initial: state.avatarInitial,
+            color: state.avatarColor,
+            photoUrl: state.photoUrl,
+            size: 96,
+        )
+        #if os(macOS)
+        // Ajustes draw the form inside the profile, where the avatar opens the photo big, as Bible Planner's
+        Button {
+            model.send(EditProfileUiEventOnAvatarClicked.shared)
+        } label: {
+            photo.contentShape(.circle)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("View photo")
+        #else
+        photo.accessibilityHidden(true)
         #endif
     }
 }

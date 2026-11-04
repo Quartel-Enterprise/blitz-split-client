@@ -36,7 +36,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyU
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -88,6 +91,8 @@ class ProfileViewModelTest {
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
+    private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
+    private var supportsDynamicColors = true
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ProfileViewModel
     private val actions = mutableListOf<ProfileUiAction>()
@@ -637,6 +642,18 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN the profile WHEN tapping the avatar THEN opens the photo big`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAvatarClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.ProfilePhoto), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN no theme stored WHEN the profile opens THEN shows the system theme`() = runTest(testDispatcher) {
         // Given
         prepareScenario(theme = null)
@@ -672,6 +689,463 @@ class ProfileViewModelTest {
         assertEquals(ThemePreference.LIGHT, storedTheme.value)
         assertEquals(ThemePreference.LIGHT, viewModel.uiState.value.theme)
     }
+
+    @Test
+    fun `GIVEN a device that draws dynamic colors WHEN the profile opens THEN shows the dynamic colors switch`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN a device that cannot draw dynamic colors WHEN the profile opens THEN hides the dynamic colors switch`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN the switch shown WHEN the platform answer changes later THEN keeps the switch shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            supportsDynamicColors = false
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN dynamic colors not read yet WHEN the profile opens THEN shows them off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(dynamicColors = null)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.usesDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors not read yet WHEN the profile opens THEN it waits for them before loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(dynamicColors = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+        }
+
+    @Test
+    fun `GIVEN dynamic colors stored on WHEN the profile opens THEN shows them on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(dynamicColors = true)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.usesDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors stored off WHEN the profile opens THEN shows them off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(dynamicColors = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.usesDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors off WHEN they are turned on elsewhere THEN shows them on at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(dynamicColors = false)
+
+            // When
+            storedDynamicColors.value = true
+
+            // Then
+            assertTrue(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN dynamic colors on WHEN they are turned off elsewhere THEN shows them off at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(dynamicColors = true)
+
+            // When
+            storedDynamicColors.value = false
+
+            // Then
+            assertFalse(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN a local only user with dynamic colors off WHEN turning them on THEN stores and shows them on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                dynamicColors = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+            // Then
+            assertEquals(true, storedDynamicColors.value)
+            assertTrue(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN Google with dynamic colors on WHEN turning them off THEN stores and shows them off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                dynamicColors = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = false))
+
+            // Then
+            assertEquals(false, storedDynamicColors.value)
+            assertFalse(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user offline WHEN turning dynamic colors on THEN stores them on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                online = false,
+                dynamicColors = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+            // Then
+            assertEquals(true, storedDynamicColors.value)
+            assertTrue(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN Apple offline WHEN turning dynamic colors on THEN stores them on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithApple,
+            online = false,
+            dynamicColors = false,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+        // Then
+        assertEquals(true, storedDynamicColors.value)
+        assertTrue(viewModel.uiState.value.usesDynamicColors)
+    }
+
+    @Test
+    fun `GIVEN the dark theme WHEN turning dynamic colors on THEN keeps the dark theme`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            theme = ThemePreference.DARK,
+            dynamicColors = false,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+        // Then
+        assertEquals(ThemePreference.DARK, storedTheme.value)
+        assertEquals(ThemePreference.DARK, viewModel.uiState.value.theme)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors on WHEN choosing the light theme THEN keeps dynamic colors on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                theme = ThemePreference.SYSTEM,
+                dynamicColors = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.LIGHT))
+
+            // Then
+            assertEquals(true, storedDynamicColors.value)
+            assertTrue(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Appearance THEN opens Appearance`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN Appearance open on a device with dynamic colors WHEN tapping their info THEN explains them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.DYNAMIC_COLORS_INFO, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Appearance open on a device without dynamic colors WHEN their info arrives THEN keeps Appearance`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = false)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN the dynamic colors info arrives THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(supportsDynamicColors = true)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN the dynamic colors info arrives THEN keeps who sees your profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN goes back to Appearance`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Appearance open WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN back on Appearance from the dynamic colors info WHEN dismissing it THEN closes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN Appearance open WHEN choosing the dark theme THEN stores it and keeps Appearance open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(theme = ThemePreference.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // Then
+            assertEquals(ThemePreference.DARK, storedTheme.value)
+            assertEquals(ThemePreference.DARK, viewModel.uiState.value.theme)
+            assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Appearance open WHEN turning dynamic colors on THEN stores them and keeps Appearance open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(dynamicColors = false)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+            // Then
+            assertEquals(true, storedDynamicColors.value)
+            assertTrue(viewModel.uiState.value.usesDynamicColors)
+            assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Appearance THEN keeps the sign out dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+        }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping Appearance THEN keeps the unlink dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithApple,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        assertTrue(viewModel.uiState.value.isUnlinking)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN the dynamic colors info arrives THEN keeps the unlink dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                supportsDynamicColors = true,
+                unlinkHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.isUnlinking)
+        }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping Appearance THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN a device without dynamic colors WHEN they are toggled on THEN stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                supportsDynamicColors = false,
+                dynamicColors = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(isOn = true))
+
+            // Then
+            assertEquals(false, storedDynamicColors.value)
+        }
 
     @Test
     fun `GIVEN the profile WHEN tapping the privacy policy THEN opens its page`() = runTest(testDispatcher) {
@@ -3752,6 +4226,8 @@ class ProfileViewModelTest {
         syncState: SyncState = SyncState.SYNCED,
         online: Boolean = true,
         theme: ThemePreference? = ThemePreference.SYSTEM,
+        dynamicColors: Boolean? = false,
+        supportsDynamicColors: Boolean = true,
         native: Set<AccountProvider> = emptySet(),
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
         signOutError: Throwable? = null,
@@ -3791,6 +4267,8 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.firstDownload = MutableStateFlow(firstDownload)
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
+        storedDynamicColors = MutableStateFlow(dynamicColors)
+        this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
             navigator = navigator,
@@ -3808,6 +4286,7 @@ class ProfileViewModelTest {
             ),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             updateThemePreference = UpdateThemePreference { storedTheme.value = it },
+            updateDynamicColors = UpdateDynamicColors { storedDynamicColors.value = it },
             retrySync = RetrySync { syncRetries++ },
             signOut = SignOut {
                 signOutCalls++
@@ -3830,6 +4309,8 @@ class ProfileViewModelTest {
             observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },
+            observeDynamicColors = ObserveDynamicColors { storedDynamicColors.filterNotNull() },
+            dynamicColorSupport = DynamicColorSupport { this@ProfileViewModelTest.supportsDynamicColors },
             observeNotificationPreferences = ObserveNotificationPreferences { notificationPreferences.preferences },
             observePendingNotificationPreferenceChanges = ObservePendingNotificationPreferenceChanges {
                 notificationPreferences.hasPendingChanges

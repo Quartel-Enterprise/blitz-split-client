@@ -56,6 +56,13 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
+    <string name="profile_dynamic_colors">Dynamic colors</string>
+    <string name="profile_dynamic_colors_detail">Use your wallpaper\'s colors in the app</string>
+    <string name="profile_appearance_dynamic_summary">%1$s · dynamic colors</string>
+    <string name="profile_dynamic_colors_info">About dynamic colors</string>
+    <string name="profile_dynamic_colors_info_body">Dynamic colors match the app to your wallpaper: buttons, backgrounds and highlights take the colors Android picks from it, and change when your wallpaper does.</string>
+    <string name="profile_dynamic_colors_info_note">Groups, avatars and categories keep their own colors, so you still tell them apart. This only applies to this device.</string>
+    <string name="profile_dynamic_colors_info_ok">Got it</string>
     <string name="profile_section_about">Privacy and about</string>
     <string name="profile_privacy_policy">Privacy policy</string>
     <string name="profile_terms">Terms of use</string>
@@ -96,4 +103,5 @@
     <string name="profile_unlink_confirm">Disconnect</string>
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
+    <string name="profile_photo_open">View photo</string>
 </resources>
