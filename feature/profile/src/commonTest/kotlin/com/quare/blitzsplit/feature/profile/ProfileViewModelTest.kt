@@ -731,7 +731,7 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN dynamic colors not read yet WHEN the profile opens THEN the profile is loaded anyway`() =
+    fun `GIVEN dynamic colors not read yet WHEN the profile opens THEN it waits for them before loading`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(dynamicColors = null)
@@ -740,7 +740,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertTrue(state.isLoaded)
+            assertFalse(state.isLoaded)
         }
 
     @Test

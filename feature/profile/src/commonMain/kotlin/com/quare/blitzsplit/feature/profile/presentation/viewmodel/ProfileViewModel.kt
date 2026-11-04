@@ -135,7 +135,7 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        // Why: isLoaded once the profile, the account, the theme and what waits to go up each answered once.
+        // Why: isLoaded once the profile, account, theme, colors and what waits to go up each answered once.
         combine(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
@@ -147,11 +147,9 @@ class ProfileViewModel(
                 hasPendingPreferences = observePendingNotificationPreferenceChanges(),
                 isOnline = connectivityObserver.observe(),
             ),
-        ) { _, _, _, _ -> }
+            observeDynamicColors().onEach { isOn -> uiState.update { it.copy(usesDynamicColors = isOn) } },
+        ) { _, _, _, _, _ -> }
             .onEach { uiState.update { it.copy(isLoaded = true) } }
-            .launchIn(viewModelScope)
-        observeDynamicColors()
-            .onEach { isOn -> uiState.update { it.copy(usesDynamicColors = isOn) } }
             .launchIn(viewModelScope)
         val firstDownload = observeFirstDownload()
         // Why: a restored account's keys and notification choices only come with its first full sync.
