@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -20,11 +19,9 @@ import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,28 +36,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.paneTitle
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
-import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
-import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
-import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-private val sheetMaxWidth = 640.dp
-private val dialogWidth = 560.dp
 
 /*
  * Why: the ⋮ menu: Juntar for a guest (disabled offline, "Precisa de internet"), "Ver em Saldos", and "Ocultar de
@@ -324,51 +314,29 @@ private fun AddGroupRow(
  * Why: what the profile opens over itself: a bottom sheet on a phone (centered, at most 640dp, lying down), a 560dp
  * dialog elsewhere, in the half after the hinge on a book (FoldDialog).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileSheet(
     title: String,
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val formFactor = rememberFoldLayout().formFactor
-    val isPhone = formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape
-    if (isPhone) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            sheetState = rememberFullSheetState(),
-            sheetMaxWidth = sheetMaxWidth,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        ) {
-            SheetColumn(
-                title = title,
-                content = content,
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(
-                        start = 24.dp,
-                        end = 24.dp,
-                        bottom = 24.dp,
-                    ),
-            )
-        }
-    } else {
-        FoldDialog(onDismissRequest = onDismiss) {
-            Surface(
-                modifier = Modifier
-                    .widthIn(max = dialogWidth)
-                    .fillMaxWidth()
-                    .semantics { paneTitle = title },
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ) {
-                SheetColumn(
-                    title = title,
-                    content = content,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
-        }
+    AdaptiveSheet(
+        title = title,
+        onDismissRequest = onDismiss,
+        dialogShape = MaterialTheme.shapes.extraLarge,
+    ) {
+        // Why: the dialog's window keeps off the navigation bar by itself, so the padding only lifts the sheet.
+        SheetColumn(
+            title = title,
+            content = content,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 24.dp,
+                ),
+        )
     }
 }
 
