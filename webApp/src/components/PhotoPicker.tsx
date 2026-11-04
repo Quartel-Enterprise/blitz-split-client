@@ -1,5 +1,7 @@
-import { useCallback, useRef, useState, type RefObject } from 'react'
+import { Camera, ImageIcon } from 'lucide-react'
+import { useCallback, useRef, useState, type ReactElement, type RefObject } from 'react'
 import { CameraCaptureDialog } from '@/components/CameraCaptureDialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useCameras, type CameraFacing } from '@/hooks/useCameraStream'
 import { onPhotoFile, type PhotoReceiver } from '@/lib/photoFile'
 
@@ -46,5 +48,38 @@ export function PhotoPickerInputs({ picker, receiver, facing, title }: { picker:
         />
       )}
     </>
+  )
+}
+
+/**
+ * A button that asks where the photo comes from, "Tirar foto" or the files, where the browser has a camera, and opens
+ * the file chooser at once where it has none. `renderTrigger` draws the button with the props it is handed.
+ */
+export function PhotoSourceMenu({
+  picker,
+  renderTrigger,
+  align,
+  takePhotoLabel,
+  choosePhotoLabel,
+}: {
+  picker: PhotoPicker
+  renderTrigger: (props: { onClick?: () => void }) => ReactElement
+  align?: 'start' | 'end'
+  takePhotoLabel: string
+  choosePhotoLabel: string
+}) {
+  if (!picker.hasCamera) return renderTrigger({ onClick: picker.chooseFile })
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{renderTrigger({})}</DropdownMenuTrigger>
+      <DropdownMenuContent align={align}>
+        <DropdownMenuItem onSelect={picker.takePhoto}>
+          <Camera /> {takePhotoLabel}
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={picker.chooseFile}>
+          <ImageIcon /> {choosePhotoLabel}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

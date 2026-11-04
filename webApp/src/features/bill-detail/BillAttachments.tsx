@@ -1,11 +1,10 @@
-import { Camera, ChevronLeft, ChevronRight, Download, ImageIcon, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
 import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState } from 'blitzsplit-shared'
 import { useEffect, useReducer, useRef, type ComponentProps, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
-import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
+import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
@@ -140,24 +139,15 @@ const tileClass =
 /** "Adicionar foto": the file chooser, or a menu with the camera where the browser has one. */
 function AddPhoto({ presenter, state }: { presenter: AttachmentsPresenter; state: AttachmentsState }) {
   const photo = usePhotoPicker()
-  const tile = <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} onClick={photo.hasCamera ? undefined : photo.chooseFile} />
   return (
     <>
-      {photo.hasCamera ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>{tile}</DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={photo.takePhoto}>
-              <Camera /> {t('billDetail_takePhoto')}
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={photo.chooseFile}>
-              <ImageIcon /> {t('billDetail_choosePhoto')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        tile
-      )}
+      <PhotoSourceMenu
+        picker={photo}
+        align="start"
+        takePhotoLabel={t('billDetail_takePhoto')}
+        choosePhotoLabel={t('billDetail_choosePhoto')}
+        renderTrigger={(props) => <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} {...props} />}
+      />
       <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />
     </>
   )

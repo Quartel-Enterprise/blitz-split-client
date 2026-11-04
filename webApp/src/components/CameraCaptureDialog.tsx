@@ -1,5 +1,5 @@
 import { Camera, CameraOff, Check, Flashlight, FlashlightOff, ImageIcon, Loader2, RotateCcw, SwitchCamera } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { useCameras, useCameraStream, type CameraFacing } from '@/hooks/useCameraStream'
@@ -43,13 +43,15 @@ export function CameraCaptureDialog({
     video.current = element
     setVideoElement(element)
   }, [])
+  const [facingMode, setFacingMode] = useState(facing)
   const [deviceId, setDeviceId] = useState<string | null>(null)
   const [shot, setShot] = useState<Shot | null>(null)
   const [isTorchOn, setIsTorchOn] = useState(false)
   const isConfirming = useRef(false)
+  // Why: off while the photo taken shows, so the camera's light goes off until "Tirar outra".
   const { problem, track, isPlaying, hasTorch, retry } = useCameraStream(video, {
-    isEnabled: true,
-    facingMode: facing,
+    isEnabled: !shot,
+    facingMode,
     deviceId,
     prefersHighResolution: true,
     isTorchOn,
@@ -57,7 +59,8 @@ export function CameraCaptureDialog({
   // Why: listed again once the camera runs, since a browser names every camera (with its id) only after it was allowed.
   const cameraIds = (useCameras(track) ?? []).map((each) => each.deviceId).filter(Boolean)
   // Why: a camera facing the person shows as a mirror, as every camera app does; the photo itself is never mirrored.
-  const isMirrored = track !== null && track.getSettings().facingMode !== 'environment'
+  const settings = useMemo(() => track?.getSettings(), [track])
+  const isMirrored = settings !== undefined && settings.facingMode !== 'environment'
   const [captureFailed, setCaptureFailed] = useState(false)
   const shownProblem = problem ?? (captureFailed ? 'failed' : null)
 
@@ -92,10 +95,17 @@ export function CameraCaptureDialog({
       onUnreadable?.()
     }
   }
-  // Why: steps through the cameras themselves, since two webcams report no facing to tell them apart.
+  // Why: front and back, as the apps switch, where the cameras say which they are (a phone lists every lens of its
+  // back); one camera after the other where they don't, as two webcams.
   const switchCamera = () => {
-    const current = cameraIds.indexOf(track?.getSettings().deviceId ?? '')
-    setDeviceId(cameraIds[(current + 1) % cameraIds.length] ?? null)
+    const current = settings?.facingMode
+    if (current === 'user' || current === 'environment') {
+      setDeviceId(null)
+      setFacingMode(current === 'user' ? 'environment' : 'user')
+      return
+    }
+    const index = cameraIds.indexOf(settings?.deviceId ?? '')
+    setDeviceId(cameraIds[(index + 1) % cameraIds.length] ?? null)
   }
   const chooseFile = () => {
     onClose()
@@ -143,7 +153,7 @@ export function CameraCaptureDialog({
     <div className={cn('relative mx-auto w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-[4/3]' : 'aspect-[3/4] max-h-[55dvh]')}>
       {/* Always mounted, so a second try after a refusal has the video to show the camera in */}
       <video ref={attachVideo} muted playsInline className={cn('absolute inset-0 size-full object-contain', isMirrored && '-scale-x-100')} />
-      {!isPlaying && !shownProblem && <Loader2 aria-label={t('common_loading')} className="absolute inset-0 m-auto size-8 animate-spin text-white/70" />}
+      {!isPlaying && !shownProblem && !shot && <Loader2 aria-label={t('common_loading')} className="absolute inset-0 m-auto size-8 animate-spin text-white/70" />}
       {shot && <img src={shot.url} alt={t('camera_preview')} className="absolute inset-0 size-full bg-camera object-contain" />}
       {shownProblem && (
         <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-camera px-6 text-center">

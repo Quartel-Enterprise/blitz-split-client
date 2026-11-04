@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 
 /** Which camera to ask for: the one facing the person (a selfie) or the one on the back. Desktops have only the first. */
 export type CameraFacing = 'user' | 'environment'
@@ -108,9 +108,13 @@ export function useCameraStream(
       .catch(() => {})
   })
 
-  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
+  const hasTorch = useMemo(() => (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true, [track])
+  const litTrack = useRef<MediaStreamTrack | null>(null)
   useEffect(() => {
     if (!track || !hasTorch) return
+    // Why: untouched until turned on, since new constraints may drop the resolution the camera was asked for.
+    if (!isTorchOn && litTrack.current !== track) return
+    litTrack.current = track
     track.applyConstraints({ advanced: [{ torch: isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
   }, [track, hasTorch, isTorchOn])
 

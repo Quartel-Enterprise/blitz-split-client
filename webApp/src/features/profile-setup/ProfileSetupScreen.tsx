@@ -1,12 +1,11 @@
-import { ArrowLeft, Camera, ImageIcon, Info, Loader2 } from 'lucide-react'
+import { ArrowLeft, Camera, Info, Loader2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { ProfileSetupPresenter, type JsProfileSetupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
-import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
+import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
@@ -54,23 +53,13 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
               </span>
             )}
             {/* Why: with a camera the button asks where the photo comes from; without one it opens the file chooser. */}
-            {photo.hasCamera ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <AddPhotoButton />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={photo.takePhoto}>
-                    <Camera /> {t('profileSetup_takePhoto')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={photo.chooseFile}>
-                    <ImageIcon /> {t('profileSetup_choosePhoto')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <AddPhotoButton onClick={photo.chooseFile} />
-            )}
+            <PhotoSourceMenu
+              picker={photo}
+              align="end"
+              takePhotoLabel={t('profileSetup_takePhoto')}
+              choosePhotoLabel={t('profileSetup_choosePhoto')}
+              renderTrigger={(props) => <AddPhotoButton {...props} />}
+            />
             <PhotoPickerInputs picker={photo} receiver={presenter} facing="user" />
           </div>
           {state.showsPhotoError && (
