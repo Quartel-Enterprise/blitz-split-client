@@ -40,6 +40,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -76,6 +77,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ActivityViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var activity: FakeActivityRepository
     private lateinit var groupRepository: FakeGroupRepository
@@ -2236,6 +2238,20 @@ class ActivityViewModelTest {
     }
 
     @Test
+    fun `GIVEN Atividade WHEN the web logo is tapped THEN goes back to Inicio and sends brand_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnBrandClicked)
+
+            // Then
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Atividade WHEN tapping Saldos THEN opens Saldos in its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -2482,6 +2498,1142 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+    }
+
+    // endregion
+
+    // region Analytics
+
+    @Test
+    fun `GIVEN the events nobody taps WHEN reading their analytics THEN none is tracked`() {
+        // Given
+        val events = listOf(
+            ActivityUiEvent.OnDetailPaneChanged(isShown = true),
+            ActivityUiEvent.OnEndReached,
+            ActivityUiEvent.OnDeletedNoticeShown,
+            ActivityUiEvent.OnFilterDismissed,
+            ActivityUiEvent.OnBackClicked,
+            ActivityUiEvent.OnHomeTabClicked,
+            ActivityUiEvent.OnGroupsTabClicked,
+            ActivityUiEvent.OnBalancesTabClicked,
+            ActivityUiEvent.OnContactsTabClicked,
+        )
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(List(events.size) { EventAnalytics.NotTracked }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Filtrar atividade and Ver grupos WHEN reading their analytics THEN the filter waits for its sheet`() {
+        // Given
+        val events = listOf(ActivityUiEvent.OnFilterClicked, ActivityUiEvent.OnEmptyActionClicked)
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(
+            listOf(
+                EventAnalytics.Manual("activity_filter_clicked"),
+                EventAnalytics.Automatic("activity_empty_action_clicked"),
+            ),
+            analytics,
+        )
+    }
+
+    @Test
+    fun `GIVEN the taps the screen may refuse WHEN reading their analytics THEN the ViewModel sends each event`() {
+        // Given
+        val expected = mapOf(
+            ActivityUiEvent.OnItemClicked(PAYMENT_ANA) to "activity_item_clicked",
+            ActivityUiEvent.OnOpenTargetClicked(PAYMENT_ANA) to "activity_open_target_clicked",
+            ActivityUiEvent.OnActorClicked(PAYMENT_ANA) to "person_clicked",
+            ActivityUiEvent.OnGroupClicked(PAYMENT_ANA) to "group_clicked",
+            ActivityUiEvent.OnChangesToggled(EDIT_JANTAR) to "activity_changes_toggled",
+            ActivityUiEvent.OnMarkAllReadClicked to "activity_mark_all_read_clicked",
+            ActivityUiEvent.OnDraftGroupPicked(APE) to "activity_filter_group_picked",
+            ActivityUiEvent.OnDraftTypeToggled(ActivityType.BILLS) to "activity_filter_type_toggled",
+            ActivityUiEvent.OnFilterApplied to "activity_filter_applied",
+            ActivityUiEvent.OnFilterCleared to "activity_filters_cleared",
+            ActivityUiEvent.OnClearFiltersClicked to "activity_filters_cleared",
+            ActivityUiEvent.OnGroupChipRemoved to "activity_filter_chip_removed",
+            ActivityUiEvent.OnTypeChipRemoved(ActivityType.BILLS) to "activity_filter_chip_removed",
+            ActivityUiEvent.OnPersonChipRemoved to "activity_filter_chip_removed",
+            ActivityUiEvent.OnRefresh to "pull_to_refresh",
+            ActivityUiEvent.OnProfileClicked to "profile_avatar_clicked",
+            ActivityUiEvent.OnSearchClicked to "search_opened",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Filtrar atividade THEN sends the filter clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+            // Then
+            assertEquals(listOf("activity_filter_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN nothing here yet WHEN tapping Ver grupos THEN sends the empty action clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = emptyList())
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnEmptyActionClicked)
+
+            // Then
+            assertEquals(listOf("activity_empty_action_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an unread payment WHEN tapping it THEN sends its kind as unread`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                "activity_item_clicked" to mapOf<String, Any>(
+                    "kind" to ActivityKind.PAYMENT_RECORDED,
+                    "is_unread" to true,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a bill already read WHEN tapping it THEN sends its kind as read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked(MERCADO_CREATED))
+
+        // Then
+        assertEquals(
+            listOf(
+                "activity_item_clicked" to mapOf<String, Any>(
+                    "kind" to ActivityKind.BILL_CREATED,
+                    "is_unread" to false,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the detail beside the list WHEN picking an item THEN sends the item clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(DIEGO_ADDED))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "activity_item_clicked" to mapOf<String, Any>(
+                        "kind" to ActivityKind.MEMBER_ADDED,
+                        "is_unread" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an id not in the feed WHEN tapping it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked("unknown"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sync took the item off the feed WHEN a late tap on it arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            activity.events.value = defaultEvents.filterNot { it.id == PAYMENT_ANA }
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping an item THEN still sends it as the tap marks it read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "activity_item_clicked" to mapOf<String, Any>(
+                        "kind" to ActivityKind.BILL_EDITED,
+                        "is_unread" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an edited bill WHEN tapping Abrir conta THEN sends the open target clicked with its kind`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(EDIT_JANTAR))
+
+            // Then
+            assertEquals(
+                listOf("activity_open_target_clicked" to mapOf<String, Any>("kind" to ActivityKind.BILL_EDITED)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill picked beside the list WHEN opening it from its detail THEN sends the open target clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(MERCADO_CREATED))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(MERCADO_CREATED))
+
+            // Then
+            assertEquals(
+                listOf("activity_open_target_clicked" to mapOf<String, Any>("kind" to ActivityKind.BILL_CREATED)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping Abrir conta late THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(EDIT_JANTAR))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an id not in the feed WHEN tapping Abrir conta THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked("unknown"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a bill item without its bill id WHEN tapping Abrir conta THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            val withoutBillId = event(
+                id = "bill-without-id",
+                seq = 9L,
+                targetId = null,
+            )
+            prepareScenario(storedEvents = listOf(withoutBillId) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked("bill-without-id"))
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill someone deleted WHEN tapping Abrir conta THEN sends the open target clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(pastelDeleted, pastelCreated) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnOpenTargetClicked(PASTEL_CREATED))
+
+            // Then
+            assertEquals(
+                listOf("activity_open_target_clicked" to mapOf<String, Any>("kind" to ActivityKind.BILL_CREATED)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an item by a guest WHEN tapping the face THEN sends the person clicked from Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(CARLA_BILL))
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN your own event WHEN tapping the face THEN sends the person clicked as it opens Perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(MERCADO_CREATED))
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an item by someone no longer in the group WHEN tapping the face THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(byGoneMember) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnActorClicked(GONE_BILL))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping a face late THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(carlaBill) + defaultEvents)
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnActorClicked(CARLA_BILL))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group on the device WHEN tapping its name THEN sends the group clicked from Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an item of a group no longer on the device WHEN tapping its group THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(praiaBillByAna) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PRAIA_BILL))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping a group late THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the changes closed WHEN tapping Ver mudancas THEN sends them expanded`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnChangesToggled(EDIT_JANTAR))
+
+        // Then
+        assertEquals(listOf("activity_changes_toggled" to mapOf<String, Any>("is_expanded" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the changes open WHEN tapping Esconder mudancas THEN sends them collapsed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnChangesToggled(EDIT_JANTAR))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnChangesToggled(EDIT_JANTAR))
+
+        // Then
+        assertEquals(listOf("activity_changes_toggled" to mapOf<String, Any>("is_expanded" to false)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the changes of one edit open WHEN opening those of another THEN sends them expanded`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(editMercado) + defaultEvents)
+            viewModel.onEvent(ActivityUiEvent.OnChangesToggled(EDIT_JANTAR))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnChangesToggled(EDIT_MERCADO))
+
+            // Then
+            assertEquals(
+                listOf("activity_changes_toggled" to mapOf<String, Any>("is_expanded" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an id not in the feed WHEN tapping Ver mudancas THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnChangesToggled("unknown"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN unread items WHEN tapping Marcar tudo como lido THEN sends the mark all read clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnMarkAllReadClicked)
+
+            // Then
+            assertEquals(listOf("activity_mark_all_read_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN nothing unread WHEN tapping Marcar tudo como lido THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(readState = unreadState.copy(readThroughSeq = 5L))
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnMarkAllReadClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open on every group WHEN picking a group THEN sends it is not all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+
+        // Then
+        assertEquals(listOf("activity_filter_group_picked" to mapOf<String, Any>("is_all" to false)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Filtrar open on a group WHEN picking Todos os grupos THEN sends it is all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(null))
+
+        // Then
+        assertEquals(listOf("activity_filter_group_picked" to mapOf<String, Any>("is_all" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Filtrar open on a group WHEN picking the same group THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open on every group WHEN picking Todos os grupos THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(null))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Filtrar closed WHEN a late pick of a group arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open WHEN picking a type THEN sends it included`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.PAYMENTS))
+
+        // Then
+        assertEquals(
+            listOf(
+                "activity_filter_type_toggled" to mapOf<String, Any>(
+                    "type" to ActivityType.PAYMENTS,
+                    "is_included" to true,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a type picked in Filtrar WHEN toggling it again THEN sends it left out`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.CHARGES))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.CHARGES))
+
+        // Then
+        assertEquals(
+            listOf(
+                "activity_filter_type_toggled" to mapOf<String, Any>(
+                    "type" to ActivityType.CHARGES,
+                    "is_included" to false,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Filtrar closed WHEN a late type toggle arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.BILLS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group and two types picked WHEN applying THEN sends the filter applied with how much it holds`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+            viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.BILLS))
+            viewModel.onEvent(ActivityUiEvent.OnDraftTypeToggled(ActivityType.PAYMENTS))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterApplied)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "activity_filter_applied" to mapOf<String, Any>(
+                        "has_group" to true,
+                        "types" to 2,
+                        "has_person" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a contact history WHEN applying Filtrar unchanged THEN sends the filter applied with the person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = "user:ana")
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterApplied)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "activity_filter_applied" to mapOf<String, Any>(
+                        "has_group" to false,
+                        "types" to 0,
+                        "has_person" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Filtrar closed WHEN a late Mostrar resultados arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnFilterApplied)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnFilterDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open WHEN tapping its Limpar THEN sends the filters cleared from the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = "user:ana")
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterCleared)
+
+            // Then
+            assertEquals(listOf("activity_filters_cleared" to mapOf<String, Any>("entry" to "sheet")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Filtrar closed WHEN a late Limpar of the sheet arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = "user:ana")
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnFilterCleared)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a filter applied and Filtrar closed WHEN a late Limpar of the sheet arrives THEN keeps the filter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            applyFilter(groupId = FLORIPA)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterCleared)
+
+            // Then
+            assertEquals(FLORIPA, viewModel.uiState.value.filter.groupId)
+            assertEquals(
+                listOf(DIEGO_ADDED),
+                viewModel.uiState.value.items
+                    .map { it.id },
+            )
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Filtrar open and changed WHEN tapping Filtrar again THEN keeps what was picked and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+            viewModel.onEvent(ActivityUiEvent.OnDraftGroupPicked(APE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+            // Then
+            assertEquals(
+                APE,
+                viewModel.uiState.value.filterDraft
+                    ?.groupId,
+            )
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping Filtrar late THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.filterDraft)
+            assertFalse(viewModel.uiState.value.isFilterOpen)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a filter WHEN tapping Limpar next to the chips THEN sends the filters cleared from the chips`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            applyFilter(groupId = FLORIPA, ActivityType.CHARGES)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnClearFiltersClicked)
+
+            // Then
+            assertEquals(listOf("activity_filters_cleared" to mapOf<String, Any>("entry" to "chips")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN only a contact history WHEN tapping Limpar filtros THEN sends the filters cleared from the chips`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = "user:ana")
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnClearFiltersClicked)
+
+            // Then
+            assertEquals(listOf("activity_filters_cleared" to mapOf<String, Any>("entry" to "chips")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN nothing filtered WHEN a late Limpar filtros arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnClearFiltersClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group filter WHEN removing the group chip THEN sends the group chip removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            applyFilter(groupId = APE, ActivityType.BILLS)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnGroupChipRemoved)
+
+            // Then
+            assertEquals(
+                listOf("activity_filter_chip_removed" to mapOf<String, Any>("chip" to "group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no group filter WHEN a late group chip removal arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        applyFilter(groupId = null, ActivityType.BILLS)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupChipRemoved)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a type filter WHEN removing its chip THEN sends the type chip removed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        applyFilter(groupId = null, ActivityType.BILLS, ActivityType.PAYMENTS)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnTypeChipRemoved(ActivityType.PAYMENTS))
+
+        // Then
+        assertEquals(listOf("activity_filter_chip_removed" to mapOf<String, Any>("chip" to "type")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a type not filtered WHEN a late removal of its chip arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            applyFilter(groupId = null, ActivityType.BILLS)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnTypeChipRemoved(ActivityType.CHARGES))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a contact history WHEN removing the person chip THEN sends the person chip removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = "user:ana")
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnPersonChipRemoved)
+
+            // Then
+            assertEquals(
+                listOf("activity_filter_chip_removed" to mapOf<String, Any>("chip" to "person")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no person filtered WHEN a late person chip removal arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnPersonChipRemoved)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN online WHEN pulling down THEN sends the pull to refresh from Atividade`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnRefresh)
+
+        // Then
+        assertEquals(listOf("pull_to_refresh" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN offline WHEN pulling down THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnRefresh)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a refresh running WHEN pulling down again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        syncGate = CompletableDeferred()
+        viewModel.onEvent(ActivityUiEvent.OnRefresh)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnRefresh)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade on top WHEN tapping the profile THEN sends the profile avatar clicked from Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(
+                listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "activity")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group opened over Atividade WHEN a late tap on the profile arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Atividade on top WHEN tapping Buscar THEN sends the search opened from Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "activity")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN tapping Buscar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Filtrar open WHEN tapping Buscar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a bill opened from an item WHEN tapping Buscar late THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the search already open over Atividade WHEN tapping Buscar again THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Atividade WHEN the window shows the detail beside the list THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN 50 of 120 events shown WHEN reaching the end THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = manyEvents(120))
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnEndReached)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the deleted notice shown WHEN the UI has shown it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(pastelDeleted, pastelCreated) + defaultEvents)
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked(PASTEL_CREATED))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnDeletedNoticeShown)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN going back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Inicio THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Grupos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Saldos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnBalancesTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Contatos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
     }
 
     // endregion
@@ -2843,6 +3995,7 @@ class ActivityViewModelTest {
         route = Route.Activity(personKey)
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
         viewModel = ActivityViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             markActivityRead = MarkActivityReadUseCase(activity),

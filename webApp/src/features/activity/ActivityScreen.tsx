@@ -51,6 +51,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
       activityUnreadCount={state.unreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      onBrand={() => presenter.openBrand()}
       search={search}
     >
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>

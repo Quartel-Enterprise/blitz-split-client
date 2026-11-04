@@ -376,6 +376,11 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
     }
 
+    // Why: the logo, which opens Home.
+    fun openBrand() {
+        viewModel.onEvent(ActivityUiEvent.OnBrandClicked)
+    }
+
     fun openGroups() {
         viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
     }

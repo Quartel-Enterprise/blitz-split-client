@@ -140,6 +140,11 @@ class ContactsPresenter {
         viewModel.onEvent(ContactsUiEvent.OnHomeTabClicked)
     }
 
+    // Why: the logo, which opens Home.
+    fun openBrand() {
+        viewModel.onEvent(ContactsUiEvent.OnBrandClicked)
+    }
+
     fun openGroups() {
         viewModel.onEvent(ContactsUiEvent.OnGroupsTabClicked)
     }

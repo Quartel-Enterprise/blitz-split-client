@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.contacts.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
@@ -21,8 +20,10 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.mapper.rowOf
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
@@ -57,7 +58,11 @@ class ContactsViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeHasGroups: ObserveHasGroups,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
+    // Why: the screen these events come from, as their source param says.
+    private val sourceParams: Map<String, Any> = mapOf("source" to "contacts")
+
     val uiState: StateFlow<ContactsUiState>
         field = MutableStateFlow(
             ContactsUiState(
@@ -136,16 +141,22 @@ class ContactsViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ContactsUiEvent) {
+    override fun handleEvent(event: ContactsUiEvent) {
         when (event) {
             is ContactsUiEvent.OnContactClicked -> openContact(event.key)
 
             is ContactsUiEvent.OnDetailPaneChanged -> uiState.update { it.copy(isDetailPaneShown = event.isShown) }
 
-            ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch) navigator.openSearchOver(HomeTab.CONTACTS)
+            ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch &&
+                navigator.openSearchOver(HomeTab.CONTACTS)
+            ) {
+                trackEvent("search_opened", sourceParams)
+            }
 
-            ContactsUiEvent.OnHiddenToggled -> uiState.update {
-                it.copy(isHiddenExpanded = !it.isHiddenExpanded && it.hiddenContacts.isNotEmpty())
+            ContactsUiEvent.OnHiddenToggled -> if (uiState.value.hiddenContacts.isNotEmpty()) {
+                val isExpanded = !uiState.value.isHiddenExpanded
+                trackEvent("contacts_hidden_toggled", mapOf("is_expanded" to isExpanded))
+                uiState.update { it.copy(isHiddenExpanded = isExpanded) }
             }
 
             is ContactsUiEvent.OnShowContactClicked -> show(event.key)
@@ -172,14 +183,20 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnAgendaClicked -> openAgenda()
 
-            ContactsUiEvent.OnInviteWithLinkClicked -> openFromList(
-                Route.ContactInvite(
+            ContactsUiEvent.OnInviteWithLinkClicked -> {
+                val invite = Route.ContactInvite(
                     personKey = null,
                     name = null,
-                ),
-            )
+                )
+                if (openFromList(invite)) trackEvent("contacts_invite_with_link_clicked", sourceParams)
+            }
 
             ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)
+
+            ContactsUiEvent.OnBrandClicked -> if (isTabShown()) {
+                trackEvent("brand_clicked", sourceParams)
+                navigator.openHomeTab(Route.Home)
+            }
 
             ContactsUiEvent.OnGroupsTabClicked -> if (isTabShown()) navigator.popToGroups()
 
@@ -192,6 +209,7 @@ class ContactsViewModel(
             }
 
             ContactsUiEvent.OnProfileClicked -> if (isTabShown()) {
+                trackEvent("profile_avatar_clicked", sourceParams)
                 closeOverTab()
                 navigator.navigate(Route.Profile)
             }
@@ -209,42 +227,54 @@ class ContactsViewModel(
     private fun openContact(key: String) {
         val state = uiState.value
         if (state.contacts.none { it.key == key } && state.hiddenContacts.none { it.key == key }) return
-        if (state.isDetailPaneShown) {
+        val isOpened = if (state.isDetailPaneShown) {
             uiState.update {
                 it.copy(
                     pickedKey = key,
                     isAgendaPicked = false,
                 )
             }
+            true
         } else {
             openFromList(Route.ContactProfile(key))
         }
+        if (isOpened) trackEvent("contact_clicked", mapOf("is_hidden" to state.contacts.none { it.key == key }))
     }
 
     private fun openAgenda() {
-        if (uiState.value.isDetailPaneShown) {
+        val isOpened = if (uiState.value.isDetailPaneShown) {
             uiState.update {
                 it.copy(
                     pickedKey = null,
                     isAgendaPicked = true,
                 )
             }
+            true
         } else {
             openFromList(Route.ContactsAgenda)
         }
+        if (isOpened) trackEvent("contacts_agenda_clicked", emptyMap())
     }
 
-    // Why: only Contatos on top takes taps, so a late tap never stacks a second screen.
-    private fun openFromList(route: Route) {
-        if (isOnTop()) navigator.navigate(route)
+    /*
+     * Why: only Contatos on top takes taps, so a late tap never stacks a second screen. Says whether it opened, which
+     * Analytics counts.
+     */
+    private fun openFromList(route: Route): Boolean {
+        if (!isOnTop()) return false
+        navigator.navigate(route)
+        return true
     }
 
     private fun openBalances(filter: BalancesFilter) {
-        if (isOnTop()) navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
+        if (!isOnTop()) return
+        trackEvent("contacts_balances_clicked", mapOf("filter" to filter))
+        navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
     }
 
     private fun show(key: String) {
         if (uiState.value.hiddenContacts.none { it.key == key }) return
+        trackEvent("contact_show_clicked", sourceParams)
         viewModelScope.launch {
             setContactHidden(key, isHidden = false).onFailure { uiAction.emit(ContactsUiAction.ShowChangeError) }
         }

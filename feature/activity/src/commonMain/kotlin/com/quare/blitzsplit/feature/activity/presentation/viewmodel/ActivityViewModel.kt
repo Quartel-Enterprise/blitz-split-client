@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.activity.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
@@ -28,8 +27,10 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -74,7 +75,11 @@ class ActivityViewModel(
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     minuteTicks: MinuteTicks,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ActivityUiEvent>(trackEvent) {
+    // Why: the screen these events come from, as their source param says.
+    private val sourceParams: Map<String, Any> = mapOf("source" to "activity")
+
     val uiState: StateFlow<ActivityUiState>
         field = MutableStateFlow(
             ActivityUiState(
@@ -190,55 +195,105 @@ class ActivityViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ActivityUiEvent) {
+    override fun handleEvent(event: ActivityUiEvent) {
         when (event) {
             is ActivityUiEvent.OnDetailPaneChanged -> isDetailPaneShown = event.isShown
 
             is ActivityUiEvent.OnItemClicked -> clickItem(event.itemId)
 
-            is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let(::openTarget)
+            is ActivityUiEvent.OnOpenTargetClicked -> itemOrNull(event.itemId)?.let { item ->
+                if (openTarget(item)) trackEvent("activity_open_target_clicked", mapOf("kind" to item.kind))
+            }
 
             is ActivityUiEvent.OnActorClicked -> itemOrNull(event.itemId)
                 ?.actor
                 ?.takeIf { it.opensProfile && isOnTop() }
-                ?.let { actor -> navigator.openPersonProfile(actor.personKey, actor.isMe) }
+                ?.let { actor ->
+                    trackEvent("person_clicked", sourceParams)
+                    navigator.openPersonProfile(actor.personKey, actor.isMe)
+                }
 
             // Why: only a group still on the device; one deleted or left keeps its name, with nothing to open.
             is ActivityUiEvent.OnGroupClicked -> itemOrNull(event.itemId)
                 ?.takeIf { it.isGroupOnDevice && isOnTop() }
-                ?.let { item -> openGroup(item.groupId, GroupTab.EXPENSES) }
+                ?.let { item ->
+                    trackEvent("group_clicked", sourceParams)
+                    openGroup(item.groupId, GroupTab.EXPENSES)
+                }
 
-            is ActivityUiEvent.OnChangesToggled -> uiState.update {
-                it.copy(expandedItemId = event.itemId.takeIf { id -> id != it.expandedItemId })
+            is ActivityUiEvent.OnChangesToggled -> itemOrNull(event.itemId)?.let { item ->
+                val isExpanded = item.id != uiState.value.expandedItemId
+                trackEvent("activity_changes_toggled", mapOf("is_expanded" to isExpanded))
+                uiState.update { it.copy(expandedItemId = item.id.takeIf { isExpanded }) }
             }
 
             ActivityUiEvent.OnMarkAllReadClicked -> if (uiState.value.canMarkAllRead) {
+                trackEvent("activity_mark_all_read_clicked", emptyMap())
                 viewModelScope.launch { markAllActivityRead() }
             }
 
-            ActivityUiEvent.OnFilterClicked -> openFilter()
-
-            is ActivityUiEvent.OnDraftGroupPicked -> updateDraft { it.copy(groupId = event.groupId) }
-
-            is ActivityUiEvent.OnDraftTypeToggled -> updateDraft { draft ->
-                draft.copy(types = toggleType(draft.types, event.type))
+            // Why: only a sheet that opens, Atividade on top and the sheet not open yet.
+            ActivityUiEvent.OnFilterClicked -> if (isOnTop() && uiState.value.filterDraft == null) {
+                trackEvent("activity_filter_clicked", emptyMap())
+                openFilter()
             }
 
-            ActivityUiEvent.OnFilterApplied -> uiState.value.filterDraft?.let(::changeFilter)
+            is ActivityUiEvent.OnDraftGroupPicked -> uiState.value.filterDraft?.let { draft ->
+                if (draft.groupId != event.groupId) {
+                    trackEvent("activity_filter_group_picked", mapOf("is_all" to (event.groupId == null)))
+                }
+                updateDraft { it.copy(groupId = event.groupId) }
+            }
 
-            ActivityUiEvent.OnFilterCleared -> changeFilter(ActivityFilter.none)
+            is ActivityUiEvent.OnDraftTypeToggled -> uiState.value.filterDraft?.let { draft ->
+                trackEvent(
+                    "activity_filter_type_toggled",
+                    mapOf("type" to event.type, "is_included" to (event.type !in draft.types)),
+                )
+                updateDraft { it.copy(types = toggleType(it.types, event.type)) }
+            }
+
+            ActivityUiEvent.OnFilterApplied -> uiState.value.filterDraft?.let { draft ->
+                trackEvent(
+                    "activity_filter_applied",
+                    mapOf(
+                        "has_group" to (draft.groupId != null),
+                        "types" to draft.types.size,
+                        "has_person" to (draft.personKey != null),
+                    ),
+                )
+                changeFilter(draft)
+            }
+
+            // Why: the sheet's own Limpar, so a late tap once the sheet closed leaves the chips applied.
+            ActivityUiEvent.OnFilterCleared -> if (uiState.value.filterDraft != null) {
+                trackEvent("activity_filters_cleared", mapOf("entry" to "sheet"))
+                changeFilter(ActivityFilter.none)
+            }
 
             ActivityUiEvent.OnFilterDismissed -> uiState.update { it.copy(filterDraft = null) }
 
-            ActivityUiEvent.OnGroupChipRemoved -> changeFilter(uiState.value.filter.copy(groupId = null))
+            ActivityUiEvent.OnGroupChipRemoved -> {
+                if (uiState.value.filter.groupId != null) trackChipRemoved("group")
+                changeFilter(uiState.value.filter.copy(groupId = null))
+            }
 
-            is ActivityUiEvent.OnTypeChipRemoved -> changeFilter(
-                uiState.value.filter.let { it.copy(types = it.types - event.type) },
-            )
+            is ActivityUiEvent.OnTypeChipRemoved -> {
+                if (event.type in uiState.value.filter.types) trackChipRemoved("type")
+                changeFilter(uiState.value.filter.let { it.copy(types = it.types - event.type) })
+            }
 
-            ActivityUiEvent.OnPersonChipRemoved -> changeFilter(uiState.value.filter.copy(personKey = null))
+            ActivityUiEvent.OnPersonChipRemoved -> {
+                if (uiState.value.filter.personKey != null) trackChipRemoved("person")
+                changeFilter(uiState.value.filter.copy(personKey = null))
+            }
 
-            ActivityUiEvent.OnClearFiltersClicked -> changeFilter(ActivityFilter.none)
+            ActivityUiEvent.OnClearFiltersClicked -> {
+                if (uiState.value.filter != ActivityFilter.none) {
+                    trackEvent("activity_filters_cleared", mapOf("entry" to "chips"))
+                }
+                changeFilter(ActivityFilter.none)
+            }
 
             ActivityUiEvent.OnEndReached -> showMore()
 
@@ -248,14 +303,17 @@ class ActivityViewModel(
 
             ActivityUiEvent.OnDeletedNoticeShown -> uiState.update { it.copy(deletedNotice = null) }
 
-            ActivityUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
+            ActivityUiEvent.OnProfileClicked -> if (isOnTop()) {
+                trackEvent("profile_avatar_clicked", sourceParams)
+                navigator.navigate(Route.Profile)
+            }
 
             // Why: never over "Filtrar atividade", which is no route, so ⌘K on the web can't stack the search over it.
             ActivityUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.isFilterOpen) {
-                navigator.openSearchOver(HomeTab.ACTIVITY)
+                if (navigator.openSearchOver(HomeTab.ACTIVITY)) trackEvent("search_opened", sourceParams)
             }
 
-            ActivityUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
+            ActivityUiEvent.OnHomeTabClicked, ActivityUiEvent.OnBrandClicked -> navigator.openHomeTab(Route.Home)
 
             ActivityUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
@@ -309,6 +367,7 @@ class ActivityViewModel(
      */
     private fun clickItem(itemId: String) {
         val item = itemOrNull(itemId) ?: return
+        trackEvent("activity_item_clicked", mapOf("kind" to item.kind, "is_unread" to item.isUnread))
         if (item.isUnread) viewModelScope.launch { markActivityRead(item.id) }
         if (isDetailPaneShown) {
             uiState.update { it.copy(pickedItemId = item.id) }
@@ -317,16 +376,17 @@ class ActivityViewModel(
         }
     }
 
-    private fun openTarget(item: ActivityItem) {
-        if (!isOnTop()) return
+    // Why: says whether it opened something (the deleted notice included), which Analytics counts.
+    private fun openTarget(item: ActivityItem): Boolean {
+        if (!isOnTop()) return false
         val deletion = item.deletion
         if (deletion != null) {
             uiState.update { it.copy(deletedNotice = deletion) }
-            return
+            return true
         }
         when (item.target) {
             ActivityTarget.BILL -> {
-                val billId = item.targetId ?: return
+                val billId = item.targetId ?: return false
                 openGroup(item.groupId, GroupTab.EXPENSES)
                 navigator.navigate(
                     Route.BillDetail(
@@ -343,6 +403,7 @@ class ActivityViewModel(
 
             ActivityTarget.BALANCES -> openGroup(item.groupId, GroupTab.BALANCES)
         }
+        return true
     }
 
     private fun openGroup(
@@ -426,10 +487,15 @@ class ActivityViewModel(
         }
     }
 
+    private fun trackChipRemoved(chip: String) {
+        trackEvent("activity_filter_chip_removed", mapOf("chip" to chip))
+    }
+
     private fun refresh() {
         val state = uiState.value
         // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
         if (state.isRefreshing || !state.isOnline) return
+        trackEvent("pull_to_refresh", sourceParams)
         uiState.update {
             it.copy(
                 isRefreshing = true,

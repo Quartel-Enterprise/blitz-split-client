@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaAccess
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaContact
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaUiAction
@@ -24,6 +25,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AgendaViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: AgendaViewModel
@@ -423,6 +425,225 @@ class AgendaViewModelTest {
             assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
+    // region Analytics
+
+    @Test
+    fun `GIVEN the events nobody taps to act WHEN reading their analytics THEN none is tracked`() {
+        // Given
+        val events = listOf(
+            AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED),
+            AgendaUiEvent.OnContactsLoaded(agenda),
+            AgendaUiEvent.OnQueryChanged("hel"),
+            AgendaUiEvent.OnBackClicked,
+        )
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(List(events.size) { EventAnalytics.NotTracked }, analytics)
+    }
+
+    @Test
+    fun `GIVEN the taps the agenda may refuse WHEN reading their analytics THEN the ViewModel sends each event`() {
+        // Given
+        val expected = mapOf(
+            AgendaUiEvent.OnAllowAccessClicked to "agenda_allow_access_clicked",
+            AgendaUiEvent.OnOpenSettingsClicked to "agenda_settings_clicked",
+            AgendaUiEvent.OnInviteClicked("agenda-helena") to "agenda_invite_clicked",
+            AgendaUiEvent.OnInviteWithLinkClicked to "contacts_invite_with_link_clicked",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN the agenda never asked WHEN Permitir acesso is tapped THEN sends the allow access clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.NOT_ASKED))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnAllowAccessClicked)
+
+            // Then
+            assertEquals(listOf("agenda_allow_access_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the agenda refused WHEN Permitir acesso is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.DENIED))
+
+        // When
+        viewModel.onEvent(AgendaUiEvent.OnAllowAccessClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the agenda refused WHEN Abrir configuracoes is tapped THEN sends the settings clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.DENIED))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnOpenSettingsClicked)
+
+            // Then
+            assertEquals(listOf("agenda_settings_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the agenda never asked WHEN Abrir configuracoes is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.NOT_ASKED))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnOpenSettingsClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the agenda over Contatos WHEN Convidar is tapped on Helena THEN sends the agenda invite clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+            viewModel.onEvent(AgendaUiEvent.OnContactsLoaded(agenda))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-helena"))
+
+            // Then
+            assertEquals(listOf("agenda_invite_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the agenda in the pane WHEN Convidar is tapped on Helena THEN sends the invite clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inPane = true)
+            viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+            viewModel.onEvent(AgendaUiEvent.OnContactsLoaded(agenda))
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-helena"))
+
+            // Then
+            assertEquals(listOf("agenda_invite_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a contact not listed WHEN Convidar is tapped on it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+        viewModel.onEvent(AgendaUiEvent.OnContactsLoaded(agenda))
+
+        // When
+        viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-nobody"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the invite already open WHEN a late Convidar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED))
+        viewModel.onEvent(AgendaUiEvent.OnContactsLoaded(agenda))
+        viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-helena"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-carlos"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the agenda over Contatos WHEN Convidar com link is tapped THEN sends it from the agenda`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnInviteWithLinkClicked)
+
+            // Then
+            assertEquals(
+                listOf("contacts_invite_with_link_clicked" to mapOf<String, Any>("source" to "agenda")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the agenda in the pane WHEN Convidar com link is tapped THEN sends it from the agenda`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inPane = true)
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnInviteWithLinkClicked)
+
+            // Then
+            assertEquals(
+                listOf("contacts_invite_with_link_clicked" to mapOf<String, Any>("source" to "agenda")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the invite already open WHEN a late Convidar com link arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(AgendaUiEvent.OnInviteWithLinkClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(AgendaUiEvent.OnInviteWithLinkClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the agenda on top WHEN the platform reads it a name is typed and back tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val events = listOf(
+                AgendaUiEvent.OnAccessChanged(AgendaAccess.GRANTED),
+                AgendaUiEvent.OnContactsLoaded(agenda),
+                AgendaUiEvent.OnQueryChanged("hel"),
+                AgendaUiEvent.OnBackClicked,
+            )
+
+            // When
+            events.forEach(viewModel::onEvent)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    // endregion
+
     private val agenda = listOf(
         AgendaContact(
             id = "agenda-carlos",
@@ -446,7 +667,10 @@ class AgendaViewModelTest {
             it.navigate(Route.Contacts)
             if (!inPane) it.navigate(Route.ContactsAgenda)
         }
-        viewModel = AgendaViewModel(navigator = navigator)
+        viewModel = AgendaViewModel(
+            navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
+        )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 }

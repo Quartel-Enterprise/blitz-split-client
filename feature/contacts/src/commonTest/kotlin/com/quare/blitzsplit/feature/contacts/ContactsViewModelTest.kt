@@ -27,6 +27,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -57,6 +58,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ContactsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var hidden: FakeHiddenContactRepository
@@ -652,6 +654,20 @@ class ContactsViewModelTest {
     }
 
     @Test
+    fun `GIVEN Contatos WHEN the web logo is tapped THEN goes back to Inicio and sends brand_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnBrandClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+            assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "contacts")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Contatos WHEN the Grupos tab is tapped THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -934,6 +950,451 @@ class ContactsViewModelTest {
         assertEquals(listOf(Route.Home, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
     }
 
+    // region Analytics
+
+    @Test
+    fun `GIVEN the events nobody taps to act WHEN reading their analytics THEN none is tracked`() {
+        // Given
+        val events = listOf(
+            ContactsUiEvent.OnDetailPaneChanged(isShown = true),
+            ContactsUiEvent.OnPaneBackClicked,
+            ContactsUiEvent.OnHomeTabClicked,
+            ContactsUiEvent.OnGroupsTabClicked,
+            ContactsUiEvent.OnBalancesTabClicked,
+            ContactsUiEvent.OnActivityTabClicked,
+        )
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(List(events.size) { EventAnalytics.NotTracked }, analytics)
+    }
+
+    @Test
+    fun `GIVEN the taps Contatos may refuse WHEN reading their analytics THEN the ViewModel sends each event`() {
+        // Given
+        val expected = mapOf(
+            ContactsUiEvent.OnContactClicked(CARLA_KEY) to "contact_clicked",
+            ContactsUiEvent.OnSearchClicked to "search_opened",
+            ContactsUiEvent.OnHiddenToggled to "contacts_hidden_toggled",
+            ContactsUiEvent.OnShowContactClicked(JULIA_KEY) to "contact_show_clicked",
+            ContactsUiEvent.OnBalancesCardClicked to "contacts_balances_clicked",
+            ContactsUiEvent.OnYouOweClicked to "contacts_balances_clicked",
+            ContactsUiEvent.OnOwedToYouClicked to "contacts_balances_clicked",
+            ContactsUiEvent.OnAgendaClicked to "contacts_agenda_clicked",
+            ContactsUiEvent.OnInviteWithLinkClicked to "contacts_invite_with_link_clicked",
+            ContactsUiEvent.OnProfileClicked to "profile_avatar_clicked",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Carla listed WHEN she is tapped THEN sends the contact clicked as not hidden`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // Then
+            assertEquals(listOf("contact_clicked" to mapOf<String, Any>("is_hidden" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla listed and the pane beside the list WHEN she is tapped THEN sends the contact clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // Then
+            assertEquals(listOf("contact_clicked" to mapOf<String, Any>("is_hidden" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Julia under the hidden ones WHEN she is tapped THEN sends the contact clicked as hidden`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedHidden = juliaHidden)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(JULIA_KEY))
+
+            // Then
+            assertEquals(listOf("contact_clicked" to mapOf<String, Any>("is_hidden" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone not in Contatos WHEN their key is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnContactClicked("user:nobody"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN her profile already open over Contatos WHEN a late tap on Bruno arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(BRUNO_KEY))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN groups and Contatos on top WHEN the magnifier is tapped THEN sends the search opened from contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf("search_opened" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN the magnifier is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla profile over Contatos WHEN the magnifier is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Julia hidden WHEN the hidden section is opened THEN sends it as expanded`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedHidden = juliaHidden)
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnHiddenToggled)
+
+        // Then
+        assertEquals(listOf("contacts_hidden_toggled" to mapOf<String, Any>("is_expanded" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the hidden section open WHEN it is closed THEN sends it as not expanded`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedHidden = juliaHidden)
+        viewModel.onEvent(ContactsUiEvent.OnHiddenToggled)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnHiddenToggled)
+
+        // Then
+        assertEquals(listOf("contacts_hidden_toggled" to mapOf<String, Any>("is_expanded" to false)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN nobody hidden WHEN the hidden section is toggled THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnHiddenToggled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Julia hidden WHEN Mostrar is tapped on her THEN sends the show clicked from contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedHidden = juliaHidden)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnShowContactClicked(JULIA_KEY))
+
+            // Then
+            assertEquals(listOf("contact_show_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla not hidden WHEN Mostrar is tapped on her THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnShowContactClicked(CARLA_KEY))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the summary WHEN Ver Saldos is tapped THEN sends the balances clicked on all`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnBalancesCardClicked)
+
+            // Then
+            assertEquals(
+                listOf("contacts_balances_clicked" to mapOf<String, Any>("filter" to BalancesFilter.ALL)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe Bruno WHEN Voce deve is tapped THEN sends the balances clicked on whom you owe`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnYouOweClicked)
+
+            // Then
+            assertEquals(
+                listOf("contacts_balances_clicked" to mapOf<String, Any>("filter" to BalancesFilter.YOU_OWE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla owes you WHEN Te devem is tapped THEN sends the balances clicked on who owes you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnOwedToYouClicked)
+
+            // Then
+            assertEquals(
+                listOf("contacts_balances_clicked" to mapOf<String, Any>("filter" to BalancesFilter.OWES_YOU)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe nobody WHEN Voce deve is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(bills = listOf(owes(FLORIPA, memberId("carla", FLORIPA), meId(FLORIPA), 5_000L, "dinner")))
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnYouOweClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN nobody owes you WHEN Te devem is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(bills = listOf(owes(FLORIPA, meId(FLORIPA), memberId("bruno", FLORIPA), 2_000L, "taxi")))
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnOwedToYouClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla profile over Contatos WHEN Ver Saldos is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnBalancesCardClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Contatos on top WHEN Convidar da agenda is tapped THEN sends the agenda clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
+
+            // Then
+            assertEquals(listOf("contacts_agenda_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the pane beside the list WHEN Convidar da agenda is tapped THEN sends the agenda clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
+
+            // Then
+            assertEquals(listOf("contacts_agenda_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the agenda already over Contatos WHEN a late agenda tap arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Contatos on top WHEN Convidar com link is tapped THEN sends the invite with link from contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnInviteWithLinkClicked)
+
+            // Then
+            assertEquals(listOf("contacts_invite_with_link_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla profile over Contatos WHEN Convidar com link is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnInviteWithLinkClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Contatos WHEN the avatar is tapped THEN sends the profile avatar clicked from contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf("profile_avatar_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a profile over the Contatos tab WHEN the avatar is tapped THEN still sends the avatar clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf("profile_avatar_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Saldos in place of Contatos WHEN a late avatar tap arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnBalancesTabClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Contatos WHEN the pane shows and closes and a tab is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val events = listOf(
+                ContactsUiEvent.OnDetailPaneChanged(isShown = true),
+                ContactsUiEvent.OnPaneBackClicked,
+                ContactsUiEvent.OnActivityTabClicked,
+            )
+
+            // When
+            events.forEach(viewModel::onEvent)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    // endregion
+
+    private val contactsSource: Map<String, Any> = mapOf("source" to "contacts")
+
+    private val juliaHidden = listOf(
+        HiddenContact(
+            JULIA_KEY,
+            isHidden = true,
+            hiddenAt = 10L,
+        ),
+    )
+
     private fun TestScope.prepareScenario(
         storedGroups: List<Group> = defaultGroups(),
         bills: List<Expense> = defaultBills(),
@@ -954,6 +1415,7 @@ class ContactsViewModelTest {
         firstDownload = MutableStateFlow(downloading)
         val roomNeverAnswers = MutableSharedFlow<ContactBookSnapshot>()
         viewModel = ContactsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             setContactHidden = SetContactHiddenUseCase(hidden),
             observeContactBook = if (isBookRead) {

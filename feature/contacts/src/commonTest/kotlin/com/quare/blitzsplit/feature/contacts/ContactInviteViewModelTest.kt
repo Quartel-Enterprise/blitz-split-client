@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiAction
@@ -36,6 +37,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class ContactInviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
@@ -452,6 +454,233 @@ class ContactInviteViewModelTest {
         modules = text.map { it.isUpperCase() },
     )
 
+    // region Analytics
+
+    @Test
+    fun `GIVEN the close WHEN reading its analytics THEN it is not tracked`() {
+        // Given
+        val event = ContactInviteUiEvent.OnCloseClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.NotTracked, analytics)
+    }
+
+    @Test
+    fun `GIVEN the taps the invite may refuse WHEN reading their analytics THEN the ViewModel sends each event`() {
+        // Given
+        val expected = mapOf(
+            ContactInviteUiEvent.OnGroupPicked(APE) to "contact_invite_group_picked",
+            ContactInviteUiEvent.OnNewGroupClicked to "create_group_clicked",
+            ContactInviteUiEvent.OnCopyClicked to "invite_link_copy_clicked",
+            ContactInviteUiEvent.OnShareClicked to "invite_link_share_clicked",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Viagem Floripa marked WHEN Ape 302 is picked THEN sends the group picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnGroupPicked(APE))
+
+        // Then
+        assertEquals(listOf("contact_invite_group_picked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Viagem Floripa marked WHEN it is picked again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnGroupPicked(FLORIPA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the invite WHEN a group not listed is picked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnGroupPicked("gone"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the invite on top WHEN Novo grupo is tapped THEN sends the create group clicked from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
+
+            // Then
+            assertEquals(listOf("create_group_clicked" to inviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the invite already closed WHEN a late Novo grupo arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a link WHEN Copiar is tapped THEN sends the link copy clicked from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to inviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the link pending WHEN Copiar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ContactInviteUiEvent.OnGroupPicked(FUTEBOL))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnCopyClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a link and its group WHEN Compartilhar is tapped THEN sends the link share clicked from the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(name = "Helena Souza")
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_share_clicked" to inviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the link pending WHEN Compartilhar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ContactInviteUiEvent.OnGroupPicked(FUTEBOL))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnShareClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no group WHEN Copiar and Compartilhar are tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+        val events = listOf(ContactInviteUiEvent.OnCopyClicked, ContactInviteUiEvent.OnShareClicked)
+
+        // When
+        events.forEach(viewModel::onEvent)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the invite on top WHEN it is closed THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactInviteUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Copiar is tapped THEN sends the link copy clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to personalInviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Compartilhar is tapped THEN sends the link share clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_share_clicked" to personalInviteSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Diego WHEN Novo grupo is tapped THEN sends the create group clicked from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                name = "Diego",
+            )
+
+            // When
+            viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
+
+            // Then
+            assertEquals(listOf("create_group_clicked" to personalInviteSource), trackedEvents)
+        }
+
+    // endregion
+
+    private val inviteSource: Map<String, Any> = mapOf("source" to "contact_invite")
+
+    private val personalInviteSource: Map<String, Any> = mapOf("source" to "personal_invite")
+
     private fun TestScope.prepareScenario(
         personKey: String? = null,
         name: String? = null,
@@ -470,6 +699,7 @@ class ContactInviteViewModelTest {
             it.navigate(route)
         }
         viewModel = ContactInviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode(::qrCodeOf),
