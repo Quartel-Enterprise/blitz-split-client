@@ -76,7 +76,8 @@ internal fun personTargetOf(
     )
 }
 
-private fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
+// Why: a member as the form and "Quem pagou a quem?" draw them.
+internal fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
     id = member.id,
     name = member.name,
     initials = Initials.ofMember(member.name, member.isMe),

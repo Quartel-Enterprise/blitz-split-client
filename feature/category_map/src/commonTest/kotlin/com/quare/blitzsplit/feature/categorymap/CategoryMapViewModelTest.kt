@@ -462,6 +462,39 @@ class CategoryMapViewModelTest {
     }
 
     @Test
+    fun `GIVEN nothing picked yet WHEN picking the first category shown beside its terms THEN sends nothing`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val shown = viewModel.uiState.value.selectedSection
+                ?.category
+                ?.id
+                .orEmpty()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(shown))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the term category picker open WHEN tapping its category again to close it THEN sends nothing`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnTermClicked("uber"))
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the map not read yet WHEN adding a term or restoring THEN sends nothing`() = runTest {
         // Given
         prepareScenario(holdsGroupCategories = true)

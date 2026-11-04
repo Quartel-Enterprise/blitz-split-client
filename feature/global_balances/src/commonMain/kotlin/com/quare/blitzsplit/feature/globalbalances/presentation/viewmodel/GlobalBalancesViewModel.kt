@@ -191,6 +191,7 @@ class GlobalBalancesViewModel(
              * filter hides, whom the pane would jump to once the filter changes.
              */
             is GlobalBalancesUiEvent.OnPersonSelected -> if (isListed(event.personId)) {
+                trackEvent("balances_person_selected", emptyMap())
                 uiState.update { it.copy(pickedPersonId = event.personId) }
             }
 

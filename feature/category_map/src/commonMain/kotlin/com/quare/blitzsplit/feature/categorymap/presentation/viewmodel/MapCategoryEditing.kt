@@ -58,8 +58,11 @@ internal class MapCategoryEditing(
                 openNew(event.parentId)
             }
 
+            // Why: only a group's category still on the device, never a stale tap on one a sync just deleted.
             is CategoryMapUiEvent.OnEditCategoryClicked -> {
-                trackEvent("category_edit_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
+                if (uiState.value.categories.groupIdOf(event.categoryId) != null) {
+                    trackEvent("category_edit_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
+                }
                 openEdit(event.categoryId)
             }
 
@@ -105,10 +108,7 @@ internal class MapCategoryEditing(
             CategoryMapUiEvent.OnCategoryDeleteConfirmed -> delete()
 
             CategoryMapUiEvent.OnCategoryDeleteDismissed -> {
-                val deletion = uiState.value.categoryDeletion
-                if (deletion != null &&
-                    !deletion.isDeleting
-                ) {
+                if (uiState.value.categoryDeletion?.isDeleting == false) {
                     trackEvent("category_delete_cancelled", mapOf("source" to CATEGORY_MAP_SOURCE))
                 }
                 uiState.update {

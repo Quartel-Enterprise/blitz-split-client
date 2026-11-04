@@ -26,7 +26,8 @@ sealed interface PaymentKeyUiEvent : TrackedUiEvent {
             // Why: the tap, then the key once it is saved.
             OnSaveClicked -> EventAnalytics.Manual(setOf("payment_key_save_clicked", "payment_key_saved"))
 
-            OnDeleteClicked -> EventAnalytics.Automatic("payment_key_delete_clicked")
+            // Why: only a tap that asks, never one while the key is saving or on a key not saved yet.
+            OnDeleteClicked -> EventAnalytics.Manual("payment_key_delete_clicked")
 
             // Why: only an answer to a question still open, since Apple's alert also closes itself after its button.
             OnDeleteConfirmed -> EventAnalytics.Manual("payment_key_delete_confirmed")

@@ -278,7 +278,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | Tudo, Você deve or Te devem, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "Por grupo" opened or closed on a row | `:feature:global_balances` |
-| `balances_person_selected` | none | A person picked in the list beside the detail | `:feature:global_balances` |
+| `balances_person_selected` | none | A person picked in the list beside the detail, while the filter lists them | `:feature:global_balances` |
 | `received_clicked` | `source` (`global_balances`) | "Recebi" | `:feature:global_balances` |
 | `charge_clicked` | `source` (`global_balances`) | "Cobrar" | `:feature:global_balances` |
 | `charge_pix_key_toggled` | `is_included` | "Incluir minha chave Pix", while the switch takes it (not once the message was edited) | `:feature:global_balances` |
@@ -290,7 +290,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_key_default_toggled` | `is_default` | "Chave padrão", while it can change (not the only key of its method) | `:feature:payment_key` |
 | `payment_key_save_clicked` | none | The key's Salvar, also when it can't save yet | `:feature:payment_key` |
 | `payment_key_saved` | `type`, `is_new`, `is_default` | A key saved | `:feature:payment_key` |
-| `payment_key_delete_clicked` | none | "Apagar chave", which asks first | `:feature:payment_key` |
+| `payment_key_delete_clicked` | none | "Apagar chave", which asks first, while the key isn't saving | `:feature:payment_key` |
 | `payment_key_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:payment_key` |
 | `payment_key_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:payment_key` |
 | `stats_period_selected` | `period` | A period of the menu | `:feature:group_stats` |
@@ -303,12 +303,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_section_selected` | none | Another category picked beside its terms | `:feature:category_map` |
 | `category_term_add_clicked` | `entry` (`map`, `category`, `search`) | "Adicionar termo", "Adicionar termo em Transporte" or "Adicionar “pizzaria”", once the map is read | `:feature:category_map` |
 | `category_term_clicked` | none | A term, which opens "Editar termo", once the map is read | `:feature:category_map` |
-| `category_term_category_clicked` | none | The term's category, opening its picker | `:feature:category_map` |
+| `category_term_category_clicked` | none | The term's category, opening its picker (not the tap that closes it) | `:feature:category_map` |
 | `category_term_category_picked` | none | A category picked for the term | `:feature:category_map` |
 | `category_term_save_clicked` | none | The term's Salvar (or "Mover para X"), also when it can't save yet | `:feature:category_map` |
 | `category_term_saved` | `is_new` (from "Novo termo", also when it moves a word another category had) | A term saved | `:feature:category_map` |
 | `category_term_remove_clicked` | none | "Remover do mapa" | `:feature:category_map` |
-| `category_term_undo_clicked` | none | Desfazer on "“café” saiu do mapa" | `:feature:category_map` |
+| `category_term_undo_clicked` | none | Desfazer on "“café” saiu do mapa", once the map is read | `:feature:category_map` |
 | `category_map_restore_clicked` | none | "Restaurar padrão", which asks first, once the map is read | `:feature:category_map` |
 | `category_map_restore_confirmed` | none | Its question confirmed, while it was open | `:feature:category_map` |
 | `category_map_restore_cancelled` | none | Its question closed without confirming, while it was open | `:feature:category_map` |

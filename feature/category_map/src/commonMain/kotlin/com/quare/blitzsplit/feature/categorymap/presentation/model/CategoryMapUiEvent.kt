@@ -26,7 +26,8 @@ sealed interface CategoryMapUiEvent : TrackedUiEvent {
 
             is OnTermClicked -> EventAnalytics.Manual("category_term_clicked")
 
-            OnTermCategoryClicked -> EventAnalytics.Automatic("category_term_category_clicked")
+            // Why: only the tap that opens the picker, since the same row closes it again.
+            OnTermCategoryClicked -> EventAnalytics.Manual("category_term_category_clicked")
 
             is OnTermCategoryPicked -> EventAnalytics.Automatic("category_term_category_picked")
 
@@ -35,7 +36,8 @@ sealed interface CategoryMapUiEvent : TrackedUiEvent {
 
             OnTermRemoveClicked -> EventAnalytics.Automatic("category_term_remove_clicked")
 
-            OnUndoRemoveClicked -> EventAnalytics.Automatic("category_term_undo_clicked")
+            // Why: only an undo that brings a term back, once the map is read.
+            OnUndoRemoveClicked -> EventAnalytics.Manual("category_term_undo_clicked")
 
             // Why: a close or a notice that went away, which each platform also does its own way.
             OnTermDismissed,

@@ -16,7 +16,8 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
             // Why: a toggle, sent with where it ended up.
             is OnPersonExpandToggled -> EventAnalytics.Manual("balances_person_expand_toggled")
 
-            is OnPersonSelected -> EventAnalytics.Automatic("balances_person_selected")
+            // Why: only someone the filter lists, never a stale tap the screen ignores.
+            is OnPersonSelected -> EventAnalytics.Manual("balances_person_selected")
 
             is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 

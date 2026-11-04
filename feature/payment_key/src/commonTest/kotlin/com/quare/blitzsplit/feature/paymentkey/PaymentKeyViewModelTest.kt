@@ -1840,6 +1840,18 @@ class PaymentKeyViewModelTest {
     }
 
     @Test
+    fun `GIVEN a new key WHEN tapping Apagar THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the delete question open WHEN confirming it THEN tracks the deletion confirmed`() =
         runTest(testDispatcher) {
             // Given

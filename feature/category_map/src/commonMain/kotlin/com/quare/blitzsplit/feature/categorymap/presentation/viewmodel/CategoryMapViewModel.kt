@@ -139,8 +139,11 @@ class CategoryMapViewModel(
 
             is CategoryMapUiEvent.OnQueryChanged -> uiState.update { it.copy(query = event.text) }
 
-            is CategoryMapUiEvent.OnSectionSelected -> if (event.categoryId != uiState.value.selectedCategoryId) {
-                trackEvent("category_map_section_selected", emptyMap())
+            // Why: the section shown, which is the first one until a pick, never the id stored (null until then).
+            is CategoryMapUiEvent.OnSectionSelected -> {
+                if (event.categoryId != uiState.value.selectedSection?.category?.id) {
+                    trackEvent("category_map_section_selected", emptyMap())
+                }
                 uiState.update { it.copy(selectedCategoryId = event.categoryId) }
             }
 
@@ -158,8 +161,14 @@ class CategoryMapViewModel(
                 state.copy(termForm = state.termForm?.copy(text = event.text.take(MAX_TYPED)))
             }
 
-            CategoryMapUiEvent.OnTermCategoryClicked -> uiState.update { state ->
-                state.copy(termForm = state.termForm?.let { it.copy(isPickingCategory = !it.isPickingCategory) })
+            // Why: the same row opens and closes the picker; only opening it counts.
+            CategoryMapUiEvent.OnTermCategoryClicked -> {
+                if (uiState.value.termForm?.isPickingCategory == false) {
+                    trackEvent("category_term_category_clicked", emptyMap())
+                }
+                uiState.update { state ->
+                    state.copy(termForm = state.termForm?.let { it.copy(isPickingCategory = !it.isPickingCategory) })
+                }
             }
 
             is CategoryMapUiEvent.OnTermCategoryPicked -> uiState.update { state ->
@@ -314,6 +323,7 @@ class CategoryMapViewModel(
 
     private fun undoRemove() {
         val term = uiState.value.removedTerm ?: return
+        trackEvent("category_term_undo_clicked", emptyMap())
         uiState.update { it.copy(removedTerm = null) }
         viewModelScope.launch {
             saveCategoryTerm(

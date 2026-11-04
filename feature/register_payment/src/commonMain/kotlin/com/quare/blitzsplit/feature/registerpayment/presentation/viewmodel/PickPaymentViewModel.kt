@@ -4,11 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -122,14 +120,4 @@ class PickPaymentViewModel(
         group: Group,
         memberId: String,
     ): PaymentPerson? = group.members.firstOrNull { it.id == memberId }?.let(::toPerson)
-
-    private fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
-        id = member.id,
-        name = member.name,
-        initials = Initials.ofMember(member.name, member.isMe),
-        avatarColor = member.avatarColor,
-        photoUrl = member.photoUrl,
-        isMe = member.isMe,
-        personKey = PeopleBalances.keyOf(member),
-    )
 }

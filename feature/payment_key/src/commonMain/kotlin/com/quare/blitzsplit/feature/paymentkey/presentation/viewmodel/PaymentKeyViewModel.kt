@@ -101,6 +101,7 @@ class PaymentKeyViewModel(
             }
 
             PaymentKeyUiEvent.OnDeleteClicked -> if (route.keyId != null && !uiState.value.isSaving) {
+                trackEvent("payment_key_delete_clicked", emptyMap())
                 showDeleteConfirmation(true)
             }
 
@@ -272,7 +273,7 @@ class PaymentKeyViewModel(
     }
 
     private fun changeDefault(isDefault: Boolean) {
-        if (uiState.value.isDefaultLocked) return
+        if (uiState.value.isDefaultLocked || isDefault == uiState.value.isDefault) return
         trackEvent("payment_key_default_toggled", mapOf("is_default" to isDefault))
         uiState.update { it.copy(isDefault = isDefault) }
     }

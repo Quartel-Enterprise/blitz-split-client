@@ -1890,6 +1890,18 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN someone not listed WHEN a stale pick arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected("user:nobody|BRL"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN Carla WHEN tapping her face THEN sends the person clicked from Saldos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
