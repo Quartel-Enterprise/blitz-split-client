@@ -31,4 +31,10 @@ data class DeviceSettingsEntity(
     // Why: "Bitcoin em satoshis", every bitcoin amount shown and typed in whole sats; off until turned on.
     @ColumnInfo(defaultValue = "0")
     val showsBitcoinInSats: Boolean,
+    /*
+     * Why: when this device last offered an update (epoch millis), so opening the app again within the hour doesn't
+     * ask again; null until offered once.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val lastUpdatePromptAt: Long?,
 )

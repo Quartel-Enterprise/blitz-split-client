@@ -13,12 +13,14 @@ import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDat
 import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsRepositoryImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class DeviceSettingsRepositoryImplTest {
     private lateinit var local: FakeDeviceSettingsLocalDataSource
@@ -565,6 +567,45 @@ class DeviceSettingsRepositoryImplTest {
             assertEquals(listOf(true), observedDynamicColors.distinct())
         }
 
+    @Test
+    fun `GIVEN a fresh install WHEN observing the last update prompt THEN none was shown`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val lastPromptAt = repository.observeLastUpdatePromptAt().first()
+
+        // Then
+        assertNull(lastPromptAt)
+    }
+
+    @Test
+    fun `GIVEN sats and a theme picked WHEN an update is offered THEN stores when keeping the rest`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                showsBitcoinInSats = true,
+            ),
+        )
+
+        // When
+        repository.updateLastUpdatePromptAt(1_700_000_000_000L)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    showsBitcoinInSats = true,
+                    lastUpdatePromptAt = 1_700_000_000_000L,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(1_700_000_000_000L, repository.observeLastUpdatePromptAt().first())
+    }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -573,6 +614,7 @@ class DeviceSettingsRepositoryImplTest {
         statsGrain: String? = null,
         usesDynamicColors: Boolean = false,
         showsBitcoinInSats: Boolean = false,
+        lastUpdatePromptAt: Long? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -582,6 +624,7 @@ class DeviceSettingsRepositoryImplTest {
         statsGrain = statsGrain,
         usesDynamicColors = usesDynamicColors,
         showsBitcoinInSats = showsBitcoinInSats,
+        lastUpdatePromptAt = lastUpdatePromptAt,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -637,6 +680,7 @@ private class FakeDeviceSettingsLocalDataSource(
             statsGrain = null,
             usesDynamicColors = false,
             showsBitcoinInSats = false,
+            lastUpdatePromptAt = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

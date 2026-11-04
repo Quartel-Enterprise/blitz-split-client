@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.activity.di.activityModule
 import com.quare.blitzsplit.core.contacts.di.contactModule
 import com.quare.blitzsplit.core.expenses.di.expenseModule
 import com.quare.blitzsplit.core.groups.di.groupModule
+import com.quare.blitzsplit.core.inappupdate.di.inAppUpdateModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
 import com.quare.blitzsplit.core.profile.di.profileModule
 import com.quare.blitzsplit.core.provider.analytics.di.analyticsModule
@@ -30,6 +31,7 @@ import com.quare.blitzsplit.feature.globalbalances.di.globalBalancesModule
 import com.quare.blitzsplit.feature.groupdetail.di.groupDetailModule
 import com.quare.blitzsplit.feature.groups.di.groupsModule
 import com.quare.blitzsplit.feature.groupstats.di.groupStatsModule
+import com.quare.blitzsplit.feature.inappupdate.di.inAppUpdateFeatureModule
 import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
 import com.quare.blitzsplit.feature.members.di.membersModule
@@ -76,6 +78,7 @@ val sharedModules: List<Module> = listOf(
     contactModule,
     syncModule,
     settingsModule,
+    inAppUpdateModule,
     welcomeModule,
     profileSetupModule,
     restoreModule,
@@ -100,6 +103,7 @@ val sharedModules: List<Module> = listOf(
     groupStatsModule,
     activityFeatureModule,
     contactsModule,
+    inAppUpdateFeatureModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

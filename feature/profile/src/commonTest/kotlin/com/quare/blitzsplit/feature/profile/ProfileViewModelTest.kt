@@ -10,6 +10,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCa
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -23,6 +27,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -59,7 +64,9 @@ import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
+import com.quare.blitzsplit.feature.profile.presentation.model.UpdateCheckResult
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -107,6 +114,11 @@ class ProfileViewModelTest {
     private var unlinkCalls = 0
     private var unlinkHangs = false
     private var exportError: Throwable? = null
+    private var updateAvailability: UpdateAvailability = UpdateAvailability.NotAvailable
+    private var updateChecks = 0
+    private var updateCheckHangs = false
+    private lateinit var updateCheckRelease: CompletableDeferred<Unit>
+    private val shownUpdatePrompts = mutableListOf<Pair<UpdateAvailability.Pending, UpdatePromptSource>>()
 
     @BeforeTest
     fun setUp() {
@@ -1185,6 +1197,228 @@ class ProfileViewModelTest {
         // Then
         assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE)), actions)
     }
+
+    @Test
+    fun `GIVEN updates come from Google Play WHEN the profile opens THEN offers the update check idle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateMechanism = UpdateMechanism.GOOGLE_PLAY)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsCheckForUpdates)
+            assertFalse(state.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN updates come from the App Store WHEN the profile opens THEN offers the update check idle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateMechanism = UpdateMechanism.APP_STORE)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsCheckForUpdates)
+            assertFalse(state.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN the web with no update mechanism WHEN the profile opens THEN hides the update check`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateMechanism = UpdateMechanism.NONE)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsCheckForUpdates)
+            assertFalse(state.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN a newer version in the store WHEN checking for updates THEN offers it as a manual prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            val available = UpdateAvailability.Available(
+                versionName = "2.1.0",
+                storeUrl = "https://apps.apple.com/app/id123",
+            )
+            prepareScenario(
+                updateMechanism = UpdateMechanism.APP_STORE,
+                updateAvailability = available,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(
+                listOf<Pair<UpdateAvailability.Pending, UpdatePromptSource>>(available to UpdatePromptSource.MANUAL),
+                shownUpdatePrompts,
+            )
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN Google Play already downloaded an update WHEN checking for updates THEN offers it as a manual prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateAvailability = UpdateAvailability.Downloaded)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(
+                listOf<Pair<UpdateAvailability.Pending, UpdatePromptSource>>(
+                    UpdateAvailability.Downloaded to UpdatePromptSource.MANUAL,
+                ),
+                shownUpdatePrompts,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Google Play already downloading WHEN checking for updates THEN says it is downloading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateAvailability = UpdateAvailability.Downloading)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(
+                listOf<ProfileUiAction>(ProfileUiAction.ShowUpdateCheckResult(UpdateCheckResult.DOWNLOADING)),
+                actions,
+            )
+            assertTrue(shownUpdatePrompts.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the latest version installed WHEN checking for updates THEN says it is up to date`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateAvailability = UpdateAvailability.NotAvailable)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(
+                listOf<ProfileUiAction>(ProfileUiAction.ShowUpdateCheckResult(UpdateCheckResult.UP_TO_DATE)),
+                actions,
+            )
+            assertTrue(shownUpdatePrompts.isEmpty())
+            assertFalse(viewModel.uiState.value.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN the store unreachable WHEN checking for updates THEN says the check failed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(updateAvailability = UpdateAvailability.CheckFailed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+        // Then
+        assertEquals(
+            listOf<ProfileUiAction>(ProfileUiAction.ShowUpdateCheckResult(UpdateCheckResult.FAILED)),
+            actions,
+        )
+        assertTrue(shownUpdatePrompts.isEmpty())
+        assertFalse(viewModel.uiState.value.isCheckingForUpdates)
+    }
+
+    @Test
+    fun `GIVEN the store still answering WHEN checking for updates THEN shows the check in progress`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateCheckHangs = true)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isCheckingForUpdates)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a check for updates in progress WHEN tapping it again THEN asks the store only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateCheckHangs = true)
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(1, updateChecks)
+            assertTrue(viewModel.uiState.value.isCheckingForUpdates)
+        }
+
+    @Test
+    fun `GIVEN a check for updates in progress WHEN the store answers THEN stops showing the check in progress`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateCheckHangs = true)
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // When
+            updateCheckRelease.complete(Unit)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isCheckingForUpdates)
+            assertEquals(
+                listOf<ProfileUiAction>(ProfileUiAction.ShowUpdateCheckResult(UpdateCheckResult.UP_TO_DATE)),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a check for updates that answered WHEN tapping it again THEN asks the store again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateAvailability = UpdateAvailability.NotAvailable)
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(2, updateChecks)
+            assertEquals(
+                List<ProfileUiAction>(2) { ProfileUiAction.ShowUpdateCheckResult(UpdateCheckResult.UP_TO_DATE) },
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the web with no update mechanism WHEN checking for updates THEN asks nothing and says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                updateMechanism = UpdateMechanism.NONE,
+                updateAvailability = UpdateAvailability.Downloaded,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(0, updateChecks)
+            assertTrue(shownUpdatePrompts.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.isCheckingForUpdates)
+        }
 
     @Test
     fun `GIVEN a local only user WHEN tapping sign out THEN asks to erase the profile`() = runTest(testDispatcher) {
@@ -4255,8 +4489,16 @@ class ProfileViewModelTest {
         unlinkHangs: Boolean = false,
         exportJson: String = "{}",
         firstDownload: FirstDownloadProgress? = null,
+        updateMechanism: UpdateMechanism = UpdateMechanism.GOOGLE_PLAY,
+        updateAvailability: UpdateAvailability = UpdateAvailability.NotAvailable,
+        updateCheckHangs: Boolean = false,
     ) {
         syncRetries = 0
+        updateChecks = 0
+        shownUpdatePrompts.clear()
+        this@ProfileViewModelTest.updateAvailability = updateAvailability
+        this@ProfileViewModelTest.updateCheckHangs = updateCheckHangs
+        updateCheckRelease = CompletableDeferred()
         signOutCalls = 0
         signOutWhenSyncedCalls = 0
         cancelSignOutWhenSyncedCalls = 0
@@ -4317,6 +4559,18 @@ class ProfileViewModelTest {
             },
             exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportJson) },
             validatePaymentKey = ValidatePaymentKeyUseCase(),
+            checkForUpdate = CheckForUpdate {
+                updateChecks++
+                if (this@ProfileViewModelTest.updateCheckHangs) updateCheckRelease.await()
+                this@ProfileViewModelTest.updateAvailability
+            },
+            showUpdatePrompt = ShowUpdatePrompt {
+                availability,
+                source,
+                ->
+                shownUpdatePrompts += availability to source
+            },
+            updateMechanism = updateMechanism,
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),

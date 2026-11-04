@@ -15,7 +15,10 @@ every UI.
 | `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | Apple's, attached through `BlitzSplitApple.attachAnalytics` once the shared code started |
 | `firebaseAnalytics.ts` | `webApp/src/analytics` | The web's, through `firebase/analytics`, attached through the exported `attachAnalytics` |
 
-No event is tracked yet: each user action's event comes with its feature, through `TrackEvent`.
+Each user action's event comes with its feature, through `TrackEvent`. The first are the in-app update's, as Bible
+Planner's: `update_prompt_shown` (`source`: `startup` or `manual`; `version` on iOS and macOS, where the App Store
+says it), `update_accepted` and `update_dismissed` (`source`, the App Store's sheet), `update_install_started` and
+`update_download_failed` (Google Play's flexible update).
 
 ## What is never sent
 

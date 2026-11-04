@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
@@ -36,6 +37,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ExportUserDataUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.JoinGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.LeaveGroupUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveAppForegroundUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveSyncStateUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ReportAppForegroundUseCase
@@ -95,6 +97,7 @@ val syncModule = module {
     factoryOf(::ObserveFirstDownloadUseCase).bind<ObserveFirstDownload>()
     factoryOf(::RetrySyncUseCase).bind<RetrySync>()
     factoryOf(::ReportAppForegroundUseCase).bind<ReportAppForeground>()
+    factoryOf(::ObserveAppForegroundUseCase).bind<ObserveAppForeground>()
     factoryOf(::SignOutUseCase).bind<SignOut>()
     factoryOf(::SignOutWhenSyncedUseCase).bind<SignOutWhenSynced>()
     factoryOf(::CancelSignOutWhenSyncedUseCase).bind<CancelSignOutWhenSynced>()

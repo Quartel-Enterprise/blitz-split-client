@@ -146,9 +146,15 @@ class ProfilePresenter {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 is ProfileUiAction.CopyToClipboard -> JsProfileAction("copy", action.formattedCode)
+
                 is ProfileUiAction.OpenUrl -> JsProfileAction("open", action.url)
+
                 is ProfileUiAction.SaveExport -> JsProfileAction("export", action.json)
+
                 is ProfileUiAction.LaunchNativeSignIn -> null
+
+                // Why: the web never checks for updates, since it always serves the latest version.
+                is ProfileUiAction.ShowUpdateCheckResult -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
