@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
+import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.CancelGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.FindPendingGuestMergeUseCase
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
@@ -1299,6 +1301,854 @@ class ContactProfileViewModelTest {
             assertTrue(merges.pendingLookups.isEmpty())
         }
 
+    // region Analytics
+
+    @Test
+    fun `GIVEN the back and the closes WHEN reading their analytics THEN none is tracked`() {
+        // Given
+        val events = listOf(
+            ContactProfileUiEvent.OnBackClicked,
+            ContactProfileUiEvent.OnAddToGroupDismissed,
+            ContactProfileUiEvent.OnMergeDismissed,
+        )
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(List(events.size) { EventAnalytics.NotTracked }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Pedir para quem ja usa o app WHEN reading its analytics THEN it is sent on its own`() {
+        // Given
+        val event = ContactProfileUiEvent.OnAskAppUserClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Automatic("contact_ask_app_user_clicked"), analytics)
+    }
+
+    @Test
+    fun `GIVEN the taps the profile may refuse WHEN reading their analytics THEN the ViewModel sends each event`() {
+        // Given
+        val expected = mapOf(
+            ContactProfileUiEvent.OnChargeClicked to "charge_clicked",
+            ContactProfileUiEvent.OnReceivedClicked to "received_clicked",
+            ContactProfileUiEvent.OnSettleClicked to "settle_clicked",
+            ContactProfileUiEvent.OnGroupClicked(FLORIPA) to "group_clicked",
+            ContactProfileUiEvent.OnAddToGroupClicked to "contact_add_to_group_clicked",
+            ContactProfileUiEvent.OnAddGroupPicked(APE) to "contact_add_to_group_picked",
+            ContactProfileUiEvent.OnAddToGroupConfirmed to "contact_add_to_group_confirmed",
+            ContactProfileUiEvent.OnHideClicked to "contact_hide_clicked",
+            ContactProfileUiEvent.OnHideConfirmed to "contact_hide_confirmed",
+            ContactProfileUiEvent.OnHideDismissed to "contact_hide_cancelled",
+            ContactProfileUiEvent.OnShowClicked to "contact_show_clicked",
+            ContactProfileUiEvent.OnViewBalancesClicked to "contact_view_balances_clicked",
+            ContactProfileUiEvent.OnSeeAllHistoryClicked to "contact_history_see_all_clicked",
+            ContactProfileUiEvent.OnInviteGuestClicked to "contact_invite_guest_clicked",
+            ContactProfileUiEvent.OnMergeClicked to "contact_merge_clicked",
+            ContactProfileUiEvent.OnMergeRetryClicked to "retry_clicked",
+            ContactProfileUiEvent.OnMergeCopyClicked to "invite_link_copy_clicked",
+            ContactProfileUiEvent.OnMergeShareClicked to "invite_link_share_clicked",
+            ContactProfileUiEvent.OnCancelMergeClicked to "contact_merge_cancel_clicked",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN Carla owes you WHEN Cobrar is tapped THEN sends the charge clicked from her profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnChargeClicked)
+
+            // Then
+            assertEquals(listOf("charge_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla in the pane beside Contatos WHEN Cobrar is tapped THEN sends the charge clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                inPane = true,
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnChargeClicked)
+
+            // Then
+            assertEquals(listOf("charge_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN you owe Bruno WHEN Cobrar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = BRUNO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnChargeClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Registrar pagamento already over the profile WHEN a late Cobrar arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnChargeClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Carla owes you WHEN Recebi is tapped THEN sends the received clicked from her profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // Then
+            assertEquals(listOf("received_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile opened from her settling up WHEN Recebi goes back to it THEN sends the received clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                openedFrom = Route.SettleUp(CARLA_KEY, GroupCurrency.BRL),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // Then
+            assertEquals(listOf("received_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN you owe Bruno WHEN Recebi is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = BRUNO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Registrar pagamento already over the profile WHEN a late Recebi arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN you owe Bruno WHEN Acertar is tapped THEN sends the settle clicked from his profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = BRUNO_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnSettleClicked)
+
+            // Then
+            assertEquals(listOf("settle_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile opened from his settling up WHEN Acertar goes back to it THEN sends the settle clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = BRUNO_KEY,
+                openedFrom = Route.SettleUp(BRUNO_KEY, GroupCurrency.BRL),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnSettleClicked)
+
+            // Then
+            assertEquals(listOf("settle_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla owes you WHEN Acertar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnSettleClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN her own profile WHEN a group in common is tapped THEN sends the group clicked from her profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(APE))
+
+            // Then
+            assertEquals(listOf("group_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group Carla is not in WHEN it is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FUTEBOL))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the group already opened from the profile WHEN a second group tap arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(FLORIPA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnGroupClicked(APE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN her profile WHEN Adicionar a um grupo is tapped THEN sends the add to group clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = JULIA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+
+            // Then
+            assertEquals(listOf("contact_add_to_group_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the profile WHEN a late Adicionar a um grupo arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the groups to add Julia to WHEN another group is picked THEN sends the add to group picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = JULIA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddGroupPicked(APE))
+
+            // Then
+            assertEquals(listOf("contact_add_to_group_picked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Viagem Floripa marked for Julia WHEN it is picked again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnAddGroupPicked(FLORIPA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups to add Julia to WHEN a group she is already in is picked THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = JULIA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddGroupPicked(FUTEBOL))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the groups to add to closed WHEN a group is picked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnAddGroupPicked(APE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group marked for Julia WHEN Adicionar is tapped THEN sends the add confirmed as not a guest`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = JULIA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("contact_add_to_group_confirmed" to mapOf<String, Any>("is_guest" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group marked for Diego a guest WHEN Adicionar is tapped THEN sends the add confirmed as a guest`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("contact_add_to_group_confirmed" to mapOf<String, Any>("is_guest" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla already in every group WHEN Adicionar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            storedGroups = listOf(floripa(), ape()),
+        )
+        viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups to add to closed WHEN Adicionar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Julia settled WHEN Ocultar is tapped THEN sends the hide clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+
+        // Then
+        assertEquals(listOf("contact_hide_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the question already open WHEN Ocultar is tapped again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla owes you WHEN Ocultar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the question open WHEN hiding is confirmed THEN sends the hide confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideConfirmed)
+
+        // Then
+        assertEquals(listOf("contact_hide_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the question never asked WHEN hiding is confirmed THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the question open WHEN it is dismissed THEN sends the hide cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnHideClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideDismissed)
+
+        // Then
+        assertEquals(listOf("contact_hide_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the question not open WHEN a dismiss arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = JULIA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnHideDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Julia hidden WHEN Mostrar is tapped THEN sends the show clicked from her profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = JULIA_KEY,
+                storedHidden = listOf(
+                    HiddenContact(
+                        JULIA_KEY,
+                        isHidden = true,
+                        hiddenAt = 10L,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShowClicked)
+
+            // Then
+            assertEquals(listOf("contact_show_clicked" to profileSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla not hidden WHEN Mostrar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnShowClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN her profile WHEN Ver em Saldos is tapped THEN sends the view balances clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnViewBalancesClicked)
+
+            // Then
+            assertEquals(listOf("contact_view_balances_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the profile WHEN a late Ver em Saldos arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnViewBalancesClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the history WHEN Ver tudo is tapped THEN sends the history see all clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
+
+        // Then
+        assertEquals(listOf("contact_history_see_all_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the profile WHEN a late Ver tudo arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN Convidar Diego is tapped THEN sends the invite guest clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnInviteGuestClicked)
+
+            // Then
+            assertEquals(listOf("contact_invite_guest_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla with an account WHEN the guest invite is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnInviteGuestClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN his invite already open WHEN a late Convidar Diego arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnInviteGuestClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnInviteGuestClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN Juntar is tapped THEN sends the merge clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+
+        // Then
+        assertEquals(listOf("contact_merge_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Carla with an account WHEN Juntar is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = CARLA_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN his invite over the profile WHEN a late Juntar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnInviteGuestClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the request failed WHEN Tentar de novo is tapped THEN sends the retry clicked from the merge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            merges.requestError = IllegalStateException("500")
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            merges.requestError = null
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mergeSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal link made WHEN Tentar de novo arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeRetryClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the personal link made WHEN Copiar is tapped THEN sends the link copy clicked from the merge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to mergeSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sheet still waiting for the link WHEN Copiar is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                online = false,
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeCopyClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the personal link made WHEN Compartilhar is tapped THEN sends the share clicked from the merge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeShareClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_share_clicked" to mergeSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sheet still waiting for the link WHEN Compartilhar is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                online = false,
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeShareClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a request waiting for Diego WHEN Cancelar is tapped THEN sends the merge cancel clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                storedMerge = waitingMerge,
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnCancelMergeClicked)
+
+            // Then
+            assertEquals(listOf("contact_merge_cancel_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the request already being cancelled WHEN Cancelar is tapped again THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                storedMerge = waitingMerge,
+                cancelAnswered = false,
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnCancelMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnCancelMergeClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no request waiting for Diego WHEN Cancelar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnCancelMergeClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the sheet open WHEN Pedir para quem ja usa o app is tapped twice THEN sends it on each tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+            val taps = List(2) { ContactProfileUiEvent.OnAskAppUserClicked }
+
+            // When
+            taps.forEach(viewModel::onEvent)
+
+            // Then
+            assertEquals(List(2) { "contact_ask_app_user_clicked" to emptyMap<String, Any>() }, trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the merge sheet and the groups to add open WHEN both close and back is tapped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnAddToGroupClicked)
+            trackedEvents.clear()
+            val events = listOf(
+                ContactProfileUiEvent.OnMergeDismissed,
+                ContactProfileUiEvent.OnAddToGroupDismissed,
+                ContactProfileUiEvent.OnBackClicked,
+            )
+
+            // When
+            events.forEach(viewModel::onEvent)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    // endregion
+
+    private val profileSource: Map<String, Any> = mapOf("source" to "contact_profile")
+
+    private val mergeSource: Map<String, Any> = mapOf("source" to "contact_merge")
+
     private val floripaExpenses = Route.GroupDetail(
         FLORIPA,
         joinedAs = null,
@@ -1324,6 +2174,7 @@ class ContactProfileViewModelTest {
         addResult: Result<Unit> = Result.success(Unit),
         pendingAnswered: Boolean = true,
         findFails: Boolean = false,
+        cancelAnswered: Boolean = true,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -1355,7 +2206,11 @@ class ContactProfileViewModelTest {
             } else {
                 FindPendingGuestMerge { awaitCancellation() }
             },
-            cancelGuestMerge = CancelGuestMergeUseCase(merges),
+            cancelGuestMerge = if (cancelAnswered) {
+                CancelGuestMergeUseCase(merges)
+            } else {
+                CancelGuestMerge { awaitCancellation() }
+            },
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )

@@ -226,17 +226,18 @@ class ContactsViewModel(
     private fun openContact(key: String) {
         val state = uiState.value
         if (state.contacts.none { it.key == key } && state.hiddenContacts.none { it.key == key }) return
-        trackEvent("contact_clicked", mapOf("is_hidden" to state.contacts.none { it.key == key }))
-        if (state.isDetailPaneShown) {
+        val isOpened = if (state.isDetailPaneShown) {
             uiState.update {
                 it.copy(
                     pickedKey = key,
                     isAgendaPicked = false,
                 )
             }
+            true
         } else {
             openFromList(Route.ContactProfile(key))
         }
+        if (isOpened) trackEvent("contact_clicked", mapOf("is_hidden" to state.contacts.none { it.key == key }))
     }
 
     private fun openAgenda() {
