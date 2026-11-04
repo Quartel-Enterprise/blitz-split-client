@@ -170,6 +170,7 @@ class GroupDetailViewModel(
                 Route.BillDetail(
                     groupId = route.groupId,
                     expenseId = event.expenseId,
+                    focusCommentId = null,
                 ),
             )
 

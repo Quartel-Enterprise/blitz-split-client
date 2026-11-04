@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -920,6 +921,7 @@ class PayReceiverViewModelTest {
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { firstDownload },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

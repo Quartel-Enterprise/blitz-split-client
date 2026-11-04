@@ -516,6 +516,7 @@ internal fun createPreviewProfileState(
     theme = ThemePreference.SYSTEM,
     showsDynamicColors = true,
     usesDynamicColors = false,
+    showsBitcoinInSats = false,
     activeNotificationCount = 3.toLoaded(),
     dialog = null,
     hasConfirmedCodeSaved = false,

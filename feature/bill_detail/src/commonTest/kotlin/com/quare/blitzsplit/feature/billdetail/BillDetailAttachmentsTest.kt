@@ -15,7 +15,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
@@ -1067,6 +1070,7 @@ class BillDetailAttachmentsTest {
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
+        focusCommentId = null,
     )
     private val groupRoute = Route.GroupDetail(
         GROUP_ID,
@@ -1227,6 +1231,9 @@ class BillDetailAttachmentsTest {
             observeSettlements = ObserveSettlementsUseCase(FakeSettlementRepository()),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            deleteBillComment = DeleteBillCommentUseCase(comments),
+            likeBillComment = LikeBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
             loadBillHistory = LoadBillHistoryUseCase(activity),
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },

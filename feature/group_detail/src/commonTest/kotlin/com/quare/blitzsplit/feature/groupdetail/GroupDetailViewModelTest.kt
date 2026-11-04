@@ -1244,7 +1244,7 @@ class GroupDetailViewModelTest {
     fun `GIVEN a bill over the group WHEN its rail is tapped THEN nothing changes`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+        navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
         val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.GROUPS)
 
         // When
@@ -1252,7 +1252,7 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")),
+            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null)),
             navigator.backStack.value,
         )
     }
@@ -1306,7 +1306,7 @@ class GroupDetailViewModelTest {
         // Then
         assertTrue(actions.isEmpty())
         assertEquals(
-            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")),
+            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null)),
             navigator.backStack.value,
         )
     }
@@ -1321,14 +1321,14 @@ class GroupDetailViewModelTest {
                     expense("taxi", spentAt = thisMorning),
                 ),
             )
-            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked("taxi"))
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "taxi")),
+                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "taxi", focusCommentId = null)),
                 navigator.backStack.value,
             )
         }
@@ -1338,7 +1338,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
-            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
@@ -1355,14 +1355,20 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
-            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner"), Route.Profile),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null),
+                    Route.Profile,
+                ),
                 navigator.backStack.value,
             )
         }
@@ -1388,7 +1394,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
-            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
             deletedBills.postNotice(GROUP_ID)
 
             // When
@@ -1853,7 +1859,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.BillDetail(GROUP_ID, "bill-1"))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "bill-1", focusCommentId = null))
             deletions.post(
                 GroupDeletion(
                     groupId = GROUP_ID,

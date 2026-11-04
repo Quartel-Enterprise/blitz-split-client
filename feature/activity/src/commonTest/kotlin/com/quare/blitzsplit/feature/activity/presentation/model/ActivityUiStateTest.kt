@@ -543,6 +543,8 @@ class ActivityUiStateTest {
         target = ActivityTarget.BILL,
         deletion = null,
         targetId = targetId,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun state(

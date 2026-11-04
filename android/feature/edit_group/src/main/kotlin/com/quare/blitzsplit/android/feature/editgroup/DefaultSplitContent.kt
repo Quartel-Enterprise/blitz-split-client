@@ -348,6 +348,7 @@ private fun createPreviewState(
 ): DefaultSplitUiState = DefaultSplitUiState(
     groupName = "Apê 302",
     currency = GroupCurrency.BRL,
+    showsSats = false,
     mode = mode,
     people = people,
     incomeFallback = emptyMap(),
@@ -361,6 +362,7 @@ private fun createPreviewState(
         people = people,
         incomeFallback = emptyMap(),
         currency = GroupCurrency.BRL,
+        showsSats = false,
     ),
     exceptions = listOf(
         CategorySplit(

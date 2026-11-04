@@ -330,7 +330,7 @@ function PersonRow({ presenter, state, row }: { presenter: DefaultSplitPresenter
           value={row.incomeText}
           label={t('defaultSplit_incomeOf', { name })}
           prefix={currencySymbol(state.currency)}
-          placeholder={amountPlaceholder(state.fractionDigits)}
+          placeholder={amountPlaceholder(state.fractionDigits, state.currency)}
           isInvalid={false}
           onChange={(text) => {
             presenter.changeIncome(row.id, text)

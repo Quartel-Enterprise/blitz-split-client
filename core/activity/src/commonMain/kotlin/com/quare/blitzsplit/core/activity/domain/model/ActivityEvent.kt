@@ -26,8 +26,12 @@ data class ActivityEvent(
     val changes: List<ActivityChange>,
     // Why: how many take part in a new bill ("Igual entre 5").
     val sharesCount: Int?,
-    // Why: a comment's text, cut to what a feed row shows.
+    // Why: a comment's text as it reads now, cut to what a feed row shows; null once deleted.
     val body: String?,
+    // Why: the comment a comment_added event is about, which its tap scrolls to.
+    val commentId: String?,
+    // Why: "Ana apagou um comentário em Jantar": its author deleted it.
+    val isCommentDeleted: Boolean,
     // Why: a charge sent here and not up yet.
     val isPending: Boolean,
 )

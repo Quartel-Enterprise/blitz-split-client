@@ -27,10 +27,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
-import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
-import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -42,7 +41,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -71,6 +72,7 @@ class SplitBillViewModel(
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     categoryUseCases: BillCategoryUseCases,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -78,6 +80,7 @@ class SplitBillViewModel(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
+                showsSats = false,
             ),
         )
 
@@ -95,8 +98,8 @@ class SplitBillViewModel(
     // Why: the group last shown, so another one picked starts over who paid and how it splits among its own people.
     private var shownGroupId: String? = null
 
-    // Why: the home's "Rachar conta" asks for the group once, as the groups first load; a sync never asks again.
-    private var hasAskedForGroup = false
+    // Why: "Rachar em qual grupo?" (7.1i), whose "Continuar" moves a new bill to the group picked.
+    private val groupPicking = GroupPicking(uiState, route, groupId)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -104,6 +107,9 @@ class SplitBillViewModel(
 
     // Why: Room no longer has the bill; if a delete in flight here then fails, someone else's delete won.
     private var isBillMissing = false
+
+    // Why: bitcoin's unit as the form opened was applied; a change after that comes from "Bitcoin em satoshis" itself.
+    private var hasReadUnit = false
 
     /*
      * Why: the parts of "Valores" as last set in "Dividir", with the total they were set for. A new total rescales
@@ -183,15 +189,23 @@ class SplitBillViewModel(
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(group, expenseFlow, ::Pair)
-            .onEach { (group, expense) ->
+        // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
+        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        combine(group, expenseFlow, showsSats, ::Triple)
+            .onEach { (group, expense, sats) ->
+                // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
+                if (!hasReadUnit) uiState.update { it.withShowsSats(sats, separator) }
+                hasReadUnit = true
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
         categoryEditing.observe(groupId)
+        observeBitcoinInSats()
+            .onEach { sats -> uiState.update { it.withShowsSats(sats, separator) } }
+            .launchIn(viewModelScope)
         if (settledPairs == null) {
             observeGroupsByActivity()
-                .onEach(::showGroups)
+                .onEach(groupPicking::show)
                 .launchIn(viewModelScope)
         } else {
             settledPairs.showIn(uiState)
@@ -220,15 +234,13 @@ class SplitBillViewModel(
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
-            SplitBillUiEvent.OnGroupClicked -> uiState.update {
-                if (it.canChangeGroup) it.copy(groupSelection = GroupSelection(groupId = it.groupId)) else it
-            }
+            SplitBillUiEvent.OnGroupClicked -> groupPicking.open()
 
-            is SplitBillUiEvent.OnGroupPicked -> uiState.update { it.withGroupPicked(event.groupId) }
+            is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
-            SplitBillUiEvent.OnGroupDone -> confirmGroup()
+            SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()
 
-            SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
+            SplitBillUiEvent.OnGroupDismissed -> groupPicking.dismiss()
 
             is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
@@ -324,25 +336,6 @@ class SplitBillViewModel(
         }
     }
 
-    private fun showGroups(groups: List<Group>) {
-        val asks = route.picksGroupFirst && !hasAskedForGroup && groups.size > 1
-        hasAskedForGroup = true
-        uiState.update {
-            it.withGroups(
-                groups = groups.map(::toBillGroup),
-                asks = asks,
-                billGroupId = groupId.value,
-            )
-        }
-    }
-
-    private fun confirmGroup() {
-        val state = uiState.value
-        val picked = state.groupSelection?.groupId ?: return
-        uiState.update { it.copy(groupSelection = null) }
-        if (!state.isSaving && state.groups.any { it.id == picked }) groupId.value = picked
-    }
-
     private fun handle(
         group: Group?,
         expense: Expense?,
@@ -361,7 +354,15 @@ class SplitBillViewModel(
             else -> {
                 isBillMissing = false
                 val previous = editedExpense
-                if (previous == null) fill(group, expense) else noticeChange(group, previous, expense)
+                val isFirstRead = previous == null
+                if (isFirstRead) {
+                    fill(
+                        group,
+                        expense,
+                    )
+                } else {
+                    uiState.update { it.withChangeNoticed(group, previous, expense) }
+                }
                 editedExpense = expense
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
@@ -378,7 +379,9 @@ class SplitBillViewModel(
     // Why: a new bill whose picked group went goes back to the group it was opened for, and closes once that one went.
     private fun handleGroupGone() {
         isGroupGone = route.expenseId != null || groupId.value == route.groupId
-        if (isGroupGone) exits.leave() else groupId.value = route.groupId
+        if (isGroupGone) return exits.leave()
+        uiState.update { it.copy(pickedGroupId = route.groupId) }
+        groupId.value = route.groupId
     }
 
     /*
@@ -403,25 +406,6 @@ class SplitBillViewModel(
         uiState.update { it.toFilledWith(group, expense, separator, spentDay) }
         val split = uiState.value.split
         amountAnchor = if (split.mode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
-    }
-
-    // Why: someone else's save that a sync brought, while the form keeps what is being typed here.
-    private fun noticeChange(
-        group: Group,
-        previous: Expense,
-        expense: Expense,
-    ) {
-        if (expense.updatedAt == previous.updatedAt || expense.isPending) return
-        val changer = group.members.firstOrNull { it.id == expense.updatedByMemberId }
-        uiState.update {
-            it.copy(
-                conflict = BillConflict(
-                    changerName = changer?.name,
-                    changerIsMe = changer?.isMe == true,
-                    changedAt = expense.updatedAt,
-                ),
-            )
-        }
     }
 
     // Why: a new bill's category picks its split, the exception of its category or the group's default (7.1k).
@@ -457,6 +441,7 @@ class SplitBillViewModel(
                 .withItemsAmong(people)
                 .withBillTotal()
                 .withSplitAsDefaultSettled()
+                .withReceiptRequestSettled()
         }
     }
 
@@ -468,24 +453,19 @@ class SplitBillViewModel(
         uiState.update { state ->
             state
                 .copy(
-                    amountText = TypedText.toAmountText(state.amountText, text, state.currency, separator),
+                    amountText = TypedText.toAmountText(
+                        state.amountText,
+                        text,
+                        state.currency,
+                        state.showsSats,
+                        separator,
+                    ),
                     hasEditedAmount = true,
                 ).withBillTotal()
         }
     }
 
-    /*
-     * Why: the split and the several payers add up to the bill's amount, 0 while the field holds no valid amount.
-     * What several people paid stays as typed, so Salvar waits until someone makes it add up again.
-     */
-    private fun SplitBillUiState.withBillTotal(): SplitBillUiState {
-        val total = amountMinor?.takeIf { isAmountValid } ?: 0L
-        return copy(
-            split = split.withTotal(total, amountAnchor, separator),
-            severalPayers = severalPayers?.copy(totalMinor = total),
-            payerAmounts = payerAmounts?.copy(totalMinor = total),
-        )
-    }
+    private fun SplitBillUiState.withBillTotal(): SplitBillUiState = withBillTotal(amountAnchor, separator)
 
     private fun editSplit(change: (SplitEditor) -> SplitEditor) {
         uiState.update { state ->

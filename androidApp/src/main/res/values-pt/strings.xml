@@ -17,4 +17,10 @@
     <string name="push_settle_reminders">Você tem saldo em aberto em %1$s grupos</string>
     <string name="push_added_to_group">%1$s te adicionou ao grupo</string>
     <string name="push_member_joined">%1$s entrou no grupo</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Você não está neste grupo</string>
+    <string name="bill_link_not_in_group_message">Esse comentário é de um grupo em que você não está. Peça o convite a quem te mandou o link.</string>
+    <string name="bill_link_offline_title">Sem internet</string>
+    <string name="bill_link_offline_message">Abra o link de novo quando reconectar.</string>
+    <string name="bill_link_go_home">Ir para o início</string>
 </resources>

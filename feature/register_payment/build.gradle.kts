@@ -11,6 +11,7 @@ kotlin {
             api(projects.core.expenses)
             implementation(projects.core.groups)
             implementation(projects.core.profile)
+            implementation(projects.core.settings)
             implementation(projects.core.utils)
             implementation(projects.core.sync)
             implementation(libs.quare.connectivity)

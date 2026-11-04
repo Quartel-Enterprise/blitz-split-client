@@ -60,6 +60,13 @@ enum ActivityCopy {
             return Text("\(who) released the name \(what)", comment: "Activity: the creator released a member's name")
         case .memberRenamed: return Text("\(who) renamed \(what)", comment: "Activity: someone renamed a member")
         case .commentAdded:
+            // A comment deleted since keeps its row, with no text
+            if item.isCommentDeleted {
+                return Text(
+                    "\(who) deleted a comment on \(what)",
+                    comment: "Activity: someone deleted their comment on a bill",
+                )
+            }
             return Text("\(who) commented on \(what)", comment: "Activity: someone commented on a bill")
         default: return Text("\(who) sent a request to \(what)", comment: "Activity: someone asked a member to pay")
         }
@@ -107,7 +114,7 @@ enum ActivityCopy {
         case .memberRenamed:
             return nil
         case .commentAdded:
-            return item.body.map { "“\($0)”" }
+            return item.isCommentDeleted ? nil : item.body.map { "“\($0)”" }
         default:
             return joined([amountText, String(localized: "message sent")])
         }

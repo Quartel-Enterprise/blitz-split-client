@@ -18,7 +18,7 @@ data class ItemsBreakdown(
 ) {
     // Why: "Itens, serviço e couvert somam R$ 627,00".
     val totalMinor: Long
-        get() = itemsMinor + serviceMinor + couvertMinor + extraMinor
+        get() = itemsMinor.toSaturatedSum(serviceMinor).toSaturatedSum(couvertMinor).toSaturatedSum(extraMinor)
 
     /*
      * Why: each one's total as the bill's shares, weighted by the amount as "Valores" is, so a version that doesn't

@@ -7,6 +7,7 @@ import androidx.room3.Query
 import androidx.room3.Transaction
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
 import kotlinx.coroutines.flow.Flow
 
 /*
@@ -38,6 +39,10 @@ interface ExpenseDao {
         "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE id = :id AND isDeleted = 0",
     )
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
+
+    // Why: a comment's link: the bill's group, deleted or not, even one this version can't read.
+    @Query("SELECT groupId, isDeleted FROM expense WHERE id = :id")
+    suspend fun findStoredBill(id: String): StoredBillRow?
 
     // Why: the group of each bill deleted here whose tombstone is not on the server yet, once per bill.
     @Query("SELECT groupId FROM expense WHERE pendingSync = 1 AND isDeleted = 1")

@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitFigures
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
@@ -26,6 +27,9 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiE
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -40,6 +44,7 @@ class DefaultSplitViewModel(
     private val decimalSeparator: DeviceDecimalSeparator,
     observeGroup: ObserveGroup,
     observeCategoryTree: ObserveCategoryTree,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<DefaultSplitUiState>
@@ -47,6 +52,7 @@ class DefaultSplitViewModel(
             DefaultSplitUiState(
                 groupName = "",
                 currency = GroupCurrency.fallback,
+                showsSats = false,
                 mode = DefaultSplitMode.EQUAL,
                 people = emptyList(),
                 incomeFallback = emptyMap(),
@@ -60,6 +66,7 @@ class DefaultSplitViewModel(
                     people = emptyList(),
                     incomeFallback = emptyMap(),
                     currency = GroupCurrency.fallback,
+                    showsSats = false,
                 ),
                 exceptions = emptyList(),
                 categories = CategoryTree.appOnly,
@@ -80,10 +87,33 @@ class DefaultSplitViewModel(
      * the people follow it: who joins comes in as the rules start them, who is removed goes.
      */
     init {
-        observeGroup(route.groupId)
-            .onEach { group ->
+        // Why: the form opens once bitcoin's unit is known, so no income is filled in the other one first.
+        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        combine(observeGroup(route.groupId), showsSats, ::Pair)
+            .onEach { (group, sats) ->
+                if (opened == null) uiState.update { it.copy(showsSats = sats) }
                 isGroupGone = group == null
                 if (group == null) leave() else show(group)
+            }.launchIn(viewModelScope)
+        // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): each income keeps its value.
+        observeBitcoinInSats()
+            .onEach { sats ->
+                updateForm { state ->
+                    state.copy(
+                        showsSats = sats,
+                        people = state.people.map { person ->
+                            person.copy(
+                                incomeText = TypedText.toUnit(
+                                    text = person.incomeText,
+                                    currency = state.currency,
+                                    showedSats = state.showsSats,
+                                    showsSats = sats,
+                                    decimalSeparator = decimalSeparator(),
+                                ),
+                            )
+                        },
+                    )
+                }
             }.launchIn(viewModelScope)
         observeCategoryTree(route.groupId)
             .onEach { tree -> uiState.update { it.copy(categories = tree) } }
@@ -126,6 +156,7 @@ class DefaultSplitViewModel(
                         previous = it.incomeText,
                         typed = event.text,
                         currency = uiState.value.currency,
+                        showsSats = uiState.value.showsSats,
                         decimalSeparator = decimalSeparator(),
                     ),
                 )
@@ -185,6 +216,7 @@ class DefaultSplitViewModel(
                             text = person.incomeText,
                             from = state.currency,
                             to = group.currency,
+                            showsSats = state.showsSats,
                             decimalSeparator = decimalSeparator(),
                         ),
                     )
@@ -241,7 +273,7 @@ class DefaultSplitViewModel(
                         if (income == null || person.incomeText.isNotEmpty()) {
                             person
                         } else {
-                            person.copy(incomeText = formatAmount(income, state.currency))
+                            person.copy(incomeText = formatAmount(income, state.currency, state.showsSats))
                         }
                     },
                 )
@@ -373,7 +405,13 @@ class DefaultSplitViewModel(
     private fun updateForm(transform: (DefaultSplitUiState) -> DefaultSplitUiState) {
         uiState.update { state ->
             val next = transform(state)
-            val figures = DefaultSplitFigures.of(next.mode, next.people, next.incomeFallback, next.currency)
+            val figures = DefaultSplitFigures.of(
+                next.mode,
+                next.people,
+                next.incomeFallback,
+                next.currency,
+                next.showsSats,
+            )
             next.copy(
                 figures = figures,
                 hasChanges = next.isChangedFrom(opened, figures),
@@ -398,9 +436,11 @@ class DefaultSplitViewModel(
     private fun formatAmount(
         amountMinor: Long,
         currency: GroupCurrency,
+        showsSats: Boolean,
     ): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
+        showsSats = showsSats,
         decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
     )
 

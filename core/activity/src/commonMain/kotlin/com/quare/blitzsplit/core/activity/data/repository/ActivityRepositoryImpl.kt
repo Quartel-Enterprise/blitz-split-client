@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityTargets
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -46,10 +47,23 @@ class ActivityRepositoryImpl(
     override fun observeEvents(): Flow<List<ActivityEvent>> = combine(
         local.observeEvents().map { entities -> entities.mapNotNull(mapper::toDomain) },
         olderEvents,
-    ) { recent, older ->
+        local.observeChangedComments(),
+    ) { recent, older, changedComments ->
         val recentIds = recent.mapTo(HashSet()) { it.id }
-        (recent + older.filterNot { it.id in recentIds }).filter { it.kind.isInFeed }
+        val changedById = changedComments.associateBy { it.id }
+        (recent + older.filterNot { it.id in recentIds })
+            .filter { it.kind.isInFeed }
+            .map { event -> event.toCommentAsNow(changedById) }
     }.distinctUntilChanged()
+
+    // Why: a comment edited or deleted after its event came down reads as it is now, before the event's own copy does.
+    private fun ActivityEvent.toCommentAsNow(changedById: Map<String, ChangedCommentRow>): ActivityEvent {
+        val comment = commentId?.let(changedById::get) ?: return this
+        return copy(
+            body = if (isCommentDeleted || comment.isDeleted) null else comment.body.take(MAX_FEED_BODY_LENGTH),
+            isCommentDeleted = isCommentDeleted || comment.isDeleted,
+        )
+    }
 
     override fun observeEventsAbout(targetId: String): Flow<List<ActivityEvent>> = combine(
         local.observeEventsAbout(targetId).map { entities -> entities.mapNotNull(mapper::toDomain) },
@@ -91,6 +105,8 @@ class ActivityRepositoryImpl(
     }.distinctUntilChanged()
 
     override fun observeHasOlder(): Flow<Boolean> = hasOlder
+
+    override suspend fun findEvent(eventId: String): ActivityEvent? = local.getEvent(eventId)?.let(mapper::toDomain)
 
     override suspend fun saveRead(eventId: String): Result<Unit> = suspendRunCatching { local.markRead(eventId) }
 
@@ -218,5 +234,8 @@ class ActivityRepositoryImpl(
 
     private companion object {
         const val OLDER_PAGE_SIZE = 50L
+
+        // Why: as much of a comment as its event keeps (the server's left(body, 200)).
+        const val MAX_FEED_BODY_LENGTH = 200
     }
 }

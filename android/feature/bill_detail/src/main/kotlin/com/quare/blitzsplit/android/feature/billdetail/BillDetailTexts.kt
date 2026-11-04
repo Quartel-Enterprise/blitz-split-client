@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -9,6 +10,7 @@ import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
@@ -106,5 +108,36 @@ internal fun myPartNoteTextOf(
                 money.toText(note.totalMinor),
             )
         }
+    }
+}
+
+// Why: what a comment's "Compartilhar" hands the system share: "Ana comentou em “Jantar”: “…” <link>".
+internal fun shareCommentTextOf(
+    resources: Resources,
+    share: BillCommentShare,
+): String {
+    val author = share.authorName
+    return when {
+        share.isMe -> resources.getString(
+            R.string.bill_detail_share_comment_message_me,
+            share.billDescription,
+            share.body,
+            share.link,
+        )
+
+        author == null -> resources.getString(
+            R.string.bill_detail_share_comment_message_unknown,
+            share.billDescription,
+            share.body,
+            share.link,
+        )
+
+        else -> resources.getString(
+            R.string.bill_detail_share_comment_message,
+            author,
+            share.billDescription,
+            share.body,
+            share.link,
+        )
     }
 }

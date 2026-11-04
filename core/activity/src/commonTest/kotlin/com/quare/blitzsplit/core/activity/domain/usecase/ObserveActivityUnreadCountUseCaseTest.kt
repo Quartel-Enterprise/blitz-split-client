@@ -188,6 +188,8 @@ class ObserveActivityUnreadCountUseCaseTest {
         sharesCount = null,
         body = null,
         isPending = seq == null,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun prepareScenario(events: List<ActivityEvent>) {

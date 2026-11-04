@@ -335,7 +335,7 @@ class HomeViewModel(
                         tab = GroupTab.EXPENSES,
                     ),
                 )
-                navigator.navigate(Route.BillDetail(event.groupId, event.expenseId))
+                navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
             }
 
             HomeUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)

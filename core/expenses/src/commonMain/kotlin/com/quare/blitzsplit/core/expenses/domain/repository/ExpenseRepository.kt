@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.repository
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.StoredBill
 import kotlinx.coroutines.flow.Flow
 
 interface ExpenseRepository {
@@ -52,6 +53,12 @@ interface ExpenseRepository {
 
     // Why: after the groups' download, so a bill of a group that just came down has its group on the device.
     suspend fun downloadExpenses(userId: String): Result<Unit>
+
+    // Why: one bill as the server keeps it, null when the user may not see it (a group they aren't in).
+    suspend fun fetchServerBill(id: String): Result<StoredBill?>
+
+    // Why: one bill as the device keeps it, a deletion not up yet or one this version can't read included.
+    suspend fun findDeviceBill(id: String): StoredBill?
 
     // Why: one group's bills for a first download, written by the write it returns; nothing leaves the device.
     suspend fun fetchGroupExpenses(groupId: String): Result<suspend () -> Unit>

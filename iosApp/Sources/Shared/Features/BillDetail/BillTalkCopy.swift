@@ -29,9 +29,46 @@ extension BillCopy {
         return comment.authorName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
     }
 
-    /// "Today, 10:40 PM", "Yesterday, 10:40 PM" or "Oct 27, 10:40 PM".
+    /// "Today, 10:40 PM", "Yesterday, 10:40 PM" or "Oct 27, 10:40 PM", then "· edited" once its author changed it.
     static func posted(_ comment: BillCommentRow) -> String {
-        ExpenseFormat.dayTime(comment.postedAt, relativeDay: comment.postedDay)
+        let posted = ExpenseFormat.dayTime(comment.postedAt, relativeDay: comment.postedDay)
+        guard comment.isEdited else { return posted }
+        let edited = String(localized: "edited", comment: "After a comment's time, once its author changed it")
+        return "\(posted) · \(edited)"
+    }
+
+    /// "3 likes" or "1 like", for VoiceOver beside the heart.
+    static func likes(_ count: Int32) -> String {
+        String(localized: "\(Int(count)) likes", comment: "VoiceOver: how many people liked a comment")
+    }
+
+    /// One name of "Likes": "You", the member's name, or "Someone" when the server kept none.
+    static func liker(_ liker: BillCommentLiker) -> String {
+        if liker.isMe { return String(localized: "You") }
+        return liker.name ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+    }
+
+    /// What "Share" on a comment sends: "Ana commented on “Dinner”: “…” <link>".
+    static func shareMessage(_ share: BillCommentShare) -> String {
+        let bill = share.billDescription
+        let body = share.body
+        let link = share.link
+        if share.isMe {
+            return String(
+                localized: "I commented on “\(bill)”: “\(body)” \(link)",
+                comment: "A comment shared by its author: the bill, the comment and its link",
+            )
+        }
+        guard let author = share.authorName else {
+            return String(
+                localized: "Comment on “\(bill)”: “\(body)” \(link)",
+                comment: "A comment shared whose author has no name: the bill, the comment and its link",
+            )
+        }
+        return String(
+            localized: "\(author) commented on “\(bill)”: “\(body)” \(link)",
+            comment: "A comment shared: its author, the bill, the comment and its link",
+        )
     }
 
     /// "@Diego Pay me tomorrow": a reply to a reply names whom it answers, in the accent.
@@ -42,6 +79,11 @@ extension BillCopy {
         mention.foregroundColor = Palette.accent
         mention.inlinePresentationIntent = .stronglyEmphasized
         return Text(mention + AttributedString(comment.body))
+    }
+
+    /// "Editing comment", over the composer while it holds the user's own comment.
+    static var editing: String {
+        String(localized: "Editing comment", comment: "Over the bill's comment field while editing your own comment")
     }
 
     /// "Replying to Diego" or "Replying to you", over the composer.

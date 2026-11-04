@@ -263,7 +263,104 @@ class SharedBillLinkTest {
         assertNull(code)
     }
 
+    @Test
+    fun `GIVEN a code and a comment WHEN building the link THEN is the code link with the comment`() {
+        // Given
+        val code = CODE
+
+        // When
+        val link = SharedBillLink.of(code, COMMENT_ID)
+
+        // Then
+        assertEquals("https://blitzsplit.com/c/7Hk2pQ8x?comentario=$COMMENT_ID", link)
+    }
+
+    @Test
+    fun `GIVEN the link the app builds at a comment WHEN reading its code THEN gets the code back`() {
+        // Given
+        val url = SharedBillLink.of(CODE, COMMENT_ID)
+
+        // When
+        val code = SharedBillLink.codeOf(url)
+
+        // Then
+        assertEquals(CODE, code)
+    }
+
+    @Test
+    fun `GIVEN the link the app builds at a comment WHEN reading its comment THEN gets the comment back`() {
+        // Given
+        val url = SharedBillLink.of(CODE, COMMENT_ID)
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertEquals(COMMENT_ID, commentId)
+    }
+
+    @Test
+    fun `GIVEN a link at a comment among other params and a fragment WHEN reading its comment THEN gets the comment`() {
+        // Given
+        val url = "http://localhost:5173/c/7Hk2pQ8x/?ref=share&comentario=$COMMENT_ID#comments"
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertEquals(COMMENT_ID, commentId)
+    }
+
+    @Test
+    fun `GIVEN a link without a comment WHEN reading its comment THEN finds none`() {
+        // Given
+        val url = SharedBillLink.of(CODE)
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertNull(commentId)
+    }
+
+    @Test
+    fun `GIVEN a link with other params only WHEN reading its comment THEN finds none`() {
+        // Given
+        val url = "https://blitzsplit.com/c/7Hk2pQ8x?utm_source=whatsapp"
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertNull(commentId)
+    }
+
+    @Test
+    fun `GIVEN a group invite link with a comment WHEN reading its comment THEN finds none`() {
+        // Given
+        val url = "https://blitzsplit.com/g/7Hk2pQ8x?comentario=$COMMENT_ID"
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertNull(commentId)
+    }
+
+    @Test
+    fun `GIVEN a comment link of a bill WHEN reading it as a bill share link comment THEN finds none`() {
+        // Given
+        val url = "https://blitzsplit.com/b/0b6c1f0e-8f5a-4d7e-9c2a-3e1f5d7b9a11?comentario=$COMMENT_ID"
+
+        // When
+        val commentId = SharedBillLink.commentIdOf(url)
+
+        // Then
+        assertNull(commentId)
+    }
+
     private companion object {
         const val CODE = "7Hk2pQ8x"
+        const val COMMENT_ID = "5d2e7a10-3c4b-4f6a-8e9d-1a2b3c4d5e6f"
     }
 }

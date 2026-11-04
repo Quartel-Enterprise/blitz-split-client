@@ -13,7 +13,7 @@ class TypedTextTest {
         val text = "R$ 1.234,56abc"
 
         // When
-        val kept = TypedText.toAmountText("12,34", "12,34$text", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("12,34", "12,34$text", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -37,8 +37,8 @@ class TypedTextTest {
         val text = "12,50"
 
         // When
-        val amount = TypedText.toSplitValueText("", text, SplitMode.AMOUNT, GroupCurrency.BRL, ',')
-        val percent = TypedText.toSplitValueText("", text, SplitMode.PERCENT, GroupCurrency.BRL, ',')
+        val amount = TypedText.toSplitValueText("", text, SplitMode.AMOUNT, GroupCurrency.BRL, false, ',')
+        val percent = TypedText.toSplitValueText("", text, SplitMode.PERCENT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", amount)
@@ -112,7 +112,7 @@ class TypedTextTest {
         val previous = "99"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.CLP, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.CLP, false, ',')
 
         // Then
         assertEquals("999", kept)
@@ -136,7 +136,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -148,7 +148,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -160,7 +160,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}a", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}a", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -172,7 +172,7 @@ class TypedTextTest {
         val previous = ""
 
         // When
-        val kept = TypedText.toAmountText(previous, ",", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, ",", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -184,7 +184,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -196,7 +196,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("123,45", kept)
@@ -208,7 +208,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -220,7 +220,7 @@ class TypedTextTest {
         val previous = ""
 
         // When
-        val kept = TypedText.toAmountText(previous, "0", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -232,7 +232,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -244,7 +244,7 @@ class TypedTextTest {
         val previous = "100.000.000,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100.000.000,00", kept)
@@ -256,7 +256,7 @@ class TypedTextTest {
         val previous = "99.999.999,99"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("999.999.999,99", kept)
@@ -268,7 +268,7 @@ class TypedTextTest {
         val previous = "123.456.789"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.JPY, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("123.456.789", kept)
@@ -280,7 +280,7 @@ class TypedTextTest {
         val pasted = "12,5"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", kept)
@@ -292,7 +292,7 @@ class TypedTextTest {
         val pasted = "50"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("50,00", kept)
@@ -304,7 +304,7 @@ class TypedTextTest {
         val pasted = "R$ 1.234,56"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -316,7 +316,7 @@ class TypedTextTest {
         val pasted = "1,234.56"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -328,7 +328,7 @@ class TypedTextTest {
         val previous = "12,34"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}56,78", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}56,78", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("56,78", kept)
@@ -340,7 +340,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "250,75", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "250,75", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("250,75", kept)
@@ -352,7 +352,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "1.000.000.000", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "1.000.000.000", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -364,7 +364,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "1234567890123", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "1234567890123", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -376,7 +376,7 @@ class TypedTextTest {
         val pasted = "100000000"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100.000.000,00", kept)
@@ -388,7 +388,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}abc", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}abc", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -400,7 +400,7 @@ class TypedTextTest {
         val pasted = "0,00"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -412,7 +412,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toSplitValueText(previous, "0,012", SplitMode.AMOUNT, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText(previous, "0,012", SplitMode.AMOUNT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -424,7 +424,7 @@ class TypedTextTest {
         val typed = "2,5"
 
         // When
-        val kept = TypedText.toSplitValueText("2,", typed, SplitMode.SHARES, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText("2,", typed, SplitMode.SHARES, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("25", kept)
@@ -436,7 +436,7 @@ class TypedTextTest {
         val typed = "1000"
 
         // When
-        val kept = TypedText.toSplitValueText("100", typed, SplitMode.PERCENT, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText("100", typed, SplitMode.PERCENT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100", kept)
@@ -448,7 +448,7 @@ class TypedTextTest {
         val text = "12,50"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("12", converted)
@@ -460,7 +460,7 @@ class TypedTextTest {
         val text = "1.250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.250,00", converted)
@@ -472,7 +472,7 @@ class TypedTextTest {
         val text = "1,250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.USD, '.')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.USD, false, '.')
 
         // Then
         assertEquals("1,250.00", converted)
@@ -484,7 +484,7 @@ class TypedTextTest {
         val text = "1,250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, '٫')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, '٫')
 
         // Then
         assertEquals("1,250.00", converted)
@@ -496,7 +496,7 @@ class TypedTextTest {
         val text = "12,5"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,5", converted)
@@ -508,7 +508,7 @@ class TypedTextTest {
         val text = "abc"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -520,7 +520,7 @@ class TypedTextTest {
         val text = ""
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -532,7 +532,7 @@ class TypedTextTest {
         val text = "0,50"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -544,7 +544,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, "7", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "7", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,07", kept)
@@ -556,7 +556,7 @@ class TypedTextTest {
         val previous = "0,05"
 
         // When
-        val kept = TypedText.toAmountText(previous, "0,05,1", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0,05,1", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,51", kept)
@@ -568,7 +568,7 @@ class TypedTextTest {
         val previous = "0,12"
 
         // When
-        val kept = TypedText.toAmountText(previous, "0,0123", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0,0123", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -580,7 +580,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toAmountText(previous, "12", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "12", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -592,7 +592,7 @@ class TypedTextTest {
         val pasted = "0,5"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,50", kept)
@@ -604,10 +604,561 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin and a comma WHEN typing digits one at a time THEN they come in with 8 decimals`() {
+        // Given
+        val keys = "123"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, ',')
+
+        // Then
+        assertEquals(listOf("0,00000001", "0,00000012", "0,00000123"), texts)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in satoshis and a comma WHEN typing digits one at a time THEN writes whole sats`() {
+        // Given
+        val keys = "12345"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1.234", "12.345"), texts)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in satoshis and a dot WHEN typing digits one at a time THEN groups sats with the comma`() {
+        // Given
+        val keys = "1234"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, '.', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1,234"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and ether WHEN typing digits one at a time THEN keeps its 8 decimals`() {
+        // Given
+        val keys = "12"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.ETH, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("0,00000001", "0,00000012"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and reais WHEN typing digits one at a time THEN keeps the cents`() {
+        // Given
+        val keys = "123"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BRL, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("0,01", "0,12", "1,23"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and yen WHEN typing digits one at a time THEN writes whole yen`() {
+        // Given
+        val keys = "1234"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.JPY, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1.234"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN typing a comma after them THEN nothing changes`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN typing a dot after them THEN nothing changes`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN typing a comma after it THEN nothing changes`() {
+        // Given
+        val previous = "0,00000012"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00000012", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN deleting the last character THEN regroups what is left`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "12.34", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1.234", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "21.000.000,00000000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("21.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with 15 digits WHEN typing a 16th over the cap THEN keeps it for the form error`() {
+        // Given
+        val previous = "9.999.999,99999999"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("99.999.999,99999999", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "2.100.000.000.000.000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("2.100.000.000.000.000", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis with 15 digits WHEN typing a 16th THEN takes it`() {
+        // Given
+        val previous = "999.999.999.999.999"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("9.999.999.999.999.999", kept)
+    }
+
+    @Test
+    fun `GIVEN ether with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "90.000.000,00000000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.ETH, false, ',')
+
+        // Then
+        assertEquals("90.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting a fraction of a bitcoin THEN reads it with 8 decimals`() {
+        // Given
+        val pasted = "0,00125"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00125000", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting satoshis grouped by a comma THEN reads whole sats`() {
+        // Given
+        val pasted = "12,345"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting 21 million bitcoin THEN keeps it`() {
+        // Given
+        val pasted = "21000000"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("21.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN pasting more digits than the largest amount has THEN keeps the field as it was`() {
+        // Given
+        val previous = "0,00000001"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "100000000", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00000001", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN pasting more digits than the largest amount has THEN keeps the field as it was`() {
+        // Given
+        val previous = "1"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "21000000000000000", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1", kept)
+    }
+
+    @Test
+    fun `GIVEN reais with cents WHEN moving to bitcoin THEN keeps the number with 8 decimals`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("12,50000000", moved)
+    }
+
+    @Test
+    fun `GIVEN a fraction of a bitcoin under a cent WHEN moving to reais THEN the field is empty`() {
+        // Given
+        val text = "0,00125"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, false, ',')
+
+        // Then
+        assertEquals("", moved)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with decimals WHEN moving to reais THEN cuts them to the cents`() {
+        // Given
+        val text = "1,23456789"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, false, ',')
+
+        // Then
+        assertEquals("1,23", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN moving to reais THEN keeps the number of sats with zero cents`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, true, ',')
+
+        // Then
+        assertEquals("12.345,00", moved)
+    }
+
+    @Test
+    fun `GIVEN reais with cents WHEN moving to bitcoin in satoshis THEN keeps the whole number of sats`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN moving to ether THEN keeps the number with 8 decimals`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, true, ',')
+
+        // Then
+        assertEquals("12.345,00000000", moved)
+    }
+
+    @Test
+    fun `GIVEN ether with satoshis shown WHEN moving to bitcoin THEN keeps the whole number of sats`() {
+        // Given
+        val text = "1,50000000"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.ETH, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1", moved)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN moving to ether THEN keeps the text as it reads`() {
+        // Given
+        val text = "0,00125000"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, false, ',')
+
+        // Then
+        assertEquals("0,00125000", moved)
+    }
+
+    @Test
+    fun `GIVEN 16 digits of satoshis WHEN moving to ether THEN the field is empty instead of overflowing`() {
+        // Given
+        val text = "9.999.999.999.999.999"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, true, ',')
+
+        // Then
+        assertEquals("", moved)
+    }
+
+    @Test
+    fun `GIVEN 16 digits of satoshis WHEN moving to reais THEN keeps the number with zero cents`() {
+        // Given
+        val text = "9.999.999.999.999.999"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, true, ',')
+
+        // Then
+        assertEquals("9.999.999.999.999.999,00", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown WHEN moving reais to yen THEN cuts the cents as without them`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, true, ',')
+
+        // Then
+        assertEquals("12", moved)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin amount WHEN moving to bitcoin THEN keeps the text as it is`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", moved)
+    }
+
+    @Test
+    fun `GIVEN a fraction of a bitcoin WHEN switching to satoshis THEN writes the same amount in whole sats`() {
+        // Given
+        val text = "0,00012345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("12.345", converted)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN switching to bitcoin THEN writes the same amount with 8 decimals`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("0,00012345", converted)
+    }
+
+    @Test
+    fun `GIVEN one satoshi WHEN switching to bitcoin THEN it is the eighth decimal`() {
+        // Given
+        val text = "1"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("0,00000001", converted)
+    }
+
+    @Test
+    fun `GIVEN a device with the dot WHEN switching bitcoin to satoshis THEN groups sats with the comma`() {
+        // Given
+        val text = "1.5"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, '.')
+
+        // Then
+        assertEquals("150,000,000", converted)
+    }
+
+    @Test
+    fun `GIVEN 21 million bitcoin WHEN switching to satoshis and back THEN keeps the amount`() {
+        // Given
+        val text = "21.000.000,00000000"
+
+        // When
+        val sats = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+        val bitcoin = TypedText.toUnit(sats, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("2.100.000.000.000.000", sats)
+        assertEquals(text, bitcoin)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN switching bitcoin to satoshis THEN it stays empty`() {
+        // Given
+        val text = ""
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN a text that is no amount WHEN switching satoshis to bitcoin THEN the field is empty`() {
+        // Given
+        val text = "abc"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN zero bitcoin WHEN switching to satoshis THEN the field is empty`() {
+        // Given
+        val text = "0,00000000"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, false, true, ',')
+
+        // Then
+        assertEquals("", converted)
+    }
+
+    @Test
+    fun `GIVEN ether WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "0,00012345"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.ETH, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.ETH, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN reais WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "1.234,56"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.BRL, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.BRL, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN yen WHEN satoshis are switched on or off THEN keeps the text as it is`() {
+        // Given
+        val text = "1.234"
+
+        // When
+        val switchedOn = TypedText.toUnit(text, GroupCurrency.JPY, false, true, ',')
+        val switchedOff = TypedText.toUnit(text, GroupCurrency.JPY, true, false, ',')
+
+        // Then
+        assertEquals(text, switchedOn)
+        assertEquals(text, switchedOff)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in the same unit as before WHEN converting the unit THEN keeps the text as it is`() {
+        // Given
+        val sats = "12.345"
+        val bitcoin = "0,5"
+
+        // When
+        val keptSats = TypedText.toUnit(sats, GroupCurrency.BTC, true, true, ',')
+        val keptBitcoin = TypedText.toUnit(bitcoin, GroupCurrency.BTC, false, false, ',')
+
+        // Then
+        assertEquals(sats, keptSats)
+        assertEquals(bitcoin, keptBitcoin)
+    }
+
+    @Test
+    fun `GIVEN an Arabic decimal separator WHEN switching satoshis to bitcoin THEN writes the dot as decimal`() {
+        // Given
+        val text = "12345"
+
+        // When
+        val converted = TypedText.toUnit(text, GroupCurrency.BTC, true, false, '٫')
+
+        // Then
+        assertEquals("0.00012345", converted)
     }
 
     // Why: what the field holds after each key, as the ViewModel stores it and hands it back as the previous text.
@@ -615,8 +1166,9 @@ class TypedTextTest {
         keys: String,
         currency: GroupCurrency,
         decimalSeparator: Char,
+        showsSats: Boolean = false,
     ): List<String> = keys
         .runningFold("") { previous, key ->
-            TypedText.toAmountText(previous, previous + key, currency, decimalSeparator)
+            TypedText.toAmountText(previous, previous + key, currency, showsSats, decimalSeparator)
         }.drop(1)
 }

@@ -6,10 +6,12 @@ import com.quare.blitzsplit.core.expenses.data.dto.SharedBillAttachmentDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillCommentDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillExpenseDto
+import com.quare.blitzsplit.core.expenses.data.dto.SharedBillLikeDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillPartDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillStatusDto
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
@@ -285,6 +287,10 @@ class SharedBillMapperImplTest {
                         viaLink = true,
                         postedAt = 3_000L,
                         isPending = false,
+                        editedAt = null,
+                        isDeleted = false,
+                        isMine = false,
+                        likes = emptyList(),
                     ),
                 ),
             ),
@@ -373,6 +379,10 @@ class SharedBillMapperImplTest {
                 viaLink = false,
                 postedAt = 3_000L,
                 isPending = false,
+                editedAt = null,
+                isDeleted = false,
+                isMine = false,
+                likes = emptyList(),
             ),
             reply,
         )
@@ -400,6 +410,115 @@ class SharedBillMapperImplTest {
                 .comments
                 .single()
                 .viaLink,
+        )
+    }
+
+    @Test
+    fun `GIVEN my comment edited and liked WHEN mapping the shared bill THEN reads the edit mine and who liked it`() {
+        // Given
+        val dto = sharedBillDto(
+            comments = listOf(
+                commentDto(
+                    id = "comment-1",
+                    body = "Quem trouxe o gelo e o carvão?",
+                    editedAt = 4_000L,
+                    isDeleted = false,
+                    isMine = true,
+                    likedBy = listOf(
+                        SharedBillLikeDto(
+                            name = "Ana",
+                            isMine = false,
+                        ),
+                        SharedBillLikeDto(
+                            name = null,
+                            isMine = true,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
+
+        // Then
+        assertEquals(
+            BillComment(
+                id = "comment-1",
+                expenseId = BILL_ID,
+                groupId = GROUP_ID,
+                authorUserId = null,
+                authorMemberId = null,
+                authorName = "Diego",
+                threadId = null,
+                replyToName = null,
+                body = "Quem trouxe o gelo e o carvão?",
+                viaLink = true,
+                postedAt = 3_000L,
+                editedAt = 4_000L,
+                isDeleted = false,
+                isMine = true,
+                likes = listOf(
+                    BillCommentLike(
+                        memberId = null,
+                        name = "Ana",
+                        isMine = false,
+                    ),
+                    BillCommentLike(
+                        memberId = null,
+                        name = null,
+                        isMine = true,
+                    ),
+                ),
+                isPending = false,
+            ),
+            assertIs<SharedBill.Open>(bill).comments.single(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a deleted comment WHEN mapping the shared bill THEN reads it deleted with no text`() {
+        // Given
+        val dto = sharedBillDto(
+            comments = listOf(
+                commentDto(
+                    id = "comment-1",
+                    body = "",
+                    isDeleted = true,
+                ),
+            ),
+        )
+
+        // When
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
+
+        // Then
+        val comment = assertIs<SharedBill.Open>(bill).comments.single()
+        assertTrue(comment.isDeleted)
+        assertEquals("", comment.body)
+    }
+
+    @Test
+    fun `GIVEN someone else comment WHEN mapping the shared bill THEN reads it not mine`() {
+        // Given
+        val dto = sharedBillDto(
+            comments = listOf(
+                commentDto(
+                    id = "comment-1",
+                    isMine = false,
+                ),
+            ),
+        )
+
+        // When
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
+
+        // Then
+        assertFalse(
+            assertIs<SharedBill.Open>(bill)
+                .comments
+                .single()
+                .isMine,
         )
     }
 
@@ -645,14 +764,23 @@ class SharedBillMapperImplTest {
         threadId: String? = null,
         replyToName: String? = null,
         viaLink: Boolean? = true,
+        body: String = "Quem trouxe o gelo?",
+        editedAt: Long? = null,
+        isDeleted: Boolean? = null,
+        isMine: Boolean? = null,
+        likedBy: List<SharedBillLikeDto>? = null,
     ): SharedBillCommentDto = SharedBillCommentDto(
         id = id,
         threadId = threadId,
         authorName = "Diego",
         replyToName = replyToName,
-        body = "Quem trouxe o gelo?",
+        body = body,
         viaLink = viaLink,
         postedAt = 3_000L,
+        editedAt = editedAt,
+        isDeleted = isDeleted,
+        isMine = isMine,
+        likedBy = likedBy,
     )
 
     private companion object {

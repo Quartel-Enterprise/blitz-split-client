@@ -7,6 +7,8 @@ final class BillDetailModel {
     private(set) var state: BillDetailUiState
     private(set) var deleteErrorCount = 0
     private(set) var commentErrorCount = 0
+    private(set) var commentChangeErrorCount = 0
+    private(set) var commentGoneCount = 0
     private(set) var undoErrorCount = 0
     private(set) var unreadablePhotoCount = 0
     private(set) var tooLargePhotoCount = 0
@@ -28,6 +30,9 @@ final class BillDetailModel {
             switch action {
             case is BillDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is BillDetailUiActionShowCommentError: self?.commentErrorCount += 1
+            case is BillDetailUiActionShowCommentChangeError: self?.commentChangeErrorCount += 1
+            case is BillDetailUiActionShowCommentGone: self?.commentGoneCount += 1
+            case let share as BillDetailUiActionShareComment: SystemShare.share(BillCopy.shareMessage(share.share))
             case is BillDetailUiActionShowUndoError: self?.undoErrorCount += 1
             case let photo as BillDetailUiActionShowPhotoError: self?.countPhotoError(photo.error)
             case is BillDetailUiActionShowRemovePhotoError: self?.removePhotoErrorCount += 1
@@ -88,6 +93,28 @@ final class BillDetailModel {
             get: { self.state.viewedAttachmentId ?? "" },
             set: { id in
                 if id != self.current.viewedAttachmentId { self.send(BillDetailUiEventOnViewerPageChanged(id: id)) }
+            },
+        )
+    }
+
+    /// "Delete comment?", open while the ViewModel has a comment to delete; closing it any way tells the ViewModel.
+    var isCommentDeletionOpen: Binding<Bool> {
+        Binding(
+            get: { self.state.commentToDelete != nil },
+            set: { isOpen in
+                guard !isOpen, self.current.commentToDelete != nil else { return }
+                self.send(BillDetailUiEventOnCommentDeleteDismissed.shared)
+            },
+        )
+    }
+
+    /// "Likes" on an iPhone and an iPad, open while the comment still has a like; closing it tells the ViewModel.
+    var isLikesOpen: Binding<Bool> {
+        Binding(
+            get: { self.state.likesComment != nil },
+            set: { isOpen in
+                guard !isOpen, self.current.likesCommentId != nil else { return }
+                self.send(BillDetailUiEventOnCommentLikesDismissed.shared)
             },
         )
     }
@@ -167,8 +194,25 @@ struct BillDetailView: View {
             onConfirm: { model?.send(BillDetailUiEventOnDeleteConfirmed.shared) },
             onDismiss: { model?.dismissDeletion() },
         )
+        .alert("Delete comment?", isPresented: model?.isCommentDeletionOpen ?? .constant(false)) {
+            Button(role: .destructive) {
+                model?.send(BillDetailUiEventOnCommentDeleteConfirmed.shared)
+            } label: {
+                Text(BillCopy.delete)
+            }
+            Button("Cancel", role: .cancel) {
+                model?.send(BillDetailUiEventOnCommentDeleteDismissed.shared)
+            }
+        } message: {
+            Text("It leaves the bill for everyone. Its replies stay.")
+        }
         .glassToast([
+            GlassToastMessage(text: "That comment was deleted.", trigger: model?.commentGoneCount ?? 0),
             GlassToastMessage(text: "Couldn't send the comment. Try again.", trigger: model?.commentErrorCount ?? 0),
+            GlassToastMessage(
+                text: "Couldn't save the change to the comment.",
+                trigger: model?.commentChangeErrorCount ?? 0,
+            ),
             GlassToastMessage(text: "Couldn't undo. Try again.", trigger: model?.undoErrorCount ?? 0),
             GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0),
         ] + BillAttachmentToasts.messages(model))
@@ -343,6 +387,8 @@ private struct PhoneBillDetail: View {
     let model: BillDetailModel
 
     @State private var layout = ScreenLayout()
+    /// The comment a link opened Bill at, tinted for a moment.
+    @State private var highlightedCommentId: String?
     @FocusState private var isComposing: Bool
 
     private var state: BillDetailUiState {
@@ -355,6 +401,33 @@ private struct PhoneBillDetail: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
+            columns
+                .modifier(BillCommentFocus(model: model, proxy: proxy, highlighted: $highlightedCommentId))
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if !state.isOnline {
+                BillOfflineBanner()
+                    .frame(maxWidth: 640)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 4)
+                    .padding(.bottom, 4)
+            }
+        }
+        .measuringScreenLayout($layout)
+        .background(Palette.groupedBackground)
+        .fullScreenCover(isPresented: model.isViewerOpen) {
+            BillAttachmentViewer(model: model)
+        }
+        .sheet(isPresented: model.isLikesOpen) {
+            BillLikesSheet(likers: state.likesComment?.likers ?? []) {
+                model.send(BillDetailUiEventOnCommentLikesDismissed.shared)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var columns: some View {
         Group {
             if layout.usesTwoColumns {
                 TwoColumnsLayout(spacing: 0) {
@@ -391,20 +464,6 @@ private struct PhoneBillDetail: View {
                         .padding(.bottom, 8)
                 }
             }
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if !state.isOnline {
-                BillOfflineBanner()
-                    .frame(maxWidth: 640)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 4)
-                    .padding(.bottom, 4)
-            }
-        }
-        .measuringScreenLayout($layout)
-        .background(Palette.groupedBackground)
-        .fullScreenCover(isPresented: model.isViewerOpen) {
-            BillAttachmentViewer(model: model)
         }
     }
 
@@ -553,22 +612,25 @@ private struct PhoneBillDetail: View {
 
     /// A thread reads as one block: no line between a comment and its replies.
     private func commentRow(_ comment: BillCommentRow, isReply: Bool, endsThread: Bool) -> some View {
-        let isTarget = state.replyTarget?.commentId == comment.id
+        // The comment being answered or edited, tinted while "Replying to" or "Editing comment" shows
+        let isTarget = state.replyTarget?.commentId == comment.id || state.editingCommentId == comment.id
         return BillCommentView(
             comment: comment,
             isReply: isReply,
             metrics: .standard,
-            onPerson: openPerson,
+            showsLikes: false,
+            send: model.send,
         ) {
-            model.send(BillDetailUiEventOnReplyClicked(commentId: comment.id))
             isComposing = true
         }
         .padding(.vertical, 2)
+        .id(comment.id)
         .listRowSeparator(endsThread ? .visible : .hidden, edges: .bottom)
-        // The comment being answered, tinted while "Replying to" shows
         .listRowBackground(ZStack {
             Palette.card
             if isTarget { Palette.accent.opacity(0.12) }
+            // The comment a link opened at, fading out
+            Palette.accent.opacity(highlightedCommentId == comment.id ? 0.22 : 0)
         })
     }
 }
@@ -589,6 +651,8 @@ private struct MacBillDetail: View {
 
     @State private var layout = ScreenLayout()
     @State private var tab = MacBillTab.bill
+    /// The comment a link opened Bill at, tinted for a moment.
+    @State private var highlightedCommentId: String?
     @FocusState private var isFocused: Bool
     @FocusState private var isComposing: Bool
 
@@ -657,6 +721,10 @@ private struct MacBillDetail: View {
         .focusEffectDisabled()
         .focused($isFocused)
         .onAppear { isFocused = true }
+        // The narrow inspector shows the comments, so the one a link opened at can be scrolled to
+        .onChange(of: state.focusedCommentId, initial: true) { _, id in
+            if id != nil { tab = .comments }
+        }
         .onExitCommand {
             model.send(BillDetailUiEventOnBackClicked.shared)
         }
@@ -782,13 +850,21 @@ private struct MacBillDetail: View {
     /// Comments and History scroll together over the composer, which shows with the comments.
     private func talkColumn(showsComments: Bool, showsHistory: Bool) -> some View {
         VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    if showsComments { comments }
-                    if showsHistory { history }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        if showsComments { comments }
+                        if showsHistory { history }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(isNarrow ? 16 : 20)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(isNarrow ? 16 : 20)
+                .modifier(BillCommentFocus(
+                    model: model,
+                    proxy: proxy,
+                    highlighted: $highlightedCommentId,
+                    isEnabled: showsComments,
+                ))
             }
             if showsComments {
                 Divider()
@@ -824,14 +900,25 @@ private struct MacBillDetail: View {
     }
 
     private func commentRow(_ comment: BillCommentRow, isReply: Bool) -> some View {
-        let isTarget = state.replyTarget?.commentId == comment.id
-        return BillCommentView(comment: comment, isReply: isReply, metrics: .standard, onPerson: openPerson) {
-            model.send(BillDetailUiEventOnReplyClicked(commentId: comment.id))
+        // The comment being answered or edited, tinted while "Replying to" or "Editing comment" shows; the one a link
+        // opened at, fading out
+        let isTarget = state.replyTarget?.commentId == comment.id || state.editingCommentId == comment.id
+        let isHighlighted = highlightedCommentId == comment.id
+        return BillCommentView(
+            comment: comment,
+            isReply: isReply,
+            metrics: .standard,
+            showsLikes: state.likesComment?.id == comment.id,
+            send: model.send,
+        ) {
             isComposing = true
         }
         .padding(6)
-        // The comment being answered, tinted while "Replying to" shows
-        .background(isTarget ? Palette.accent.opacity(0.14) : .clear, in: .rect(cornerRadius: 8))
+        .background(
+            Palette.accent.opacity(isHighlighted ? 0.24 : isTarget ? 0.14 : 0),
+            in: .rect(cornerRadius: 8),
+        )
+        .id(comment.id)
     }
 
     @ViewBuilder

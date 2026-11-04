@@ -12,4 +12,9 @@ data class SharedBillCommentDto(
     @SerialName("body") val body: String,
     @SerialName("via_link") val viaLink: Boolean?,
     @SerialName("posted_at") val postedAt: Long,
+    // Why: the comments' edits and likes (beta feedback 14).
+    @SerialName("edited_at") val editedAt: Long?,
+    @SerialName("is_deleted") val isDeleted: Boolean?,
+    @SerialName("is_mine") val isMine: Boolean?,
+    @SerialName("liked_by") val likedBy: List<SharedBillLikeDto>?,
 )
