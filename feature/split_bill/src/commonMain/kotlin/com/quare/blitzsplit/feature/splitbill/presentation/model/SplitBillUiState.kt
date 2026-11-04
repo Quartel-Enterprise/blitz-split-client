@@ -58,6 +58,11 @@ data class SplitBillUiState(
     val split: SplitEditor,
     // Why: the group's "Divisão padrão" a new bill opens with; null while editing a saved bill or for a group without one.
     val defaultSplit: BillDefaultSplit?,
+    /*
+     * Why: the category whose exception (6.7f) covers the bill's, even one that no longer adds up and so opens nothing:
+     * what "Usar como padrão do grupo" replaces; null for the group's own default.
+     */
+    val defaultSplitExceptionId: String?,
     // Why: the bill's split becomes the group's default when it is saved, set by Dividir's "Pronto"; null for none.
     val splitAsDefault: SplitAsDefault?,
     // Why: the app's categories with the group's (7.7), which the bill's category resolves in.
@@ -267,6 +272,10 @@ data class SplitBillUiState(
             val default = defaultSplit ?: return !editor.splitsEquallyAmongEveryone
             return !default.isFollowedBy(editor)
         }
+
+    // Why: "Usar como padrão do grupo para Mercado", the exception the box replaces, whether or not it opened the bill.
+    val splitEditorDefaultException: Category?
+        get() = defaultSplitExceptionId?.let { categories.resolve(it) }
 
     // Why: "Vira a exceção do grupo para Mercado" under "Divisão", for the exception the bill's split replaces.
     val splitAsDefaultException: Category?

@@ -291,15 +291,9 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnPartsDecreased -> editSplit { it.withPartsChanged(event.memberId, -1) }
 
-            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update {
-                it
-                    .withSplitEditorReset()
-                    .withSplitAsDefaultSettled()
-            }
+            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
 
-            SplitBillUiEvent.OnSplitAsDefaultToggled -> uiState.update {
-                it.copy(isSplitEditorAsDefaultChecked = !it.isSplitEditorAsDefaultChecked)
-            }
+            SplitBillUiEvent.OnSplitAsDefaultToggled -> uiState.update { it.withSplitAsDefaultToggled() }
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 

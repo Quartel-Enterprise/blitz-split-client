@@ -153,7 +153,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
  */
 function SplitAsDefaultField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
   // Why: "Usar como padrão do grupo para Mercado" while the bill opened with that category's exception.
-  const exception = state.categories.defaultSplitException
+  const exception = state.categories.splitEditorDefaultException
   return (
     <label className="flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3">
       <Checkbox className="mt-0.5" checked={state.isSplitEditorAsDefaultChecked} onCheckedChange={() => presenter.toggleSplitAsDefault()} />

@@ -130,7 +130,7 @@ internal fun SplitEditorContent(
             if (state.offersSplitAsDefault) {
                 SplitAsDefaultRow(
                     isChecked = state.isSplitEditorAsDefaultChecked,
-                    exceptionName = state.defaultSplitException?.let { categoryNameOf(it) },
+                    exceptionName = state.splitEditorDefaultException?.let { categoryNameOf(it) },
                     onEvent = onEvent,
                 )
             }

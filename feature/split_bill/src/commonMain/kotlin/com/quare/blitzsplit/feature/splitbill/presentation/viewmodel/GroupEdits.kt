@@ -55,6 +55,7 @@ internal fun createInitialBillState(
         itemDeletion = null,
         feeEditor = null,
         defaultSplit = null,
+        defaultSplitExceptionId = null,
         splitAsDefault = null,
         categories = CategoryTree.appOnly,
         categoryId = null,
@@ -137,6 +138,7 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
     itemDeletion = null,
     feeEditor = null,
     defaultSplit = null,
+    defaultSplitExceptionId = null,
     splitAsDefault = null,
     // Why: one of the last group's own categories means nothing in another; the app's stay picked.
     categoryId = categoryId?.takeIf { AppCategory.fromKeyOrNull(it) != null },

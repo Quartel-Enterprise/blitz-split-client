@@ -175,6 +175,7 @@ internal fun createPreviewBillState(
     itemDeletion = null,
     feeEditor = null,
     defaultSplit = null,
+    defaultSplitExceptionId = null,
     splitAsDefault = null,
     categories = CategoryTree.appOnly,
     categoryId = AppCategory.FOOD_MARKET.key,

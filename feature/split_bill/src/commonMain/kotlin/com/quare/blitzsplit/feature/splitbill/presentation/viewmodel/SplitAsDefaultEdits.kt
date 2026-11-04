@@ -11,6 +11,9 @@ internal fun SplitBillUiState.withSplitOpened(): SplitBillUiState = copy(
     isSplitEditorAsDefaultChecked = splitAsDefault != null,
 )
 
+internal fun SplitBillUiState.withSplitAsDefaultToggled(): SplitBillUiState =
+    copy(isSplitEditorAsDefaultChecked = !isSplitEditorAsDefaultChecked)
+
 // Why: "Usar como padrão do grupo" unchecks once it hides, so it never comes back checked by itself.
 internal fun SplitBillUiState.withSplitAsDefaultSettled(): SplitBillUiState =
     if (isSplitEditorAsDefaultChecked && !offersSplitAsDefault) copy(isSplitEditorAsDefaultChecked = false) else this
@@ -24,7 +27,7 @@ internal fun SplitBillUiState.withSplitConfirmed(editor: SplitEditor): SplitBill
     return copy(
         split = editor,
         splitEditor = null,
-        splitAsDefault = if (makesDefault) SplitAsDefault(defaultSplit?.exceptionCategoryId) else null,
+        splitAsDefault = if (makesDefault) SplitAsDefault(defaultSplitExceptionId) else null,
     )
 }
 

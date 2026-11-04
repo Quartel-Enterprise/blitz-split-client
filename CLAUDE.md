@@ -566,9 +566,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
-    percentages they give (`IncomePercents`). "Numa conta de R$ 100: Pierre R$ 75 · Ana R$ 25" with the bar
-    in each one's color is always in sight, the cents as Rachar conta shares them (Igual's example is the first round
-    bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
+    percentages they give (`IncomePercents`). A new bill's Dividir may also save its split as the default or its
+    category's exception ("Usar como padrão do grupo", below in Rachar conta). "Numa conta de R$ 100: Pierre R$ 75 ·
+    Ana R$ 25" with the bar in each one's color is always in sight, the cents as Rachar conta shares them (Igual's
+    example is the first round bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
@@ -617,7 +618,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (in Igual, out of the other modes). "Divisão" then says "Padrão do grupo", and Dividir's notice above the
     modes "Padrão do Apê 302: Partes, 3 para 1", or "Diferente do padrão do grupo" with "Voltar ao padrão" once
     changed for this bill (`SplitBillUiState.defaultSplit`, `isSplitEditorOffDefault`); "Editar conta" keeps its split
-    with no notice. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
+    with no notice. A new bill split by Igual, Partes or % in another way than that default (or, for a group without
+    one, anything that doesn't split equally among everyone, Partes at 1 each included) offers "Usar como padrão do
+    grupo" under Dividir's people (beta feedback 11, Pierre's call, `offersSplitAsDefault`; never Valores nor Itens,
+    which are one bill's amounts, nor on "Editar conta"): "Pronto" with it checked makes "Divisão" say "Vira o padrão
+    do grupo", and saving the bill saves its split as the group's "Divisão padrão" (`SaveSplitAsDefault`), keeping its
+    exceptions, as Divisão padrão's Salvar does (offline too, Last-Write-Wins, a "Pela renda" replaced dropping this
+    device's incomes). A bill whose category has an exception, even one that no longer adds up after someone in it
+    left (`defaultSplitExceptionId`), offers "Usar como padrão do grupo para Mercado" and replaces only that exception
+    ("Vira a exceção do grupo para Mercado"). Closing the bill unsaved changes nothing; another group or category
+    picked (Pierre's call: another category falls under another default) or Itens' "Pronto" drops it, and the
+    checkbox unchecks once it hides. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's

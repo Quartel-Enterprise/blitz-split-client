@@ -592,6 +592,7 @@ class SplitBillUiStateTest {
         itemDeletion = null,
         feeEditor = null,
         defaultSplit = null,
+        defaultSplitExceptionId = null,
         splitAsDefault = null,
         categories = CategoryTree.appOnly,
         categoryId = null,

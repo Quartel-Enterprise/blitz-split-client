@@ -110,7 +110,7 @@ private struct SplitAsDefaultToggle: View {
 
     /// "Use as the group default for Groceries" while the bill opened with that category's exception.
     private var title: String {
-        state.defaultSplitException.map {
+        state.splitEditorDefaultException.map {
             String(localized: "Use as the group default for \(CategoryCopy.name($0))")
         } ?? String(localized: "Use as the group default")
     }

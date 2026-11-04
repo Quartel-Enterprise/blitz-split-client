@@ -755,6 +755,34 @@ class DefaultSplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN a broken Mercado exception WHEN saving the bill as default THEN it replaces that exception`() =
+        runTest(testDispatcher) {
+            // Given
+            val brokenMarket = CategorySplit(
+                categoryId = AppCategory.FOOD_MARKET.key,
+                mode = DefaultSplitMode.PERCENT,
+                weights = mapOf(PIERRE to 60L, "member-gone" to 40L),
+            )
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(brokenMarket))))
+            fillBill(description = "Supermercado")
+            pickSharesAsDefault()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = groups.savedDefaultSplits.single().second
+            assertEquals(threeToOne.mode, saved?.mode)
+            assertEquals(threeToOne.weights, saved?.weights)
+            assertEquals(
+                listOf(
+                    CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.SHARES, mapOf(PIERRE to 2L, ANA to 1L)),
+                ),
+                saved?.exceptions,
+            )
+        }
+
+    @Test
     fun `GIVEN the bill becomes the default WHEN its items are done THEN it no longer does`() =
         runTest(testDispatcher) {
             // Given
