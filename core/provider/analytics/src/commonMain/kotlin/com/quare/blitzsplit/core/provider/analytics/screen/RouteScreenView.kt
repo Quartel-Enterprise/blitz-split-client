@@ -27,6 +27,7 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     is Route.GroupStats -> ScreenView("group_stats", emptyMap())
     is Route.EditGroup -> ScreenView("edit_group", emptyMap())
     is Route.DefaultSplit -> ScreenView("default_split", emptyMap())
+    is Route.SimplifyDebtsInfo -> ScreenView("simplify_debts_info", emptyMap())
     is Route.SplitBill -> ScreenView("split_bill", mapOf("is_edit" to (expenseId != null)))
     is Route.BillDetail -> ScreenView("bill_detail", emptyMap())
     is Route.ShareBill -> ScreenView("share_bill", emptyMap())
