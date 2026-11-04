@@ -48,9 +48,6 @@ class FakeActivityRepository(
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
-    // Why: what getNewestSeq answers, as the newest event downloaded.
-    var newestSeq: Long? = null
-
     override fun observeEvents(): Flow<List<ActivityEvent>> = events
 
     // Why: a bill's history, the events about it (the loaded ones are in `events` too).
@@ -119,8 +116,6 @@ class FakeActivityRepository(
         readState.update { it.copy(hasDownloaded = true) }
         return Result.success(Unit)
     }
-
-    override suspend fun getNewestSeq(): Long? = newestSeq
 
     override suspend fun clear() {
         clearCalls++

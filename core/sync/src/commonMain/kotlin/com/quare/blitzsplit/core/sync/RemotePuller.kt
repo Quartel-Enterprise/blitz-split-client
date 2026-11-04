@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.RemotePull
 import kotlinx.coroutines.NonCancellable
@@ -21,6 +22,7 @@ import kotlinx.coroutines.withContext
  */
 class RemotePuller(
     private val profileRepository: ProfileRepository,
+    private val paymentKeyRepository: PaymentKeyRepository,
     private val groupRepository: GroupRepository,
     private val categoryRepository: CategoryRepository,
     private val expenseRepository: ExpenseRepository,
@@ -59,6 +61,7 @@ class RemotePuller(
         if (pull.pullsComments) billCommentRepository.download(userId).getOrThrow()
         if (pull.pullsAttachments) billAttachmentRepository.download(userId).getOrThrow()
         if (pull.pullsMemberPhotos) groupRepository.downloadMemberPhotos().getOrThrow()
+        if (pull.pullsMemberKeys) paymentKeyRepository.downloadMemberKeys(userId).getOrThrow()
         if (pull.pullsActivity) activityRepository.downloadActivity(userId).getOrThrow()
     }
 }

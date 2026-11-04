@@ -172,27 +172,34 @@ the tables as the sync brings them.
 - **What it listens to**: one Realtime channel (`RemoteChangeRepository`), with the inserts of `activity_events`, which
   the server's triggers write for everything done in a group (bills, payments, comments, photos, members, the group),
   and the updates of `profiles`. No filter: the server's row level security decides what each subscriber hears
-  (`blitz-split-api`'s `20261125120000_publish_realtime_changes`). The payload is never applied; only an event's `seq`,
-  `group_id` and `kind`, and a profile's `id`, are read (`RemoteChange`).
+  (`blitz-split-api`'s `20261126120000_publish_realtime_changes`). The payload is never applied; only an event's
+  `group_id` and `kind`, and a profile's `id`, are used (`RemoteChange`).
 - **When**: only while the app is in front (`AppForeground`, which `ReportAppForeground` sets from Android's
   `ProcessLifecycleOwner`, Apple's scene phase other than `.background` and the page's `visibilitychange`), online,
-  with an account and a profile. Bible Planner learned the first: a token refreshed in the background reaches a dead
-  socket, which supabase-kt's `setAuth` crashes on. Leaving any of them leaves the channel; a channel that fails
-  listens again 30 seconds later.
+  with an account and a profile (`RemoteChangeListener`). Bible Planner learned the first: a token refreshed in the
+  background reaches a dead socket, which supabase-kt's `setAuth` crashes on. Leaving any of them leaves the channel;
+  a channel that fails listens again 30 seconds later.
 - **Catching up**: each time the channel joins (coming to the front, back online, the socket back after it dropped)
-  a full sync brings what nobody heard meanwhile, unless one began since the join (`startedSyncs`), which already read
-  after it: the launch's, or the one coming back online starts.
-- **The pull** (`RemotePull`, each kind's `RemoteReach`): what is heard within half a second pulls once, under the sync lock, so the device's
-  newest event (`ActivityRepository.getNewestSeq`) is read after any sync in flight. An event up to it is already on
-  the device: this device's own, heard back after the sync that pushed it brought it down. A bill, a payment, a
-  group's edit, its link or a rename pulls that group alone (`RemotePuller.downloadGroup`: the group and members, categories, bills
-  and payments, read together and written in Room's foreign key order, as the first download does); a comment pulls
-  the comments, a photo the attachments; then Atividade's new events come down, so the feed and its badge follow. A
-  member added, joined, gone or released, a group deleted, and a kind this version doesn't know take the full sync,
-  the only one that drops what the server no longer has (and brings a group the user was just added to, a joined
-  member's keys and photo, "Grupo apagado"). A profile changed pulls this user's profile when it is theirs (another
-  of their devices), the members' photos otherwise. A pull doesn't count as a sync for the badge; one that fails goes
-  to the full sync, which tries again and reports it.
+  a full sync brings what nobody heard meanwhile, and shows as one. It is spared only when a sync began after the join
+  (`startedSyncs`), which already read after it; the launch's sync, and the one coming back online starts, usually
+  begin before the join completes, so those moments run two full syncs back to back.
+- **The pull** (`RemotePull`, each kind's `RemoteReach`, `RemotePuller`): what is heard within half a second pulls
+  once, under the sync lock. A bill, a payment, a group's edit, its link or a rename pulls that group alone
+  (`RemotePuller.downloadGroup`: the group and members, categories, bills and payments, read together and written in
+  Room's foreign key order, as the first download does); a member added pulls the group with the members' photos and
+  keys (it also brings the group to an account added straight in, which Atividade backfills); a comment pulls the
+  comments, a photo the attachments, both for every bill on the device, since neither has a download of one bill;
+  then Atividade's new events come down, so the feed and its badge follow. A member joined, gone or released, a group
+  deleted, and a kind this version doesn't know take the full sync, the only one that drops what the server no longer
+  has (a guest merged into an account, "Grupo apagado"). A profile changed pulls this user's profile when it is theirs
+  (another of their devices), the members' photos otherwise. An event the device already has still pulls: a sync
+  brings Atividade after the rows, so the event may be there before the rows it tells of, and `seq` follows the
+  inserts, not the commits. So this device hears its own changes back once, after the sync that pushed them, for one
+  group's pull. A pull doesn't count as a sync for the badge; one that fails goes to the full sync, which tries again
+  and reports it.
+- **Not heard**: a group this account loses. "Sair do grupo" on another of this user's devices, or the creator's
+  "Liberar nome" on the name this user joined as, records an event this account can no longer read, so the group
+  leaves this device on its next sync, as before.
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet

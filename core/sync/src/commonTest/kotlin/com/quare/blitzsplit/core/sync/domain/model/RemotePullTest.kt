@@ -8,10 +8,9 @@ import kotlin.test.assertTrue
 
 class RemotePullTest {
     private val userId = "pierre"
-    private val newestSeq = 10L
 
     @Test
-    fun `GIVEN only events already on the device WHEN planning THEN pulls nothing`() {
+    fun `GIVEN events whose seq the device already has WHEN planning THEN still pulls what they tell of`() {
         // Given
         val changes = listOf(
             event(
@@ -25,10 +24,17 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
-        assertEquals(expectedPull(), pull)
+        assertEquals(
+            expectedPull(
+                groupIds = setOf("floripa"),
+                pullsActivity = true,
+                pullsComments = true,
+            ),
+            pull,
+        )
     }
 
     @Test
@@ -43,7 +49,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(
@@ -79,7 +85,6 @@ class RemotePullTest {
                         kind = kind,
                     ),
                 ),
-                newestSeq,
                 userId,
             )
         }
@@ -107,7 +112,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(
@@ -133,7 +138,6 @@ class RemotePullTest {
                         kind = kind,
                     ),
                 ),
-                newestSeq,
                 userId,
             )
         }
@@ -164,7 +168,6 @@ class RemotePullTest {
                         kind = kind,
                     ),
                 ),
-                newestSeq,
                 userId,
             )
         }
@@ -178,7 +181,6 @@ class RemotePullTest {
         // Given
         val kinds = listOf(
             ActivityKind.GROUP_DELETED,
-            ActivityKind.MEMBER_ADDED,
             ActivityKind.MEMBER_JOINED,
             ActivityKind.MEMBER_LEFT,
             ActivityKind.MEMBER_REMOVED,
@@ -194,7 +196,6 @@ class RemotePullTest {
                         kind = kind,
                     ),
                 ),
-                newestSeq,
                 userId,
             )
         }
@@ -214,7 +215,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertTrue(pull.isFullSync)
@@ -232,34 +233,33 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertTrue(pull.isFullSync)
     }
 
     @Test
-    fun `GIVEN a member who joined already on the device WHEN planning THEN does not ask for a full sync`() {
+    fun `GIVEN a member added to a group WHEN planning THEN pulls the group with the members photos and keys`() {
         // Given
         val changes = listOf(
             event(
-                seq = 10L,
-                kind = ActivityKind.MEMBER_JOINED,
-            ),
-            event(
                 seq = 11L,
-                kind = ActivityKind.BILL_CREATED,
+                kind = ActivityKind.MEMBER_ADDED,
+                groupId = "floripa",
             ),
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(
             expectedPull(
                 groupIds = setOf("floripa"),
                 pullsActivity = true,
+                pullsMemberPhotos = true,
+                pullsMemberKeys = true,
             ),
             pull,
         )
@@ -271,7 +271,7 @@ class RemotePullTest {
         val changes = listOf(RemoteChange.ProfileChanged(userId))
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(expectedPull(pullsOwnProfile = true), pull)
@@ -283,26 +283,22 @@ class RemotePullTest {
         val changes = listOf(RemoteChange.ProfileChanged("ana"))
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(expectedPull(pullsMemberPhotos = true), pull)
     }
 
     @Test
-    fun `GIVEN both profiles changed alongside old events WHEN planning THEN pulls both whatever the seq`() {
+    fun `GIVEN both profiles changed WHEN planning THEN pulls the own profile and the members photos`() {
         // Given
         val changes = listOf(
-            event(
-                seq = 3L,
-                kind = ActivityKind.BILL_EDITED,
-            ),
             RemoteChange.ProfileChanged(userId),
             RemoteChange.ProfileChanged("ana"),
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(
@@ -333,7 +329,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(setOf("floripa"), pull.groupIds)
@@ -357,7 +353,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(setOf("floripa", "ape-302"), pull.groupIds)
@@ -380,7 +376,7 @@ class RemotePullTest {
         )
 
         // When
-        val pull = RemotePull.of(changes, newestSeq, userId)
+        val pull = RemotePull.of(changes, userId)
 
         // Then
         assertEquals(
@@ -411,6 +407,7 @@ class RemotePullTest {
         pullsAttachments: Boolean = false,
         pullsOwnProfile: Boolean = false,
         pullsMemberPhotos: Boolean = false,
+        pullsMemberKeys: Boolean = false,
     ): RemotePull = RemotePull(
         isFullSync = isFullSync,
         groupIds = groupIds,
@@ -419,5 +416,6 @@ class RemotePullTest {
         pullsAttachments = pullsAttachments,
         pullsOwnProfile = pullsOwnProfile,
         pullsMemberPhotos = pullsMemberPhotos,
+        pullsMemberKeys = pullsMemberKeys,
     )
 }

@@ -177,8 +177,6 @@ class ActivityRepositoryImpl(
      * Why: what happened since the newest event the device has, then the history of the groups new on it (joined, or
      * come down on another account's first sync), the last 90 days only. Another account's feed goes first.
      */
-    override suspend fun getNewestSeq(): Long? = local.getMaxSeq()
-
     override suspend fun downloadActivity(userId: String): Result<Unit> = suspendRunCatching {
         val owner = local.getState()?.ownerUserId
         if (owner != null && owner != userId) {

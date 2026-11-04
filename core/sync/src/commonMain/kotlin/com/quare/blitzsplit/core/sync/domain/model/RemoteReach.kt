@@ -6,12 +6,16 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 enum class RemoteReach {
     ACTIVITY,
     GROUP,
+    MEMBERS,
     COMMENTS,
     ATTACHMENTS,
     EVERYTHING,
     ;
 
     companion object {
+        // Why: the reaches that bring their group's rows down.
+        val groupReaches: Set<RemoteReach> = setOf(GROUP, MEMBERS)
+
         // Why: every kind says what it reaches, so a kind added to ActivityKind has to say it too.
         fun of(kind: ActivityKind?): RemoteReach = when (kind) {
             ActivityKind.BILL_CREATED,
@@ -24,6 +28,12 @@ enum class RemoteReach {
             ActivityKind.INVITE_LINK_CHANGED,
             ActivityKind.MEMBER_RENAMED,
             -> GROUP
+
+            /*
+             * Why: a name added, or an account added straight in, which brings the group to that account's devices
+             * (Atividade backfills it) with the faces and keys of the people in it.
+             */
+            ActivityKind.MEMBER_ADDED -> MEMBERS
 
             ActivityKind.COMMENT_ADDED -> COMMENTS
 
@@ -38,7 +48,6 @@ enum class RemoteReach {
              * server records may do any of it.
              */
             ActivityKind.GROUP_DELETED,
-            ActivityKind.MEMBER_ADDED,
             ActivityKind.MEMBER_JOINED,
             ActivityKind.MEMBER_LEFT,
             ActivityKind.MEMBER_REMOVED,

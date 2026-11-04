@@ -74,6 +74,7 @@ class SyncCoordinator(
     )
     private val remotePuller = RemotePuller(
         profileRepository = profileRepository,
+        paymentKeyRepository = paymentKeyRepository,
         groupRepository = groupRepository,
         categoryRepository = categoryRepository,
         expenseRepository = expenseRepository,
@@ -540,6 +541,8 @@ class SyncCoordinator(
      * back online starts).
      */
     private suspend fun catchUp(syncsBeforeJoin: Long) {
+        // Why: checked again under the lock, but first without it, so a catch-up with nothing to do never shows as a sync.
+        if (startedSyncs.value > syncsBeforeJoin) return
         val result = runUnderSyncLock {
             if (startedSyncs.value > syncsBeforeJoin) Result.success(Unit) else syncLocked()
         }
@@ -547,9 +550,8 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: under the sync lock, so the device's newest event is read after any sync in flight, whose download may have
-     * brought these already, and no download that read the server before overwrites the pull. It doesn't count as a
-     * sync for the badge, which only asks for attention. What only the full sync drops, and a pull that failed, go to
+     * Why: under the sync lock, like any download, so a sync's writes and the pull's never interleave. It doesn't count
+     * as a sync for the badge, which only asks for attention. What only the full sync drops, and a pull that failed, go to
      * the full sync, which tries again and reports it.
      */
     private suspend fun pullRemoteChanges(
@@ -560,7 +562,6 @@ class SyncCoordinator(
             suspendRunCatching {
                 val pull = RemotePull.of(
                     changes = changes,
-                    newestSeq = activityRepository.getNewestSeq() ?: 0L,
                     userId = userId,
                 )
                 if (!pull.isFullSync) remotePuller.pull(userId, pull)

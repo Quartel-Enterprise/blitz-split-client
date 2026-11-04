@@ -20,7 +20,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 /*
  * Why: one channel for the user, with no filter: the server's row level security decides which events and profiles
- * each subscriber hears of (blitz-split-api's 20261125120000_publish_realtime_changes). The channel leaves when the
+ * each subscriber hears of (blitz-split-api's 20261126120000_publish_realtime_changes). The channel leaves when the
  * collection ends, so nothing listens once the app leaves the front or goes offline.
  */
 class SupabaseRemoteChangeRemoteDataSource(

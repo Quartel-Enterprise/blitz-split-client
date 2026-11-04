@@ -49,6 +49,7 @@ class SyncCoordinatorRealtimeTest {
     private lateinit var billComments: FakeBillCommentRepository
     private lateinit var billAttachments: FakeBillAttachmentRepository
     private lateinit var activity: FakeActivityRepository
+    private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var remoteChanges: FakeRemoteChangeRepository
     private lateinit var appForeground: AppForeground
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -302,46 +303,6 @@ class SyncCoordinatorRealtimeTest {
     }
 
     @Test
-    fun `GIVEN an event already on the device WHEN it is heard THEN pulls nothing`() = runTest {
-        // Given
-        prepareScenario(newestSeq = 11L)
-
-        // When
-        remoteChanges.changes.emit(
-            event(
-                seq = 11L,
-                kind = ActivityKind.BILL_EDITED,
-            ),
-        )
-        advanceTimeBy(BATCH_WAIT)
-        runCurrent()
-
-        // Then
-        assertTrue(groups.downloadedGroupIds.isEmpty())
-        assertTrue(activity.downloadedUserIds.isEmpty())
-        assertEquals(0, account.registrationCount)
-    }
-
-    @Test
-    fun `GIVEN a device with no event yet WHEN an event is heard THEN pulls its group`() = runTest {
-        // Given
-        prepareScenario(newestSeq = null)
-
-        // When
-        remoteChanges.changes.emit(
-            event(
-                seq = 1L,
-                kind = ActivityKind.BILL_CREATED,
-            ),
-        )
-        advanceTimeBy(BATCH_WAIT)
-        runCurrent()
-
-        // Then
-        assertEquals(listOf(FLORIPA), groups.downloadedGroupIds)
-    }
-
-    @Test
     fun `GIVEN a change just heard WHEN less than the batch window passes THEN nothing is pulled yet`() = runTest {
         // Given
         prepareScenario()
@@ -561,26 +522,6 @@ class SyncCoordinatorRealtimeTest {
     }
 
     @Test
-    fun `GIVEN a member who joined already on the device WHEN it is heard again THEN runs no full sync`() = runTest {
-        // Given
-        prepareScenario(newestSeq = 11L)
-
-        // When
-        remoteChanges.changes.emit(
-            event(
-                seq = 11L,
-                kind = ActivityKind.MEMBER_JOINED,
-            ),
-        )
-        advanceTimeBy(BATCH_WAIT)
-        runCurrent()
-
-        // Then
-        assertEquals(0, account.registrationCount)
-        assertTrue(groups.downloadedUserIds.isEmpty())
-    }
-
-    @Test
     fun `GIVEN the group fails to come down WHEN its bill edited is heard THEN falls back to a full sync`() = runTest {
         // Given
         prepareScenario()
@@ -600,6 +541,29 @@ class SyncCoordinatorRealtimeTest {
         assertEquals(1, account.registrationCount)
         assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
     }
+
+    @Test
+    fun `GIVEN listening WHEN a member added is heard THEN pulls the group with the members photos and keys`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            remoteChanges.changes.emit(
+                event(
+                    seq = 11L,
+                    kind = ActivityKind.MEMBER_ADDED,
+                ),
+            )
+            advanceTimeBy(BATCH_WAIT)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FLORIPA), groups.downloadedGroupIds)
+            assertEquals(1, groups.memberPhotoDownloads)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.memberKeysDownloadedUserIds)
+            assertEquals(0, account.registrationCount)
+        }
 
     @Test
     fun `GIVEN listening WHEN the own profile saved on another device is heard THEN pulls the profile only`() =
@@ -676,30 +640,6 @@ class SyncCoordinatorRealtimeTest {
         assertEquals(listOf(FLORIPA), groups.downloadedGroupIds)
         assertEquals(1, account.registrationCount)
     }
-
-    @Test
-    fun `GIVEN the sync in flight brought the change heard WHEN it ends THEN the change pulls nothing more`() =
-        runTest {
-            // Given
-            prepareScenario(syncInFlight = true)
-            remoteChanges.changes.emit(
-                event(
-                    seq = 11L,
-                    kind = ActivityKind.BILL_EDITED,
-                ),
-            )
-            advanceTimeBy(BATCH_WAIT)
-            runCurrent()
-            activity.newestSeq = 11L
-
-            // When
-            syncGate.complete(Unit)
-            runCurrent()
-
-            // Then
-            assertTrue(groups.downloadedGroupIds.isEmpty())
-            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
-        }
 
     @Test
     fun `GIVEN listening WHEN the channel joins THEN catches up with a full sync`() = runTest {
@@ -821,7 +761,6 @@ class SyncCoordinatorRealtimeTest {
         storedProfile: UserProfile? = pierre,
         online: Boolean = true,
         inFront: Boolean = true,
-        newestSeq: Long? = 10L,
         failingListens: Int = 0,
         syncInFlight: Boolean = false,
     ) {
@@ -834,14 +773,15 @@ class SyncCoordinatorRealtimeTest {
         settlements = FakeSettlementRepository()
         billComments = FakeBillCommentRepository()
         billAttachments = FakeBillAttachmentRepository()
-        activity = FakeActivityRepository().also { it.newestSeq = newestSeq }
+        activity = FakeActivityRepository()
+        paymentKeys = FakePaymentKeyRepository()
         remoteChanges = FakeRemoteChangeRepository().also { it.failingListens = failingListens }
         appForeground = AppForeground()
         isOnline = MutableStateFlow(online)
         coordinator = SyncCoordinator(
             accountRepository = account,
             profileRepository = gatedProfile,
-            paymentKeyRepository = FakePaymentKeyRepository(),
+            paymentKeyRepository = paymentKeys,
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             groupRepository = groups,
             groupPinRepository = FakeGroupPinRepository(),
@@ -878,6 +818,7 @@ class SyncCoordinatorRealtimeTest {
         billComments.downloadedUserIds.clear()
         billAttachments.downloadedUserIds.clear()
         activity.downloadedUserIds.clear()
+        paymentKeys.memberKeysDownloadedUserIds.clear()
         states.clear()
         if (syncInFlight) {
             gatedProfile.gate = syncGate
