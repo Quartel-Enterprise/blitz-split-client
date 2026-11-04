@@ -406,7 +406,8 @@ class GroupsViewModel(
 
             is SearchUiEvent.OnScopeChanged -> search { it.copy(scope = event.scope) }
 
-            is SearchUiEvent.OnGroupClicked -> onEvent(GroupsUiEvent.OnGroupClicked(event.groupId))
+            // Why: handled, not sent again, so the result's tap counts once, as search_result_clicked.
+            is SearchUiEvent.OnGroupClicked -> handleEvent(GroupsUiEvent.OnGroupClicked(event.groupId))
 
             // Why: the group on its Membros, which takes the place of the group beside the list.
             is SearchUiEvent.OnPersonClicked -> if (isListShown()) {

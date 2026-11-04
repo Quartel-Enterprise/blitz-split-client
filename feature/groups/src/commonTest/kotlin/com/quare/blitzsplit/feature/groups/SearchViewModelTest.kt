@@ -471,6 +471,88 @@ class SearchViewModelTest {
             assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the search over a tab WHEN picking Pessoas THEN tracks search_scope_selected from the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnScopeChanged(SearchScope.PEOPLE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "search_scope_selected" to mapOf<String, Any>("scope" to SearchScope.PEOPLE, "source" to "search"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a group found THEN tracks a group result without its id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("chur"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnGroupClicked("churrasco"))
+
+            // Then
+            assertEquals(
+                listOf("search_result_clicked" to mapOf<String, Any>("kind" to "group", "source" to "search")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a person found THEN tracks a person result without the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnPersonClicked("ape"))
+
+            // Then
+            assertEquals(
+                listOf("search_result_clicked" to mapOf<String, Any>("kind" to "person", "source" to "search")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a bill found THEN tracks a bill result without ids`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carne"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnBillClicked("churrasco", "carne"))
+
+            // Then
+            assertEquals(
+                listOf("search_result_clicked" to mapOf<String, Any>("kind" to "bill", "source" to "search")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN typing and closing it THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SearchUiEvent.OnQueryChanged("chur"))
+        viewModel.onEvent(SearchUiEvent.OnClosed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val balances = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
     private val activity = Route.Activity(personKey = null)

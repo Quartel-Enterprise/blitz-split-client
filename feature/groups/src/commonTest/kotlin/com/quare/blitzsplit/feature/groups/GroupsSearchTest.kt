@@ -451,6 +451,83 @@ class GroupsSearchTest {
             assertEquals(listOf(Route.Groups), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the search open in the groups WHEN picking Despesas THEN tracks the scope from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnScopeChanged(SearchScope.BILLS)))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "search_opened" to mapOf<String, Any>("source" to "groups"),
+                    "search_scope_selected" to mapOf<String, Any>("scope" to SearchScope.BILLS, "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group found in the groups WHEN tapping it THEN tracks only search_result_clicked of a group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnGroupClicked("churrasco")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "search_opened" to mapOf<String, Any>("source" to "groups"),
+                    "search_result_clicked" to mapOf<String, Any>("kind" to "group", "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search in the groups WHEN tapping a person and a bill found THEN tracks each kind without ids`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnPersonClicked("ape")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked("ape", "mercado")))
+
+            // Then
+            assertEquals(
+                listOf("person", "bill").map { kind ->
+                    "search_result_clicked" to mapOf<String, Any>("kind" to kind, "source" to "groups")
+                },
+                trackedEvents.drop(1),
+            )
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN typing and closing it THEN tracks only the opening`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
     private val churrasco = group(
         id = "churrasco",
         name = "Churrasco de sábado",

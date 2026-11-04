@@ -323,6 +323,41 @@ class GroupsLayoutTest {
             assertTrue(viewModel.uiState.value.showsGrid)
         }
 
+    @Test
+    fun `GIVEN the list WHEN picking Grade THEN tracks groups_display_changed with the grid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(apartment))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(GroupsDisplay.GRID))
+
+            // Then
+            assertEquals(
+                listOf("groups_display_changed" to mapOf<String, Any>("display" to GroupsDisplay.GRID)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the grid WHEN picking Grande THEN tracks groups_grid_size_changed with the size`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD),
+                storedGroups = listOf(apartment),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+
+            // Then
+            assertEquals(
+                listOf("groups_grid_size_changed" to mapOf<String, Any>("size" to GroupGridSize.LARGE)),
+                trackedEvents,
+            )
+        }
+
     private val largeGrid = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)
 
     private val apartment = Group(

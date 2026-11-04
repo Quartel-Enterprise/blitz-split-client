@@ -2356,6 +2356,343 @@ class HomeViewModelTest {
         assertNull(viewModel.uiState.value.recordedPayment)
     }
 
+    @Test
+    fun `GIVEN Inicio WHEN tapping the avatar THEN tracks profile_avatar_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Buscar THEN tracks search_opened from the home`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
+
+        // Then
+        assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "home")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping tentar de novo THEN tracks sync_retry_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRetrySyncClicked)
+
+            // Then
+            assertEquals(listOf("sync_retry_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN pulling down THEN tracks pull_to_refresh from the home`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnRefresh)
+
+        // Then
+        assertEquals(listOf("pull_to_refresh" to mapOf<String, Any>("source" to "home")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Te devem THEN tracks balances_to_receive_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(listOf("balances_to_receive_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Voce deve THEN tracks balances_to_pay_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnToPayClicked)
+
+            // Then
+            assertEquals(listOf("balances_to_pay_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Rachar conta THEN tracks split_bill_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Ler cupom fiscal THEN tracks scan_receipt_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertEquals(listOf("scan_receipt_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Registrar pagamento THEN tracks record_payment_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecordPaymentClicked)
+
+            // Then
+            assertEquals(listOf("record_payment_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Novo grupo THEN tracks create_group_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnCreateGroupClicked)
+
+            // Then
+            assertEquals(listOf("create_group_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Entrar com link ou QR THEN tracks join_with_link_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnJoinWithLinkClicked)
+
+            // Then
+            assertEquals(listOf("join_with_link_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Desfazer THEN tracks payment_undo_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf("payment_undo_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone owes you WHEN tapping their face THEN tracks person_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill(id = "market")),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnPersonClicked(
+                    key = "member-Ana",
+                    currency = GroupCurrency.BRL,
+                ),
+            )
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group in Seus grupos WHEN tapping its card THEN tracks group_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill in Ultimas despesas WHEN tapping it THEN tracks bill_clicked with only the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill(id = "market")),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnBillClicked(
+                    groupId = "trio",
+                    expenseId = "market",
+                ),
+            )
+
+            // Then
+            assertEquals(listOf("bill_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Ver saldos THEN tracks home_see_balances_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSeeBalancesClicked)
+
+            // Then
+            assertEquals(listOf("home_see_balances_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Ver todos THEN tracks home_see_all_groups_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSeeAllGroupsClicked)
+
+            // Then
+            assertEquals(listOf("home_see_all_groups_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping Ver tudo THEN tracks home_see_all_bills_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
+
+            // Then
+            assertEquals(
+                listOf("home_see_all_bills_clicked" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the recovery code card WHEN tapping Ver codigo THEN tracks the card show tap with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnShowRecoveryCodeClicked)
+
+            // Then
+            assertEquals(
+                listOf("recovery_code_card_show_clicked" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the recovery code card WHEN tapping Conectar conta THEN tracks the card connect tap with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnConnectAccountClicked)
+
+            // Then
+            assertEquals(listOf("recovery_code_card_connect_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the recovery code card WHEN closing it THEN tracks the card dismissed with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
+
+            // Then
+            assertEquals(listOf("recovery_code_card_dismissed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN the payment and deleted group notices go away THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecordedPaymentNoticeShown)
+            viewModel.onEvent(HomeUiEvent.OnDeletedGroupNoticeShown)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping each other home tab THEN tracks home_tab_clicked naming each tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnGroupsTabClicked)
+            viewModel.onEvent(HomeUiEvent.OnBalancesTabClicked)
+            viewModel.onEvent(HomeUiEvent.OnContactsTabClicked)
+            viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(
+                listOf("groups", "balances", "contacts", "activity").map { tab ->
+                    "home_tab_clicked" to mapOf<String, Any>("tab" to tab, "source" to "home")
+                },
+                trackedEvents,
+            )
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
