@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -49,7 +50,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -83,6 +86,7 @@ class RegisterPaymentViewModel(
     observeGroupBalances: ObserveGroupBalances,
     observePeopleBalances: ObservePeopleBalances,
     observeFirstDownload: ObserveFirstDownload,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RegisterPaymentUiState>
@@ -132,15 +136,23 @@ class RegisterPaymentViewModel(
             .map { it?.toUserId }
             .distinctUntilChanged()
             .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
-        combine(targets, keys, observeFirstDownload()) { target, (userId, receiverKeys), download ->
-            KeyedTarget(target, userId, receiverKeys, download)
+        // Why: the form opens once bitcoin's unit is known, so the debt is never filled in the other one first.
+        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        combine(targets, keys, observeFirstDownload(), showsSats) { target, (userId, receiverKeys), download, sats ->
+            KeyedTarget(target, userId, receiverKeys, download, sats)
         }.filter { it.target?.toUserId == it.userId }
             .onEach { keyed ->
+                // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
+                if (!hasRead) uiState.update { it.withShowsSats(keyed.showsSats) }
                 hasRead = true
                 receiverKeys = keyed.keys
                 firstDownload = keyed.download
                 handle(keyed.target)
             }.launchIn(viewModelScope)
+        // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): the amount keeps its value.
+        observeBitcoinInSats()
+            .onEach { sats -> uiState.update { it.withShowsSats(sats) } }
+            .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isDebtGone) leave() }
             .launchIn(viewModelScope)
@@ -159,6 +171,7 @@ class RegisterPaymentViewModel(
                             previous = it.amountText,
                             typed = event.text,
                             currency = it.currency,
+                            showsSats = it.showsSats,
                             decimalSeparator = decimalSeparator(),
                         ),
                         hasEditedAmount = true,
@@ -168,7 +181,7 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnFullDebtClicked -> uiState.update {
                 it.copy(
-                    amountText = toAmountText(it.debtMinor, it.currency),
+                    amountText = toAmountText(it.debtMinor, it.currency, it.showsSats),
                     hasEditedAmount = false,
                 )
             }
@@ -202,6 +215,7 @@ class RegisterPaymentViewModel(
         val now = currentTimeMillis()
         return RegisterPaymentUiState(
             currency = GroupCurrency.BRL,
+            showsSats = false,
             from = null,
             to = null,
             debtMinor = 0L,
@@ -352,7 +366,7 @@ class RegisterPaymentViewModel(
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {
                     it.amountText
                 } else {
-                    toAmountText(target.debtMinor, target.currency)
+                    toAmountText(target.debtMinor, target.currency, it.showsSats)
                 },
                 isLoaded = true,
             )
@@ -476,10 +490,17 @@ class RegisterPaymentViewModel(
     private fun toAmountText(
         amountMinor: Long,
         currency: GroupCurrency,
+        showsSats: Boolean,
     ): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
+        showsSats = showsSats,
         decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
+    )
+
+    private fun RegisterPaymentUiState.withShowsSats(showsSats: Boolean): RegisterPaymentUiState = copy(
+        showsSats = showsSats,
+        amountText = TypedText.toUnit(amountText, currency, this.showsSats, showsSats, decimalSeparator()),
     )
 
     private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(

@@ -24,6 +24,7 @@ internal fun SplitBillUiState.withReceiptRead(
         amountText = AmountInput.format(
             amountMinor = reading.totalMinor,
             currency = currency,
+            showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
         hasEditedAmount = true,

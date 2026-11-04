@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
@@ -49,6 +50,7 @@ class AppViewModel(
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
     private val observeDynamicColors: ObserveDynamicColors,
+    private val observeBitcoinInSats: ObserveBitcoinInSats,
     private val linkInbox: LinkInbox,
     private val markActivityRead: MarkActivityRead,
     private val findActivityEvent: FindActivityEvent,
@@ -69,11 +71,19 @@ class AppViewModel(
     val usesDynamicColors: StateFlow<Boolean>
         field = MutableStateFlow(false)
 
+    /*
+     * Why: Preferências' "Bitcoin em satoshis", which every amount in bitcoin the platforms draw follows, in a list
+     * as in a field.
+     */
+    val showsBitcoinInSats: StateFlow<Boolean>
+        field = MutableStateFlow(false)
+
     private val isThemeKnown = CompletableDeferred<Unit>()
 
     val stateWatcher: FlowWatcher<AppUiState> = FlowWatcher(uiState)
     val backStackWatcher: FlowWatcher<List<Route>> = FlowWatcher(navigator.backStack)
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
+    val bitcoinInSatsWatcher: FlowWatcher<Boolean> = FlowWatcher(showsBitcoinInSats)
 
     // Why: "Você não está neste grupo" over wherever the app is, while a comment's link can't open its bill.
     val billLinkNotice: StateFlow<BillLinkNoticeState>
@@ -99,11 +109,19 @@ class AppViewModel(
         }
     }
 
-    // Why: the first frame waits for the chosen theme and colors, so neither flashes the system's or the brand's.
+    /*
+     * Why: the first frame waits for the chosen theme and colors, so neither flashes the system's or the brand's, and
+     * for bitcoin's unit, so no amount shows in bitcoin before turning into sats.
+     */
     private fun followTheme() {
-        combine(observeThemePreference(), observeDynamicColors()) { preference, isDynamic ->
+        combine(
+            observeThemePreference(),
+            observeDynamicColors(),
+            observeBitcoinInSats(),
+        ) { preference, isDynamic, sats ->
             theme.value = preference
             usesDynamicColors.value = isDynamic
+            showsBitcoinInSats.value = sats
             isThemeKnown.complete(Unit)
         }.launchIn(viewModelScope)
     }

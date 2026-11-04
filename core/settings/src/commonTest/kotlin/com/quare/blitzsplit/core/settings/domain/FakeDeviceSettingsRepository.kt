@@ -18,6 +18,8 @@ internal class FakeDeviceSettingsRepository(
     val updatedStatsCharts = mutableListOf<StatsChartPreferences>()
     val dynamicColors = MutableStateFlow(false)
     val updatedDynamicColors = mutableListOf<Boolean>()
+    val bitcoinInSats = MutableStateFlow(false)
+    val updatedBitcoinInSats = mutableListOf<Boolean>()
 
     override fun observeTheme(): Flow<ThemePreference> = theme
 
@@ -45,5 +47,12 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateDynamicColors(isOn: Boolean) {
         updatedDynamicColors += isOn
         dynamicColors.value = isOn
+    }
+
+    override fun observeBitcoinInSats(): Flow<Boolean> = bitcoinInSats
+
+    override suspend fun updateBitcoinInSats(isOn: Boolean) {
+        updatedBitcoinInSats += isOn
+        bitcoinInSats.value = isOn
     }
 }

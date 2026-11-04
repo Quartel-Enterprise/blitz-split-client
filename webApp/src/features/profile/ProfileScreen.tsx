@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
 import { NotificationSettingsCard } from '@/features/notification-settings/NotificationSettingsCard'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
@@ -327,6 +328,15 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
               )
             })}
           </div>
+        )}
+        {state.isLoaded && (
+          <label htmlFor="bitcoin-in-sats" className="mt-4 flex items-center gap-3">
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="text-sm font-medium">{t('profile_bitcoinInSats')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile_bitcoinInSatsDetail')}</span>
+            </span>
+            <Switch id="bitcoin-in-sats" checked={state.showsBitcoinInSats} onCheckedChange={(checked) => presenter.toggleBitcoinInSats(checked)} />
+          </label>
         )}
       </CardContent>
     </Card>

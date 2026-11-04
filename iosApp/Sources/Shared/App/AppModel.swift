@@ -32,6 +32,7 @@ final class AppModel {
         isReady = (viewModel.uiState.value as? AppUiState) == .ready
         backStack = Self.routes(of: viewModel.navigator.backStack.value)
         theme = viewModel.theme.value as? ThemePreference ?? .system
+        BitcoinUnit.shared.showsSats = (viewModel.showsBitcoinInSats.value as? KotlinBoolean)?.boolValue ?? false
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.isReady = state == .ready
         })
@@ -43,6 +44,9 @@ final class AppModel {
         })
         watches.add(viewModel.billLinkNoticeWatcher.observe { [weak self] state in
             self?.billLinkNotice = state.notice
+        })
+        watches.add(viewModel.bitcoinInSatsWatcher.observe { showsSats in
+            BitcoinUnit.shared.showsSats = showsSats.boolValue
         })
     }
 

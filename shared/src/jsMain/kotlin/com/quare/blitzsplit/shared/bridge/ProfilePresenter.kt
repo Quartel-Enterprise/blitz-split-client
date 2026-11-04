@@ -38,6 +38,8 @@ class JsProfileState(
     val canRetrySync: Boolean,
     val isSignOutScheduled: Boolean,
     val theme: String,
+    // Why: Preferências' "Bitcoin em satoshis".
+    val showsBitcoinInSats: Boolean,
     // Why: null while it loads, also while a restored account's choices haven't come down.
     val activeNotificationCount: Int?,
     // Why: the ProfileDialog's name, null while none is open.
@@ -104,6 +106,7 @@ class ProfilePresenter {
                 canRetrySync = state.canRetrySync,
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
+                showsBitcoinInSats = state.showsBitcoinInSats,
                 activeNotificationCount = state.activeNotificationCount.valueOrNull(),
                 dialog = state.dialog?.name,
                 hasConfirmedCodeSaved = state.hasConfirmedCodeSaved,
@@ -208,6 +211,10 @@ class ProfilePresenter {
     fun selectTheme(themeCode: String) {
         val theme = ThemePreference.fromCodeOrNull(themeCode) ?: return
         viewModel.onEvent(ProfileUiEvent.OnThemeSelected(theme))
+    }
+
+    fun toggleBitcoinInSats(isOn: Boolean) {
+        viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(isOn))
     }
 
     fun categoryMap() {

@@ -34,7 +34,11 @@ object BillItemsSplit {
     fun serviceOf(
         itemsMinor: Long,
         servicePercent: Long,
-    ): Long = if (servicePercent <= 0 || itemsMinor <= 0) 0L else (itemsMinor * servicePercent + HALF) / FULL
+    ): Long = when {
+        servicePercent <= 0 || itemsMinor <= 0 -> 0L
+        itemsMinor > (Long.MAX_VALUE - HALF) / servicePercent -> itemsMinor / FULL * servicePercent
+        else -> (itemsMinor * servicePercent + HALF) / FULL
+    }
 
     fun breakdownOf(
         split: BillItems,
@@ -49,10 +53,10 @@ object BillItemsSplit {
             if (shares == null) {
                 unsettled += item.id
             } else {
-                shares.forEach { consumed[it.memberId] = (consumed[it.memberId] ?: 0L) + it.amountMinor }
+                shares.forEach { consumed[it.memberId] = (consumed[it.memberId] ?: 0L).toSaturatedSum(it.amountMinor) }
             }
         }
-        val itemsMinor = split.items.sumOf { it.totalMinor }
+        val itemsMinor = split.items.fold(0L) { sum, item -> sum.toSaturatedSum(item.totalMinor) }
         val serviceMinor = serviceOf(itemsMinor, split.servicePercent)
         val weights = memberIds.map {
             SplitEntry(
@@ -75,7 +79,7 @@ object BillItemsSplit {
         return ItemsBreakdown(
             itemsMinor = itemsMinor,
             serviceMinor = serviceMinor,
-            couvertMinor = split.couvertMinor * atTable.size,
+            couvertMinor = split.couvertMinor.toSaturatedProduct(atTable.size.toLong()),
             extraMinor = split.extraMinor,
             people = people,
             looseItemIds = split.items.filter { it.hasNobody }.map { it.id },

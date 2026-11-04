@@ -618,6 +618,16 @@
         }
       }
     },
+    "Bitcoin in satoshis" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitcoin em satoshis"
+          }
+        }
+      }
+    },
     "Bringing your groups" : {
       "comment" : "Groups: the card in the overall balance's place during a new device's first download",
       "localizations" : {
@@ -873,6 +883,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apagar comentário?"
+          }
+        }
+      }
+    },
+    "Cryptocurrencies" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criptomoedas"
           }
         }
       }
@@ -2103,6 +2123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acertos"
+          }
+        }
+      }
+    },
+    "Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats)." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra e digita valores em bitcoin em sats (1 ₿ = 100.000.000 sats)."
           }
         }
       }
@@ -18250,6 +18280,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vira a exceção do grupo para %@"
+          }
+        }
+      }
+    },
+    "%@ sats" : {
+      "comment" : "A bitcoin amount in satoshis, \"125.000 sats\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ sats"
+          }
+        }
+      }
+    },
+    "sats" : {
+      "comment" : "The symbol of an amount field in bitcoin while Bitcoin in satoshis is on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sats"
           }
         }
       }

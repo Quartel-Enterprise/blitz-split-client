@@ -24,7 +24,6 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
@@ -57,6 +56,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
@@ -433,25 +433,14 @@ private fun CurrencyRow(
             expanded = isMenuOpen && !state.isCurrencyLocked,
             onDismissRequest = { isMenuOpen = false },
         ) {
-            state.currencies.forEach { currency ->
-                DropdownMenuItem(
-                    text = { Text(groupCurrencyLabel(currency, locale)) },
-                    onClick = {
-                        isMenuOpen = false
-                        onEvent(EditGroupUiEvent.OnCurrencySelected(currency))
-                    },
-                    trailingIcon = if (currency == state.currency) {
-                        {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = null,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                )
-            }
+            CurrencyMenuContent(
+                currencies = state.currencies,
+                selected = state.currency,
+                onSelected = { currency ->
+                    isMenuOpen = false
+                    onEvent(EditGroupUiEvent.OnCurrencySelected(currency))
+                },
+            )
         }
     }
 }

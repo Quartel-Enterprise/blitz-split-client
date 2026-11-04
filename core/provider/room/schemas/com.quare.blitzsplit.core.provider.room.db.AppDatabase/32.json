@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 32,
-    "identityHash": "515811c621cea497cef46b741ba72ac2",
+    "identityHash": "32a5b8b229ce984a353b0539addd42c7",
     "entities": [
       {
         "tableName": "profile",
@@ -141,7 +141,7 @@
       },
       {
         "tableName": "device_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `theme` TEXT NOT NULL, `groupsDisplay` TEXT DEFAULT NULL, `groupGridSize` TEXT DEFAULT NULL, `statsChartType` TEXT DEFAULT NULL, `statsGrain` TEXT DEFAULT NULL, `usesDynamicColors` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `theme` TEXT NOT NULL, `groupsDisplay` TEXT DEFAULT NULL, `groupGridSize` TEXT DEFAULT NULL, `statsChartType` TEXT DEFAULT NULL, `statsGrain` TEXT DEFAULT NULL, `usesDynamicColors` INTEGER NOT NULL DEFAULT 0, `showsBitcoinInSats` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -182,6 +182,13 @@
           {
             "fieldPath": "usesDynamicColors",
             "columnName": "usesDynamicColors",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "showsBitcoinInSats",
+            "columnName": "showsBitcoinInSats",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -1294,7 +1301,7 @@
       },
       {
         "tableName": "bill_comment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `expenseId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `authorUserId` TEXT, `authorMemberId` TEXT, `authorName` TEXT, `threadId` TEXT, `replyToName` TEXT, `body` TEXT NOT NULL, `viaLink` INTEGER NOT NULL, `postedAt` INTEGER NOT NULL, `editedAt` INTEGER DEFAULT NULL, `isDeleted` INTEGER NOT NULL DEFAULT 0, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`expenseId`) REFERENCES `expense`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `expenseId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `authorUserId` TEXT, `authorMemberId` TEXT, `authorName` TEXT, `threadId` TEXT, `replyToName` TEXT, `body` TEXT NOT NULL, `viaLink` INTEGER NOT NULL, `postedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`expenseId`) REFERENCES `expense`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1356,19 +1363,6 @@
             "columnName": "postedAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "editedAt",
-            "columnName": "editedAt",
-            "affinity": "INTEGER",
-            "defaultValue": "NULL"
-          },
-          {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           },
           {
             "fieldPath": "pendingSync",
@@ -1516,94 +1510,11 @@
             ]
           }
         ]
-      },
-      {
-        "tableName": "bill_comment_like",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`commentId` TEXT NOT NULL, `likerKey` TEXT NOT NULL, `groupId` TEXT NOT NULL, `memberId` TEXT, `likerName` TEXT, `isLiked` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`commentId`, `likerKey`), FOREIGN KEY(`commentId`) REFERENCES `bill_comment`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "commentId",
-            "columnName": "commentId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "likerKey",
-            "columnName": "likerKey",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "memberId",
-            "columnName": "memberId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "likerName",
-            "columnName": "likerName",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "isLiked",
-            "columnName": "isLiked",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "commentId",
-            "likerKey"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_bill_comment_like_groupId",
-            "unique": false,
-            "columnNames": [
-              "groupId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_bill_comment_like_groupId` ON `${TABLE_NAME}` (`groupId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "bill_comment",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "commentId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '515811c621cea497cef46b741ba72ac2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32a5b8b229ce984a353b0539addd42c7')"
     ]
   }
 }

@@ -41,6 +41,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -370,6 +371,7 @@ class EditAfterPaymentViewModelTest {
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }
