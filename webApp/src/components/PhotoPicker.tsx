@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, type RefObject } from 'react'
 import { CameraCaptureDialog } from '@/components/CameraCaptureDialog'
-import { useCameraCount, type CameraFacing } from '@/hooks/useCameraStream'
+import { useCameras, type CameraFacing } from '@/hooks/useCameraStream'
 import { onPhotoFile, type PhotoReceiver } from '@/lib/photoFile'
 
 /** Where a photo comes from: the file chooser always, the camera only while the browser lists one. */
@@ -16,13 +16,13 @@ export interface PhotoPicker {
 
 export function usePhotoPicker(): PhotoPicker {
   const input = useRef<HTMLInputElement>(null)
-  const cameraCount = useCameraCount()
+  const cameras = useCameras()
   const [isCameraOpen, setIsCameraOpen] = useState(false)
   // Why: stable, so an effect that opens the picker by itself (Início's "Ler cupom fiscal") runs once.
   const chooseFile = useCallback(() => input.current?.click(), [])
   const takePhoto = useCallback(() => setIsCameraOpen(true), [])
   const closeCamera = useCallback(() => setIsCameraOpen(false), [])
-  return { input, hasCamera: cameraCount === null ? null : cameraCount > 0, isCameraOpen, chooseFile, takePhoto, closeCamera }
+  return { input, hasCamera: cameras === null ? null : cameras.length > 0, isCameraOpen, chooseFile, takePhoto, closeCamera }
 }
 
 /**
@@ -38,6 +38,7 @@ export function PhotoPickerInputs({ picker, receiver, facing, title }: { picker:
           facing={facing}
           title={title}
           onCaptured={(jpeg) => receiver.photoPicked?.(jpeg)}
+          onUnreadable={receiver.photoUnreadable}
           onChooseFile={picker.chooseFile}
           onClose={picker.closeCamera}
         />

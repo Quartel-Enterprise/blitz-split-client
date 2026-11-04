@@ -1,16 +1,11 @@
-import { Camera, CameraOff, Check, Flashlight, FlashlightOff, ImageIcon, RotateCcw, SwitchCamera } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Camera, CameraOff, Check, Flashlight, FlashlightOff, ImageIcon, Loader2, RotateCcw, SwitchCamera } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
-import { useCameraCount, useCameraStream, type CameraFacing } from '@/hooks/useCameraStream'
+import { useCameras, useCameraStream, type CameraFacing } from '@/hooks/useCameraStream'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
-
-// Why: Chrome on Android exposes the flashlight as a constraint of the camera's track; TypeScript doesn't know it yet.
-interface TorchCapabilities extends MediaTrackCapabilities {
-  torch?: boolean
-}
 
 interface Shot {
   blob: Blob
@@ -26,26 +21,41 @@ const JPEG_QUALITY = 0.92
  * the camera was refused. The camera stops as soon as it closes.
  */
 export function CameraCaptureDialog({
-  facing: initialFacing,
+  facing,
   title,
   onCaptured,
+  onUnreadable,
   onChooseFile,
   onClose,
 }: {
   facing: CameraFacing
   title?: string
   onCaptured: (jpeg: Int8Array) => void
+  onUnreadable?: () => void
   onChooseFile?: () => void
   onClose: () => void
 }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  const video = useRef<HTMLVideoElement>(null)
-  const [facing, setFacing] = useState(initialFacing)
+  const video = useRef<HTMLVideoElement | null>(null)
+  // Why: the drawer mounts its video after this renders, so a new element re-renders the dialog to get the stream.
+  const [, setVideoElement] = useState<HTMLVideoElement | null>(null)
+  const attachVideo = useCallback((element: HTMLVideoElement | null) => {
+    video.current = element
+    setVideoElement(element)
+  }, [])
+  const [deviceId, setDeviceId] = useState<string | null>(null)
   const [shot, setShot] = useState<Shot | null>(null)
   const [isTorchOn, setIsTorchOn] = useState(false)
-  const cameraCount = useCameraCount() ?? 0
-  const { problem, track, isPlaying, retry } = useCameraStream(video, { isEnabled: true, facingMode: facing, prefersHighResolution: true })
-  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
+  const isConfirming = useRef(false)
+  const { problem, track, isPlaying, hasTorch, retry } = useCameraStream(video, {
+    isEnabled: true,
+    facingMode: facing,
+    deviceId,
+    prefersHighResolution: true,
+    isTorchOn,
+  })
+  // Why: listed again once the camera runs, since a browser names every camera (with its id) only after it was allowed.
+  const cameraIds = (useCameras(track) ?? []).map((each) => each.deviceId).filter(Boolean)
   // Why: a camera facing the person shows as a mirror, as every camera app does; the photo itself is never mirrored.
   const isMirrored = track !== null && track.getSettings().facingMode !== 'environment'
   const [captureFailed, setCaptureFailed] = useState(false)
@@ -55,11 +65,6 @@ export function CameraCaptureDialog({
     if (!shot) return
     return () => URL.revokeObjectURL(shot.url)
   }, [shot])
-  useEffect(() => {
-    if (!track || !hasTorch) return
-    track.applyConstraints({ advanced: [{ torch: isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
-  }, [track, hasTorch, isTorchOn])
-
   const takePhoto = () => {
     const element = video.current
     if (!element?.videoWidth) return
@@ -76,11 +81,21 @@ export function CameraCaptureDialog({
       JPEG_QUALITY,
     )
   }
+  // Why: closes at once, so a second click on "Usar foto" never hands the same photo on twice.
   const confirmPhoto = async () => {
-    if (!shot) return
-    const jpeg = new Int8Array(await shot.blob.arrayBuffer())
+    if (!shot || isConfirming.current) return
+    isConfirming.current = true
     onClose()
-    onCaptured(jpeg)
+    try {
+      onCaptured(new Int8Array(await shot.blob.arrayBuffer()))
+    } catch {
+      onUnreadable?.()
+    }
+  }
+  // Why: steps through the cameras themselves, since two webcams report no facing to tell them apart.
+  const switchCamera = () => {
+    const current = cameraIds.indexOf(track?.getSettings().deviceId ?? '')
+    setDeviceId(cameraIds[(current + 1) % cameraIds.length] ?? null)
   }
   const chooseFile = () => {
     onClose()
@@ -125,7 +140,8 @@ export function CameraCaptureDialog({
   const body = (
     <div className={cn('relative mx-auto w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-[4/3]' : 'aspect-[3/4] max-h-[55dvh]')}>
       {/* Always mounted, so a second try after a refusal has the video to show the camera in */}
-      <video ref={video} muted playsInline className={cn('absolute inset-0 size-full object-contain', isMirrored && '-scale-x-100')} />
+      <video ref={attachVideo} muted playsInline className={cn('absolute inset-0 size-full object-contain', isMirrored && '-scale-x-100')} />
+      {!isPlaying && !shownProblem && <Loader2 aria-label={t('common_loading')} className="absolute inset-0 m-auto size-8 animate-spin text-white/70" />}
       {shot && <img src={shot.url} alt={t('camera_preview')} className="absolute inset-0 size-full bg-camera object-contain" />}
       {shownProblem && (
         <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-camera px-6 text-center">
@@ -136,13 +152,13 @@ export function CameraCaptureDialog({
       )}
       {!shot && !shownProblem && isPlaying && (
         <div className="absolute top-3 right-3 flex gap-2">
-          {cameraCount > 1 && (
+          {cameraIds.length > 1 && (
             <Button
               type="button"
               size="icon"
               variant="secondary"
               aria-label={t('camera_switch')}
-              onClick={() => setFacing((current) => (current === 'user' ? 'environment' : 'user'))}
+              onClick={switchCamera}
               className="rounded-full bg-black/45 text-white hover:bg-black/60"
             >
               <SwitchCamera />

@@ -779,7 +779,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     configurações" offers "Configurações", which opens the app's settings page.
   - The web's "Tirar foto" (beta feedback 2): wherever the web takes a photo from a file (Seu perfil, Editar perfil,
     Novo grupo, Editar grupo, Conta's Anexos, Ler cupom fiscal) it also offers the browser's camera, a desktop's
-    webcam too, but only while the browser lists a camera (`useCameraCount`). One dialog (`CameraCaptureDialog`, a
+    webcam too, but only while the browser lists a camera (`useCameras`). One dialog (`CameraCaptureDialog`, a
     drawer on a phone) shows it live, the selfie camera mirrored and the photo never, with the shutter, "Tirar outra"
     and "Usar foto", "Trocar câmera" with more than one and the flashlight where the browser has it; "Usar foto"
     hands the JPEG on as a file picked would be, so a profile's or a group's goes through "Ajustar foto". A camera

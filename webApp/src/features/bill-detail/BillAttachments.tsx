@@ -99,7 +99,6 @@ function sourceOf(attachment: JsBillAttachment, localUrls: LocalPhotoUrls): stri
  * A bill's link page has no limit to count against, nor the add tile.
  */
 export function BillAttachments({ presenter, state, localUrls }: { presenter: AttachmentsPresenter; state: AttachmentsState; localUrls: LocalPhotoUrls }) {
-  const photo = usePhotoPicker()
   return (
     <section aria-labelledby="bill-attachments-title" className="flex min-w-0 flex-col gap-2">
       <h3 id="bill-attachments-title" className="flex justify-between text-sm font-medium">
@@ -127,33 +126,42 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
         ))}
         {state.showsAddPhoto && (
           <li>
-            {photo.hasCamera ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onSelect={photo.takePhoto}>
-                    <Camera /> {t('billDetail_takePhoto')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={photo.chooseFile}>
-                    <ImageIcon /> {t('billDetail_choosePhoto')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} onClick={photo.chooseFile} />
-            )}
+            <AddPhoto presenter={presenter} state={state} />
           </li>
         )}
       </ul>
-      {state.showsAddPhoto && <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />}
     </section>
   )
 }
 
 const tileClass =
   'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+
+/** "Adicionar foto": the file chooser, or a menu with the camera where the browser has one. */
+function AddPhoto({ presenter, state }: { presenter: AttachmentsPresenter; state: AttachmentsState }) {
+  const photo = usePhotoPicker()
+  const tile = <AddPhotoTile isAdding={state.isAddingPhoto} disabled={!state.canAddPhoto} onClick={photo.hasCamera ? undefined : photo.chooseFile} />
+  return (
+    <>
+      {photo.hasCamera ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>{tile}</DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onSelect={photo.takePhoto}>
+              <Camera /> {t('billDetail_takePhoto')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={photo.chooseFile}>
+              <ImageIcon /> {t('billDetail_choosePhoto')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        tile
+      )}
+      <PhotoPickerInputs picker={photo} receiver={presenter} facing="environment" />
+    </>
+  )
+}
 
 // "Adicionar foto", a menu's trigger too, so it takes the trigger's props and ref.
 function AddPhotoTile({ isAdding, ...props }: { isAdding: boolean | undefined } & ComponentProps<'button'>) {

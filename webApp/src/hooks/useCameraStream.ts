@@ -6,24 +6,37 @@ export type CameraFacing = 'user' | 'environment'
 /** Why the camera shows nothing: `denied` when the person or the browser refused it, `failed` for anything else. */
 export type CameraProblem = 'denied' | 'failed'
 
+// Why: Chrome on Android exposes the flashlight as a constraint of the camera's track; TypeScript doesn't know it yet.
+interface TorchCapabilities extends MediaTrackCapabilities {
+  torch?: boolean
+}
+
 interface CameraStreamOptions {
   isEnabled: boolean
   facingMode: CameraFacing
+  // Why: two webcams report no facing, so switching between them asks for the device itself.
+  deviceId?: string | null
   // Why: a photo wants the camera's detail; reading a QR doesn't, and a smaller stream reads faster.
   prefersHighResolution?: boolean
+  isTorchOn?: boolean
   onStarted?: () => void
 }
 
 /**
- * Shows the camera in `video` from the moment `isEnabled` turns on until it turns off, the facing changes or the
- * component goes away, and then stops it, so the camera's light goes off. `retry` asks for the camera once more, since a
- * browser has no settings page to open after a refusal.
+ * Shows the camera in `video` from the moment `isEnabled` turns on until it turns off, the camera asked for changes or
+ * the component goes away, and then stops it, so the camera's light goes off. `retry` asks for the camera once more,
+ * since a browser has no settings page to open after a refusal. `hasTorch` says whether the camera has a flashlight,
+ * which `isTorchOn` turns on.
  */
-export function useCameraStream(video: RefObject<HTMLVideoElement | null>, { isEnabled, facingMode, prefersHighResolution = false, onStarted }: CameraStreamOptions) {
+export function useCameraStream(
+  video: RefObject<HTMLVideoElement | null>,
+  { isEnabled, facingMode, deviceId = null, prefersHighResolution = false, isTorchOn = false, onStarted }: CameraStreamOptions,
+) {
   const [problem, setProblem] = useState<CameraProblem | null>(null)
   const [track, setTrack] = useState<MediaStreamTrack | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  const stream = useRef<MediaStream | null>(null)
   // The latest callback, so a parent re-render never restarts the camera
   const started = useRef(onStarted)
   started.current = onStarted
@@ -35,9 +48,11 @@ export function useCameraStream(video: RefObject<HTMLVideoElement | null>, { isE
       return
     }
     setProblem(null)
-    let stream: MediaStream | null = null
     let isActive = true
-    const constraints: MediaTrackConstraints = prefersHighResolution ? { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } } : { facingMode }
+    const constraints: MediaTrackConstraints = {
+      ...(deviceId ? { deviceId: { exact: deviceId } } : { facingMode }),
+      ...(prefersHighResolution && { width: { ideal: 1920 }, height: { ideal: 1080 } }),
+    }
 
     navigator.mediaDevices
       .getUserMedia({ video: constraints })
@@ -47,7 +62,7 @@ export function useCameraStream(video: RefObject<HTMLVideoElement | null>, { isE
           media.getTracks().forEach((each) => each.stop())
           return
         }
-        stream = media
+        stream.current = media
         started.current?.()
         if (!video.current) return
         video.current.srcObject = media
@@ -69,26 +84,43 @@ export function useCameraStream(video: RefObject<HTMLVideoElement | null>, { isE
 
     return () => {
       isActive = false
-      stream?.getTracks().forEach((each) => each.stop())
+      stream.current?.getTracks().forEach((each) => each.stop())
+      stream.current = null
       setTrack(null)
       setIsPlaying(false)
     }
-  }, [isEnabled, facingMode, prefersHighResolution, video, attempt])
+  }, [isEnabled, facingMode, deviceId, prefersHighResolution, video, attempt])
+
+  // Why: the video may be a new element while the camera runs (a dialog becoming a drawer as a phone turns), which
+  // shows nothing until it gets the stream again.
+  useEffect(() => {
+    const element = video.current
+    if (!element || !stream.current || element.srcObject === stream.current) return
+    element.srcObject = stream.current
+    element.play().catch(() => {})
+  })
+
+  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
+  useEffect(() => {
+    if (!track || !hasTorch) return
+    track.applyConstraints({ advanced: [{ torch: isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
+  }, [track, hasTorch, isTorchOn])
 
   const retry = useCallback(() => setAttempt((count) => count + 1), [])
-  return { problem, track, isPlaying, retry }
+  return { problem, track, isPlaying, hasTorch, retry }
 }
 
 /**
- * How many cameras the browser lists, null until it answered. A browser lists them before the camera is allowed (with
- * no names), so a computer without a webcam never offers to take a photo. Follows a webcam plugged in or out.
+ * The cameras the browser lists, null until it answered. A browser lists one before the camera is allowed (with no
+ * names nor ids), so a computer without a webcam never offers to take a photo; `refresh` lists them again, all of them
+ * once the camera was allowed. Follows a webcam plugged in or out.
  */
-export function useCameraCount(): number | null {
-  const [count, setCount] = useState<number | null>(null)
+export function useCameras(refresh?: unknown): MediaDeviceInfo[] | null {
+  const [cameras, setCameras] = useState<MediaDeviceInfo[] | null>(null)
   useEffect(() => {
     const devices = navigator.mediaDevices
     if (!devices?.enumerateDevices || !devices.getUserMedia) {
-      setCount(0)
+      setCameras([])
       return
     }
     let isActive = true
@@ -96,10 +128,10 @@ export function useCameraCount(): number | null {
       devices
         .enumerateDevices()
         .then((list) => {
-          if (isActive) setCount(list.filter((each) => each.kind === 'videoinput').length)
+          if (isActive) setCameras(list.filter((each) => each.kind === 'videoinput'))
         })
         .catch(() => {
-          if (isActive) setCount(0)
+          if (isActive) setCameras([])
         })
     }
     check()
@@ -108,6 +140,6 @@ export function useCameraCount(): number | null {
       isActive = false
       devices.removeEventListener('devicechange', check)
     }
-  }, [])
-  return count
+  }, [refresh])
+  return cameras
 }
