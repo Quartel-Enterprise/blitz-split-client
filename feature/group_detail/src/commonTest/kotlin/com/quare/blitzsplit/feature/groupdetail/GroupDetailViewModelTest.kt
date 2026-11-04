@@ -68,6 +68,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.exit.GroupExitDialogKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -2505,6 +2506,40 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a word picked to teach WHEN confirming twice THEN tracks category_teach_confirmed once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertEquals(listOf("category_teach_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the teach question closed WHEN a late Agora nao arrives THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the screen on top WHEN tapping Membros THEN tracks group_tab_clicked with the tab`() =
         runTest(testDispatcher) {
             // Given
@@ -2610,7 +2645,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf("group_exit_confirmed" to exitParams("confirm_leave")), trackedEvents)
+            assertEquals(listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE)), trackedEvents)
         }
 
     @Test
@@ -2625,7 +2660,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
 
             // Then
-            assertEquals(listOf("group_exit_cancelled" to exitParams("confirm_leave")), trackedEvents)
+            assertEquals(listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE)), trackedEvents)
         }
 
     @Test
@@ -2647,7 +2682,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf("group_exit_confirmed" to exitParams("leave_blocked")), trackedEvents)
+            assertEquals(listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.LEAVE_BLOCKED)), trackedEvents)
         }
 
     @Test
@@ -2669,7 +2704,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
 
             // Then
-            assertEquals(listOf("group_exit_cancelled" to exitParams("leave_blocked")), trackedEvents)
+            assertEquals(listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.LEAVE_BLOCKED)), trackedEvents)
         }
 
     @Test
@@ -2684,7 +2719,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf("group_exit_confirmed" to exitParams("confirm_delete")), trackedEvents)
+            assertEquals(
+                listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_DELETE)),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -2699,7 +2737,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
 
             // Then
-            assertEquals(listOf("group_exit_cancelled" to exitParams("confirm_delete")), trackedEvents)
+            assertEquals(
+                listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.CONFIRM_DELETE)),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -2721,7 +2762,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf("group_exit_confirmed" to exitParams("delete_blocked")), trackedEvents)
+            assertEquals(
+                listOf("group_exit_confirmed" to exitParams(GroupExitDialogKind.DELETE_BLOCKED)),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -2743,7 +2787,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
 
             // Then
-            assertEquals(listOf("group_exit_cancelled" to exitParams("delete_blocked")), trackedEvents)
+            assertEquals(
+                listOf("group_exit_cancelled" to exitParams(GroupExitDialogKind.DELETE_BLOCKED)),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -2785,7 +2832,7 @@ class GroupDetailViewModelTest {
             assertEquals(
                 listOf(
                     "leave_group_clicked" to fromGroupDetail,
-                    "group_exit_confirmed" to exitParams("confirm_leave"),
+                    "group_exit_confirmed" to exitParams(GroupExitDialogKind.CONFIRM_LEAVE),
                 ),
                 trackedEvents,
             )
@@ -2882,7 +2929,10 @@ class GroupDetailViewModelTest {
 
     private val fromGroupDetail = mapOf<String, Any>("source" to "group_detail")
 
-    private fun exitParams(dialog: String): Map<String, Any> = mapOf("dialog" to dialog, "source" to "group_detail")
+    private fun exitParams(dialog: GroupExitDialogKind): Map<String, Any> = mapOf(
+        "dialog" to dialog,
+        "source" to "group_detail",
+    )
 
     private fun settlement(id: String): Settlement = Settlement(
         id = id,

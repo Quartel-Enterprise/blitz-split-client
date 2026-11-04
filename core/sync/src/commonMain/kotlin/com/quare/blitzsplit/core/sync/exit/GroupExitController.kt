@@ -121,19 +121,16 @@ class GroupExitController(
         }
     }
 
-    /*
-     * Why: which dialog is open and can still be answered, as Analytics names it, so an answer counts only while it
-     * means something: null while none is open or a request runs.
-     */
-    fun findAnswerableDialog(): String? {
+    // Why: which dialog is open and can still be answered: null while none is open or a request runs.
+    fun findAnswerableDialog(): GroupExitDialogKind? {
         val current = state.value
         if (current.isRunning) return null
         return when (current.dialog) {
             null -> null
-            is GroupExitDialog.LeaveBlocked -> "leave_blocked"
-            is GroupExitDialog.ConfirmLeave -> "confirm_leave"
-            is GroupExitDialog.DeleteBlocked -> "delete_blocked"
-            is GroupExitDialog.ConfirmDelete -> "confirm_delete"
+            is GroupExitDialog.LeaveBlocked -> GroupExitDialogKind.LEAVE_BLOCKED
+            is GroupExitDialog.ConfirmLeave -> GroupExitDialogKind.CONFIRM_LEAVE
+            is GroupExitDialog.DeleteBlocked -> GroupExitDialogKind.DELETE_BLOCKED
+            is GroupExitDialog.ConfirmDelete -> GroupExitDialogKind.CONFIRM_DELETE
         }
     }
 

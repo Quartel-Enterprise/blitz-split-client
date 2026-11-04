@@ -209,7 +209,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Entrar com link ou QR" | `:feature:groups` |
 | `group_clicked` | `source` (`home`, `groups`, `sidebar`) | A group's row, card or sidebar entry | `:feature:groups` |
 | `settled_groups_toggled` | `is_shown` | Quitados expanded or collapsed, or its tab | `:feature:groups` |
-| `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade" | `:feature:groups` |
+| `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade", for another way than the one showing | `:feature:groups` |
 | `groups_grid_size_changed` | `size` | Another size the grid takes: Compacto, Padrão or Grande, once per size the Mac's slider passes | `:feature:groups` |
 | `invite_clicked` | `source` (`groups`, `group_detail`) | "Convidar pessoas" | `:feature:groups`, `:feature:group_detail` |
 | `leave_group_clicked` | `source` (`groups`, `group_detail`) | "Sair do grupo" | `:feature:groups`, `:feature:group_detail` |
@@ -238,15 +238,15 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed, while it was open | `:feature:group_detail` |
 | `payment_delete_cancelled` | none | "Apagar este acerto?" closed without confirming, while it was open | `:feature:group_detail` |
 | `category_teach_clicked` | none | "Ensinar" on "Ensinar ao mapa?" | `:feature:group_detail` |
-| `category_teach_dismissed` | none | "Agora não" on it, or Cancelar on which word | `:feature:group_detail` |
+| `category_teach_dismissed` | none | "Agora não" on it, or Cancelar on which word, while it shows and isn't saving | `:feature:group_detail` |
 | `category_teach_word_picked` | none | A word of the title picked to teach | `:feature:group_detail` |
-| `category_teach_confirmed` | none | The word taught | `:feature:group_detail` |
+| `category_teach_confirmed` | none | The word taught, once per word saved (not a second tap while it saves) | `:feature:group_detail` |
 | `protect_access_clicked` | `source` (`group_detail`) | "Proteja seu acesso" | `:feature:group_detail` |
 | `simplify_debts_info_clicked` | `source` (`group_detail`, `edit_group`) | "Como funciona" of "Simplificar dívidas" | `:feature:group_detail`, `:feature:edit_group` |
 | `simplify_conflict_activity_clicked` | `source` (`group_detail`, `edit_group`) | "Ver na Atividade" on the simplify conflict's notice | `:feature:group_detail`, `:feature:edit_group` |
 | `group_icon_clicked` | none | The avatar or "Trocar ícone ou foto", which opens "Ícone do grupo" | `:feature:edit_group` |
-| `group_icon_color_picked` | `color` | A color in "Ícone do grupo" | `:feature:edit_group` |
-| `group_icon_shape_picked` | `shape` | A shape in "Ícone do grupo" (Android) | `:feature:edit_group` |
+| `group_icon_color_picked` | `color` | A color in "Ícone do grupo", while it is open | `:feature:edit_group` |
+| `group_icon_shape_picked` | `shape` | A shape in "Ícone do grupo" (Android), while it is open | `:feature:edit_group` |
 | `group_icon_confirmed` | none | "Usar este ícone" | `:feature:edit_group` |
 | `group_color_selected` | `color`, `source` (`edit_group`) | "Cor do ícone" on the web and the Mac | `:feature:edit_group` |
 | `default_split_clicked` | none | Editar grupo's "Divisão padrão" | `:feature:edit_group` |

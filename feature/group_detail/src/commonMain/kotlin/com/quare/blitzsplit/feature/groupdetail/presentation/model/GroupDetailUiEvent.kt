@@ -69,11 +69,12 @@ sealed interface GroupDetailUiEvent : TrackedUiEvent {
 
             OnTeachClicked -> EventAnalytics.Automatic("category_teach_clicked")
 
-            OnTeachDismissed -> EventAnalytics.Automatic("category_teach_dismissed")
+            // Why: only an offer or a question still open, never one saving, nor a second tap on Ensinar.
+            OnTeachDismissed -> EventAnalytics.Manual("category_teach_dismissed")
 
             is OnTeachWordPicked -> EventAnalytics.Automatic("category_teach_word_picked")
 
-            OnTeachConfirmed -> EventAnalytics.Automatic("category_teach_confirmed")
+            OnTeachConfirmed -> EventAnalytics.Manual("category_teach_confirmed")
 
             OnProtectAccessClicked -> EventAnalytics.Automatic("protect_access_clicked", mapOf("source" to SOURCE))
 

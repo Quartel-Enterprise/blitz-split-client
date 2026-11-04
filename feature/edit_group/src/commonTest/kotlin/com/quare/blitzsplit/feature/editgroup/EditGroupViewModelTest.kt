@@ -3025,6 +3025,20 @@ class EditGroupViewModelTest {
     }
 
     @Test
+    fun `GIVEN Icone do grupo closed WHEN a late color or shape pick arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
+            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN Icone do grupo open WHEN tapping Usar este icone THEN sends the group icon confirmed event`() =
         runTest(testDispatcher) {
             // Given

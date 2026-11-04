@@ -274,11 +274,7 @@ class HomeViewModel(
 
             // Why: never over the recovery code's prompt, which is no route, so ⌘K on the web can't stack the search on it.
             HomeUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.showsRecoveryCodePrompt) {
-                // Why: Buscar opens only over Início on top, as openSearchOver does.
-                if (navigator.backStack.value.lastOrNull() == Route.Home) {
-                    trackEvent("search_opened", mapOf("source" to "home"))
-                }
-                navigator.openSearchOver(HomeTab.HOME)
+                if (navigator.openSearchOver(HomeTab.HOME)) trackEvent("search_opened", mapOf("source" to "home"))
             }
 
             HomeUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()

@@ -340,6 +340,18 @@ class GroupsLayoutTest {
         }
 
     @Test
+    fun `GIVEN the list WHEN picking Lista again THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(apartment))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(GroupsDisplay.LIST))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the grid WHEN picking Grande THEN tracks groups_grid_size_changed with the size`() =
         runTest(testDispatcher) {
             // Given

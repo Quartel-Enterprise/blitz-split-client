@@ -57,10 +57,12 @@ fun List<Route>.isRightAboveHomeTab(route: Route): Boolean {
 
 /*
  * Why: "Buscar" opens over the tab it was asked from only while that tab is on top, so ⌘K over a dialog on the web
- * or a late tap over a screen the tab opened never covers it.
+ * or a late tap over a screen the tab opened never covers it. Says whether it opened, which Analytics counts.
  */
-fun Navigator.openSearchOver(tab: HomeTab) {
-    if (backStack.value.lastOrNull()?.homeTabOrNull() == tab) navigate(Route.Search)
+fun Navigator.openSearchOver(tab: HomeTab): Boolean {
+    if (backStack.value.lastOrNull()?.homeTabOrNull() != tab) return false
+    navigate(Route.Search)
+    return true
 }
 
 // Why: one of the home's tabs (Início, Grupos, Saldos, Contatos, Atividade), as opposed to what they opened.

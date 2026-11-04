@@ -172,12 +172,14 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnIconDismissed -> uiState.update { it.copy(iconEditor = null) }
 
-            is EditGroupUiEvent.OnIconColorPicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(color = event.color))
+            is EditGroupUiEvent.OnIconColorPicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_color_picked", mapOf("color" to event.color))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(color = event.color)) }
             }
 
-            is EditGroupUiEvent.OnIconShapePicked -> uiState.update {
-                it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape))
+            is EditGroupUiEvent.OnIconShapePicked -> if (uiState.value.iconEditor != null) {
+                trackEvent("group_icon_shape_picked", mapOf("shape" to event.shape))
+                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape)) }
             }
 
             EditGroupUiEvent.OnIconConfirmed -> confirmIcon()

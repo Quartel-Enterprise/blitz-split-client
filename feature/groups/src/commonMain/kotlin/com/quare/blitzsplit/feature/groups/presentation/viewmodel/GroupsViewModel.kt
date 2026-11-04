@@ -373,9 +373,11 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnFilterChanged -> uiState.update { it.copy(filterQuery = event.query) }
 
-            is GroupsUiEvent.OnDisplayChanged -> layoutPicker.changeDisplay(event.display)
+            is GroupsUiEvent.OnDisplayChanged -> if (layoutPicker.pickDisplay(event.display)) {
+                trackEvent("groups_display_changed", mapOf("display" to event.display))
+            }
 
-            is GroupsUiEvent.OnGridSizeChanged -> if (layoutPicker.changeGridSize(event.size)) {
+            is GroupsUiEvent.OnGridSizeChanged -> if (layoutPicker.pickGridSize(event.size)) {
                 trackEvent("groups_grid_size_changed", mapOf("size" to event.size))
             }
 
