@@ -74,7 +74,7 @@ export function BalanceCard({
           <span className="text-lg font-semibold tabular-nums">{t('balance_settled', { amount: money(0) })}</span>
         ) : (
           <span className="flex flex-wrap items-baseline gap-x-2">
-            <span className={cn('text-xl font-semibold tabular-nums', net === 0 ? 'text-foreground' : balanceTone(net))}>
+            <span className={cn('text-xl font-semibold tabular-nums', balanceTone(net))}>
               {formatSignedMoney(net, currency, fractionDigits)}
             </span>
             {net !== 0 && <span className={cn('font-medium', balanceTone(net))}>{t(net > 0 ? 'balance_toGetBack' : 'balance_youOwe')}</span>}

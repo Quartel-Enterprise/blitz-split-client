@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
+import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 
 /*
@@ -126,4 +127,12 @@ fun amountColorOf(amountMinor: Long): Color = when {
     amountMinor > 0 -> positiveAmountColor()
     amountMinor < 0 -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+// Why: a pair of the group's Saldos, with you or between two others, which keep the quiet color whatever the way.
+@Composable
+fun debtColorOf(kind: DebtKind): Color = when (kind) {
+    DebtKind.YOU_OWE -> MaterialTheme.colorScheme.error
+    DebtKind.OWES_YOU -> positiveAmountColor()
+    DebtKind.BETWEEN_OTHERS -> MaterialTheme.colorScheme.onSurfaceVariant
 }

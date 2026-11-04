@@ -374,12 +374,12 @@ struct BalanceCard: View {
             Text("\(currency.format(0)) · you're settled up")
                 .font(.title3.weight(.semibold))
         } else {
-            // What this person gets back and owes may cancel out: "$0.00", neutral, with both in the details
+            // What this person gets back and owes may cancel out: "$0.00", muted, with both in the details
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(verbatim: currency.formatSigned(balance.netMinor))
                     .font(.title2.bold())
                     .monospacedDigit()
-                    .foregroundStyle(netColor)
+                    .foregroundStyle(Palette.balance(balance.netMinor))
                 if balance.netMinor > 0 {
                     Text("to get back")
                         .font(.subheadline)
@@ -391,12 +391,6 @@ struct BalanceCard: View {
                 }
             }
         }
-    }
-
-    private var netColor: Color {
-        if balance.netMinor > 0 { return Palette.positive }
-        if balance.netMinor < 0 { return Palette.negative }
-        return .primary
     }
 
     /// "You get $332.90 and owe $118.00", without the part that is zero.

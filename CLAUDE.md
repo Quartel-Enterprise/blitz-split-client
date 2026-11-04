@@ -65,13 +65,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     which Android's `MoneyFormatter`, Apple's `GroupCurrency.format` and the web's `formatMoney` apply), Cobrar's
     message included. Amount fields and their placeholders keep the currency's decimals, and what a machine reads
     (the Pix BR Code) keeps its exact format.
-  - Money coming to you is green, what you owe the brand's orange (Pierre's call, as the legacy app): a positive net
-    or share, "a receber", "te deve", Te devem's and A receber's totals, in `#006C4C` light and `#6EDBAA` dark (a
-    teal-leaning green that colorblind eyes still tell apart from the orange), never the accent blue of links and
-    buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the wallpaper's by
-    Cores dinâmicas. Zero stays muted, debts between two others keep their color, and a status that adds up
-    ("Fechou") stays the accent. No preference inverts them: the sign and the words already say which way the money
-    goes.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Moeda (Novo grupo, Editar grupo) lists BTC and ETH last,
     under their own "Criptomoedas" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

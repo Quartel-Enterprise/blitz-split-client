@@ -106,7 +106,7 @@ function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money
       : net < 0
         ? t('members_balanceOwes', { amount: money(net) })
         : money(0)
-  const tone = balance.isSettled ? 'text-muted-foreground' : net === 0 ? 'text-foreground' : balanceTone(net)
+  const tone = balance.isSettled ? 'text-muted-foreground' : balanceTone(net)
   return <span className={cn('text-sm font-medium whitespace-nowrap tabular-nums', tone)}>{text}</span>
 }
 

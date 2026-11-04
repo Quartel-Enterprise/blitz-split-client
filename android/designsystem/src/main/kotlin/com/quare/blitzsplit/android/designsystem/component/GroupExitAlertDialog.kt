@@ -32,7 +32,6 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
-import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
@@ -272,11 +271,7 @@ private fun DebtSummaryList(
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = when (debt.kind) {
-                            DebtKind.YOU_OWE -> MaterialTheme.colorScheme.error
-                            DebtKind.OWES_YOU -> positiveAmountColor()
-                            DebtKind.BETWEEN_OTHERS -> MaterialTheme.colorScheme.onSurfaceVariant
-                        },
+                        color = debtColorOf(debt.kind),
                     )
                 }
             }
