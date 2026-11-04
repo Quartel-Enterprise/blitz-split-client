@@ -2139,7 +2139,7 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping the logo THEN sends brand_clicked from Saldos`() = runTest(testDispatcher) {
+    fun `GIVEN Balances WHEN tapping the logo THEN sends brand_clicked from Balances`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -2151,7 +2151,7 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping the logo THEN goes back to Inicio`() = runTest(testDispatcher) {
+    fun `GIVEN Balances WHEN tapping the logo THEN goes back to Home`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 

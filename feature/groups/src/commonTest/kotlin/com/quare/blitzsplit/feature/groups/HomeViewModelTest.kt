@@ -2357,7 +2357,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping the logo THEN tracks brand_clicked from the home`() = runTest(testDispatcher) {
+    fun `GIVEN Home WHEN tapping the logo THEN tracks brand_clicked from the home`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 

@@ -20,7 +20,7 @@ sealed interface HomeSidebarUiEvent : TrackedUiEvent {
 
             OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
 
-            // Why: the web's logo, which opens Início; the tabs it stands beside are not tracked, their screen view is.
+            // Why: the web's logo, which opens Home; the tabs it stands beside are not tracked, their screen view is.
             OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to SOURCE))
         }
 
@@ -36,6 +36,6 @@ sealed interface HomeSidebarUiEvent : TrackedUiEvent {
     // Why: the web's profile at the sidebar's foot.
     data object OnProfileClicked : HomeSidebarUiEvent
 
-    // Why: the web's logo, which opens Início as its tab does.
+    // Why: the web's logo, which opens Home as its tab does.
     data object OnBrandClicked : HomeSidebarUiEvent
 }

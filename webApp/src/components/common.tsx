@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
  * Portuguese, Blitz Split in every other language.
  */
 export function BrandMark({ showsName = true, className }: { showsName?: boolean; className?: string }) {
-  // Why: a span, so the logo can sit inside the button that opens Início (a button holds no div).
+  // Why: a span, so the logo can sit inside the button that opens Home (a button holds no div).
   return (
     <span className={cn('flex items-center gap-2.5', className)}>
       <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">

@@ -85,7 +85,7 @@ export function HomeShell({
   profile: HomeProfile | null
   onTab: (tab: HomeTab) => void
   onProfile: () => void
-  /** The logo: opens Início, the tracked way where the screen has a presenter that counts it. */
+  /** The logo: opens Home, the tracked way where the screen has a presenter that counts it. */
   onBrand?: () => void
   // Why: "Buscar" on the five tabs, once there is a group to look in; a group's pages (PageShell) have none.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
@@ -106,7 +106,7 @@ export function HomeShell({
   const select = (tab: HomeTab) => {
     if (tab !== selected || isOutsideTabs) onTab(tab)
   }
-  // Why: a screen whose presenter can't count the logo yet opens Início as its tab does.
+  // Why: a screen whose presenter can't count the logo yet opens Home as its tab does.
   const openBrand = onBrand ?? (() => select('home'))
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
   const unreadOf = (tab: HomeTab) => (tab === 'activity' ? activityUnreadCount : 0)

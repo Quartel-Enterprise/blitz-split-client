@@ -272,7 +272,7 @@ class HomeViewModel(
         when (event) {
             HomeUiEvent.OnProfileClicked -> open(Route.Profile)
 
-            // Why: already on Início, so the logo only counts.
+            // Why: already on Home, so the logo only counts.
             HomeUiEvent.OnBrandClicked -> Unit
 
             // Why: never over the recovery code's prompt, which is no route, so ⌘K on the web can't stack the search on it.

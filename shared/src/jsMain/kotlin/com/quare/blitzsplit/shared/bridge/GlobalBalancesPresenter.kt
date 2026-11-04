@@ -292,7 +292,7 @@ class GlobalBalancesPresenter(
         viewModel.onEvent(GlobalBalancesUiEvent.OnProfileClicked)
     }
 
-    // Why: the logo, which opens Início.
+    // Why: the logo, which opens Home.
     fun openBrand() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnBrandClicked)
     }

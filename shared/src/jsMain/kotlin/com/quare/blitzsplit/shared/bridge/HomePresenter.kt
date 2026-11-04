@@ -191,7 +191,7 @@ class HomePresenter {
         viewModel.onEvent(HomeUiEvent.OnProfileClicked)
     }
 
-    // Why: the logo, which opens Início.
+    // Why: the logo, which opens Home.
     fun openBrand() {
         viewModel.onEvent(HomeUiEvent.OnBrandClicked)
     }

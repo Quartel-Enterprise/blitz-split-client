@@ -213,7 +213,7 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
     }
 
-    // Why: the logo, which opens Início.
+    // Why: the logo, which opens Home.
     fun openBrand() {
         viewModel.onEvent(GroupsUiEvent.OnBrandClicked)
     }

@@ -59,7 +59,7 @@ class HomeSidebarPresenter {
         viewModel.onEvent(HomeSidebarUiEvent.OnProfileClicked)
     }
 
-    // Why: the logo, which opens Início.
+    // Why: the logo, which opens Home.
     fun openBrand() {
         viewModel.onEvent(HomeSidebarUiEvent.OnBrandClicked)
     }

@@ -2976,7 +2976,7 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN the search open WHEN tapping the logo THEN closes the search and goes back to Inicio`() =
+    fun `GIVEN the search open WHEN tapping the logo THEN closes the search and goes back to Home`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
