@@ -24,6 +24,7 @@ import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
+import { ProfilePhotoDialog } from '@/features/profile/ProfilePhotoDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { CategoryMapScreen } from '@/features/category-map/CategoryMapScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
@@ -81,6 +82,8 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   // expenses or members.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
+  // Why: the profile's photo big, over the profile, whose avatar opened it.
+  const isProfilePhoto = top.name === 'profile-photo'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
   // Why: Contatos' "Convidar com link ou QR" (and a guest's "Convidar Diego") opens over Contatos or the profile.
@@ -100,14 +103,14 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = stack[pageIndex]?.name === 'bill-detail' ? stack[pageIndex] : undefined
   if (bill) pageIndex -= 1
   const page = stack[pageIndex]
-  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'home')
+  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
   return (
     <>
       <Screen name={pageName} route={page} />
@@ -115,6 +118,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
+      {isProfilePhoto && <ProfilePhotoDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}

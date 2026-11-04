@@ -642,6 +642,18 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN the profile WHEN tapping the avatar THEN opens the photo big`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAvatarClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.ProfilePhoto), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN no theme stored WHEN the profile opens THEN shows the system theme`() = runTest(testDispatcher) {
         // Given
         prepareScenario(theme = null)

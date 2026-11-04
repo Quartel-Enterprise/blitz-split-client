@@ -43,7 +43,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
 /// sidebar lists the profile's sections and scrolls the form to the one picked, and Categories shows the category map
 /// in the form's place (whatever opens the map opens it here, `AppModel.requestedSettingsPane`); a narrow window
 /// (under 700 pt, as Saldos' inspector) hides it behind the toolbar's sidebar button, one column. A key and deleting the account open
-/// as sheets on this window (`AppModel.settingsSheet`). Until a profile exists, and once signing out erases it, there
+/// as sheets on this window (`AppModel.settingsSheet`), and so does the photo big. Until a profile exists, and once signing out erases it, there
 /// is nothing to set, so the window closes.
 struct SettingsView: View {
     @Bindable var app: AppModel
@@ -89,6 +89,7 @@ struct SettingsView: View {
             NavigationStack {
                 switch route {
                 case let .paymentKey(route): PaymentKeyView(route: route)
+                case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
                 default: EmptyView()
                 }

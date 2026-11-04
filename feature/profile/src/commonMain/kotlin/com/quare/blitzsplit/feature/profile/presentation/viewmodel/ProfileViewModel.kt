@@ -180,6 +180,7 @@ class ProfileViewModel(
         when (event) {
             ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
+            ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
             ProfileUiEvent.OnVisibilityInfoClicked -> showDialog(ProfileDialog.VISIBILITY_INFO)
             ProfileUiEvent.OnDialogDismissed -> closeDialog()
             ProfileUiEvent.OnConnectClicked -> expandConnect()

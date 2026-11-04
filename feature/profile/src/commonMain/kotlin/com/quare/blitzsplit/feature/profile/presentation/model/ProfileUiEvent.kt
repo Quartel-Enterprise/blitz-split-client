@@ -10,6 +10,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data object OnEditClicked : ProfileUiEvent
 
+    // Why: the avatar opens the photo big, apart from the rest of the card, which edits the profile.
+    data object OnAvatarClicked : ProfileUiEvent
+
     data object OnVisibilityInfoClicked : ProfileUiEvent
 
     data object OnDialogDismissed : ProfileUiEvent

@@ -2,9 +2,7 @@ package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -24,11 +22,8 @@ import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUi
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,8 +35,7 @@ class EditProfileViewModel(
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
-    getSessionUser: GetSessionUser,
-    observeAccount: ObserveAccount,
+    observeAccountPhoto: ObserveAccountPhoto,
 ) : ViewModel() {
     val uiState: StateFlow<EditProfileUiState>
         field = MutableStateFlow(
@@ -85,29 +79,18 @@ class EditProfileViewModel(
             .filterNotNull()
             .onEach(::onSavedProfileChanged)
             .launchIn(viewModelScope)
-        /*
-         * Why: keyed on the user too, so another account of the same provider reads its own picture; and a newer
-         * status drops a session read still running, so the notice never waits on it.
-         */
-        viewModelScope.launch {
-            observeAccount()
-                .map { account -> account.status as? AccountStatus.Connected }
-                .distinctUntilChanged()
-                .collectLatest { connected ->
-                    // Why: the notice names the provider at once; the picture follows once the session is read.
-                    isAccountRead = true
-                    uiState.update {
-                        it.copy(
-                            isLoaded = saved != null,
-                            accountProvider = connected?.provider,
-                            accountPhotoUrl = null,
-                        )
-                    }
-                    // Why: only a connected account has a picture of its own to offer.
-                    val accountPhotoUrl = connected?.let { getSessionUser()?.photoUrl }
-                    uiState.update { it.copy(accountPhotoUrl = accountPhotoUrl) }
+        observeAccountPhoto()
+            .onEach { account ->
+                // Why: the notice names the provider at once; the picture follows once the session is read.
+                isAccountRead = true
+                uiState.update {
+                    it.copy(
+                        isLoaded = saved != null,
+                        accountProvider = account.provider,
+                        accountPhotoUrl = account.photoUrl,
+                    )
                 }
-        }
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: EditProfileUiEvent) {
@@ -121,6 +104,7 @@ class EditProfileViewModel(
             EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
+            EditProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
             EditProfileUiEvent.OnSaveClicked -> save()
             EditProfileUiEvent.OnDiscardClicked -> discard()
             EditProfileUiEvent.OnBackClicked -> navigator.navigateBack()
