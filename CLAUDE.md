@@ -452,7 +452,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     debt on its "Quando" and what they pay (a payment, or a later bill they paid more of than their part) covering
     the oldest first, a debt still open counting up to today; only debts born of the period's bills count, the amount
     weighting the average, whoever is still in the group (guests too, never an ex-member), and only once two people
-    had one. "Ao longo do tempo" is Barras or
+    had one and the two named don't tie (the same days and the same open amount hide the card). "Ao longo do tempo" is Barras or
     Linha by Dia, Semana (Monday to Sunday), Mês or Ano, kept per device for every group and never synced
     (`StatsChartPreferences` in `device_settings`): Dia only up to 3 months, the others once the period touches two of
     them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that

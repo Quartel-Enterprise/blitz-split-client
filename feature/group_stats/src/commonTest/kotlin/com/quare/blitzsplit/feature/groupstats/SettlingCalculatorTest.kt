@@ -19,7 +19,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.time.Instant
@@ -478,11 +477,18 @@ class SettlingCalculatorTest {
     }
 
     @Test
-    fun `GIVEN the same average and open amount WHEN ranking THEN the group order decides between two people`() {
+    fun `GIVEN two tied for the fastest and a slower one WHEN ranking THEN the group order picks the fastest`() {
         // Given
         prepareScenario(
-            members = listOf(pierre, bruno, ana),
-            bills = listOf(bill("dinner", "2026-10-10T12:00:00Z", PIERRE, PIERRE to 100, ANA to 100, BRUNO to 100)),
+            members = listOf(pierre, bruno, ana, carla),
+            bills = listOf(
+                bill("dinner", "2026-10-10T12:00:00Z", PIERRE, PIERRE to 100, ANA to 100, BRUNO to 100, CARLA to 100),
+            ),
+            payments = listOf(
+                payment(ANA, PIERRE, 100, "2026-10-12T12:00:00Z"),
+                payment(BRUNO, PIERRE, 100, "2026-10-12T12:00:00Z"),
+                payment(CARLA, PIERRE, 100, "2026-10-20T12:00:00Z"),
+            ),
         )
 
         // When
@@ -490,8 +496,22 @@ class SettlingCalculatorTest {
 
         // Then
         assertEquals(BRUNO, settling.fastest.memberId)
-        assertEquals(ANA, settling.slowest.memberId)
-        assertNotEquals(settling.fastest.memberId, settling.slowest.memberId)
+        assertEquals(CARLA, settling.slowest.memberId)
+    }
+
+    @Test
+    fun `GIVEN the fastest and the slowest with the same average and open amount WHEN ranking THEN nothing shows`() {
+        // Given
+        prepareScenario(
+            members = listOf(pierre, bruno, ana),
+            bills = listOf(bill("dinner", "2026-10-10T12:00:00Z", PIERRE, PIERRE to 100, ANA to 100, BRUNO to 100)),
+        )
+
+        // When
+        val settling = calculator.createOrNull(october)
+
+        // Then
+        assertNull(settling)
     }
 
     @Test

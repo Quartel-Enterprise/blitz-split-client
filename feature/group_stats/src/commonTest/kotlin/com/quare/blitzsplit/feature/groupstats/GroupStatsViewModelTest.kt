@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
@@ -847,6 +848,20 @@ class GroupStatsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the payments not read yet WHEN the bills are THEN nothing is drawn with Acertos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(arePaymentsReadAtStart = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertNull(state.settling)
+        }
+
+    @Test
     fun `GIVEN Acertos WHEN the payment of Ana arrives THEN she paid on the day with nothing open`() =
         runTest(testDispatcher) {
             // Given
@@ -1130,6 +1145,7 @@ class GroupStatsViewModelTest {
         downloading: FirstDownloadProgress? = null,
         isDownloadReadAtStart: Boolean = true,
         payments: List<Settlement> = emptyList(),
+        arePaymentsReadAtStart: Boolean = true,
     ) {
         firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
@@ -1159,7 +1175,11 @@ class GroupStatsViewModelTest {
             },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = ObserveExpensesUseCase(expenses),
-            observeSettlements = ObserveSettlementsUseCase(settlements),
+            observeSettlements = if (arePaymentsReadAtStart) {
+                ObserveSettlementsUseCase(settlements)
+            } else {
+                ObserveSettlements { emptyFlow() }
+            },
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },

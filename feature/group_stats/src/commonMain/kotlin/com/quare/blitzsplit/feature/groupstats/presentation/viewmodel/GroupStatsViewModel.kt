@@ -123,23 +123,21 @@ class GroupStatsViewModel(
     private var isDownloadRead = false
 
     init {
+        // Why: the payments come with the bills, so "Acertos" is never drawn from the bills alone while they load.
         combine(
             observeGroup(route.groupId),
             observeExpenses(route.groupId),
+            observeSettlements(route.groupId),
             observeStatsChartPreferences(),
-            ::Triple,
-        ).onEach { (group, expenses, chart) ->
-            this.group = group
-            this.expenses = expenses
-            keepStoredChart(chart)
-            isGone = group == null
-            if (group == null) leave() else render()
+            ::StatsSources,
+        ).onEach { sources ->
+            group = sources.group
+            expenses = sources.expenses
+            settlements = sources.settlements
+            keepStoredChart(sources.chart)
+            isGone = sources.group == null
+            if (sources.group == null) leave() else render()
         }.launchIn(viewModelScope)
-        observeSettlements(route.groupId)
-            .onEach { settlements ->
-                this.settlements = settlements
-                render()
-            }.launchIn(viewModelScope)
         observeCategoryTree(route.groupId)
             .onEach { tree ->
                 categoryTree = tree
@@ -312,7 +310,7 @@ class GroupStatsViewModel(
                 group = group,
                 expenses = expenses,
                 settlements = settlements,
-                today = SpentDay.dateOf(currentTimeMillis(), timeZone),
+                today = calculator.today,
                 timeZone = timeZone,
             ).createOrNull(span),
             categories = calculator.createCategories(spending),
@@ -352,6 +350,13 @@ class GroupStatsViewModel(
         dividend: Long,
         divisor: Long,
     ): Long = (dividend + divisor / 2) / divisor
+
+    private class StatsSources(
+        val group: Group?,
+        val expenses: List<Expense>,
+        val settlements: List<Settlement>,
+        val chart: StatsChartPreferences,
+    )
 
     private companion object {
         const val PERCENT = 100L

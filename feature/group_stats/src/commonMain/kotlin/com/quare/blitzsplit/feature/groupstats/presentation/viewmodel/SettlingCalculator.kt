@@ -27,15 +27,21 @@ internal class SettlingCalculator(
     private val today: LocalDate,
     private val timeZone: TimeZone,
 ) {
-    // Why: null until two people had a debt in the period, so there is someone to compare.
+    /*
+     * Why: null until two people had a debt in the period, so there is someone to compare, and while the fastest and
+     * the slowest tie (Pierre's call): nobody is slower than anyone then.
+     */
     fun createOrNull(span: DateSpan): StatsSettling? {
         val settlers = group.members
             .mapNotNull { member -> createSettlerOrNull(member, span) }
             .sortedWith(compareBy<StatsSettler> { it.averageDays }.thenBy { it.openMinor })
         if (settlers.size < MIN_SETTLERS) return null
+        val fastest = settlers.first()
+        val slowest = settlers.last()
+        if (fastest.averageDays == slowest.averageDays && fastest.openMinor == slowest.openMinor) return null
         return StatsSettling(
-            fastest = settlers.first(),
-            slowest = settlers.last(),
+            fastest = fastest,
+            slowest = slowest,
         )
     }
 
