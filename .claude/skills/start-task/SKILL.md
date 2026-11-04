@@ -273,7 +273,7 @@ so install the APK directly (in worktree mode, `./gradlew -p <worktree>` and the
 path, or you install the main checkout's build):
 
 ```bash
-./gradlew :androidApp:assembleDebug
+./scripts/heavy-check.sh ./gradlew :androidApp:assembleDebug
 adb -s "emulator-$CONSOLE_PORT" install -r androidApp/build/outputs/apk/debug/androidApp-debug.apk
 adb -s "emulator-$CONSOLE_PORT" shell am start -n com.quare.blitzsplit/.MainActivity
 adb -s "emulator-$CONSOLE_PORT" exec-out screencap -p > <scratchpad>/screen.png
@@ -346,7 +346,7 @@ Gradle, so the first build takes a few minutes. In worktree mode, use the worktr
 derived data path.
 
 ```bash
-xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
   -destination "id=$UDID" -derivedDataPath iosApp/build/DerivedData build -quiet
 xcrun simctl install "$UDID" iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app
 xcrun simctl launch "$UDID" com.quare.blitzsplit

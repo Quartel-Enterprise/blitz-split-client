@@ -24,8 +24,8 @@ Run these in parallel:
 - `git diff main...HEAD --stat` to see total changes vs main
 
 In worktree mode, run every command of this skill against the worktree: `git -C <worktree>`,
-`./gradlew -p <worktree>`, `npm --prefix <worktree>/webApp`, `<worktree>/iosApp/...` (see step 7
-of [`start-task`](../start-task/SKILL.md)).
+`./gradlew -p <worktree>`, `npm --prefix <worktree>/webApp`, `<worktree>/iosApp/...`,
+`<worktree>/scripts/heavy-check.sh` (see step 7 of [`start-task`](../start-task/SKILL.md)).
 
 ### 2. Run ktlint formatter (if needed)
 
@@ -183,6 +183,20 @@ Otherwise, sort the changed files into the areas below and run the checks of eve
 least one. Put the Gradle tasks of every area into one `./gradlew` call, so they share one
 configuration and run in parallel, and pass `--continue` so one failure doesn't hide the next.
 
+Run every `./gradlew`, `xcodebuild` and `npm --prefix webApp run build` below through
+`./scripts/heavy-check.sh`, which waits until no other heavy check of this machine is running, in any
+worktree, then runs the command and exits with its code. Each worktree's Gradle daemon, Kotlin daemon
+and Kotlin/Native take more memory than the Mac has for two or three sessions building at once: side
+by side they swap and a three-minute check takes an hour, while queued each takes its minutes. Since
+the queue may wait longer than the Bash tool's ten minutes, run the checks with `run_in_background`,
+one background command for the whole step, and let its completion call you back. Join its commands
+with `;`, never `&&`, and print each one's code after it (`; echo "gradle exit $?"`), so a failing area
+neither stops the next nor hides behind the last one's success; read every code before going on.
+Never wait on it in the foreground with an `until`/`sleep` loop, and never bypass the queue with
+`--no-daemon`, `--max-workers` or a smaller `-Xmx` when a check is slow: what makes it slow is the
+other sessions' builds, and the queue is what fixes that. Never run `./gradlew --stop` either: it
+stops every daemon of the machine, and the other sessions' builds with them.
+
 | Area | The branch changes | Checks |
 |---|---|---|
 | Shared Kotlin | `core/`, `feature/`, `shared/` | Tests and coverage, main and test code compiled for each platform, the debug APK |
@@ -196,7 +210,7 @@ configuration and run in parallel, and pass `--continue` so one failure doesn't 
 **Shared Kotlin**:
 
 ```bash
-./gradlew jvmTest :koverVerifyCi \
+./scripts/heavy-check.sh ./gradlew jvmTest :koverVerifyCi \
   compileKotlinIosSimulatorArm64 compileKotlinMacosArm64 compileKotlinJs \
   compileTestKotlinIosSimulatorArm64 compileTestKotlinJs \
   :androidApp:assembleDebug --continue
@@ -223,7 +237,7 @@ the `Shared` framework and the JS library when the API they see changes.
 that platform:
 
 ```bash
-./gradlew iosSimulatorArm64Test macosArm64Test jsTest --continue
+./scripts/heavy-check.sh ./gradlew iosSimulatorArm64Test macosArm64Test jsTest --continue
 ```
 
 with `iosSimulatorArm64Test` and `macosArm64Test` for `appleMain` (it compiles into both targets) and
@@ -236,7 +250,7 @@ only when platform code changes.
 **Build**, the full build:
 
 ```bash
-./gradlew build :koverVerifyCi assertModuleGraph --continue
+./scripts/heavy-check.sh ./gradlew build :koverVerifyCi assertModuleGraph --continue
 ```
 
 A build change can break any target, so it runs everything: it compiles every target of every
@@ -250,7 +264,8 @@ checks, so skip those. Expect several minutes in a fresh worktree.
 **Android UI**, when the full build didn't run:
 
 ```bash
-./gradlew :androidApp:assembleDebug :androidApp:lintDebug :android:<module>:lintDebug --continue
+./scripts/heavy-check.sh ./gradlew :androidApp:assembleDebug :androidApp:lintDebug \
+  :android:<module>:lintDebug --continue
 ```
 
 with one `:android:<module>:lintDebug` for each changed module (`:android:designsystem`,
@@ -262,10 +277,10 @@ framework with Gradle first.
 
 ```bash
 ./iosApp/generate-project.sh
-xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
   -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
   -derivedDataPath iosApp/build/DerivedData build -quiet
-xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS \
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS \
   -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData \
   CODE_SIGNING_ALLOWED=NO build -quiet
 ```
@@ -279,7 +294,7 @@ missing, ask the user before installing it (`brew install xcodegen`).
 **Web UI**:
 
 ```bash
-npm --prefix webApp run build
+./scripts/heavy-check.sh npm --prefix webApp run build
 ```
 
 Its `prebuild` script builds the JS library of `:shared` with Gradle first, then `tsc -b` type

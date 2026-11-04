@@ -114,11 +114,14 @@ line in the report (step 5), since it may be behavior nobody asked for.
 
 ```bash
 <worktree>/scripts/ktlint.sh --format
-./gradlew -p <worktree> :<module>:jvmTest --continue
+<worktree>/scripts/heavy-check.sh ./gradlew -p <worktree> :<module>:jvmTest --continue
 ```
 
 Run `jvmTest` for each module you wrote tests in (e.g. `:feature:restore:jvmTest`,
 `:core:account:jvmTest`). If ktlint reports something it can't fix, fix it by hand and run it again.
+`heavy-check.sh` waits until no other worktree is building, since two builds at once outgrow the
+Mac's memory (see step 8 of [`create-pr`](../create-pr/SKILL.md)); run it with `run_in_background`,
+as the wait may outlast the Bash tool's ten minutes.
 
 When a test fails, decide which side is wrong:
 
