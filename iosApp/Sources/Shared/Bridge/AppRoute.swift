@@ -67,6 +67,9 @@ enum AppRoute: Hashable, Identifiable {
     case categoryMap
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
+    /// "Update available" over wherever the app is; holds the Kotlin route itself, which its ViewModel reads the
+    /// App Store's version and page from.
+    case inAppUpdate(RouteInAppUpdate)
 
     init(_ route: any Route) {
         switch route {
@@ -104,6 +107,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteNotificationSettings: self = .notificationSettings
         case is RouteCategoryMap: self = .categoryMap
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
+        case let inAppUpdate as RouteInAppUpdate: self = .inAppUpdate(inAppUpdate)
         default: self = .welcome
         }
     }
@@ -124,7 +128,7 @@ enum AppRoute: Hashable, Identifiable {
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
         case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .pickPayment,
-             .contactInvite, .shareBill:
+             .contactInvite, .shareBill, .inAppUpdate:
             return true
         case .invite:
             #if os(macOS)
@@ -176,12 +180,15 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key, the photo big and deleting the
-    /// account show as sheets on the Settings window there (`AppModel.settingsSheet`). Never off the Mac.
+    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key, the photo big, deleting the
+    /// account and the update "Check for updates" found show as sheets on the Settings window there
+    /// (`AppModel.settingsSheet`). Never off the Mac.
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
         case .paymentKey, .profilePhoto, .deleteAccount: true
+        // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
+        case let .inAppUpdate(route): route.source == .manual
         default: false
         }
         #else
@@ -194,7 +201,7 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .shareBill, .editProfile, .editGroup, .registerPayment, .settleUp,
-             .pickPayment: true
+             .pickPayment, .inAppUpdate: true
         default: false
         }
     }

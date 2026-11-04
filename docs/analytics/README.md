@@ -151,3 +151,5 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Excluir conta's Cancelar, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |
+| `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
+| `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |

@@ -91,6 +91,7 @@ struct SettingsView: View {
                 case let .paymentKey(route): PaymentKeyView(route: route)
                 case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
+                case let .inAppUpdate(route): InAppUpdateView(route: route)
                 default: EmptyView()
                 }
             }

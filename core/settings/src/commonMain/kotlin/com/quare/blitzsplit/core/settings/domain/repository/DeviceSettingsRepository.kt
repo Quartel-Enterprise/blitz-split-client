@@ -25,4 +25,8 @@ interface DeviceSettingsRepository {
     fun observeBitcoinInSats(): Flow<Boolean>
 
     suspend fun updateBitcoinInSats(isOn: Boolean)
+
+    fun observeLastUpdatePromptAt(): Flow<Long?>
+
+    suspend fun updateLastUpdatePromptAt(epochMillis: Long)
 }

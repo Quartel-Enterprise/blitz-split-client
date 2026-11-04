@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.PaymentMethod
+import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 
@@ -19,6 +20,11 @@ internal val everyRouteKind: List<Route> = listOf(
     Route.CreateGroup,
     Route.EditProfile,
     Route.ProfilePhoto,
+    Route.InAppUpdate(
+        versionName = "2.1.0",
+        storeUrl = "https://apps.apple.com/app/id1",
+        source = UpdatePromptSource.STARTUP,
+    ),
     Route.DeleteAccount,
     Route.NotificationSettings,
     Route.CategoryMap,

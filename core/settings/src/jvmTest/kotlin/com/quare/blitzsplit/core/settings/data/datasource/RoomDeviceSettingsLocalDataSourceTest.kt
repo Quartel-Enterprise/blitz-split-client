@@ -40,6 +40,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = false,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -70,6 +71,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = false,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -94,6 +96,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = true,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -125,6 +128,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = true,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -150,6 +154,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = true,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -181,6 +186,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsGrain = null,
                 usesDynamicColors = false,
                 showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
             ),
             dataSource.observe().first(),
         )

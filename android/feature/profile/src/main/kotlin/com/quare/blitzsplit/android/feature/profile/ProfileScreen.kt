@@ -2,13 +2,16 @@ package com.quare.blitzsplit.android.feature.profile
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
 import com.quare.blitzsplit.android.platform.rememberExportFileSaver
@@ -16,6 +19,7 @@ import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
+import com.quare.blitzsplit.feature.profile.presentation.model.UpdateCheckResult
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -34,6 +38,8 @@ fun ProfileScreen(
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val appVersion = remember(context) { context.getAppVersion() }
     val saveExport = rememberExportFileSaver()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -55,9 +61,17 @@ fun ProfileScreen(
         viewModel.uiAction.collect { action ->
             when (action) {
                 is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.formattedCode)
+
                 is ProfileUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
+
                 is ProfileUiAction.OpenUrl -> uriHandler.openUri(action.url)
+
                 is ProfileUiAction.SaveExport -> saveExport(action.json)
+
+                is ProfileUiAction.ShowUpdateCheckResult -> showReplacingSnackbar(
+                    snackbarHostState = snackbarHostState,
+                    message = resources.getString(action.result.toMessageRes()),
+                )
             }
         }
     }
@@ -66,12 +80,19 @@ fun ProfileScreen(
         state = state,
         appVersion = appVersion,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
     )
     ProfileDialogsOverlay(
         state = state,
         onEvent = viewModel::onEvent,
     )
     if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
+}
+
+private fun UpdateCheckResult.toMessageRes(): Int = when (this) {
+    UpdateCheckResult.UP_TO_DATE -> R.string.profile_check_for_updates_up_to_date
+    UpdateCheckResult.DOWNLOADING -> R.string.profile_check_for_updates_downloading
+    UpdateCheckResult.FAILED -> R.string.profile_check_for_updates_failed
 }
 
 private fun Context.getAppVersion(): String = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()

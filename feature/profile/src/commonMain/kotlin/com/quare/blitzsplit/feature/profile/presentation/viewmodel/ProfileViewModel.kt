@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
+import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -13,6 +17,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -53,6 +58,7 @@ import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import com.quare.blitzsplit.feature.profile.presentation.model.UpdateCheckResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +88,9 @@ class ProfileViewModel(
     private val validatePaymentKey: ValidatePaymentKey,
     private val unlinkAccount: UnlinkAccount,
     private val exportUserData: ExportUserData,
+    private val checkForUpdate: CheckForUpdate,
+    private val showUpdatePrompt: ShowUpdatePrompt,
+    updateMechanism: UpdateMechanism,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
     observePendingProfileChanges: ObservePendingProfileChanges,
@@ -119,6 +128,8 @@ class ProfileViewModel(
                 usesDynamicColors = false,
                 showsBitcoinInSats = false,
                 activeNotificationCount = Loadable.Loading,
+                showsCheckForUpdates = updateMechanism != UpdateMechanism.NONE,
+                isCheckingForUpdates = false,
                 dialog = null,
                 hasConfirmedCodeSaved = false,
                 isConnectExpanded = false,
@@ -217,6 +228,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
+            ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()
             ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) clearSession()
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
@@ -226,6 +238,26 @@ class ProfileViewModel(
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
             ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE) eraseProfile()
+        }
+    }
+
+    /*
+     * Why: Perfil's "Buscar atualizações", as Bible Planner's: an update found opens what opening the app would (Google
+     * Play's flow, or "Atualização disponível"), even within the hour; nothing to offer says so.
+     */
+    private fun checkForUpdates() {
+        if (!uiState.value.showsCheckForUpdates || uiState.value.isCheckingForUpdates) return
+        uiState.update { it.copy(isCheckingForUpdates = true) }
+        viewModelScope.launch {
+            val availability = checkForUpdate()
+            uiState.update { it.copy(isCheckingForUpdates = false) }
+            val result = when (availability) {
+                is UpdateAvailability.Pending -> return@launch showUpdatePrompt(availability, UpdatePromptSource.MANUAL)
+                UpdateAvailability.Downloading -> UpdateCheckResult.DOWNLOADING
+                UpdateAvailability.NotAvailable -> UpdateCheckResult.UP_TO_DATE
+                UpdateAvailability.CheckFailed -> UpdateCheckResult.FAILED
+            }
+            uiAction.emit(ProfileUiAction.ShowUpdateCheckResult(result))
         }
     }
 

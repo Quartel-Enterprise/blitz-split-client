@@ -2,6 +2,7 @@ package com.quare.blitzsplit
 
 import android.app.Application
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.quare.blitzsplit.core.inappupdate.CurrentActivityProvider
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.FirebaseAnalyticsService
 import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting
@@ -17,6 +18,8 @@ class BlitzSplitApplication : Application() {
         startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
         if (BuildConfig.HAS_FIREBASE && !BuildConfig.DEBUG) get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
         PushSetup.start(this, setPushDevice = get())
+        // Why: Google Play's update flow starts from the Activity in front, whichever screen asked for it.
+        registerActivityLifecycleCallbacks(get<CurrentActivityProvider>())
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppForegroundObserver(reportAppForeground = get()))
     }
 }

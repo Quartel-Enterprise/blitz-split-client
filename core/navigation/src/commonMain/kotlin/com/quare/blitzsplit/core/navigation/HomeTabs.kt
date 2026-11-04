@@ -63,6 +63,9 @@ fun Navigator.openSearchOver(tab: HomeTab) {
     if (backStack.value.lastOrNull()?.homeTabOrNull() == tab) navigate(Route.Search)
 }
 
+// Why: one of the home's tabs (Início, Grupos, Saldos, Contatos, Atividade), as opposed to what they opened.
+fun Route.isHomeTab(): Boolean = homeTabOrNull() != null
+
 private val HomeTab.route: Route
     get() = when (this) {
         HomeTab.HOME -> Route.Home

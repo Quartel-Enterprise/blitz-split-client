@@ -36,6 +36,7 @@ private val exportedToApple = listOf(
     projects.feature.categoryMap,
     projects.feature.activity,
     projects.feature.contacts,
+    projects.feature.inAppUpdate,
 )
 
 kotlin {
@@ -65,6 +66,7 @@ kotlin {
             implementation(projects.core.contacts)
             implementation(projects.core.sync)
             implementation(projects.core.settings)
+            implementation(projects.core.inAppUpdate)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.image)

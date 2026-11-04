@@ -45,6 +45,13 @@ data class ProfileUiState(
      * the keys, since a restored account's choices only come with its first full sync.
      */
     val activeNotificationCount: Loadable<Int>,
+    /*
+     * Why: "Buscar atualizações" with the version under it takes the place of "Versão" where a store sends new
+     * versions (Android, iOS, macOS); the web always serves the latest, so it keeps "Versão".
+     */
+    val showsCheckForUpdates: Boolean,
+    // Why: "Verificando…" under it while the store is asked, which also ignores another tap.
+    val isCheckingForUpdates: Boolean,
     val dialog: ProfileDialog?,
     // Why: "Apagar e sair" only unlocks once the person says the recovery code is kept.
     val hasConfirmedCodeSaved: Boolean,

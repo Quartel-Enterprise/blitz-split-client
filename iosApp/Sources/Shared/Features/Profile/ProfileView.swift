@@ -6,6 +6,9 @@ import SwiftUI
 final class ProfileModel {
     private(set) var state: ProfileUiState
     private(set) var didCopy = false
+    /// Bumped by each "Check for updates" with nothing to offer, which a toast says.
+    private(set) var upToDateCount = 0
+    private(set) var updateCheckFailedCount = 0
     /// The JSON of "Export my data", until the save sheet closes.
     var exportJson: String?
 
@@ -42,6 +45,13 @@ final class ProfileModel {
             #endif
         case let export as ProfileUiActionSaveExport:
             exportJson = export.json
+        case let result as ProfileUiActionShowUpdateCheckResult:
+            switch result.result {
+            case .upToDate: upToDateCount += 1
+            case .failed: updateCheckFailedCount += 1
+            // Only Google Play downloads inside the app
+            default: break
+            }
         case is ProfileUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
@@ -129,6 +139,13 @@ struct ProfileView: View {
             }
         }
         .profileDialogs(model: model)
+        .glassToast([
+            GlassToastMessage(text: "You already have the latest version.", trigger: model.upToDateCount),
+            GlassToastMessage(
+                text: "Couldn't check for updates. Check your connection and try again.",
+                trigger: model.updateCheckFailedCount,
+            ),
+        ])
         #if os(macOS)
         .onAppear {
             if notificationModel == nil { notificationModel = NotificationSettingsModel() }
@@ -714,8 +731,65 @@ private struct AboutSection: View {
             } label: {
                 Label("Terms of use", systemImage: "arrow.up.right").labelStyle(TrailingIconLabelStyle())
             }
-            LabeledContent("Version", value: Bundle.main.appVersion)
+            if model.state.showsCheckForUpdates {
+                CheckForUpdatesRow(model: model)
+            } else {
+                LabeledContent("Version", value: Bundle.main.appVersion)
+            }
         }
+    }
+}
+
+/// "Check for updates" in the place of "Version", with the version under it, as Bible Planner's; the Mac keeps the
+/// version as the row's label and the check as its button, as its Settings rows do.
+private struct CheckForUpdatesRow: View {
+    let model: ProfileModel
+
+    private var isChecking: Bool {
+        model.state.isCheckingForUpdates
+    }
+
+    var body: some View {
+        #if os(macOS)
+        LabeledContent {
+            if isChecking {
+                ProgressView().controlSize(.small)
+            } else {
+                Button("Check for updates") { check() }
+            }
+        } label: {
+            Text("Version \(Bundle.main.appVersion)")
+        }
+        #else
+        Button {
+            check()
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Check for updates")
+                    Group {
+                        if isChecking {
+                            Text("Checking…")
+                        } else {
+                            Text("Version \(Bundle.main.appVersion)")
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
+                Spacer()
+                if isChecking {
+                    ProgressView()
+                }
+            }
+            .contentShape(.rect)
+        }
+        .disabled(isChecking)
+        #endif
+    }
+
+    private func check() {
+        model.send(ProfileUiEventOnCheckForUpdatesClicked.shared)
     }
 }
 

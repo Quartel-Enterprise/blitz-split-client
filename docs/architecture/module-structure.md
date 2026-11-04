@@ -16,6 +16,7 @@ core/
 │   └── testing/        # FakeAccountRepository
 ├── groups/             # Groups domain + data, synced like the keys (not `group`: Gradle's getGroup() hides it)
 │   └── testing/        # FakeGroupRepository
+├── in_app_update/      # In-app update: Google Play's flexible update, the App Store's version by bundle id, the hourly prompt
 ├── sync/               # SyncCoordinator, ProviderConnector, ProviderSignIn, use cases across profile and account
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
