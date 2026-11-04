@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
@@ -19,15 +18,11 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,18 +32,16 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.ChoiceChipSurface
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
-import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
@@ -161,7 +154,6 @@ private fun sharesTextOf(values: List<Long>): String = if (values.size == 2) {
  * sheet where Divisão padrão is full screen; where it is a dialog, a 480dp dialog over it, in a book's right half on a
  * foldable, never over the hinge.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ExceptionSheet(
     state: DefaultSplitUiState,
@@ -170,58 +162,20 @@ internal fun ExceptionSheet(
     isDialog: Boolean,
     onEvent: (DefaultSplitUiEvent) -> Unit,
 ) {
-    val onDismiss = { onEvent(DefaultSplitUiEvent.OnExceptionDismissed) }
-    if (isDialog) {
-        val title = stringResource(R.string.default_split_exception_title)
-        FoldDialog(
-            onDismissRequest = onDismiss,
-            // Why: like every dialog route, a stray tap outside keeps the parts typed.
-            properties = DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        ) {
-            Surface(
-                modifier = Modifier
-                    .widthIn(max = exceptionDialogWidth)
-                    .fillMaxWidth()
-                    .semantics { paneTitle = title },
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ) {
-                ExceptionFormColumn(
-                    state = state,
-                    editor = editor,
-                    money = money,
-                    onEvent = onEvent,
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(24.dp),
-                )
-            }
-        }
-        return
-    }
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-        ),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    AdaptiveSheet(
+        title = stringResource(R.string.default_split_exception_title),
+        onDismissRequest = { onEvent(DefaultSplitUiEvent.OnExceptionDismissed) },
+        usesDialog = isDialog,
+        dialogMaxWidth = exceptionDialogWidth,
+        dialogShape = MaterialTheme.shapes.extraLarge,
+        // Why: like every dialog route, a stray tap outside keeps the parts typed.
+        dialogDismissOnClickOutside = false,
     ) {
         ExceptionFormColumn(
             state = state,
             editor = editor,
             money = money,
             onEvent = onEvent,
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 24.dp,
-                ),
         )
     }
 }
@@ -232,10 +186,15 @@ private fun ExceptionFormColumn(
     editor: ExceptionEditor,
     money: MoneyFormatter,
     onEvent: (DefaultSplitUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 24.dp,
+            ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

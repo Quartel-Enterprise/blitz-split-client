@@ -69,7 +69,7 @@ fun startBlitzSplitKoin(
 | --- | --- | --- |
 | Android | `BlitzSplitApplication.onCreate` | `startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }`: the `Context` the Android `platformRoomModule` needs for the database path |
 | Apple | `BoraRacharApp.init` → `BlitzSplitApple.shared.start()` | Nothing: the database goes to Application Support |
-| Web | `webApp/src/bridge/shared.ts` → `startBlitzSplit(worker)` | `module { single<Worker> { sqliteWorker } }`: the SQLite Web Worker the JS `platformRoomModule` hands to `WebWorkerSQLiteDriver`. React creates the worker so Vite bundles it |
+| Web | `webApp/src/bridge/shared.ts` → `startBlitzSplit(worker, uiTag)` | A module with the SQLite Web Worker the JS `platformRoomModule` hands to `WebWorkerSQLiteDriver` (React creates the worker so Vite bundles it) and `DeviceDecimalSeparator` from the UI's language tag, so the amount fields type in the language `t()` and `formatMoney` speak: Chrome's `navigator.language` is its menus' language, which may differ |
 
 ### `expect` modules
 

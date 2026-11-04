@@ -82,12 +82,12 @@ export function currencySymbol(currency: string): string {
 }
 
 /**
- * "0,00" or "0.00", an amount field's placeholder, with the decimal separator of navigator.language: the language
- * the shared code reads its decimal separator from when it fills a field.
+ * "0,00" or "0.00", an amount field's placeholder, with the decimal separator of the UI's language: the tag
+ * `startShared` hands `startBlitzSplit`, whose shared code fills the fields with that separator.
  */
 export function amountPlaceholder(fractionDigits: number): string {
   try {
-    return new Intl.NumberFormat(typeof navigator === 'undefined' ? undefined : navigator.language, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(0)
+    return new Intl.NumberFormat(uiTag, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(0)
   } catch {
     return (0).toFixed(fractionDigits)
   }

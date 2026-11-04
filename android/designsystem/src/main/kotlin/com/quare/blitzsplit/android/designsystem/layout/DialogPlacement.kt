@@ -31,3 +31,10 @@ fun rememberDialogPlacement(
         else -> DialogPlacement.Centered
     }
 }
+
+/*
+ * Why: a sheet that stays a bottom sheet everywhere but a fold, which draws it as a dialog in its half (AdaptiveSheet's
+ * usesDialog). It reads the same default placement FoldDialog draws the dialog in, so the two never disagree.
+ */
+@Composable
+fun rememberUsesFoldDialog(): Boolean = rememberDialogPlacement() != DialogPlacement.Centered
