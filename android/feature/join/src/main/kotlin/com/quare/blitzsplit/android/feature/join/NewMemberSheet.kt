@@ -42,10 +42,9 @@ internal fun NewMemberSheet(
     onEvent: (JoinPickUiEvent) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
-    val onDismiss = { onEvent(JoinPickUiEvent.OnNewMemberDismissed) }
     AdaptiveSheet(
         title = stringResource(R.string.join_pick_new_title),
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onEvent(JoinPickUiEvent.OnNewMemberDismissed) },
         dialogShape = MaterialTheme.shapes.extraLarge,
     ) {
         NewMemberFormContent(

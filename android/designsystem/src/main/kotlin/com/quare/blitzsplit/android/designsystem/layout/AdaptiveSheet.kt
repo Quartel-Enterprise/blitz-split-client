@@ -7,8 +7,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +43,12 @@ fun AdaptiveSheet(
     if (!usesDialog) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            sheetState = if (skipPartiallyExpanded) rememberFullSheetState() else rememberModalBottomSheetState(),
+            // Why: ModalBottomSheet's own default, not the deprecated rememberModalBottomSheetState's legacy half way.
+            sheetState = if (skipPartiallyExpanded) {
+                rememberFullSheetState()
+            } else {
+                rememberBottomSheetState(initialValue = SheetValue.Hidden)
+            },
             sheetMaxWidth = sheetMaxWidth,
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {

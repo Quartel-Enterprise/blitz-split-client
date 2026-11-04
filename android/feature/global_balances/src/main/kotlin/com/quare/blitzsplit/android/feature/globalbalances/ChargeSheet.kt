@@ -56,11 +56,10 @@ internal fun ChargeSheet(
     pixKey: PaymentKey?,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
-    val onDismiss = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) }
     val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
     AdaptiveSheet(
         title = stringResource(R.string.global_balances_charge_title, name),
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) },
         skipPartiallyExpanded = false,
         sheetMaxWidth = chargeWidth,
         dialogShape = MaterialTheme.shapes.extraLarge,

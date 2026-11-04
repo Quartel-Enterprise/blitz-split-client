@@ -40,7 +40,7 @@ private val filterWidth = 560.dp
 
 /*
  * Why: "Filtrar atividade": one group or all, any types, then "Mostrar 4 resultados". A bottom sheet on a phone
- * (560dp wide lying down), a 560dp dialog on a tablet, in the right half of an unfolded book.
+ * (560dp wide lying down), a book and a tabletop, a 560dp dialog on a tablet and a foldable upright.
  */
 @Composable
 internal fun ActivityFilterSheet(
@@ -49,10 +49,9 @@ internal fun ActivityFilterSheet(
     groups: List<ActivityGroupOption>,
     onEvent: (ActivityUiEvent) -> Unit,
 ) {
-    val onDismiss = { onEvent(ActivityUiEvent.OnFilterDismissed) }
     AdaptiveSheet(
         title = null,
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onEvent(ActivityUiEvent.OnFilterDismissed) },
         usesDialog = rememberUsesGroupDialog(),
         skipPartiallyExpanded = false,
         sheetMaxWidth = filterWidth,
