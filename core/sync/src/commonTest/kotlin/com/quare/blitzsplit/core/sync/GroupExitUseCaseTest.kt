@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.LeaveGroupUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -125,6 +126,7 @@ class GroupExitUseCaseTest {
             pushDeviceRepository = FakePushDeviceRepository(),
             firstDownload = FirstDownload(),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
+            crashReporter = CrashReporter {},
             scope = backgroundScope,
         )
         leaveGroup = LeaveGroupUseCase(

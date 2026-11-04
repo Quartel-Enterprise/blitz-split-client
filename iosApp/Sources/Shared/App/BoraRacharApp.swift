@@ -22,6 +22,7 @@ struct BoraRacharApp: App {
     @State private var app: AppModel
 
     init() {
+        CrashReporting.start()
         BlitzSplitApple.shared.start()
         _app = State(initialValue: AppModel())
     }

@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferenc
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -59,6 +60,7 @@ class SyncCoordinator(
     private val pushDeviceRepository: PushDeviceRepository,
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
+    private val crashReporter: CrashReporter,
     private val scope: CoroutineScope,
 ) {
     private val syncLock = Mutex()
@@ -142,6 +144,15 @@ class SyncCoordinator(
     }.also { result ->
         lastSyncFailed.value = result.isFailure
         if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
+        result.exceptionOrNull()?.let { failure -> reportIfOnline(failure) }
+    }
+
+    /*
+     * Why: offline, a failed sync is expected. Online it is a change the server keeps refusing or a step that broke,
+     * which fails every try and only Crashlytics tells.
+     */
+    private suspend fun reportIfOnline(failure: Throwable) {
+        if (connectivityObserver.observe().first()) crashReporter.recordException(failure)
     }
 
     // Why: returns the user it synced, whose copy it completed.

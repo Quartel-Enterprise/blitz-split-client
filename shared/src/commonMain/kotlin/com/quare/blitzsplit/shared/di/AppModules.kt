@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.di.expenseModule
 import com.quare.blitzsplit.core.groups.di.groupModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
 import com.quare.blitzsplit.core.profile.di.profileModule
+import com.quare.blitzsplit.core.provider.crashlytics.di.crashlyticsModule
 import com.quare.blitzsplit.core.provider.image.di.imageModule
 import com.quare.blitzsplit.core.provider.room.di.roomModule
 import com.quare.blitzsplit.core.provider.supabase.di.supabaseModule
@@ -64,6 +65,7 @@ val sharedModules: List<Module> = listOf(
     roomModule,
     supabaseModule,
     imageModule,
+    crashlyticsModule,
     profileModule,
     accountModule,
     groupModule,

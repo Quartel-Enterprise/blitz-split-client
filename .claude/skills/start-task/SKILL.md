@@ -70,12 +70,16 @@ tracked files. Copy each one that exists in the main checkout:
 WT=.claude/worktrees/<short-description>
 cp local.properties "$WT/local.properties"
 mkdir -p "$WT/.claude" && cp .claude/settings.local.json "$WT/.claude/settings.local.json"
+cp androidApp/google-services.json "$WT/androidApp/google-services.json"
+cp iosApp/Resources/GoogleService-Info.plist "$WT/iosApp/Resources/GoogleService-Info.plist"
 ```
 
 - `local.properties` has `sdk.dir`; without it Gradle can't find the Android SDK and every build
   fails.
 - `.claude/settings.local.json` gives the worktree's Claude Code session the same permission
   settings instead of re-prompting for everything.
+- `google-services.json` and `GoogleService-Info.plist` are the Firebase config (push notifications and
+  Crashlytics). The builds run without them, with Firebase off, so a worktree without them builds too.
 
 If one of them doesn't exist in the main checkout, skip it and tell the user which one is missing.
 

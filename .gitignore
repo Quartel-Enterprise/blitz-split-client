@@ -6,6 +6,10 @@
 /build-logic/convention/bin/
 local.properties
 
+# Firebase: each app starts it only when its file is there (docs/crash-reporting.md)
+androidApp/google-services.json
+iosApp/Resources/GoogleService-Info.plist
+
 # IDEs
 .idea/
 *.iml

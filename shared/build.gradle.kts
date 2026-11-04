@@ -67,6 +67,7 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.image)
+            implementation(projects.core.provider.crashlytics)
             implementation(libs.quare.connectivity)
             implementation(libs.kermit)
             api(project.dependencies.platform(libs.koin.bom))

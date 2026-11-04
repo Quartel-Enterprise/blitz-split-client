@@ -68,6 +68,7 @@ val syncModule = module {
             pushDeviceRepository = get(),
             firstDownload = get(),
             connectivityObserver = get(),
+            crashReporter = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }

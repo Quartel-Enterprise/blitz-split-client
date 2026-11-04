@@ -48,6 +48,7 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
+import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -92,6 +93,7 @@ class SyncCoordinatorTest {
     private lateinit var pullGate: CompletableDeferred<Unit>
     private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
     private val pendingAtGroupsFullDownload = mutableListOf<Boolean>()
+    private val reportedFailures = mutableListOf<Throwable>()
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -583,6 +585,51 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN online and the pull fails WHEN syncing THEN reports the failure`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        val failure = IllegalStateException("server down")
+        profile.pullError = failure
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf<Throwable>(failure), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN offline and the pull fails WHEN syncing THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        profile.pullError = IllegalStateException("no internet")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online WHEN a sync succeeds THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), reportedFailures)
     }
 
     @Test
@@ -6984,6 +7031,7 @@ class SyncCoordinatorTest {
             ),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            crashReporter = CrashReporter { reportedFailures += it },
             scope = backgroundScope,
         )
     }
