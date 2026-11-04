@@ -189,6 +189,7 @@ class InviteViewModel(
     // Why: the new link shows once the use case wrote it to Room; a failure keeps the old one, which still works.
     private fun changeLink() {
         if (!uiState.value.isConfirmingLinkChange) return
+        trackEvent("invite_link_change_confirmed", emptyMap())
         uiState.update {
             it.copy(
                 isConfirmingLinkChange = false,

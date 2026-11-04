@@ -391,6 +391,7 @@ class MembersViewModel(
     // Why: the confirmation closes right away; the write is local, and only a failure has something to say.
     private fun remove() {
         val member = uiState.value.memberToRemove ?: return
+        trackEvent("member_remove_confirmed", emptyMap())
         uiState.update { it.copy(memberToRemove = null) }
         viewModelScope.launch {
             removeMember(member.id).onFailure { uiAction.emit(MembersUiAction.ShowChangeError) }
@@ -406,13 +407,13 @@ class MembersViewModel(
         if (member.canBeReleased) uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = member) }
     }
 
-    // Why: a release on its way can't be called back, so its confirmation waits for the answer.
     private fun dismissRemove() {
         if (uiState.value.memberToRemove == null) return
         trackEvent("member_remove_cancelled", emptyMap())
         uiState.update { it.copy(memberToRemove = null) }
     }
 
+    // Why: a release on its way can't be called back, so its confirmation waits for the answer.
     private fun dismissRelease() {
         val state = uiState.value
         if (state.memberToRelease == null || state.isReleasing) return
@@ -425,6 +426,7 @@ class MembersViewModel(
         val state = uiState.value
         val member = state.memberToRelease ?: return
         if (state.isReleasing) return
+        trackEvent("member_release_confirmed", emptyMap())
         uiState.update { it.copy(isReleasing = true) }
         viewModelScope.launch {
             val result = releaseMember(member.id)
