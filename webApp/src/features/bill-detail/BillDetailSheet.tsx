@@ -1,5 +1,5 @@
 import { Pencil, Share2, Trash2, X } from 'lucide-react'
-import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
+import { BillDetailPresenter, type JsBillDetailAction, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -8,15 +8,16 @@ import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
+import { balanceTone } from '@/features/balances/BalanceCard'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t } from '@/i18n'
+import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from './BillAttachments'
-import { BillComments, CommentComposer } from './BillComments'
+import { BillComments, CommentComposer, CommentDialogs, shareComment } from './BillComments'
 import { BillDeleteDialog } from './BillDeleteDialog'
 import { BillHistory } from './BillHistory'
 import { splitTitles } from './billHistoryText'
@@ -39,15 +40,10 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const isWide = useMediaQuery('(min-width: 1024px)')
   const composerRef = useRef<HTMLTextAreaElement>(null)
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
-    if (action === 'delete-error') toast(t('billDetail_deleteError'))
-    if (action === 'comment-error') toast(t('billDetail_commentError'))
-    if (action === 'undo-error') toast(t('billDetail_undoError'))
-    if (action === 'photo-unreadable') toast(t('billDetail_photoUnreadable'))
-    if (action === 'photo-no-room') toast(t('billDetail_photoNoRoom'))
-    if (action === 'photo-too-large') toast(t('billDetail_photoTooLarge'))
-    if (action === 'photo-error') toast(t('billDetail_photoError'))
-    if (action === 'remove-photo-error') toast(t('billDetail_removePhotoError'))
+  useActions(presenter, (p, onAction: (action: JsBillDetailAction) => void) => p.observeActions(onAction), (action) => {
+    if (action.type === 'share-comment' && action.share) shareComment(action.share)
+    const message = actionMessages[action.type]
+    if (message) toast(t(message))
   })
   const localPhotoUrls = useLocalPhotoUrls(state?.attachments ?? [])
   if (!presenter || !state) return null
@@ -58,9 +54,13 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.back()
   }
-  // Why: "Responder" leaves the person typing the reply.
+  // Why: "Responder" and "Editar" leave the person typing the reply or the edit.
   const onReply = (commentId: string) => {
     presenter.reply(commentId)
+    composerRef.current?.focus()
+  }
+  const onEditComment = (commentId: string) => {
+    presenter.editComment(commentId)
     composerRef.current?.focus()
   }
   const openPerson = (memberId: string) => presenter.openPerson(memberId)
@@ -77,7 +77,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   )
   const conversation = isLoaded && (
     <>
-      <BillComments state={state} onReply={onReply} onPerson={openPerson} />
+      <BillComments state={state} presenter={presenter} onReply={onReply} onEdit={onEditComment} onPerson={openPerson} />
       <BillHistory history={state.history} isUndoing={state.isUndoing} money={money} onUndo={() => presenter.undo()} onPerson={openPerson} />
     </>
   )
@@ -94,6 +94,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       onDismiss={() => presenter.dismissDelete()}
     />
   )
+  const commentDialogs = <CommentDialogs state={state} presenter={presenter} />
 
   if (isDesktop) {
     const body = !isLoaded ? (
@@ -143,6 +144,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
         </Sheet>
         {viewer}
         {deletion}
+        {commentDialogs}
       </>
     )
   }
@@ -177,8 +179,23 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       </Drawer>
       {viewer}
       {deletion}
+      {commentDialogs}
     </>
   )
+}
+
+// Why: by the action's type, the toast each one is; "share-comment" opens the system share instead.
+const actionMessages: Partial<Record<string, MessageKey>> = {
+  'delete-error': 'billDetail_deleteError',
+  'comment-error': 'billDetail_commentError',
+  'comment-change-error': 'billDetail_commentChangeError',
+  'comment-gone': 'billDetail_commentGone',
+  'undo-error': 'billDetail_undoError',
+  'photo-unreadable': 'billDetail_photoUnreadable',
+  'photo-no-room': 'billDetail_photoNoRoom',
+  'photo-too-large': 'billDetail_photoTooLarge',
+  'photo-error': 'billDetail_photoError',
+  'remove-photo-error': 'billDetail_removePhotoError',
 }
 
 /**
@@ -326,7 +343,7 @@ function paidText(payers: JsBillPayer[]): string {
 function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
   const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
   const word = balance < 0 ? t('billDetail_myPartOwe') : balance > 0 ? t('billDetail_myPartGetBack') : t('billDetail_myPartSettled')
-  const tone = balance < 0 ? 'text-destructive' : balance > 0 ? 'text-primary' : 'text-muted-foreground'
+  const tone = balanceTone(balance)
   const noteText = note ? myPartNoteText(note, money) : null
   return (
     <div className="flex flex-col gap-1 rounded-xl border bg-card px-4 py-3.5">

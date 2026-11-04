@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.debtColorOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -87,11 +88,7 @@ internal fun DebtEntryRow(
                     },
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = when (debt.kind) {
-                        DebtKind.YOU_OWE -> MaterialTheme.colorScheme.error
-                        DebtKind.OWES_YOU -> MaterialTheme.colorScheme.primary
-                        DebtKind.BETWEEN_OTHERS -> MaterialTheme.colorScheme.onSurfaceVariant
-                    },
+                    color = debtColorOf(debt.kind),
                 )
             }
             DebtButton(

@@ -33,8 +33,12 @@ data class ActivityItem(
     val toName: String?,
     val toIsMe: Boolean,
     val changes: List<ActivityChangeRow>,
-    // Why: what a comment says, cut to what a row shows; null for anything else.
+    // Why: what a comment says now, cut to what a row shows; null once deleted and for anything else.
     val body: String?,
+    // Why: the comment a "Carla comentou" row is about, which its tap scrolls Conta to.
+    val commentId: String?,
+    // Why: "Ana apagou um comentário em Jantar", with no text, in place of "Ana comentou em Jantar".
+    val isCommentDeleted: Boolean,
     // Why: saved on this device and not up yet: "Aguardando envio" with the orange dot.
     val isPending: Boolean,
     val isUnread: Boolean,

@@ -8,24 +8,32 @@ import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.CommentOnSharedBill
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.LikeSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.payersOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.peopleOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.replyTargetOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.sharedTilesOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillStatus
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiAction
@@ -54,6 +62,9 @@ class SharedBillViewModel(
     private val navigator: Navigator,
     private val loadSharedBill: LoadSharedBill,
     private val commentOnSharedBill: CommentOnSharedBill,
+    private val editSharedBillComment: EditSharedBillComment,
+    private val deleteSharedBillComment: DeleteSharedBillComment,
+    private val likeSharedBillComment: LikeSharedBillComment,
     private val observeExpense: ObserveExpense,
     private val observeProfile: ObserveProfile,
     private val currentTimeMillis: CurrentTimeMillis,
@@ -86,6 +97,11 @@ class SharedBillViewModel(
                 commentDraft = "",
                 replyTarget = null,
                 isSendingComment = false,
+                editingCommentId = null,
+                commentToDelete = null,
+                likesCommentId = null,
+                focusedCommentId = null,
+                isChangingComment = false,
             ),
         )
 
@@ -103,6 +119,11 @@ class SharedBillViewModel(
     // Why: the comment typed keeps its id until it is up, so sending it again after a lost answer posts it once.
     private var commentId: String? = null
 
+    private val edit = CommentComposerEdit()
+
+    // Why: the comment the link was shared at is looked for once, when the bill first shows.
+    private var focusCommentId: String? = route.commentId
+
     // Why: whose session the page was last read with, to read it again once another one signs in.
     private var accountUserId: String? = null
     private var isAccountKnown = false
@@ -117,7 +138,7 @@ class SharedBillViewModel(
                         hasLinkedAccount = status is AccountStatus.Connected,
                     )
                 }
-                val userId = userIdOf(status)
+                val userId = status.userIdOrNull()
                 /*
                  * Why: a browser sign in coming back reopens the page while its session is still being made, so a
                  * page read before it (a link only the group opens, or not knowing a member) is read again with it.
@@ -152,6 +173,16 @@ class SharedBillViewModel(
             is SharedBillUiEvent.OnAttachmentClicked -> view(event.id)
             is SharedBillUiEvent.OnViewerPageChanged -> view(event.id)
             SharedBillUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
+            is SharedBillUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
+            SharedBillUiEvent.OnCommentEditCancelled -> stopEditing()
+            is SharedBillUiEvent.OnCommentDeleteClicked -> askToDeleteComment(event.commentId)
+            SharedBillUiEvent.OnCommentDeleteConfirmed -> deleteComment()
+            SharedBillUiEvent.OnCommentDeleteDismissed -> uiState.update { it.copy(commentToDelete = null) }
+            is SharedBillUiEvent.OnCommentLikeClicked -> toggleLike(event.commentId)
+            is SharedBillUiEvent.OnCommentLikesClicked -> showLikes(event.commentId)
+            SharedBillUiEvent.OnCommentLikesDismissed -> uiState.update { it.copy(likesCommentId = null) }
+            is SharedBillUiEvent.OnCommentShareClicked -> shareComment(event.commentId)
+            SharedBillUiEvent.OnFocusedCommentShown -> uiState.update { it.copy(focusedCommentId = null) }
         }
     }
 
@@ -171,12 +202,6 @@ class SharedBillViewModel(
         loading?.cancel()
         loading = null
         load()
-    }
-
-    private fun userIdOf(status: AccountStatus): String? = when (status) {
-        AccountStatus.LocalOnly -> null
-        is AccountStatus.Anonymous -> status.userId
-        is AccountStatus.Connected -> status.userId
     }
 
     private fun show(bill: SharedBill) {
@@ -221,6 +246,19 @@ class SharedBillViewModel(
                     )
                 }
                 if (bill.isMember) watchExpense(bill.expenseId) else stopWatchingExpense()
+                focusLinkedComment()
+                // Why: the comment being edited was deleted meanwhile, so the edit has nothing to save.
+                val editingId = uiState.value.editingCommentId
+                if (editingId != null && uiState.value.threads
+                        .findComment(editingId)
+                        ?.canChange != true
+                ) {
+                    stopEditing()
+                }
+                // Why: "Curtidas" closed by itself once its comment or last like went; a later like never reopens it.
+                if (uiState.value.likesCommentId != null && uiState.value.likesComment == null) {
+                    uiState.update { it.copy(likesCommentId = null) }
+                }
             }
         }
     }
@@ -272,6 +310,7 @@ class SharedBillViewModel(
                 Route.BillDetail(
                     groupId = bill.groupId,
                     expenseId = bill.expenseId,
+                    focusCommentId = null,
                 ),
             ),
         )
@@ -295,6 +334,7 @@ class SharedBillViewModel(
     private fun sendComment() {
         val state = uiState.value
         if (!state.canSendComment) return
+        state.editingCommentId?.let { return saveEdit(it) }
         val replyTarget = state.replyTarget
         val id = commentId ?: Uuid.random().toString().also { commentId = it }
         uiState.update { it.copy(isSendingComment = true) }
@@ -333,6 +373,114 @@ class SharedBillViewModel(
                 null -> uiAction.emit(SharedBillUiAction.ShowCommentError)
             }
         }
+    }
+
+    // Why: once, on the first bill shown: highlighted when it is there, else "Esse comentário foi apagado".
+    private fun focusLinkedComment() {
+        val commentId = focusCommentId ?: return
+        focusCommentId = null
+        if (findCommentOrNull(commentId)?.canInteract == true) {
+            uiState.update { it.copy(focusedCommentId = commentId) }
+        } else {
+            viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShowCommentGone) }
+        }
+    }
+
+    private fun findCommentOrNull(commentId: String): BillCommentRow? = uiState.value.threads.findComment(commentId)
+
+    private fun startEditing(commentId: String) {
+        val comment = findCommentOrNull(commentId)?.takeIf { it.canChange } ?: return
+        if (!uiState.value.canChangeComments) return
+        val state = uiState.value
+        show(
+            edit.start(
+                comment.id,
+                comment.body,
+                CommentComposer(state.editingCommentId, state.commentDraft, state.replyTarget),
+            ),
+        )
+    }
+
+    private fun stopEditing() {
+        if (uiState.value.isEditingComment) show(edit.stop())
+    }
+
+    private fun show(composer: CommentComposer) {
+        uiState.update {
+            it.copy(
+                editingCommentId = composer.editingCommentId,
+                commentDraft = composer.draft,
+                replyTarget = composer.replyTarget,
+            )
+        }
+    }
+
+    // Why: straight to the server, so the edited text stays in the composer until it is up.
+    private fun saveEdit(commentId: String) {
+        val body = uiState.value.commentDraft
+        change(onPosted = { if (uiState.value.editingCommentId == commentId) stopEditing() }) {
+            editSharedBillComment(route.code, commentId, body)
+        }
+    }
+
+    private fun askToDeleteComment(commentId: String) {
+        if (findCommentOrNull(commentId)?.canChange != true || !uiState.value.canChangeComments) return
+        uiState.update { it.copy(commentToDelete = commentId) }
+    }
+
+    private fun deleteComment() {
+        val commentId = uiState.value.commentToDelete ?: return
+        uiState.update { it.copy(commentToDelete = null) }
+        if (uiState.value.editingCommentId == commentId) stopEditing()
+        change { deleteSharedBillComment(route.code, commentId) }
+    }
+
+    private fun toggleLike(commentId: String) {
+        val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
+        change { likeSharedBillComment(route.code, comment.id, !comment.isLikedByMe) }
+    }
+
+    /*
+     * Why: one change at a time, read again from the server once it answered; a link changed meanwhile reads again too,
+     * so the page says what it shows now.
+     */
+    private fun change(
+        onPosted: () -> Unit = {},
+        request: suspend () -> Result<SharedBillComment>,
+    ) {
+        if (!uiState.value.canChangeComments) return
+        uiState.update { it.copy(isChangingComment = true) }
+        viewModelScope.launch {
+            val outcome = request().getOrNull()
+            uiState.update { it.copy(isChangingComment = false) }
+            when (outcome) {
+                null -> uiAction.emit(SharedBillUiAction.ShowCommentChangeError)
+
+                SharedBillComment.POSTED -> {
+                    onPosted()
+                    reload()
+                }
+
+                else -> reload()
+            }
+        }
+    }
+
+    private fun showLikes(commentId: String) {
+        if ((findCommentOrNull(commentId)?.likeCount ?: 0) == 0) return
+        uiState.update { it.copy(likesCommentId = commentId) }
+    }
+
+    private fun shareComment(commentId: String) {
+        val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
+        val share = BillCommentShare(
+            link = SharedBillLink.of(route.code, comment.id),
+            authorName = comment.authorName,
+            isMe = comment.isMe,
+            billDescription = uiState.value.description,
+            body = comment.body,
+        )
+        viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShareComment(share)) }
     }
 
     private fun view(id: String) {

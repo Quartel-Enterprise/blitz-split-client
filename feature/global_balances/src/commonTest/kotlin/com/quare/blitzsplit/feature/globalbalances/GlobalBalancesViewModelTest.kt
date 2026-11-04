@@ -1903,6 +1903,8 @@ class GlobalBalancesViewModelTest {
         sharesCount = null,
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private val route = Route.GlobalBalances(BalancesFilter.ALL, charge = null)

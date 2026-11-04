@@ -1434,6 +1434,8 @@ class BillHistoriesTest {
         sharesCount = sharesCount,
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun attachment(

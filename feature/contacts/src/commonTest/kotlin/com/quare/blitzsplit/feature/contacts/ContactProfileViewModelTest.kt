@@ -371,7 +371,7 @@ class ContactProfileViewModelTest {
             // Given
             prepareScenario(
                 personKey = CARLA_KEY,
-                openedFrom = Route.BillDetail(FLORIPA, "dinner"),
+                openedFrom = Route.BillDetail(FLORIPA, "dinner", focusCommentId = null),
             )
 
             // When

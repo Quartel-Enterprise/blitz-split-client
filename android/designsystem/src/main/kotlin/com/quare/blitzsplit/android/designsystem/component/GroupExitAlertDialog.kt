@@ -271,11 +271,7 @@ private fun DebtSummaryList(
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (debt.kind == DebtKind.YOU_OWE) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
+                        color = debtColorOf(debt.kind),
                     )
                 }
             }

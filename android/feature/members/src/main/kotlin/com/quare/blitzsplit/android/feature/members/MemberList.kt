@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
@@ -164,12 +165,7 @@ private fun MemberBalanceText(
         },
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = when {
-            balance.isSettled -> MaterialTheme.colorScheme.outline
-            net > 0 -> MaterialTheme.colorScheme.primary
-            net < 0 -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.onSurfaceVariant
-        },
+        color = if (balance.isSettled) MaterialTheme.colorScheme.outline else amountColorOf(net),
         textAlign = TextAlign.End,
     )
 }

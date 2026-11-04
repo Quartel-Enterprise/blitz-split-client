@@ -17,18 +17,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatters
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -47,10 +46,7 @@ internal fun GroupsSummaryCard(
     // Why: in a phone lying down's narrow column the buttons go side by side under the amount, as the canvas draws it.
     isStacked: Boolean = false,
 ) {
-    val locale = LocalLocale.current.platformLocale
-    val formatters = remember(summary.totals, locale) {
-        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale) }
-    }
+    val formatters = rememberMoneyFormatters(summary.totals.map { it.currency })
     val signed = { currency: GroupCurrency, minor: Long -> formatters.getValue(currency).toSignedText(minor) }
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -72,7 +68,7 @@ internal fun GroupsSummaryCard(
                 amounts = amountsOf(summary.totals, BalanceTotal::toReceiveMinor).map { (currency, minor) ->
                     signed(currency, minor)
                 },
-                amountColor = MaterialTheme.colorScheme.primary,
+                amountColor = positiveAmountColor(),
                 isEnabled = summary.canOpenToReceive,
                 onClick = { onEvent(GroupsUiEvent.OnToReceiveClicked) },
                 modifier = buttonModifier,

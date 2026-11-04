@@ -142,6 +142,43 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
+    fun `GIVEN bitcoin in sats WHEN typing incomes THEN they are whole sats and the example is 100 sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(currency = GroupCurrency.BTC),
+                showsSats = true,
+            )
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "9000"))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(ANA, "3000"))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(100L, viewModel.uiState.value.exampleTotalMinor)
+            assertEquals(mapOf(PIERRE to 9_000L, ANA to 3_000L), groups.savedIncomes[GROUP_ID])
+        }
+
+    @Test
+    fun `GIVEN incomes typed in bitcoin WHEN sats turn on while open THEN each keeps its value in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(currency = GroupCurrency.BTC))
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "0,00009"))
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("9.000", state.people.first { it.id == PIERRE }.incomeText)
+        }
+
+    @Test
     fun `GIVEN Pela renda from another device WHEN the screen opens THEN it shows the saved percentages`() =
         runTest(testDispatcher) {
             // Given
@@ -553,11 +590,15 @@ class DefaultSplitViewModelTest {
         ),
     )
 
+    private val bitcoinInSats = MutableStateFlow(false)
+
     private fun prepareScenario(
         storedGroup: Group = home,
         storedIncomes: Map<String, Long> = emptyMap(),
         online: Boolean = true,
+        showsSats: Boolean = false,
     ) {
+        bitcoinInSats.value = showsSats
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
@@ -580,6 +621,7 @@ class DefaultSplitViewModelTest {
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeBitcoinInSats = { bitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
     }

@@ -893,6 +893,7 @@ class SeveralPayersViewModelTest {
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

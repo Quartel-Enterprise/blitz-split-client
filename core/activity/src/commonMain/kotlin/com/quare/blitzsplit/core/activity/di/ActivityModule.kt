@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.activity.data.mapper.ActivityMapper
 import com.quare.blitzsplit.core.activity.data.mapper.ActivityMapperImpl
 import com.quare.blitzsplit.core.activity.data.repository.ActivityRepositoryImpl
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.FindActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadOlderActivity
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
@@ -16,6 +17,7 @@ import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveBillHistory
 import com.quare.blitzsplit.core.activity.domain.usecase.RecordCharges
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.FindActivityEventUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadOlderActivityUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.MarkActivityReadUseCase
@@ -38,6 +40,7 @@ val activityModule = module {
     factoryOf(::ObserveActivityFeedUseCase).bind<ObserveActivityFeed>()
     factoryOf(::ObserveActivityUnreadCountUseCase).bind<ObserveActivityUnreadCount>()
     factoryOf(::MarkActivityReadUseCase).bind<MarkActivityRead>()
+    factoryOf(::FindActivityEventUseCase).bind<FindActivityEvent>()
     factoryOf(::MarkAllActivityReadUseCase).bind<MarkAllActivityRead>()
     factoryOf(::RecordChargesUseCase).bind<RecordCharges>()
     factoryOf(::LoadOlderActivityUseCase).bind<LoadOlderActivity>()

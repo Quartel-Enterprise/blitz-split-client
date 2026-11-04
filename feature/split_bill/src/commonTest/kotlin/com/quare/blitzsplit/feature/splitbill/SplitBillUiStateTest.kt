@@ -509,6 +509,245 @@ class SplitBillUiStateTest {
         assertFalse(state.canSave)
     }
 
+    @Test
+    fun `GIVEN a bitcoin bill in sats WHEN reading the amount THEN it is whole sats`() {
+        // Given
+        val state = state(
+            amountText = "12.345",
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val amountMinor = state.amountMinor
+
+        // Then
+        assertEquals(12_345L, amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin bill not in sats WHEN reading the amount THEN it has 8 decimals`() {
+        // Given
+        val state = state(
+            amountText = "0,00012345",
+            currency = GroupCurrency.BTC,
+            showsSats = false,
+        )
+
+        // When
+        val amountMinor = state.amountMinor
+
+        // Then
+        assertEquals(12_345L, amountMinor)
+    }
+
+    @Test
+    fun `GIVEN an ether bill and sats on WHEN reading the amount THEN sats change nothing`() {
+        // Given
+        val state = state(
+            amountText = "0,00012345",
+            currency = GroupCurrency.ETH,
+            showsSats = true,
+        )
+
+        // When
+        val amountMinor = state.amountMinor
+
+        // Then
+        assertEquals(12_345L, amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin bill of 21 million bitcoin WHEN reading Salvar THEN it is enabled`() {
+        // Given
+        val state = state(
+            amountText = "21.000.000,00000000",
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertTrue(state.isAmountValid)
+        assertTrue(canSave)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin bill 1 sat over 21 million bitcoin WHEN reading Salvar THEN it is disabled`() {
+        // Given
+        val state = state(
+            amountText = "21.000.000,00000001",
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertFalse(state.isAmountValid)
+        assertFalse(canSave)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin bill in sats 1 sat over 21 million bitcoin WHEN reading Salvar THEN it is disabled`() {
+        // Given
+        val state = state(
+            amountText = "2.100.000.000.000.001",
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertEquals(2_100_000_000_000_001L, state.amountMinor)
+        assertFalse(state.isAmountValid)
+        assertFalse(canSave)
+    }
+
+    @Test
+    fun `GIVEN an ether bill of 90 million ether WHEN reading Salvar THEN it is enabled`() {
+        // Given
+        val state = state(
+            amountText = "90.000.000,00000000",
+            currency = GroupCurrency.ETH,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertTrue(state.isAmountValid)
+        assertTrue(canSave)
+    }
+
+    @Test
+    fun `GIVEN an ether bill just over 90 million ether WHEN reading Salvar THEN it is disabled`() {
+        // Given
+        val state = state(
+            amountText = "90.000.000,00000001",
+            currency = GroupCurrency.ETH,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertFalse(state.isAmountValid)
+        assertFalse(canSave)
+    }
+
+    @Test
+    fun `GIVEN a bill of 100 million reais WHEN reading Salvar THEN it is enabled`() {
+        // Given
+        val state = state(amountText = "100.000.000,00")
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertTrue(state.isAmountValid)
+        assertTrue(canSave)
+    }
+
+    @Test
+    fun `GIVEN a new bill in reais online WHEN reading Ler cupom fiscal THEN it shows enabled`() {
+        // Given
+        val state = state()
+
+        // When
+        val showsScanReceipt = state.showsScanReceipt
+
+        // Then
+        assertTrue(showsScanReceipt)
+        assertTrue(state.canScanReceipt)
+    }
+
+    @Test
+    fun `GIVEN a new bill in bitcoin online WHEN reading Ler cupom fiscal THEN it is not offered`() {
+        // Given
+        val state = state(currency = GroupCurrency.BTC)
+
+        // When
+        val showsScanReceipt = state.showsScanReceipt
+
+        // Then
+        assertFalse(showsScanReceipt)
+        assertFalse(state.canScanReceipt)
+    }
+
+    @Test
+    fun `GIVEN a new bill in ether online WHEN reading Ler cupom fiscal THEN it is not offered`() {
+        // Given
+        val state = state(currency = GroupCurrency.ETH)
+
+        // When
+        val showsScanReceipt = state.showsScanReceipt
+
+        // Then
+        assertFalse(showsScanReceipt)
+        assertFalse(state.canScanReceipt)
+    }
+
+    @Test
+    fun `GIVEN the camera asked for in reais WHEN reading the camera THEN it opens`() {
+        // Given
+        val state = state(
+            isReceiptCameraRequested = true,
+            groups = listOf(billGroup),
+        )
+
+        // When
+        val showsCamera = state.showsReceiptCamera
+
+        // Then
+        assertTrue(showsCamera)
+    }
+
+    @Test
+    fun `GIVEN the camera asked for in bitcoin WHEN reading the camera THEN it does not open`() {
+        // Given
+        val state = state(
+            isReceiptCameraRequested = true,
+            groups = listOf(billGroup),
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val showsCamera = state.showsReceiptCamera
+
+        // Then
+        assertFalse(showsCamera)
+    }
+
+    @Test
+    fun `GIVEN the camera asked for in ether WHEN reading the camera THEN it does not open`() {
+        // Given
+        val state = state(
+            isReceiptCameraRequested = true,
+            groups = listOf(billGroup),
+            currency = GroupCurrency.ETH,
+        )
+
+        // When
+        val showsCamera = state.showsReceiptCamera
+
+        // Then
+        assertFalse(showsCamera)
+    }
+
+    private val billGroup = BillGroup(
+        id = "group-1",
+        name = "Viagem Floripa",
+        initials = "VF",
+        color = AvatarColor.GREEN,
+        shape = GroupShape.COOKIE,
+        photoUrl = null,
+        memberCount = 2,
+    )
+
     private fun person(
         id: String,
         isMe: Boolean,
@@ -529,6 +768,7 @@ class SplitBillUiStateTest {
         },
         totalMinor = 10_000L,
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     // Why: a 100,00 bill between Ana and Pierre, who paid, split equally unless the mode says otherwise.
@@ -546,9 +786,13 @@ class SplitBillUiStateTest {
         amountText: String = "100,00",
         severalPayers: PayerAmounts? = null,
         groups: List<BillGroup> = emptyList(),
+        currency: GroupCurrency = GroupCurrency.BRL,
+        showsSats: Boolean = false,
+        isReceiptCameraRequested: Boolean = false,
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupId = "group-1",
+        pickedGroupId = "group-1",
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
@@ -556,7 +800,8 @@ class SplitBillUiStateTest {
         groupPhotoUrl = null,
         groups = groups,
         groupSelection = null,
-        currency = GroupCurrency.BRL,
+        currency = currency,
+        showsSats = showsSats,
         people = people,
         amountText = amountText,
         description = "Mercado",
@@ -583,7 +828,8 @@ class SplitBillUiStateTest {
             totalMinor = 10_000L,
             payerIds = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId),
             items = null,
-            currency = GroupCurrency.BRL,
+            currency = currency,
+            showsSats = showsSats,
         ),
         splitEditor = null,
         isSplitEditorAsDefaultChecked = false,
@@ -604,7 +850,7 @@ class SplitBillUiStateTest {
         categoryDeletion = null,
         receipt = null,
         receiptCategoryId = null,
-        isReceiptCameraRequested = false,
+        isReceiptCameraRequested = isReceiptCameraRequested,
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,

@@ -27,11 +27,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -39,7 +37,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.logoIcon
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatters
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
@@ -152,10 +151,7 @@ private fun CoverBrandRow(isOffline: Boolean) {
 @Composable
 private fun CoverBalanceCard(state: GroupsUiState) {
     val summary = state.summary
-    val locale = LocalLocale.current.platformLocale
-    val formatters = remember(summary.totals, locale) {
-        summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale) }
-    }
+    val formatters = rememberMoneyFormatters(summary.totals.map { it.currency })
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -210,8 +206,7 @@ private fun CoverBalanceCard(state: GroupsUiState) {
 // Why: "Última atividade": "Ana lançou Uber aeroporto, R$ 87,60, em Viagem Floripa".
 @Composable
 private fun CoverLatestBillSection(bill: LatestBill) {
-    val locale = LocalLocale.current.platformLocale
-    val amount = remember(bill, locale) { MoneyFormatter(bill.currency, locale).toText(bill.amountMinor) }
+    val amount = rememberMoneyFormatter(bill.currency).toText(bill.amountMinor)
     Column(
         modifier = Modifier.padding(horizontal = 4.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),

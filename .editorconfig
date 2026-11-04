@@ -50,6 +50,10 @@ ktlint_quare_max-file-length = disabled
 [**/testing/src/**]
 ktlint_quare_comments-say-why = disabled
 
+# The one place that unwraps the Realtime plugin, to bind SerializedRemovalRealtime (quare:injected-realtime).
+[core/provider/supabase/src/commonMain/kotlin/com/quare/blitzsplit/core/provider/supabase/di/SupabaseModule.kt]
+ktlint_quare_injected-realtime = disabled
+
 [*.kts]
 ktlint_quare_comments-say-why = disabled
 

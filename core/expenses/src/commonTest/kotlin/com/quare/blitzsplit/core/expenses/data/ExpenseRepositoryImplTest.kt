@@ -5,14 +5,17 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSourc
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpensePayerDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseShareDto
+import com.quare.blitzsplit.core.expenses.data.dto.ServerBillDto
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.StoredBill
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -631,6 +634,82 @@ class ExpenseRepositoryImplTest {
         assertEquals(listOf("bill-1"), local.entities.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN a live bill of the users group on the server WHEN fetching it THEN reads its group not deleted`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverRows = listOf(
+                    dto(
+                        id = "bill-1",
+                        groupId = OTHER_GROUP_ID,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.fetchServerBill("bill-1")
+
+            // Then
+            assertEquals(
+                StoredBill(
+                    groupId = OTHER_GROUP_ID,
+                    isDeleted = false,
+                ),
+                result.getOrThrow(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill the server keeps deleted WHEN fetching it THEN reads it deleted in its group`() = runTest {
+        // Given
+        prepareScenario(
+            serverRows = listOf(
+                dto(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.fetchServerBill("bill-1")
+
+        // Then
+        assertEquals(
+            StoredBill(
+                groupId = GROUP_ID,
+                isDeleted = true,
+            ),
+            result.getOrThrow(),
+        )
+    }
+
+    @Test
+    fun `GIVEN the server answers nothing for the bill WHEN fetching it THEN reads no bill`() = runTest {
+        // Given
+        prepareScenario(serverRows = listOf(dto(id = "bill-2")))
+
+        // When
+        val result = repository.fetchServerBill("bill-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN fetching a bill from the server THEN fails`() = runTest {
+        // Given
+        prepareScenario(fetchError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.fetchServerBill("bill-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
     private val newExpense = Expense(
         id = "bill-new",
         groupId = GROUP_ID,
@@ -696,6 +775,7 @@ class ExpenseRepositoryImplTest {
         id: String,
         splitMode: String = "amount",
         groupId: String = GROUP_ID,
+        isDeleted: Boolean = false,
     ): ExpenseDto = ExpenseDto(
         id = id,
         groupId = groupId,
@@ -719,7 +799,7 @@ class ExpenseRepositoryImplTest {
         items = null,
         categoryId = null,
         spentAt = 5_000L,
-        isDeleted = false,
+        isDeleted = isDeleted,
         addedAt = 2L,
         updatedAt = 9L,
         updatedBy = null,
@@ -772,6 +852,13 @@ private class FakeExpenseLocalDataSource(
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
         list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override suspend fun findStoredBill(id: String): StoredBillRow? = entities.value.firstOrNull { it.id == id }?.let {
+        StoredBillRow(
+            groupId = it.groupId,
+            isDeleted = it.isDeleted,
+        )
     }
 
     override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->
@@ -865,5 +952,15 @@ private class FakeExpenseRemoteDataSource(
     override suspend fun fetchExpenses(groupId: String): List<ExpenseDto> {
         fetchError?.let { throw it }
         return rows.filter { it.groupId == groupId }
+    }
+
+    override suspend fun fetchServerBill(id: String): ServerBillDto? {
+        fetchError?.let { throw it }
+        return rows.firstOrNull { it.id == id }?.let {
+            ServerBillDto(
+                groupId = it.groupId,
+                isDeleted = it.isDeleted,
+            )
+        }
     }
 }

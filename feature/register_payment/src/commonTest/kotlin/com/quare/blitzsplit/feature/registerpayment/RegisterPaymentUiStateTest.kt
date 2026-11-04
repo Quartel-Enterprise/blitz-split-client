@@ -591,6 +591,7 @@ class RegisterPaymentUiStateTest {
         offersReceiverKeys: Boolean = true,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
+        showsSats = false,
         from = from,
         to = to,
         debtMinor = debtMinor,

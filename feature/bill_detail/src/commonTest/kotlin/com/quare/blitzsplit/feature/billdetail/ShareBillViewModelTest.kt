@@ -637,6 +637,7 @@ class ShareBillViewModelTest {
     private val billRoute = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
+        focusCommentId = null,
     )
     private val groupRoute = Route.GroupDetail(
         GROUP_ID,

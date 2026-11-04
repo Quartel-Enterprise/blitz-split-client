@@ -56,6 +56,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
@@ -491,25 +492,14 @@ private fun CurrencyRow(
             expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
         ) {
-            state.currencies.forEach { currency ->
-                DropdownMenuItem(
-                    text = { Text(groupCurrencyLabel(currency, locale)) },
-                    onClick = {
-                        isMenuOpen = false
-                        onEvent(CreateGroupUiEvent.OnCurrencySelected(currency))
-                    },
-                    trailingIcon = if (currency == state.currency) {
-                        {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = null,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                )
-            }
+            CurrencyMenuContent(
+                currencies = state.currencies,
+                selected = state.currency,
+                onSelected = { currency ->
+                    isMenuOpen = false
+                    onEvent(CreateGroupUiEvent.OnCurrencySelected(currency))
+                },
+            )
         }
     }
 }

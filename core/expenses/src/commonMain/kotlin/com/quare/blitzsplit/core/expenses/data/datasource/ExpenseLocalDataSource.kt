@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.expenses.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
 import kotlinx.coroutines.flow.Flow
 
 interface ExpenseLocalDataSource {
@@ -11,6 +12,8 @@ interface ExpenseLocalDataSource {
 
     // Why: null once the bill is deleted, here or by a sync.
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
+
+    suspend fun findStoredBill(id: String): StoredBillRow?
 
     fun observePendingDeletionGroupIds(): Flow<List<String>>
 

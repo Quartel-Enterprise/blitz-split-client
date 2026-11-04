@@ -64,6 +64,7 @@
     <string name="activity_kind_member_renamed">%1$s renomeou %2$s</string>
     <string name="activity_kind_charge_sent">%1$s cobrou %2$s</string>
     <string name="activity_kind_comment_added">%1$s comentou em %2$s</string>
+    <string name="activity_kind_comment_deleted">%1$s apagou um comentário em %2$s</string>
     <string name="activity_detail_amount_split">%1$s · %2$s</string>
     <string name="activity_detail_bill_gone">%s · a conta não existe mais</string>
     <string name="activity_detail_payment">%1$s → %2$s · %3$s · %4$s</string>

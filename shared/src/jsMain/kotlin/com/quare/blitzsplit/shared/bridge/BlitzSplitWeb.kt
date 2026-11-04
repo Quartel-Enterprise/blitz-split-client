@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -13,9 +14,11 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
+import com.quare.blitzsplit.shared.app.BillLinkNotice
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.browser.window
@@ -78,15 +81,16 @@ private fun decimalSeparatorOf(languageTag: String): Char = try {
 
 /*
  * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, of a
- * bill's link, blitzsplit.com/c/<code>, or of a notification tapped with no tab open, blitzsplit.com/n?…, opens it
- * once; the address goes back to the app's own. A bill's link left to sign in (its "Entrar") opens again once the
- * browser comes back.
+ * bill's link, blitzsplit.com/c/<code>, of a comment's, blitzsplit.com/b/<bill>?comentario=<id>, or of a notification
+ * tapped with no tab open, blitzsplit.com/n?…, opens it once; the address goes back to the app's own. A bill's link
+ * left to sign in (its "Entrar") opens again once the browser comes back.
  */
 private fun openInviteLink(launchUrl: String) {
     val inbox = KoinPlatform.getKoin().get<LinkInbox>()
     val sharedBillLeftToSignIn = takeSharedBillLeftToSignIn()
     val isLink = InviteLink.targetOf(launchUrl) != null ||
         SharedBillLink.codeOf(launchUrl) != null ||
+        BillCommentLink.targetOf(launchUrl) != null ||
         PushLink.of(launchUrl) != null
     if (isLink) {
         inbox.receive(launchUrl)
@@ -114,6 +118,11 @@ fun setPushDevice(
             webAuth = auth,
         ),
     )
+}
+
+// Why: real time listens only while the page is visible (document.visibilityState).
+fun setAppForeground(isForeground: Boolean) {
+    KoinPlatform.getKoin().get<ReportAppForeground>().invoke(isForeground)
 }
 
 // Why: a notification tapped while a tab is open, which the service worker hands to it instead of opening another.
@@ -166,6 +175,11 @@ class JsWatch internal constructor(
     }
 }
 
+// Why: "not-in-group" ("Você não está neste grupo") or "offline" ("Sem internet"); null for no notice.
+class JsBillLinkNotice(
+    val notice: String?,
+)
+
 class AppPresenter {
     private val holder = ViewModelHolder(AppViewModel::class) { KoinPlatform.getKoin().get() }
     private val navigator: Navigator = holder.viewModel.navigator
@@ -184,6 +198,32 @@ class AppPresenter {
     // Why: "system", "light" or "dark"; the page follows the system's scheme only for "system".
     fun observeTheme(onChange: (String) -> Unit): JsWatch {
         val watch = FlowWatcher(holder.viewModel.theme.map { it.code }).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: why a comment's link opened nothing, over wherever the app is.
+    fun observeBillLinkNotice(onChange: (JsBillLinkNotice) -> Unit): JsWatch {
+        val notices = holder.viewModel.billLinkNotice.map { state ->
+            JsBillLinkNotice(
+                notice = when (state.notice) {
+                    BillLinkNotice.NOT_IN_GROUP -> "not-in-group"
+                    BillLinkNotice.OFFLINE -> "offline"
+                    null -> null
+                },
+            )
+        }
+        val watch = FlowWatcher(notices).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: "Ir para o início" on the notice, or the notice closed some other way.
+    fun dismissBillLinkNotice() {
+        holder.viewModel.onBillLinkNoticeDismissed()
+    }
+
+    // Why: Preferências' "Bitcoin em satoshis", which every bitcoin amount the page writes follows.
+    fun observeBitcoinInSats(onChange: (Boolean) -> Unit): JsWatch {
+        val watch = FlowWatcher(holder.viewModel.showsBitcoinInSats).observe(onChange)
         return JsWatch(watch::cancel)
     }
 

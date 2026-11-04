@@ -457,7 +457,7 @@ class EditSeveralPayersViewModelTest {
                     tab = GroupTab.EXPENSES,
                 ),
             )
-            it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID))
+            it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null))
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -488,6 +488,7 @@ class EditSeveralPayersViewModelTest {
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

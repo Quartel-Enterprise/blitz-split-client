@@ -609,6 +609,7 @@ class SettleUpViewModelTest {
                 observeGroupsMoney = money,
             ),
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

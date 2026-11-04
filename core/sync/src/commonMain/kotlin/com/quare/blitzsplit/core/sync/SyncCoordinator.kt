@@ -15,15 +15,17 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.sync.domain.model.RemoteChange
+import com.quare.blitzsplit.core.sync.domain.model.RemotePull
+import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -60,13 +62,40 @@ class SyncCoordinator(
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
+    remoteChangeRepository: RemoteChangeRepository,
+    appForeground: AppForeground,
 ) {
     private val syncLock = Mutex()
+    private val remoteChangeListener = RemoteChangeListener(
+        remoteChangeRepository = remoteChangeRepository,
+        appForeground = appForeground,
+        connectivityObserver = connectivityObserver,
+        accountRepository = accountRepository,
+        profileRepository = profileRepository,
+    )
+    private val remotePuller = RemotePuller(
+        profileRepository = profileRepository,
+        paymentKeyRepository = paymentKeyRepository,
+        groupRepository = groupRepository,
+        categoryRepository = categoryRepository,
+        expenseRepository = expenseRepository,
+        settlementRepository = settlementRepository,
+        billCommentRepository = billCommentRepository,
+        billAttachmentRepository = billAttachmentRepository,
+        activityRepository = activityRepository,
+    )
     private var started = false
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
     private val lastSyncFailed = MutableStateFlow(false)
+
+    /*
+     * Why: how many syncs began reading the groups, the bills and the rest real time tells of, so a channel that joined
+     * can tell whether one read them after it: one already running at the join (the launch's, the one coming back online
+     * starts) usually reaches them after the join completes.
+     */
+    private val groupReadsStarted = MutableStateFlow(0L)
 
     // Why: offline, a failed sync is expected and only a change still waiting on the device is worth telling.
     fun observeState(): Flow<SyncState> = combine(
@@ -93,6 +122,7 @@ class SyncCoordinator(
         scope.launch { syncWhenDue() }
         scope.launch { registerPushDevice() }
         scope.launch { endFirstDownloadOffline() }
+        scope.launch { followRemoteChanges() }
     }
 
     // Why: the retry outlives the screen that asked for it, like every other sync.
@@ -136,7 +166,7 @@ class SyncCoordinator(
          * and so does a switch to another user while it ran, whose copy this sync never brought.
          */
         val account = accountRepository.observeAccount().first()
-        if (account.awaitsFullSync && userIdOrNull(account.status) == userId) {
+        if (account.awaitsFullSync && account.status.userIdOrNull() == userId) {
             accountRepository.updateAwaitsFullSync(false)
         }
     }.also { result ->
@@ -173,6 +203,7 @@ class SyncCoordinator(
          * another device before the category it is in.
          */
         var areGroupsSynced = false
+        groupReadsStarted.update { it + 1 }
         val groupsSynced = suspendRunCatching {
             if (firstDownload.isPending) {
                 // Why: the count is only a nicety, so a pass that fails ends it and the full download below goes on.
@@ -436,7 +467,7 @@ class SyncCoordinator(
         var previousUserId: String? = null
         accountRepository
             .observeStatus()
-            .map(::userIdOrNull)
+            .map { it.userIdOrNull() }
             .distinctUntilChanged()
             .collect { userId ->
                 val isSwitch = previousUserId != null && userId != null
@@ -455,7 +486,7 @@ class SyncCoordinator(
     private suspend fun registerPushDevice() {
         combine(
             pushDeviceRepository.observeDevice(),
-            accountRepository.observeStatus().map(::userIdOrNull),
+            accountRepository.observeStatus().map { it.userIdOrNull() },
             connectivityObserver.observe(),
         ) { device, userId, isOnline -> if (device != null && isOnline) device to userId else null }
             .distinctUntilChanged()
@@ -463,12 +494,6 @@ class SyncCoordinator(
             .collect { (_, userId) ->
                 if (userId == null) pushDeviceRepository.unregister() else pushDeviceRepository.register(userId)
             }
-    }
-
-    private fun userIdOrNull(status: AccountStatus): String? = when (status) {
-        AccountStatus.LocalOnly -> null
-        is AccountStatus.Anonymous -> status.userId
-        is AccountStatus.Connected -> status.userId
     }
 
     /*
@@ -487,27 +512,75 @@ class SyncCoordinator(
      * Why: a first download (5.1d) asks the server which groups are coming, then brings each one whole, the latest
      * activity first, so Início and Grupos count "3 de 7 grupos" and what came is usable before the rest. A group's
      * rows are all read first, then written in Room's foreign key order with no round trip in between, so no screen
-     * shows a group with its bills and without its payments. The count stays until the sync settles; the full download
-     * right after it takes off what left meanwhile and brings the rest of the account.
+     * shows a group with its bills and without its payments (RemotePuller.downloadGroup). The count stays until the sync settles; the
+     * full download right after it takes off what left meanwhile and brings the rest of the account.
      */
     private suspend fun downloadGroupByGroup(userId: String) {
         val groupIds = groupRepository.fetchFirstDownloadGroupIds().getOrThrow()
         // Why: with none coming there is nothing to count, so it never reads "0 de 0 grupos".
         if (groupIds.isNotEmpty()) firstDownload.expect(groupIds.size)
         groupIds.forEach { groupId ->
-            val writes = coroutineScope {
-                listOf(
-                    async { groupRepository.fetchGroupDownload(userId, groupId) },
-                    async { categoryRepository.fetchGroupCategories(groupId) },
-                    async { expenseRepository.fetchGroupExpenses(groupId) },
-                    async { settlementRepository.fetchGroupSettlements(groupId) },
-                ).awaitAll()
-            }.map { it.getOrThrow() }
-            writes.forEach { write -> write() }
+            remotePuller.downloadGroup(userId, groupId)
             firstDownload.groupArrived()
         }
         // Why: "7 de 7 grupos" stays until the rest of the sync settles, which ends it, never a bar that runs again.
     }
+
+    /*
+     * Why: a join's catch-up and a batch's pull run in the app's scope like any sync, so a slow one never holds the
+     * channel's buffer nor stops halfway when the app leaves the front; the pull checks under the lock that its user is
+     * still the one signed in.
+     */
+    private suspend fun followRemoteChanges() {
+        remoteChangeListener.listen(
+            onJoined = {
+                val readsBeforeJoin = groupReadsStarted.value
+                scope.launch { catchUp(readsBeforeJoin) }
+            },
+            onChanges = { userId, changes -> scope.launch { pullRemoteChanges(userId, changes) } },
+        )
+    }
+
+    /*
+     * Why: what happened while nobody listened (in the background, offline, the socket down) comes with a full sync,
+     * unless one read the groups since the channel joined, which already brought everything after it.
+     */
+    private suspend fun catchUp(readsBeforeJoin: Long) {
+        // Why: checked again under the lock, but first without it, so a catch-up with nothing to do never shows as a sync.
+        if (groupReadsStarted.value > readsBeforeJoin) return
+        val result = runUnderSyncLock {
+            if (groupReadsStarted.value > readsBeforeJoin) Result.success(Unit) else syncLocked()
+        }
+        if (result.isSuccess && observeHasPendingChanges().first()) syncUntilSettled()
+    }
+
+    /*
+     * Why: under the sync lock, like any download, so a sync's writes and the pull's never interleave. It doesn't count
+     * as a sync for the badge, which only asks for attention. What only the full sync drops, and a pull that failed, go to
+     * the full sync, which tries again and reports it.
+     */
+    private suspend fun pullRemoteChanges(
+        userId: String,
+        changes: List<RemoteChange>,
+    ) {
+        val isPulled = syncLock.withLock {
+            suspendRunCatching {
+                // Why: a sign out, an erased profile or another user may have taken the lock first.
+                if (!isSignedInWithProfile(userId)) return@suspendRunCatching true
+                val pull = RemotePull.of(
+                    changes = changes,
+                    userId = userId,
+                )
+                if (!pull.isFullSync) remotePuller.pull(userId, pull)
+                !pull.isFullSync
+            }.getOrDefault(false)
+        }
+        if (!isPulled) scope.launch { syncUntilSettled() }
+    }
+
+    private suspend fun isSignedInWithProfile(userId: String): Boolean =
+        accountRepository.observeStatus().first().userIdOrNull() == userId &&
+            profileRepository.observeProfile().first() != null
 
     /*
      * Why: a first download ends with a sync, which never runs offline, so offline its count goes; the account still

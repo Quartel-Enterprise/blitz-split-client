@@ -51,8 +51,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -346,7 +347,7 @@ internal fun HomeSummaryCard(
                         }
                     },
                     amounts = listOf(toReceiveMoney.toText(toReceive?.toReceiveMinor ?: 0L)),
-                    amountColor = MaterialTheme.colorScheme.primary,
+                    amountColor = positiveAmountColor(),
                     isEnabled = summary.canOpenToReceive,
                     onClick = { onEvent(HomeUiEvent.OnToReceiveClicked) },
                 )
@@ -374,9 +375,8 @@ internal fun HomeSummaryCard(
 // Why: "+US$ 40,00" under the big amount, for each other currency with a net; never added to the first.
 @Composable
 private fun ExtraCurrencyText(totals: List<PeopleTotal>) {
-    val locale = LocalLocale.current.platformLocale
     totals.forEach { total ->
-        val money = remember(total.currency, locale) { MoneyFormatter(total.currency, locale) }
+        val money = rememberMoneyFormatter(total.currency)
         Text(
             text = money.toSignedText(total.netMinor),
             style = MaterialTheme.typography.titleMedium,

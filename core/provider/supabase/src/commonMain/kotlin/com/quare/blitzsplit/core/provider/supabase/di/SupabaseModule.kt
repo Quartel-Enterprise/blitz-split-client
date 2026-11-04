@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.supabase.di
 
+import com.quare.blitzsplit.core.provider.supabase.SerializedRemovalRealtime
 import com.quare.blitzsplit.core.provider.supabase.createBlitzSplitSupabaseClient
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -8,6 +9,8 @@ import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import org.koin.dsl.module
@@ -18,4 +21,5 @@ val supabaseModule = module {
     single<Postgrest> { get<SupabaseClient>().postgrest }
     single<Functions> { get<SupabaseClient>().functions }
     single<Storage> { get<SupabaseClient>().storage }
+    single<Realtime> { SerializedRemovalRealtime(get<SupabaseClient>().realtime) }
 }

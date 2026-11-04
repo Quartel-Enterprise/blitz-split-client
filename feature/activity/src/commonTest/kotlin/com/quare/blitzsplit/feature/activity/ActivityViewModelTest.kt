@@ -379,6 +379,49 @@ class ActivityViewModelTest {
     // region Tapping in one column
 
     @Test
+    fun `GIVEN a comment item WHEN tapping it THEN opens the bill at the comment`() = runTest(testDispatcher) {
+        // Given
+        val comment = event(
+            id = "comment-event",
+            kind = ActivityKind.COMMENT_ADDED,
+            targetId = BILL_JANTAR,
+            commentId = "comment-1",
+        )
+        prepareScenario(storedEvents = listOf(comment) + defaultEvents)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked("comment-event"))
+
+        // Then
+        assertEquals(
+            Route.BillDetail(APE, BILL_JANTAR, focusCommentId = "comment-1"),
+            navigator.backStack.value.last(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a deleted comment item WHEN tapping it THEN opens the bill at no comment`() = runTest(testDispatcher) {
+        // Given
+        val comment = event(
+            id = "comment-event",
+            kind = ActivityKind.COMMENT_ADDED,
+            targetId = BILL_JANTAR,
+            commentId = "comment-1",
+            isCommentDeleted = true,
+        )
+        prepareScenario(storedEvents = listOf(comment) + defaultEvents)
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnItemClicked("comment-event"))
+
+        // Then
+        assertEquals(
+            Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null),
+            navigator.backStack.value.last(),
+        )
+    }
+
+    @Test
     fun `GIVEN a bill item WHEN tapping it THEN opens the bill over its group`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -396,7 +439,7 @@ class ActivityViewModelTest {
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
                 ),
-                Route.BillDetail(APE, BILL_JANTAR),
+                Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null),
             ),
             navigator.backStack.value,
         )
@@ -657,7 +700,7 @@ class ActivityViewModelTest {
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
                     ),
-                    Route.BillDetail(APE, BILL_MERCADO),
+                    Route.BillDetail(APE, BILL_MERCADO, focusCommentId = null),
                 ),
                 navigator.backStack.value,
             )
@@ -2331,7 +2374,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(opened, navigator.backStack.value)
-        assertEquals(Route.BillDetail(APE, BILL_JANTAR), navigator.backStack.value.last())
+        assertEquals(Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null), navigator.backStack.value.last())
     }
 
     @Test
@@ -2651,6 +2694,8 @@ class ActivityViewModelTest {
         toMemberId: String? = null,
         changes: List<ActivityChange> = emptyList(),
         isPending: Boolean = false,
+        commentId: String? = null,
+        isCommentDeleted: Boolean = false,
     ): ActivityEvent = ActivityEvent(
         id = id,
         seq = seq,
@@ -2671,6 +2716,8 @@ class ActivityViewModelTest {
         sharesCount = null,
         body = null,
         isPending = isPending,
+        commentId = commentId,
+        isCommentDeleted = isCommentDeleted,
     )
 
     private fun queued(

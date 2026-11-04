@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
@@ -239,6 +240,11 @@ object BlitzSplitApple : KoinComponent {
     // Why: after any handleDeepLink the return brought, so a browser closed without finishing ends its sign in.
     fun handleAppResumed() {
         get<HandleAppResumed>().invoke()
+    }
+
+    // Why: real time listens only while the app is in front (its scene phase isn't background).
+    fun setAppForeground(isForeground: Boolean) {
+        get<ReportAppForeground>().invoke(isForeground)
     }
 
     // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.

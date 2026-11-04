@@ -217,7 +217,7 @@ struct HomeSummaryCard: View {
         SummaryButton(
             label: toReceive.label,
             amounts: toReceive.amount,
-            color: Palette.accent,
+            color: Palette.positive,
             isEnabled: summary.canOpenToReceive,
             hint: "See who owes you",
         ) {

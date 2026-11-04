@@ -328,7 +328,13 @@ class ActivityViewModel(
             ActivityTarget.BILL -> {
                 val billId = item.targetId ?: return
                 openGroup(item.groupId, GroupTab.EXPENSES)
-                navigator.navigate(Route.BillDetail(item.groupId, billId))
+                navigator.navigate(
+                    Route.BillDetail(
+                        groupId = item.groupId,
+                        expenseId = billId,
+                        focusCommentId = item.commentId.takeUnless { item.isCommentDeleted },
+                    ),
+                )
             }
 
             ActivityTarget.GROUP -> openGroup(item.groupId, GroupTab.EXPENSES)

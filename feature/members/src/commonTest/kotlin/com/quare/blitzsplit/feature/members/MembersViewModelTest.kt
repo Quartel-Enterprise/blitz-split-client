@@ -255,7 +255,7 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+            navigator.navigate(Route.BillDetail("group-1", "dinner", focusCommentId = null))
 
             // When
             viewModel.onEvent(MembersUiEvent.OnShareClicked)
@@ -374,7 +374,7 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+            navigator.navigate(Route.BillDetail("group-1", "dinner", focusCommentId = null))
             val event = MembersUiEvent.OnMemberClicked("member-4")
 
             // When
@@ -396,7 +396,7 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+            navigator.navigate(Route.BillDetail("group-1", "dinner", focusCommentId = null))
             val event = MembersUiEvent.OnMemberClicked("member-1")
 
             // When
@@ -407,7 +407,7 @@ class MembersViewModelTest {
                 listOf(
                     Route.Groups,
                     Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
-                    Route.BillDetail("group-1", "dinner"),
+                    Route.BillDetail("group-1", "dinner", focusCommentId = null),
                     Route.Profile,
                 ),
                 navigator.backStack.value,

@@ -17,4 +17,10 @@
     <string name="push_settle_reminders">You have open balances in %1$s groups</string>
     <string name="push_added_to_group">%1$s added you to the group</string>
     <string name="push_member_joined">%1$s joined the group</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">You\'re not in this group</string>
+    <string name="bill_link_not_in_group_message">This comment is in a group you\'re not in. Ask whoever sent you the link for the invite.</string>
+    <string name="bill_link_offline_title">No internet</string>
+    <string name="bill_link_offline_message">Open the link again once you\'re back online.</string>
+    <string name="bill_link_go_home">Go to Home</string>
 </resources>

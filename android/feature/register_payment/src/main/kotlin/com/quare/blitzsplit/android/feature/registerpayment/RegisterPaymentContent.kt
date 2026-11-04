@@ -410,6 +410,7 @@ private fun ConfirmButton(
 
 private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState = RegisterPaymentUiState(
     currency = GroupCurrency.BRL,
+    showsSats = false,
     from = PaymentPerson(
         id = "ana",
         name = "Ana",
