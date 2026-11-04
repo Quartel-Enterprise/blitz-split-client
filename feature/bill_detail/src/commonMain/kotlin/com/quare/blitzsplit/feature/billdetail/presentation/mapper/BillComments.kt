@@ -77,11 +77,18 @@ private fun rowOf(
     val member = comment.authorMemberId?.let { id -> members.firstOrNull { it.id == id } }
     val isMe = member?.isMe == true || comment.isMine
     val name = member?.name ?: comment.authorName
+    /*
+     * Why: the server lets only the author's account change it, so a name released to someone else (Liberar nome)
+     * doesn't make its old comments theirs; one not up yet has no account and is this device's member's.
+     */
+    val myUserId = members.firstOrNull { it.isMe }?.userId
+    val isAuthor = comment.isMine || if (comment.authorUserId != null) comment.authorUserId == myUserId else isMe
+    // Why: this device's own like is the account's (isMine), whoever its member was.
     val likers = comment.likes.map { like ->
         val liker = like.memberId?.let { id -> members.firstOrNull { it.id == id } }
         BillCommentLiker(
             name = liker?.name ?: like.name,
-            isMe = like.isMine || liker?.isMe == true,
+            isMe = like.isMine,
         )
     }
     return BillCommentRow(
@@ -92,6 +99,7 @@ private fun rowOf(
         avatarColor = member?.avatarColor ?: AvatarColor.default,
         photoUrl = member?.photoUrl,
         isMe = isMe,
+        isAuthor = isAuthor,
         viaLink = comment.viaLink,
         replyToName = comment.replyToName,
         body = comment.body,

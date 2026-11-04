@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.activity.data.dto.ActivityReadMarkDto
 import com.quare.blitzsplit.core.activity.data.dto.ChargeEventDto
 import com.quare.blitzsplit.core.activity.data.mapper.ActivityMapperImpl
 import com.quare.blitzsplit.core.activity.data.repository.ActivityRepositoryImpl
+import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityReadState
 import com.quare.blitzsplit.core.activity.domain.model.ActivityTargets
@@ -28,6 +29,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -1261,6 +1264,238 @@ class ActivityRepositoryImplTest {
         assertTrue(repository.observeEventsAbout(BILL_ID).first().isEmpty())
     }
 
+    @Test
+    fun `GIVEN a comment edited on the device WHEN observing the feed THEN its event reads the comment as it is now`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(commentEvent(body = "Faltou o pão")),
+                changedComments = listOf(changedComment(body = "Faltou o pão e o leite")),
+            )
+
+            // When
+            val event = repository.observeEvents().first().single()
+
+            // Then
+            assertEquals("Faltou o pão e o leite", event.body)
+            assertFalse(event.isCommentDeleted)
+        }
+
+    @Test
+    fun `GIVEN a comment edited to a long text WHEN observing the feed THEN keeps its first 200 characters`() =
+        runTest {
+            // Given
+            val longBody = "a".repeat(150) + "b".repeat(100)
+            prepareScenario(
+                storedEvents = listOf(commentEvent(body = "Faltou o pão")),
+                changedComments = listOf(changedComment(body = longBody)),
+            )
+
+            // When
+            val event = repository.observeEvents().first().single()
+
+            // Then
+            assertEquals("a".repeat(150) + "b".repeat(50), event.body)
+        }
+
+    @Test
+    fun `GIVEN a comment deleted on the device WHEN observing the feed THEN its event is deleted with no text`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(commentEvent(body = "Faltou o pão")),
+                changedComments = listOf(
+                    changedComment(
+                        body = "Faltou o pão",
+                        isDeleted = true,
+                    ),
+                ),
+            )
+
+            // When
+            val event = repository.observeEvents().first().single()
+
+            // Then
+            assertTrue(event.isCommentDeleted)
+            assertNull(event.body)
+        }
+
+    @Test
+    fun `GIVEN the server deleted a comment the device has edited WHEN observing THEN it stays deleted`() = runTest {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(
+                commentEvent(
+                    body = null,
+                    isDeleted = true,
+                ),
+            ),
+            changedComments = listOf(changedComment(body = "Faltou o pão e o leite")),
+        )
+
+        // When
+        val event = repository.observeEvents().first().single()
+
+        // Then
+        assertTrue(event.isCommentDeleted)
+        assertNull(event.body)
+    }
+
+    @Test
+    fun `GIVEN another comment edited WHEN observing the feed THEN the comment and the bill events are unchanged`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    commentEvent(body = "Faltou o pão"),
+                    entity(
+                        id = "bill",
+                        seq = 1L,
+                        data = """{"description":"Mercado"}""",
+                    ),
+                ),
+                changedComments = listOf(
+                    changedComment(
+                        id = "other-comment",
+                        body = "Outro texto",
+                        isDeleted = true,
+                    ),
+                ),
+            )
+
+            // When
+            val events = repository.observeEvents().first()
+
+            // Then
+            val comment = events.single { it.id == COMMENT_EVENT_ID }
+            assertEquals("Faltou o pão", comment.body)
+            assertFalse(comment.isCommentDeleted)
+            val bill = events.single { it.id == "bill" }
+            assertNull(bill.body)
+            assertFalse(bill.isCommentDeleted)
+        }
+
+    @Test
+    fun `GIVEN the feed observed WHEN the comment is edited later THEN the feed shows the new text`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(commentEvent(body = "Faltou o pão")))
+        val feeds = mutableListOf<List<ActivityEvent>>()
+        backgroundScope.launch { repository.observeEvents().collect(feeds::add) }
+        runCurrent()
+
+        // When
+        local.changedComments.value = listOf(changedComment(body = "Faltou o pão e o leite"))
+        runCurrent()
+
+        // Then
+        assertEquals("Faltou o pão", feeds.first().single().body)
+        assertEquals("Faltou o pão e o leite", feeds.last().single().body)
+    }
+
+    @Test
+    fun `GIVEN the feed observed WHEN the comment is deleted later THEN the feed shows it deleted`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(commentEvent(body = "Faltou o pão")))
+        val feeds = mutableListOf<List<ActivityEvent>>()
+        backgroundScope.launch { repository.observeEvents().collect(feeds::add) }
+        runCurrent()
+
+        // When
+        local.changedComments.value = listOf(
+            changedComment(
+                body = "Faltou o pão",
+                isDeleted = true,
+            ),
+        )
+        runCurrent()
+
+        // Then
+        val event = feeds.last().single()
+        assertTrue(event.isCommentDeleted)
+        assertNull(event.body)
+    }
+
+    @Test
+    fun `GIVEN an older page with a comment edited on the device WHEN observing the feed THEN it reads as it is now`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(entity(seq = 100L)),
+                changedComments = listOf(changedComment(body = "Faltou o pão e o leite")),
+            )
+            remote.olderPages += listOf(
+                dto(
+                    id = COMMENT_EVENT_ID,
+                    seq = 99L,
+                    kind = "comment_added",
+                    data = """{"comment_id":"$COMMENT_ID","body":"Faltou o pão"}""",
+                ),
+            )
+            repository.loadOlder()
+
+            // When
+            val events = repository.observeEvents().first()
+
+            // Then
+            assertEquals(listOf(EVENT_ID, COMMENT_EVENT_ID), events.map { it.id })
+            assertEquals("Faltou o pão e o leite", events.last().body)
+        }
+
+    @Test
+    fun `GIVEN an older page with a comment deleted on the device WHEN observing the feed THEN it reads deleted`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(entity(seq = 100L)),
+                changedComments = listOf(
+                    changedComment(
+                        body = "Faltou o pão",
+                        isDeleted = true,
+                    ),
+                ),
+            )
+            remote.olderPages += listOf(
+                dto(
+                    id = COMMENT_EVENT_ID,
+                    seq = 99L,
+                    kind = "comment_added",
+                    data = """{"comment_id":"$COMMENT_ID","body":"Faltou o pão"}""",
+                ),
+            )
+            repository.loadOlder()
+
+            // When
+            val event = repository.observeEvents().first().single { it.id == COMMENT_EVENT_ID }
+
+            // Then
+            assertTrue(event.isCommentDeleted)
+            assertNull(event.body)
+        }
+
+    private fun commentEvent(
+        body: String?,
+        isDeleted: Boolean = false,
+    ): ActivityEventEntity {
+        val text = body?.let { ""","body":"$it"""" }.orEmpty()
+        val deleted = if (isDeleted) ""","deleted":true""" else ""
+        return entity(
+            id = COMMENT_EVENT_ID,
+            seq = 2L,
+            kind = "comment_added",
+            data = """{"comment_id":"$COMMENT_ID"$text$deleted}""",
+        )
+    }
+
+    private fun changedComment(
+        id: String = COMMENT_ID,
+        body: String,
+        isDeleted: Boolean = false,
+    ): ChangedCommentRow = ChangedCommentRow(
+        id = id,
+        body = body,
+        isDeleted = isDeleted,
+    )
+
     private fun page(
         from: Long,
         size: Int,
@@ -1363,9 +1598,11 @@ class ActivityRepositoryImplTest {
         storedState: ActivityStateEntity? = null,
         deviceGroupIds: List<String> = emptyList(),
         backfilledGroupIds: Set<String> = emptySet(),
+        changedComments: List<ChangedCommentRow> = emptyList(),
     ) {
         local = FakeActivityLocalDataSource().also {
             it.events.value = storedEvents
+            it.changedComments.value = changedComments
             it.state.value = storedState
             it.deviceGroupIds = deviceGroupIds
             it.backfilled += backfilledGroupIds
@@ -1384,6 +1621,8 @@ class ActivityRepositoryImplTest {
         const val EVENT_ID = "event-1"
         const val GROUP_ID = "group-1"
         const val BILL_ID = "bill-1"
+        const val COMMENT_ID = "comment-1"
+        const val COMMENT_EVENT_ID = "comment-event-1"
     }
 }
 

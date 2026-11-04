@@ -155,7 +155,18 @@ class AppViewModel(
         commentId: String?,
     ) {
         val openIndex = navigator.backStack.value.indexOfFirst { it is Route.SharedBill && it.code == code }
-        if (openIndex < 0) navigator.navigate(Route.SharedBill(code, commentId)) else navigator.popTo(openIndex + 1)
+        val route = Route.SharedBill(code, commentId)
+        when {
+            openIndex < 0 -> navigator.navigate(route)
+
+            // Why: the same page shared at a comment opens again at it, read anew.
+            commentId != null -> navigator.replaceAbove(
+                size = openIndex,
+                route = route,
+            )
+
+            else -> navigator.popTo(openIndex + 1)
+        }
     }
 
     /*

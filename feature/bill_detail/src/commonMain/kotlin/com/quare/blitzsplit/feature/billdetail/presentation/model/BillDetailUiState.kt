@@ -121,7 +121,11 @@ data class BillDetailUiState(
 
     // Why: "Enviar comentário" stays disabled until something is typed, up to what the server takes.
     val canSendComment: Boolean
-        get() = isLoaded && !isDeleting && BillCommentRules.isBodyValid(commentDraft)
+        get() = isLoaded && !isDeleting && BillCommentRules.isBodyValid(commentDraft) && !isUnchangedEdit
+
+    // Why: an edit that changes nothing would only mark the comment "editado".
+    private val isUnchangedEdit: Boolean
+        get() = editingCommentId?.let { threads.valueOrNull()?.findComment(it)?.body == commentDraft.trim() } == true
 
     // Why: "Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta."
     val showsNoComments: Boolean

@@ -664,7 +664,7 @@ class BillCommentsTest {
     }
 
     @Test
-    fun `GIVEN the member of the device user liked it on another device WHEN gathering THEN the like is theirs`() {
+    fun `GIVEN another account liked it as the member of the device user WHEN gathering THEN the like is not theirs`() {
         // Given
         val comments = listOf(
             comment(
@@ -686,12 +686,12 @@ class BillCommentsTest {
             listOf(
                 BillCommentLiker(
                     name = "Pierre",
-                    isMe = true,
+                    isMe = false,
                 ),
             ),
             row.likers,
         )
-        assertTrue(row.isLikedByMe)
+        assertFalse(row.isLikedByMe)
     }
 
     @Test
@@ -907,6 +907,43 @@ class BillCommentsTest {
         assertNull(found)
     }
 
+    // Why: a name released (Liberar nome) to the account of this device leaves the old comments to whoever wrote them.
+    @Test
+    fun `GIVEN a comment of another account under my member WHEN gathering THEN it cannot be changed`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorUserId = "user-carla",
+                authorMemberId = PIERRE,
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertFalse(row.isAuthor)
+        assertFalse(row.canChange)
+    }
+
+    @Test
+    fun `GIVEN a comment of the account of the device WHEN gathering THEN it can be changed`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorUserId = MY_USER_ID,
+                authorMemberId = PIERRE,
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.isAuthor)
+        assertTrue(row.canChange)
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val group = Group(
@@ -940,13 +977,14 @@ class BillCommentsTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = true,
-        userId = null,
+        userId = if (isMe) MY_USER_ID else null,
         inviteCode = null,
         photoUrl = null,
     )
 
     private fun comment(
         id: String = "comment-1",
+        authorUserId: String? = null,
         authorMemberId: String? = BRUNO,
         authorName: String? = "Bruno",
         threadId: String? = null,
@@ -963,7 +1001,7 @@ class BillCommentsTest {
         id = id,
         expenseId = EXPENSE_ID,
         groupId = GROUP_ID,
-        authorUserId = null,
+        authorUserId = authorUserId,
         authorMemberId = authorMemberId,
         authorName = authorName,
         threadId = threadId,
@@ -993,6 +1031,7 @@ class BillCommentsTest {
         const val EXPENSE_ID = "expense-1"
         const val ANA = "member-1"
         const val PIERRE = "member-2"
+        const val MY_USER_ID = "user-pierre"
         const val BRUNO = "member-3"
         const val FORMER = "member-9"
         const val HOUR = 3_600_000L

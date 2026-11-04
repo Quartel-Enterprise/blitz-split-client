@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
@@ -60,21 +61,34 @@ internal class BillDetailComments(
         }
     }
 
-    // Why: the comments as they show now, which a link's comment is looked for in and an edit under way may lose.
-    fun onShown(threads: List<BillCommentThread>) {
-        focusLinkedComment(threads)
+    /*
+     * Why: the comments as they show now (threads) and as the device keeps them, tombstones included, which a link's
+     * comment is looked for in and an edit under way may lose.
+     */
+    fun onShown(
+        threads: List<BillCommentThread>,
+        comments: List<BillComment>,
+    ) {
+        focusLinkedComment(threads, comments)
         // Why: the comment being edited was deleted on another device meanwhile, so the edit has nothing to save.
         val editingId = uiState.value.editingCommentId
         if (editingId != null && threads.findComment(editingId)?.canChange != true) stopEditing()
     }
 
-    // Why: once: highlighted when it is there, else "Esse comentário foi apagado".
-    private fun focusLinkedComment(threads: List<BillCommentThread>) {
+    /*
+     * Why: once: highlighted when it shows, "Esse comentário foi apagado" when the device keeps it deleted, and
+     * waited for while it isn't on the device yet, which a sync may still bring.
+     */
+    private fun focusLinkedComment(
+        threads: List<BillCommentThread>,
+        comments: List<BillComment>,
+    ) {
         val commentId = focusCommentId ?: return
-        focusCommentId = null
         if (threads.findComment(commentId)?.canInteract == true) {
+            focusCommentId = null
             uiState.update { it.copy(focusedCommentId = commentId) }
-        } else {
+        } else if (comments.any { it.id == commentId }) {
+            focusCommentId = null
             scope.launch { emit(BillDetailUiAction.ShowCommentGone) }
         }
     }

@@ -278,6 +278,7 @@ private fun createPreviewComment(
     avatarColor = color,
     photoUrl = null,
     isMe = isMe,
+    isAuthor = isMe,
     viaLink = viaLink,
     replyToName = replyToName,
     body = body,

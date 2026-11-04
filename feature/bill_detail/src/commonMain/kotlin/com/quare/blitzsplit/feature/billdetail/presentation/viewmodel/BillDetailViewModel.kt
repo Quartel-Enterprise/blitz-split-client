@@ -465,7 +465,7 @@ class BillDetailViewModel(
         val threads = threadsOf(commentList, group, currentTimeMillis(), currentTimeZone())
         val isShown = isCopyWhole && areCommentsRead
         uiState.update { it.copy(threads = if (isShown) threads.toLoaded() else Loadable.Loading) }
-        if (isShown) comments.onShown(threads)
+        if (isShown) comments.onShown(threads, commentList)
     }
 
     private fun showHistory() {

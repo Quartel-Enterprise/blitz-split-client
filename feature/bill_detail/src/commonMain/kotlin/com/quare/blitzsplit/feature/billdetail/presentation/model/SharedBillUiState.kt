@@ -107,5 +107,13 @@ data class SharedBillUiState(
         get() = status == SharedBillStatus.OPEN && isSignedIn
 
     val canSendComment: Boolean
-        get() = showsComposer && isOnline && !isSendingComment && BillCommentRules.isBodyValid(commentDraft)
+        get() = showsComposer &&
+            isOnline &&
+            !isSendingComment &&
+            BillCommentRules.isBodyValid(commentDraft) &&
+            !isUnchangedEdit
+
+    // Why: an edit that changes nothing would only mark the comment "editado".
+    private val isUnchangedEdit: Boolean
+        get() = editingCommentId?.let { threads.findComment(it)?.body == commentDraft.trim() } == true
 }

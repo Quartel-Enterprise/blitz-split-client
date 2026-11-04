@@ -60,7 +60,7 @@ class ActivityRepositoryImpl(
     private fun ActivityEvent.toCommentAsNow(changedById: Map<String, ChangedCommentRow>): ActivityEvent {
         val comment = commentId?.let(changedById::get) ?: return this
         return copy(
-            body = if (comment.isDeleted) null else comment.body.take(MAX_FEED_BODY_LENGTH),
+            body = if (isCommentDeleted || comment.isDeleted) null else comment.body.take(MAX_FEED_BODY_LENGTH),
             isCommentDeleted = isCommentDeleted || comment.isDeleted,
         )
     }

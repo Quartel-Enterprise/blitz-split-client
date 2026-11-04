@@ -2807,6 +2807,22 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a comment being edited WHEN its text is unchanged THEN Salvar stays disabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo "))
+
+            // Then
+            assertFalse(viewModel.uiState.value.canSendComment)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+            assertTrue(viewModel.uiState.value.canSendComment)
+        }
+
+    @Test
     fun `GIVEN a comment of Bruno WHEN tapping Editar on it THEN the composer keeps what was typed`() =
         runTest(testDispatcher) {
             // Given
@@ -3397,12 +3413,12 @@ class BillDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN Conta opened at a comment no longer there WHEN the comments show THEN says it was deleted`() =
+    fun `GIVEN Conta opened at a comment not on the device yet WHEN the comments show THEN waits saying nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 storedComments = brunoAndMine,
-                focusCommentId = "gone",
+                focusCommentId = "late",
                 firstDownload = pendingDownload,
             )
 
@@ -3410,9 +3426,30 @@ class BillDetailViewModelTest {
             firstDownload.value = null
 
             // Then
-            val state = viewModel.uiState.value
-            assertNull(state.focusedCommentId)
-            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentGone), actions)
+            assertNull(viewModel.uiState.value.focusedCommentId)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Conta waiting for the comment a link opened at WHEN a sync brings it THEN highlights it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "late",
+                firstDownload = pendingDownload,
+            )
+            firstDownload.value = null
+
+            // When
+            comments.comments.value = comments.comments.value + comment(
+                id = "late",
+                postedAt = laterToday + 1,
+            )
+
+            // Then
+            assertEquals("late", viewModel.uiState.value.focusedCommentId)
+            assertTrue(actions.isEmpty())
         }
 
     @Test
@@ -3490,12 +3527,12 @@ class BillDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the comment a link opened at is gone WHEN a sync brings more comments THEN says so only once`() =
+    fun `GIVEN the comment a link opened at never comes WHEN a sync brings others THEN says nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 storedComments = brunoAndMine,
-                focusCommentId = "gone",
+                focusCommentId = "late",
                 firstDownload = pendingDownload,
             )
             firstDownload.value = null
@@ -3507,7 +3544,8 @@ class BillDetailViewModelTest {
             )
 
             // Then
-            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentGone), actions)
+            assertNull(viewModel.uiState.value.focusedCommentId)
+            assertTrue(actions.isEmpty())
         }
 
     // Why: the comment a link opened Conta at, set by each scenario.

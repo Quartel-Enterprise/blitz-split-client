@@ -728,6 +728,87 @@ class ActivityMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a comment added WHEN reading it THEN knows which comment it is about and that it is not deleted`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"comment_id":"comment-1","body":"Faltou o pão"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("comment-1", event?.commentId)
+        assertEquals(false, event?.isCommentDeleted)
+    }
+
+    @Test
+    fun `GIVEN a comment its author edited WHEN reading its event THEN the body is the new text the server wrote`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"comment_id":"comment-1","body":"Faltou o pão e o leite"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("Faltou o pão e o leite", event?.body)
+        assertEquals(false, event?.isCommentDeleted)
+    }
+
+    @Test
+    fun `GIVEN a comment its author deleted WHEN reading its event THEN it is deleted with no body`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"comment_id":"comment-1","deleted":true}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(true, event?.isCommentDeleted)
+        assertNull(event?.body)
+        assertEquals("comment-1", event?.commentId)
+    }
+
+    @Test
+    fun `GIVEN a comment event saying it is not deleted WHEN reading it THEN it is not deleted`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"comment_id":"comment-1","body":"Faltou o pão","deleted":false}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(false, event?.isCommentDeleted)
+        assertEquals("Faltou o pão", event?.body)
+    }
+
+    @Test
+    fun `GIVEN an event that is not about a comment WHEN reading it THEN it has no comment and is not deleted`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"description":"Mercado"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.commentId)
+        assertEquals(false, event?.isCommentDeleted)
+    }
+
+    @Test
     fun `GIVEN a bill split among five WHEN reading it THEN says how many take part`() {
         // Given
         val entity = entity(

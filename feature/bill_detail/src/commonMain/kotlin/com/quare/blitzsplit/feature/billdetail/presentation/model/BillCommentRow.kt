@@ -15,6 +15,8 @@ data class BillCommentRow(
     // Why: the member's photo in the face, null for none or someone out of the group.
     val photoUrl: String?,
     val isMe: Boolean,
+    // Why: written by this device's account, the only one the server lets edit or delete it.
+    val isAuthor: Boolean,
     // Why: "Pelo link", written by someone out of the group through the bill's open link.
     val viaLink: Boolean,
     // Why: whom a reply to a reply answers, "@Diego".
@@ -39,7 +41,7 @@ data class BillCommentRow(
 
     // Why: only its author edits or deletes it, never once deleted.
     val canChange: Boolean
-        get() = isMe && !isDeleted
+        get() = isAuthor && !isDeleted
 
     // Why: a deleted comment takes no like, reply nor share.
     val canInteract: Boolean
