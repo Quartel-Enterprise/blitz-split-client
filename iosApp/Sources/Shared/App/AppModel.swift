@@ -114,14 +114,32 @@ final class AppModel {
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
         get {
-            let modals = modalCount
-            let inspected = inspectorBill(above: modals) == nil ? 0 : 1
-            return Array(windowStack.dropFirst().dropLast(modals + inspected))
+            pathEntries.filter { !isHiddenBill($0) }
         }
         set {
             guard newValue.count < path.count else { return }
-            holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
+            // Keeps a hidden bill right under the first entry popped, so the inspector shows it again
+            let entries = pathEntries
+            let visible = entries.indices.filter { !isHiddenBill(entries[$0]) }
+            holder.viewModel.navigator.popTo(size: Int32(visible[newValue.count] + 1))
         }
+    }
+
+    private var pathEntries: [AppRoute] {
+        let modals = modalCount
+        let inspected = inspectorBill(above: modals) == nil ? 0 : 1
+        return Array(windowStack.dropFirst().dropLast(modals + inspected))
+    }
+
+    /// The Mac's bill under a screen it opened (a person's profile, item 18): the main window never pushes a bill, so
+    /// the inspector closes while that screen shows and opens again once it is popped. Never off the Mac.
+    private func isHiddenBill(_ route: AppRoute) -> Bool {
+        #if os(macOS)
+        guard root == .home, case .billDetail = route else { return false }
+        return true
+        #else
+        return false
+        #endif
     }
 
     /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room, a key on the Mac,

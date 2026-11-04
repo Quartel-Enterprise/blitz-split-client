@@ -58,12 +58,16 @@ extension BillCopy {
         ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)
     }
 
-    /// "**Ana** changed the category": what someone did, their name bolder.
-    static func headline(_ entry: BillHistoryEntry) -> Text {
-        let name = entry.actorIsMe
+    /// "You", "Ana" or "Someone": who did a line of History.
+    static func actor(_ entry: BillHistoryEntry) -> String {
+        entry.actorIsMe
             ? String(localized: "You")
             : entry.actorName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
-        let who = Text(verbatim: name).fontWeight(.semibold)
+    }
+
+    /// "**Ana** changed the category": what someone did, their name bolder.
+    static func headline(_ entry: BillHistoryEntry) -> Text {
+        let who = Text(verbatim: actor(entry)).fontWeight(.semibold)
         switch entry.kind {
         case .created:
             return entry.isPending

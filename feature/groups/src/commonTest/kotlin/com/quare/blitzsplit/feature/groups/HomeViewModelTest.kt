@@ -579,7 +579,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN you owe Ana WHEN tapping her face THEN opens settling up with her over Inicio`() =
+    fun `GIVEN you owe Ana WHEN tapping her face THEN opens her profile over Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -600,8 +600,38 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
+                    Route.ContactProfile("name:ana"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe Diego who left the group WHEN tapping his face THEN opens settling up with him`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Diego",
+                        amountMinor = 9000L,
+                        splitOver = listOf("Pierre", "Diego"),
+                    ),
+                ),
+            )
+            val key = "gone:trio:member-Diego"
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnPersonClicked(key, GroupCurrency.BRL))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
                     Route.SettleUp(
-                        personKey = "name:ana",
+                        personKey = key,
                         currency = GroupCurrency.BRL,
                     ),
                 ),
@@ -610,7 +640,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN you owe Ana in reais and dollars WHEN tapping her dollar face THEN settles up in dollars`() =
+    fun `GIVEN you owe Ana in reais and dollars WHEN tapping her dollar face THEN opens her profile`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -651,10 +681,7 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.SettleUp(
-                        personKey = "name:ana",
-                        currency = GroupCurrency.USD,
-                    ),
+                    Route.ContactProfile("name:ana"),
                 ),
                 navigator.backStack.value,
             )

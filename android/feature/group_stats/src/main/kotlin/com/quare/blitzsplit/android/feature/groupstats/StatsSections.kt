@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -37,16 +38,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.opensProfileWhen
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val sectionPadding = Modifier.padding(
     start = 4.dp,
@@ -306,13 +308,17 @@ internal fun StatsPeopleSection(
         )
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             state.people.forEachIndexed { index, person ->
+                val shape = groupedRowShapeOf(index, state.people.size)
+                // Why: the row opens their profile (Perfil for this device's user); an ex-member has none.
                 StatsPersonRowItem(
                     person = person,
                     money = money,
-                    modifier = Modifier.background(
-                        MaterialTheme.colorScheme.surfaceContainerLowest,
-                        groupedRowShapeOf(index, state.people.size),
-                    ),
+                    modifier = Modifier
+                        .clip(shape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                        .opensProfileWhen(person.opensProfile) {
+                            onEvent(GroupStatsUiEvent.OnPersonClicked(person.memberId))
+                        },
                 )
             }
         }

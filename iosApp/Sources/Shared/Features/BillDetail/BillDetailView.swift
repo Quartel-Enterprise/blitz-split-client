@@ -216,10 +216,16 @@ struct BillDetailView: View {
     #endif
 }
 
-/// "Bruno paid" next to Bruno's face, or "A former member paid".
+/// "Bruno paid" next to Bruno's face, or "A former member paid". A lone payer opens their profile from here; several
+/// each have their row in the split, which opens them.
 private struct PayerLine: View {
     let payers: [BillPayer]
     let size: CGFloat
+    let onPerson: (String) -> Void
+
+    private var lonePayer: BillPayer? {
+        payers.count == 1 && payers[0].opensProfile ? payers[0] : nil
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -235,6 +241,7 @@ private struct PayerLine: View {
             }
             Text(verbatim: BillCopy.paid(payers))
         }
+        .opensProfile(lonePayer.map { payer in { onPerson(payer.memberId) } })
     }
 }
 
@@ -279,11 +286,13 @@ private struct MyPartContent: View {
     }
 }
 
-/// One person of the split: their face, "Paid R$ 642,00" or "Hasn't joined yet", and their part.
+/// One person of the split: their face, "Paid R$ 642,00" or "Hasn't joined yet", and their part. The row opens their
+/// profile, which someone no longer in the group doesn't have.
 private struct ShareRow: View {
     let row: BillShareRow
     let currency: GroupCurrency
     let avatarSize: CGFloat
+    let onPerson: (String) -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -303,6 +312,7 @@ private struct ShareRow: View {
                 .foregroundStyle(row.shareMinor == nil ? .secondary : .primary)
         }
         .accessibilityElement(children: .combine)
+        .opensProfile(row.opensProfile ? { onPerson(row.memberId) } : nil)
     }
 }
 
@@ -340,6 +350,11 @@ private struct PhoneBillDetail: View {
 
     private var state: BillDetailUiState {
         model.state
+    }
+
+    /// A person's face, name or row: their profile, or Profile for this device's user.
+    private func openPerson(_ memberId: String) {
+        model.send(BillDetailUiEventOnPersonClicked(memberId: memberId))
     }
 
     var body: some View {
@@ -431,7 +446,7 @@ private struct PhoneBillDetail: View {
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    PayerLine(payers: state.payers, size: 24)
+                    PayerLine(payers: state.payers, size: 24, onPerson: openPerson)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     if state.isPending {
@@ -472,7 +487,7 @@ private struct PhoneBillDetail: View {
     private var splitSection: some View {
         Section {
             ForEach(state.people, id: \.memberId) { row in
-                ShareRow(row: row, currency: state.currency, avatarSize: 32)
+                ShareRow(row: row, currency: state.currency, avatarSize: 32, onPerson: openPerson)
             }
         } header: {
             Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))
@@ -525,6 +540,7 @@ private struct PhoneBillDetail: View {
                                 categories: state.categories,
                                 isUndoing: state.isUndoing,
                                 metrics: .standard,
+                                onPerson: openPerson,
                             ) {
                                 model.send(BillDetailUiEventOnUndoClicked.shared)
                             }
@@ -545,6 +561,7 @@ private struct PhoneBillDetail: View {
             comment: comment,
             isReply: isReply,
             metrics: .standard,
+            onPerson: openPerson,
         ) {
             model.send(BillDetailUiEventOnReplyClicked(commentId: comment.id))
             isComposing = true
@@ -580,6 +597,11 @@ private struct MacBillDetail: View {
 
     private var state: BillDetailUiState {
         model.state
+    }
+
+    /// A person's face, name or row: their profile, or Profile for this device's user.
+    private func openPerson(_ memberId: String) {
+        model.send(BillDetailUiEventOnPersonClicked(memberId: memberId))
     }
 
     /// The inspector itself, not the window: two columns from 600 pt, as the 720 pt inspector draws them.
@@ -722,7 +744,7 @@ private struct MacBillDetail: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                PayerLine(payers: state.payers, size: 20)
+                PayerLine(payers: state.payers, size: 20, onPerson: openPerson)
                     .foregroundStyle(.secondary)
                 if state.isPending {
                     PendingLine()
@@ -749,7 +771,7 @@ private struct MacBillDetail: View {
                 VStack(spacing: 0) {
                     ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, row in
                         if index > 0 { Divider() }
-                        ShareRow(row: row, currency: state.currency, avatarSize: 24)
+                        ShareRow(row: row, currency: state.currency, avatarSize: 24, onPerson: openPerson)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
                     }
@@ -806,7 +828,7 @@ private struct MacBillDetail: View {
 
     private func commentRow(_ comment: BillCommentRow, isReply: Bool) -> some View {
         let isTarget = state.replyTarget?.commentId == comment.id
-        return BillCommentView(comment: comment, isReply: isReply, metrics: .standard) {
+        return BillCommentView(comment: comment, isReply: isReply, metrics: .standard, onPerson: openPerson) {
             model.send(BillDetailUiEventOnReplyClicked(commentId: comment.id))
             isComposing = true
         }
@@ -838,6 +860,7 @@ private struct MacBillDetail: View {
                             categories: state.categories,
                             isUndoing: state.isUndoing,
                             metrics: .standard,
+                            onPerson: openPerson,
                         ) {
                             model.send(BillDetailUiEventOnUndoClicked.shared)
                         }

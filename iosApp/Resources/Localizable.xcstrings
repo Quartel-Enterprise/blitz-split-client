@@ -1316,6 +1316,39 @@
         }
       }
     },
+    "Open %@'s profile" : {
+      "comment" : "Activity: what tapping someone's face does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir o perfil de %@"
+          }
+        }
+      }
+    },
+    "Open your profile" : {
+      "comment" : "Activity: what tapping your own face does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir seu perfil"
+          }
+        }
+      }
+    },
+    "Opens the profile" : {
+      "comment" : "What tapping a person's face or name does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o perfil"
+          }
+        }
+      }
+    },
     "Pay %@" : {
       "comment" : "Pay with a key (4.5): the title",
       "localizations" : {
@@ -10706,7 +10739,7 @@
       }
     },
     "Options for %@" : {
-      "comment" : "Accessibility label of a member's row",
+      "comment" : "Accessibility label of a member's ⋯ menu",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {

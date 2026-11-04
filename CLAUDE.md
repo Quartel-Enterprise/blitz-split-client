@@ -92,8 +92,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     per tab by `measuringNarrowWindow()`).
   - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
     with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
-    the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net (`Route.SettleUp`),
-    and a guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é convidado e não tem o
+    the largest first in each, hidden when nobody owes anybody; a face opens the person's profile (`Route.ContactProfile`,
+    Pierre's call, beta feedback 18), an ex-member's settling up for the net (`Route.SettleUp`), and a guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é convidado e não tem o
     app…". "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
@@ -358,6 +358,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
     column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
     and the filter stay still in a 300 pt column on the left while the people scroll on the right).
+  - A person tapped wherever a bill, a list or the feed shows them opens their profile, as Contatos opens it (Pierre's
+    call, beta feedback 18, `Route.ContactProfile` by Saldos' person key, `openPersonProfile`): Conta's split rows,
+    its lone payer ("Ana pagou"; several payers each have their row), a comment's author and a Histórico line's face,
+    Membros' rows, Início's faces, Saldos' people, Atividade's actor face (the rest of the row still opens the item;
+    a hidden button over the face on the web, a VoiceOver action of the row on Apple), and Estatísticas' "Por
+    pessoa". This device's own user opens Perfil (the Mac's Ajustes); someone no longer in the group opens nothing.
+    The group's Saldos pairs and Despesas' rows stay as they were. With an iPad's room the profile pushes inside
+    Conta's sheet; the Mac closes Conta's inspector while the profile shows and opens it again on back.
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0 · quitado") and "3 grupos" or the group's
@@ -492,7 +500,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     esta conta?" ends with the same sentence, from Conta too (`BillDeletion.settledPair`). A payment dated before the
     bill, or one whose pair the change doesn't move, says nothing.
   - "Membros" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Convidar's "Ver quem já
-    entrou". Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
+    entrou". A member's row opens their profile and the ⋮ (⋯ on iOS, macOS and the web, also a long press or right
+    click on Apple) holds their menu. Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
     but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined),
     after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal para Carla" (the
     menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their

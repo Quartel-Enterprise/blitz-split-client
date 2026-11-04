@@ -153,12 +153,19 @@ enum AppRoute: Hashable, Identifiable {
     }
 
     /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, the
-    /// category map inside Split a bill's (9.0), and on the Mac "Who are you" inside the invite's. From the profile the
-    /// map is pushed as any screen; the Mac never pushes it, since it lives in Ajustes (`AppModel`).
+    /// category map inside Split a bill's (9.0), a person's profile and Profile inside a bill's with an iPad's room
+    /// (item 18), and on the Mac "Who are you" inside the invite's. From the profile the map is pushed as any screen;
+    /// the Mac never pushes it, since it lives in Ajustes (`AppModel`), and draws a bill in its inspector instead.
     var pushesInSheet: Bool {
         switch self {
         case .defaultSplit, .categoryMap:
             return true
+        case .contactProfile, .profile:
+            #if os(macOS)
+            return false
+            #else
+            return true
+            #endif
         case .joinPick:
             #if os(macOS)
             return true

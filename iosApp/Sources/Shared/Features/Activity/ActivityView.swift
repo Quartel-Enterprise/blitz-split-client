@@ -512,7 +512,7 @@ private struct ActivityRow: View {
                 .padding(.top, Self.faceSize / 2 - 4)
                 .accessibilityHidden(true)
             HStack(alignment: .top, spacing: 12) {
-                ActivityFace(item: item, size: Self.faceSize)
+                ActivityFace(item: item, size: Self.faceSize, onOpen: openActor)
                 VStack(alignment: .leading, spacing: 3) {
                     ActivityCopy.headline(item)
                         .font(rowFont)
@@ -542,6 +542,18 @@ private struct ActivityRow: View {
         .contentShape(.rect)
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnread ? Text("Unread") : Text(verbatim: ""))
+        // VoiceOver reaches the face's tap as an action of the row
+        .accessibilityActions {
+            if let openActor {
+                Button(ActivityCopy.openActorLabel(item), action: openActor)
+            }
+        }
+    }
+
+    /// The face opens whoever did it: their profile, or Profile for this device's user (Pierre's call, item 18).
+    private var openActor: (() -> Void)? {
+        guard item.actor.opensProfile else { return nil }
+        return { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
     }
 
     private var rowFont: Font {
@@ -653,10 +665,12 @@ struct ActivityChangeLine: View {
     }
 }
 
-/// Who did it, with what happened on its corner: a bill, a payment, a person, a trash can once it is gone.
+/// Who did it, with what happened on its corner: a bill, a payment, a person, a trash can once it is gone. With
+/// `onOpen`, a tap on the face opens whoever did it, before the row it sits in takes the tap.
 struct ActivityFace: View {
     let item: ActivityItem
     let size: CGFloat
+    var onOpen: (() -> Void)?
 
     var body: some View {
         let colors = ActivityCopy.iconColors(item)
@@ -672,6 +686,8 @@ struct ActivityFace: View {
                     .offset(x: 5, y: 5)
             }
             .padding(.trailing, 4)
+            .contentShape(.circle)
+            .highPriorityGesture(TapGesture().onEnded { onOpen?() }, isEnabled: onOpen != nil)
             .accessibilityHidden(true)
     }
 }

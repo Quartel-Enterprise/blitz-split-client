@@ -245,11 +245,13 @@ class BillDetailViewModelTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = ANA,
                     name = "Ana",
                     initials = "A",
                     avatarColor = AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = true,
                 ),
             ),
             state.payers,
@@ -268,11 +270,13 @@ class BillDetailViewModelTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = PIERRE,
                     name = "Pierre",
                     initials = "P",
                     avatarColor = AvatarColor.BLUE,
                     photoUrl = null,
                     isMe = true,
+                    opensProfile = true,
                 ),
             ),
             state.payers,
@@ -304,18 +308,22 @@ class BillDetailViewModelTest {
             assertEquals(
                 listOf(
                     BillPayer(
+                        memberId = ANA,
                         name = "Ana",
                         initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = BRUNO,
                         name = "Bruno",
                         initials = "B",
                         avatarColor = AvatarColor.GREEN,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                 ),
                 state.payers,
@@ -358,25 +366,31 @@ class BillDetailViewModelTest {
             assertEquals(
                 listOf(
                     BillPayer(
+                        memberId = PIERRE,
                         name = "Pierre",
                         initials = "P",
                         avatarColor = AvatarColor.BLUE,
                         photoUrl = null,
                         isMe = true,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = ANA,
                         name = "Ana",
                         initials = "A",
                         avatarColor = AvatarColor.PEACH,
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = true,
                     ),
                     BillPayer(
+                        memberId = FORMER,
                         name = null,
                         initials = "",
                         avatarColor = AvatarColor.entries.first(),
                         photoUrl = null,
                         isMe = false,
+                        opensProfile = false,
                     ),
                 ),
                 state.payers,
@@ -877,6 +891,7 @@ class BillDetailViewModelTest {
                         hasJoined = true,
                         paidMinor = 48_000,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = PIERRE,
@@ -888,6 +903,7 @@ class BillDetailViewModelTest {
                         hasJoined = true,
                         paidMinor = null,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = BRUNO,
@@ -899,6 +915,7 @@ class BillDetailViewModelTest {
                         hasJoined = false,
                         paidMinor = null,
                         shareMinor = 16_000,
+                        opensProfile = true,
                     ),
                     BillShareRow(
                         memberId = CARLA,
@@ -910,6 +927,7 @@ class BillDetailViewModelTest {
                         hasJoined = false,
                         paidMinor = null,
                         shareMinor = null,
+                        opensProfile = true,
                     ),
                 ),
                 state.people,

@@ -10,6 +10,12 @@ enum ActivityCopy {
 
     // MARK: - An item
 
+    /// "Open Ana's profile", or "Open your profile": what a tap on the face does.
+    static func openActorLabel(_ item: ActivityItem) -> String {
+        if item.actor.isMe { return String(localized: "Open your profile") }
+        return String(localized: "Open \(actor(item))'s profile")
+    }
+
     /// Who did it: "You", their name, or "Someone" when the server kept no name.
     static func actor(_ item: ActivityItem) -> String {
         if item.actor.isMe { return String(localized: "You") }

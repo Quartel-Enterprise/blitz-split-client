@@ -33,18 +33,22 @@ class SharedBillRowsTest {
         assertEquals(
             listOf(
                 BillPayer(
+                    memberId = ANA,
                     name = "Ana Paula",
                     initials = "AP",
                     avatarColor = AvatarColor.default,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = false,
                 ),
                 BillPayer(
+                    memberId = BRUNO,
                     name = "Bruno",
                     initials = "B",
                     avatarColor = AvatarColor.default,
                     photoUrl = null,
                     isMe = false,
+                    opensProfile = false,
                 ),
             ),
             payers,
@@ -100,6 +104,7 @@ class SharedBillRowsTest {
                 hasJoined = true,
                 paidMinor = 64_200,
                 shareMinor = null,
+                opensProfile = false,
             ),
             people.last(),
         )

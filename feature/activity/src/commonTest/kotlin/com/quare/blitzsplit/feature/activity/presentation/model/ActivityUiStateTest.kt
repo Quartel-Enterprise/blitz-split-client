@@ -509,6 +509,7 @@ class ActivityUiStateTest {
             isMe = false,
             initials = "AN",
             color = AvatarColor.GREEN,
+            personKey = "name:ana",
         ),
         groupId = "ape",
         groupName = "Apê 302",
