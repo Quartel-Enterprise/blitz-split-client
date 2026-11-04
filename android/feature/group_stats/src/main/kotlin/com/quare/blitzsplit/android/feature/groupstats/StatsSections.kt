@@ -46,6 +46,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiSt
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val sectionPadding = Modifier.padding(
@@ -382,6 +383,108 @@ private fun StatsPersonRowItem(
                 )
             }
             StatsAmountBarIndicator(fraction = person.barFraction.toFloat())
+        }
+    }
+}
+
+// Why: "Acertos": who settles their share of the period's bills fastest and slowest, once two people had one.
+@Composable
+internal fun StatsSettlingSection(
+    state: GroupStatsUiState,
+    money: MoneyFormatter,
+    modifier: Modifier = Modifier,
+) {
+    val settling = state.settling ?: return
+    Column(modifier = modifier) {
+        StatsSectionHeading(stringResource(R.string.group_stats_settling), modifier = sectionPadding)
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            listOf(
+                R.string.group_stats_settles_fastest to settling.fastest,
+                R.string.group_stats_settles_slowest to settling.slowest,
+            ).forEachIndexed { index, (label, settler) ->
+                StatsSettlerRow(
+                    label = stringResource(label),
+                    settler = settler,
+                    money = money,
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceContainerLowest,
+                        groupedRowShapeOf(index, 2),
+                    ),
+                )
+            }
+        }
+        Text(
+            text = stringResource(R.string.group_stats_settling_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(
+                start = 4.dp,
+                end = 4.dp,
+                top = 12.dp,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun StatsSettlerRow(
+    label: String,
+    settler: StatsSettler,
+    money: MoneyFormatter,
+    modifier: Modifier = Modifier,
+) {
+    val name = if (settler.isMe) stringResource(R.string.group_stats_you, settler.name) else settler.name
+    val days = if (settler.averageDays == 0) {
+        stringResource(R.string.group_stats_settling_same_day)
+    } else {
+        pluralStringResource(R.plurals.group_stats_settling_days, settler.averageDays, settler.averageDays)
+    }
+    val open = settler.openMinor
+        .takeIf { it > 0 }
+        ?.let { stringResource(R.string.group_stats_settling_open, money.toText(it)) }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 10.dp,
+            ).semantics(mergeDescendants = true) {
+                contentDescription = listOfNotNull(label, name, days, open).joinToString(", ")
+            },
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AvatarBadge(
+            initial = settler.initials,
+            color = settler.avatarColor,
+            photoUrl = settler.photoUrl,
+            size = 36.dp,
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = days,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            if (open != null) {
+                Text(
+                    text = open,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

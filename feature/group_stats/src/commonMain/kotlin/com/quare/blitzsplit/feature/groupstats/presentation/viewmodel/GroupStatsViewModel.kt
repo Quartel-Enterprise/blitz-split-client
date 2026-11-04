@@ -7,9 +7,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -53,6 +55,7 @@ class GroupStatsViewModel(
     private val updateStatsChartPreferences: UpdateStatsChartPreferences,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
     observeCategoryTree: ObserveCategoryTree,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
@@ -91,6 +94,7 @@ class GroupStatsViewModel(
                 bars = emptyList(),
                 grainNotes = emptyList(),
                 biggestExpense = null,
+                settling = null,
                 categories = emptyList(),
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
@@ -102,6 +106,7 @@ class GroupStatsViewModel(
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
+    private var settlements: List<Settlement> = emptyList()
     private var categoryTree = CategoryTree.appOnly
     private var chart = StatsChartPreferences.initial
 
@@ -130,6 +135,11 @@ class GroupStatsViewModel(
             isGone = group == null
             if (group == null) leave() else render()
         }.launchIn(viewModelScope)
+        observeSettlements(route.groupId)
+            .onEach { settlements ->
+                this.settlements = settlements
+                render()
+            }.launchIn(viewModelScope)
         observeCategoryTree(route.groupId)
             .onEach { tree ->
                 categoryTree = tree
@@ -298,6 +308,13 @@ class GroupStatsViewModel(
             bars = calculator.createBars(spending, span, grain),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
+            settling = SettlingCalculator(
+                group = group,
+                expenses = expenses,
+                settlements = settlements,
+                today = SpentDay.dateOf(currentTimeMillis(), timeZone),
+                timeZone = timeZone,
+            ).createOrNull(span),
             categories = calculator.createCategories(spending),
             isLoaded = isDownloadRead,
             homeTab = uiState.value.homeTab,
