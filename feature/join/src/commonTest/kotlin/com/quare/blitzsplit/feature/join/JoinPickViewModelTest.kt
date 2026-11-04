@@ -42,6 +42,7 @@ class JoinPickViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: JoinPickViewModel
     private val actions = mutableListOf<JoinPickUiAction>()
+    private val selectedWhenTracked = mutableListOf<String?>()
     private var joinCalls = 0
 
     @BeforeTest
@@ -750,6 +751,171 @@ class JoinPickViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN the list WHEN tapping back THEN sends no analytics event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the list WHEN picking Bruno THEN sends the member selected event without his id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+
+            // Then
+            assertEquals(listOf("join_pick_member_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the list WHEN picking Bruno THEN sends the event before he shows picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+
+        // Then
+        assertEquals(listOf<String?>(null), selectedWhenTracked)
+        assertEquals(BRUNO_ID, viewModel.uiState.value.selectedMemberId)
+    }
+
+    @Test
+    fun `GIVEN Ana already joined WHEN picking her THEN still sends the member selected event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(ANA_ID))
+
+            // Then
+            assertEquals(listOf("join_pick_member_selected" to emptyMap<String, Any>()), trackedEvents)
+            assertNull(viewModel.uiState.value.selectedMemberId)
+        }
+
+    @Test
+    fun `GIVEN Bruno picked WHEN joining THEN sends the join event after the pick`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "join_pick_member_selected" to emptyMap<String, Any>(),
+                "join_pick_join_clicked" to emptyMap(),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN nobody picked WHEN joining THEN still sends the join event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(listOf("join_pick_join_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(0, joinCalls)
+    }
+
+    @Test
+    fun `GIVEN the list WHEN tapping not in the list THEN sends the not in list event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+        // Then
+        assertEquals(listOf("join_pick_not_in_list_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the new name sheet WHEN typing a name THEN sends no analytics event for it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+
+        // Then
+        assertEquals(listOf("join_pick_not_in_list_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Daniel typed WHEN confirming the new member THEN sends the confirmed event without the name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "join_pick_not_in_list_clicked" to emptyMap<String, Any>(),
+                    "join_pick_new_member_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a name already in the group WHEN confirming the new member THEN still sends the confirmed event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Ana"))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "join_pick_not_in_list_clicked" to emptyMap<String, Any>(),
+                    "join_pick_new_member_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN the new name sheet WHEN dismissing it THEN sends no analytics event for it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnNewMemberDismissed)
+
+        // Then
+        assertEquals(listOf("join_pick_not_in_list_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
     private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
     private val ana = InviteMember(ANA_ID, "Ana", AvatarColor.PEACH, hasJoined = true)
     private val bruno = InviteMember(BRUNO_ID, "Bruno", AvatarColor.GREEN, hasJoined = false)
@@ -798,7 +964,10 @@ class JoinPickViewModelTest {
             it.navigate(Route.JoinPick(CODE))
         }
         viewModel = JoinPickViewModel(
-            trackEvent = { name, params -> trackedEvents += name to params },
+            trackEvent = { name, params ->
+                trackedEvents += name to params
+                selectedWhenTracked += viewModel.uiState.value.selectedMemberId
+            },
             route = Route.JoinPick(CODE),
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),

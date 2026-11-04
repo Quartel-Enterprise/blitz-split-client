@@ -2697,6 +2697,452 @@ class MembersViewModelTest {
             assertTrue(viewModel.uiState.value.isReleasing)
         }
 
+    @Test
+    fun `GIVEN a group with members WHEN the screen opens and a sync changes it THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            groups.groups.value =
+                listOf(
+                    trip.copy(
+                        name = "Floripa",
+                        members = listOf(pierre, ana, bruno, carla, diego),
+                    ),
+                )
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping share THEN sends the share event with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf("members_share_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping add THEN sends the add event with no params`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnAddClicked)
+
+        // Then
+        assertEquals(listOf("member_add_clicked" to noParams), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a guest WHEN tapping their row THEN sends the person event from Membros without the member id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnMemberClicked("member-4"))
+
+            // Then
+            assertEquals(listOf("person_clicked" to fromMembers), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an unknown member WHEN tapping their row THEN still sends the person event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnMemberClicked("member-9"))
+
+        // Then
+        assertEquals(listOf("person_clicked" to fromMembers), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping rename on a member THEN sends the rename event without the member id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-4"))
+
+            // Then
+            assertEquals(listOf("member_rename_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla with her personal link WHEN tapping her personal invite THEN sends the invite event alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            assertEquals(listOf("personal_invite_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla without her link yet WHEN tapping her personal invite THEN still sends the invite event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            assertEquals(listOf("personal_invite_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN dismissing it THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteDismissed)
+
+            // Then
+            assertEquals(listOf("personal_invite_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN copying THEN sends the copy event without the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "personal_invite_clicked" to noParams,
+                    "personal_invite_copy_clicked" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no personal invite open WHEN copying the personal link THEN still sends the copy event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+
+            // Then
+            assertEquals(listOf("personal_invite_copy_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN sharing THEN sends the share event without the link or names`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkShareClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "personal_invite_clicked" to noParams,
+                    "personal_invite_share_clicked" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone who has not joined WHEN tapping remove THEN sends the remove event without the member id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // Then
+            assertEquals(listOf("member_remove_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone who joined WHEN tapping remove THEN still sends the remove event though nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-3"))
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRemove)
+            assertEquals(listOf("member_remove_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the removal of Carla asked WHEN confirming THEN sends the confirmation after the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_remove_clicked" to noParams,
+                    "member_remove_confirmed" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the removal of Carla asked WHEN dismissing it THEN sends the cancellation after the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_remove_clicked" to noParams,
+                    "member_remove_cancelled" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Bruno joined WHEN the creator taps Liberar nome THEN sends the release event without the member id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // Then
+            assertEquals(listOf("member_release_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN this device user did not create the group WHEN tapping Liberar nome THEN still sends the event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(isCreatedByMe = false))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertEquals(listOf("member_release_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN confirming the release of Bruno THEN still sends the confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(releaseError = IllegalStateException("offline"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_release_clicked" to noParams,
+                    "member_release_confirmed" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN dismissing it THEN sends the cancellation after the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_release_clicked" to noParams,
+                    "member_release_cancelled" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server answering the release of Bruno WHEN dismissing it THEN still sends the cancellation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_release_clicked" to noParams,
+                    "member_release_confirmed" to noParams,
+                    "member_release_cancelled" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the add editor open WHEN typing a name THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(MembersUiEvent.OnAddClicked)
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnDraftChanged("Diego"))
+
+        // Then
+        assertEquals(listOf("member_add_clicked" to noParams), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN nicknames offered WHEN tapping one THEN sends the suggestion event from Membros without the name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_add_clicked" to noParams,
+                    "member_name_suggestion_clicked" to fromMembers,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN nicknames offered WHEN tapping a name not offered THEN still sends the suggestion event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana Z."))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_add_clicked" to noParams,
+                    "member_name_suggestion_clicked" to fromMembers,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a free name typed in the add editor WHEN saving THEN sends the save event without the name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Diego"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_add_clicked" to noParams,
+                    "member_editor_save_clicked" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a blank draft WHEN saving THEN still sends the save event though nothing is written`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSaveClicked)
+
+            // Then
+            assertTrue(groups.addedMembers.isEmpty())
+            assertEquals(
+                listOf(
+                    "member_add_clicked" to noParams,
+                    "member_editor_save_clicked" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the rename editor open WHEN dismissing it THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-4"))
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+
+        // Then
+        assertEquals(listOf("member_rename_clicked" to noParams), trackedEvents)
+    }
+
+    private val noParams = emptyMap<String, Any>()
+
+    // Why: the params of the events that name the screen they come from.
+    private val fromMembers = mapOf<String, Any>("source" to "members")
+
     private val pierre = GroupMember(
         "member-1",
         "Pierre",

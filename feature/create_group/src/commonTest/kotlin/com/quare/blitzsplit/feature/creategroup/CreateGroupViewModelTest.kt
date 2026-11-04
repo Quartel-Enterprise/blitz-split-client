@@ -37,6 +37,7 @@ import kotlin.test.assertTrue
 
 class CreateGroupViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val backStacksWhenTracked = mutableListOf<List<Route>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var groups: FakeGroupRepository
@@ -1552,6 +1553,502 @@ class CreateGroupViewModelTest {
             assertEquals(ProfilePhoto.Pending(firstPhoto), viewModel.uiState.value.photo)
         }
 
+    @Test
+    fun `GIVEN the screen on top WHEN closing THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val close = CreateGroupUiEvent.OnCloseClicked
+
+        // When
+        viewModel.onEvent(close)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN typing the group name THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val typed = CreateGroupUiEvent.OnNameChanged("Viagem Floripa")
+
+        // When
+        viewModel.onEvent(typed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN typing a member name THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val typed = CreateGroupUiEvent.OnDraftChanged("Ana")
+
+        // When
+        viewModel.onEvent(typed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN the picked file is unreadable THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val unreadable = CreateGroupUiEvent.OnPhotoUnreadable
+
+        // When
+        viewModel.onEvent(unreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN dragging the photo THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+        trackedEvents.clear()
+        val drag = CreateGroupUiEvent.OnPhotoCrop(
+            PhotoCropEvent.OnDragged(
+                dx = 0.1f,
+                dy = 0f,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(drag)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN pinching the photo THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+        trackedEvents.clear()
+        val pinch = CreateGroupUiEvent.OnPhotoCrop(
+            PhotoCropEvent.OnPinched(
+                zoomChange = 1.5f,
+                focusX = 0.5f,
+                focusY = 0.5f,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(pinch)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN moving the zoom slider THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+        trackedEvents.clear()
+        val zoom = CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(2f))
+
+        // When
+        viewModel.onEvent(zoom)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping the avatar THEN sends the color event from the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tap = CreateGroupUiEvent.OnColorClicked
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(listOf("group_color_clicked" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group photo WHEN tapping the avatar THEN still sends the color event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        trackedEvents.clear()
+        val tap = CreateGroupUiEvent.OnColorClicked
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(listOf("group_color_clicked" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping the Android avatar THEN sends the shape and color event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tap = CreateGroupUiEvent.OnShapeAndColorClicked
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                listOf("group_shape_and_color_clicked" to mapOf<String, Any>("source" to "create_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN a photo is picked THEN sends the photo picked event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val picked = CreateGroupUiEvent.OnPhotoPicked(firstPhoto)
+
+        // When
+        viewModel.onEvent(picked)
+
+        // Then
+        assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open WHEN confirming THEN sends the crop confirmed event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+        trackedEvents.clear()
+        val confirm = CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked)
+
+        // When
+        viewModel.onEvent(confirm)
+
+        // Then
+        assertEquals(listOf("photo_crop_confirmed" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a group photo WHEN removing it THEN sends the photo removed event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        trackedEvents.clear()
+        val remove = CreateGroupUiEvent.OnPhotoRemoved
+
+        // When
+        viewModel.onEvent(remove)
+
+        // Then
+        assertEquals(listOf("photo_removed" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a trip WHEN picking home THEN sends the type event with home`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val pick = CreateGroupUiEvent.OnTypeSelected(GroupType.HOME)
+
+        // When
+        viewModel.onEvent(pick)
+
+        // Then
+        assertEquals(
+            listOf("group_type_selected" to mapOf<String, Any>("type" to GroupType.HOME, "source" to "create_group")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN reais WHEN picking euros THEN sends the currency event with euros`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(region = "BR")
+        val pick = CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR)
+
+        // When
+        viewModel.onEvent(pick)
+
+        // Then
+        assertEquals(
+            listOf(
+                "group_currency_selected" to mapOf<String, Any>(
+                    "currency" to GroupCurrency.EUR,
+                    "source" to "create_group",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a member name typed WHEN adding it THEN sends the add member event with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
+            val add = CreateGroupUiEvent.OnAddMemberClicked
+
+            // When
+            viewModel.onEvent(add)
+
+            // Then
+            assertEquals(listOf("create_group_add_member_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a blank draft WHEN adding it THEN still sends the add member event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val add = CreateGroupUiEvent.OnAddMemberClicked
+
+        // When
+        viewModel.onEvent(add)
+
+        // Then
+        assertEquals(listOf("create_group_add_member_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a draft repeating Ana WHEN picking a nickname THEN sends the suggestion event without the name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            addMember("Ana")
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
+            trackedEvents.clear()
+            val nickname = viewModel.uiState.value.nicknameSuggestions
+                .first()
+            val pick = CreateGroupUiEvent.OnSuggestionClicked(nickname)
+
+            // When
+            viewModel.onEvent(pick)
+
+            // Then
+            assertEquals(
+                listOf("member_name_suggestion_clicked" to mapOf<String, Any>("source" to "create_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana in the group WHEN removing Ana THEN sends the remove member event without the id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            addMember("Ana")
+            trackedEvents.clear()
+            val remove = CreateGroupUiEvent.OnRemoveMemberClicked(memberIdOf("Ana"))
+
+            // When
+            viewModel.onEvent(remove)
+
+            // Then
+            assertEquals(listOf("create_group_remove_member_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no group name WHEN creating THEN sends only the create tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val create = CreateGroupUiEvent.OnCreateClicked
+
+        // When
+        viewModel.onEvent(create)
+
+        // Then
+        assertEquals(listOf("create_group_create_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a draft repeating Ana WHEN creating THEN sends only the create tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        addMember("Ana")
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ANA"))
+        trackedEvents.clear()
+        val create = CreateGroupUiEvent.OnCreateClicked
+
+        // When
+        viewModel.onEvent(create)
+
+        // Then
+        assertEquals(listOf("create_group_create_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a filled group WHEN creating THEN sends the tap and then the group created with its kind`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(region = "BR")
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
+            viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+            addMember("Ana")
+            trackedEvents.clear()
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "create_group_create_clicked" to emptyMap(),
+                    "group_created" to mapOf<String, Any>(
+                        "type" to GroupType.HOME,
+                        "currency" to GroupCurrency.EUR,
+                        "members" to 2,
+                        "has_photo" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN only the creator WHEN creating THEN the group created counts one member`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(region = "BR")
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        val create = CreateGroupUiEvent.OnCreateClicked
+
+        // When
+        viewModel.onEvent(create)
+
+        // Then
+        assertEquals(
+            "group_created" to mapOf<String, Any>(
+                "type" to GroupType.TRIP,
+                "currency" to GroupCurrency.BRL,
+                "members" to 1,
+                "has_photo" to false,
+            ),
+            trackedEvents.last(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a draft typed and not added WHEN creating THEN the group created counts the draft as a member`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            addMember("Ana")
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("  Bia  "))
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            val (name, params) = trackedEvents.last()
+            assertEquals("group_created", name)
+            assertEquals(3, params["members"])
+        }
+
+    @Test
+    fun `GIVEN a group photo WHEN creating THEN the group created says it has a photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        pickAndConfirm(firstPhoto)
+        val create = CreateGroupUiEvent.OnCreateClicked
+
+        // When
+        viewModel.onEvent(create)
+
+        // Then
+        val (name, params) = trackedEvents.last()
+        assertEquals("group_created", name)
+        assertEquals(true, params["has_photo"])
+    }
+
+    @Test
+    fun `GIVEN a filled group WHEN creating THEN sends the group created before the invite opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            backStacksWhenTracked.clear()
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.CreateGroup), backStacksWhenTracked.last())
+            assertEquals(
+                Route.Invite(groups.createdGroups.single().id, isNewGroup = true),
+                navigator.backStack.value.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a group with names WHEN creating THEN no event carries a group or member name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            addMember("Ana")
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Bia"))
+            trackedEvents.clear()
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            val values = trackedEvents.flatMap { it.second.values }.map { it.toString() }
+            assertTrue(values.none { it.contains("Viagem") || it == "Pierre" || it == "Ana" || it == "Bia" })
+        }
+
+    @Test
+    fun `GIVEN the device fails to save the group WHEN creating THEN sends only the create tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            groups.createError = IllegalStateException("disk full")
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            assertEquals(listOf("create_group_create_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a save in flight WHEN tapping create again THEN sends a second tap and no group created yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            groups.createGate = CompletableDeferred()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "create_group_create_clicked" to emptyMap<String, Any>(),
+                    "create_group_create_clicked" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, null)
 
     private val firstPhoto = byteArrayOf(1, 2, 3)
@@ -1584,7 +2081,10 @@ class CreateGroupViewModelTest {
         groups = FakeGroupRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.CreateGroup) }
         viewModel = CreateGroupViewModel(
-            trackEvent = { name, params -> trackedEvents += name to params },
+            trackEvent = { name, params ->
+                trackedEvents += name to params
+                backStacksWhenTracked += navigator.backStack.value
+            },
             navigator = navigator,
             createGroup = CreateGroupUseCase(groups) { 1_000L },
             checkMemberName = CheckMemberNameUseCase(),
