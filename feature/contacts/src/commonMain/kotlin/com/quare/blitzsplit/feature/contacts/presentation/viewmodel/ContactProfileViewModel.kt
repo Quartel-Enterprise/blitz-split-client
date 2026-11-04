@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.contacts.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
@@ -19,7 +18,9 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.isRightAboveHomeTab
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
@@ -55,7 +56,14 @@ class ContactProfileViewModel(
     private val cancelGuestMerge: CancelGuestMerge,
     observeContactBook: ObserveContactBook,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ContactProfileUiEvent>(trackEvent) {
+    // Why: the screen these events come from, as their source param says.
+    private val sourceParams: Map<String, Any> = mapOf("source" to "contact_profile")
+
+    // Why: "Juntar com uma conta", as its link's and retry's source say, apart from the profile's own taps.
+    private val mergeParams: Map<String, Any> = mapOf("source" to "contact_merge")
+
     val uiState: StateFlow<ContactProfileUiState>
         field = MutableStateFlow(
             ContactProfileUiState(
@@ -106,55 +114,58 @@ class ContactProfileViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ContactProfileUiEvent) {
+    override fun handleEvent(event: ContactProfileUiEvent) {
         when (event) {
             ContactProfileUiEvent.OnBackClicked -> if (isOwnRouteOnTop()) navigator.navigateBack()
 
             ContactProfileUiEvent.OnChargeClicked -> findContactIf { uiState.value.canCharge }?.let { contact ->
-                navigate(
-                    Route.GlobalBalances(
-                        BalancesFilter.OWES_YOU,
-                        charge = BalancesCharge(contact.key, contact.net.currency),
-                    ),
-                )
+                val charge = BalancesCharge(contact.key, contact.net.currency)
+                if (navigate(Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = charge))) {
+                    trackEvent("charge_clicked", sourceParams)
+                }
             }
 
-            ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let(::openSettleUp)
+            ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let { contact ->
+                if (openSettleUp(contact)) trackEvent("received_clicked", sourceParams)
+            }
 
-            ContactProfileUiEvent.OnSettleClicked -> findContactIf { uiState.value.canSettle }?.let(::openSettleUp)
+            ContactProfileUiEvent.OnSettleClicked -> findContactIf { uiState.value.canSettle }?.let { contact ->
+                if (openSettleUp(contact)) trackEvent("settle_clicked", sourceParams)
+            }
 
             // Why: only a group the person is still in, so a stale tap never opens one a sync just took away.
             is ContactProfileUiEvent.OnGroupClicked -> findContactIf { contact ->
                 contact.groups.any { it.groupId == event.groupId }
-            }?.let { openGroup(event.groupId) }
+            }?.let { if (openGroup(event.groupId)) trackEvent("group_clicked", sourceParams) }
 
             ContactProfileUiEvent.OnAddToGroupClicked -> openAddToGroup()
 
-            is ContactProfileUiEvent.OnAddGroupPicked -> uiState.update { state ->
-                val draft = state.addToGroup ?: return@update state
+            is ContactProfileUiEvent.OnAddGroupPicked -> {
+                val draft = uiState.value.addToGroup ?: return
                 val option = draft.options.firstOrNull { it.groupId == event.groupId }
-                if (option == null ||
-                    option.isAlreadyIn
-                ) {
-                    state
-                } else {
-                    state.copy(addToGroup = draft.copy(selectedGroupId = event.groupId))
-                }
+                if (option == null || option.isAlreadyIn) return
+                if (event.groupId != draft.selectedGroupId) trackEvent("contact_add_to_group_picked", emptyMap())
+                uiState.update { it.copy(addToGroup = it.addToGroup?.copy(selectedGroupId = event.groupId)) }
             }
 
             ContactProfileUiEvent.OnAddToGroupConfirmed -> addToGroup()
 
             ContactProfileUiEvent.OnAddToGroupDismissed -> uiState.update { it.copy(addToGroup = null) }
 
-            ContactProfileUiEvent.OnHideClicked -> if (uiState.value.canHide) {
+            ContactProfileUiEvent.OnHideClicked -> if (uiState.value.canHide && !uiState.value.isHideConfirmOpen) {
+                trackEvent("contact_hide_clicked", emptyMap())
                 uiState.update { it.copy(isHideConfirmOpen = true) }
             }
 
             ContactProfileUiEvent.OnHideConfirmed -> hide()
 
-            ContactProfileUiEvent.OnHideDismissed -> uiState.update { it.copy(isHideConfirmOpen = false) }
+            ContactProfileUiEvent.OnHideDismissed -> if (uiState.value.isHideConfirmOpen) {
+                trackEvent("contact_hide_cancelled", emptyMap())
+                uiState.update { it.copy(isHideConfirmOpen = false) }
+            }
 
             ContactProfileUiEvent.OnShowClicked -> findContactIf { uiState.value.canShow }?.let { contact ->
+                trackEvent("contact_show_clicked", sourceParams)
                 viewModelScope.launch {
                     setContactHidden(contact.key, isHidden = false)
                         .onFailure { emit(ContactProfileUiAction.ShowChangeError) }
@@ -162,37 +173,45 @@ class ContactProfileViewModel(
             }
 
             ContactProfileUiEvent.OnViewBalancesClicked -> if (isShown()) {
+                trackEvent("contact_view_balances_clicked", emptyMap())
                 navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
             }
 
             // Why: "Ver tudo" is Atividade on this person, a home tab in Contatos' place.
             ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (isShown()) {
+                trackEvent("contact_history_see_all_clicked", emptyMap())
                 navigator.openHomeTab(Route.Activity(personKey = route.personKey))
             }
 
             ContactProfileUiEvent.OnInviteGuestClicked -> findContactIf { it.isGuest }?.let { contact ->
-                navigate(
-                    Route.ContactInvite(
-                        personKey = contact.key,
-                        name = contact.name,
-                    ),
-                )
+                if (navigate(
+                        Route.ContactInvite(
+                            personKey = contact.key,
+                            name = contact.name,
+                        ),
+                    )
+                ) {
+                    trackEvent("contact_invite_guest_clicked", emptyMap())
+                }
             }
 
             ContactProfileUiEvent.OnMergeClicked -> openMerge()
 
             ContactProfileUiEvent.OnMergeRetryClicked -> {
+                if (uiState.value.merge?.hasFailed == true) trackEvent("retry_clicked", mergeParams)
                 uiState.update { state -> state.copy(merge = state.merge?.copy(hasFailed = false)) }
                 requestMergeIfDue()
             }
 
             ContactProfileUiEvent.OnMergeCopyClicked -> uiState.value.merge?.merge?.let { merge ->
+                trackEvent("invite_link_copy_clicked", mergeParams)
                 emit(ContactProfileUiAction.CopyLink(merge.link))
             }
 
             ContactProfileUiEvent.OnMergeShareClicked -> {
                 val merge = uiState.value.merge?.merge ?: return
                 val contact = uiState.value.contact ?: return
+                trackEvent("invite_link_share_clicked", mergeParams)
                 emit(ContactProfileUiAction.ShareLink(merge.link, contact.name))
             }
 
@@ -239,35 +258,33 @@ class ContactProfileViewModel(
 
     /*
      * Why: a profile opened from that same settling up's face goes back to it, keeping what was typed, rather than
-     * stacking a second, equal form whose twin under it would close it once the debt settles.
+     * stacking a second, equal form whose twin under it would close it once the debt settles. Says whether it opened
+     * (or went back to the one under it), which Analytics counts.
      */
-    private fun openSettleUp(contact: Contact) {
+    private fun openSettleUp(contact: Contact): Boolean {
         val settleUp = Route.SettleUp(
             personKey = contact.key,
             currency = contact.net.currency,
         )
         val stack = navigator.backStack.value
-        if (isOwnRouteOnTop() && stack.getOrNull(stack.lastIndex - 1) == settleUp) {
-            navigator.navigateBack()
-        } else {
-            navigate(settleUp)
-        }
+        if (!isOwnRouteOnTop() || stack.getOrNull(stack.lastIndex - 1) != settleUp) return navigate(settleUp)
+        navigator.navigateBack()
+        return true
     }
 
-    private fun openGroup(groupId: String) {
-        navigate(
-            Route.GroupDetail(
-                groupId,
-                joinedAs = null,
-                tab = GroupTab.EXPENSES,
-            ),
-        )
-    }
+    private fun openGroup(groupId: String): Boolean = navigate(
+        Route.GroupDetail(
+            groupId,
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        ),
+    )
 
     private fun openAddToGroup() {
         val contact = uiState.value.contact ?: return
         val snapshot = book ?: return
         if (!isShown()) return
+        trackEvent("contact_add_to_group_clicked", emptyMap())
         uiState.update { it.copy(addToGroup = draftOf(contact, snapshot, selectedGroupId = null)) }
     }
 
@@ -302,6 +319,7 @@ class ContactProfileViewModel(
         val contact = state.contact ?: return
         val groupId = draft.selectedGroupId ?: return
         val groupName = draft.options.first { it.groupId == groupId }.name
+        trackEvent("contact_add_to_group_confirmed", mapOf("is_guest" to contact.isGuest))
         uiState.update { it.copy(addToGroup = null) }
         viewModelScope.launch {
             addContactToGroup(contact, groupId)
@@ -313,6 +331,7 @@ class ContactProfileViewModel(
     // Why: hidden, the person leaves Contatos; a profile of its own goes back to the list, a pane keeps showing them.
     private fun hide() {
         val contact = findContactIf { uiState.value.canHide && uiState.value.isHideConfirmOpen } ?: return
+        trackEvent("contact_hide_confirmed", emptyMap())
         uiState.update { it.copy(isHideConfirmOpen = false) }
         viewModelScope.launch {
             setContactHidden(contact.key, isHidden = true)
@@ -323,6 +342,7 @@ class ContactProfileViewModel(
 
     private fun openMerge() {
         if (findContactIf { it.isGuest } == null || !isShown()) return
+        trackEvent("contact_merge_clicked", emptyMap())
         uiState.update { state ->
             state.copy(
                 merge = GuestMergeSheet(
@@ -378,6 +398,7 @@ class ContactProfileViewModel(
         val state = uiState.value
         val pending = state.pendingMerge.valueOrNull() ?: return
         if (state.isCancellingMerge) return
+        trackEvent("contact_merge_cancel_clicked", emptyMap())
         uiState.update { it.copy(isCancellingMerge = true) }
         viewModelScope.launch {
             val result = cancelGuestMerge(pending.id)
@@ -393,8 +414,11 @@ class ContactProfileViewModel(
 
     private fun findContactIf(rule: (Contact) -> Boolean): Contact? = uiState.value.contact?.takeIf(rule)
 
-    private fun navigate(route: Route) {
-        if (isShown()) navigator.navigate(route)
+    // Why: says whether it opened, which Analytics counts.
+    private fun navigate(route: Route): Boolean {
+        if (!isShown()) return false
+        navigator.navigate(route)
+        return true
     }
 
     private fun emit(action: ContactProfileUiAction) {

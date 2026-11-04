@@ -36,6 +36,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class ContactInviteViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
@@ -470,6 +471,7 @@ class ContactInviteViewModelTest {
             it.navigate(route)
         }
         viewModel = ContactInviteViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode(::qrCodeOf),

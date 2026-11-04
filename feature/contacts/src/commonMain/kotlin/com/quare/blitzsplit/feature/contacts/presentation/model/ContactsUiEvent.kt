@@ -1,8 +1,50 @@
 package com.quare.blitzsplit.feature.contacts.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ContactsUiEvent : UiEvent {
+sealed interface ContactsUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: the window deciding the layout, or a back that closes the pane: nobody tapped to act.
+            is OnDetailPaneChanged,
+            OnPaneBackClicked,
+            -> EventAnalytics.NotTracked
+
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnHomeTabClicked,
+            OnGroupsTabClicked,
+            OnBalancesTabClicked,
+            OnActivityTabClicked,
+            -> EventAnalytics.NotTracked
+
+            /*
+             * Why: each counts only when the screen takes it (someone still listed, the screen still on top or beside
+             * Contatos, a question still open), never a late tap, as the ViewModel checks before acting.
+             */
+            is OnContactClicked -> EventAnalytics.Manual("contact_clicked")
+
+            OnSearchClicked -> EventAnalytics.Manual("search_opened")
+
+            OnHiddenToggled -> EventAnalytics.Manual("contacts_hidden_toggled")
+
+            is OnShowContactClicked -> EventAnalytics.Manual("contact_show_clicked")
+
+            OnBalancesCardClicked,
+            OnYouOweClicked,
+            OnOwedToYouClicked,
+            -> EventAnalytics.Manual("contacts_balances_clicked")
+
+            OnAgendaClicked -> EventAnalytics.Manual("contacts_agenda_clicked")
+
+            OnInviteWithLinkClicked -> EventAnalytics.Manual("contacts_invite_with_link_clicked")
+
+            OnProfileClicked -> EventAnalytics.Manual("profile_avatar_clicked")
+        }
+
     // Why: a row tapped: its profile, beside the list where the UI draws the pane, over it everywhere else.
     data class OnContactClicked(
         val key: String,

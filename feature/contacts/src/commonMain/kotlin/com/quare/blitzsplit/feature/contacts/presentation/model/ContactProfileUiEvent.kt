@@ -1,8 +1,63 @@
 package com.quare.blitzsplit.feature.contacts.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ContactProfileUiEvent : UiEvent {
+sealed interface ContactProfileUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: a back or a close, which each platform also does its own way: where it went is its screen view.
+            OnBackClicked,
+            OnAddToGroupDismissed,
+            OnMergeDismissed,
+            -> EventAnalytics.NotTracked
+
+            // Why: "Em breve", which the tap always shows.
+            OnAskAppUserClicked -> EventAnalytics.Automatic("contact_ask_app_user_clicked")
+
+            /*
+             * Why: each counts only when the screen takes it (someone still listed, the screen still on top or beside
+             * Contatos, a question still open), never a late tap, as the ViewModel checks before acting.
+             */
+            OnChargeClicked -> EventAnalytics.Manual("charge_clicked")
+
+            OnReceivedClicked -> EventAnalytics.Manual("received_clicked")
+
+            OnSettleClicked -> EventAnalytics.Manual("settle_clicked")
+
+            is OnGroupClicked -> EventAnalytics.Manual("group_clicked")
+
+            OnAddToGroupClicked -> EventAnalytics.Manual("contact_add_to_group_clicked")
+
+            is OnAddGroupPicked -> EventAnalytics.Manual("contact_add_to_group_picked")
+
+            OnAddToGroupConfirmed -> EventAnalytics.Manual("contact_add_to_group_confirmed")
+
+            OnHideClicked -> EventAnalytics.Manual("contact_hide_clicked")
+
+            OnHideConfirmed -> EventAnalytics.Manual("contact_hide_confirmed")
+
+            OnHideDismissed -> EventAnalytics.Manual("contact_hide_cancelled")
+
+            OnShowClicked -> EventAnalytics.Manual("contact_show_clicked")
+
+            OnViewBalancesClicked -> EventAnalytics.Manual("contact_view_balances_clicked")
+
+            OnSeeAllHistoryClicked -> EventAnalytics.Manual("contact_history_see_all_clicked")
+
+            OnInviteGuestClicked -> EventAnalytics.Manual("contact_invite_guest_clicked")
+
+            OnMergeClicked -> EventAnalytics.Manual("contact_merge_clicked")
+
+            OnMergeRetryClicked -> EventAnalytics.Manual("retry_clicked")
+
+            OnMergeCopyClicked -> EventAnalytics.Manual("invite_link_copy_clicked")
+
+            OnMergeShareClicked -> EventAnalytics.Manual("invite_link_share_clicked")
+
+            OnCancelMergeClicked -> EventAnalytics.Manual("contact_merge_cancel_clicked")
+        }
+
     data object OnBackClicked : ContactProfileUiEvent
 
     // Why: "Cobrar", Saldos' message (8.2) for the person.

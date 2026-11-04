@@ -57,6 +57,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ContactsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var hidden: FakeHiddenContactRepository
@@ -954,6 +955,7 @@ class ContactsViewModelTest {
         firstDownload = MutableStateFlow(downloading)
         val roomNeverAnswers = MutableSharedFlow<ContactBookSnapshot>()
         viewModel = ContactsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             setContactHidden = SetContactHiddenUseCase(hidden),
             observeContactBook = if (isBookRead) {

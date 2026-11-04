@@ -51,6 +51,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ContactProfileViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1340,6 +1341,7 @@ class ContactProfileViewModelTest {
             if (!inPane) it.navigate(route)
         }
         viewModel = ContactProfileViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             setContactHidden = SetContactHiddenUseCase(hidden),

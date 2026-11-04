@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.contacts.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
@@ -10,7 +9,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiAction
@@ -36,7 +37,11 @@ class ContactInviteViewModel(
     observeContactBook: ObserveContactBook,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ContactInviteUiEvent>(trackEvent) {
+    // Why: the screen these events come from, as their source param says.
+    private val sourceParams: Map<String, Any> = mapOf("source" to "contact_invite")
+
     val uiState: StateFlow<ContactInviteUiState>
         field = MutableStateFlow(
             ContactInviteUiState(
@@ -78,9 +83,14 @@ class ContactInviteViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ContactInviteUiEvent) {
+    override fun handleEvent(event: ContactInviteUiEvent) {
         when (event) {
             is ContactInviteUiEvent.OnGroupPicked -> if (uiState.value.groups.any { it.groupId == event.groupId }) {
+                if (event.groupId !=
+                    uiState.value.selectedGroupId
+                ) {
+                    trackEvent("contact_invite_group_picked", emptyMap())
+                }
                 uiState.update {
                     it.copy(
                         selectedGroupId = event.groupId,
@@ -91,6 +101,7 @@ class ContactInviteViewModel(
             }
 
             ContactInviteUiEvent.OnNewGroupClicked -> if (isOnTop()) {
+                trackEvent("create_group_clicked", sourceParams)
                 navigator.navigateBack()
                 navigator.navigate(Route.CreateGroup)
             }
@@ -143,6 +154,7 @@ class ContactInviteViewModel(
 
     private fun copy() {
         val link = uiState.value.link ?: return
+        trackEvent("invite_link_copy_clicked", sourceParams)
         send(ContactInviteUiAction.CopyLink(link))
         copiedFeedback.start()
     }
@@ -151,6 +163,7 @@ class ContactInviteViewModel(
         val state = uiState.value
         val link = state.link ?: return
         val group = state.selectedGroup ?: return
+        trackEvent("invite_link_share_clicked", sourceParams)
         send(
             ContactInviteUiAction.ShareLink(
                 link = link,

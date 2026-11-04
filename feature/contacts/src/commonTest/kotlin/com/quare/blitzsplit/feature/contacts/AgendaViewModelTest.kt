@@ -24,6 +24,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AgendaViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: AgendaViewModel
@@ -446,7 +447,10 @@ class AgendaViewModelTest {
             it.navigate(Route.Contacts)
             if (!inPane) it.navigate(Route.ContactsAgenda)
         }
-        viewModel = AgendaViewModel(navigator = navigator)
+        viewModel = AgendaViewModel(
+            navigator = navigator,
+            trackEvent = { name, params -> trackedEvents += name to params },
+        )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 }

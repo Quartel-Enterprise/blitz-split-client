@@ -76,6 +76,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ActivityViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var activity: FakeActivityRepository
     private lateinit var groupRepository: FakeGroupRepository
@@ -2843,6 +2844,7 @@ class ActivityViewModelTest {
         route = Route.Activity(personKey)
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
         viewModel = ActivityViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             markActivityRead = MarkActivityReadUseCase(activity),

@@ -1,9 +1,75 @@
 package com.quare.blitzsplit.feature.activity.presentation.model
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ActivityUiEvent : UiEvent {
+sealed interface ActivityUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: the window deciding the layout, the list reaching its end, or a notice going away: nobody tapped.
+            is OnDetailPaneChanged,
+            OnEndReached,
+            OnDeletedNoticeShown,
+            -> EventAnalytics.NotTracked
+
+            // Why: a close or a back, which each platform also does its own way: where it went is its screen view.
+            OnFilterDismissed,
+            OnBackClicked,
+            -> EventAnalytics.NotTracked
+
+            /*
+             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
+             * where it went is its screen view.
+             */
+            OnHomeTabClicked,
+            OnGroupsTabClicked,
+            OnBalancesTabClicked,
+            OnContactsTabClicked,
+            -> EventAnalytics.NotTracked
+
+            OnFilterClicked -> EventAnalytics.Automatic("activity_filter_clicked")
+
+            OnEmptyActionClicked -> EventAnalytics.Automatic("activity_empty_action_clicked")
+
+            /*
+             * Why: each counts only when the screen takes it (an item still listed, the sheet still open, a filter there
+             * to clear, Atividade on top), never a late tap, as the ViewModel checks before acting.
+             */
+            is OnItemClicked -> EventAnalytics.Manual("activity_item_clicked")
+
+            is OnOpenTargetClicked -> EventAnalytics.Manual("activity_open_target_clicked")
+
+            is OnActorClicked -> EventAnalytics.Manual("person_clicked")
+
+            is OnGroupClicked -> EventAnalytics.Manual("group_clicked")
+
+            is OnChangesToggled -> EventAnalytics.Manual("activity_changes_toggled")
+
+            OnMarkAllReadClicked -> EventAnalytics.Manual("activity_mark_all_read_clicked")
+
+            is OnDraftGroupPicked -> EventAnalytics.Manual("activity_filter_group_picked")
+
+            is OnDraftTypeToggled -> EventAnalytics.Manual("activity_filter_type_toggled")
+
+            OnFilterApplied -> EventAnalytics.Manual("activity_filter_applied")
+
+            OnFilterCleared,
+            OnClearFiltersClicked,
+            -> EventAnalytics.Manual("activity_filters_cleared")
+
+            OnGroupChipRemoved,
+            is OnTypeChipRemoved,
+            OnPersonChipRemoved,
+            -> EventAnalytics.Manual("activity_filter_chip_removed")
+
+            OnRefresh -> EventAnalytics.Manual("pull_to_refresh")
+
+            OnProfileClicked -> EventAnalytics.Manual("profile_avatar_clicked")
+
+            OnSearchClicked -> EventAnalytics.Manual("search_opened")
+        }
+
     /*
      * Why: the UI draws, or stops drawing, the item beside the list, as its window decides (a tablet lying down, an
      * unfolded book, an iPad lying down, the web's desktop, the Mac's inspector). Tapping an item then picks it.

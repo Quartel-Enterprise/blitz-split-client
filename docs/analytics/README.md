@@ -138,7 +138,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
-| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail` |
+| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`, `contact_merge`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:contacts` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
@@ -151,8 +151,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Excluir conta's Cancelar, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |
-| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`) | Copiar on Convidar or on a personal invite | `:feature:invite`, `:feature:members` |
-| `invite_link_share_clicked` | `source` (`invite`, `personal_invite`) | Convidar's "Compartilhar link" or "Compartilhar com Carla" | `:feature:invite`, `:feature:members` |
+| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copiar on Convidar or on a personal invite | `:feature:invite`, `:feature:members`, `:feature:contacts` |
+| `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Convidar's "Compartilhar link" or "Compartilhar com Carla" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Convidar's "Ver quem já entrou" | `:feature:invite` |
 | `invite_go_to_group_clicked` | none | Convidar's "Ir para o grupo" | `:feature:invite` |
 | `invite_link_change_clicked` | none | "Trocar link", which asks first | `:feature:invite` |
@@ -160,7 +160,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `invite_link_change_cancelled` | none | "Trocar o link do convite?" closed without confirming, while it was open | `:feature:invite` |
 | `members_share_clicked` | none | Membros' Compartilhar, which opens Convidar | `:feature:members` |
 | `member_add_clicked` | none | "Adicionar pessoa" | `:feature:members` |
-| `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`, `bill_detail`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats`, `:feature:bill_detail` |
+| `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`, `bill_detail`, `activity`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats`, `:feature:bill_detail`, `:feature:activity` |
 | `member_rename_clicked` | none | A member's "Renomear" | `:feature:members` |
 | `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
 | `member_editor_save_clicked` | none | The name editor's Salvar or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
@@ -196,18 +196,18 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |
-| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | The avatar that opens Perfil | `:feature:groups`, `:feature:global_balances` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`) | Buscar opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances` |
+| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contacts`) | The avatar that opens Perfil | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `activity`, `contacts`) | Buscar opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | Tudo, Grupos, Pessoas or Despesas | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`) | The sync chip's "tentar de novo" | `:feature:groups` |
-| `pull_to_refresh` | `source` (`home`, `groups`) | Pulled down on Android and iOS | `:feature:groups` |
+| `pull_to_refresh` | `source` (`home`, `groups`, `activity`) | Pulled down on Android and iOS | `:feature:groups`, `:feature:activity` |
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Rachar conta" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "A receber" or "Te devem" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "A pagar" or "Você deve" | `:feature:groups` |
-| `create_group_clicked` | `source` (`home`, `groups`) | "Novo grupo" | `:feature:groups` |
+| `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`) | "Novo grupo" | `:feature:groups`, `:feature:contacts` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Entrar com link ou QR" | `:feature:groups` |
-| `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | A group's row, card or sidebar entry, or a group of a person's "Por grupo" on Saldos | `:feature:groups`, `:feature:global_balances` |
+| `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, or a group of a person's "Por grupo" on Saldos | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `settled_groups_toggled` | `is_shown` | Quitados expanded or collapsed, or its tab | `:feature:groups` |
 | `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade", for another way than the one showing | `:feature:groups` |
 | `groups_grid_size_changed` | `size` | Another size the grid takes: Compacto, Padrão or Grande, once per size the Mac's slider passes | `:feature:groups` |
@@ -232,7 +232,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_group_clicked` | none | "Editar grupo" | `:feature:group_detail` |
 | `group_pin_toggled` | `is_pinned` | "Fixar na Início" or "Desafixar da Início" | `:feature:group_detail` |
 | `group_deleted_back_clicked` | none | "Voltar para Grupos" on "Grupo apagado", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
-| `settle_clicked` | `source` (`group_detail`, `global_balances`) | "Acertar" on "Seu saldo neste grupo" or on a person of Saldos | `:feature:group_detail`, `:feature:global_balances` |
+| `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Acertar" on "Seu saldo neste grupo" or on a person of Saldos | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Acertar", "Recebi" or "Já pagou" on a pair of Saldos | `:feature:group_detail` |
 | `payment_clicked` | `source` (`group_detail`) | A payment of Despesas, which asks "Apagar este acerto?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed, while it was open | `:feature:group_detail` |
@@ -279,8 +279,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | Tudo, Você deve or Te devem, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "Por grupo" opened or closed on a row | `:feature:global_balances` |
 | `balances_person_selected` | none | A person picked in the list beside the detail, while the filter lists them | `:feature:global_balances` |
-| `received_clicked` | `source` (`global_balances`) | "Recebi" | `:feature:global_balances` |
-| `charge_clicked` | `source` (`global_balances`) | "Cobrar" | `:feature:global_balances` |
+| `received_clicked` | `source` (`global_balances`, `contact_profile`) | "Recebi" | `:feature:global_balances`, `:feature:contacts` |
+| `charge_clicked` | `source` (`global_balances`, `contact_profile`) | "Cobrar" | `:feature:global_balances`, `:feature:contacts` |
 | `charge_pix_key_toggled` | `is_included` | "Incluir minha chave Pix", while the switch takes it (not once the message was edited) | `:feature:global_balances` |
 | `charge_share_clicked` | none | Cobrar's "Enviar", while Cobrar is open | `:feature:global_balances` |
 | `charge_copy_clicked` | none | Cobrar's "Copiar mensagem", while Cobrar is open | `:feature:global_balances` |
@@ -389,3 +389,36 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_link_disable_clicked` | none | "Desativar link", while the link can change | `:feature:bill_detail` |
 | `shared_bill_sign_in_clicked` | none | The shared page's "Entrar" or "Entrar para comentar" | `:feature:bill_detail` |
 | `shared_bill_open_in_app_clicked` | none | The shared page's "Abrir no app" | `:feature:bill_detail` |
+| `activity_filter_clicked` | none | "Filtrar atividade" | `:feature:activity` |
+| `activity_empty_action_clicked` | none | "Ver grupos" of "Nada por aqui ainda" | `:feature:activity` |
+| `activity_item_clicked` | `kind` (the event's kind), `is_unread` | An item of the feed, still listed | `:feature:activity` |
+| `activity_open_target_clicked` | `kind` | "Abrir conta", "Abrir grupo"… of the detail or the open changes, with Atividade on top | `:feature:activity` |
+| `activity_changes_toggled` | `is_expanded` | "Ver mudanças" or "Esconder mudanças" | `:feature:activity` |
+| `activity_mark_all_read_clicked` | none | "Marcar tudo como lido", while something is unread | `:feature:activity` |
+| `activity_filter_group_picked` | `is_all` | A group, or "Todos os grupos", another than the one picked, in the sheet | `:feature:activity` |
+| `activity_filter_type_toggled` | `type`, `is_included` | A type in or out, in the sheet | `:feature:activity` |
+| `activity_filter_applied` | `has_group`, `types` (how many), `has_person` | "Mostrar 4 resultados" | `:feature:activity` |
+| `activity_filters_cleared` | `entry` (`sheet`, `chips`) | The sheet's "Limpar", or "Limpar" next to the chips and "Limpar filtros", while something is filtered | `:feature:activity` |
+| `activity_filter_chip_removed` | `chip` (`group`, `type`, `person`) | A filter's chip removed, while it filters | `:feature:activity` |
+| `contact_clicked` | `is_hidden` | A row of Contatos or of Ocultos, still listed | `:feature:contacts` |
+| `contacts_hidden_toggled` | `is_expanded` | "Ocultos · 1" opened or closed, while someone is hidden | `:feature:contacts` |
+| `contact_show_clicked` | `source` (`contacts`, `contact_profile`) | "Mostrar" or "Mostrar em Contatos" on someone hidden | `:feature:contacts` |
+| `contacts_balances_clicked` | `filter` (`all`, `you_owe`, `owes_you`) | "Ver Saldos", "Você deve" or "Te devem" on the card, while there is something that way | `:feature:contacts` |
+| `contacts_agenda_clicked` | none | "Convidar da agenda" | `:feature:contacts` |
+| `contacts_invite_with_link_clicked` | `source` (`contacts`, `agenda`) | "Convidar com link ou QR" | `:feature:contacts` |
+| `agenda_allow_access_clicked` | none | "Permitir acesso à agenda", which hands the question to the system | `:feature:contacts` |
+| `agenda_settings_clicked` | none | "Abrir configurações" once the access was refused | `:feature:contacts` |
+| `agenda_invite_clicked` | none | "Convidar" on a contact of the agenda | `:feature:contacts` |
+| `contact_invite_group_picked` | none | A group's chip, another than the one picked | `:feature:contacts` |
+| `contact_ask_app_user_clicked` | none | "Pedir para quem já usa o app", which says "Em breve" | `:feature:contacts` |
+| `contact_add_to_group_clicked` | none | "Adicionar a um grupo" | `:feature:contacts` |
+| `contact_add_to_group_picked` | none | A group the person isn't in, another than the one marked | `:feature:contacts` |
+| `contact_add_to_group_confirmed` | `is_guest` | "Adicionar", with a group marked | `:feature:contacts` |
+| `contact_hide_clicked` | none | "Ocultar de Contatos", which asks first | `:feature:contacts` |
+| `contact_hide_confirmed` | none | Its question confirmed, while it was open | `:feature:contacts` |
+| `contact_hide_cancelled` | none | Its question closed without confirming, while it was open | `:feature:contacts` |
+| `contact_view_balances_clicked` | none | "Ver em Saldos" | `:feature:contacts` |
+| `contact_history_see_all_clicked` | none | "Ver tudo" over "Histórico com Carla" | `:feature:contacts` |
+| `contact_invite_guest_clicked` | none | "Convidar Diego" on a guest | `:feature:contacts` |
+| `contact_merge_clicked` | none | "Juntar com uma conta" on a guest | `:feature:contacts` |
+| `contact_merge_cancel_clicked` | none | "Cancelar" on "Aguardando Diego aceitar" | `:feature:contacts` |
