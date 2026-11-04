@@ -270,7 +270,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 ))}
               </div>
             )}
-            <ReceiptReadChips receipt={state.receipt} />
+            <ReceiptReadChips presenter={presenter} receipt={state.receipt} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>

@@ -346,6 +346,11 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
     }
 
+    // Why: "14 itens", Dividir straight on "Itens".
+    fun openReceiptItems() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+    }
+
     fun deleteBill() {
         viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
     }

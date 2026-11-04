@@ -610,6 +610,63 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN a receipt with items read WHEN its items are tapped THEN Dividir opens on Itens with them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = scanOf(reading()))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNotNull(state.splitEditor)
+            val items = assertNotNull(state.itemsEditor)
+            assertEquals(listOf("Pizza", "Refrigerante"), items.items.map { it.name })
+            assertTrue(items.split.isFromReceipt)
+            assertEquals(SplitMode.EQUAL, state.split.mode)
+        }
+
+    @Test
+    fun `GIVEN a receipt that lists no items WHEN its items are tapped THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(scan = scanOf(reading(items = emptyList())))
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.splitEditor)
+        assertNull(viewModel.uiState.value.itemsEditor)
+    }
+
+    @Test
+    fun `GIVEN a receipt read and the bill moved to another currency WHEN its items are tapped THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = false),
+                storedGroups = listOf(dinner, trip),
+                scan = scanOf(reading()),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptItemsClicked)
+
+            // Then
+            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
+            assertNull(viewModel.uiState.value.splitEditor)
+            assertNull(viewModel.uiState.value.itemsEditor)
+        }
+
+    @Test
     fun `GIVEN a receipt that lists no items WHEN read and opening Itens THEN Itens opens empty`() =
         runTest(testDispatcher) {
             // Given
