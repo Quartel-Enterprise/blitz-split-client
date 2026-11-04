@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
@@ -105,7 +106,14 @@ internal class CategoryEditing(
                 )
             }
 
-            is SplitBillUiEvent.OnEditCategoryClicked -> uiState.update { it.withEditCategoryForm(event.categoryId) }
+            // Why: only a category its form opens for, one of the group's still there.
+            is SplitBillUiEvent.OnEditCategoryClicked -> {
+                val state = uiState.value
+                if (CategoryForm.editingOrNull(state.categories, state.groupId, event.categoryId) != null) {
+                    trackEvent("category_edit_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
+                }
+                uiState.update { it.withEditCategoryForm(event.categoryId) }
+            }
 
             is SplitBillUiEvent.OnCategoryNameChanged -> uiState.update { state ->
                 state.copy(categoryForm = state.categoryForm?.withName(event.text))

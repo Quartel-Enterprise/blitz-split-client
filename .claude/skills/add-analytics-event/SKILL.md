@@ -18,6 +18,9 @@ sent"): read it first and apply it as written. This skill is the order of the wo
   and its `fun onEvent(event: XUiEvent)` becomes `override fun handleEvent(event: XUiEvent)`. The UIs keep calling
   `onEvent`, so Android, SwiftUI and React need no change. A ViewModel that hands a part of its events to a helper
   (`BillDetailComments.onEvent`) keeps handing them from `handleEvent`.
+- A ViewModel that refuses whole kinds of events for a while (a lock, a loading gate) overrides `isAccepted(event)`
+  and checks it at the top of `handleEvent`, so its Automatic events stay quiet as its Manual ones do
+  (`SplitBillViewModel` while it reads a receipt).
 - The ViewModel's tests build it with a recording `TrackEvent` (`{ name, params -> events += name to params }`).
 
 ### 2. Decide each case

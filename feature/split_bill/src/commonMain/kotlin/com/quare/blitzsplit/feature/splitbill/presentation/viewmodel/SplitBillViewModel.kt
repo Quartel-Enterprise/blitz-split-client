@@ -106,7 +106,7 @@ class SplitBillViewModel(
     private val tracking = SplitFormTracking(uiState, trackEvent)
 
     // Why: "Quem pagou" and "Várias pessoas pagaram".
-    private val payers = PayerPicking(uiState, { separator }, trackEvent)
+    private val payerPicking = PayerPicking(uiState, { separator }, trackEvent)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -261,7 +261,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
-            is SplitBillUiEvent.Payers -> payers.onEvent(event)
+            is SplitBillUiEvent.Payers -> payerPicking.onEvent(event)
 
             SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
                 it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
@@ -275,9 +275,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnSplitModeClicked -> {
                 tracking.trackSplitModeSelected(event.mode)
-                if (event.mode ==
-                    SplitMode.ITEMS
-                ) {
+                if (event.mode == SplitMode.ITEMS) {
                     items.openInSplit()
                 } else {
                     editSplit { it.toMode(event.mode, separator) }

@@ -159,10 +159,8 @@ sealed interface SplitBillUiEvent : TrackedUiEvent {
                 mapOf("is_subcategory" to (parentId != null), "source" to SPLIT_BILL_SOURCE),
             )
 
-            is OnEditCategoryClicked -> EventAnalytics.Automatic(
-                "category_edit_clicked",
-                mapOf("source" to SPLIT_BILL_SOURCE),
-            )
+            // Why: only a category its form opens for, as the map counts it.
+            is OnEditCategoryClicked -> EventAnalytics.Manual("category_edit_clicked")
 
             is OnCategoryParentPicked -> EventAnalytics.Automatic(
                 "category_parent_picked",

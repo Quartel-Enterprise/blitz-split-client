@@ -99,7 +99,7 @@ every new user action. The `add-analytics-event` skill walks through it.
 
 | `analytics` | When | Sent by |
 | --- | --- | --- |
-| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it |
+| `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it. A screen that refuses whole kinds of events for a while (Rachar conta reading a receipt) overrides `isAccepted` and checks it at the top of `handleEvent`, so neither its Automatic nor its Manual events count then |
 | `EventAnalytics.Manual(name)` | It needs what only handling it tells: the result of a save, the `UiState` (`setOf(…)` for a branch that may send more than one) | A `trackEvent("name", …)` call in the branch, with the same name |
 | `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does, or ends the funnel a tap began, as the native sign in failing or closed does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, and a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front: where either went is its screen view | Nothing |
 
@@ -312,8 +312,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_restore_clicked` | none | "Restaurar padrão", which asks first, once the map is read | `:feature:category_map` |
 | `category_map_restore_confirmed` | none | Its question confirmed, while it was open | `:feature:category_map` |
 | `category_map_restore_cancelled` | none | Its question closed without confirming, while it was open | `:feature:category_map` |
-| `category_create_clicked` | `is_subcategory`, `source` (`category_map`, `split_bill`) | "Nova categoria" or "Nova subcategoria em Transporte", once the map is read and there is a group | `:feature:category_map`, `:feature:split_bill` |
-| `category_edit_clicked` | `source` (`category_map`, `split_bill`) | A group's category's pencil, once the map is read | `:feature:category_map`, `:feature:split_bill` |
+| `category_create_clicked` | `is_subcategory`, `source` (`category_map`, `split_bill`) | "Nova categoria" or "Nova subcategoria em Transporte" in the map, once it is read and there is a group; in Categoria, "Nova", "Nova em Alimentação" or "Criar “Pet”" from a search | `:feature:category_map`, `:feature:split_bill` |
+| `category_edit_clicked` | `source` (`category_map`, `split_bill`) | A group's category opened to edit, when its form opens: its pencil in the map, once read; a long press or right click in Categoria | `:feature:category_map`, `:feature:split_bill` |
 | `category_group_picked` | `source` (`category_map`) | The new category's Grupo | `:feature:category_map` |
 | `category_parent_picked` | `source` (`category_map`, `split_bill`) | The category's "Dentro de" | `:feature:category_map`, `:feature:split_bill` |
 | `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill` |

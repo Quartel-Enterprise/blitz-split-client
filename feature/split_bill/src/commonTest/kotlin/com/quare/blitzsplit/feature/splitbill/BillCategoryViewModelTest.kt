@@ -763,6 +763,20 @@ class BillCategoryViewModelTest {
     }
 
     @Test
+    fun `GIVEN the picker WHEN editing a category no longer in the group THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(groupCategories = listOf(churrasco))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("gone"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN a new category WHEN typing its name THEN sends nothing`() = runTest {
         // Given
         prepareScenario()
