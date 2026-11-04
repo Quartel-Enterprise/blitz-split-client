@@ -11,10 +11,11 @@ import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.ServerBill
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.StoredBill
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -651,7 +652,7 @@ class ExpenseRepositoryImplTest {
 
             // Then
             assertEquals(
-                ServerBill(
+                StoredBill(
                     groupId = OTHER_GROUP_ID,
                     isDeleted = false,
                 ),
@@ -676,7 +677,7 @@ class ExpenseRepositoryImplTest {
 
         // Then
         assertEquals(
-            ServerBill(
+            StoredBill(
                 groupId = GROUP_ID,
                 isDeleted = true,
             ),
@@ -851,6 +852,13 @@ private class FakeExpenseLocalDataSource(
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
         list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override suspend fun findStoredBill(id: String): StoredBillRow? = entities.value.firstOrNull { it.id == id }?.let {
+        StoredBillRow(
+            groupId = it.groupId,
+            isDeleted = it.isDeleted,
+        )
     }
 
     override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->

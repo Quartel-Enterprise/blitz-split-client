@@ -37,6 +37,8 @@ class RoomActivityLocalDataSource(
 
     override suspend fun getState(): ActivityStateEntity? = dao.getState()
 
+    override suspend fun getEvent(id: String): ActivityEventEntity? = dao.getEvent(id)
+
     override suspend fun getMaxSeq(): Long? = dao.getMaxSeq()
 
     override suspend fun getOldestSeqOrNull(): Long? = dao.getMinSeq()

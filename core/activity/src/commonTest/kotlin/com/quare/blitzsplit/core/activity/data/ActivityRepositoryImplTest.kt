@@ -1265,6 +1265,30 @@ class ActivityRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a comment event on the device WHEN finding it THEN reads its comment`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(commentEvent(body = "Faltou o pão")))
+
+        // When
+        val event = repository.findEvent(COMMENT_EVENT_ID)
+
+        // Then
+        assertEquals(COMMENT_ID, event?.commentId)
+    }
+
+    @Test
+    fun `GIVEN no such event on the device WHEN finding it THEN finds none`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val event = repository.findEvent(COMMENT_EVENT_ID)
+
+        // Then
+        assertNull(event)
+    }
+
+    @Test
     fun `GIVEN a comment edited on the device WHEN observing the feed THEN its event reads the comment as it is now`() =
         runTest {
             // Given
@@ -1671,6 +1695,8 @@ private class FakeActivityLocalDataSource : ActivityLocalDataSource {
     override fun observeChangedComments(): Flow<List<ChangedCommentRow>> = changedComments
 
     override suspend fun getState(): ActivityStateEntity? = state.value
+
+    override suspend fun getEvent(id: String): ActivityEventEntity? = events.value.firstOrNull { it.id == id }
 
     override suspend fun getMaxSeq(): Long? = events.value.mapNotNull { it.seq }.maxOrNull()
 

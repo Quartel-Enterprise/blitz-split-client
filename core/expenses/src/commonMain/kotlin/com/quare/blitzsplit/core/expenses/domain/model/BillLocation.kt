@@ -2,12 +2,13 @@ package com.quare.blitzsplit.core.expenses.domain.model
 
 // Why: where a comment's link leads, for this device's user.
 sealed interface BillLocation {
-    // Why: the bill is in a group the user is in, on the device or not yet synced to it.
+    // Why: the bill is in a group the user is in, on the device or not synced to it yet.
     data class Found(
         val groupId: String,
+        val isOnDevice: Boolean,
     ) : BillLocation
 
-    // Why: the server keeps it deleted, in a group the user is in.
+    // Why: deleted on this device or on the server, in a group the user is in.
     data class Deleted(
         val groupId: String,
     ) : BillLocation

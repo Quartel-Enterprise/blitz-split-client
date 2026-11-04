@@ -62,6 +62,8 @@ class FakeActivityRepository(
 
     override fun observeHasOlder(): Flow<Boolean> = hasOlder
 
+    override suspend fun findEvent(eventId: String): ActivityEvent? = events.value.firstOrNull { it.id == eventId }
+
     override suspend fun saveRead(eventId: String): Result<Unit> {
         markReadError?.let { return Result.failure(it) }
         readState.update { it.copy(readEventIds = it.readEventIds + eventId) }

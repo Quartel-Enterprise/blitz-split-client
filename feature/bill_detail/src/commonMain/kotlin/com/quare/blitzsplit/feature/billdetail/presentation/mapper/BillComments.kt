@@ -45,6 +45,16 @@ internal fun threadsOf(
     }
 }
 
+// Why: the count beside "Comentários", replies included and "Comentário apagado" not.
+internal fun List<BillCommentThread>.countShownComments(): Int =
+    sumOf { (if (it.comment.isDeleted) 0 else 1) + it.replies.size }
+
+// Why: an edit that changes nothing would only mark the comment "editado", so Salvar waits for a change.
+internal fun List<BillCommentThread>.isUnchangedEdit(
+    editingCommentId: String?,
+    draft: String,
+): Boolean = editingCommentId?.let { findComment(it)?.body == draft.trim() } == true
+
 // Why: a comment shown, top or reply, by its id.
 internal fun List<BillCommentThread>.findComment(commentId: String): BillCommentRow? = firstNotNullOfOrNull { thread ->
     (listOf(thread.comment) + thread.replies).firstOrNull { it.id == commentId }

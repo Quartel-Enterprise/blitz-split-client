@@ -6,7 +6,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.countShownComments
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.isUnchangedEdit
 
 /*
  * Why: a bill's link opened (7.3h), blitzsplit.com/c/<code>: the bill, who paid, each one's part, the attachments and
@@ -72,7 +74,7 @@ data class SharedBillUiState(
         get() = viewedAttachmentIndex?.let(attachments::get)
 
     val commentCount: Int
-        get() = threads.sumOf { (if (it.comment.isDeleted) 0 else 1) + it.replies.size }
+        get() = threads.countShownComments()
 
     // Why: liking, editing and deleting go straight to the server, as commenting does here.
     val canChangeComments: Boolean
@@ -111,9 +113,5 @@ data class SharedBillUiState(
             isOnline &&
             !isSendingComment &&
             BillCommentRules.isBodyValid(commentDraft) &&
-            !isUnchangedEdit
-
-    // Why: an edit that changes nothing would only mark the comment "editado".
-    private val isUnchangedEdit: Boolean
-        get() = editingCommentId?.let { threads.findComment(it)?.body == commentDraft.trim() } == true
+            !threads.isUnchangedEdit(editingCommentId, commentDraft)
 }

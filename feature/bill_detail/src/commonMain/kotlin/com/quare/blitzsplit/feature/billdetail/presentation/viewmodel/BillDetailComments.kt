@@ -39,6 +39,9 @@ internal class BillDetailComments(
 ) {
     private val edit = CommentComposerEdit()
 
+    // Why: the like each heart was last set to, until the device's copy shows it, so a quick second tap undoes the first.
+    private val likesSet = mutableMapOf<String, Boolean>()
+
     // Why: the comment a link opened at is looked for once, when the comments first show.
     private var focusCommentId: String? = route.focusCommentId
 
@@ -70,6 +73,10 @@ internal class BillDetailComments(
         comments: List<BillComment>,
     ) {
         focusLinkedComment(threads, comments)
+        likesSet.entries.removeAll { (commentId, isLiked) ->
+            threads.findComment(commentId)?.isLikedByMe in
+                setOf(isLiked, null)
+        }
         // Why: the comment being edited was deleted on another device meanwhile, so the edit has nothing to save.
         val editingId = uiState.value.editingCommentId
         if (editingId != null && threads.findComment(editingId)?.canChange != true) stopEditing()
@@ -207,14 +214,19 @@ internal class BillDetailComments(
         val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
         if (!uiState.value.areActionsEnabled) return
         val me = me()
+        val isLiked = !(likesSet[comment.id] ?: comment.isLikedByMe)
+        likesSet[comment.id] = isLiked
         scope.launch {
             likeBillComment(
                 commentId = comment.id,
                 groupId = route.groupId,
-                isLiked = !comment.isLikedByMe,
+                isLiked = isLiked,
                 memberId = me?.id,
                 likerName = me?.name,
-            ).onFailure { emit(BillDetailUiAction.ShowCommentChangeError) }
+            ).onFailure {
+                likesSet.remove(comment.id)
+                emit(BillDetailUiAction.ShowCommentChangeError)
+            }
         }
     }
 

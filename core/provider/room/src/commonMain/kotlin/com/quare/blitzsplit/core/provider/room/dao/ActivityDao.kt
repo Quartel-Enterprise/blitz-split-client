@@ -25,6 +25,10 @@ interface ActivityDao {
     @Query("SELECT * FROM activity_event ORDER BY occurredAt DESC, seq DESC")
     fun observeEvents(): Flow<List<ActivityEventEntity>>
 
+    // Why: the event a push notification was tapped for, once its sync brought it.
+    @Query("SELECT * FROM activity_event WHERE id = :id")
+    suspend fun getEvent(id: String): ActivityEventEntity?
+
     // Why: a bill's history in Conta (7.3): what happened to it in the window, the most recent first.
     @Query("SELECT * FROM activity_event WHERE targetId = :targetId ORDER BY occurredAt DESC, seq DESC")
     fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>>

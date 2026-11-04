@@ -31,6 +31,8 @@ interface ActivityLocalDataSource {
 
     suspend fun getState(): ActivityStateEntity?
 
+    suspend fun getEvent(id: String): ActivityEventEntity?
+
     suspend fun getMaxSeq(): Long?
 
     suspend fun getOldestSeqOrNull(): Long?

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.activity.domain.usecase.FindActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentTarget
@@ -50,6 +51,7 @@ class AppViewModel(
     private val observeDynamicColors: ObserveDynamicColors,
     private val linkInbox: LinkInbox,
     private val markActivityRead: MarkActivityRead,
+    private val findActivityEvent: FindActivityEvent,
     private val observeGroup: ObserveGroup,
     private val observeExpense: ObserveExpense,
     private val syncNow: SyncNow,
@@ -176,10 +178,7 @@ class AppViewModel(
      * can't check offline, says so over wherever the app is. Without a profile there is no group to be in.
      */
     private fun openBillCommentLink(target: BillCommentTarget) {
-        if (Route.Home !in navigator.backStack.value) {
-            billLinkNotice.value = BillLinkNoticeState(BillLinkNotice.NOT_IN_GROUP)
-            return
-        }
+        if (Route.Home !in navigator.backStack.value) return showBillLinkNotice(BillLinkNotice.NOT_IN_GROUP)
         navigator.openHomeTab(HomeTab.GROUPS)
         val tabTop = navigator.backStack.value
         viewModelScope.launch {
@@ -188,20 +187,12 @@ class AppViewModel(
             val location = locateBill(target.expenseId)
             val groupId = when (location) {
                 is BillLocation.Found -> location.groupId
-
                 is BillLocation.Deleted -> location.groupId
-
-                BillLocation.OutOfReach -> null
-
-                BillLocation.Unknown -> return@launch run {
-                    billLinkNotice.value =
-                        BillLinkNoticeState(BillLinkNotice.OFFLINE)
-                }
+                BillLocation.OutOfReach -> return@launch showBillLinkNotice(BillLinkNotice.NOT_IN_GROUP)
+                BillLocation.Unknown -> return@launch showBillLinkNotice(BillLinkNotice.OFFLINE)
             }
-            if (groupId == null || observeGroup(groupId).first() == null) {
-                billLinkNotice.value = BillLinkNoticeState(BillLinkNotice.NOT_IN_GROUP)
-                return@launch
-            }
+            // Why: the server says the person is in it, so a group not on the device yet comes with a later sync.
+            if (observeGroup(groupId).first() == null) return@launch
             if (location is BillLocation.Deleted) noticeBillGone(groupId, target.expenseId)
             navigator.navigate(
                 Route.GroupDetail(
@@ -210,10 +201,14 @@ class AppViewModel(
                     tab = GroupTab.EXPENSES,
                 ),
             )
-            if (observeExpense(target.expenseId).first() != null) {
+            if (location is BillLocation.Found && location.isOnDevice) {
                 navigator.navigate(Route.BillDetail(groupId, target.expenseId, focusCommentId = target.commentId))
             }
         }
+    }
+
+    private fun showBillLinkNotice(notice: BillLinkNotice) {
+        billLinkNotice.value = BillLinkNoticeState(notice)
     }
 
     // Why: "Ir para o início" on the notice, back to Início when there is one (the welcome otherwise).
@@ -240,8 +235,14 @@ class AppViewModel(
         viewModelScope.launch {
             withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
             if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return@launch
+            // Why: a comment's notification opens Conta at the comment, as its item in Atividade does.
+            val commentId = link.eventId
+                ?.let { findActivityEvent(it) }
+                ?.takeUnless { it.isCommentDeleted }
+                ?.commentId
             link.routesAbove
                 .filter { route -> route !is Route.BillDetail || observeExpense(route.expenseId).first() != null }
+                .map { route -> if (route is Route.BillDetail) route.copy(focusCommentId = commentId) else route }
                 .forEach(navigator::navigate)
         }
     }

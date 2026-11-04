@@ -4,8 +4,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillLocation
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.ServerBill
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.StoredBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LocateBillUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import kotlinx.coroutines.test.runTest
@@ -25,7 +25,7 @@ class LocateBillUseCaseTest {
         val location = useCase(BILL_ID)
 
         // Then
-        assertEquals(BillLocation.Found(GROUP_ID), location)
+        assertEquals(BillLocation.Found(GROUP_ID, isOnDevice = true), location)
     }
 
     @Test
@@ -41,7 +41,7 @@ class LocateBillUseCaseTest {
             val location = useCase(BILL_ID)
 
             // Then
-            assertEquals(BillLocation.Found(GROUP_ID), location)
+            assertEquals(BillLocation.Found(GROUP_ID, isOnDevice = true), location)
         }
 
     @Test
@@ -50,7 +50,7 @@ class LocateBillUseCaseTest {
         prepareScenario(
             stored = listOf(mercado),
             serverBills = mapOf(
-                BILL_ID to ServerBill(
+                BILL_ID to StoredBill(
                     groupId = OTHER_GROUP_ID,
                     isDeleted = true,
                 ),
@@ -61,7 +61,7 @@ class LocateBillUseCaseTest {
         val location = useCase(BILL_ID)
 
         // Then
-        assertEquals(BillLocation.Found(GROUP_ID), location)
+        assertEquals(BillLocation.Found(GROUP_ID, isOnDevice = true), location)
     }
 
     @Test
@@ -71,7 +71,7 @@ class LocateBillUseCaseTest {
             prepareScenario(
                 stored = listOf(otherBill),
                 serverBills = mapOf(
-                    BILL_ID to ServerBill(
+                    BILL_ID to StoredBill(
                         groupId = OTHER_GROUP_ID,
                         isDeleted = false,
                     ),
@@ -82,7 +82,28 @@ class LocateBillUseCaseTest {
             val location = useCase(BILL_ID)
 
             // Then
-            assertEquals(BillLocation.Found(OTHER_GROUP_ID), location)
+            assertEquals(BillLocation.Found(OTHER_GROUP_ID, isOnDevice = false), location)
+        }
+
+    @Test
+    fun `GIVEN a bill deleted on the device not up yet WHEN locating it THEN says it was deleted in its group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverBills = mapOf(
+                    BILL_ID to StoredBill(
+                        groupId = GROUP_ID,
+                        isDeleted = false,
+                    ),
+                ),
+            )
+            repository.deviceTombstones[BILL_ID] = GROUP_ID
+
+            // When
+            val location = useCase(BILL_ID)
+
+            // Then
+            assertEquals(BillLocation.Deleted(GROUP_ID), location)
         }
 
     @Test
@@ -90,7 +111,7 @@ class LocateBillUseCaseTest {
         // Given
         prepareScenario(
             serverBills = mapOf(
-                BILL_ID to ServerBill(
+                BILL_ID to StoredBill(
                     groupId = OTHER_GROUP_ID,
                     isDeleted = true,
                 ),
@@ -167,7 +188,7 @@ class LocateBillUseCaseTest {
 
     private fun prepareScenario(
         stored: List<Expense> = emptyList(),
-        serverBills: Map<String, ServerBill> = emptyMap(),
+        serverBills: Map<String, StoredBill> = emptyMap(),
         serverError: Throwable? = null,
     ) {
         repository = FakeExpenseRepository(initialExpenses = stored).also {

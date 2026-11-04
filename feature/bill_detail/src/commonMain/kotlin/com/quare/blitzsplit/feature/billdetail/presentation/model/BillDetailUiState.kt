@@ -8,7 +8,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.countShownComments
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.isUnchangedEdit
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -108,7 +110,7 @@ data class BillDetailUiState(
 
     // Why: the count beside "Comentários", replies included and "Comentário apagado" not; null while they load.
     val commentCount: Int?
-        get() = threads.valueOrNull()?.sumOf { (if (it.comment.isDeleted) 0 else 1) + it.replies.size }
+        get() = threads.valueOrNull()?.countShownComments()
 
     // Why: the sheet of who liked it closes once the comment or its last like is gone.
     val likesComment: BillCommentRow?
@@ -121,11 +123,10 @@ data class BillDetailUiState(
 
     // Why: "Enviar comentário" stays disabled until something is typed, up to what the server takes.
     val canSendComment: Boolean
-        get() = isLoaded && !isDeleting && BillCommentRules.isBodyValid(commentDraft) && !isUnchangedEdit
-
-    // Why: an edit that changes nothing would only mark the comment "editado".
-    private val isUnchangedEdit: Boolean
-        get() = editingCommentId?.let { threads.valueOrNull()?.findComment(it)?.body == commentDraft.trim() } == true
+        get() = isLoaded &&
+            !isDeleting &&
+            BillCommentRules.isBodyValid(commentDraft) &&
+            threads.valueOrNull()?.isUnchangedEdit(editingCommentId, commentDraft) != true
 
     // Why: "Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta."
     val showsNoComments: Boolean

@@ -106,6 +106,8 @@ class ActivityRepositoryImpl(
 
     override fun observeHasOlder(): Flow<Boolean> = hasOlder
 
+    override suspend fun findEvent(eventId: String): ActivityEvent? = local.getEvent(eventId)?.let(mapper::toDomain)
+
     override suspend fun saveRead(eventId: String): Result<Unit> = suspendRunCatching { local.markRead(eventId) }
 
     override suspend fun saveReadThrough(

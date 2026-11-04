@@ -63,10 +63,17 @@ internal fun BillCommentComposerBox(
     LaunchedEffect(replyTarget?.commentId, state.editingCommentId) {
         if (replyTarget != null || state.isEditingComment) focusRequester.requestFocus()
     }
-    // Why: a draft replaced from outside ("Editar" fills it, sending empties it) puts the caret at its end.
+    /*
+     * Why: a draft replaced from outside ("Editar" fills it, sending empties it) puts the caret at its end; one that is
+     * only catching up with what was typed (the state comes a frame later) leaves the field, its caret included, alone.
+     */
     var field by remember { mutableStateOf(TextFieldValue(state.commentDraft, TextRange(state.commentDraft.length))) }
-    if (field.text != state.commentDraft) {
+    val typed = remember { mutableListOf<String>() }
+    if (state.commentDraft == field.text) {
+        typed.clear()
+    } else if (state.commentDraft !in typed) {
         field = TextFieldValue(state.commentDraft, TextRange(state.commentDraft.length))
+        typed.clear()
     }
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -110,6 +117,7 @@ internal fun BillCommentComposerBox(
                 value = field,
                 onValueChange = {
                     field = it
+                    typed += it.text
                     onEvent(BillDetailUiEvent.OnCommentChanged(it.text))
                 },
                 modifier = Modifier
