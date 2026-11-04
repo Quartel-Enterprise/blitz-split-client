@@ -199,8 +199,10 @@ data class CategoryMapUiState(
 
     fun findTermOrNull(key: String): MapTerm? = terms.firstOrNull { it.key == key }
 
-    fun groupNameOf(category: Category): String? =
-        categories.groupIdOf(category.id)?.let { id -> groups.firstOrNull { it.id == id }?.name }
+    // Why: once per state, as every section and line of the map looks its group's name up.
+    private val groupNames: Map<String, String> by lazy { groups.associate { it.id to it.name } }
+
+    fun groupNameOf(category: Category): String? = categories.groupIdOf(category.id)?.let(groupNames::get)
 
     private fun matchStartOrNull(
         key: String,

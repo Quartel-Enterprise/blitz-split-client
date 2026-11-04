@@ -69,8 +69,16 @@ internal class MapCategoryEditing(
 
             CategoryMapUiEvent.OnCategoryFormSaveClicked -> save()
 
+            // Why: "Apagar “X”?" goes with its form, so it never opens over the next category's.
             CategoryMapUiEvent.OnCategoryFormDismissed -> uiState.update {
-                if (it.categoryForm?.isSaving == true) it else it.copy(categoryForm = null)
+                if (it.categoryForm?.isSaving == true || it.categoryDeletion?.isDeleting == true) {
+                    it
+                } else {
+                    it.copy(
+                        categoryForm = null,
+                        categoryDeletion = null,
+                    )
+                }
             }
 
             CategoryMapUiEvent.OnCategoryDeleteClicked -> uiState.update { state ->
@@ -87,7 +95,8 @@ internal class MapCategoryEditing(
 
     private fun changeForm(transform: (CategoryMapUiState, CategoryForm) -> CategoryForm) {
         uiState.update { state ->
-            val form = state.categoryForm ?: return@update state
+            // Why: what is saving is the form as Salvar found it, so nothing typed or picked meanwhile is lost unseen.
+            val form = state.categoryForm?.takeIf { !it.isSaving } ?: return@update state
             state.copy(categoryForm = transform(state, form))
         }
     }
@@ -110,6 +119,7 @@ internal class MapCategoryEditing(
                     parentId = parentId,
                     name = "",
                 ),
+                categoryDeletion = null,
                 termForm = null,
             )
         }
@@ -121,6 +131,7 @@ internal class MapCategoryEditing(
             val form = CategoryForm.editingOrNull(state.categories, groupId, categoryId) ?: return@update state
             state.copy(
                 categoryForm = form,
+                categoryDeletion = null,
                 termForm = null,
             )
         }

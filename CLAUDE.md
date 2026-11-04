@@ -439,13 +439,21 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     no app".
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
-    on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
-    it works offline. Períodos (only this screen keeps one): a trip lists "Toda a viagem" (the default, from its first
+    on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos
+    (but in "Acertos"), so it works offline. Períodos (only this screen keeps one): a trip lists "Toda a viagem" (the default, from its first
     to its last day with a bill), "Este mês", "Mês passado" and "Escolher datas…"; any other group "Este ano", "Este
     mês", "Mês passado", "Todo o período" (the default, as the notes say) and "Escolher datas…" (each platform's date
     range picker, never after today). Total gasto, how many bills, "Média por pessoa" (the total over every member,
     who hasn't joined included), "Sua parte" and "Você pagou"; "Por pessoa" shows Consumo (each part as each bill
-    split it) or Pagou, the largest first, someone who left the group as "Ex-membro". "Ao longo do tempo" is Barras or
+    split it) or Pagou, the largest first, someone who left the group as "Ex-membro". "Acertos" (Pierre's call, beta
+    feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Acerta mais rápido" and who
+    "Demora mais para acertar" ("em média 2 dias", "no mesmo dia", "R$ 80 em aberto"): each member's bills and
+    payments of the group's whole history, the queue's too, go in date order, what a bill puts on them opening a
+    debt on its "Quando" and what they pay (a payment, or a later bill they paid more of than their part) covering
+    the oldest first, a debt still open counting up to today; only debts born of the period's bills count, the amount
+    weighting the average, whoever is still in the group (guests too, never an ex-member), and only once two people
+    had one and the two named don't tie (the same days and the same open amount hide the card); whoever covered all of
+    the period's debts ranks before whoever still has some open, so a part put on someone today never reads as fast. "Ao longo do tempo" is Barras or
     Linha by Dia, Semana (Monday to Sunday), Mês or Ano, kept per device for every group and never synced
     (`StatsChartPreferences` in `device_settings`): Dia only up to 3 months, the others once the period touches two of
     them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
@@ -459,12 +467,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
     categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
-    tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
-    first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
+    tempo" on top of the second, then "Por pessoa", "Acertos" and "Maior despesa"; on iOS both in one scroll, "Por
+    pessoa" and "Acertos" first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
     a small bar with the period, the total and "Ao longo do tempo" side by side in the top half, against the hinge,
-    and "Por categoria" and "Por pessoa" side by side in the bottom half, scrolling, without the grains' note nor
-    "Maior despesa". The web from the tablet
-    up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, with four summary cards.
+    and "Por categoria" beside "Por pessoa" and "Acertos" in the bottom half, scrolling, without the grains' note nor
+    "Maior despesa". The web from the tablet up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second
+    column, with four summary cards, "Acertos" under "Por pessoa".
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
@@ -705,8 +713,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Editing (a long press or a right click on the group's category, "Editar “X”…" on the Mac) says how many bills
     use it; deleting asks "Apagar “X”?" saying where its bills go: they move to its parent, or Outros, at read time,
     since a deleted category stays as a tombstone (`CategoryTree.resolve`), its subcategories going with it. A new
-    category is picked for the bill at once. Rachar conta's Categoria and Mapa de categorias open the same form
-    (`CategoryForm`, `CategoryEditor` in `:core:expenses`).
+    category is picked for the bill at once.
   - "Mapa de categorias" (flow 9, `Route.CategoryMap`, `:feature:category_map`): each person's map of words to
     categories, valid in every group, on the device and offline first (`category_term`, the server's
     `category_terms`), synced to the person's other devices under their account and cleared on sign out; while the
@@ -721,16 +728,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and removes there; a term of a category of a group no longer on the device isn't shown, nor counted for the empty
     map or "Mover para X" (`CategoryMapUiState.terms`), though its change waiting to go up still counts in the queue.
     Terms have 2 to 30 letters, digits and spaces.
-    The map also creates, edits and deletes categories (9.4, Pierre's call, beta feedback 19), always a group's
-    (`GroupCategory`, "Nova categoria"'s rules, offline and synced to the group's members), since there are no personal
-    categories: "Nova categoria" in the ⋮/⋯ menu (the Mac's "Nova Categoria…" beside Restaurar padrão) and "Nova
-    subcategoria em Transporte" in every main category but Outros, only once there is a group on the device
-    (`CategoryMapUiState.canCreateCategory`). A new one goes in the group of the category it was made from, else of
-    the one picked beside the list, else the group with the latest activity; "Grupo" changes it while there are two
-    or more (`canPickCategoryGroup`), never while editing, and its name and "Dentro de" are checked against that group
-    alone (`CategoryTree.ofGroup`). Saving a new one opens "Novo termo" in it at once (Cancelar leaves it without
-    terms), and a group's subcategory shows in its card even with no term yet. A group's category is edited from its
-    pencil (the Mac's "Categorias" menu under the table), with Apagar there; the app's categories stay as they are.
     "Buscar termo" finds words starting with what is typed, accents ignored ("2 termos com “uber”"), else offers
     "Adicionar “pizzaria”"; an empty map offers Adicionar termo and Restaurar padrão; offline with changes queued it
     says "Offline · 2 alterações na fila" and each queued term has the orange dot. It opens from Perfil ›

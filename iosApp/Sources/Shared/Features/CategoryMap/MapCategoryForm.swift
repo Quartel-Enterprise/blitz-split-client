@@ -84,14 +84,17 @@ extension View {
                     TermFormView(model: model)
                 }
             }
+            // Why: in the sheet, as a failed save or delete keeps the form open over the map, which would hide it.
+            .glassToast([
+                GlassToastMessage(text: "Couldn't save the category. Try again.", trigger: model.categorySaveErrorCount),
+                GlassToastMessage(text: "Couldn't delete the category. Try again.", trigger: model.categoryDeleteErrorCount),
+            ])
             #if os(macOS)
             .frame(width: isCategory ? 520 : 460, height: isCategory ? 600 : 420)
             #else
             .formSheetSizing()
             #endif
         }
-        .glassToast("Couldn't save the category. Try again.", trigger: model.categorySaveErrorCount)
-        .glassToast("Couldn't delete the category. Try again.", trigger: model.categoryDeleteErrorCount)
     }
 }
 

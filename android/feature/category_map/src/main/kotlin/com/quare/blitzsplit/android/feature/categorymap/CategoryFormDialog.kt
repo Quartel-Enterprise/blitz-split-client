@@ -28,12 +28,13 @@ import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUi
 @Composable
 internal fun CategoryFormDialog(
     state: CategoryMapUiState,
+    // Why: the map's, so "Não deu para salvar a categoria" shows over the form that stays open.
+    snackbarHostState: SnackbarHostState,
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val editor = state.categoryEditor ?: return
     val formFactor = rememberFoldLayout().formFactor
     val isDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
-    val snackbarHostState = remember { SnackbarHostState() }
     val actions = remember(onEvent) {
         CategoryFormActions(
             onNameChanged = { onEvent(CategoryMapUiEvent.OnCategoryNameChanged(it)) },

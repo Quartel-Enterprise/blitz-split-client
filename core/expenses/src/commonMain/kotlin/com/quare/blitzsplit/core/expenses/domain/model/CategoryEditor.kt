@@ -37,9 +37,12 @@ data class CategoryEditor(
     val canSave: Boolean
         get() = form.canSaveIn(categories)
 
-    // Why: the preview's color: its parent's, its own while edited, else the one a new main category gets next.
+    /*
+     * Why: the preview's color: its parent's, else the one it has or gets as a main category (a subcategory moved out
+     * of its parent included), the next one for a new main category.
+     */
     val color: AvatarColor
-        get() = parent?.color ?: categories.findOrNull(form.categoryId)?.color ?: categories.nextMainColor
+        get() = parent?.color ?: categories.mainColorOf(form.categoryId)
 
     // Why: "Sem internet: a categoria fica salva no aparelho e sobe ao reconectar." (7.8d).
     val showsOfflineNotice: Boolean

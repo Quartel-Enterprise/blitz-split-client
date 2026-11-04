@@ -13,7 +13,8 @@ enum CategoryEditorCopy {
             return String(localized: "\(name) already exists. Pick another name.")
         }
         if editor.form.isEditing {
-            let used = editor.usage.map { String(localized: "used in \($0.intValue) bills") }
+            // Int, not KotlinInt's Int32, so the key is the catalog's "%lld" with its plural.
+            let used = editor.usage.map { String(localized: "used in \(Int(truncating: $0)) bills") }
             let creator = editor.creatorName.map { String(localized: "Created by \($0)") }
             return [creator, used].compactMap(\.self).joined(separator: " · ")
         }
@@ -31,7 +32,7 @@ enum CategoryEditorCopy {
     static func groupNote(_ editor: CategoryEditor) -> String {
         if editor.form.isEditing, let usage = editor.usage {
             let name = editor.form.name.trimmingCharacters(in: .whitespaces)
-            return String(localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(usage.intValue) bills that already use \(name).")
+            return String(localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(Int(truncating: usage)) bills that already use \(name).")
         }
         return String(localized: "It belongs to all of \(editor.groupName): anyone in the group can use, edit and delete it.")
     }

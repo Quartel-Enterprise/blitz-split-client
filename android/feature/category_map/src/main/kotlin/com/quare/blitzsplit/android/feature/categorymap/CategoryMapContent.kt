@@ -29,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +62,12 @@ fun CategoryMapContent(
     onEvent: (CategoryMapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    /*
+     * Why: a failed save or delete keeps the category's form open over the map, so its snackbar shows in the form,
+     * and only there rather than once more under its scrim.
+     */
+    val idleSnackbarHostState = remember { SnackbarHostState() }
+    val isCategoryFormOpen = state.categoryForm != null
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -85,7 +92,7 @@ fun CategoryMapContent(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(if (isCategoryFormOpen) idleSnackbarHostState else snackbarHostState) },
     ) { padding ->
         val formFactor = rememberFoldLayout().formFactor
         Box(
@@ -148,9 +155,10 @@ fun CategoryMapContent(
             onEvent = onEvent,
         )
     }
-    if (state.categoryForm != null) {
+    if (isCategoryFormOpen) {
         CategoryFormDialog(
             state = state,
+            snackbarHostState = snackbarHostState,
             onEvent = onEvent,
         )
     }

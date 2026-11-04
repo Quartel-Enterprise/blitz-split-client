@@ -141,6 +141,20 @@ class CategoryEditorTest {
     }
 
     @Test
+    fun `GIVEN a subcategory being moved out of its parent WHEN reading the color THEN it is the one it gets as a main category`() {
+        // Given
+        val form = CategoryForm.editingOrNull(tree, GROUP_ID, "quiosque")!!.withParent(tree, null)
+        val saved = CategoryTree.of(listOf(churrasco, praia, quiosque.copy(parentId = null)))
+
+        // When
+        val color = editor(form).color
+
+        // Then
+        assertEquals(saved.findOrNull("quiosque")?.color, color)
+        assertEquals(AvatarColor.PEACH, color)
+    }
+
+    @Test
     fun `GIVEN a new main category WHEN reading the color THEN it is the next main color of the group`() {
         // Given
         val form = newMain()
