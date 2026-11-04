@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ShowUpdatePromptUseCaseTest {
     private lateinit var navigator: BackStackNavigator
@@ -18,7 +17,6 @@ class ShowUpdatePromptUseCaseTest {
     // Why: every collaborator writes here, so a test can check what happened and in which order.
     private val calls = mutableListOf<String>()
     private val storedPromptTimes = mutableListOf<Long>()
-    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     private val now = 1_800_000_000_000L
     private val newVersion = UpdateAvailability.Available(
@@ -37,11 +35,11 @@ class ShowUpdatePromptUseCaseTest {
 
             // Then
             assertEquals(listOf(now), storedPromptTimes)
-            assertEquals(listOf(STORE_TIME, TRACK, START_UPDATE), calls)
+            assertEquals(listOf(STORE_TIME, START_UPDATE), calls)
         }
 
     @Test
-    fun `GIVEN Google Play and a newer version WHEN checking by hand THEN tracks its source and starts the flow`() =
+    fun `GIVEN Google Play and a newer version WHEN checking by hand THEN starts the flow without the sheet`() =
         runTest {
             // Given
             prepareScenario(mechanism = UpdateMechanism.GOOGLE_PLAY)
@@ -50,10 +48,6 @@ class ShowUpdatePromptUseCaseTest {
             useCase(newVersion, UpdatePromptSource.MANUAL)
 
             // Then
-            assertEquals(
-                listOf("update_prompt_shown" to mapOf<String, Any>("source" to UpdatePromptSource.MANUAL)),
-                trackedEvents,
-            )
             assertEquals(1, calls.count { it == START_UPDATE })
             assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
         }
@@ -69,7 +63,6 @@ class ShowUpdatePromptUseCaseTest {
         // Then
         assertEquals(listOf(STORE_TIME, INSTALL), calls)
         assertEquals(listOf(now), storedPromptTimes)
-        assertTrue(trackedEvents.isEmpty())
     }
 
     @Test
@@ -103,7 +96,6 @@ class ShowUpdatePromptUseCaseTest {
             assertEquals(listOf(Route.Home, sheet), navigator.backStack.value)
             assertEquals(listOf(STORE_TIME), calls)
             assertEquals(listOf(now), storedPromptTimes)
-            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test
@@ -152,7 +144,6 @@ class ShowUpdatePromptUseCaseTest {
         // Then
         assertEquals(listOf(STORE_TIME), calls)
         assertEquals(listOf(now), storedPromptTimes)
-        assertTrue(trackedEvents.isEmpty())
         assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
     }
 
@@ -161,23 +152,18 @@ class ShowUpdatePromptUseCaseTest {
         useCase = ShowUpdatePromptUseCase(
             mechanism = mechanism,
             startUpdate = { calls += START_UPDATE },
-            installDownloadedUpdate = { calls += INSTALL },
+            completeUpdateInstall = { calls += INSTALL },
             navigator = navigator,
             updateLastUpdatePromptAt = { epochMillis ->
                 calls += STORE_TIME
                 storedPromptTimes += epochMillis
             },
             currentTimeMillis = { now },
-            trackEvent = { name, params ->
-                calls += TRACK
-                trackedEvents += name to params
-            },
         )
     }
 
     private companion object {
         const val STORE_TIME = "store time"
-        const val TRACK = "track"
         const val START_UPDATE = "start update"
         const val INSTALL = "install"
     }

@@ -23,7 +23,6 @@ class InAppUpdateDownloadViewModelTest {
     private lateinit var downloadStates: MutableSharedFlow<UpdateDownloadState>
     private lateinit var viewModel: InAppUpdateDownloadViewModel
     private var installs = 0
-    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val actions = mutableListOf<InAppUpdateDownloadUiAction>()
 
     @BeforeTest
@@ -161,41 +160,36 @@ class InAppUpdateDownloadViewModelTest {
         }
 
     @Test
-    fun `GIVEN a download running WHEN it fails THEN tracks the failure and shows the failure notice`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            downloadStates.emit(UpdateDownloadState.Downloading(percent = 30))
+    fun `GIVEN a download running WHEN it fails THEN shows the failure notice`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        downloadStates.emit(UpdateDownloadState.Downloading(percent = 30))
 
-            // When
-            downloadStates.emit(UpdateDownloadState.Failed)
+        // When
+        downloadStates.emit(UpdateDownloadState.Failed)
 
-            // Then
-            assertEquals(listOf("update_download_failed" to emptyMap<String, Any>()), trackedEvents)
-            assertEquals(listOf<InAppUpdateDownloadUiAction>(InAppUpdateDownloadUiAction.ShowDownloadFailed), actions)
-        }
+        // Then
+        assertEquals(listOf<InAppUpdateDownloadUiAction>(InAppUpdateDownloadUiAction.ShowDownloadFailed), actions)
+    }
 
     @Test
-    fun `GIVEN a download running WHEN it finishes THEN tracks nothing and shows no failure notice`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            downloadStates.emit(UpdateDownloadState.Downloading(percent = 42))
+    fun `GIVEN a download running WHEN it finishes THEN shows no failure notice`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        downloadStates.emit(UpdateDownloadState.Downloading(percent = 42))
 
-            // When
-            downloadStates.emit(UpdateDownloadState.Downloaded)
+        // When
+        downloadStates.emit(UpdateDownloadState.Downloaded)
 
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-            assertTrue(actions.isEmpty())
-        }
+        // Then
+        assertTrue(actions.isEmpty())
+    }
 
     private fun TestScope.prepareScenario(replayedState: UpdateDownloadState? = null) {
         downloadStates = MutableSharedFlow(replay = 1)
         replayedState?.let(downloadStates::tryEmit)
         viewModel = InAppUpdateDownloadViewModel(
-            installDownloadedUpdate = { installs++ },
-            trackEvent = { name, params -> trackedEvents += name to params },
+            completeUpdateInstall = { installs++ },
             observeUpdateDownloadState = { downloadStates },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

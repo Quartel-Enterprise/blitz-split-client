@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
@@ -63,6 +64,7 @@ class AppViewModel(
     private val noticeBillGone: NoticeBillGone,
     private val observeAppForeground: ObserveAppForeground,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
+    private val startScreenViews: StartScreenViews,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -111,6 +113,8 @@ class AppViewModel(
             navigator.replaceAll(if (hasProfile) Route.Home else Route.Welcome)
             isThemeKnown.await()
             uiState.value = AppUiState.READY
+            // Why: only once the first screen is drawn, so a link opening over it before it stayed never counts it.
+            startScreenViews()
         }
     }
 

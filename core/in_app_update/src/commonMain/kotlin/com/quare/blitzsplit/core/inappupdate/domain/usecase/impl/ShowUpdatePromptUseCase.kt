@@ -2,13 +2,12 @@ package com.quare.blitzsplit.core.inappupdate.domain.usecase.impl
 
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
-import com.quare.blitzsplit.core.inappupdate.domain.usecase.InstallDownloadedUpdate
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.CompleteUpdateInstall
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.StartUpdate
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastUpdatePromptAt
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 
@@ -19,11 +18,10 @@ import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 class ShowUpdatePromptUseCase(
     private val mechanism: UpdateMechanism,
     private val startUpdate: StartUpdate,
-    private val installDownloadedUpdate: InstallDownloadedUpdate,
+    private val completeUpdateInstall: CompleteUpdateInstall,
     private val navigator: Navigator,
     private val updateLastUpdatePromptAt: UpdateLastUpdatePromptAt,
     private val currentTimeMillis: CurrentTimeMillis,
-    private val trackEvent: TrackEvent,
 ) : ShowUpdatePrompt {
     override suspend fun invoke(
         availability: UpdateAvailability.Pending,
@@ -36,7 +34,7 @@ class ShowUpdatePromptUseCase(
                 source = source,
             )
 
-            UpdateAvailability.Downloaded -> installDownloadedUpdate()
+            UpdateAvailability.Downloaded -> completeUpdateInstall()
         }
     }
 
@@ -45,10 +43,7 @@ class ShowUpdatePromptUseCase(
         source: UpdatePromptSource,
     ) {
         when (mechanism) {
-            UpdateMechanism.GOOGLE_PLAY -> {
-                trackEvent("update_prompt_shown", mapOf("source" to source))
-                startUpdate()
-            }
+            UpdateMechanism.GOOGLE_PLAY -> startUpdate()
 
             UpdateMechanism.APP_STORE -> {
                 val storeUrl = availability.storeUrl ?: return

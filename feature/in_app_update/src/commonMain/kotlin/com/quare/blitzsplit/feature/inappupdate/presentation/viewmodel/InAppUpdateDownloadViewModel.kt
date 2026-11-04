@@ -3,10 +3,9 @@ package com.quare.blitzsplit.feature.inappupdate.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateDownloadState
-import com.quare.blitzsplit.core.inappupdate.domain.usecase.InstallDownloadedUpdate
+import com.quare.blitzsplit.core.inappupdate.domain.usecase.CompleteUpdateInstall
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ObserveUpdateDownloadState
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.inappupdate.presentation.model.InAppUpdateDownloadUiAction
 import com.quare.blitzsplit.feature.inappupdate.presentation.model.InAppUpdateDownloadUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,8 +21,7 @@ import kotlinx.coroutines.flow.update
  * over every screen, installed (the app restarts) as soon as it finishes, and a notice when it fails.
  */
 class InAppUpdateDownloadViewModel(
-    private val installDownloadedUpdate: InstallDownloadedUpdate,
-    private val trackEvent: TrackEvent,
+    private val completeUpdateInstall: CompleteUpdateInstall,
     observeUpdateDownloadState: ObserveUpdateDownloadState,
 ) : ViewModel() {
     val uiState: StateFlow<InAppUpdateDownloadUiState>
@@ -53,12 +51,11 @@ class InAppUpdateDownloadViewModel(
                  */
                 val hasWatchedDownload = uiState.value.downloadPercent != null
                 showPercent(null)
-                if (hasWatchedDownload) installDownloadedUpdate()
+                if (hasWatchedDownload) completeUpdateInstall()
             }
 
             UpdateDownloadState.Failed -> {
                 showPercent(null)
-                trackEvent("update_download_failed", emptyMap())
                 uiAction.emit(InAppUpdateDownloadUiAction.ShowDownloadFailed)
             }
 

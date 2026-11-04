@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.inappupdate.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.inappupdate.presentation.model.InAppUpdateUiAction
@@ -18,13 +18,13 @@ import kotlinx.coroutines.launch
 /*
  * Why: "Atualização disponível" (iOS and macOS), as Bible Planner's: the App Store's newer version, "Abrir na App
  * Store", which opens the store and closes the sheet, and "Agora não". Opening the app again offers it at most once an
- * hour.
+ * hour. Its showing is the in_app_update screen view.
  */
 class InAppUpdateViewModel(
     private val route: Route.InAppUpdate,
     private val navigator: Navigator,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
     val uiState: StateFlow<InAppUpdateUiState>
         field = MutableStateFlow(InAppUpdateUiState(versionName = route.versionName))
 
@@ -34,17 +34,7 @@ class InAppUpdateViewModel(
     val stateWatcher: FlowWatcher<InAppUpdateUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<InAppUpdateUiAction> = FlowWatcher(uiAction)
 
-    init {
-        trackEvent(
-            "update_prompt_shown",
-            buildMap {
-                put("source", route.source)
-                route.versionName?.let { put("version", it) }
-            },
-        )
-    }
-
-    fun onEvent(event: InAppUpdateUiEvent) {
+    override fun handleEvent(event: InAppUpdateUiEvent) {
         when (event) {
             InAppUpdateUiEvent.OnUpdateClicked -> openStore()
             InAppUpdateUiEvent.OnDismissed -> dismiss()

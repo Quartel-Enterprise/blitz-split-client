@@ -65,7 +65,7 @@ class InAppUpdateViewModelTest {
         }
 
     @Test
-    fun `GIVEN the store says the version WHEN the sheet opens THEN tracks the prompt with its source and version`() =
+    fun `GIVEN the store says the version WHEN the sheet opens THEN tracks nothing until a button is tapped`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -77,32 +77,7 @@ class InAppUpdateViewModelTest {
             val events = trackedEvents.toList()
 
             // Then
-            assertEquals(
-                listOf(
-                    "update_prompt_shown" to
-                        mapOf<String, Any>("source" to UpdatePromptSource.STARTUP, "version" to "2.1.0"),
-                ),
-                events,
-            )
-        }
-
-    @Test
-    fun `GIVEN the store does not say the version WHEN the sheet opens THEN tracks the prompt with its source only`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                versionName = null,
-                source = UpdatePromptSource.MANUAL,
-            )
-
-            // When
-            val events = trackedEvents.toList()
-
-            // Then
-            assertEquals(
-                listOf("update_prompt_shown" to mapOf<String, Any>("source" to UpdatePromptSource.MANUAL)),
-                events,
-            )
+            assertTrue(events.isEmpty())
         }
 
     @Test
