@@ -380,7 +380,10 @@ function PendingDot() {
 /**
  * "Últimas despesas": the five latest bills you paid or take part in, from every group, the most recent first. A
  * table on the desktop (Despesa, Grupo, Quando, Total, Sua parte), a list below it with the group and the day in the
- * meta. A bill opens its Conta over its group; "Ver tudo" is Atividade, not built yet.
+ * meta. The card picks by its own width, not the window's: beside "Seus grupos" a narrower desktop window (half a
+ * laptop's screen) leaves the table no room for "Sua parte", so the card stays a list until the table fits. There the
+ * description takes what the amounts leave and the group's name is capped, tighter the narrower the card, so even a
+ * hundred million fits. A bill opens its Conta over its group; "Ver tudo" is Atividade, not built yet.
  */
 export function RecentBills({ presenter, state }: SectionProps) {
   const rows = Array.from(state.billDays).flatMap((day) => Array.from(day.bills).map((bill) => ({ bill, day: formatDayLabel(day.dayStartMillis, day.relativeDay) })))
@@ -388,11 +391,11 @@ export function RecentBills({ presenter, state }: SectionProps) {
   const open = (bill: JsHomeBill) => presenter.openBill(bill.groupId, bill.id)
   const shareClass = (bill: JsHomeBill) => cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))
   return (
-    <section aria-labelledby="home-bills-title" className="min-w-0 overflow-hidden rounded-lg border bg-card">
+    <section aria-labelledby="home-bills-title" className="@container min-w-0 overflow-hidden rounded-lg border bg-card">
       <SectionHeader id="home-bills-title" title={t('home_recentBills')} action={t('home_seeAllBills')} onAction={() => presenter.seeAllBills()} className="px-4 pt-3.5 pb-2.5" />
       {rows.length > 0 && (
         <>
-          <table className="hidden w-full text-sm lg:table">
+          <table className="hidden w-full text-sm lg:@3xl:table">
             <thead className="border-y text-xs text-muted-foreground">
               <tr className="text-left">
                 <th scope="col" className="px-4 py-2 font-medium">
@@ -415,7 +418,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
             <tbody className="divide-y">
               {rows.map(({ bill, day }) => (
                 <tr key={bill.id} onClick={() => open(bill)} className="cursor-pointer hover:bg-accent">
-                  <td className="px-4 py-2.5">
+                  <td className="w-full max-w-0 px-4 py-2.5">
                     <span className="flex min-w-0 items-center gap-2.5">
                       <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
                       <span className="flex min-w-0 flex-col">
@@ -428,14 +431,18 @@ export function RecentBills({ presenter, state }: SectionProps) {
                         >
                           {bill.description}
                         </button>
-                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
                           {bill.isPending && <PendingDot />}
-                          {paidText(bill)}
+                          <span className="truncate">{paidText(bill)}</span>
                         </span>
                       </span>
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">{bill.groupName}</td>
+                  <td className="px-3 py-2.5">
+                    <span title={bill.groupName} className="block max-w-32 truncate @4xl:max-w-48 @5xl:max-w-64">
+                      {bill.groupName}
+                    </span>
+                  </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
                   <td className="px-3 py-2.5 text-right whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
                   <td className="px-4 py-2.5 text-right">
@@ -445,7 +452,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
               ))}
             </tbody>
           </table>
-          <ul className="divide-y border-t lg:hidden">
+          <ul className="divide-y border-t lg:@3xl:hidden">
             {rows.map(({ bill, day }) => (
               <li key={bill.id}>
                 <button
