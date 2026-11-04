@@ -217,6 +217,7 @@ private struct GroupsSummaryCard: View {
                 Text(verbatim: amount)
                     .font(summary.totals.count > 1 ? .title2.bold() : isStacked ? .title.bold() : .largeTitle.bold())
                     .monospacedDigit()
+                    .foregroundStyle(Palette.balance(summary.totals.first { $0.netMinor != 0 }?.netMinor ?? 0))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
