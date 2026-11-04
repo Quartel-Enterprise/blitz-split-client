@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class HomeTabsTest {
     private lateinit var navigator: BackStackNavigator
@@ -480,6 +482,215 @@ class HomeTabsTest {
         assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN a profile Contatos opened WHEN asking whether it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack = listOf(Route.Home, Route.Contacts, route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile over Saldos filtered with a charge WHEN asking if it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = BalancesCharge(PERSON_KEY, GroupCurrency.BRL)),
+                route,
+            )
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile over Atividade WHEN asking whether it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack = listOf(Route.Home, Route.Activity(personKey = null), route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile over Atividade on a person WHEN asking whether it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack = listOf(Route.Home, Route.Contacts, Route.Activity(personKey = PERSON_KEY), route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN Perfil over Grupos WHEN asking whether it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.Profile
+        val stack = listOf(Route.Home, Route.Groups, route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN Perfil over Inicio WHEN asking whether it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.Profile
+        val stack = listOf(Route.Home, route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile opened from a bill WHEN asking whether it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                route,
+            )
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile opened from a group WHEN asking whether it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.MEMBERS,
+                ),
+                route,
+            )
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile not in the back stack WHEN asking whether it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack = listOf(Route.Home, Route.Contacts)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN Inicio alone WHEN asking whether it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.Home
+        val stack = listOf(route)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN the first entry under a home tab WHEN asking if it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.Welcome
+        val stack = listOf(route, Route.Home)
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile over Contatos then over a bill WHEN asking if it is right above a home tab THEN it is not`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.Contacts,
+                route,
+                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                route,
+            )
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertFalse(isAboveTab)
+    }
+
+    @Test
+    fun `GIVEN a profile over a bill then over Contatos WHEN asking if it is right above a home tab THEN it is`() {
+        // Given
+        val route = Route.ContactProfile(PERSON_KEY)
+        val stack =
+            listOf(
+                Route.Home,
+                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                route,
+                Route.Contacts,
+                route,
+            )
+
+        // When
+        val isAboveTab = stack.isRightAboveHomeTab(route)
+
+        // Then
+        assertTrue(isAboveTab)
+    }
+
     private fun prepareScenario(vararg stack: Route) {
         navigator = BackStackNavigator(startRoute = stack.first()).also { navigator ->
             stack.drop(1).forEach(navigator::navigate)
@@ -489,5 +700,6 @@ class HomeTabsTest {
     private companion object {
         const val GROUP_ID = "group-1"
         const val EXPENSE_ID = "expense-1"
+        const val PERSON_KEY = "name:ana"
     }
 }

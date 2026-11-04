@@ -428,6 +428,106 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN only Ana paid WHEN it opens THEN the payer line opens Ana`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payerId = ANA))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(ANA, state.lonePayer?.memberId)
+    }
+
+    @Test
+    fun `GIVEN only the device user paid WHEN it opens THEN the payer line opens them`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payerId = PIERRE))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(PIERRE, state.lonePayer?.memberId)
+        assertEquals(true, state.lonePayer?.isMe)
+    }
+
+    @Test
+    fun `GIVEN only someone who left the group paid WHEN it opens THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = FORMER))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN Ana and Bruno paid WHEN it opens THEN the payer line opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000))))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.lonePayer)
+    }
+
+    @Test
+    fun `GIVEN Ana and someone who left the group paid WHEN it opens THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 24_000), paid(FORMER, 24_000)),
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN only Ana paid WHEN a sync brings Bruno as a second payer THEN the payer line opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = ANA))
+            val edited = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000)))
+
+            // When
+            expenses.expenses.value = listOf(edited)
+
+            // Then
+            assertNull(viewModel.uiState.value.lonePayer)
+        }
+
+    @Test
+    fun `GIVEN Ana and Bruno paid WHEN a sync leaves Bruno as the only payer THEN the payer line opens Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000))))
+            val edited = expense(payerId = BRUNO)
+
+            // When
+            expenses.expenses.value = listOf(edited)
+
+            // Then
+            assertEquals(
+                BRUNO,
+                viewModel.uiState.value.lonePayer
+                    ?.memberId,
+            )
+        }
+
+    @Test
     fun `GIVEN someone else paid and the device user is in it WHEN it opens THEN they owe the payer`() =
         runTest(testDispatcher) {
             // Given
