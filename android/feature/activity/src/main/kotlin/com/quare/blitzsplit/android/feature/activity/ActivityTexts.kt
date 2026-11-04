@@ -45,7 +45,7 @@ private val groupObjectKinds = setOf(
 )
 
 @StringRes
-private fun sentenceOf(kind: ActivityKind): Int = when (kind) {
+private fun sentenceOf(item: ActivityItem): Int = when (item.kind) {
     ActivityKind.BILL_CREATED -> R.string.activity_kind_bill_created
 
     ActivityKind.BILL_EDITED -> R.string.activity_kind_bill_edited
@@ -78,7 +78,12 @@ private fun sentenceOf(kind: ActivityKind): Int = when (kind) {
 
     ActivityKind.CHARGE_SENT -> R.string.activity_kind_charge_sent
 
-    ActivityKind.COMMENT_ADDED -> R.string.activity_kind_comment_added
+    // Why: "Ana apagou um comentário em Jantar" once the comment is gone, with no text under it.
+    ActivityKind.COMMENT_ADDED -> if (item.isCommentDeleted) {
+        R.string.activity_kind_comment_deleted
+    } else {
+        R.string.activity_kind_comment_added
+    }
 
     // Why: a bill's attachments and share link only make its history (isInFeed), so the feed never draws them.
     ActivityKind.ATTACHMENT_ADDED,
@@ -107,7 +112,7 @@ internal fun actorNameOf(item: ActivityItem): String = if (item.actor.isMe) {
  */
 @Composable
 internal fun sentenceTextOf(item: ActivityItem): AnnotatedString {
-    val template = stringResource(sentenceOf(item.kind))
+    val template = stringResource(sentenceOf(item))
     val names = listOf(actorNameOf(item), objectOf(item).orEmpty())
     val weight = if (item.isUnread) FontWeight.Bold else FontWeight.SemiBold
     return buildAnnotatedString {
@@ -173,7 +178,10 @@ internal fun detailTextOf(item: ActivityItem): String? {
         ActivityKind.CHARGE_SENT -> amount?.let { stringResource(R.string.activity_detail_charge, it) }
 
         // Why: "“A cerveja que ficou comigo foi do Bruno…”", the comment under "Carla comentou em Jantar".
-        ActivityKind.COMMENT_ADDED -> item.body?.let { stringResource(R.string.activity_detail_comment, it) }
+        ActivityKind.COMMENT_ADDED ->
+            item.body
+                ?.takeUnless { item.isCommentDeleted }
+                ?.let { stringResource(R.string.activity_detail_comment, it) }
 
         ActivityKind.MEMBER_ADDED,
         ActivityKind.MEMBER_LEFT,

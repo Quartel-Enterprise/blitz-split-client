@@ -1239,6 +1239,8 @@ class ActivityItemsTest {
         sharesCount = null,
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun payment(

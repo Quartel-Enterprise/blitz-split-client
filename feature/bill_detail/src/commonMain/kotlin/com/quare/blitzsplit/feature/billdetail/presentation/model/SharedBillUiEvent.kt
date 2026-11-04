@@ -26,6 +26,38 @@ sealed interface SharedBillUiEvent : UiEvent {
 
     data object OnReplyCancelled : SharedBillUiEvent
 
+    // Why: "Editar" in the menu of the caller's own comment, which puts its text in the composer.
+    data class OnCommentEditClicked(
+        val commentId: String,
+    ) : SharedBillUiEvent
+
+    data object OnCommentEditCancelled : SharedBillUiEvent
+
+    data class OnCommentDeleteClicked(
+        val commentId: String,
+    ) : SharedBillUiEvent
+
+    data object OnCommentDeleteConfirmed : SharedBillUiEvent
+
+    data object OnCommentDeleteDismissed : SharedBillUiEvent
+
+    data class OnCommentLikeClicked(
+        val commentId: String,
+    ) : SharedBillUiEvent
+
+    data class OnCommentLikesClicked(
+        val commentId: String,
+    ) : SharedBillUiEvent
+
+    data object OnCommentLikesDismissed : SharedBillUiEvent
+
+    // Why: the page's link at the comment, through the system share.
+    data class OnCommentShareClicked(
+        val commentId: String,
+    ) : SharedBillUiEvent
+
+    data object OnFocusedCommentShown : SharedBillUiEvent
+
     data class OnAttachmentClicked(
         val id: String,
     ) : SharedBillUiEvent

@@ -234,6 +234,75 @@ class RegisterPaymentViewModelTest {
     }
 
     @Test
+    fun `GIVEN bitcoin in sats WHEN the screen opens and a digit is typed THEN types whole sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(currency = GroupCurrency.BTC),
+                showsSats = true,
+            )
+
+            // When
+            val opened = viewModel.uiState.value
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("16.2309"))
+
+            // Then
+            assertTrue(opened.showsSats)
+            assertEquals("16.230", opened.amountText)
+            assertEquals(162_309L, viewModel.uiState.value.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN an amount typed in bitcoin WHEN sats turn on while open THEN it keeps its value in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BTC))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("0,0001623"))
+
+            // When
+            bitcoinInSats.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("1.623", state.amountText)
+            assertEquals(1_623L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN sats turned on while open WHEN a sync brings the group again THEN the amount stays in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            val bitcoinTrip = trip.copy(currency = GroupCurrency.BTC)
+            prepareScenario(storedGroup = bitcoinTrip)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("0,0001623"))
+            bitcoinInSats.value = true
+
+            // When
+            groups.groups.value = listOf(bitcoinTrip.copy(name = "Carteira"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("1.623", state.amountText)
+            assertEquals(1_623L, state.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN a group in bitcoin WHEN the screen opens THEN fills in the debt with its 8 decimals`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BTC))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsSats)
+            assertEquals("0,00016230", state.amountText)
+        }
+
+    @Test
     fun `GIVEN debts both ways between the pair WHEN the screen opens THEN shows only the difference`() =
         runTest(testDispatcher) {
             // Given
@@ -1715,6 +1784,8 @@ class RegisterPaymentViewModelTest {
         updatedAt = 0L,
     )
 
+    private val bitcoinInSats = MutableStateFlow(false)
+
     private fun TestScope.prepareScenario(
         from: String = ANA,
         to: String = PIERRE,
@@ -1728,7 +1799,9 @@ class RegisterPaymentViewModelTest {
         decimalSeparator: Char = ',',
         recordError: Throwable? = null,
         recordGate: CompletableDeferred<Unit>? = null,
+        showsSats: Boolean = false,
     ) {
+        bitcoinInSats.value = showsSats
         clockMillis = nowMillis
         route = Route.RegisterPayment(
             GROUP_ID,
@@ -1779,6 +1852,7 @@ class RegisterPaymentViewModelTest {
             },
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
+            observeBitcoinInSats = { bitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

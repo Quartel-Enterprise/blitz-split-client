@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
+import com.quare.blitzsplit.core.expenses.domain.model.toSaturatedProduct
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
@@ -28,11 +29,12 @@ data class ItemEditor(
     val lastEditedMemberId: String?,
     val payerIds: List<String>,
     val currency: GroupCurrency,
+    val showsSats: Boolean,
 ) {
-    val unitPriceMinor: Long? = AmountInput.parse(unitPriceText, currency)
+    val unitPriceMinor: Long? = AmountInput.parse(unitPriceText, currency, showsSats)
 
     // Why: "Total do item", 0 while the price isn't one.
-    val totalMinor: Long = (unitPriceMinor ?: 0L) * quantity
+    val totalMinor: Long = (unitPriceMinor ?: 0L).toSaturatedProduct(quantity)
 
     val entries: List<SplitEntry> = rows.map { row ->
         SplitEntry(
@@ -40,7 +42,7 @@ data class ItemEditor(
             value = when (mode) {
                 ItemSplitMode.EQUAL -> if (row.isIncluded) 1L else 0L
                 ItemSplitMode.UNITS, ItemSplitMode.SHARES -> row.count
-                ItemSplitMode.AMOUNT -> AmountInput.parse(row.valueText, currency) ?: 0L
+                ItemSplitMode.AMOUNT -> AmountInput.parse(row.valueText, currency, showsSats) ?: 0L
                 ItemSplitMode.PERCENT -> AmountInput.parseWhole(row.valueText) ?: 0L
             },
         )

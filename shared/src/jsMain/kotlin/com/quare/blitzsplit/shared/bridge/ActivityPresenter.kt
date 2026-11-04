@@ -90,8 +90,10 @@ class JsActivityItem(
     val toName: String?,
     val toIsMe: Boolean,
     val changes: Array<JsActivityChange>,
-    // Why: what a comment says, cut to what a row shows.
+    // Why: what a comment says now, cut to what a row shows; null once deleted.
     val body: String?,
+    // Why: "Ana apagou um comentário em Jantar", with no text, in place of "Ana comentou em Jantar".
+    val isCommentDeleted: Boolean,
     val moreChangesCount: Int,
     val hasChangesToShow: Boolean,
     val isPending: Boolean,
@@ -446,6 +448,7 @@ private fun toJsActivityItem(
     toIsMe = item.toIsMe,
     changes = item.changes.map(::toJsActivityChange).toTypedArray(),
     body = item.body,
+    isCommentDeleted = item.isCommentDeleted,
     moreChangesCount = item.moreChangesCount,
     hasChangesToShow = item.hasChangesToShow,
     isPending = item.isPending,

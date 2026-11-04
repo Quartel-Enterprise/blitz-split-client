@@ -368,7 +368,7 @@ class SearchViewModelTest {
                     Route.Home,
                     activity,
                     expensesOf("churrasco"),
-                    Route.BillDetail("churrasco", "carne"),
+                    Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
                 navigator.backStack.value,
             )
@@ -419,7 +419,7 @@ class SearchViewModelTest {
                     Route.Home,
                     activity,
                     expensesOf("churrasco"),
-                    Route.BillDetail("churrasco", "carne"),
+                    Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
                 navigator.backStack.value,
             )

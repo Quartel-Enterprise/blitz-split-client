@@ -52,6 +52,8 @@ class ActivityMapperImpl : ActivityMapper {
             changes = (data["changes"] as? JsonArray).orEmpty().mapNotNull(::changeOf),
             sharesCount = data.findLong("shares_count")?.toInt(),
             body = data.findText("body"),
+            commentId = data.findText("comment_id"),
+            isCommentDeleted = (data["deleted"] as? JsonPrimitive)?.contentOrNull == "true",
             isPending = entity.pendingSync,
         )
     }

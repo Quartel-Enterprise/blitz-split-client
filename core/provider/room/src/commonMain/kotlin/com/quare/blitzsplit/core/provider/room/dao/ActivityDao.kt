@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedPaymentRow
@@ -23,6 +24,10 @@ interface ActivityDao {
     // Why: the most recent first; the window is 90 days, so the feed filters and pages in memory.
     @Query("SELECT * FROM activity_event ORDER BY occurredAt DESC, seq DESC")
     fun observeEvents(): Flow<List<ActivityEventEntity>>
+
+    // Why: the event a push notification was tapped for, once its sync brought it.
+    @Query("SELECT * FROM activity_event WHERE id = :id")
+    suspend fun getEvent(id: String): ActivityEventEntity?
 
     // Why: a bill's history in Conta (7.3): what happened to it in the window, the most recent first.
     @Query("SELECT * FROM activity_event WHERE targetId = :targetId ORDER BY occurredAt DESC, seq DESC")
@@ -59,6 +64,10 @@ interface ActivityDao {
 
     @Query("SELECT id FROM split_group")
     fun observeLiveGroupIds(): Flow<List<String>>
+
+    // Why: a comment's event keeps the text it had; the device's copy says how it reads now.
+    @Query("SELECT id, body, isDeleted FROM bill_comment WHERE editedAt IS NOT NULL OR isDeleted = 1")
+    fun observeChangedComments(): Flow<List<ChangedCommentRow>>
 
     @Query("SELECT MAX(seq) FROM activity_event")
     suspend fun getMaxSeq(): Long?

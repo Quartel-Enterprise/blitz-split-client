@@ -361,6 +361,7 @@ class GroupStatsViewModel(
             Route.BillDetail(
                 groupId = route.groupId,
                 expenseId = expense.expenseId,
+                focusCommentId = null,
             ),
         )
     }

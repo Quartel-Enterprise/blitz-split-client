@@ -7,3 +7,6 @@ import com.quare.blitzsplit.core.model.GroupType
 internal fun List<GroupType>.toCodes(): Array<String> = map(GroupType::code).toTypedArray()
 
 internal fun List<GroupCurrency>.toCurrencyCodes(): Array<String> = map(GroupCurrency::code).toTypedArray()
+
+// Why: the codes "Moeda" lists under "Criptomoedas", as `GroupCurrency.isCrypto` has them.
+internal fun List<GroupCurrency>.toCryptoCurrencyCodes(): Array<String> = filter { it.isCrypto }.toCurrencyCodes()

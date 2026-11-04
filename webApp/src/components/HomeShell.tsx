@@ -263,7 +263,7 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
           >
             <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-[22px] rounded-md text-[9px]" />
             <span className="min-w-0 flex-1 truncate">{group.name}</span>
-            <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{formatSignedPlainMoney(group.netMinor, group.fractionDigits)}</span>
+            <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{formatSignedPlainMoney(group.netMinor, group.fractionDigits, group.currency)}</span>
           </button>
         ))}
       </nav>

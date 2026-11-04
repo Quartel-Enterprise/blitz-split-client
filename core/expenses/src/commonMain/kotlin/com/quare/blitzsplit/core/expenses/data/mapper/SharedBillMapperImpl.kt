@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.data.dto.SharedBillPartDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillStatusDto
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
@@ -108,6 +109,16 @@ class SharedBillMapperImpl : SharedBillMapper {
         body = dto.body,
         viaLink = dto.viaLink == true,
         postedAt = dto.postedAt,
+        editedAt = dto.editedAt,
+        isDeleted = dto.isDeleted == true,
+        isMine = dto.isMine == true,
+        likes = dto.likedBy.orEmpty().map { like ->
+            BillCommentLike(
+                memberId = null,
+                name = like.name,
+                isMine = like.isMine,
+            )
+        },
         isPending = false,
     )
 

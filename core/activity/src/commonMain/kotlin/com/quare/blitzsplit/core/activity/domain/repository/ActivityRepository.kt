@@ -25,6 +25,9 @@ interface ActivityRepository {
 
     suspend fun saveRead(eventId: String): Result<Unit>
 
+    // Why: one event the device keeps, null when it isn't there (yet) or this version doesn't know its kind.
+    suspend fun findEvent(eventId: String): ActivityEvent?
+
     suspend fun saveReadThrough(
         throughSeq: Long,
         now: Long,

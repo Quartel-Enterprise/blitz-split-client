@@ -27,6 +27,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var observedLayouts: MutableList<GroupsLayout>
     private lateinit var observedCharts: MutableList<StatsChartPreferences>
     private lateinit var observedDynamicColors: MutableList<Boolean>
+    private lateinit var observedBitcoinInSats: MutableList<Boolean>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -523,6 +524,47 @@ class DeviceSettingsRepositoryImplTest {
             assertEquals(listOf(true), observedDynamicColors)
         }
 
+    @Test
+    fun `GIVEN a fresh install WHEN observing the bitcoin unit THEN shows bitcoin and not sats`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val showsSats = observedBitcoinInSats.toList()
+
+        // Then
+        assertEquals(listOf(false), showsSats)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors on WHEN turning sats on THEN stores it keeping the colors and observers see it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    usesDynamicColors = true,
+                ),
+            )
+
+            // When
+            repository.updateBitcoinInSats(true)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        usesDynamicColors = true,
+                        showsBitcoinInSats = true,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(false, true), observedBitcoinInSats)
+            assertEquals(listOf(true), observedDynamicColors.distinct())
+        }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -530,6 +572,7 @@ class DeviceSettingsRepositoryImplTest {
         statsChartType: String? = null,
         statsGrain: String? = null,
         usesDynamicColors: Boolean = false,
+        showsBitcoinInSats: Boolean = false,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -538,6 +581,7 @@ class DeviceSettingsRepositoryImplTest {
         statsChartType = statsChartType,
         statsGrain = statsGrain,
         usesDynamicColors = usesDynamicColors,
+        showsBitcoinInSats = showsBitcoinInSats,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -547,6 +591,7 @@ class DeviceSettingsRepositoryImplTest {
         observedLayouts = mutableListOf()
         observedCharts = mutableListOf()
         observedDynamicColors = mutableListOf()
+        observedBitcoinInSats = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
         }
@@ -558,6 +603,9 @@ class DeviceSettingsRepositoryImplTest {
         }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeDynamicColors().collect(observedDynamicColors::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeBitcoinInSats().collect(observedBitcoinInSats::add)
         }
     }
 }
@@ -588,6 +636,7 @@ private class FakeDeviceSettingsLocalDataSource(
             statsChartType = null,
             statsGrain = null,
             usesDynamicColors = false,
+            showsBitcoinInSats = false,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

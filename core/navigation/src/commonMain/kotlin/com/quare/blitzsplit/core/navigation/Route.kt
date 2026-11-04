@@ -110,6 +110,8 @@ sealed interface Route {
     data class BillDetail(
         val groupId: String,
         val expenseId: String,
+        // Why: a comment's link, or its item in Atividade, scrolls to the comment and highlights it; null for none.
+        val focusCommentId: String?,
     ) : Route
 
     // Why: "Compartilhar conta" (7.3) over Conta: the bill's link and who may open it, online only.
@@ -124,6 +126,8 @@ sealed interface Route {
      */
     data class SharedBill(
         val code: String,
+        // Why: a comment the link was shared at ("?comentario="), which the page scrolls to; null for none.
+        val commentId: String?,
     ) : Route
 
     /*

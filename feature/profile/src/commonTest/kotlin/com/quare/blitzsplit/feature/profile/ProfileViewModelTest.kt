@@ -92,6 +92,7 @@ class ProfileViewModelTest {
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
+    private val storedBitcoinInSats = MutableStateFlow(false)
     private var supportsDynamicColors = true
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ProfileViewModel
@@ -820,6 +821,20 @@ class ProfileViewModelTest {
             // Then
             assertEquals(true, storedDynamicColors.value)
             assertTrue(viewModel.uiState.value.usesDynamicColors)
+        }
+
+    @Test
+    fun `GIVEN bitcoin shown in bitcoin WHEN turning satoshis on THEN stores and shows them on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(isOn = true))
+
+            // Then
+            assertTrue(storedBitcoinInSats.value)
+            assertTrue(viewModel.uiState.value.showsBitcoinInSats)
         }
 
     @Test
@@ -4316,6 +4331,8 @@ class ProfileViewModelTest {
                 notificationPreferences.hasPendingChanges
             },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
+            updateBitcoinInSats = { storedBitcoinInSats.value = it },
+            observeBitcoinInSats = { storedBitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

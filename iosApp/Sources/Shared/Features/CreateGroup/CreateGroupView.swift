@@ -155,9 +155,7 @@ private struct CreateGroupForm: View {
                 }
             }
             Picker("Currency", selection: currencyBinding) {
-                ForEach(state.currencies, id: \.self) { currency in
-                    Text(verbatim: currency.label).tag(currency)
-                }
+                CurrencyOptions(currencies: state.currencies)
             }
         }
     }
@@ -413,10 +411,32 @@ extension GroupType {
     }
 }
 
+/// The "Currency" picker's options: the fiat currencies, then bitcoin and ether under "Cryptocurrencies".
+struct CurrencyOptions: View {
+    let currencies: [GroupCurrency]
+
+    var body: some View {
+        ForEach(currencies.filter { !$0.isCrypto }, id: \.self) { currency in
+            Text(verbatim: currency.label).tag(currency)
+        }
+        Section("Cryptocurrencies") {
+            ForEach(currencies.filter(\.isCrypto), id: \.self) { currency in
+                Text(verbatim: currency.label).tag(currency)
+            }
+        }
+    }
+}
+
 extension GroupCurrency {
     /// "Brazilian Real (R$)", named by the system in the device's language. Made once per currency: the picker
-    /// reads every label each time the form redraws.
+    /// reads every label each time the form redraws. Bitcoin and ether, which the system doesn't name, by their own
+    /// names: "Bitcoin (₿)", "Ethereum (Ξ)".
     @MainActor var label: String {
+        switch self {
+        case .btc: return "Bitcoin (₿)"
+        case .eth: return "Ethereum (Ξ)"
+        default: break
+        }
         if let label = Self.labels[code] { return label }
         let locale = Locale.current
         let name = locale.localizedString(forCurrencyCode: code) ?? code

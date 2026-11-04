@@ -80,6 +80,10 @@ class ObserveBillCommentsUseCaseTest {
         viaLink = false,
         postedAt = postedAt,
         isPending = false,
+        editedAt = null,
+        isDeleted = false,
+        isMine = false,
+        likes = emptyList(),
     )
 
     private fun prepareScenario(stored: List<BillComment>) {

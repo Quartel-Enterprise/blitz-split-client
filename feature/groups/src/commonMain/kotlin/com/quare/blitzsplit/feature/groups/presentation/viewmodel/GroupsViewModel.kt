@@ -456,7 +456,7 @@ class GroupsViewModel(
     ) {
         if (!isListShown()) return
         detailPane.openGroup(groupId, GroupTab.EXPENSES)
-        navigator.navigate(Route.BillDetail(groupId, expenseId))
+        navigator.navigate(Route.BillDetail(groupId, expenseId, focusCommentId = null))
     }
 
     /*

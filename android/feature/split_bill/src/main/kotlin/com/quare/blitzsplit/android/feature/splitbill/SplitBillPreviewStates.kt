@@ -144,6 +144,7 @@ internal fun createPreviewBillState(
 ): SplitBillUiState = SplitBillUiState(
     isEditing = isEditing,
     groupId = PREVIEW_TRIP_ID,
+    pickedGroupId = PREVIEW_TRIP_ID,
     groupName = "Viagem Floripa",
     groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.PEACH,
@@ -152,6 +153,7 @@ internal fun createPreviewBillState(
     groups = previewGroups,
     groupSelection = groupSelection,
     currency = GroupCurrency.BRL,
+    showsSats = false,
     people = previewPeople,
     amountText = amountText,
     description = description,
@@ -306,6 +308,7 @@ private fun createPreviewEditor(
     totalMinor = totalMinor,
     payerIds = listOf(payerId),
     currency = GroupCurrency.BRL,
+    showsSats = false,
     items = null,
 )
 
@@ -322,6 +325,7 @@ internal fun createPreviewPayerAmounts(): PayerAmounts {
         },
         totalMinor = PREVIEW_TOTAL_MINOR,
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 }
 
@@ -391,6 +395,7 @@ internal fun createPreviewItemsState(hasOwners: Boolean): SplitBillUiState {
             totalMinor = PREVIEW_DINNER_TOTAL_MINOR,
             payerIds = listOf(PREVIEW_BRUNO_ID),
             currency = GroupCurrency.BRL,
+            showsSats = false,
         ),
     )
 }
@@ -418,6 +423,7 @@ internal fun createPreviewItemState(mode: ItemSplitMode): SplitBillUiState {
             lastEditedMemberId = null,
             payerIds = listOf(PREVIEW_BRUNO_ID),
             currency = GroupCurrency.BRL,
+            showsSats = false,
         ),
     )
 }

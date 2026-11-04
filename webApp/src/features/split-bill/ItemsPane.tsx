@@ -229,7 +229,7 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
             id="item-price"
             inputMode="numeric"
             value={price}
-            placeholder={amountPlaceholder(state.fractionDigits)}
+            placeholder={amountPlaceholder(state.fractionDigits, state.currency)}
             autoComplete="off"
             onChange={(event) => setPrice(event.target.value)}
             className="text-right tabular-nums"
@@ -352,7 +352,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         inputMode="numeric"
         autoComplete="off"
         value={value}
-        placeholder={editor.mode === 'amount' ? amountPlaceholder(state.fractionDigits) : '0'}
+        placeholder={editor.mode === 'amount' ? amountPlaceholder(state.fractionDigits, state.currency) : '0'}
         aria-label={label}
         aria-invalid={line.isError}
         onChange={(event) => setValue(event.target.value)}
@@ -401,7 +401,7 @@ function FeeBody({ presenter, state, editor }: { presenter: SplitItemsPresenter;
           id="items-fee"
           inputMode="numeric"
           value={value}
-          placeholder={isService ? '0' : amountPlaceholder(state.fractionDigits)}
+          placeholder={isService ? '0' : amountPlaceholder(state.fractionDigits, state.currency)}
           aria-invalid={!editor.canSave}
           aria-describedby="items-fee-help"
           autoComplete="off"

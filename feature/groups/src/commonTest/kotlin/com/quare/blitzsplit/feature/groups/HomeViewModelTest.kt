@@ -1518,7 +1518,7 @@ class HomeViewModelTest {
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
                 ),
-                Route.BillDetail("trio", "dinner"),
+                Route.BillDetail("trio", "dinner", focusCommentId = null),
             ),
             navigator.backStack.value,
         )

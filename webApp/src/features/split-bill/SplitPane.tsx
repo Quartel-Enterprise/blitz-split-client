@@ -250,7 +250,7 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLa
             ? t('splitBill_notJoined')
             : t('split_theirPart')
       control = (
-        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits)} isInvalid={isMissing} label={t('split_amountLabel', { name: ariaName })} className="w-28" />
+        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={isMissing} label={t('split_amountLabel', { name: ariaName })} className="w-28" />
       )
       break
     case 'percent':

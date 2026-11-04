@@ -165,9 +165,7 @@ private struct EditGroupForm: View {
                     }
                 } else {
                     Picker("Currency", selection: currencyBinding) {
-                        ForEach(state.currencies, id: \.self) { currency in
-                            Text(verbatim: currency.label).tag(currency)
-                        }
+                        CurrencyOptions(currencies: state.currencies)
                     }
                 }
                 // Pushes "Default split" inside this sheet, which keeps what is typed here

@@ -1,8 +1,10 @@
-import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
+import { AppPresenter, type JsBillLinkNotice, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { HomeSidebarProvider } from '@/components/HomeSidebar'
 import { AppSkeleton } from '@/components/PageSkeletons'
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
@@ -34,7 +36,9 @@ import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
+import { t } from '@/i18n'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
+import { setShowsBitcoinInSats } from '@/lib/money'
 import { applyTheme } from '@/lib/theme'
 
 /**
@@ -46,6 +50,10 @@ export function App() {
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
   const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
+  const billLinkNotice = useWatch(app, (presenter, onChange: (notice: JsBillLinkNotice) => void) => presenter.observeBillLinkNotice(onChange))?.notice
+  const showsBitcoinInSats = useWatch(app, (presenter, onChange: (isOn: boolean) => void) => presenter.observeBitcoinInSats(onChange))
+  // Why: set before the screens under it draw, so this render's amounts already follow it; a change redraws them all.
+  setShowsBitcoinInSats(showsBitcoinInSats ?? false)
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {
     if (isReady && theme) applyTheme(theme)
@@ -58,8 +66,35 @@ export function App() {
       <HomeSidebarProvider isActive={backStack.some((route) => SHELL_PAGES.has(route.name))}>
         <StackLayers backStack={backStack} />
       </HomeSidebarProvider>
+      {app && billLinkNotice && <BillLinkNoticeDialog notice={billLinkNotice} onDismiss={() => app.dismissBillLinkNotice()} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
+  )
+}
+
+/**
+ * Why a comment's link opened nothing, over wherever the app is: "Você não está neste grupo" ("not-in-group") or "Sem
+ * internet" ("offline"). "Ir para o início", or closing it any way, goes back to Início.
+ */
+function BillLinkNoticeDialog({ notice, onDismiss }: { notice: string; onDismiss: () => void }) {
+  const isOffline = notice === 'offline'
+  return (
+    <AlertDialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onDismiss()
+      }}
+    >
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t(isOffline ? 'billLinkNotice_offlineTitle' : 'billLinkNotice_notInGroupTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>{t(isOffline ? 'billLinkNotice_offlineBody' : 'billLinkNotice_notInGroupBody')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button onClick={onDismiss}>{t('billLinkNotice_goHome')}</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
 
