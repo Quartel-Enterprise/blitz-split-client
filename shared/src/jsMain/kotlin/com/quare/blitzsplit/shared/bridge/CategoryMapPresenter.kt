@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -71,6 +72,12 @@ class JsTermForm(
     val canSave: Boolean,
 )
 
+// Why: a group a category may be created in from the map (9.4), the most recent activity first.
+class JsMapGroup(
+    val id: String,
+    val name: String,
+)
+
 class JsCategoryMapState(
     // Why: false while the terms, the categories, the account or a restored account's first full sync are pending.
     val isLoaded: Boolean,
@@ -92,10 +99,19 @@ class JsCategoryMapState(
     val removedTerm: String?,
     val isRestoreConfirmOpen: Boolean,
     val ownTerms: Array<String>,
+    // Why: "Nova categoria" and "Nova subcategoria" (9.4), only once there is a group to put them in.
+    val canCreateCategory: Boolean,
+    val groups: Array<JsMapGroup>,
+    // Why: "Grupo" in "Nova categoria", while there is more than one and the category isn't being edited.
+    val canPickCategoryGroup: Boolean,
+    val categoryForm: JsCategoryForm?,
+    val categoryDeletion: JsCategoryDeletion?,
+    // Why: every CategoryIcon's code, in the order "Nova categoria" offers them.
+    val icons: Array<String>,
 )
 
 class JsCategoryMapAction(
-    // Why: "save-error".
+    // Why: "save-error", "category-save-error" or "category-delete-error".
     val type: String,
 )
 
@@ -112,6 +128,8 @@ class CategoryMapPresenter {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 CategoryMapUiAction.ShowSaveError -> JsCategoryMapAction("save-error")
+                CategoryMapUiAction.ShowCategorySaveError -> JsCategoryMapAction("category-save-error")
+                CategoryMapUiAction.ShowCategoryDeleteError -> JsCategoryMapAction("category-delete-error")
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -192,6 +210,57 @@ class CategoryMapPresenter {
         viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
     }
 
+    // Why: parentId null for "Nova categoria", a main category's id for "Nova subcategoria" in it.
+    fun createCategory(parentId: String?) {
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId))
+    }
+
+    fun editCategory(categoryId: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(categoryId))
+    }
+
+    // Why: the form's actions are named as SplitCategoriesPresenter's, so one web form draws both.
+    fun changeName(text: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged(text))
+    }
+
+    fun getName(): String = viewModel.uiState.value.categoryForm
+        ?.name
+        .orEmpty()
+
+    fun pickGroup(groupId: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryGroupPicked(groupId))
+    }
+
+    fun pickParent(parentId: String?) {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryParentPicked(parentId))
+    }
+
+    fun pickIcon(code: String) {
+        val icon = CategoryIcon.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryIconPicked(icon))
+    }
+
+    fun save() {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+    }
+
+    fun dismissForm() {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormDismissed)
+    }
+
+    fun askToDelete() {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+    }
+
+    fun confirmDelete() {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+    }
+
+    fun dismissDelete() {
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteDismissed)
+    }
+
     fun dispose() {
         holder.clear()
     }
@@ -252,6 +321,18 @@ private fun toJsMapState(state: CategoryMapUiState): JsCategoryMapState {
         removedTerm = state.removedTerm?.term,
         isRestoreConfirmOpen = state.isRestoreConfirmOpen,
         ownTerms = state.ownTerms.map { it.term }.toTypedArray(),
+        canCreateCategory = state.canCreateCategory,
+        groups = state.groups
+            .map {
+                JsMapGroup(
+                    id = it.id,
+                    name = it.name,
+                )
+            }.toTypedArray(),
+        canPickCategoryGroup = state.canPickCategoryGroup,
+        categoryForm = state.categoryEditor?.let(::toJsCategoryForm),
+        categoryDeletion = state.categoryDeletion?.let(::toJsCategoryDeletion),
+        icons = CategoryIcon.entries.map { it.code }.toTypedArray(),
     )
 }
 

@@ -29,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +62,12 @@ fun CategoryMapContent(
     onEvent: (CategoryMapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    /*
+     * Why: a failed save or delete keeps the category's form open over the map, so its snackbar shows in the form,
+     * and only there rather than once more under its scrim.
+     */
+    val idleSnackbarHostState = remember { SnackbarHostState() }
+    val isCategoryFormOpen = state.categoryForm != null
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -75,10 +82,17 @@ fun CategoryMapContent(
                     }
                 },
                 // Why: adding and restoring take no change until the map is read (canEditMap).
-                actions = { if (state.canEditMap) MapActionsMenu(onEvent = onEvent) },
+                actions = {
+                    if (state.canEditMap) {
+                        MapActionsMenu(
+                            canCreateCategory = state.canCreateCategory,
+                            onEvent = onEvent,
+                        )
+                    }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(if (isCategoryFormOpen) idleSnackbarHostState else snackbarHostState) },
     ) { padding ->
         val formFactor = rememberFoldLayout().formFactor
         Box(
@@ -141,6 +155,13 @@ fun CategoryMapContent(
             onEvent = onEvent,
         )
     }
+    if (isCategoryFormOpen) {
+        CategoryFormDialog(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+    }
     if (state.isRestoreConfirmOpen) {
         RestoreMapDialog(
             state = state,
@@ -150,7 +171,10 @@ fun CategoryMapContent(
 }
 
 @Composable
-private fun MapActionsMenu(onEvent: (CategoryMapUiEvent) -> Unit) {
+private fun MapActionsMenu(
+    canCreateCategory: Boolean,
+    onEvent: (CategoryMapUiEvent) -> Unit,
+) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     IconButton(onClick = {
         onEvent(
@@ -176,6 +200,16 @@ private fun MapActionsMenu(onEvent: (CategoryMapUiEvent) -> Unit) {
             expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
         ) {
+            // Why: a category goes in a group (9.4), so with none on the device there is nowhere to create one.
+            if (canCreateCategory) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.category_map_new_category)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+                    },
+                )
+            }
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.category_map_restore)) },
                 onClick = {

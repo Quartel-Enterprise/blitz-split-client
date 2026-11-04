@@ -1,12 +1,10 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
@@ -31,10 +29,7 @@ internal fun SplitBillUiState.withCategories(
     expenses: List<Expense>,
 ): SplitBillUiState = copy(
     categories = tree,
-    categoryUsage = expenses
-        .filter { it.categoryId != null }
-        .groupingBy { tree.resolve(it.categoryId).id }
-        .eachCount(),
+    categoryUsage = tree.usageOf(expenses),
 )
 
 // Why: the picker opens on the bill's main category, with what it holds already marked.
@@ -63,47 +58,13 @@ internal fun SplitBillUiState.withCategoryMainToggled(mainId: String): SplitBill
     return copy(categoryPicker = picker.copy(openMainId = mainId.takeIf { it != picker.openMainId }))
 }
 
-// Why: "Nova em Alimentação" starts inside it; a new main category starts with the first icon of the grid.
+// Why: "Nova em Alimentação" starts inside it, in the bill's group.
 internal fun SplitBillUiState.withNewCategoryForm(
     parentId: String?,
     name: String,
-): SplitBillUiState {
-    val parent = parentId?.let { categories.findOrNull(it) }?.takeIf { it.isMain && !it.isOther }
-    return copy(
-        categoryForm = CategoryForm(
-            categoryId = null,
-            name = CategoryRules.toCapped(name.trim()),
-            parentId = parent?.id,
-            icon = parent?.icon ?: CategoryIcon.PAW,
-            createdByMemberId = null,
-            isSaving = false,
-        ),
-    )
-}
+): SplitBillUiState = copy(categoryForm = CategoryForm.create(categories, groupId, parentId, name))
 
-// Why: only the group's own categories may be edited (7.8e).
 internal fun SplitBillUiState.withEditCategoryForm(categoryId: String): SplitBillUiState {
-    val category = categories.findOrNull(categoryId)?.takeIf { it.isGroupCategory } ?: return this
-    return copy(
-        categoryForm = CategoryForm(
-            categoryId = category.id,
-            name = category.name.orEmpty(),
-            parentId = category.parentId,
-            icon = category.icon,
-            createdByMemberId = category.createdByMemberId,
-            isSaving = false,
-        ),
-    )
-}
-
-internal fun SplitBillUiState.withCategoryParent(parentId: String?): SplitBillUiState {
-    val form = categoryForm ?: return this
-    if (isCategoryParentLocked) return this
-    val parent = parentId?.let { id -> categoryParents.firstOrNull { it.id == id } }
-    return copy(
-        categoryForm = form.copy(
-            parentId = parent?.id,
-            icon = if (parent != null) parent.icon else form.icon,
-        ),
-    )
+    val form = CategoryForm.editingOrNull(categories, groupId, categoryId) ?: return this
+    return copy(categoryForm = form)
 }

@@ -1,32 +1,23 @@
-import { Check, ChevronDown, ChevronRight, ChevronUp, CloudOff, MoreHorizontal, Plus, Search, SearchX, Tag, Users, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, ChevronUp, MoreHorizontal, Plus, Search, SearchX, Tag, Users, X } from 'lucide-react'
 import type {
   JsBillCategories,
   JsCategory,
   JsCategoryBranch,
-  JsCategoryDeletion,
-  JsCategoryForm,
   JsSplitBillState,
   SplitCategoriesPresenter,
 } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { ConfirmDialog } from '@/components/ConfirmDialog'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
-import { CategoryBadge, categoryIconLabel, categoryIconOf, categoryName, categoryPath } from '@/lib/categories'
+import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
 const searchId = 'category-search'
-const nameId = 'category-name'
-const nameHelpId = 'category-name-help'
-const parentId = 'category-parent'
-const noParent = '__none__'
 
 const reasons: Record<string, MessageKey | null> = {
   description: 'splitBill_categoryReasonDescription',
@@ -399,167 +390,6 @@ function SearchResults({ presenter, state, query }: { presenter: SplitCategories
         {t('splitBill_categoryCreateQuery', { query })}
       </Button>
     </>
-  )
-}
-
-/** "Nova categoria", "Nova subcategoria" or "Editar categoria" (7.8), in the picker's place. */
-export function categoryFormPane(presenter: SplitCategoriesPresenter, state: JsSplitBillState, form: JsCategoryForm): PaneParts {
-  const title = form.isEditing ? 'splitBill_categoryFormEdit' : form.isSubcategory ? 'splitBill_categoryFormSub' : 'splitBill_categoryFormNew'
-  return {
-    title: t(title),
-    body: <CategoryFormBody presenter={presenter} state={state} form={form} />,
-    footer: (
-      <>
-        {form.isEditing && (
-          <Button key="category-delete" variant="ghost" className="text-destructive sm:mr-auto" onClick={() => presenter.askToDelete()}>
-            {t('splitBill_categoryDelete')}
-          </Button>
-        )}
-        <Button key="category-cancel" variant="outline" onClick={() => presenter.dismissForm()}>
-          {t('common_cancel')}
-        </Button>
-        <Button key="category-save" disabled={!form.canSave} onClick={() => presenter.save()}>
-          {t('editGroup_save')}
-        </Button>
-      </>
-    ),
-  }
-}
-
-function CategoryFormBody({ presenter, state, form }: { presenter: SplitCategoriesPresenter; state: JsSplitBillState; form: JsCategoryForm }) {
-  const [name, setName] = useDraft(form.name, (text) => {
-    presenter.changeName(text)
-    return presenter.getName()
-  })
-  const parent = form.parent
-  const trimmed = form.name.trim()
-  const edited = form.categoryId ? state.categories.branches.flatMap((b) => [b.category, ...b.subcategories]).find((c) => c.id === form.categoryId) : null
-  const creator = edited ? state.people.find((person) => person.id === edited.createdByMemberId) : null
-  const nameHelp = form.isNameTaken
-    ? parent
-      ? t('splitBill_categoryNameTakenIn', { name: trimmed, parent: categoryName(parent) })
-      : t('splitBill_categoryNameTaken', { name: trimmed })
-    : form.isEditing
-      ? [creator && t('splitBill_categoryCreatedBy', { name: creator.name }), form.usage === 1 ? t('splitBill_categoryUsedInOne') : t('splitBill_categoryUsedIn', { count: form.usage })]
-          .filter(Boolean)
-          .join(' · ')
-      : t('splitBill_categoryNameHelp')
-  const parentHelp = form.isParentLocked
-    ? t('splitBill_categoryParentLocked')
-    : parent
-      ? t('splitBill_categoryParentHelpSub', { name: categoryName(parent) })
-      : t('splitBill_categoryParentHelp')
-  const Icon = categoryIconOf(form.icon)
-  const note = form.isEditing
-    ? form.usage === 1
-      ? t('splitBill_categoryEditNoteOne', { group: state.groupName, name: trimmed })
-      : t('splitBill_categoryEditNote', { group: state.groupName, count: form.usage, name: trimmed })
-    : t('splitBill_categoryGroupNote', { group: state.groupName })
-  return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8">
-      <div className="flex min-w-0 flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={nameId} className={cn(form.isNameTaken && 'text-destructive')}>
-            {t('splitBill_categoryName')}
-          </Label>
-          <Input
-            id={nameId}
-            autoComplete="off"
-            maxLength={30}
-            value={name}
-            aria-invalid={form.isNameTaken}
-            aria-describedby={nameHelpId}
-            onChange={(event) => setName(event.target.value)}
-          />
-          <p id={nameHelpId} className={cn('text-[13px]', form.isNameTaken ? 'text-destructive' : 'text-muted-foreground')}>
-            {nameHelp}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={parentId}>{t('splitBill_categoryParent')}</Label>
-          <Select value={form.parentId ?? noParent} disabled={form.isParentLocked} onValueChange={(value) => presenter.pickParent(value === noParent ? null : value)}>
-            <SelectTrigger id={parentId} className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={noParent}>{t('splitBill_categoryParentNone')}</SelectItem>
-              {form.parents.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {categoryName(option)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[13px] text-muted-foreground">{parentHelp}</p>
-        </div>
-        <div className="flex items-center gap-3 rounded-2xl bg-card p-3">
-          <span aria-hidden style={avatarStyle(parent?.color ?? edited?.color ?? 'blue')} className="avatar flex size-10 items-center justify-center rounded-xl">
-            <Icon className="size-5" />
-          </span>
-          <span>
-            <span className="block text-[13px] text-muted-foreground">{t('splitBill_categoryPreview')}</span>
-            <span className="block font-semibold">{parent ? t('category_path', { parent: categoryName(parent), name: trimmed }) : trimmed}</span>
-          </span>
-        </div>
-        {state.showsOfflineNotice && (
-          <p role="status" className="flex gap-2 text-[13px] text-muted-foreground">
-            <CloudOff aria-hidden className="size-4 shrink-0" />
-            {t('splitBill_categoryOffline')}
-          </p>
-        )}
-        <p className="text-[13px] text-muted-foreground">{note}</p>
-      </div>
-      {!form.isSubcategory && (
-        <div className="flex min-w-0 flex-col gap-2">
-          <span id="category-icon-label" className="text-sm font-semibold text-muted-foreground">
-            {t('splitBill_categoryIcon')}
-          </span>
-          <div role="radiogroup" aria-labelledby="category-icon-label" className="grid grid-cols-6 gap-2">
-            {state.categories.icons.map((code) => {
-              const IconOf = categoryIconOf(code)
-              const isSelected = code === form.icon
-              return (
-                <button
-                  key={code}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  aria-label={categoryIconLabel(code)}
-                  onClick={() => presenter.pickIcon(code)}
-                  className={cn(
-                    'flex aspect-square items-center justify-center rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-primary',
-                  )}
-                >
-                  <IconOf aria-hidden className="size-5" />
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/** "Apagar “Churrasco”?" (7.8f), saying where its bills go. */
-export function CategoryDeleteDialog({ presenter, state, deletion }: { presenter: SplitCategoriesPresenter; state: JsSplitBillState; deletion: JsCategoryDeletion }) {
-  const name = categoryName(deletion.category)
-  const message =
-    deletion.billCount === 0
-      ? t('splitBill_categoryDeleteNone', { group: state.groupName })
-      : deletion.billCount === 1
-        ? t('splitBill_categoryDeleteTextOne', { name, to: categoryName(deletion.movesTo), group: state.groupName })
-        : t('splitBill_categoryDeleteText', { count: deletion.billCount, name, to: categoryName(deletion.movesTo), group: state.groupName })
-  return (
-    <ConfirmDialog
-      title={t('splitBill_categoryDeleteTitle', { name })}
-      description={message}
-      confirmLabel={t('splitBill_categoryDeleteConfirm')}
-      isBusy={deletion.isDeleting}
-      onConfirm={() => presenter.confirmDelete()}
-      onDismiss={() => presenter.dismissDelete()}
-    />
   )
 }
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, CloudOff, Ellipsis, Plus, Search, SearchX, Tag } from 'lucide-react'
+import { ArrowLeft, CloudOff, Ellipsis, FolderPlus, Pencil, Plus, Search, SearchX, Tag } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import {
@@ -11,6 +11,7 @@ import {
   type JsMapSection,
 } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { CategoryDeleteDialog } from '@/components/CategoryForm'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
+import { CategoryFormDialog } from './CategoryFormDialog'
 import { TermDialog } from './TermDialog'
 
 /** "7 termos", "Nenhum termo · categoria do Viagem Floripa". */
@@ -45,8 +47,10 @@ export function CategoryMapScreen() {
   const presenter = usePresenter(() => new CategoryMapPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsCategoryMapState) => void) => p.observeState(onChange))
   const isWide = useMediaQuery('(min-width: 768px)')
-  useActions(presenter, (p, onAction: (action: JsCategoryMapAction) => void) => p.observeActions(onAction), () => {
-    toast.error(t('categoryMap_saveError'))
+  useActions(presenter, (p, onAction: (action: JsCategoryMapAction) => void) => p.observeActions(onAction), (action) => {
+    if (action.type === 'category-save-error') toast.error(t('splitBill_categorySaveError'))
+    else if (action.type === 'category-delete-error') toast.error(t('splitBill_categoryDeleteError'))
+    else toast.error(t('categoryMap_saveError'))
   })
   const removed = state?.removedTerm ?? null
   // Why: only the latest removed term's toast acts, so an older one closing never drops a newer term's Desfazer.
@@ -97,6 +101,8 @@ export function CategoryMapScreen() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {/* Why: a category goes in a group (9.4), so with none on the device there is nowhere to create one. */}
+            {state.canCreateCategory && <DropdownMenuItem onSelect={() => presenter.createCategory(null)}>{t('splitBill_categoryNew')}</DropdownMenuItem>}
             <DropdownMenuItem onSelect={() => presenter.askToRestore()}>{t('categoryMap_restore')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -135,13 +141,19 @@ export function CategoryMapScreen() {
                 </button>
               ))}
             </nav>
-            <SectionCard presenter={presenter} section={selected} isDetail />
+            <SectionCard presenter={presenter} section={selected} canCreateCategory={state.canCreateCategory} isDetail />
           </div>
         ) : (
-          state.sections.map((section) => <SectionCard key={section.category.id} presenter={presenter} section={section} />)
+          state.sections.map((section) => (
+            <SectionCard key={section.category.id} presenter={presenter} section={section} canCreateCategory={state.canCreateCategory} />
+          ))
         )}
       </main>
       {state.form && <TermDialog presenter={presenter} state={state} form={state.form} isDesktop={isWide} />}
+      {state.categoryForm && <CategoryFormDialog presenter={presenter} state={state} form={state.categoryForm} isDesktop={isWide} />}
+      {state.categoryDeletion && state.categoryForm && (
+        <CategoryDeleteDialog actions={presenter} deletion={state.categoryDeletion} groupName={state.categoryForm.groupName} />
+      )}
       {state.isRestoreConfirmOpen && (
         <ConfirmDialog
           title={t('categoryMap_restoreTitle')}
@@ -221,26 +233,55 @@ function MapNotices({ presenter, state }: { presenter: CategoryMapPresenter; sta
   )
 }
 
-/** A main category's terms in lines by subcategory, each term a Badge that opens "Editar termo". */
-function SectionCard({ presenter, section, isDetail = false }: { presenter: CategoryMapPresenter; section: JsMapSection; isDetail?: boolean }) {
+/**
+ * A main category's terms in lines by subcategory, each term a Badge that opens "Editar termo"; a group's category
+ * opens "Editar categoria" from its name, and every main one but Outros takes a new subcategory (9.4).
+ */
+function SectionCard({
+  presenter,
+  section,
+  canCreateCategory,
+  isDetail = false,
+}: {
+  presenter: CategoryMapPresenter
+  section: JsMapSection
+  canCreateCategory: boolean
+  isDetail?: boolean
+}) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-3">
         <CategoryBadge category={section.category} />
-        <div className="flex flex-col">
+        <div className="mr-auto flex flex-col">
           <CardTitle>{categoryName(section.category)}</CardTitle>
           <span className="text-sm text-muted-foreground">
             {sectionCount(section)}
             {isDetail && section.subcategoryCount > 0 && ` · ${t('categoryMap_subcategories', { count: section.subcategoryCount })}`}
           </span>
         </div>
+        {canCreateCategory && section.category.isGroupCategory && (
+          <Button variant="ghost" size="icon" aria-label={t('splitBill_categoryEdit', { name: categoryName(section.category) })} onClick={() => presenter.editCategory(section.category.id)}>
+            <Pencil />
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {section.rows.length === 0 && <p className="text-sm text-muted-foreground">{t('categoryMap_noTermsYet')}</p>}
         {section.rows.map((row) => (
           <div key={row.category.id} className="flex gap-3">
             <div className="flex w-32 shrink-0 flex-col pt-1 text-xs text-muted-foreground">
-              <span>{rowLabel(row)}</span>
+              {canCreateCategory && row.category.isGroupCategory && !row.isOnlyMain ? (
+                <button
+                  type="button"
+                  className="self-start text-left underline-offset-2 hover:underline"
+                  aria-label={t('splitBill_categoryEdit', { name: rowLabel(row) })}
+                  onClick={() => presenter.editCategory(row.category.id)}
+                >
+                  {rowLabel(row)}
+                </button>
+              ) : (
+                <span>{rowLabel(row)}</span>
+              )}
               {row.groupName && <span className="text-primary">{t('categoryMap_onlyInGroup', { group: row.groupName })}</span>}
             </div>
             <div className="flex flex-1 flex-wrap gap-2">
@@ -260,9 +301,16 @@ function SectionCard({ presenter, section, isDetail = false }: { presenter: Cate
             </div>
           </div>
         ))}
-        <Button variant="ghost" className="self-start" onClick={() => presenter.addTerm(section.category.id, '')}>
-          <Plus /> {t('categoryMap_addIn', { name: categoryName(section.category) })}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="ghost" onClick={() => presenter.addTerm(section.category.id, '')}>
+            <Plus /> {t('categoryMap_addIn', { name: categoryName(section.category) })}
+          </Button>
+          {canCreateCategory && !section.category.isOther && (
+            <Button variant="ghost" onClick={() => presenter.createCategory(section.category.id)}>
+              <FolderPlus /> {t('categoryMap_newSubcategoryIn', { name: categoryName(section.category) })}
+            </Button>
+          )}
+        </div>
         {isDetail && <p className="text-xs text-muted-foreground">{t('categoryMap_tip')}</p>}
       </CardContent>
     </Card>

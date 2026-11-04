@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface CategoryMapUiEvent : UiEvent {
@@ -55,4 +56,46 @@ sealed interface CategoryMapUiEvent : UiEvent {
     data object OnRestoreConfirmed : CategoryMapUiEvent
 
     data object OnRestoreDismissed : CategoryMapUiEvent
+
+    // Why: creating, editing and deleting a group's category from the map (9.4), which MapCategoryEditing handles.
+    sealed interface Categories : CategoryMapUiEvent
+
+    /*
+     * Why: "Nova categoria" (the bar's menu, parentId null) and "Nova subcategoria" in a main category (9.4), in a
+     * group: the category's own, else the most recent one.
+     */
+    data class OnNewCategoryClicked(
+        val parentId: String?,
+    ) : Categories
+
+    // Why: "Editar categoria" on a group's category (9.4); the app's can't be edited.
+    data class OnEditCategoryClicked(
+        val categoryId: String,
+    ) : Categories
+
+    data class OnCategoryNameChanged(
+        val text: String,
+    ) : Categories
+
+    data class OnCategoryGroupPicked(
+        val groupId: String,
+    ) : Categories
+
+    data class OnCategoryParentPicked(
+        val parentId: String?,
+    ) : Categories
+
+    data class OnCategoryIconPicked(
+        val icon: CategoryIcon,
+    ) : Categories
+
+    data object OnCategoryFormSaveClicked : Categories
+
+    data object OnCategoryFormDismissed : Categories
+
+    data object OnCategoryDeleteClicked : Categories
+
+    data object OnCategoryDeleteConfirmed : Categories
+
+    data object OnCategoryDeleteDismissed : Categories
 }

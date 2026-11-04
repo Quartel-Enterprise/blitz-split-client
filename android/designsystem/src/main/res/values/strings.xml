@@ -211,4 +211,40 @@
     <string name="designsystem_search">Search</string>
     <string name="designsystem_loading">Loading</string>
     <string name="designsystem_waiting_for_internet">No internet. Your data shows up once you\'re back online.</string>
+    <plurals name="designsystem_category_delete_text">
+        <item quantity="one">The %1$d bill with %2$s moves to %3$s. The category goes for all of %4$s.</item>
+        <item quantity="other">The %1$d bills with %2$s move to %3$s. The category goes for all of %4$s.</item>
+    </plurals>
+    <plurals name="designsystem_category_edit_note">
+        <item quantity="one">Changing the name or the place counts for all of %1$s and for the %2$d bill that already uses %3$s.</item>
+        <item quantity="other">Changing the name or the place counts for all of %1$s and for the %2$d bills that already use %3$s.</item>
+    </plurals>
+    <plurals name="designsystem_category_used_in">
+        <item quantity="one">used in %d bill</item>
+        <item quantity="other">used in %d bills</item>
+    </plurals>
+    <string name="designsystem_category_created_by">Created by %s</string>
+    <string name="designsystem_category_delete">Delete category</string>
+    <string name="designsystem_category_delete_confirm">Delete</string>
+    <string name="designsystem_category_delete_none">The category goes for all of %s.</string>
+    <string name="designsystem_category_delete_title">Delete “%s”?</string>
+    <string name="designsystem_category_form_edit">Edit category</string>
+    <string name="designsystem_category_form_new">New category</string>
+    <string name="designsystem_category_form_sub">New subcategory</string>
+    <string name="designsystem_category_group_note">It belongs to all of %s: anyone in the group can use, edit and delete it.</string>
+    <string name="designsystem_category_icon">Icon</string>
+    <string name="designsystem_category_name">Name</string>
+    <string name="designsystem_category_name_help">Up to 30 letters. It can\'t repeat inside the same category.</string>
+    <string name="designsystem_category_name_taken">%s already exists. Pick another name.</string>
+    <string name="designsystem_category_name_taken_in">%1$s already exists in %2$s. Pick another name.</string>
+    <string name="designsystem_category_offline">Offline: the category can already be used on this device and reaches the group once back online.</string>
+    <string name="designsystem_category_parent">Inside</string>
+    <string name="designsystem_category_parent_help">Pick a category to create a subcategory.</string>
+    <string name="designsystem_category_parent_help_sub">A subcategory uses the icon of %s.</string>
+    <string name="designsystem_category_parent_locked">It has subcategories, so it stays a main category.</string>
+    <string name="designsystem_category_parent_none">None: main category</string>
+    <string name="designsystem_category_preview">How it shows on bills</string>
+    <string name="designsystem_category_save">Save</string>
+    <string name="designsystem_category_save_error">Couldn\'t save the category. Try again.</string>
+    <string name="designsystem_category_delete_error">Couldn\'t delete the category. Try again.</string>
 </resources>

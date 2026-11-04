@@ -14,14 +14,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.CategoryFormActions
+import com.quare.blitzsplit.android.designsystem.component.CategoryFormContent
 import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
+import com.quare.blitzsplit.android.designsystem.component.DeleteCategoryDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
@@ -32,6 +35,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private const val PAGE_BILL = 0
 private const val PAGE_SPLIT = 1
@@ -52,8 +56,8 @@ fun SplitBillScreen(
         when (action) {
             SplitBillUiAction.ShowSaveError -> R.string.split_bill_save_error
             SplitBillUiAction.ShowDeleteError -> R.string.split_bill_delete_error
-            SplitBillUiAction.ShowCategorySaveError -> R.string.split_bill_category_save_error
-            SplitBillUiAction.ShowCategoryDeleteError -> R.string.split_bill_category_delete_error
+            SplitBillUiAction.ShowCategorySaveError -> DesignR.string.designsystem_category_save_error
+            SplitBillUiAction.ShowCategoryDeleteError -> DesignR.string.designsystem_category_delete_error
         }
     }
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
@@ -102,7 +106,7 @@ fun SplitBillScreen(
         val categoryForm = pages.categoryForm
         val categoryPicker = pages.categoryPicker
         if (categoryForm != null) {
-            CategoryFormContent(
+            BillCategoryFormContent(
                 state = state,
                 form = categoryForm,
                 isDialog = isDialog,
@@ -207,9 +211,10 @@ fun SplitBillScreen(
     }
     state.categoryDeletion?.let { deletion ->
         DeleteCategoryDialog(
-            state = state,
             deletion = deletion,
-            onEvent = viewModel::onEvent,
+            groupName = state.groupName,
+            onConfirm = { viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteDismissed) },
         )
     }
     state.deletion?.let { deletion ->
@@ -264,7 +269,7 @@ private fun HalfPageContent(
     val categoryPicker = pages.categoryPicker
     val categoryForm = pages.categoryForm
     when {
-        categoryForm != null -> CategoryFormContent(
+        categoryForm != null -> BillCategoryFormContent(
             state = state,
             form = categoryForm,
             isDialog = true,
@@ -287,6 +292,32 @@ private fun HalfPageContent(
             onEvent = onEvent,
         )
     }
+}
+
+// Why: "Nova categoria" (7.8) in the picker's place, the form the map opens too.
+@Composable
+private fun BillCategoryFormContent(
+    state: SplitBillUiState,
+    form: CategoryForm,
+    isDialog: Boolean,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    CategoryFormContent(
+        editor = state.categoryEditorOf(form),
+        isDialog = isDialog,
+        snackbarHostState = snackbarHostState,
+        actions = remember(onEvent) {
+            CategoryFormActions(
+                onNameChanged = { onEvent(SplitBillUiEvent.OnCategoryNameChanged(it)) },
+                onParentPicked = { onEvent(SplitBillUiEvent.OnCategoryParentPicked(it)) },
+                onIconPicked = { onEvent(SplitBillUiEvent.OnCategoryIconPicked(it)) },
+                onSave = { onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked) },
+                onDismiss = { onEvent(SplitBillUiEvent.OnCategoryFormDismissed) },
+                onDelete = { onEvent(SplitBillUiEvent.OnCategoryDeleteClicked) },
+            )
+        },
+    )
 }
 
 // Why: what covers the bill, from the deepest: the category's form, the picker, an item, the items, Dividir.

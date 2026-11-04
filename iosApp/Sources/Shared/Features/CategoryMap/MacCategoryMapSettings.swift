@@ -38,6 +38,12 @@ struct MacCategoryMapSettings: View {
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 260)
                 Spacer()
+                // A category goes in a group (9.4), so with none on the device there is nowhere to create one
+                if state.canCreateCategory {
+                    Button("New Category…") {
+                        model.send(CategoryMapUiEventOnNewCategoryClicked(parentId: nil))
+                    }
+                }
                 if state.canEditMap {
                     Button("Restore Default…") {
                         model.send(CategoryMapUiEventOnRestoreClicked.shared)
@@ -70,10 +76,7 @@ struct MacCategoryMapSettings: View {
                 }
             }
         }
-        .sheet(isPresented: termShown) {
-            NavigationStack { TermFormView(model: model) }
-                .frame(width: 460, height: 420)
-        }
+        .mapFormSheet(model: model)
         .restoreMapAlert(model: model)
         .glassToast("Couldn't save the map. Try again.", trigger: model.saveErrorCount)
         .safeAreaInset(edge: .bottom) {
@@ -116,11 +119,37 @@ struct MacCategoryMapSettings: View {
                     model.send(CategoryMapUiEventOnTermRemoveClicked.shared)
                 }
                 .disabled(selectedTerm == nil)
+                if let section = state.selectedSection {
+                    categoryMenu(section)
+                }
                 Spacer()
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
             .padding(6)
+        }
+    }
+
+    /// "New Subcategory in Transport…" and "Edit “X”…" for the picked category and its group subcategories (9.4).
+    @ViewBuilder
+    private func categoryMenu(_ section: MapSection) -> some View {
+        let editable = ([section.category] + section.rows.filter { !$0.isOnlyMain }.map(\.category))
+            .filter(\.isGroupCategory)
+        if state.canCreateCategory, !section.category.isOther || !editable.isEmpty {
+            Menu("Categories", systemImage: "folder") {
+                if !section.category.isOther {
+                    Button("New Subcategory in \(CategoryCopy.name(section.category))…") {
+                        model.send(CategoryMapUiEventOnNewCategoryClicked(parentId: section.category.id))
+                    }
+                }
+                ForEach(editable, id: \.id) { category in
+                    Button(String(localized: "Edit “\(CategoryCopy.name(category))”…")) {
+                        model.send(CategoryMapUiEventOnEditCategoryClicked(categoryId: category.id))
+                    }
+                }
+            }
+            .menuIndicator(.hidden)
+            .fixedSize()
         }
     }
 
@@ -136,15 +165,6 @@ struct MacCategoryMapSettings: View {
             get: { model.state.selectedSection?.category.id },
             set: { id in
                 if let id { model.send(CategoryMapUiEventOnSectionSelected(categoryId: id)) }
-            },
-        )
-    }
-
-    private var termShown: Binding<Bool> {
-        Binding(
-            get: { model.state.termForm != nil },
-            set: { shown in
-                if !shown, model.current.termForm != nil { model.send(CategoryMapUiEventOnTermDismissed.shared) }
             },
         )
     }

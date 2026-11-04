@@ -1,14 +1,12 @@
-package com.quare.blitzsplit.feature.splitbill.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
-import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
  * Why: "Buscar categoria" and "Não pode repetir dentro da mesma categoria" need the app categories' names, which each UI
  * writes in its language. These are only what they are matched by, in both languages the app speaks, never shown.
  */
-internal object CategoryNames {
+object CategoryNames {
     // Why: by any word of a name starting with what is typed, ignoring case and accents ("alug" finds "Aluguel").
     fun matches(
         category: Category,
