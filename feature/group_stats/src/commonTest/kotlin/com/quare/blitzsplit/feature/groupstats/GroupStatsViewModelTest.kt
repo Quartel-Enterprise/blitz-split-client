@@ -827,7 +827,7 @@ class GroupStatsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the trip with no payments WHEN the statistics open THEN Acertos names the fastest and the slowest`() =
+    fun `GIVEN the trip with no payments WHEN the statistics open THEN Acertos ranks who settled all first`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -836,15 +836,14 @@ class GroupStatsViewModelTest {
             val settling = assertNotNull(viewModel.uiState.value.settling)
 
             // Then
-            assertEquals(ANA, settling.fastest.memberId)
-            assertEquals("Ana", settling.fastest.name)
-            assertFalse(settling.fastest.isMe)
-            assertEquals(1, settling.fastest.averageDays)
-            assertEquals(5_000L, settling.fastest.openMinor)
-            assertEquals(PIERRE, settling.slowest.memberId)
-            assertTrue(settling.slowest.isMe)
-            assertEquals(4, settling.slowest.averageDays)
-            assertEquals(0L, settling.slowest.openMinor)
+            assertEquals(PIERRE, settling.fastest.memberId)
+            assertTrue(settling.fastest.isMe)
+            assertEquals(4, settling.fastest.averageDays)
+            assertEquals(0L, settling.fastest.openMinor)
+            assertEquals(BRUNO, settling.slowest.memberId)
+            assertEquals("Bruno", settling.slowest.name)
+            assertFalse(settling.slowest.isMe)
+            assertEquals(30_000L, settling.slowest.openMinor)
         }
 
     @Test

@@ -235,9 +235,31 @@ class SettlingCalculatorTest {
         val settling = assertNotNull(calculator.createOrNull(october))
 
         // Then
-        assertEquals(ANA, settling.slowest.memberId)
-        assertEquals(10, settling.slowest.averageDays)
-        assertEquals(0L, settling.slowest.openMinor)
+        assertEquals(ANA, settling.fastest.memberId)
+        assertEquals(10, settling.fastest.averageDays)
+        assertEquals(0L, settling.fastest.openMinor)
+    }
+
+    @Test
+    fun `GIVEN a part put on Bruno today and unpaid WHEN ranking THEN Ana who paid in a day settles fastest`() {
+        // Given
+        prepareScenario(
+            bills = listOf(
+                bill("dinner", "2026-10-10T12:00:00Z", PIERRE, PIERRE to 100, ANA to 100),
+                bill("taxi", "2026-10-29T12:00:00Z", PIERRE, PIERRE to 100, BRUNO to 100),
+            ),
+            payments = listOf(payment(ANA, PIERRE, 100, "2026-10-11T12:00:00Z")),
+        )
+
+        // When
+        val settling = assertNotNull(calculator.createOrNull(october))
+
+        // Then
+        assertEquals(ANA, settling.fastest.memberId)
+        assertEquals(1, settling.fastest.averageDays)
+        assertEquals(BRUNO, settling.slowest.memberId)
+        assertEquals(0, settling.slowest.averageDays)
+        assertEquals(100L, settling.slowest.openMinor)
     }
 
     @Test

@@ -149,7 +149,12 @@ enum GroupStatsCopy {
     /// "Bruno (you)" for this device's user, "Former member" for someone who left the group.
     static func name(_ person: StatsPersonRow) -> String {
         guard let name = person.name else { return String(localized: "Former member") }
-        return person.isMe ? String(localized: "\(name) (you)") : name
+        return self.name(name, isMe: person.isMe)
+    }
+
+    /// "Bruno (you)" for this device's user, the name as it is otherwise.
+    static func name(_ name: String, isMe: Bool) -> String {
+        isMe ? String(localized: "\(name) (you)") : name
     }
 
     /// "Oct 28, 3:00 PM · You paid", the biggest bill's day, time and who paid it.

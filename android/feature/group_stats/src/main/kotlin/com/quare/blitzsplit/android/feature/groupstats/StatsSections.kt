@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
@@ -343,22 +345,13 @@ private fun StatsPersonRowItem(
     val name =
         person.name?.let { if (person.isMe) stringResource(R.string.group_stats_you, it) else it } ?: formerMember
     val amount = money.toText(person.amountMinor)
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 10.dp,
-            ).semantics(mergeDescendants = true) { contentDescription = "$name: $amount" },
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    StatsAvatarRow(
+        initials = person.initials,
+        avatarColor = person.avatarColor,
+        photoUrl = person.photoUrl,
+        description = "$name: $amount",
+        modifier = modifier,
     ) {
-        AvatarBadge(
-            initial = person.initials,
-            color = person.avatarColor,
-            photoUrl = person.photoUrl,
-            size = 36.dp,
-        )
         val hasAmount = person.amountMinor > 0
         Column(
             modifier = Modifier.weight(1f),
@@ -442,24 +435,13 @@ private fun StatsSettlerRow(
     val open = settler.openMinor
         .takeIf { it > 0 }
         ?.let { stringResource(R.string.group_stats_settling_open, money.toText(it)) }
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 10.dp,
-            ).semantics(mergeDescendants = true) {
-                contentDescription = listOfNotNull(label, name, days, open).joinToString(", ")
-            },
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    StatsAvatarRow(
+        initials = settler.initials,
+        avatarColor = settler.avatarColor,
+        photoUrl = settler.photoUrl,
+        description = listOfNotNull(label, name, days, open).joinToString(", "),
+        modifier = modifier,
     ) {
-        AvatarBadge(
-            initial = settler.initials,
-            color = settler.avatarColor,
-            photoUrl = settler.photoUrl,
-            size = 36.dp,
-        )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
@@ -486,6 +468,36 @@ private fun StatsSettlerRow(
                 )
             }
         }
+    }
+}
+
+// Why: a person's row of Por pessoa and Acertos, read as one sentence by a screen reader.
+@Composable
+private fun StatsAvatarRow(
+    initials: String,
+    avatarColor: AvatarColor,
+    photoUrl: String?,
+    description: String,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 10.dp,
+            ).semantics(mergeDescendants = true) { contentDescription = description },
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AvatarBadge(
+            initial = initials,
+            color = avatarColor,
+            photoUrl = photoUrl,
+            size = 36.dp,
+        )
+        content()
     }
 }
 

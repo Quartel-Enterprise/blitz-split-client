@@ -35,7 +35,7 @@ import kotlin.math.ceil
 internal class StatsCalculator(
     private val group: Group,
     private val expenses: List<Expense>,
-    val today: LocalDate,
+    private val today: LocalDate,
     private val timeZone: TimeZone,
     private val categories: CategoryTree,
 ) {

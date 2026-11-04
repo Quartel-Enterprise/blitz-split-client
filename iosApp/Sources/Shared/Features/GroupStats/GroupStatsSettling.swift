@@ -41,9 +41,12 @@ private struct StatsSettlerLine: View {
     let currency: GroupCurrency
 
     var body: some View {
-        HStack(spacing: 12) {
-            AvatarPhoto(initial: settler.initials, color: settler.avatarColor, photoUrl: settler.photoUrl, size: 36)
-                .accessibilityHidden(true)
+        StatsAvatarRow(
+            initial: settler.initials,
+            color: settler.avatarColor,
+            photoUrl: settler.photoUrl,
+            label: [label, name, days, open].compactMap { $0 }.joined(separator: ", "),
+        ) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: label)
                     .font(.footnote)
@@ -64,14 +67,10 @@ private struct StatsSettlerLine: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: [label, name, days, open].compactMap { $0 }.joined(separator: ", ")))
     }
 
     private var name: String {
-        settler.isMe ? String(localized: "\(settler.name) (you)") : settler.name
+        GroupStatsCopy.name(settler.name, isMe: settler.isMe)
     }
 
     /// "same day on average" for 0, else "2 days on average".

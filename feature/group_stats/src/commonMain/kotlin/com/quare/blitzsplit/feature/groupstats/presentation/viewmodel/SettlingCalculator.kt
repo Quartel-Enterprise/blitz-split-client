@@ -31,12 +31,18 @@ internal class SettlingCalculator(
 
     /*
      * Why: null until two people had a debt in the period, so there is someone to compare, and while the fastest and
-     * the slowest tie (Pierre's call): nobody is slower than anyone then.
+     * the slowest tie (Pierre's call): nobody is slower than anyone then. Whoever covered all of the period's debts
+     * ranks before whoever still has some open (Pierre's call), so a part put on someone today and not paid yet never
+     * reads as settling fast.
      */
     fun createOrNull(span: DateSpan): StatsSettling? {
         val settlers = group.members
             .mapNotNull { member -> createSettlerOrNull(member, span) }
-            .sortedWith(compareBy<StatsSettler> { it.averageDays }.thenBy { it.openMinor })
+            .sortedWith(
+                compareBy<StatsSettler> { it.openMinor > 0 }
+                    .thenBy { it.averageDays }
+                    .thenBy { it.openMinor },
+            )
         if (settlers.size < MIN_SETTLERS) return null
         val fastest = settlers.first()
         val slowest = settlers.last()
@@ -101,7 +107,8 @@ internal class SettlingCalculator(
 
     /*
      * Why: every member's moves from one pass over the bills and the payments, in date order, a bill before a payment
-     * of the same instant; a payment received owes that much back.
+     * of the same instant, then by id, so the order never hangs on how the database lists them; a payment received
+     * owes that much back.
      */
     private fun findMovesByMember(): Map<String, List<Move>> {
         val moves = mutableMapOf<String, MutableList<Move>>()
@@ -115,18 +122,21 @@ internal class SettlingCalculator(
         expenses.forEach { expense ->
             (expense.payers.map { it.memberId } + expense.shares.map { it.memberId }).toSet().forEach { memberId ->
                 val balance = expense.balanceOf(memberId) ?: 0L
-                if (balance != 0L) add(memberId, Move(expense.spentAt, balance, isBill = true))
+                if (balance != 0L) add(memberId, Move(expense.id, expense.spentAt, balance, isBill = true))
             }
         }
         settlements.forEach { payment ->
-            add(payment.fromMemberId, Move(payment.paidAt, payment.amountMinor, isBill = false))
-            add(payment.toMemberId, Move(payment.paidAt, -payment.amountMinor, isBill = false))
+            add(payment.fromMemberId, Move(payment.id, payment.paidAt, payment.amountMinor, isBill = false))
+            add(payment.toMemberId, Move(payment.id, payment.paidAt, -payment.amountMinor, isBill = false))
         }
-        return moves.mapValues { (_, list) -> list.sortedWith(compareBy<Move> { it.at }.thenBy { !it.isBill }) }
+        val order = compareBy<Move> { it.at }.thenBy { !it.isBill }.thenBy { it.id }
+        return moves.mapValues { (_, list) -> list.sortedWith(order) }
     }
 
     // Why: what a bill or a payment changes in the member's balance, positive when it is in their favor.
     private class Move(
+        // Why: the bill's or the payment's id.
+        val id: String,
         val at: Long,
         val amountMinor: Long,
         val isBill: Boolean,

@@ -480,9 +480,12 @@ private struct StatsPersonLine: View {
     let currency: GroupCurrency
 
     var body: some View {
-        HStack(spacing: 12) {
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 36)
-                .accessibilityHidden(true)
+        StatsAvatarRow(
+            initial: person.initials,
+            color: person.avatarColor,
+            photoUrl: person.photoUrl,
+            label: "\(GroupStatsCopy.name(person)): \(currency.format(person.amountMinor))",
+        ) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(verbatim: GroupStatsCopy.name(person))
@@ -496,10 +499,27 @@ private struct StatsPersonLine: View {
                 StatsAmountBar(fraction: person.barFraction)
             }
         }
+    }
+}
+
+/// A person's row of By person and Settling up, read by VoiceOver as one sentence.
+struct StatsAvatarRow<Content: View>: View {
+    let initial: String
+    let color: AvatarColor
+    let photoUrl: String?
+    let label: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        HStack(spacing: 12) {
+            AvatarPhoto(initial: initial, color: color, photoUrl: photoUrl, size: 36)
+                .accessibilityHidden(true)
+            content
+        }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: "\(GroupStatsCopy.name(person)): \(currency.format(person.amountMinor))"))
+        .accessibilityLabel(Text(verbatim: label))
     }
 }
 
