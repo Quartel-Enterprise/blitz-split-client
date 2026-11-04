@@ -109,6 +109,9 @@ class SplitBillViewModel(
     // Why: Room no longer has the bill; if a delete in flight here then fails, someone else's delete won.
     private var isBillMissing = false
 
+    // Why: bitcoin's unit as the form opened was applied; a change after that comes from "Bitcoin em satoshis" itself.
+    private var hasReadUnit = false
+
     /*
      * Why: the parts of "Valores" as last set in "Dividir", with the total they were set for. A new total rescales
      * from them rather than from the last rescale, so typing "312" through "3" and "31" loses nothing.
@@ -191,7 +194,9 @@ class SplitBillViewModel(
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(group, expenseFlow, showsSats, ::Triple)
             .onEach { (group, expense, sats) ->
-                uiState.update { it.withShowsSats(sats, separator) }
+                // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
+                if (!hasReadUnit) uiState.update { it.withShowsSats(sats, separator) }
+                hasReadUnit = true
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)

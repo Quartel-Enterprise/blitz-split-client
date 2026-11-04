@@ -142,7 +142,8 @@ class RegisterPaymentViewModel(
             KeyedTarget(target, userId, receiverKeys, download, sats)
         }.filter { it.target?.toUserId == it.userId }
             .onEach { keyed ->
-                uiState.update { it.withShowsSats(keyed.showsSats) }
+                // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
+                if (!hasRead) uiState.update { it.withShowsSats(keyed.showsSats) }
                 hasRead = true
                 receiverKeys = keyed.keys
                 firstDownload = keyed.download

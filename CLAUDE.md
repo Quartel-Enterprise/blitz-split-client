@@ -65,19 +65,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     which Android's `MoneyFormatter`, Apple's `GroupCurrency.format` and the web's `formatMoney` apply), Cobrar's
     message included. Amount fields and their placeholders keep the currency's decimals, and what a machine reads
     (the Pix BR Code) keeps its exact format.
-  - Bitcoin and Ether (Pierre's calls, beta feedback 7): Moeda (Novo grupo, Editar grupo) lists BTC and ETH last,
-    under their own "Criptomoedas" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
-    Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
-    bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million (`ExpenseRules.maxAmountMinorFor`, the API's
-    `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts a symbol and only the decimals the amount
-    needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8 ("0,00000001"). Perfil › Preferências' "Bitcoin em
-    satoshis" (always shown, Ajustes on the Mac), kept per device and never synced (`showsBitcoinInSats` in
-    `device_settings`), shows every bitcoin amount as whole sats ("125.000 sats", the field's symbol "sats") and
-    types them so (`GroupCurrency.getTypedFractionDigits`); a form open when it changes (the Mac's Ajustes is a window
-    of its own) turns what was typed into the new unit, keeping its value (`TypedText.toUnit`). "Ler cupom fiscal"
-    isn't offered in a group in either (no receipt is printed in them), and Início's shortcut opens such a bill
-    without the camera; the reader refuses them too.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone

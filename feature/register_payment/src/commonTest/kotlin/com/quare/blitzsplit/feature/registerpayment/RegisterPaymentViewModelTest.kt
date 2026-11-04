@@ -270,6 +270,25 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
+    fun `GIVEN sats turned on while open WHEN a sync brings the group again THEN the amount stays in sats`() =
+        runTest(testDispatcher) {
+            // Given
+            val bitcoinTrip = trip.copy(currency = GroupCurrency.BTC)
+            prepareScenario(storedGroup = bitcoinTrip)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("0,0001623"))
+            bitcoinInSats.value = true
+
+            // When
+            groups.groups.value = listOf(bitcoinTrip.copy(name = "Carteira"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsSats)
+            assertEquals("1.623", state.amountText)
+            assertEquals(1_623L, state.amountMinor)
+        }
+
+    @Test
     fun `GIVEN a group in bitcoin WHEN the screen opens THEN fills in the debt with its 8 decimals`() =
         runTest(testDispatcher) {
             // Given

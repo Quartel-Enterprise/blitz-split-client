@@ -364,11 +364,11 @@ class ProfileViewModel(
         }
     }
 
-    // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
     private fun toggleBitcoinInSats(isOn: Boolean) {
         viewModelScope.launch { updateBitcoinInSats(isOn) }
     }
 
+    // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
     private fun toggleDynamicColors(isOn: Boolean) {
         if (!uiState.value.showsDynamicColors) return
         viewModelScope.launch { updateDynamicColors(isOn) }

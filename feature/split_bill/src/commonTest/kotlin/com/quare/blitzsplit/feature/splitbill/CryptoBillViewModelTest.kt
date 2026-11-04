@@ -246,6 +246,24 @@ class CryptoBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Bitcoin em satoshis turned off while open WHEN a sync brings the group again THEN it stays in bitcoin`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sats = true)
+            typeDigits("12345")
+            bitcoinInSats.value = false
+
+            // When
+            groups.groups.value = listOf(bitcoin.copy(name = "Carteira"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsSats)
+            assertEquals("0,00012345", state.amountText)
+            assertEquals(12_345L, state.amountMinor)
+        }
+
+    @Test
     fun `GIVEN Bitcoin em satoshis turned off while open WHEN typing a digit more THEN it types 8 decimals`() =
         runTest(testDispatcher) {
             // Given
