@@ -19,9 +19,9 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettling
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlin.time.Duration.Companion.days
 
@@ -108,8 +108,18 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             isPending = false,
         ),
         settling = StatsSettling(
-            fastest = createPreviewSettler("Ana", AvatarColor.GREEN, averageDays = 1, openMinor = 0L),
-            slowest = createPreviewSettler("Bruno", AvatarColor.PEACH, averageDays = 12, openMinor = 8_000L),
+            fastest = createPreviewSettler(
+                "Ana",
+                AvatarColor.GREEN,
+                averageDays = 1,
+                openMinor = 0L,
+            ),
+            slowest = createPreviewSettler(
+                "Bruno",
+                AvatarColor.PEACH,
+                averageDays = 12,
+                openMinor = 8_000L,
+            ),
         ),
         categories = createPreviewCategories(),
         isLoaded = true,
@@ -123,7 +133,7 @@ private fun createPreviewSettler(
     color: AvatarColor,
     averageDays: Int,
     openMinor: Long,
-) = StatsSettler(
+): StatsSettler = StatsSettler(
     memberId = name,
     name = name,
     initials = previewInitialsOf(name),

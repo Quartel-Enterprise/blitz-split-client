@@ -1,5 +1,5 @@
 import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, LineChart, ReceiptText } from 'lucide-react'
-import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption } from 'blitzsplit-shared'
+import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, segmentClass } from '@/components/common'
@@ -38,8 +38,8 @@ const cardClass = 'flex min-w-0 flex-col gap-3.5 rounded-xl border bg-card p-4 m
 
 /**
  * "Estatísticas do grupo" (6.6): the group's spending in a period from the bills on this browser, offline too. Four
- * summary cards, then "Ao longo do tempo" and "Maior despesa" beside "Por pessoa" from the tablet up, one column on
- * the phone. The period is a menu under its field, a drawer on the phone; "Escolher datas…" asks for the days.
+ * summary cards, then "Ao longo do tempo" and "Maior despesa" beside "Por pessoa" and "Acertos" from the tablet up,
+ * one column on the phone. The period is a menu under its field, a drawer on the phone; "Escolher datas…" asks for the days.
  */
 export function GroupStatsScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupStatsPresenter(route))
@@ -153,7 +153,10 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                   </section>
                 )}
               </div>
-              <PeopleCard state={state} presenter={presenter} money={money} />
+              <div className="order-first flex min-w-0 flex-col gap-4 md:order-none md:gap-5">
+                <PeopleCard state={state} presenter={presenter} money={money} />
+                {state.settling && <SettlingCard settling={state.settling} money={money} />}
+              </div>
             </div>
           )}
 
@@ -337,7 +340,7 @@ function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (mino
 function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; presenter: GroupStatsPresenter; money: (minor: number) => string }) {
   const isPaid = state.peopleView === 'paid'
   return (
-    <section aria-labelledby="statsPeople" className={cn(cardClass, 'order-first md:order-none')}>
+    <section aria-labelledby="statsPeople" className={cardClass}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="statsPeople" className="text-[15px] font-semibold">
           {t('stats_byPerson')}
@@ -381,6 +384,47 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
         })}
       </div>
       <p className="text-xs leading-normal text-muted-foreground">{t(isPaid ? 'stats_notePaid' : 'stats_noteConsumption')}</p>
+    </section>
+  )
+}
+
+/** "Acertos": who settles their share of the period's bills fastest and slowest, once two people had one. */
+function SettlingCard({ settling, money }: { settling: JsStatsSettling; money: (minor: number) => string }) {
+  return (
+    <section aria-labelledby="statsSettling" className={cardClass}>
+      <h2 id="statsSettling" className="text-[15px] font-semibold">
+        {t('stats_settling')}
+      </h2>
+      <div className="flex flex-col gap-3">
+        {[
+          { label: t('stats_settlesFastest'), settler: settling.fastest },
+          { label: t('stats_settlesSlowest'), settler: settling.slowest },
+        ].map(({ label, settler }) => {
+          const name = settler.isMe ? t('stats_you', { name: settler.name }) : settler.name
+          const days =
+            settler.averageDays === 0
+              ? t('stats_settlingSameDay')
+              : t(settler.averageDays === 1 ? 'stats_settlingDaysOne' : 'stats_settlingDaysOther', { count: settler.averageDays })
+          return (
+            <div key={label} className="flex items-center gap-2.5">
+              <Avatar initial={settler.initials} color={settler.color} photoUrl={settler.photoUrl} className="size-8 text-xs" />
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <span className="truncate font-medium">{name}</span>
+              </span>
+              <span className="flex shrink-0 flex-col items-end">
+                <span className="font-semibold tabular-nums">{days}</span>
+                {settler.openMinor > 0 && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {t('stats_settlingOpen', { amount: money(settler.openMinor) })}
+                  </span>
+                )}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="text-xs leading-normal text-muted-foreground">{t('stats_settlingNote')}</p>
     </section>
   )
 }
