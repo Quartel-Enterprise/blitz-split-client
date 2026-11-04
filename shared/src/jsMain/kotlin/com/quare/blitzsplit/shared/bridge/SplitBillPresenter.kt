@@ -163,6 +163,9 @@ class JsSplitBillState(
     val defaultSplit: JsBillDefaultSplit?,
     val showsDefaultSplitNotice: Boolean,
     val isSplitEditorOffDefault: Boolean,
+    // Why: Dividir's "Usar como padrão do grupo" (beta feedback 11), shown while offered.
+    val offersSplitAsDefault: Boolean,
+    val isSplitEditorAsDefaultChecked: Boolean,
     val myShareMinor: Double?,
     val refundMinor: Double?,
     val canSave: Boolean,
@@ -267,6 +270,8 @@ class SplitBillPresenter(
                 },
                 showsDefaultSplitNotice = state.showsDefaultSplitNotice,
                 isSplitEditorOffDefault = state.isSplitEditorOffDefault,
+                offersSplitAsDefault = state.offersSplitAsDefault,
+                isSplitEditorAsDefaultChecked = state.isSplitEditorAsDefaultChecked,
                 myShareMinor = state.myShareMinor?.toDouble(),
                 refundMinor = state.refundMinor?.toDouble(),
                 canSave = state.canSave,
@@ -473,6 +478,10 @@ class SplitBillPresenter(
 
     fun resetSplitToDefault() {
         viewModel.onEvent(SplitBillUiEvent.OnSplitResetToDefault)
+    }
+
+    fun toggleSplitAsDefault() {
+        viewModel.onEvent(SplitBillUiEvent.OnSplitAsDefaultToggled)
     }
 
     fun confirmSplit() {

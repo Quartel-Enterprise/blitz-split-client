@@ -2,6 +2,7 @@ import { ChartPie, Minus, Plus } from 'lucide-react'
 import type { JsSplitBillState, JsSplitEditor, JsSplitRow, SplitBillPresenter } from 'blitzsplit-shared'
 import { Avatar, segmentClass } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
@@ -137,10 +138,30 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
         </ul>
       </div>
 
+      {state.offersSplitAsDefault && <SplitAsDefaultField presenter={presenter} state={state} />}
+
       <p className="text-[13px] text-muted-foreground">
         {state.defaultSplit ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
       </p>
     </div>
+  )
+}
+
+/**
+ * "Usar como padrão do grupo" under the people (beta feedback 11), on a new bill split another way than the group's
+ * default: the bill takes it on "Pronto" and the group when the bill is saved.
+ */
+function SplitAsDefaultField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+  // Why: "Usar como padrão do grupo para Mercado" while the bill opened with that category's exception.
+  const exception = state.categories.splitEditorDefaultException
+  return (
+    <label className="flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3">
+      <Checkbox className="mt-0.5" checked={state.isSplitEditorAsDefaultChecked} onCheckedChange={() => presenter.toggleSplitAsDefault()} />
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-sm font-medium">{exception ? t('split_asDefaultException', { name: categoryName(exception) }) : t('split_asDefault')}</span>
+        <span className="text-[13px] text-muted-foreground">{t('split_asDefaultBody')}</span>
+      </span>
+    </label>
   )
 }
 

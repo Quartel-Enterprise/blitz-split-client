@@ -85,6 +85,44 @@ private struct DefaultSplitNotice: View {
     }
 }
 
+/// "Use as the group default" under the people (beta feedback 11), on a new bill split another way than the group's
+/// default: the bill takes it on "Done" and the group when the bill is saved.
+private struct SplitAsDefaultToggle: View {
+    let state: SplitBillUiState
+    let send: (any SplitBillUiEvent) -> Void
+
+    var body: some View {
+        Toggle(isOn: isOn) {
+            #if os(macOS)
+            // The Mac's checkbox sits outside a Form, which would otherwise draw the two lines side by side.
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: title)
+                Text("New bills in the group start this way once this one is saved.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            #else
+            Text(verbatim: title)
+            Text("New bills in the group start this way once this one is saved.")
+            #endif
+        }
+    }
+
+    /// "Use as the group default for Groceries" while the bill opened with that category's exception.
+    private var title: String {
+        state.splitEditorDefaultException.map {
+            String(localized: "Use as the group default for \(CategoryCopy.name($0))")
+        } ?? String(localized: "Use as the group default")
+    }
+
+    private var isOn: Binding<Bool> {
+        Binding(
+            get: { state.isSplitEditorAsDefaultChecked },
+            set: { _ in send(SplitBillUiEventOnSplitAsDefaultToggled.shared) },
+        )
+    }
+}
+
 /// "$62.40 each" over "$312.00 among 5 people. Diego is out.", with the bar of what the parts cover by amount.
 private struct SplitStatusView: View {
     let status: SplitBillCopy.Status
@@ -378,6 +416,7 @@ struct PhoneSplitEditor: View {
         }
     }
 
+    @ViewBuilder
     private func people(_ editor: SplitEditor) -> some View {
         Section {
             ForEach(editor.rows, id: \.person.id) { row in
@@ -385,6 +424,11 @@ struct PhoneSplitEditor: View {
             }
         } header: {
             SplitListHeader(editor: editor) { model.send($0) }
+        }
+        if model.state.offersSplitAsDefault {
+            Section {
+                SplitAsDefaultToggle(state: model.state) { model.send($0) }
+            }
         }
     }
 }
@@ -448,6 +492,10 @@ struct MacSplitEditor: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .background(.background, in: .rect(cornerRadius: 10))
                     .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator))
+                }
+                if model.state.offersSplitAsDefault {
+                    SplitAsDefaultToggle(state: model.state) { model.send($0) }
+                        .toggleStyle(.checkbox)
                 }
                 Text(verbatim: SplitBillCopy.hint(editor, state: model.state))
                     .font(.callout)
