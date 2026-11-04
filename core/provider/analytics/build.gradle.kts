@@ -26,20 +26,18 @@ kotlin {
     }
 }
 
-// Why: AnalyticsCatalogTest reads the features' sources and the catalog, which aren't this module's inputs.
-tasks.withType<Test>().configureEach {
-    if (name == "jvmTest") {
-        inputs
-            .files(
-                fileTree(rootProject.layout.projectDirectory) {
-                    include("feature/**/src/*Main/**/*.kt", "core/**/src/*Main/**/*.kt")
-                    exclude("**/build/**")
-                },
-            ).withPropertyName("featureSources")
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-        inputs
-            .file(rootProject.layout.projectDirectory.file("docs/analytics/README.md"))
-            .withPropertyName("analyticsCatalog")
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-    }
+// Why: AnalyticsCatalogTest reads the features' and the core modules' sources and the catalog, which aren't this module's inputs.
+tasks.named<Test>("jvmTest") {
+    inputs
+        .files(
+            fileTree(rootProject.layout.projectDirectory) {
+                include("feature/**/src/*Main/**/*.kt", "core/**/src/*Main/**/*.kt")
+                exclude("**/build/**")
+            },
+        ).withPropertyName("declarationSources")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(rootProject.layout.projectDirectory.file("docs/analytics/README.md"))
+        .withPropertyName("analyticsCatalog")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
