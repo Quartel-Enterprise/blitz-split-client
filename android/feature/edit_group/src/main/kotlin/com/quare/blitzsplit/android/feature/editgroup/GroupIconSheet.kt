@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
@@ -18,11 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,17 +29,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.labelRes
-import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
@@ -56,7 +51,6 @@ private val iconDialogWidth = 480.dp
  * Editar grupo is full screen; where it is a dialog, a 480dp dialog over it, in a book's right half on a foldable,
  * never over the hinge.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GroupIconSheet(
     editor: GroupIconEditor,
@@ -66,45 +60,29 @@ internal fun GroupIconSheet(
     onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
 ) {
-    val onDismiss = { onEvent(EditGroupUiEvent.OnIconDismissed) }
-    if (isDialog) {
-        val title = stringResource(R.string.edit_group_icon_title)
-        FoldDialog(
-            onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            Surface(
-                modifier = Modifier
-                    .widthIn(max = iconDialogWidth)
-                    .fillMaxWidth()
-                    .semantics { paneTitle = title },
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ) {
-                GroupIconColumn(
-                    editor = editor,
-                    initials = initials,
-                    onEvent = onEvent,
-                    onTakePhotoClick = onTakePhotoClick,
-                    onChoosePhotoClick = onChoosePhotoClick,
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(vertical = 24.dp),
-                )
-            }
-        }
-        return
-    }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    AdaptiveSheet(
+        title = stringResource(R.string.edit_group_icon_title),
+        onDismissRequest = { onEvent(EditGroupUiEvent.OnIconDismissed) },
+        usesDialog = isDialog,
+        skipPartiallyExpanded = false,
+        dialogMaxWidth = iconDialogWidth,
+        dialogShape = MaterialTheme.shapes.extraLarge,
+    ) {
         GroupIconColumn(
             editor = editor,
             initials = initials,
             onEvent = onEvent,
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,
-            modifier = Modifier
-                .navigationBarsPadding()
-                .padding(bottom = 16.dp),
+            modifier = if (isDialog) {
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 24.dp)
+            } else {
+                Modifier
+                    .navigationBarsPadding()
+                    .padding(bottom = 16.dp)
+            },
         )
     }
 }

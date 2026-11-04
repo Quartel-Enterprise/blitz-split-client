@@ -16,12 +16,10 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,13 +36,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
-import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
-import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
-import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -56,7 +52,6 @@ import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
  * Why: a bottom sheet, as short as its content, over whichever layout the screen has; a book (and a tabletop) draws it
  * as a dialog in its right half instead, since a sheet would cross the hinge.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PersonalInviteSheet(
     invite: PersonalInvite,
@@ -64,33 +59,12 @@ internal fun PersonalInviteSheet(
     currency: GroupCurrency,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
-    val onDismiss = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) }
-    val placement = rememberDialogPlacement()
-    if (placement != DialogPlacement.Centered) {
-        FoldDialog(
-            onDismissRequest = onDismiss,
-            placement = placement,
-        ) {
-            val title = stringResource(R.string.members_personal_invite, invite.member.name)
-            Surface(
-                modifier = Modifier.alertDialogPane(title),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                PersonalInviteColumn(
-                    invite = invite,
-                    groupName = groupName,
-                    currency = currency,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(top = 24.dp),
-                )
-            }
-        }
-        return
-    }
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberFullSheetState(),
+    AdaptiveSheet(
+        title = stringResource(R.string.members_personal_invite, invite.member.name),
+        onDismissRequest = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) },
+        usesDialog = rememberDialogPlacement() != DialogPlacement.Centered,
+        dialogShape = MaterialTheme.shapes.extraLarge,
+        dialogColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         PersonalInviteColumn(
             invite = invite,
@@ -107,10 +81,9 @@ private fun PersonalInviteColumn(
     groupName: String,
     currency: GroupCurrency,
     onEvent: (MembersUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
             .padding(
