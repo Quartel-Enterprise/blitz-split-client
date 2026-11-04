@@ -1069,15 +1069,68 @@ class SplitEditorTest {
         mode: SplitMode,
         totalMinor: Long,
         vararg rows: SplitRow,
+        currency: GroupCurrency = GroupCurrency.BRL,
+        showsSats: Boolean = false,
     ): SplitEditor = SplitEditor(
         mode = mode,
         rows = rows.toList(),
         totalMinor = totalMinor,
         payerIds = listOf(PIERRE),
         items = null,
-        currency = GroupCurrency.BRL,
-        showsSats = false,
+        currency = currency,
+        showsSats = showsSats,
     )
+
+    @Test
+    fun `GIVEN Valores of a bitcoin bill in sats WHEN reading the shares THEN each gets the sats typed`() {
+        // Given
+        val editor = editor(
+            SplitMode.AMOUNT,
+            12_345L,
+            row(ANA, valueText = "12.000"),
+            row(PIERRE, valueText = "345"),
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val shares = editor.shares
+
+        // Then
+        assertEquals(
+            listOf(
+                ExpenseShare(ANA, 12_000L, weight = 12_000L),
+                ExpenseShare(PIERRE, 345L, weight = 345L),
+            ),
+            shares,
+        )
+        assertTrue(editor.addsUp)
+    }
+
+    @Test
+    fun `GIVEN Valores of a bitcoin bill not in sats WHEN reading the shares THEN reads 8 decimals`() {
+        // Given
+        val editor = editor(
+            SplitMode.AMOUNT,
+            12_345L,
+            row(ANA, valueText = "0,00012"),
+            row(PIERRE, valueText = "0,00000345"),
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val shares = editor.shares
+
+        // Then
+        assertEquals(
+            listOf(
+                ExpenseShare(ANA, 12_000L, weight = 12_000L),
+                ExpenseShare(PIERRE, 345L, weight = 345L),
+            ),
+            shares,
+        )
+        assertTrue(editor.addsUp)
+    }
 
     private fun row(
         id: String,

@@ -234,6 +234,39 @@ class RegisterPaymentViewModelTest {
     }
 
     @Test
+    fun `GIVEN bitcoin in sats WHEN the screen opens and a digit is typed THEN types whole sats`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(currency = GroupCurrency.BTC),
+                showsSats = true,
+            )
+
+            // When
+            val opened = viewModel.uiState.value
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("16.2309"))
+
+            // Then
+            assertTrue(opened.showsSats)
+            assertEquals("16.230", opened.amountText)
+            assertEquals(162_309L, viewModel.uiState.value.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN a group in bitcoin WHEN the screen opens THEN fills in the debt with its 8 decimals`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BTC))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsSats)
+            assertEquals("0,00016230", state.amountText)
+        }
+
+    @Test
     fun `GIVEN debts both ways between the pair WHEN the screen opens THEN shows only the difference`() =
         runTest(testDispatcher) {
             // Given
@@ -1728,6 +1761,7 @@ class RegisterPaymentViewModelTest {
         decimalSeparator: Char = ',',
         recordError: Throwable? = null,
         recordGate: CompletableDeferred<Unit>? = null,
+        showsSats: Boolean = false,
     ) {
         clockMillis = nowMillis
         route = Route.RegisterPayment(
@@ -1779,7 +1813,7 @@ class RegisterPaymentViewModelTest {
             },
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
-            observeBitcoinInSats = { flowOf(false) },
+            observeBitcoinInSats = { flowOf(showsSats) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

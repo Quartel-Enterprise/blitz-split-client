@@ -610,13 +610,398 @@ class TypedTextTest {
         assertEquals("12,50", kept)
     }
 
+    @Test
+    fun `GIVEN bitcoin and a comma WHEN typing digits one at a time THEN they come in with 8 decimals`() {
+        // Given
+        val keys = "123"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, ',')
+
+        // Then
+        assertEquals(listOf("0,00000001", "0,00000012", "0,00000123"), texts)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in satoshis and a comma WHEN typing digits one at a time THEN writes whole sats`() {
+        // Given
+        val keys = "12345"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1.234", "12.345"), texts)
+    }
+
+    @Test
+    fun `GIVEN bitcoin in satoshis and a dot WHEN typing digits one at a time THEN groups sats with the comma`() {
+        // Given
+        val keys = "1234"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BTC, '.', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1,234"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and ether WHEN typing digits one at a time THEN keeps its 8 decimals`() {
+        // Given
+        val keys = "12"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.ETH, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("0,00000001", "0,00000012"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and reais WHEN typing digits one at a time THEN keeps the cents`() {
+        // Given
+        val keys = "123"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.BRL, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("0,01", "0,12", "1,23"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown and yen WHEN typing digits one at a time THEN writes whole yen`() {
+        // Given
+        val keys = "1234"
+
+        // When
+        val texts = typeOneByOne(keys, GroupCurrency.JPY, ',', showsSats = true)
+
+        // Then
+        assertEquals(listOf("1", "12", "123", "1.234"), texts)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN typing a comma after them THEN nothing changes`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN typing a dot after them THEN nothing changes`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN typing a comma after it THEN nothing changes`() {
+        // Given
+        val previous = "0,00000012"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00000012", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN deleting the last character THEN regroups what is left`() {
+        // Given
+        val previous = "12.345"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "12.34", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1.234", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "21.000.000,00000000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("21.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with 15 digits WHEN typing a 16th over the cap THEN keeps it for the form error`() {
+        // Given
+        val previous = "9.999.999,99999999"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("99.999.999,99999999", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "2.100.000.000.000.000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("2.100.000.000.000.000", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis with 15 digits WHEN typing a 16th THEN takes it`() {
+        // Given
+        val previous = "999.999.999.999.999"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("9.999.999.999.999.999", kept)
+    }
+
+    @Test
+    fun `GIVEN ether with the 16 digits of the cap WHEN typing another digit THEN keeps the field`() {
+        // Given
+        val previous = "90.000.000,00000000"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.ETH, false, ',')
+
+        // Then
+        assertEquals("90.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting a fraction of a bitcoin THEN reads it with 8 decimals`() {
+        // Given
+        val pasted = "0,00125"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00125000", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting satoshis grouped by a comma THEN reads whole sats`() {
+        // Given
+        val pasted = "12,345"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", kept)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN pasting 21 million bitcoin THEN keeps it`() {
+        // Given
+        val pasted = "21000000"
+
+        // When
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("21.000.000,00000000", kept)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN pasting more digits than the largest amount has THEN keeps the field as it was`() {
+        // Given
+        val previous = "0,00000001"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "100000000", GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("0,00000001", kept)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN pasting more digits than the largest amount has THEN keeps the field as it was`() {
+        // Given
+        val previous = "1"
+
+        // When
+        val kept = TypedText.toAmountText(previous, "21000000000000000", GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1", kept)
+    }
+
+    @Test
+    fun `GIVEN reais with cents WHEN moving to bitcoin THEN keeps the number with 8 decimals`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BTC, false, ',')
+
+        // Then
+        assertEquals("12,50000000", moved)
+    }
+
+    @Test
+    fun `GIVEN a fraction of a bitcoin under a cent WHEN moving to reais THEN the field is empty`() {
+        // Given
+        val text = "0,00125"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, false, ',')
+
+        // Then
+        assertEquals("", moved)
+    }
+
+    @Test
+    fun `GIVEN bitcoin with decimals WHEN moving to reais THEN cuts them to the cents`() {
+        // Given
+        val text = "1,23456789"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, false, ',')
+
+        // Then
+        assertEquals("1,23", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN moving to reais THEN keeps the number of sats with zero cents`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, true, ',')
+
+        // Then
+        assertEquals("12.345,00", moved)
+    }
+
+    @Test
+    fun `GIVEN reais with cents WHEN moving to bitcoin in satoshis THEN keeps the whole number of sats`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis WHEN moving to ether THEN keeps the number with 8 decimals`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, true, ',')
+
+        // Then
+        assertEquals("12.345,00000000", moved)
+    }
+
+    @Test
+    fun `GIVEN ether with satoshis shown WHEN moving to bitcoin THEN keeps the whole number of sats`() {
+        // Given
+        val text = "1,50000000"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.ETH, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("1", moved)
+    }
+
+    @Test
+    fun `GIVEN bitcoin WHEN moving to ether THEN keeps the text as it reads`() {
+        // Given
+        val text = "0,00125000"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, false, ',')
+
+        // Then
+        assertEquals("0,00125000", moved)
+    }
+
+    @Test
+    fun `GIVEN 16 digits of satoshis WHEN moving to ether THEN the field is empty instead of overflowing`() {
+        // Given
+        val text = "9.999.999.999.999.999"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.ETH, true, ',')
+
+        // Then
+        assertEquals("", moved)
+    }
+
+    @Test
+    fun `GIVEN 16 digits of satoshis WHEN moving to reais THEN keeps the number with zero cents`() {
+        // Given
+        val text = "9.999.999.999.999.999"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BRL, true, ',')
+
+        // Then
+        assertEquals("9.999.999.999.999.999,00", moved)
+    }
+
+    @Test
+    fun `GIVEN satoshis shown WHEN moving reais to yen THEN cuts the cents as without them`() {
+        // Given
+        val text = "12,50"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, true, ',')
+
+        // Then
+        assertEquals("12", moved)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin amount WHEN moving to bitcoin THEN keeps the text as it is`() {
+        // Given
+        val text = "12.345"
+
+        // When
+        val moved = TypedText.toCurrency(text, GroupCurrency.BTC, GroupCurrency.BTC, true, ',')
+
+        // Then
+        assertEquals("12.345", moved)
+    }
+
     // Why: what the field holds after each key, as the ViewModel stores it and hands it back as the previous text.
     private fun typeOneByOne(
         keys: String,
         currency: GroupCurrency,
         decimalSeparator: Char,
+        showsSats: Boolean = false,
     ): List<String> = keys
         .runningFold("") { previous, key ->
-            TypedText.toAmountText(previous, previous + key, currency, false, decimalSeparator)
+            TypedText.toAmountText(previous, previous + key, currency, showsSats, decimalSeparator)
         }.drop(1)
 }

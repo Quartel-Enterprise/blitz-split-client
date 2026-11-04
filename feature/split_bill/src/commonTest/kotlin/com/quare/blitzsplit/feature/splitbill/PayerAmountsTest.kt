@@ -166,6 +166,56 @@ class PayerAmountsTest {
         assertTrue(amounts.addsUp)
     }
 
+    @Test
+    fun `GIVEN a bitcoin bill in sats WHEN reading who paid THEN reads each amount as whole sats`() {
+        // Given
+        val amounts = amounts(
+            ANA to "12.000",
+            PIERRE to "345",
+            totalMinor = 12_345L,
+            currency = GroupCurrency.BTC,
+            showsSats = true,
+        )
+
+        // When
+        val payers = amounts.payers
+
+        // Then
+        assertEquals(listOf(ExpensePayer(ANA, 12_000L), ExpensePayer(PIERRE, 345L)), payers)
+        assertTrue(amounts.addsUp)
+    }
+
+    @Test
+    fun `GIVEN a bitcoin bill not in sats WHEN reading who paid THEN reads each amount with 8 decimals`() {
+        // Given
+        val amounts = amounts(
+            ANA to "0,00012",
+            PIERRE to "0,00000345",
+            totalMinor = 12_345L,
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val payers = amounts.payers
+
+        // Then
+        assertEquals(listOf(ExpensePayer(ANA, 12_000L), ExpensePayer(PIERRE, 345L)), payers)
+        assertTrue(amounts.addsUp)
+    }
+
+    @Test
+    fun `GIVEN a bill in reais with sats on WHEN reading who paid THEN still reads cents`() {
+        // Given
+        val amounts = amounts(ANA to "200,00", PIERRE to "112,00", showsSats = true)
+
+        // When
+        val payers = amounts.payers
+
+        // Then
+        assertEquals(listOf(ExpensePayer(ANA, 20_000L), ExpensePayer(PIERRE, 11_200L)), payers)
+        assertTrue(amounts.addsUp)
+    }
+
     private fun person(id: String): BillPerson = BillPerson(
         id = id,
         name = id,
@@ -181,11 +231,12 @@ class PayerAmountsTest {
         vararg typed: Pair<String, String>,
         totalMinor: Long = 31_200L,
         currency: GroupCurrency = GroupCurrency.BRL,
+        showsSats: Boolean = false,
     ): PayerAmounts = PayerAmounts(
         rows = typed.map { (memberId, text) -> PayerAmountRow(memberId, person(memberId), text) },
         totalMinor = totalMinor,
         currency = currency,
-        showsSats = false,
+        showsSats = showsSats,
     )
 
     private companion object {
