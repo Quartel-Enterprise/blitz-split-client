@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -59,6 +60,7 @@ class AppViewModel(
     private val syncNow: SyncNow,
     private val locateBill: LocateBill,
     private val noticeBillGone: NoticeBillGone,
+    private val startScreenViews: StartScreenViews,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -104,6 +106,7 @@ class AppViewModel(
         viewModelScope.launch {
             val hasProfile = observeProfile().first() != null
             navigator.replaceAll(if (hasProfile) Route.Home else Route.Welcome)
+            startScreenViews()
             isThemeKnown.await()
             uiState.value = AppUiState.READY
         }

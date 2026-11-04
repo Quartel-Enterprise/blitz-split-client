@@ -7,8 +7,12 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             api(libs.kotlinx.coroutines.core)
+            implementation(projects.core.provider.analytics)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

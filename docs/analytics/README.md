@@ -15,7 +15,31 @@ every UI.
 | `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | Apple's, attached through `BlitzSplitApple.attachAnalytics` once the shared code started |
 | `firebaseAnalytics.ts` | `webApp/src/analytics` | The web's, through `firebase/analytics`, attached through the exported `attachAnalytics` |
 
-No event is tracked yet: each user action's event comes with its feature, through `TrackEvent`.
+Screen views are tracked ([below](#screen-views)); each user action's event comes with its feature, through
+`TrackEvent`.
+
+## Screen views
+
+`StartScreenViews` (`:core:navigation`) sends GA4's `screen_view` each time another route comes on top of the back
+stack, going back to one included, once per route: another group's Despesas is another view, the same route drawn again
+is not. It starts once `AppViewModel` picked the first screen, so the welcome the stack holds before that never counts.
+`screen_name` and `screen_class` are the route's name (`RouteScreenView.kt`, a `when` with no `else`, so a new route
+can't ship without one); a few routes add what kind of visit it was, never whose:
+
+| `screen_name` | Params |
+| --- | --- |
+| `welcome`, `profile_setup`, `restore`, `home`, `groups`, `search`, `profile`, `create_group`, `edit_profile`, `profile_photo`, `delete_account`, `notification_settings`, `category_map`, `group_stats`, `edit_group`, `default_split`, `share_bill`, `pick_payment`, `contacts`, `contact_profile`, `contacts_agenda`, `settle_up`, `join_pick` | none |
+| `invite` | `is_new_group` |
+| `group_detail` | `tab` (`expenses`, `balances`, `members`: the tab it opens on; a tab picked inside it is a click, not a view), `is_join` |
+| `split_bill` | `is_edit`, `picks_group_first`, `scans_receipt` |
+| `bill_detail`, `shared_bill` | `is_comment` (opened at a comment) |
+| `register_payment` | `offers_keys` ("Pagar Ana") |
+| `global_balances` | `filter` (`all`, `you_owe`, `owes_you`), `is_charge` |
+| `contact_invite` | `is_guest` |
+| `activity` | `is_person` |
+| `join_invite` | `is_personal` |
+| `join_with_link` | `is_retry` |
+| `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
 
 ## What is never sent
 
@@ -30,8 +54,7 @@ No event is tracked yet: each user action's event comes with its feature, throug
   personalization is off on all of them.
 - **A screen view the SDK makes up**: Android's and Apple's automatic screen reporting are off and gtag sends no
   `page_view`, since the activity, the view controllers and the browser's history don't name the app's screens.
-  Screen views are to come from the shared back stack, the same on every UI; until that is tracked, no build sends
-  any.
+  Screen views come from the shared back stack ([Screen views](#screen-views)), the same on every UI.
 
 ## Consent
 
