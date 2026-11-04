@@ -55,6 +55,7 @@ import kotlin.test.assertTrue
 
 // Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" from the map (9.4): always a group's category.
 class CategoryMapCategoriesTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var categories: FakeCategoryRepository
     private lateinit var viewModel: CategoryMapViewModel
     private val actions = mutableListOf<CategoryMapUiAction>()
@@ -1099,6 +1100,412 @@ class CategoryMapCategoriesTest {
             assertNull(state.groupNameOf(transport.category))
         }
 
+    @Test
+    fun `GIVEN a group on the device WHEN Nova categoria THEN sends the create clicked as a main category`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_create_clicked" to mapOf<String, Any>("is_subcategory" to false, "source" to "category_map"),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Praia in the trip WHEN Nova subcategoria in it THEN sends the create clicked as a subcategory`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = PRAIA_ID))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "category_create_clicked" to mapOf<String, Any>(
+                        "is_subcategory" to true,
+                        "source" to "category_map",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group category WHEN tapping its pencil THEN sends the edit clicked without it`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+
+        // Then
+        assertEquals(
+            listOf("category_edit_clicked" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new category in the trip WHEN picking Ape 302 THEN sends the group picked without it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryGroupPicked(HOUSE_ID))
+
+        // Then
+        assertEquals(
+            listOf("category_group_picked" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new category WHEN picking Transporte in Dentro de THEN sends the parent picked without it`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryParentPicked(AppCategory.TRANSPORT.key))
+
+            // Then
+            assertEquals(
+                listOf("category_parent_picked" to mapOf<String, Any>("source" to "category_map")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new main category WHEN picking the gift icon THEN sends the icon picked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryIconPicked(CategoryIcon.GIFT))
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_icon_picked" to mapOf<String, Any>("icon" to CategoryIcon.GIFT, "source" to "category_map"),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new main category named WHEN saving THEN sends the save clicked then the new main category saved`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Mergulho"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "category_save_clicked" to mapOf<String, Any>("source" to "category_map"),
+                    "category_saved" to mapOf<String, Any>(
+                        "is_new" to true,
+                        "is_subcategory" to false,
+                        "source" to "category_map",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new subcategory of Praia named WHEN saving THEN sends the new subcategory saved`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = PRAIA_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Mergulho"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_save_clicked" to mapOf<String, Any>("source" to "category_map"),
+                "category_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "is_subcategory" to true,
+                    "source" to "category_map",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Nova categoria inside Transporte WHEN saving THEN sends the new category saved as a subcategory`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Balsa"))
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryParentPicked(AppCategory.TRANSPORT.key))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+            // Then
+            assertEquals(
+                "category_saved" to mapOf<String, Any>(
+                    "is_new" to true,
+                    "is_subcategory" to true,
+                    "source" to "category_map",
+                ),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN Churrasco under Alimentacao renamed WHEN saving THEN sends the category saved as not new`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(CHURRASCO_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Churras"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "category_save_clicked" to mapOf<String, Any>("source" to "category_map"),
+                "category_saved" to mapOf<String, Any>(
+                    "is_new" to false,
+                    "is_subcategory" to true,
+                    "source" to "category_map",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the main category Praia renamed WHEN saving THEN sends it saved as not new nor a subcategory`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Litoral"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+            // Then
+            assertEquals(
+                "category_saved" to mapOf<String, Any>(
+                    "is_new" to false,
+                    "is_subcategory" to false,
+                    "source" to "category_map",
+                ),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN saving a new category THEN sends only the save clicked`() = runTest {
+        // Given
+        prepareScenario(writeError = IllegalStateException("disk full"))
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Mergulho"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_save_clicked" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new category with no name WHEN saving THEN sends only the save clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_save_clicked" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Praia being edited WHEN Apagar THEN sends the delete clicked`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_clicked" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the delete question open WHEN confirming THEN sends the delete confirmed`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_confirmed" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a category being deleted WHEN confirming again THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(holdsWrites = true)
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no delete question open WHEN confirming THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the delete question open WHEN dismissing it THEN sends the delete cancelled`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteDismissed)
+
+        // Then
+        assertEquals(
+            listOf("category_delete_cancelled" to mapOf<String, Any>("source" to "category_map")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a category being deleted WHEN dismissing the question THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(holdsWrites = true)
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked)
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no delete question open WHEN dismissing THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnEditCategoryClicked(PRAIA_ID))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new category open WHEN typing its name THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryNameChanged("Mergulho"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new category open WHEN closing the form THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val trip = group(
         id = TRIP_ID,
         name = "Viagem Floripa",
@@ -1215,6 +1622,7 @@ class CategoryMapCategoriesTest {
         val deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW }
         val navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.CategoryMap) }
         viewModel = CategoryMapViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },

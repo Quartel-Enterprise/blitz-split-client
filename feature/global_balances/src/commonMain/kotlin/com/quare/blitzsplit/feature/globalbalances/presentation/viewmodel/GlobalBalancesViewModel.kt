@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
@@ -29,9 +28,11 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.idOf
@@ -39,6 +40,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.GLOBAL_BALANCES_SOURCE
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
@@ -73,7 +75,8 @@ class GlobalBalancesViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeHasGroups: ObserveHasGroups,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
     val uiState: StateFlow<GlobalBalancesUiState>
         field = MutableStateFlow(
             GlobalBalancesUiState(
@@ -175,9 +178,18 @@ class GlobalBalancesViewModel(
         )
     }
 
-    fun onEvent(event: GlobalBalancesUiEvent) {
+    override fun handleEvent(event: GlobalBalancesUiEvent) {
         when (event) {
-            is GlobalBalancesUiEvent.OnFilterChanged -> changeFilter(event.filter)
+            is GlobalBalancesUiEvent.OnFilterChanged -> if (event.filter != uiState.value.filter) {
+                trackEvent(
+                    "balances_filter_selected",
+                    mapOf(
+                        "filter" to event.filter,
+                        "source" to GLOBAL_BALANCES_SOURCE,
+                    ),
+                )
+                changeFilter(event.filter)
+            }
 
             is GlobalBalancesUiEvent.OnPersonExpandToggled -> toggle(event.personId)
 
@@ -186,6 +198,7 @@ class GlobalBalancesViewModel(
              * filter hides, whom the pane would jump to once the filter changes.
              */
             is GlobalBalancesUiEvent.OnPersonSelected -> if (isListed(event.personId)) {
+                trackEvent("balances_person_selected", emptyMap())
                 uiState.update { it.copy(pickedPersonId = event.personId) }
             }
 
@@ -199,8 +212,12 @@ class GlobalBalancesViewModel(
 
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
-            is GlobalBalancesUiEvent.OnChargePixKeyToggled -> updateCharge { charge ->
-                if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
+            // Why: read before the update, whose block may run again, so the event goes once.
+            is GlobalBalancesUiEvent.OnChargePixKeyToggled -> if (uiState.value.charge?.canTogglePixKey == true) {
+                trackEvent("charge_pix_key_toggled", mapOf("is_included" to event.isIncluded))
+                updateCharge { charge ->
+                    if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
+                }
             }
 
             // Why: the switch locks as it is once the message is the person's, whatever key loads later.
@@ -211,13 +228,15 @@ class GlobalBalancesViewModel(
                 )
             }
 
-            is GlobalBalancesUiEvent.OnChargeShareClicked -> emitForCharge(
-                GlobalBalancesUiAction.ShareMessage(event.message),
-            )
+            is GlobalBalancesUiEvent.OnChargeShareClicked -> {
+                if (uiState.value.charge != null) trackEvent("charge_share_clicked", emptyMap())
+                emitForCharge(GlobalBalancesUiAction.ShareMessage(event.message))
+            }
 
-            is GlobalBalancesUiEvent.OnChargeCopyClicked -> emitForCharge(
-                GlobalBalancesUiAction.CopyMessage(event.message),
-            )
+            is GlobalBalancesUiEvent.OnChargeCopyClicked -> {
+                if (uiState.value.charge != null) trackEvent("charge_copy_clicked", emptyMap())
+                emitForCharge(GlobalBalancesUiAction.CopyMessage(event.message))
+            }
 
             GlobalBalancesUiEvent.OnChargeDismissed -> dismissCharge()
 
@@ -236,9 +255,9 @@ class GlobalBalancesViewModel(
 
             // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
             GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
-                navigator.openSearchOver(
-                    HomeTab.BALANCES,
-                )
+                if (navigator.openSearchOver(HomeTab.BALANCES)) {
+                    trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
+                }
             }
 
             GlobalBalancesUiEvent.OnUndoPaymentClicked -> undoSettledUp()
@@ -312,6 +331,7 @@ class GlobalBalancesViewModel(
         val row = uiState.value.people
             .valueOrNull()
             ?.firstOrNull { it.id == personId } ?: return
+        trackEvent("balances_person_expand_toggled", mapOf("is_expanded" to !row.isExpanded))
         expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
     }

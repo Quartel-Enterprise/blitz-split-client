@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymen
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.NotePerson
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifiedPairNote
@@ -63,6 +64,7 @@ import kotlin.time.Instant
 
 // Why: "Simplificar dívidas" on Registrar pagamento of one group's pair (13.5, 13.5b, 13.5c).
 class RegisterPaymentSimplifyDebtsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -582,6 +584,126 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             assertEquals(screenUnderForm(), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the notice WHEN tapping paid anyway THEN tracks the whole debt received by the form method`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = PIERRE,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            turnSimplifyDebts(
+                on = true,
+                by = ANA_USER,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAnywayClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    paidAnywayClicked,
+                    paidAnyway(
+                        method = SettlementMethod.CASH,
+                        kind = PaymentKind.RECEIVED,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN part of the debt typed and the notice WHEN tapping paid anyway THEN tracks the whole debt paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = PIERRE,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("10,00"))
+            turnSimplifyDebts(
+                on = true,
+                by = ANA_USER,
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAnywayClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    paidAnywayClicked,
+                    paidAnyway(
+                        method = SettlementMethod.PIX,
+                        kind = PaymentKind.RECEIVED,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Pagar Ana on Bitcoin and the switch flipped WHEN tapping paid anyway THEN tracks it paid as Outro`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = PIERRE,
+                to = BRUNO,
+                brunoKeys = listOf(phoneKey, lightningKey),
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(PaymentMethod.BITCOIN))
+            turnSimplifyDebts(
+                on = true,
+                by = ANA_USER,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAnywayClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    paidAnywayClicked,
+                    paidAnyway(
+                        method = SettlementMethod.OTHER,
+                        kind = PaymentKind.PAID,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no notice WHEN tapping paid anyway THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val tap = RegisterPaymentUiEvent.OnPaidAnywayClicked
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(listOf(paidAnywayClicked), trackedEvents)
+    }
+
+    private val paidAnywayClicked = "payment_paid_anyway_clicked" to emptyMap<String, Any>()
+
+    // Why: what was owed as the form opened, the whole debt of one pair, recorded by "Já paguei mesmo assim".
+    private fun paidAnyway(
+        method: SettlementMethod,
+        kind: PaymentKind,
+    ): Pair<String, Map<String, Any>> = "payment_recorded" to mapOf(
+        "method" to method,
+        "way" to "paid_anyway",
+        "kind" to kind,
+        "groups" to 1,
+        "is_full_debt" to true,
+    )
+
     private fun turnSimplifyDebts(
         on: Boolean,
         by: String?,
@@ -785,6 +907,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             it.navigate(route)
         }
         viewModel = RegisterPaymentViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { clockMillis },

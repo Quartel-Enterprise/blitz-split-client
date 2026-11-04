@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.categorymap.presentation.model.CATEGORY_MAP_SOURCE
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
@@ -31,6 +33,7 @@ internal class MapCategoryEditing(
     private val saveGroupCategory: SaveGroupCategory,
     private val deleteGroupCategory: DeleteGroupCategory,
     private val emit: suspend (CategoryMapUiAction) -> Unit,
+    private val trackEvent: TrackEvent,
 ) {
     // Why: "usada em 3 contas" and "Apagar “X”?" count the bills of the form's group, as a sync moves them.
     fun observe(observeExpenses: ObserveExpenses) {
@@ -45,9 +48,23 @@ internal class MapCategoryEditing(
 
     fun onEvent(event: CategoryMapUiEvent.Categories) {
         when (event) {
-            is CategoryMapUiEvent.OnNewCategoryClicked -> openNew(event.parentId)
+            is CategoryMapUiEvent.OnNewCategoryClicked -> {
+                if (uiState.value.canCreateCategory) {
+                    trackEvent(
+                        "category_create_clicked",
+                        mapOf("is_subcategory" to (event.parentId != null), "source" to CATEGORY_MAP_SOURCE),
+                    )
+                }
+                openNew(event.parentId)
+            }
 
-            is CategoryMapUiEvent.OnEditCategoryClicked -> openEdit(event.categoryId)
+            // Why: only a group's category still on the device, never a stale tap on one a sync just deleted.
+            is CategoryMapUiEvent.OnEditCategoryClicked -> {
+                if (uiState.value.categories.groupIdOf(event.categoryId) != null) {
+                    trackEvent("category_edit_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
+                }
+                openEdit(event.categoryId)
+            }
 
             is CategoryMapUiEvent.OnCategoryNameChanged -> changeForm { _, form -> form.withName(event.text) }
 
@@ -67,7 +84,10 @@ internal class MapCategoryEditing(
 
             is CategoryMapUiEvent.OnCategoryIconPicked -> changeForm { _, form -> form.withIcon(event.icon) }
 
-            CategoryMapUiEvent.OnCategoryFormSaveClicked -> save()
+            CategoryMapUiEvent.OnCategoryFormSaveClicked -> {
+                trackEvent("category_save_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
+                save()
+            }
 
             // Why: "Apagar “X”?" goes with its form, so it never opens over the next category's.
             CategoryMapUiEvent.OnCategoryFormDismissed -> uiState.update {
@@ -87,8 +107,13 @@ internal class MapCategoryEditing(
 
             CategoryMapUiEvent.OnCategoryDeleteConfirmed -> delete()
 
-            CategoryMapUiEvent.OnCategoryDeleteDismissed -> uiState.update {
-                if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
+            CategoryMapUiEvent.OnCategoryDeleteDismissed -> {
+                if (uiState.value.categoryDeletion?.isDeleting == false) {
+                    trackEvent("category_delete_cancelled", mapOf("source" to CATEGORY_MAP_SOURCE))
+                }
+                uiState.update {
+                    if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
+                }
             }
         }
     }
@@ -144,6 +169,14 @@ internal class MapCategoryEditing(
         scope.launch {
             saveGroupCategory(form, meId)
                 .onSuccess { id ->
+                    trackEvent(
+                        "category_saved",
+                        mapOf(
+                            "is_new" to !form.isEditing,
+                            "is_subcategory" to (form.parentId != null),
+                            "source" to CATEGORY_MAP_SOURCE,
+                        ),
+                    )
                     uiState.update {
                         if (form.isEditing) {
                             it.copy(categoryForm = null)
@@ -172,6 +205,7 @@ internal class MapCategoryEditing(
     // Why: its terms read as where its bills go, its parent or Outros, as a deleted category's do (9.1).
     private fun delete() {
         val deletion = uiState.value.categoryDeletion?.takeIf { !it.isDeleting } ?: return
+        trackEvent("category_delete_confirmed", mapOf("source" to CATEGORY_MAP_SOURCE))
         uiState.update { it.copy(categoryDeletion = deletion.copy(isDeleting = true)) }
         scope.launch {
             deleteGroupCategory(deletion.category.id)

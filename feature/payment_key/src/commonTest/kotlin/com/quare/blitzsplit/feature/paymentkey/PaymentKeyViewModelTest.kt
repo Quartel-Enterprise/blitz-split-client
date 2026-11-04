@@ -39,6 +39,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PaymentKeyViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakePaymentKeyRepository
     private lateinit var navigator: BackStackNavigator
@@ -1497,6 +1498,552 @@ class PaymentKeyViewModelTest {
             assertEquals(profileStack, navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN a new Pix key WHEN picking email THEN tracks the type picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val pick = PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL)
+
+        // When
+        viewModel.onEvent(pick)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_type_selected", "type" to PaymentKeyType.EMAIL)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new Bitcoin key WHEN picking on-chain THEN tracks the type picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(method = PaymentMethod.BITCOIN)
+        val pick = PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.ONCHAIN)
+
+        // When
+        viewModel.onEvent(pick)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_type_selected", "type" to PaymentKeyType.ONCHAIN)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new Pix key on email WHEN picking email again or a Bitcoin type THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.ONCHAIN))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a new Pix key WHEN tapping Colar THEN tracks the paste without the text pasted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val paste = PaymentKeyUiEvent.OnPasted(EMAIL)
+
+            // When
+            viewModel.onEvent(paste)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_paste_clicked")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN another Pix key is the default WHEN turning the default on THEN tracks it ended on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(phoneDefault))
+            val toggle = PaymentKeyUiEvent.OnDefaultChanged(true)
+
+            // When
+            viewModel.onEvent(toggle)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_default_toggled", "is_default" to true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the default turned on over another default WHEN turning it off again THEN tracks it ended off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(phoneDefault))
+            viewModel.onEvent(PaymentKeyUiEvent.OnDefaultChanged(true))
+            trackedEvents.clear()
+            val toggle = PaymentKeyUiEvent.OnDefaultChanged(false)
+
+            // When
+            viewModel.onEvent(toggle)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_default_toggled", "is_default" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the first Pix key locked as default WHEN turning the default off THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val toggle = PaymentKeyUiEvent.OnDefaultChanged(false)
+
+            // When
+            viewModel.onEvent(toggle)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the default key being edited WHEN turning the default off THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        isDefault = true,
+                    ),
+                    key(
+                        id = "key-2",
+                        type = PaymentKeyType.PHONE,
+                        value = "+5511912345678",
+                        isDefault = false,
+                    ),
+                ),
+            )
+            val toggle = PaymentKeyUiEvent.OnDefaultChanged(false)
+
+            // When
+            viewModel.onEvent(toggle)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a valid first CPF WHEN saving THEN tracks the tap then the new default key saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(
+                listOf(
+                    tracked("payment_key_save_clicked"),
+                    tracked(
+                        "payment_key_saved",
+                        "type" to PaymentKeyType.CPF,
+                        "is_new" to true,
+                        "is_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN another default and the default left off WHEN saving a new key THEN tracks it saved not default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(phoneDefault))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(
+                tracked(
+                    "payment_key_saved",
+                    "type" to PaymentKeyType.CPF,
+                    "is_new" to true,
+                    "is_default" to false,
+                ),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a key that is not the default being edited WHEN saving THEN tracks it saved as not new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        isDefault = false,
+                    ),
+                    phoneDefault,
+                ),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_VALID_CPF))
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(
+                listOf(
+                    tracked("payment_key_save_clicked"),
+                    tracked(
+                        "payment_key_saved",
+                        "type" to PaymentKeyType.CPF,
+                        "is_new" to false,
+                        "is_default" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an email pasted on CPF WHEN saving THEN tracks it saved as the email type detected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(EMAIL))
+            trackedEvents.clear()
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(
+                listOf(
+                    tracked("payment_key_save_clicked"),
+                    tracked(
+                        "payment_key_saved",
+                        "type" to PaymentKeyType.EMAIL,
+                        "is_new" to true,
+                        "is_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN half a CPF WHEN saving THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("123456"))
+        val save = PaymentKeyUiEvent.OnSaveClicked
+
+        // When
+        viewModel.onEvent(save)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_save_clicked")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the field blank WHEN saving THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val save = PaymentKeyUiEvent.OnSaveClicked
+
+        // When
+        viewModel.onEvent(save)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_save_clicked")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the keys not read yet and a valid CPF WHEN saving THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keysRead = false)
+        viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+        val save = PaymentKeyUiEvent.OnSaveClicked
+
+        // When
+        viewModel.onEvent(save)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_save_clicked")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a valid CPF WHEN saving and the save is still under way THEN tracks only the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saveGate = CompletableDeferred())
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_save_clicked")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Salvar tapped twice during a save WHEN the save ends THEN tracks both taps and the key saved once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(saveGate = gate)
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // When
+            gate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf(
+                    tracked("payment_key_save_clicked"),
+                    tracked("payment_key_save_clicked"),
+                    tracked(
+                        "payment_key_saved",
+                        "type" to PaymentKeyType.CPF,
+                        "is_new" to true,
+                        "is_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a key being edited WHEN tapping Apagar THEN tracks the delete tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keyId = "key-1",
+            storedKeys = listOf(key(id = "key-1")),
+        )
+        val delete = PaymentKeyUiEvent.OnDeleteClicked
+
+        // When
+        viewModel.onEvent(delete)
+
+        // Then
+        assertEquals(listOf(tracked("payment_key_delete_clicked")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new key WHEN tapping Apagar THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the delete question open WHEN confirming it THEN tracks the deletion confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1"), key(id = "key-2")),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            trackedEvents.clear()
+            val confirm = PaymentKeyUiEvent.OnDeleteConfirmed
+
+            // When
+            viewModel.onEvent(confirm)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_delete_confirmed")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no delete question open WHEN confirming the deletion THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keyId = "key-1",
+            storedKeys = listOf(key(id = "key-1")),
+        )
+        val confirm = PaymentKeyUiEvent.OnDeleteConfirmed
+
+        // When
+        viewModel.onEvent(confirm)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the deletion already confirmed WHEN confirming it again THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1"), key(id = "key-2")),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
+            val confirm = PaymentKeyUiEvent.OnDeleteConfirmed
+
+            // When
+            viewModel.onEvent(confirm)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the delete question open during a save WHEN confirming it THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1"), phoneDefault.copy(isDefault = false)),
+                saveGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+            val confirm = PaymentKeyUiEvent.OnDeleteConfirmed
+
+            // When
+            viewModel.onEvent(confirm)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN dismissing it THEN tracks the deletion cancelled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1")),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            trackedEvents.clear()
+            val dismiss = PaymentKeyUiEvent.OnDeleteDismissed
+
+            // When
+            viewModel.onEvent(dismiss)
+
+            // Then
+            assertEquals(listOf(tracked("payment_key_delete_cancelled")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no delete question open WHEN dismissing it THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keyId = "key-1",
+            storedKeys = listOf(key(id = "key-1")),
+        )
+        val dismiss = PaymentKeyUiEvent.OnDeleteDismissed
+
+        // When
+        viewModel.onEvent(dismiss)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the delete question already dismissed WHEN dismissing it again THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1")),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteDismissed)
+            trackedEvents.clear()
+            val dismiss = PaymentKeyUiEvent.OnDeleteDismissed
+
+            // When
+            viewModel.onEvent(dismiss)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the deletion confirmed on Apple WHEN its alert dismisses itself THEN tracks only the confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(key(id = "key-1"), key(id = "key-2")),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteConfirmed)
+            val dismiss = PaymentKeyUiEvent.OnDeleteDismissed
+
+            // When
+            viewModel.onEvent(dismiss)
+
+            // Then
+            assertEquals(
+                listOf(tracked("payment_key_delete_clicked"), tracked("payment_key_delete_confirmed")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN clicking back THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val back = PaymentKeyUiEvent.OnBackClicked
+
+        // When
+        viewModel.onEvent(back)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new Pix key WHEN typing a whole CPF THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val typed = PaymentKeyUiEvent.OnInputChanged(VALID_CPF)
+
+        // When
+        viewModel.onEvent(typed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN half a CPF typed WHEN leaving the field THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("123456"))
+        val focusLost = PaymentKeyUiEvent.OnInputFocusLost
+
+        // When
+        viewModel.onEvent(focusLost)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val profileStack: List<Route> = listOf(Route.Groups, Route.Profile)
 
     private val phoneDefault = PaymentKey(
@@ -1528,6 +2075,11 @@ class PaymentKeyViewModelTest {
         keyId = keyId,
     )
 
+    private fun tracked(
+        name: String,
+        vararg params: Pair<String, Any>,
+    ): Pair<String, Map<String, Any>> = name to mapOf(*params)
+
     private fun prepareScenario(
         method: PaymentMethod = PaymentMethod.PIX,
         keyId: String? = null,
@@ -1547,6 +2099,7 @@ class PaymentKeyViewModelTest {
         }
         val save = SavePaymentKeyUseCase(repository) { NOW }
         viewModel = PaymentKeyViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             validatePaymentKey = ValidatePaymentKeyUseCase(),

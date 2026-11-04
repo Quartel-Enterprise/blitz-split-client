@@ -81,6 +81,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GlobalBalancesViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1757,6 +1758,586 @@ class GlobalBalancesViewModelTest {
         assertNull(viewModel.uiState.value.recordedPayment)
     }
 
+    @Test
+    fun `GIVEN everyone WHEN filtering Voce deve THEN sends the filter picked on Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+        // Then
+        assertEquals(
+            listOf(
+                "balances_filter_selected" to mapOf<String, Any>(
+                    "filter" to BalancesFilter.YOU_OWE,
+                    "source" to "global_balances",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Te devem WHEN filtering Tudo THEN sends Tudo as the filter picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(filter = BalancesFilter.OWES_YOU)
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.ALL))
+
+        // Then
+        assertEquals(
+            listOf(
+                "balances_filter_selected" to mapOf<String, Any>(
+                    "filter" to BalancesFilter.ALL,
+                    "source" to "global_balances",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Te devem WHEN picking Te devem again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(filter = BalancesFilter.OWES_YOU)
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.OWES_YOU))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN everyone WHEN opening Por grupo on a row THEN sends that it ended up open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carlaId = idOfPerson("Carla")
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carlaId))
+
+        // Then
+        assertEquals(
+            listOf("balances_person_expand_toggled" to mapOf<String, Any>("is_expanded" to true)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the lone row of Voce deve open WHEN tapping Por grupo THEN sends that it ended up closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.YOU_OWE)
+            val brunoId = idOfPerson("Bruno")
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(brunoId))
+
+            // Then
+            assertEquals(
+                listOf("balances_person_expand_toggled" to mapOf<String, Any>("is_expanded" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a row opened by a tap WHEN tapping Por grupo again THEN sends that it ended up closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaId = idOfPerson("Carla")
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carlaId))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carlaId))
+
+            // Then
+            assertEquals(
+                listOf("balances_person_expand_toggled" to mapOf<String, Any>("is_expanded" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone not listed WHEN a stale Por grupo arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val staleId = "gone"
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(staleId))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN everyone WHEN picking Carla beside the list THEN sends the pick with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaId = idOfPerson("Carla")
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carlaId))
+
+            // Then
+            assertEquals(listOf("balances_person_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone not listed WHEN a stale pick arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected("user:nobody|BRL"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla WHEN tapping her face THEN sends the person clicked from Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carlaId = idOfPerson("Carla")
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonClicked(carlaId))
+
+        // Then
+        assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "global_balances")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Carla across three groups WHEN tapping a group in Por grupo THEN sends the group clicked from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val apeId = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+                .single { it.name == "Carla" }
+                .groups
+                .single { it.groupName == "Apê 302" }
+                .groupId
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnGroupClicked(apeId))
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "global_balances")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone you owe WHEN tapping Acertar THEN sends settle clicked from Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val brunoId = idOfPerson("Bruno")
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSettleClicked(brunoId))
+
+        // Then
+        assertEquals(listOf("settle_clicked" to mapOf<String, Any>("source" to "global_balances")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN someone who owes you WHEN tapping Recebi THEN sends received clicked from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaId = idOfPerson("Carla")
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnReceivedClicked(carlaId))
+
+            // Then
+            assertEquals(
+                listOf("received_clicked" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone who owes you WHEN tapping Cobrar THEN sends charge clicked from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaId = idOfPerson("Carla")
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaId))
+
+            // Then
+            assertEquals(
+                listOf("charge_clicked" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN tapping Enviar THEN sends the share without the message`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+
+        // Then
+        assertEquals(listOf("charge_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN tapping Copiar mensagem THEN sends the copy without the message`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(listOf("charge_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Cobrar closed WHEN a late Enviar or Copiar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN switching the Pix key off THEN sends that it is left out`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
+
+        // Then
+        assertEquals(
+            listOf("charge_pix_key_toggled" to mapOf<String, Any>("is_included" to false)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the Pix key switched off WHEN switching it on again THEN sends one event per toggle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            trackedEvents.clear()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = true))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "charge_pix_key_toggled" to mapOf<String, Any>("is_included" to false),
+                    "charge_pix_key_toggled" to mapOf<String, Any>("is_included" to true),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the message edited WHEN switching the Pix key THEN sends nothing since the switch is locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Cobrar closed WHEN a late Pix key switch arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val isIncluded = false
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN typing the message THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN closing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN you owe nothing WHEN tapping Ver quem te deve THEN sends the empty action clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                filter = BalancesFilter.YOU_OWE,
+                bills = listOf(owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 16_230L)),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked)
+
+            // Then
+            assertEquals(listOf("balances_empty_action_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the profile THEN sends the avatar clicked from Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnProfileClicked)
+
+        // Then
+        assertEquals(
+            listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "global_balances")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the notice of a settling up WHEN tapping Desfazer THEN sends the undo clicked from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedSettlements = listOf(payment("p1", FLORIPA), payment("p2", APE)),
+            )
+            recordedPayments.post(
+                RecordedPayment.SettledUp(
+                    listOf("p1", "p2"),
+                    personName = "Bruno",
+                    isPaidByMe = true,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(
+                listOf("payment_undo_clicked" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the notice shown WHEN it goes away THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
+                listOf("p1"),
+                personName = "Bruno",
+                isPaidByMe = true,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnRecordedPaymentNoticeShown)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Saldos on top WHEN tapping the magnifier THEN sends the search opened from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(
+                listOf("search_opened" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN the search is asked for THEN sends no search opened`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no group at all WHEN the search is asked for THEN sends no search opened`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN the search is asked for THEN sends no search opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN settling up open over Saldos WHEN a late search arrives THEN sends no search opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.SettleUp("user:bruno", GroupCurrency.BRL))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the search already open WHEN a second search arrives THEN sends no second search opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Inicio tab THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Grupos tab THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnGroupsTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Contatos tab THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Atividade tab THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    private fun idOfPerson(name: String): String = viewModel.uiState.value.people
+        .valueOrNull()
+        .orEmpty()
+        .single { it.name == name }
+        .id
+
     private fun openChargeForCarla() {
         val carla = viewModel.uiState.value.people
             .valueOrNull()
@@ -2004,6 +2585,7 @@ class GlobalBalancesViewModelTest {
         activity = FakeActivityRepository()
         val accountStatus = ObserveAccountStatus { flowOf(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)) }
         viewModel = GlobalBalancesViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = opened,
             navigator = navigator,
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),

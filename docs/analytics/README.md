@@ -160,7 +160,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `invite_link_change_cancelled` | none | "Trocar o link do convite?" closed without confirming, while it was open | `:feature:invite` |
 | `members_share_clicked` | none | Membros' Compartilhar, which opens Convidar | `:feature:members` |
 | `member_add_clicked` | none | "Adicionar pessoa" | `:feature:members` |
-| `person_clicked` | `source` (`members`) | A person's row, which opens their profile | `:feature:members` |
+| `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats` |
 | `member_rename_clicked` | none | A member's "Renomear" | `:feature:members` |
 | `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
 | `member_editor_save_clicked` | none | The name editor's Salvar or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
@@ -196,18 +196,18 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |
-| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`) | The avatar that opens Perfil | `:feature:groups` |
-| `search_opened` | `source` (`home`, `groups`) | Buscar opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups` |
+| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | The avatar that opens Perfil | `:feature:groups`, `:feature:global_balances` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`) | Buscar opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | Tudo, Grupos, Pessoas or Despesas | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`) | The sync chip's "tentar de novo" | `:feature:groups` |
 | `pull_to_refresh` | `source` (`home`, `groups`) | Pulled down on Android and iOS | `:feature:groups` |
-| `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`) | "Rachar conta" | `:feature:groups`, `:feature:group_detail` |
+| `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Rachar conta" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "A receber" or "Te devem" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "A pagar" or "Você deve" | `:feature:groups` |
 | `create_group_clicked` | `source` (`home`, `groups`) | "Novo grupo" | `:feature:groups` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Entrar com link ou QR" | `:feature:groups` |
-| `group_clicked` | `source` (`home`, `groups`, `sidebar`) | A group's row, card or sidebar entry | `:feature:groups` |
+| `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | A group's row, card or sidebar entry, or a group of a person's "Por grupo" on Saldos | `:feature:groups`, `:feature:global_balances` |
 | `settled_groups_toggled` | `is_shown` | Quitados expanded or collapsed, or its tab | `:feature:groups` |
 | `groups_display_changed` | `display` (`list`, `grid`) | "Lista ou grade", for another way than the one showing | `:feature:groups` |
 | `groups_grid_size_changed` | `size` | Another size the grid takes: Compacto, Padrão or Grande, once per size the Mac's slider passes | `:feature:groups` |
@@ -216,13 +216,13 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_group_clicked` | `source` (`groups`, `group_detail`) | "Apagar grupo" | `:feature:groups`, `:feature:group_detail` |
 | `group_exit_confirmed` | `dialog` (`leave_blocked`, `confirm_leave`, `delete_blocked`, `confirm_delete`), `source` (`groups`, `group_detail`) | The dialog's main button (Sair, Apagar para todos, Acertar, Ver saldos), while it could be answered | `:feature:groups`, `:feature:group_detail` |
 | `group_exit_cancelled` | `dialog`, `source` (`groups`, `group_detail`) | The dialog closed without its main button, while it could be answered | `:feature:groups`, `:feature:group_detail` |
-| `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`) | "Desfazer" on "Pagamento de Ana registrado." | `:feature:groups`, `:feature:group_detail` |
+| `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`, `global_balances`) | "Desfazer" on "Pagamento de Ana registrado." | `:feature:groups`, `:feature:group_detail`, `:feature:global_balances` |
 | `home_see_balances_clicked` | none | "Ver saldos" over Início's faces | `:feature:groups` |
 | `balance_face_clicked` | `source` (`home`) | A face of "Saldos com pessoas", which opens settling up with them for the net | `:feature:groups` |
 | `scan_receipt_clicked` | `source` (`home`) | "Ler cupom fiscal" | `:feature:groups` |
 | `record_payment_clicked` | `source` (`home`) | Início's "Registrar pagamento" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "Ver todos" over "Seus grupos" | `:feature:groups` |
-| `bill_clicked` | `source` (`home`, `group_detail`) | A bill's row, which opens its Conta | `:feature:groups`, `:feature:group_detail` |
+| `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`) | A bill's row, which opens its Conta | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `home_see_all_bills_clicked` | none | "Ver tudo" over "Últimas despesas" | `:feature:groups` |
 | `recovery_code_card_show_clicked` | none | "Ver código" on "Guarde seu código de recuperação" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Conectar conta" on that card | `:feature:groups` |
@@ -232,7 +232,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_group_clicked` | none | "Editar grupo" | `:feature:group_detail` |
 | `group_pin_toggled` | `is_pinned` | "Fixar na Início" or "Desafixar da Início" | `:feature:group_detail` |
 | `group_deleted_back_clicked` | none | "Voltar para Grupos" on "Grupo apagado", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
-| `settle_clicked` | `source` (`group_detail`) | "Acertar" on "Seu saldo neste grupo" | `:feature:group_detail` |
+| `settle_clicked` | `source` (`group_detail`, `global_balances`) | "Acertar" on "Seu saldo neste grupo" or on a person of Saldos | `:feature:group_detail`, `:feature:global_balances` |
 | `debt_clicked` | `source` (`group_detail`) | "Acertar", "Recebi" or "Já pagou" on a pair of Saldos | `:feature:group_detail` |
 | `payment_clicked` | `source` (`group_detail`) | A payment of Despesas, which asks "Apagar este acerto?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed, while it was open | `:feature:group_detail` |
@@ -266,3 +266,59 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `default_split_exception_parts_changed` | `direction` (`up`, `down`) | A part added or taken in the exception | `:feature:edit_group` |
 | `default_split_exception_save_clicked` | none | "Salvar exceção" | `:feature:edit_group` |
 | `default_split_exception_remove_clicked` | none | The exception removed | `:feature:edit_group` |
+| `pick_payment_pair_selected` | none | A pair of "Quem pagou a quem?", which opens Registrar pagamento for it | `:feature:register_payment` |
+| `payment_full_debt_clicked` | none | "Toda a dívida" | `:feature:register_payment` |
+| `payment_method_selected` | `method` (`pix`, `cash`, `transfer`, `other`) | "Como foi pago", another than the one picked | `:feature:register_payment` |
+| `payment_date_clicked` | none | "Quando", opening its picker | `:feature:register_payment` |
+| `payment_confirm_clicked` | none | Registrar pagamento's confirm button, also when the form can't record yet | `:feature:register_payment` |
+| `payment_key_method_selected` | `method` (`pix`, `bitcoin`) | "Pagar Ana"'s Pix or Bitcoin, another than the one shown | `:feature:register_payment` |
+| `payment_mark_as_paid_clicked` | none | "Marcar como pago" | `:feature:register_payment` |
+| `payment_pay_otherwise_clicked` | none | "Paguei outro valor ou de outro jeito" | `:feature:register_payment` |
+| `payment_paid_anyway_clicked` | none | "Já paguei mesmo assim" (13.5c) | `:feature:register_payment` |
+| `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
+| `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | Tudo, Você deve or Te devem, another than the one picked | `:feature:global_balances` |
+| `balances_person_expand_toggled` | `is_expanded` | "Por grupo" opened or closed on a row | `:feature:global_balances` |
+| `balances_person_selected` | none | A person picked in the list beside the detail, while the filter lists them | `:feature:global_balances` |
+| `received_clicked` | `source` (`global_balances`) | "Recebi" | `:feature:global_balances` |
+| `charge_clicked` | `source` (`global_balances`) | "Cobrar" | `:feature:global_balances` |
+| `charge_pix_key_toggled` | `is_included` | "Incluir minha chave Pix", while the switch takes it (not once the message was edited) | `:feature:global_balances` |
+| `charge_share_clicked` | none | Cobrar's "Enviar", while Cobrar is open | `:feature:global_balances` |
+| `charge_copy_clicked` | none | Cobrar's "Copiar mensagem", while Cobrar is open | `:feature:global_balances` |
+| `balances_empty_action_clicked` | none | The empty state's button ("Ver quem te deve", "Ver quem você deve", "Ver grupos") | `:feature:global_balances` |
+| `payment_key_type_selected` | `type` | Another type for the key (CPF, telefone, e-mail, aleatória…) | `:feature:payment_key` |
+| `payment_key_paste_clicked` | none | The key's Colar | `:feature:payment_key` |
+| `payment_key_default_toggled` | `is_default` | "Chave padrão", while it can change (not the only key of its method) | `:feature:payment_key` |
+| `payment_key_save_clicked` | none | The key's Salvar, also when it can't save yet | `:feature:payment_key` |
+| `payment_key_saved` | `type`, `is_new`, `is_default` | A key saved | `:feature:payment_key` |
+| `payment_key_delete_clicked` | none | "Apagar chave", which asks first, while the key isn't saving | `:feature:payment_key` |
+| `payment_key_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:payment_key` |
+| `payment_key_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:payment_key` |
+| `stats_period_selected` | `period` | A period of the menu | `:feature:group_stats` |
+| `stats_custom_period_selected` | none | The days picked in "Escolher datas…" | `:feature:group_stats` |
+| `stats_people_view_selected` | `view` (`consumption`, `paid`) | "Por pessoa"'s Consumo or Pagou, another than the one showing | `:feature:group_stats` |
+| `stats_chart_type_selected` | `chart_type` | Barras or Linha, another than the one showing | `:feature:group_stats` |
+| `stats_grain_selected` | `grain` | Dia, Semana, Mês or Ano, another than the one showing or one that switches the period to the whole one | `:feature:group_stats` |
+| `stats_whole_period_clicked` | none | "Ver toda a viagem" of a period without bills | `:feature:group_stats` |
+| `category_map_profile_clicked` | none | "Abrir Perfil" on "Seu mapa fica só neste aparelho" | `:feature:category_map` |
+| `category_map_section_selected` | none | Another category picked beside its terms | `:feature:category_map` |
+| `category_term_add_clicked` | `entry` (`map`, `category`, `search`) | "Adicionar termo", "Adicionar termo em Transporte" or "Adicionar “pizzaria”", once the map is read | `:feature:category_map` |
+| `category_term_clicked` | none | A term, which opens "Editar termo", once the map is read | `:feature:category_map` |
+| `category_term_category_clicked` | none | The term's category, opening its picker (not the tap that closes it) | `:feature:category_map` |
+| `category_term_category_picked` | none | A category picked for the term | `:feature:category_map` |
+| `category_term_save_clicked` | none | The term's Salvar (or "Mover para X"), also when it can't save yet | `:feature:category_map` |
+| `category_term_saved` | `is_new` (from "Novo termo", also when it moves a word another category had) | A term saved | `:feature:category_map` |
+| `category_term_remove_clicked` | none | "Remover do mapa" | `:feature:category_map` |
+| `category_term_undo_clicked` | none | Desfazer on "“café” saiu do mapa", once the map is read | `:feature:category_map` |
+| `category_map_restore_clicked` | none | "Restaurar padrão", which asks first, once the map is read | `:feature:category_map` |
+| `category_map_restore_confirmed` | none | Its question confirmed, while it was open | `:feature:category_map` |
+| `category_map_restore_cancelled` | none | Its question closed without confirming, while it was open | `:feature:category_map` |
+| `category_create_clicked` | `is_subcategory`, `source` (`category_map`) | "Nova categoria" or "Nova subcategoria em Transporte", once the map is read and there is a group | `:feature:category_map` |
+| `category_edit_clicked` | `source` (`category_map`) | A group's category's pencil, once the map is read | `:feature:category_map` |
+| `category_group_picked` | `source` (`category_map`) | The new category's Grupo | `:feature:category_map` |
+| `category_parent_picked` | `source` (`category_map`) | The category's "Dentro de" | `:feature:category_map` |
+| `category_icon_picked` | `icon`, `source` (`category_map`) | One of the 18 icons | `:feature:category_map` |
+| `category_save_clicked` | `source` (`category_map`) | The category's Salvar, also when it can't save yet | `:feature:category_map` |
+| `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`) | A category saved | `:feature:category_map` |
+| `category_delete_clicked` | `source` (`category_map`) | The category's Apagar, which asks first | `:feature:category_map` |
+| `category_delete_confirmed` | `source` (`category_map`) | "Apagar “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map` |
+| `category_delete_cancelled` | `source` (`category_map`) | "Apagar “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map` |
