@@ -493,17 +493,16 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN back is tapped THEN tracks the back click from delete account`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN the screen open WHEN back is tapped THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(DeleteAccountUiEvent.OnBackClicked)
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnBackClicked)
 
-            // Then
-            assertEquals(listOf(backClicked), trackedEvents)
-        }
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
 
     @Test
     fun `GIVEN the screen open WHEN the box is checked THEN tracks the toggle as checked`() = runTest(testDispatcher) {
@@ -601,7 +600,6 @@ class DeleteAccountViewModelTest {
             assertEquals(listOf(exportClicked), trackedEvents)
         }
 
-    private val backClicked = "back_clicked" to mapOf<String, Any>("source" to "delete_account")
     private val deleteClicked = "delete_account_clicked" to emptyMap<String, Any>()
     private val exportClicked = "data_export_clicked" to mapOf<String, Any>("source" to "delete_account")
 

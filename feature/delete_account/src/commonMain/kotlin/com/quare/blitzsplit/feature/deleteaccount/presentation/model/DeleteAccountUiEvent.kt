@@ -9,7 +9,11 @@ private const val SOURCE = "delete_account"
 sealed interface DeleteAccountUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            OnBackClicked -> EventAnalytics.Automatic("back_clicked", mapOf("source" to SOURCE))
+            /*
+             * Why: each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, so a
+             * back counts alike only as the screen_view of where it went.
+             */
+            OnBackClicked -> EventAnalytics.NotTracked
 
             is OnConfirmChanged -> EventAnalytics.Automatic(
                 "delete_account_confirm_toggled",

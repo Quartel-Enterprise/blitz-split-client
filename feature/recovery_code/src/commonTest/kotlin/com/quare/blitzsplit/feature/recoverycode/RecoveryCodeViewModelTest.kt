@@ -450,7 +450,7 @@ class RecoveryCodeViewModelTest {
             viewModel.onEvent(RecoveryCodeUiEvent.OnSaveToPasswordManagerClicked)
 
             // Then
-            assertEquals(listOf("recovery_code_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf("recovery_code_password_manager_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
     @Test

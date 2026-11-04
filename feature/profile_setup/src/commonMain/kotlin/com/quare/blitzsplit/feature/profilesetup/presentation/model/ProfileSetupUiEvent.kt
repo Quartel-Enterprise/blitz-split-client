@@ -19,6 +19,7 @@ sealed interface ProfileSetupUiEvent : TrackedUiEvent {
                 mapOf("color" to color, "source" to SOURCE),
             )
 
+            // Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for it.
             is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
 
             is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
@@ -28,7 +29,11 @@ sealed interface ProfileSetupUiEvent : TrackedUiEvent {
 
             OnContinueClicked -> EventAnalytics.Automatic("profile_setup_continue_clicked")
 
-            OnBackClicked -> EventAnalytics.Automatic("back_clicked", mapOf("source" to SOURCE))
+            /*
+             * Why: each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, so a
+             * back counts alike only as the screen_view of where it went.
+             */
+            OnBackClicked -> EventAnalytics.NotTracked
         }
 
     data class OnNameChanged(

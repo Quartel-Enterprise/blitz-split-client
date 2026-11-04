@@ -707,7 +707,7 @@ class RestoreViewModelTest {
     }
 
     @Test
-    fun `GIVEN the restore screen WHEN going back THEN tracks the back from the restore`() = runTest(testDispatcher) {
+    fun `GIVEN the restore screen WHEN going back THEN sends no event`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -715,7 +715,7 @@ class RestoreViewModelTest {
         viewModel.onEvent(RestoreUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf("back_clicked" to mapOf<String, Any>("source" to "restore")), trackedEvents)
+        assertEquals(emptyList(), trackedEvents)
     }
 
     @Test

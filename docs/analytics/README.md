@@ -101,7 +101,7 @@ every new user action. The `add-analytics-event` skill walks through it.
 | --- | --- | --- |
 | `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it |
 | `EventAnalytics.Manual(name)` | It needs what only handling it tells: the result of a save, the `UiState` (`setOf(…)` for a branch that may send more than one) | A `trackEvent("name", …)` call in the branch, with the same name |
-| `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back | Nothing |
+| `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart: where it went is its screen view | Nothing |
 
 Every tap on a button, a row, a tab, a menu item, a chip or a toggle is a user action and gets its event, even when it
 opens a screen: the tap and the screen it opens are different signals (how many tapped, how many saw). Picking an
@@ -130,23 +130,22 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `native_sign_in_failed` | `source` | The platform's own sign in sheet failed | `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
 | `native_sign_in_cancelled` | `source` | The platform's own sign in sheet was closed | `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
 | `error_dismissed` | `source` (`welcome`, `restore`) | An error's message closed | `:feature:welcome`, `:feature:restore` |
-| `back_clicked` | `source` (`profile_setup`, `restore`, `delete_account`) | The screen's own back, Cancelar or ✕ | `:feature:profile_setup`, `:feature:restore`, `:feature:delete_account` |
 | `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`) | A photo handed back by the camera or the picker | `:feature:profile_setup` |
-| `photo_crop_turned` | `source` | "Ajustar foto"'s Girar | `:core:presentation` (each screen with a photo) |
-| `photo_crop_mirrored` | `source`, `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation` (each screen with a photo) |
-| `photo_crop_confirmed` | `source` | "Ajustar foto"'s Pronto | `:core:presentation` (each screen with a photo) |
-| `photo_crop_dismissed` | `source` | "Ajustar foto" closed without Pronto | `:core:presentation` (each screen with a photo) |
+| `photo_picked` | `source` (`profile_setup`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup` |
+| `photo_crop_turned` | `source` (`profile_setup`) | "Ajustar foto"'s Girar | `:core:presentation`, from `:feature:profile_setup` |
+| `photo_crop_mirrored` | `source` (`profile_setup`), `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup` |
+| `photo_crop_confirmed` | `source` (`profile_setup`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` |
+| `photo_crop_dismissed` | `source` (`profile_setup`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
-| `restore_code_submitted` | none | Recuperar's Recuperar, with the code typed or read | `:feature:restore` |
+| `restore_code_submitted` | none | Recuperar's button or the keyboard's Done; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
 | `recovery_code_copy_clicked` | none | The recovery code's Copiar | `:feature:recovery_code` |
-| `recovery_code_save_clicked` | none | "Salvar no gerenciador de senhas" | `:feature:recovery_code` |
+| `recovery_code_password_manager_clicked` | none | "Salvar no gerenciador de senhas" | `:feature:recovery_code` |
 | `recovery_code_connect_instead_clicked` | none | "Conectar Google ou Apple em vez disso" | `:feature:recovery_code` |
-| `recovery_code_remind_later_clicked` | none | "Lembrar depois" | `:feature:recovery_code` |
+| `recovery_code_remind_later_clicked` | none | "Lembrar depois", or the sheet closed any other way while the code is due | `:feature:recovery_code` |
 | `recovery_code_saved_clicked` | none | "Já guardei" | `:feature:recovery_code` |
 | `delete_account_confirm_toggled` | `is_checked` | Excluir conta's confirmation checkbox | `:feature:delete_account` |
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |

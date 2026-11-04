@@ -32,7 +32,11 @@ sealed interface RestoreUiEvent : TrackedUiEvent {
 
             OnStartFreshClicked -> EventAnalytics.Automatic("restore_start_fresh_clicked")
 
-            OnBackClicked -> EventAnalytics.Automatic("back_clicked", mapOf("source" to SOURCE))
+            /*
+             * Why: each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, so a
+             * back counts alike only as the screen_view of where it went.
+             */
+            OnBackClicked -> EventAnalytics.NotTracked
 
             OnErrorDismissed -> EventAnalytics.Automatic("error_dismissed", mapOf("source" to SOURCE))
         }

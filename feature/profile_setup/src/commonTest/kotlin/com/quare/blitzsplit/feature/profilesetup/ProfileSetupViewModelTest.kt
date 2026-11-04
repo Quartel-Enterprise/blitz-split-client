@@ -800,7 +800,7 @@ class ProfileSetupViewModelTest {
         }
 
     @Test
-    fun `GIVEN the setup screen WHEN going back THEN tracks the back click from the setup`() = runTest(testDispatcher) {
+    fun `GIVEN the setup screen WHEN going back THEN sends no event`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -808,7 +808,7 @@ class ProfileSetupViewModelTest {
         viewModel.onEvent(ProfileSetupUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf("back_clicked" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        assertEquals(emptyList(), trackedEvents)
     }
 
     private val photoPickedEvent = "photo_picked" to mapOf<String, Any>("source" to SOURCE)

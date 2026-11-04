@@ -12,7 +12,7 @@ sealed interface RecoveryCodeUiEvent : TrackedUiEvent {
         get() = when (this) {
             OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copy_clicked")
 
-            OnSaveToPasswordManagerClicked -> EventAnalytics.Automatic("recovery_code_save_clicked")
+            OnSaveToPasswordManagerClicked -> EventAnalytics.Automatic("recovery_code_password_manager_clicked")
 
             OnConnectInsteadClicked -> EventAnalytics.Automatic("recovery_code_connect_instead_clicked")
 
