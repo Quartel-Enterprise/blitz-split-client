@@ -38,7 +38,7 @@ The feed, unread state, real time and push notifications.
     recorded or undone that you paid or received; "Settle-up reminders" for a payment request sent to you and, every Monday at
     10:00 in Brasília, "You have an open balance in Apt 302" (or "in 3 groups") while you owe or are owed;
     "Invites and new members" (off by default) for being added to a group and someone joining yours. No amount in
-    them, but for "Simplify debts" (below), whose `debts_simplified_*` and `debts_unsimplified_*` (under
+    them, but for "Simplify debts" (in [members-and-payments.md](members-and-payments.md)), whose `debts_simplified_*` and `debts_unsimplified_*` (under
     "Settle-up reminders") name the new pair's amount, which the server writes out (Pierre's call). The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
     insert), and each device words them in its language from a kind and the names (Android's channels are the four
     toggles, Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana split “Dinner”

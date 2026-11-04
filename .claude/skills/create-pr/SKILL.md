@@ -157,7 +157,7 @@ with the description from step 6 as its argument. Wait for both results before g
 If neither reports anything, continue to step 8. Otherwise fix every finding of both reviews, the
 cleanups and nitpicks too, without asking the user first. Check each one against the code before
 changing it: a finding that turns out wrong (the code already handles the case, or the fix would
-contradict a doc under `docs/` or a product decision of `CLAUDE.md`) stays unfixed. A finding that
+contradict a doc under `docs/` or a product decision of `docs/product/`) stays unfixed. A finding that
 is a bug gets its regression test, as the "Who writes the unit tests" section of
 [docs/ai_agents.md](../../../docs/ai_agents.md) says. Ask the user only when a fix needs a product
 choice nobody wrote down yet (`CLAUDE.md` makes those Pierre's call), and fix the others meanwhile.

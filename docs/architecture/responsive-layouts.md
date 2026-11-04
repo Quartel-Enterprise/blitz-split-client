@@ -18,7 +18,7 @@ The rules:
   dialog takes one half with the other under the scrim.
 - **Measure the window, not what the keyboard leaves**, so opening the keyboard never swaps the layout and rebuilds
   the focused field.
-- The CLAUDE.md product decisions say how each flow is drawn at each size; where a board and a bullet disagree, the
+- The product decisions under `docs/product/` say how each flow is drawn at each size; where a board and a bullet disagree, the
   board wins and the bullet changes in the same pull request.
 
 ### Android
@@ -182,11 +182,11 @@ Saldos sit in `HomeShell`: the sidebar on the desktop, the icon rail on the tabl
 
 ### A flow's responsive slice
 
-1. List the flow's boards per size (the base files' `size` Tweak) and the CLAUDE.md bullet that says how it opens.
+1. List the flow's boards per size (the base files' `size` Tweak) and the bullet of its `docs/product/<area>.md` that says how it opens.
 2. Android: pick the presentation per `formFactor` in `AppNavDisplay`, and the content per size inside: `DeviceLayout`
    off a foldable, `TwoHalvesLayout` on a book, `TopBottomHalvesLayout` where a tabletop board exists, `FoldDialog`
    for a dialog or sheet the book draws in a half. Previews with `@DevicePreviews` cover the book.
 3. Apple: `ScreenLayout` rules and `TwoColumnsLayout`; the sheet sizing helper the board's size calls for; nothing
    by idiom.
-4. Update the flow's CLAUDE.md bullet with what changed, and check the screen at each size on an emulator or simulator
+4. Update the flow's bullet in its `docs/product/<area>.md` with what changed, and check the screen at each size on an emulator or simulator
    (the Pixel Fold and Galaxy Z Fold emulators, the iPhone Duo simulator).

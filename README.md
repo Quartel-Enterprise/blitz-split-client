@@ -72,7 +72,7 @@ npm --prefix webApp run dev           # web dev server
 | Document | What's in it |
 |---|---|
 | [Architecture guide](docs/ai_agents.md) | The index every convention hangs off: state, use cases, DI, navigation, data sources, code style. |
-| [Product decisions](CLAUDE.md) | How each screen behaves on every platform, one doc per area of the app. |
+| [Product decisions](CLAUDE.md#where-decisions-live) | How each screen behaves on every platform, one doc per area of the app. |
 | [Getting started](docs/getting-started.md) | Prerequisites, local configuration, running each platform. |
 | [Testing](docs/testing/README.md) | How the suites are organised and what belongs in them. |
 | [Analytics](docs/analytics/README.md) | The event catalog and the rules for adding one. |
@@ -83,5 +83,5 @@ npm --prefix webApp run dev           # web dev server
 ## 🤝 Contributing
 
 Branches and pull request titles follow Conventional Commits types (`fix`, `feature`, `enhancement`, `refactor`,
-`chore`). Before opening one, run `./scripts/ktlint.sh`, `./gradlew jvmTest` and `./gradlew assertModuleGraph`. Code,
+`chore`). Before opening one, run `./scripts/ktlint.sh`, `./gradlew jvmTest :koverVerifyCi assertModuleGraph` and `./scripts/cpd.sh`. Code,
 comments, docs and commit messages are in English; only the text a user sees is translated.

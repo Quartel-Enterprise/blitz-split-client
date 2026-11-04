@@ -181,8 +181,8 @@ one line.
 ### 7. Start implementing immediately
 
 If the user's request already described the task to do (bug to fix, feature to add, etc.), not
-just which branch/mode to use, don't stop after step 6 and wait for a "go ahead"/"pode
-implementar". Continue straight into implementing that task in this same turn, right after the
+just which branch/mode to use, don't stop after step 6 and wait for a "go ahead".
+Continue straight into implementing that task in this same turn, right after the
 short status report from step 6.
 
 - Worktree mode: keep working in this same session; do not wait for a new session to be opened

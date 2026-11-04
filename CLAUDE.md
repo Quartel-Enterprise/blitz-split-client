@@ -44,8 +44,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
 
 - The docs under `docs/`, indexed in [docs/ai_agents.md](docs/ai_agents.md): the architecture decisions (shared up
   to the ViewModel, no SKIE, one back stack, offline first, auth and the recovery code) and how to apply them.
-- Product decisions, to follow on every platform, one doc per area of the app:
-  - [General rules](docs/product/general.md): language, amounts, colors, currencies, platform minimums, loading.
+- Product decisions, to follow on every platform, one doc per area of the app. Before changing a screen, read its
+  area's doc and update it in the same PR:
+  - [General rules](docs/product/general.md): language, amounts, colors, currencies, sign in buttons and recovery code, platform minimums, loading.
   - [The home and the shells](docs/product/home-and-shell.md): the five tabs, the web's and the Mac's shell.
   - [Home](docs/product/inicio.md): the home tab (Início), its shortcuts, pinned groups.
   - [Activity and push notifications](docs/product/activity-and-push.md)
@@ -54,7 +55,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - [New group and Invite](docs/product/new-group-and-invite.md)
   - [Balances, Contacts and people](docs/product/balances-and-contacts.md)
   - [The group screen and its bills](docs/product/group-and-bills.md): Expenses, the bill, Statistics.
-  - [Members, group balances and payments](docs/product/members-and-payments.md)
+  - [Members, group balances and payments](docs/product/members-and-payments.md): Edit group, Default split, leaving and deleting a group.
   - [Split a bill](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
   - [Joining and foldables](docs/product/joining-and-folds.md): invite links, cameras, foldables, iPhone Duo.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.
