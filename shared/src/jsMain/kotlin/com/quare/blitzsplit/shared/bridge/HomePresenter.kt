@@ -31,8 +31,6 @@ class JsHomePerson(
     val fractionDigits: Int,
     val netMinor: Double,
     val isGuest: Boolean,
-    // Why: the face opens their profile; a former member's settles up instead.
-    val opensProfile: Boolean,
 )
 
 // Why: "Te devem" and "Você deve" in one currency, with how many people each sums ("4 pessoas").
@@ -320,7 +318,6 @@ private fun toJsHomePerson(person: HomePerson): JsHomePerson = JsHomePerson(
     fractionDigits = person.currency.fractionDigits,
     netMinor = person.netMinor.toDouble(),
     isGuest = person.isGuest,
-    opensProfile = person.opensProfile,
 )
 
 private fun toJsHomeSummary(summary: HomeSummary): JsHomeSummary = JsHomeSummary(

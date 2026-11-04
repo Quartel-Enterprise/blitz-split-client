@@ -279,7 +279,7 @@ class HomeViewModel(
 
             HomeUiEvent.OnRefresh -> refresh()
 
-            is HomeUiEvent.OnPersonClicked -> openPerson(event.key, event.currency)
+            is HomeUiEvent.OnPersonClicked -> openSettleUp(event.key, event.currency)
 
             HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
@@ -375,26 +375,18 @@ class HomeViewModel(
         if (isOnTop()) navigator.navigate(route)
     }
 
-    /*
-     * Why: the person's profile; someone no longer in the group has none, so their face settles the net across their
-     * groups as in Saldos, "Acertar" or "Recebi".
-     */
-    private fun openPerson(
+    // Why: the net with that person, settled across their groups as in Saldos: "Acertar" or "Recebi".
+    private fun openSettleUp(
         key: String,
         currency: GroupCurrency,
     ) {
-        val person = uiState.value.people
-            .valueOrNull()
-            ?.firstOrNull { it.key == key && it.currency == currency } ?: return
+        val people = uiState.value.people.valueOrNull() ?: return
+        if (people.none { it.key == key && it.currency == currency }) return
         open(
-            if (person.opensProfile) {
-                Route.ContactProfile(key)
-            } else {
-                Route.SettleUp(
-                    personKey = key,
-                    currency = currency,
-                )
-            },
+            Route.SettleUp(
+                personKey = key,
+                currency = currency,
+            ),
         )
     }
 

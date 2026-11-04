@@ -173,6 +173,49 @@ class ContactProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile opened from her settling up WHEN Recebi is tapped THEN goes back to that form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                openedFrom = Route.SettleUp(CARLA_KEY, GroupCurrency.BRL),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.SettleUp(CARLA_KEY, GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the profile opened from settling up in dollars WHEN Recebi is tapped THEN opens the one in reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                openedFrom = Route.SettleUp(CARLA_KEY, GroupCurrency.USD),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.SettleUp(CARLA_KEY, GroupCurrency.USD),
+                    Route.ContactProfile(CARLA_KEY),
+                    Route.SettleUp(CARLA_KEY, GroupCurrency.BRL),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN you owe Bruno WHEN Acertar is tapped THEN opens Registrar pagamento for his net`() =
         runTest(testDispatcher) {
             // Given

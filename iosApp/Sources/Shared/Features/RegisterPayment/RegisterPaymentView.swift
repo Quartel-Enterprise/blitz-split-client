@@ -32,6 +32,11 @@ final class RegisterPaymentModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// Who paid or who received, whose face opens their profile over the form.
+    func openPerson(_ person: PaymentPerson) {
+        send(RegisterPaymentUiEventOnPersonClicked(personId: person.id))
+    }
+
     var amount: Binding<String> {
         Binding(
             get: { self.current.amountText },
@@ -197,11 +202,13 @@ private enum RegisterPaymentCopy {
     }
 }
 
-/// Whoever paid, an arrow, whoever received.
+/// Whoever paid, an arrow, whoever received. Registrar pagamento's faces open the person's profile (beta feedback 18)
+/// while `onOpen` is set; "Who paid whom?"'s are its rows'.
 struct PaymentFaces: View {
     let from: PaymentPerson?
     let to: PaymentPerson?
     let size: CGFloat
+    var onOpen: ((PaymentPerson) -> Void)?
 
     var body: some View {
         HStack(spacing: 10) {
@@ -209,15 +216,23 @@ struct PaymentFaces: View {
             Image(systemName: "arrow.right")
                 .font(.headline)
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             face(to)
         }
-        .accessibilityHidden(true)
+        .accessibilityHidden(onOpen == nil)
+    }
+
+    /// VoiceOver's name for a face: "You" for this device's user, as the sentence under the faces says.
+    static func label(_ person: PaymentPerson) -> Text {
+        person.isMe ? Text("You", comment: "This device's user in a list of people") : Text(verbatim: person.name)
     }
 
     @ViewBuilder
     private func face(_ person: PaymentPerson?) -> some View {
         if let person {
             AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
+                .opensProfile(onOpen.map { onOpen in { onOpen(person) } })
+                .accessibilityLabel(PaymentFaces.label(person))
         } else {
             // Someone no longer in the group, a blank face as Saldos draws them
             Circle()
@@ -368,7 +383,7 @@ private struct PhoneRegisterPayment: View {
     private var whoAndAmount: some View {
         Section {
             VStack(spacing: 8) {
-                PaymentFaces(from: state.from, to: state.to, size: 52)
+                PaymentFaces(from: state.from, to: state.to, size: 52, onOpen: model.openPerson)
                 Text(verbatim: RegisterPaymentCopy.title(state))
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
@@ -447,7 +462,7 @@ private struct MacRegisterPayment: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 14) {
-                PaymentFaces(from: state.from, to: state.to, size: 36)
+                PaymentFaces(from: state.from, to: state.to, size: 36, onOpen: model.openPerson)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: RegisterPaymentCopy.title(state))
                         .font(.title2.bold())

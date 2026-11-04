@@ -251,7 +251,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
 
 /** "Abrir o perfil de Ana", or "Abrir seu perfil" for your own face. */
 function actorProfileLabel(item: JsActivityItem): string {
-  return item.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: actorName(item) })
+  return item.actorIsMe ? t('person_openMyProfile') : t('person_openProfile', { name: actorName(item) })
 }
 
 /** "Ver mudanças" under a bill's edit, which opens its before → after in the row, with "Abrir conta". */

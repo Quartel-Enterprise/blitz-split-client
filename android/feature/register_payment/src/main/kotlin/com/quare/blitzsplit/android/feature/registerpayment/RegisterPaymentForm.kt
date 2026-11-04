@@ -27,8 +27,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
+import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
@@ -93,6 +95,7 @@ internal fun RegisterPaymentSummaryColumn(
         PaymentHeader(
             state = state,
             money = money,
+            onEvent = onEvent,
         )
         AmountSection(
             state = state,
@@ -154,6 +157,7 @@ internal fun RegisterPaymentDetailsColumn(
 private fun PaymentHeader(
     state: RegisterPaymentUiState,
     money: MoneyFormatter,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -161,17 +165,22 @@ private fun PaymentHeader(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
-            modifier = Modifier.clearAndSetSemantics {},
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PersonFaceBadge(state.from)
+            PersonFaceBadge(
+                person = state.from,
+                onClick = state.from?.let { { onEvent(RegisterPaymentUiEvent.OnPersonClicked(it.id)) } },
+            )
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            PersonFaceBadge(state.to)
+            PersonFaceBadge(
+                person = state.to,
+                onClick = state.to?.let { { onEvent(RegisterPaymentUiEvent.OnPersonClicked(it.id)) } },
+            )
         }
         Text(
             text = titleOf(state),
@@ -193,6 +202,8 @@ private fun PaymentHeader(
 internal fun PersonFaceBadge(
     person: PaymentPerson?,
     size: Dp = faceSize,
+    // Why: Registrar pagamento's faces open the person's profile (beta feedback 18); "Quem pagou a quem?"'s are its rows'.
+    onClick: (() -> Unit)? = null,
 ) {
     // Why: a blank face for someone no longer in the group, as Saldos draws them.
     if (person == null) {
@@ -203,11 +214,17 @@ internal fun PersonFaceBadge(
         )
         return
     }
+    // Why: TalkBack says "Você" for this device's user, as the sentence under the faces does.
+    val name = if (person.isMe) stringResource(DesignR.string.designsystem_you) else person.name
     AvatarBadge(
         initial = person.initials,
         color = person.avatarColor,
         photoUrl = person.photoUrl,
         size = size,
+        modifier = Modifier
+            .clip(CircleShape)
+            .semantics { if (onClick != null) contentDescription = name }
+            .opensProfile(onClick),
     )
 }
 

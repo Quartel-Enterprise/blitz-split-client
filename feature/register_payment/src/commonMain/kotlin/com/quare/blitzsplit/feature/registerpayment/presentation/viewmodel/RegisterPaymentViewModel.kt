@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
@@ -206,6 +207,8 @@ class RegisterPaymentViewModel(
                 refreshPixCode()
             }
 
+            is RegisterPaymentUiEvent.OnPersonClicked -> openPerson(event.personId)
+
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
         }
@@ -313,6 +316,7 @@ class RegisterPaymentViewModel(
             avatarColor = person.face?.color ?: AvatarColor.default,
             photoUrl = person.face?.photoUrl,
             isMe = false,
+            personKey = person.key,
         ).takeIf { person.name != null }
         val owesMe = person.netMinor > 0
         return PaymentTarget(
@@ -484,7 +488,16 @@ class RegisterPaymentViewModel(
         avatarColor = member.avatarColor,
         photoUrl = member.photoUrl,
         isMe = member.isMe,
+        personKey = PeopleBalances.keyOf(member),
     )
+
+    // Why: the form stays under the profile, so back finds it; a payment being saved finishes first.
+    private fun openPerson(personId: String) {
+        val state = uiState.value
+        if (state.isSaving || !isOnTop()) return
+        val person = listOfNotNull(state.from, state.to).firstOrNull { it.id == personId } ?: return
+        navigator.openPersonProfile(person.personKey, person.isMe)
+    }
 
     // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private fun toAmountText(
