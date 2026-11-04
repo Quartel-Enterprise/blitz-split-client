@@ -37,6 +37,7 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
+import com.quare.blitzsplit.android.feature.editgroup.SimplifyDebtsInfoScreen
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDialog
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
@@ -272,6 +273,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 DefaultSplitScreen(
                     route = route,
                     isDialog = usesDefaultSplitDialog,
+                )
+            }
+            // Why: "Como funciona" (13.2), full screen over Editar grupo or the group's Saldos at every size.
+            entry<Route.SimplifyDebtsInfo> { route ->
+                SimplifyDebtsInfoScreen(
+                    route = route,
+                    onBack = { appViewModel.navigator.navigateBack() },
                 )
             }
             // Why: the group stays behind the bill wider than a phone, but under a new bill on a tabletop's hinge.

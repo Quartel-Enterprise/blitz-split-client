@@ -24,6 +24,9 @@ enum class ActivityKind(
     MEMBER_REMOVED("member_removed", ActivityType.PEOPLE_AND_GROUPS),
     MEMBER_RELEASED("member_released", ActivityType.PEOPLE_AND_GROUPS),
     MEMBER_RENAMED("member_renamed", ActivityType.PEOPLE_AND_GROUPS),
+
+    // Why: "Ana ligou Simplificar dívidas em Viagem Floripa" (13.7), or desligou, by code ON or OFF.
+    SIMPLIFY_DEBTS_CHANGED("simplify_debts_changed", ActivityType.PEOPLE_AND_GROUPS),
     CHARGE_SENT("charge_sent", ActivityType.CHARGES),
     COMMENT_ADDED("comment_added", ActivityType.COMMENTS),
     ATTACHMENT_ADDED("attachment_added", ActivityType.BILLS, isInFeed = false),

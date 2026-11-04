@@ -524,6 +524,10 @@ class PickGroupViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(

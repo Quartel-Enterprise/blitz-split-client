@@ -205,14 +205,14 @@ class GroupExitController(
         val myDebts = target.debtsOf(meId).sortedBy { it.fromMemberId != meId }
         return GroupExitDialog.LeaveBlocked(
             groupName = target.group.name,
-            debts = myDebts.map { debtRowOf(it, target.group, meId) },
+            debts = myDebts.map { debtRowOf(it, target.group, meId, target.balances) },
             canSettle = myDebts.any { it.fromMemberId == meId },
         )
     }
 
     private fun deleteBlockedOf(target: GroupExitTarget): GroupExitDialog.DeleteBlocked = GroupExitDialog.DeleteBlocked(
         groupName = target.group.name,
-        debts = target.balances.debts.map { debtRowOf(it, target.group, target.meIdOrNull()) },
+        debts = target.balances.debts.map { debtRowOf(it, target.group, target.meIdOrNull(), target.balances) },
     )
 
     private fun GroupExitTarget.debtsOf(meId: String): List<Debt> =

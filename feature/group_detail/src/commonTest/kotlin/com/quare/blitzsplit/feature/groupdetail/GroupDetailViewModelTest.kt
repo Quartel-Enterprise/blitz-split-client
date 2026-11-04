@@ -46,6 +46,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
@@ -2152,6 +2153,10 @@ class GroupDetailViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(
@@ -2440,6 +2445,7 @@ class GroupDetailViewModelTest {
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
+            consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             teachUseCases = CategoryTeachUseCases(

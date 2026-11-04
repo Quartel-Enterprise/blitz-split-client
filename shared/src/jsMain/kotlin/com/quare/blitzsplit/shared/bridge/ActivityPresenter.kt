@@ -10,11 +10,13 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDay
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDeletion
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityEmptyState
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityFilter
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityGroupOption
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityStatus
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityTarget
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
@@ -53,6 +55,28 @@ class JsActivityDeletion(
     val byName: String?,
     val byMe: Boolean,
     val atMillis: Double?,
+)
+
+/*
+ * Why: a line of "Ver mudanças" of "Simplificar dívidas" (13.7b): what someone owed this device's user before and
+ * after, positive when they owe the user; a null name is "Ex-membro".
+ */
+class JsActivityDebtChange(
+    val name: String?,
+    val beforeMinor: Double,
+    val afterMinor: Double,
+)
+
+/*
+ * Why: "7 pagamentos viraram 5. Agora Diego te paga R$ 64,00, e Ana não te deve mais." (13.7), only what changed for
+ * this device's user, the largest first; newPair and gonePair are the largest of those that came and went.
+ */
+class JsActivitySimplification(
+    val paymentsBefore: Int,
+    val paymentsAfter: Int,
+    val myChanges: Array<JsActivityDebtChange>,
+    val newPair: JsActivityDebtChange?,
+    val gonePair: JsActivityDebtChange?,
 )
 
 class JsActivityItem(
@@ -103,6 +127,10 @@ class JsActivityItem(
     val deletion: JsActivityDeletion?,
     // Why: "Ver mudanças" open in the row (one column).
     val isExpanded: Boolean,
+    // Why: "ligou Simplificar dívidas em" rather than "desligou", for "simplify_debts_changed".
+    val isSimplifyTurnedOn: Boolean,
+    // Why: what "Simplificar dívidas" changed (13.7); null for any other kind and while it waits to go up.
+    val simplification: JsActivitySimplification?,
 )
 
 class JsActivityDay(
@@ -461,4 +489,21 @@ private fun toJsActivityItem(
     },
     deletion = item.deletion?.let(::toJsActivityDeletion),
     isExpanded = item.id == expandedItemId,
+    isSimplifyTurnedOn = item.isSimplifyTurnedOn,
+    simplification = item.simplification?.let(::toJsActivitySimplification),
+)
+
+private fun toJsActivitySimplification(simplification: ActivitySimplification): JsActivitySimplification =
+    JsActivitySimplification(
+        paymentsBefore = simplification.paymentsBefore,
+        paymentsAfter = simplification.paymentsAfter,
+        myChanges = simplification.myChanges.map(::toJsActivityDebtChange).toTypedArray(),
+        newPair = simplification.newPair?.let(::toJsActivityDebtChange),
+        gonePair = simplification.gonePair?.let(::toJsActivityDebtChange),
+    )
+
+private fun toJsActivityDebtChange(change: ActivityDebtChange): JsActivityDebtChange = JsActivityDebtChange(
+    name = change.name,
+    beforeMinor = change.beforeMinor.toDouble(),
+    afterMinor = change.afterMinor.toDouble(),
 )

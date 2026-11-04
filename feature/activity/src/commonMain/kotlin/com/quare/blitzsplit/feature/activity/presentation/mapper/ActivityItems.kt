@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.activity.presentation.mapper
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
@@ -10,6 +11,8 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.Debt
+import com.quare.blitzsplit.core.expenses.domain.model.DebtShifts
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -20,8 +23,10 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityActor
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDay
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDeletion
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityTarget
 import kotlinx.datetime.TimeZone
 
@@ -123,6 +128,7 @@ private fun queuedEntryOf(
         target = targetOf(change.kind),
         deletion = if (change.kind == ActivityKind.BILL_DELETED) deletions.ofQueuedBill(change, group) else null,
         targetId = targetId,
+        simplification = null,
     )
     return FeedEntry(item, keysOf(me, from, to))
 }
@@ -174,6 +180,7 @@ private fun eventEntryOf(
         target = targetOf(event.kind),
         deletion = deletions.of(event, group),
         targetId = event.targetId,
+        simplification = simplificationOrNull(event, group),
     )
     val actorKey = actorMember?.let(PeopleBalances::keyOf) ?: event.actorUserId?.let { "user:$it" }
     return FeedEntry(item, keysOf(from, to, subjectMember) + setOfNotNull(actorKey))
@@ -228,7 +235,48 @@ private fun targetOf(kind: ActivityKind): ActivityTarget = when (kind) {
 
     // Why: what is still owed in the group, until Contatos (page 11) opens the person.
     ActivityKind.CHARGE_SENT -> ActivityTarget.BALANCES
+
+    // Why: "Ver saldos do grupo", the pairs it changed.
+    ActivityKind.SIMPLIFY_DEBTS_CHANGED -> ActivityTarget.BALANCES
 }
+
+/*
+ * Why: what changed for this device's user, as the member they are in the group now, named as the group has them or,
+ * once gone, as the event wrote them down.
+ */
+private fun simplificationOrNull(
+    event: ActivityEvent,
+    group: Group?,
+): ActivitySimplification? {
+    if (event.kind != ActivityKind.SIMPLIFY_DEBTS_CHANGED) return null
+    val meId = group?.members?.firstOrNull { it.isMe }?.id
+    val shifts = meId
+        ?.let {
+            DebtShifts.counterpartShiftsOf(
+                before = event.debtsBefore.map(::toDebt),
+                after = event.debtsAfter.map(::toDebt),
+                memberId = it,
+            )
+        }.orEmpty()
+    return ActivitySimplification(
+        paymentsBefore = event.debtsBefore.size,
+        paymentsAfter = event.debtsAfter.size,
+        myChanges = shifts.map { shift ->
+            ActivityDebtChange(
+                name = group?.members?.firstOrNull { it.id == shift.memberId }?.name
+                    ?: event.memberNames[shift.memberId],
+                beforeMinor = shift.beforeMinor,
+                afterMinor = shift.afterMinor,
+            )
+        },
+    )
+}
+
+private fun toDebt(debt: ActivityDebt): Debt = Debt(
+    fromMemberId = debt.fromMemberId,
+    toMemberId = debt.toMemberId,
+    amountMinor = debt.amountMinor,
+)
 
 private fun rowOf(
     change: ActivityChange,

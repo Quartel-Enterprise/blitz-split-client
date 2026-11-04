@@ -33,7 +33,7 @@ internal fun rowOf(
     clock: ActivityClock,
 ): GroupRow {
     val group = item.group
-    val balances = GroupBalances.of(item.expenses, item.settlements)
+    val balances = GroupBalances.of(group, item.expenses, item.settlements)
     val me = group.members.firstOrNull { it.isMe }
     val myBalance = me?.let { balances.balanceOf(it.id) }
     val receives = myBalance?.receivesMinor ?: 0L

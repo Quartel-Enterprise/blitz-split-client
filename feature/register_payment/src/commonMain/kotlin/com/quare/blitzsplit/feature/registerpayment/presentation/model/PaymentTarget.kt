@@ -18,4 +18,8 @@ internal data class PaymentTarget(
     val legs: List<SettlementLeg>,
     // Why: "Por grupo" of a settling up across groups; empty for a pair of one group.
     val groupParts: List<PersonGroupBalance>,
+    val simplifiedNote: SimplifiedPairNote?,
+    // Why: the group's "Simplificar dívidas" and whoever last changed it, by name; null across groups.
+    val simplifiesDebts: Boolean?,
+    val simplifyChangedByName: String?,
 )

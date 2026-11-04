@@ -13,4 +13,11 @@ data class PersonGroupBalance(
     val meMemberId: String,
     // Why: positive when they owe you in this group, negative when you owe them.
     val amountMinor: Long,
+    // Why: "Dívidas simplificadas" on the group's line of "Por grupo" (13.6).
+    val isSimplified: Boolean,
+    /*
+     * Why: whom whoever pays this pair owed by the bills instead, when the simplification made or grew it, by name:
+     * Cobrar explains it (13.6b); empty otherwise, and for someone no longer in the group.
+     */
+    val insteadOfNames: List<String>,
 )

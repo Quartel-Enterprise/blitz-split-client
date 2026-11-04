@@ -11,10 +11,11 @@ import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skele
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
+import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { ActiveFilters, ActivityFilterButton } from './ActivityFilter'
-import { actorName, deletionText, detailLine, fieldLabel, headline, headlineText, openLabel, valueText } from './activityText'
+import { actorName, changeRows, changesRegionLabel, deletionText, detailLine, headline, headlineText, openLabel } from './activityText'
 
 // Início, Grupos, Saldos and Contatos take Atividade's place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>> = {
@@ -254,18 +255,20 @@ function actorProfileLabel(item: JsActivityItem): string {
   return item.actorIsMe ? t('person_openMyProfile') : t('person_openProfile', { name: actorName(item) })
 }
 
-/** "Ver mudanças" under a bill's edit, which opens its before → after in the row, with "Abrir conta". */
+/**
+ * "Ver mudanças" under a bill's edit, which opens its before → after in the row, with "Abrir conta"; under "Simplificar
+ * dívidas" (13.7b), what changed with each person for you, with "Ver saldos do grupo".
+ */
 function InlineChanges({ presenter, item }: { presenter: ActivityPresenter; item: JsActivityItem }) {
   return (
     <div className="flex flex-col gap-1 pr-4 pb-2 pl-15">
       {item.isExpanded && (
-        <div role="region" aria-label={t('activity_changesIn', { subject: item.subject ?? '' })} className="flex flex-col gap-1.5 rounded-lg border bg-background p-3 text-[13px]">
-          {item.changes.map((change) => (
-            <span key={change.field} className="flex flex-wrap gap-x-2">
-              <span className="min-w-20 text-muted-foreground">{fieldLabel(change.field)}</span>
+        <div role="region" aria-label={changesRegionLabel(item)} className="flex flex-col gap-1.5 rounded-lg border bg-background p-3 text-[13px]">
+          {changeRows(item).map((row) => (
+            <span key={row.key} className="flex flex-wrap gap-x-2">
+              <span className="min-w-20 text-muted-foreground">{row.label}</span>
               <span>
-                <s className="text-muted-foreground">{valueText(change.field, change.before)}</s> <span aria-label={t('activity_to')}>→</span>{' '}
-                <span className="font-medium">{valueText(change.field, change.after)}</span>
+                <s className="text-muted-foreground">{row.before}</s> <span aria-label={t('activity_to')}>→</span> <span className="font-medium">{row.after}</span>
               </span>
             </span>
           ))}
@@ -351,6 +354,8 @@ function kindIcon(item: JsActivityItem): ReactNode {
       return <Send />
     case 'comment_added':
       return <MessageSquare />
+    case 'simplify_debts_changed':
+      return <SimplifyIcon />
     default:
       return <Receipt />
   }
@@ -362,6 +367,8 @@ function badgeTone(item: JsActivityItem): { className: string; style?: React.CSS
   if (item.type === 'payments') return { className: 'avatar', style: avatarStyle('green') }
   if (item.type === 'bills' || item.type === 'charges') return { className: 'avatar', style: avatarStyle('blue') }
   if (item.type === 'comments') return { className: 'bg-primary text-primary-foreground' }
+  // Why: "Simplificar dívidas" (13.7) takes the boards' secondary container among the people and groups.
+  if (item.kind === 'simplify_debts_changed') return { className: 'avatar', style: avatarStyle('blue') }
   return { className: 'bg-muted text-foreground' }
 }
 
@@ -474,30 +481,31 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
           </Button>
         )}
       </header>
-      {item.changes.length > 0 ? (
+      {/* Why: "Simplificar dívidas" says its counts over the table of what changed with each person (13.7). */}
+      {(item.changes.length === 0 || item.simplification) && !item.deletion && detailLine(item) && <p className="text-sm leading-relaxed">{detailLine(item)}</p>}
+      {changeRows(item).length > 0 && (
         <div className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{t('activity_whatChanged')}</h3>
           <table className="w-full overflow-hidden rounded-lg border text-sm">
+            <caption className="sr-only">{changesRegionLabel(item)}</caption>
             <thead>
               <tr className="h-9 border-b bg-muted text-left text-xs text-muted-foreground">
-                <th scope="col" className="w-32 px-3 font-medium">{t('activity_columnField')}</th>
+                <th scope="col" className="w-32 px-3 font-medium">{t(item.simplification ? 'activity_columnPerson' : 'activity_columnField')}</th>
                 <th scope="col" className="px-3 font-medium">{t('activity_columnBefore')}</th>
                 <th scope="col" className="px-3 font-medium">{t('activity_columnAfter')}</th>
               </tr>
             </thead>
             <tbody>
-              {item.changes.map((change) => (
-                <tr key={change.field} className="h-10 border-b last:border-b-0">
-                  <th scope="row" className="px-3 text-left font-normal text-muted-foreground">{fieldLabel(change.field)}</th>
-                  <td className="px-3 text-muted-foreground"><s>{valueText(change.field, change.before)}</s></td>
-                  <td className="px-3 font-medium">{valueText(change.field, change.after)}</td>
+              {changeRows(item).map((row) => (
+                <tr key={row.key} className="h-10 border-b last:border-b-0">
+                  <th scope="row" className="px-3 text-left font-normal text-muted-foreground">{row.label}</th>
+                  <td className="px-3 text-muted-foreground"><s>{row.before}</s></td>
+                  <td className="px-3 font-medium">{row.after}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      ) : (
-        !item.deletion && detailLine(item) && <p className="text-sm leading-relaxed">{detailLine(item)}</p>
       )}
       {item.deletion && (
         <div role="note" className="flex gap-2.5 rounded-lg border bg-muted/40 p-3 text-[13px] leading-relaxed">

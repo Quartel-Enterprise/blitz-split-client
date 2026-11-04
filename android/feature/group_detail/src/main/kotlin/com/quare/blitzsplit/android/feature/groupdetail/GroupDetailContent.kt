@@ -259,6 +259,19 @@ private fun GroupDetailContentBalancesPreview() {
     }
 }
 
+@DevicePreviews
+@Composable
+private fun GroupDetailContentSimplifiedPreview() {
+    BlitzSplitTheme {
+        GroupDetailContent(
+            state = createPreviewSimplifiedBalancesState(),
+            snackbarHostState = SnackbarHostState(),
+            membersTab = previewMembersTab,
+            onEvent = {},
+        )
+    }
+}
+
 @Preview(
     name = "Tabletop",
     device = "spec:width=841dp,height=673dp,orientation=landscape",
@@ -268,7 +281,7 @@ private fun GroupDetailContentBalancesTabletopPreview() {
     CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
         BlitzSplitTheme {
             GroupDetailContent(
-                state = createPreviewBalancesState(),
+                state = createPreviewSimplifiedBalancesState(),
                 snackbarHostState = SnackbarHostState(),
                 membersTab = previewMembersTab,
                 onEvent = {},

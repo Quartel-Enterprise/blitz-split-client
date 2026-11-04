@@ -98,7 +98,22 @@ interface GroupDao {
                 inviteCode = it,
             )
         }
+        updateSimplifyDebtsFromRemote(
+            id = entity.id,
+            simplifyDebts = entity.simplifyDebts,
+            remoteAt = entity.simplifyDebtsAt,
+            by = entity.simplifyDebtsBy,
+            ownerUserId = requireNotNull(entity.ownerUserId),
+        )
+        keepSimplifyDebtsPending(entity.id)
     }
+
+    /*
+     * Why: a newer row from the server leaves the group synced, but a switch of "Simplificar dívidas" changed here
+     * after the server's still has to go up.
+     */
+    @Query("UPDATE split_group SET pendingSync = 1 WHERE id = :id AND simplifyDebtsPending = 1 AND pendingSync = 0")
+    suspend fun keepSimplifyDebtsPending(id: String)
 
     @Transaction
     suspend fun applyRemoteMember(entity: GroupMemberEntity) {
@@ -193,6 +208,64 @@ interface GroupDao {
         updatedAt: Long,
     )
 
+    /*
+     * Why: "Simplificar dívidas" (13.1) applies at once, apart from Salvar, and saves only itself. It keeps its own
+     * stamp, after the one it replaces, and leaves the row's updatedAt alone, so pushing it never sends this device's
+     * copy of the other fields over a newer one; the change it carries goes up with it.
+     */
+    @Query(
+        "UPDATE split_group SET simplifyDebts = :simplifyDebts, simplifyDebtsChange = :change, " +
+            "simplifyDebtsAt = MAX(:changedAt, simplifyDebtsAt + 1), simplifyDebtsBy = :by, " +
+            "simplifyDebtsPending = 1, simplifyDebtsConflictBy = NULL, pendingSync = 1 WHERE id = :id",
+    )
+    suspend fun updateSimplifyDebts(
+        id: String,
+        simplifyDebts: Boolean,
+        change: String?,
+        changedAt: Long,
+        by: String?,
+    )
+
+    // Why: the server took this device's change, which no longer waits; a later one made meanwhile still does.
+    @Query(
+        "UPDATE split_group SET simplifyDebtsPending = 0, simplifyDebtsChange = NULL " +
+            "WHERE id = :id AND simplifyDebtsAt = :syncedAt AND simplifyDebtsPending = 1",
+    )
+    suspend fun markSimplifyDebtsSynced(
+        id: String,
+        syncedAt: Long,
+    )
+
+    /*
+     * Why: its own Last-Write-Wins, by its own stamp. The same stamp is this device's change coming back, which stops
+     * waiting. A later one from someone else, while this device's still waited for another value, is the conflict of
+     * 13.1e, kept until a screen says so. Nothing is written when nothing differs, so a sync doesn't wake every
+     * observer of the groups.
+     */
+    @Query(
+        "UPDATE split_group SET " +
+            "simplifyDebtsConflictBy = CASE WHEN simplifyDebtsPending = 1 AND simplifyDebts != :simplifyDebts " +
+            "AND simplifyDebtsAt < :remoteAt THEN :by ELSE simplifyDebtsConflictBy END, " +
+            "simplifyDebts = :simplifyDebts, simplifyDebtsAt = :remoteAt, simplifyDebtsBy = :by, " +
+            "simplifyDebtsPending = 0, simplifyDebtsChange = NULL " +
+            "WHERE id = :id AND ownerUserId = :ownerUserId AND simplifyDebtsAt <= :remoteAt AND (" +
+            "simplifyDebts != :simplifyDebts OR simplifyDebtsAt != :remoteAt OR simplifyDebtsBy IS NOT :by " +
+            "OR simplifyDebtsPending = 1)",
+    )
+    suspend fun updateSimplifyDebtsFromRemote(
+        id: String,
+        simplifyDebts: Boolean,
+        remoteAt: Long,
+        by: String?,
+        ownerUserId: String,
+    )
+
+    // Why: "Ana desligou depois de você" shows once.
+    @Query(
+        "UPDATE split_group SET simplifyDebtsConflictBy = NULL WHERE id = :id AND simplifyDebtsConflictBy IS NOT NULL",
+    )
+    suspend fun clearSimplifyDebtsConflict(id: String)
+
     @Query("SELECT splitIncomes FROM split_group WHERE id = :id")
     suspend fun getSplitIncomes(id: String): String?
 
@@ -230,11 +303,18 @@ interface GroupDao {
         jpeg: ByteArray,
     )
 
-    // Why: a change made while the push was in flight keeps the group pending.
-    @Query("UPDATE split_group SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
+    /*
+     * Why: a change made while the push was in flight keeps the group pending, "Simplificar dívidas" too, which moves
+     * its own stamp and not updatedAt.
+     */
+    @Query(
+        "UPDATE split_group SET pendingSync = 0 " +
+            "WHERE id = :id AND updatedAt = :syncedUpdatedAt AND simplifyDebtsAt = :syncedSimplifyDebtsAt",
+    )
     suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,
+        syncedSimplifyDebtsAt: Long,
     )
 
     /*

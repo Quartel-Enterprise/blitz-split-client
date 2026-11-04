@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
@@ -50,6 +51,20 @@ interface GroupRepository {
         incomes: Map<String, Long>,
         updatedAt: Long,
     ): Result<Unit>
+
+    /*
+     * Why: "Simplificar dívidas" (13.1), by any member, offline too, apart from the group's other fields; change is
+     * what it moves, for Atividade and its push.
+     */
+    suspend fun updateSimplifiesDebts(
+        groupId: String,
+        simplifiesDebts: Boolean,
+        change: SimplifyDebtsChange,
+        changedAt: Long,
+    ): Result<Unit>
+
+    // Why: "Ana desligou depois de você" (13.1e) was shown.
+    suspend fun consumeSimplifyDebtsConflict(groupId: String): Result<Unit>
 
     // Why: the incomes this device typed for "Pela renda", empty when it typed none.
     suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>>

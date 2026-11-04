@@ -2404,6 +2404,10 @@ class HomeViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = updatedAt,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: Pierre is this device's user, in a group with Ana and Bruno.

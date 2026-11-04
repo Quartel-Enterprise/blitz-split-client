@@ -254,4 +254,9 @@
     <string name="designsystem_category_save">Salvar</string>
     <string name="designsystem_category_save_error">Não deu para salvar a categoria. Tente de novo.</string>
     <string name="designsystem_category_delete_error">Não deu para apagar a categoria. Tente de novo.</string>
+    <string name="designsystem_simplified_debts">Dívidas simplificadas</string>
+    <string name="designsystem_simplify_conflict_off">%1$s desligou depois de você. Vale a última mudança: Simplificar dívidas está desligado.</string>
+    <string name="designsystem_simplify_conflict_on">%1$s ligou depois de você. Vale a última mudança: Simplificar dívidas está ligado.</string>
+    <string name="designsystem_simplify_someone">Alguém</string>
+    <string name="designsystem_simplify_see_activity">Ver na Atividade</string>
 </resources>

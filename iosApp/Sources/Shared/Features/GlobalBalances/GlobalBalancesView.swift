@@ -696,7 +696,8 @@ enum GlobalBalancesCopy {
     }
 
     /// Request's message in the device's language, from the debt, the groups and, if wanted, the Pix key; a guest's
-    /// also says what went into the bill. Once edited, the text typed.
+    /// also says what went into the bill, and a group that simplifies its debts why they pay me. Once edited, the text
+    /// typed.
     static func message(_ charge: ChargeDraft, pixKey: PaymentKey?) -> String {
         if let edited = charge.editedMessage { return edited }
         let name = PaymentCopy.name(charge.name)
@@ -715,8 +716,17 @@ enum GlobalBalancesCopy {
         } else {
             body = String(localized: "Hi \(name)! You owe me \(amount) from \(groups): your part of \(bills).")
         }
-        guard charge.includesPixKey, let pixKey else { return body }
-        return String(localized: "\(body) Pix: \(pixKey.value)")
+        // Why they pay me and not whom the bills say, in each group that simplifies its debts (13.6b)
+        let reroutes = charge.reroutes.map { reroute in
+            let instead = ExpenseFormat.names(reroute.insteadOfNames)
+            return String(
+                localized: "\(reroute.groupName) simplified its debts, so instead of paying \(instead) you pay me directly; your total didn't change.",
+                comment: "Request's message: %1$@ is the group, %2$@ whom they would pay by the bills",
+            )
+        }
+        let explained = ([body] + reroutes).joined(separator: " ")
+        guard charge.includesPixKey, let pixKey else { return explained }
+        return String(localized: "\(explained) Pix: \(pixKey.value)")
     }
 
     /// "Email · pierre@email.com".

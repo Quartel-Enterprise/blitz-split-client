@@ -29,6 +29,8 @@ data class ChargeDraft(
     val pixKeyChoice: Boolean?,
     // Why: null until the message is edited; from then on the UIs show and send this text.
     val editedMessage: String?,
+    // Why: the groups where they pay you only because "Simplificar dívidas" is on, which the message explains.
+    val reroutes: List<ChargeReroute>,
 ) {
     // Why: "Incluir minha chave Pix", on by default while the profile has a Pix key.
     val includesPixKey: Boolean

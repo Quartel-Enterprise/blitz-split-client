@@ -46,4 +46,28 @@ data class GroupEntity(
     // Why: a photo picked here and not uploaded yet, already a 512x512 JPEG, shown in place of photoUrl until then.
     @ColumnInfo(defaultValue = "NULL")
     val pendingPhoto: ByteArray?,
+    // Why: "Simplificar dívidas" (13.1), off in every group until someone turns it on.
+    @ColumnInfo(defaultValue = "0")
+    val simplifyDebts: Boolean,
+    /*
+     * Why: when simplifyDebts last changed, in epoch millis: its own Last-Write-Wins, so an edit of the group's other
+     * fields never undoes it, nor it them. 0 while nobody ever changed it.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val simplifyDebtsAt: Long,
+    // Why: the account that last changed it, as the server says, for "Ana desligou depois de você" (13.1e).
+    @ColumnInfo(defaultValue = "NULL")
+    val simplifyDebtsBy: String?,
+    /*
+     * Why: the pairs before and after this device changed it, as the JSON the server copies into Atividade's event
+     * and its push; only while that change waits to go up.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val simplifyDebtsChange: String?,
+    // Why: changed here and the server hasn't taken it yet: "Ligado neste aparelho · aguardando envio" (13.1d).
+    @ColumnInfo(defaultValue = "0")
+    val simplifyDebtsPending: Boolean,
+    // Why: the account whose later change took the place of this device's, until "Ana desligou depois de você" shows.
+    @ColumnInfo(defaultValue = "NULL")
+    val simplifyDebtsConflictBy: String?,
 )

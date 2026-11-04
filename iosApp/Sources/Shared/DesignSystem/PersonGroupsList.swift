@@ -1,8 +1,8 @@
 import Shared
 import SwiftUI
 
-/// "By group": what each group adds to the net with someone, then the net, "Net, already offset" over several groups
-/// and "Total" for one. Balances opens it in a row, and Record payment shows it when settling up across groups.
+/// "By group": what each group adds to the net with someone ("Simplified debts" on a group that simplifies them), then
+/// the net, "Net, already offset" over several groups and "Total" for one. Balances opens it in a row, and Record payment shows it when settling up across groups.
 /// Where onGroupTap is given, a group's badge and name open it.
 struct PersonGroupsList: View {
     let groups: [PersonGroupBalance]
@@ -61,6 +61,11 @@ struct PersonGroupsList: View {
                 Text(direction(part.amountMinor))
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                // The group simplifies its debts, so this pair may be one no bill made (13.6)
+                if part.isSimplified {
+                    SimplifiedDebtsLabel()
+                        .padding(.top, 3)
+                }
             }
             Spacer(minLength: 8)
             Text(verbatim: currency.formatSigned(part.amountMinor))

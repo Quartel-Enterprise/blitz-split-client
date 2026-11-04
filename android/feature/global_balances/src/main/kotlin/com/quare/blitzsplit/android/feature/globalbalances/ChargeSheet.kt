@@ -268,10 +268,15 @@ private fun chargeMessageOf(
 
         else -> stringResource(R.string.global_balances_message_guest, name, amount, from, bills)
     }
+    // Why: a pair "Simplificar dívidas" made reads as a mistake to whoever owed someone else, so it says why (13.6b).
+    val reroutes = charge.reroutes.map { reroute ->
+        stringResource(R.string.global_balances_message_reroute, reroute.groupName, nameListOf(reroute.insteadOfNames))
+    }
+    val explained = (listOf(body) + reroutes).joinToString(" ")
     val composed = if (charge.includesPixKey && pixKey != null) {
-        stringResource(R.string.global_balances_message_pix, body, pixKey.value)
+        stringResource(R.string.global_balances_message_pix, explained, pixKey.value)
     } else {
-        body
+        explained
     }
     return charge.editedMessage ?: composed
 }

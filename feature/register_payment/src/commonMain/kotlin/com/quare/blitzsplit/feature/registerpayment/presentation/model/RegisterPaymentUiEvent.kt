@@ -45,4 +45,7 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
     ) : RegisterPaymentUiEvent
 
     data object OnCloseClicked : RegisterPaymentUiEvent
+
+    // Why: "Já paguei mesmo assim" of 13.5c: the payment is recorded as it was owed and the app redoes the pairs.
+    data object OnPaidAnywayClicked : RegisterPaymentUiEvent
 }

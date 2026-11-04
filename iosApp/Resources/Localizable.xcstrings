@@ -18316,6 +18316,1329 @@
           }
         }
       }
+    },
+    "%lld payments" : {
+      "comment" : "Simplify debts: how many payments settle a group's debts",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payment"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payments"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pagamento"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pagamentos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "simplify.payments.one" : {
+      "comment" : "Simplify debts: the word after a big 1 in the confirmation's counts",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "payment"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pagamento"
+          }
+        }
+      }
+    },
+    "simplify.payments.other" : {
+      "comment" : "Simplify debts: the word after a big count in the confirmation's counts",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "payments"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pagamentos"
+          }
+        }
+      }
+    },
+    "On · %@ instead of %lld" : {
+      "comment" : "Edit group: Simplify debts is on; %1$@ is how many payments now",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligado · %1$@ em vez de %2$lld"
+          }
+        }
+      }
+    },
+    "On · already the fewest payments" : {
+      "comment" : "Edit group: Simplify debts is on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligado · já no mínimo de pagamentos"
+          }
+        }
+      }
+    },
+    "On on this %@ · waiting to upload" : {
+      "comment" : "Edit group: Simplify debts turned on here, not up yet; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligado neste %@ · aguardando envio"
+          }
+        }
+      }
+    },
+    "Off on this %@ · waiting to upload" : {
+      "comment" : "Edit group: Simplify debts turned off here, not up yet; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligado neste %@ · aguardando envio"
+          }
+        }
+      }
+    },
+    "With 2 people it's already a single payment. Available once a third person joins." : {
+      "comment" : "Edit group: why Simplify debts is unavailable",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com 2 pessoas já é um pagamento só. Fica disponível quando entrar a terceira pessoa."
+          }
+        }
+      }
+    },
+    "Combines the group's debts into fewer payments. Nobody pays or receives more." : {
+      "comment" : "Edit group: what Simplify debts does, while off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Junta as dívidas do grupo para dar menos pagamentos. Ninguém paga nem recebe a mais."
+          }
+        }
+      }
+    },
+    "No internet: the suggested payments already changed on this %@. The group sees it once it reconnects." : {
+      "comment" : "Edit group: Simplify debts changed offline; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: os pagamentos sugeridos já mudaram neste %@. O grupo vê quando ele reconectar."
+          }
+        }
+      }
+    },
+    "Anyone in the group can change the name, icon, type and Simplify debts. Activity shows who changed it." : {
+      "comment" : "Edit group: who may change the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa do grupo pode mudar o nome, o ícone, o tipo e Simplificar dívidas. A Atividade mostra quem mudou."
+          }
+        }
+      }
+    },
+    "Simplify debts?" : {
+      "comment" : "Simplify debts: the confirmation's title, turning it on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificar dívidas?"
+          }
+        }
+      }
+    },
+    "Turn off Simplify debts?" : {
+      "comment" : "Simplify debts: the confirmation's title, turning it off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar Simplificar dívidas?"
+          }
+        }
+      }
+    },
+    "%@ stay %@" : {
+      "comment" : "Simplify debts: VoiceOver's counts when the group already has the fewest payments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ continuam %2$@"
+          }
+        }
+      }
+    },
+    "%@ become %@" : {
+      "comment" : "Simplify debts: VoiceOver's counts, how many payments before and after",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ viram %2$@"
+          }
+        }
+      }
+    },
+    "Payments go back to being between whoever split each bill. Totals don't change." : {
+      "comment" : "Simplify debts: what turning it off does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os pagamentos voltam a ser entre quem dividiu cada conta. Os totais não mudam."
+          }
+        }
+      }
+    },
+    "%@ already has the fewest payments. Turn it on anyway and the next bills come in simplified." : {
+      "comment" : "Simplify debts: the confirmation when nothing drops; %@ is the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já está no mínimo. Ligue mesmo assim, e as próximas contas já entram simplificadas."
+          }
+        }
+      }
+    },
+    "Everyone keeps paying or receiving the same total. Only who pays whom changes." : {
+      "comment" : "Simplify debts: what turning it on does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada pessoa continua pagando ou recebendo o mesmo total. Só muda quem paga a quem."
+          }
+        }
+      }
+    },
+    "No longer pay %@." : {
+      "comment" : "Simplify debts: what this device's user stops paying; %@ is amounts and whom",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não paga mais %@."
+          }
+        }
+      }
+    },
+    "No longer pays %@." : {
+      "comment" : "Simplify debts: what someone stops paying; %@ is amounts and whom",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não paga mais %@."
+          }
+        }
+      }
+    },
+    "Pay %@." : {
+      "comment" : "Simplify debts: what this device's user now pays; %@ is amounts and whom",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paga %@."
+          }
+        }
+      }
+    },
+    "Pays %@." : {
+      "comment" : "Simplify debts: what someone now pays; %@ is amounts and whom",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paga %@."
+          }
+        }
+      }
+    },
+    "No longer receive from %@." : {
+      "comment" : "Simplify debts: whom this device's user stops receiving from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não recebe mais de %@."
+          }
+        }
+      }
+    },
+    "No longer receives from %@." : {
+      "comment" : "Simplify debts: whom someone stops receiving from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não recebe mais de %@."
+          }
+        }
+      }
+    },
+    "Receive from %@." : {
+      "comment" : "Simplify debts: whom this device's user now receives from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recebe de %@."
+          }
+        }
+      }
+    },
+    "Receives from %@." : {
+      "comment" : "Simplify debts: whom someone now receives from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recebe de %@."
+          }
+        }
+      }
+    },
+    "Doesn't have the app: let them know with Request." : {
+      "comment" : "Simplify debts: a guest whose payments change",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não tem o app: avise por Cobrar."
+          }
+        }
+      }
+    },
+    "You have %lld payments in the queue. The simplification counts them; if they change, the suggested payments adjust by themselves." : {
+      "comment" : "Simplify debts: several payments recorded here and not up yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem %lld pagamentos na fila. A simplificação conta com eles; se mudarem, os pagamentos sugeridos se ajustam sozinhos."
+          }
+        }
+      }
+    },
+    "%@ paid you %@" : {
+      "comment" : "A queued payment someone made to this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te pagou %2$@"
+          }
+        }
+      }
+    },
+    "you paid %@ to %@" : {
+      "comment" : "A queued payment this device's user made",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você pagou %1$@ a %2$@"
+          }
+        }
+      }
+    },
+    "%@ paid %@ to %@" : {
+      "comment" : "A queued payment between two other members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pagou %2$@ a %3$@"
+          }
+        }
+      }
+    },
+    "You have 1 payment in the queue: %@. The simplification counts it; if it changes, the suggested payments adjust by themselves." : {
+      "comment" : "Simplify debts: one payment recorded here and not up yet; %@ is who paid whom how much",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem 1 pagamento na fila: %@. A simplificação conta com ele; se ele mudar, os pagamentos sugeridos se ajustam sozinhos."
+          }
+        }
+      }
+    },
+    "Everyone sees it in Activity." : {
+      "comment" : "Simplify debts: the confirmation's foot",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo vê na Atividade."
+          }
+        }
+      }
+    },
+    "%lld more people change." : {
+      "comment" : "Turning Simplify debts off",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more person changes."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more people change."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Mais %lld pessoa muda."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Mais %lld pessoas mudam."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%@ Everyone sees it in Activity, and whoever changes gets a notification." : {
+      "comment" : "Simplify debts: the foot turning it off; %@ is how many more people change",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Todo mundo vê na Atividade, e quem muda recebe um aviso."
+          }
+        }
+      }
+    },
+    "Everyone sees it in Activity. You can turn it off anytime." : {
+      "comment" : "Simplify debts: the foot when nothing drops",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo vê na Atividade. Dá para desligar quando quiser."
+          }
+        }
+      }
+    },
+    "Everyone sees it in Activity. Whoever now pays or receives from someone else gets a notification. You can turn it off anytime." : {
+      "comment" : "Simplify debts: the foot turning it on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo vê na Atividade. Quem passa a pagar ou receber de outra pessoa recebe um aviso. Dá para desligar quando quiser."
+          }
+        }
+      }
+    },
+    "Turn off" : {
+      "comment" : "Simplify debts: confirms turning it off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar"
+          }
+        }
+      }
+    },
+    "Turn on anyway" : {
+      "comment" : "Simplify debts: confirms turning it on when nothing drops",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligar mesmo assim"
+          }
+        }
+      }
+    },
+    "Simplify" : {
+      "comment" : "Simplify debts: confirms turning it on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificar"
+          }
+        }
+      }
+    },
+    "%@ turned it on after you. The last change counts: Simplify debts is on." : {
+      "comment" : "Simplify debts: someone changed it after this device; %@ is who",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ligou depois de você. Vale a última mudança: Simplificar dívidas está ligado."
+          }
+        }
+      }
+    },
+    "%@ turned it off after you. The last change counts: Simplify debts is off." : {
+      "comment" : "Simplify debts: someone changed it after this device; %@ is who",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ desligou depois de você. Vale a última mudança: Simplificar dívidas está desligado."
+          }
+        }
+      }
+    },
+    "Already the fewest payments. The next bills come in simplified." : {
+      "comment" : "The group's Balances while Simplify debts is on and saves no payment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já está no mínimo de pagamentos. As próximas contas já entram simplificadas."
+          }
+        }
+      }
+    },
+    "%@ instead of %lld. You may pay or receive from someone you never split a bill with." : {
+      "comment" : "The group's Balances while Simplify debts is on; %1$@ is how many payments now",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ em vez de %2$lld. Você pode pagar ou receber de quem não dividiu conta com você."
+          }
+        }
+      }
+    },
+    "Simplified debt." : {
+      "comment" : "Record payment: a pair Simplify debts made, with nobody to name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dívida simplificada."
+          }
+        }
+      }
+    },
+    "You pay %@ what you owed %@." : {
+      "comment" : "Record payment: a pair Simplify debts made, this device's user paying",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você paga a %1$@ o que devia a %2$@."
+          }
+        }
+      }
+    },
+    "%@ pays %@ what they owed %@." : {
+      "comment" : "Record payment: a pair Simplify debts made; payer, receiver, whom they owed by the bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ paga a %2$@ o que devia a %3$@."
+          }
+        }
+      }
+    },
+    "includes what %@ owed %@." : {
+      "comment" : "Record payment: a pair Simplify debts grew; payer, whom they owed by the bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "inclui o que %1$@ devia a %2$@."
+          }
+        }
+      }
+    },
+    "Simplified debt: %@" : {
+      "comment" : "Record payment: why the pair is a simplified one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dívida simplificada: %@"
+          }
+        }
+      }
+    },
+    "%@ simplified the debts just now. You no longer owe %@ in %@." : {
+      "comment" : "Record payment, 13.5c: who turned Simplify debts on, the receiver, the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplificou as dívidas agora há pouco. Você não deve mais a %2$@ na %3$@."
+          }
+        }
+      }
+    },
+    "%@ turned off Simplify debts just now. You no longer owe %@ in %@." : {
+      "comment" : "Record payment, 13.5c: who turned Simplify debts off, the receiver, the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desligou Simplificar dívidas agora há pouco. Você não deve mais a %2$@ na %3$@."
+          }
+        }
+      }
+    },
+    "%@ to %@" : {
+      "comment" : "Simplify debts: an amount and whom it is paid to",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ a %2$@"
+          }
+        }
+      }
+    },
+    "See in Activity" : {
+      "comment" : "Simplify debts: opens Activity from the conflict notice",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver na Atividade"
+          }
+        }
+      }
+    },
+    "What changes" : {
+      "comment" : "Simplify debts: the confirmation's list of people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que muda"
+          }
+        }
+      }
+    },
+    "%@: %@" : {
+      "comment" : "A bold name and what changes for them",
+      "shouldTranslate" : false
+    },
+    "Simplified debts" : {
+      "comment" : "The group's Balances card and the label on a simplified group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dívidas simplificadas"
+          }
+        }
+      }
+    },
+    "How it works" : {
+      "comment" : "Simplify debts: opens the explanation",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como funciona"
+          }
+        }
+      }
+    },
+    "New pair from simplifying" : {
+      "comment" : "VoiceOver: a pair Simplify debts made",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par novo da simplificação"
+          }
+        }
+      }
+    },
+    "In a group, each bill creates debts between two people. Over time, money goes in circles. Simplifying combines those debts and suggests fewer payments." : {
+      "comment" : "How it works: what Simplify debts is",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Num grupo, cada conta cria dívidas entre duas pessoas. Com o tempo, o dinheiro anda em círculo. Simplificar junta essas dívidas e sugere menos pagamentos."
+          }
+        }
+      }
+    },
+    "What it is" : {
+      "comment" : "How it works: a section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que é"
+          }
+        }
+      }
+    },
+    "Carla owes Elisa %@, and Elisa owes you %@." : {
+      "comment" : "How it works: the example, before",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla deve %1$@ a Elisa, e Elisa deve %2$@ a você."
+          }
+        }
+      }
+    },
+    "Example: 2 payments become 1" : {
+      "comment" : "How it works: VoiceOver's example",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exemplo: 2 pagamentos viram 1"
+          }
+        }
+      }
+    },
+    "Simplified, Carla pays you %@ directly, and Elisa pays nothing." : {
+      "comment" : "How it works: the example, after",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado, Carla paga %@ direto a você, e Elisa não paga nada."
+          }
+        }
+      }
+    },
+    "An example" : {
+      "comment" : "How it works: a section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um exemplo"
+          }
+        }
+      }
+    },
+    "Totals don't change" : {
+      "comment" : "How it works: a fact's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O total não muda"
+          }
+        }
+      }
+    },
+    "Whoever owed %@ in the group still owes %@. Only where the money goes changes." : {
+      "comment" : "How it works: a fact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem devia %1$@ no grupo continua devendo %2$@. Só muda para quem vai o dinheiro."
+          }
+        }
+      }
+    },
+    "You may owe someone you never split a bill with" : {
+      "comment" : "How it works: a fact's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pode dever a quem não dividiu conta com você"
+          }
+        }
+      }
+    },
+    "In the group's Balances, the Simplified debts label tells you when that happens." : {
+      "comment" : "How it works: a fact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em Saldos do grupo, o rótulo Dívidas simplificadas avisa quando isso acontece."
+          }
+        }
+      }
+    },
+    "Anyone can turn it on or off" : {
+      "comment" : "How it works: a fact's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa liga ou desliga"
+          }
+        }
+      }
+    },
+    "In Edit group. Activity shows who changed it, and whoever now pays or receives from someone else gets a notification." : {
+      "comment" : "How it works: a fact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em Editar grupo. A Atividade mostra quem mudou, e quem passa a pagar ou receber de outra pessoa recebe um aviso."
+          }
+        }
+      }
+    },
+    "Turning it off goes back" : {
+      "comment" : "How it works: a fact's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar volta ao que era"
+          }
+        }
+      }
+    },
+    "Payments go back to being between whoever split each bill. No bill or recorded payment changes." : {
+      "comment" : "How it works: a fact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os pagamentos voltam a ser entre quem dividiu cada conta. Nenhuma despesa nem pagamento registrado muda."
+          }
+        }
+      }
+    },
+    "Good to know" : {
+      "comment" : "How it works: a section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bom saber"
+          }
+        }
+      }
+    },
+    "Simplify debts" : {
+      "comment" : "Edit group's switch and the title of How it works",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificar dívidas"
+          }
+        }
+      }
+    },
+    "Simplified · 1 payment" : {
+      "comment" : "How it works: the example's caption, after",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado · 1 pagamento"
+          }
+        }
+      }
+    },
+    "Before · 2 payments" : {
+      "comment" : "How it works: the example's caption, before",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antes · 2 pagamentos"
+          }
+        }
+      }
+    },
+    "Payments" : {
+      "comment" : "Edit group: the section of Simplify debts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamentos"
+          }
+        }
+      }
+    },
+    "With simplified debts, the app suggests the fewest payments. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer)." : {
+      "comment" : "The group's Balances, under the pairs, while Simplify debts is on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com as dívidas simplificadas, o app sugere o menor número de pagamentos. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência)."
+          }
+        }
+      }
+    },
+    "%@ · simplified debt" : {
+      "comment" : "Record payment: the debt of a simplified pair",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · dívida simplificada"
+          }
+        }
+      }
+    },
+    "If you already sent the money, mark it as paid anyway: the app redoes the math." : {
+      "comment" : "Record payment, 13.5c: what to do if the money already went",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se já mandou o Pix, marque como pago mesmo assim: o app refaz a conta."
+          }
+        }
+      }
+    },
+    "%@ · what you owed" : {
+      "comment" : "13.5c: where the old debt came from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · era o que você devia"
+          }
+        }
+      }
+    },
+    "was %@" : {
+      "comment" : "13.5c: the amount owed before, struck through",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "era %@"
+          }
+        }
+      }
+    },
+    "I paid anyway" : {
+      "comment" : "13.5c: records the payment as it was owed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já paguei mesmo assim"
+          }
+        }
+      }
+    },
+    "%@ simplified its debts, so instead of paying %@ you pay me directly; your total didn't change." : {
+      "comment" : "Request's message: %1$@ is the group, %2$@ whom they would pay by the bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A %1$@ simplificou as dívidas, então em vez de pagar %2$@ você paga direto para mim; o seu total não mudou."
+          }
+        }
+      }
+    },
+    "%@ turned on Simplify debts in %@" : {
+      "comment" : "Activity: someone turned on Simplify debts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ligou Simplificar dívidas em %2$@"
+          }
+        }
+      }
+    },
+    "%@ turned off Simplify debts in %@" : {
+      "comment" : "Activity: someone turned off Simplify debts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desligou Simplificar dívidas em %2$@"
+          }
+        }
+      }
+    },
+    "Now %@ pays you %@" : {
+      "comment" : "Activity: a pair Simplify debts made",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agora %1$@ te paga %2$@"
+          }
+        }
+      }
+    },
+    "Now you pay %@ %@" : {
+      "comment" : "Activity: a pair Simplify debts made; whom, how much",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agora você paga %2$@ a %1$@"
+          }
+        }
+      }
+    },
+    "%@ no longer owes you" : {
+      "comment" : "Activity: a pair Simplify debts took away",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não te deve mais"
+          }
+        }
+      }
+    },
+    "you no longer owe %@" : {
+      "comment" : "Activity: a pair Simplify debts took away",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você não deve mais a %@"
+          }
+        }
+      }
+    },
+    "Now %@" : {
+      "comment" : "Activity: only a pair that went, after the counts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agora %@"
+          }
+        }
+      }
+    },
+    "%@, and %@" : {
+      "comment" : "Activity: a new pair and one that went",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, e %2$@"
+          }
+        }
+      }
+    },
+    "owed you %@" : {
+      "comment" : "Activity: what someone owed this device's user before",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "te devia %@"
+          }
+        }
+      }
+    },
+    "owes you %@" : {
+      "comment" : "Activity: what someone owes this device's user now",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "te deve %@"
+          }
+        }
+      }
+    },
+    "you owed %@" : {
+      "comment" : "Activity: what this device's user owed someone before",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você devia %@"
+          }
+        }
+      }
+    },
+    "you owe %@" : {
+      "comment" : "Activity: what this device's user owes someone now",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você deve %@"
+          }
+        }
+      }
+    },
+    "didn't owe you" : {
+      "comment" : "Activity: nobody owed anything before",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "não te devia"
+          }
+        }
+      }
+    },
+    "owes nothing now" : {
+      "comment" : "Activity: nobody owes anything now",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "não deve mais"
+          }
+        }
+      }
+    },
+    "Person" : {
+      "comment" : "The Mac's table of what Simplify debts changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pessoa"
+          }
+        }
+      }
+    },
+    "push.debts_simplified_to_you" : {
+      "comment" : "Push notification: someone turned on Simplify debts and someone now pays you. 1: who, 2: the payer, 3: the amount",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplified the debts. Now %2$@ pays you %3$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplificou as dívidas. Agora %2$@ te paga %3$@."
+          }
+        }
+      }
+    },
+    "push.debts_simplified_from_you" : {
+      "comment" : "Push notification: someone turned on Simplify debts and you now pay someone. 1: who, 2: the receiver, 3: the amount",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplified the debts. Now you pay %2$@ %3$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplificou as dívidas. Agora você paga %3$@ a %2$@."
+          }
+        }
+      }
+    },
+    "push.debts_simplified_other" : {
+      "comment" : "Push notification: someone turned on Simplify debts. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplified the debts. See how it is for you."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ simplificou as dívidas. Veja como ficou para você."
+          }
+        }
+      }
+    },
+    "push.debts_unsimplified_to_you" : {
+      "comment" : "Push notification: someone turned off Simplify debts and someone now pays you. 1: who, 2: the payer, 3: the amount",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ turned off Simplify debts. Now %2$@ pays you %3$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desligou Simplificar dívidas. Agora %2$@ te paga %3$@."
+          }
+        }
+      }
+    },
+    "push.debts_unsimplified_from_you" : {
+      "comment" : "Push notification: someone turned off Simplify debts and you now pay someone. 1: who, 2: the receiver, 3: the amount",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ turned off Simplify debts. Now you pay %2$@ %3$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desligou Simplificar dívidas. Agora você paga %3$@ a %2$@."
+          }
+        }
+      }
+    },
+    "push.debts_unsimplified_other" : {
+      "comment" : "Push notification: someone turned off Simplify debts. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ turned off Simplify debts. See how it is for you."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desligou Simplificar dívidas. Veja como ficou para você."
+          }
+        }
+      }
+    },
+    "%lld payments became %lld." : {
+      "comment" : "Activity: how many payments before Simplify debts changed, and after; the verb agrees with the first",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$#@before@ %2$lld."
+          },
+          "substitutions" : {
+            "before" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg payment became"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg payments became"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$#@before@ %2$lld."
+          },
+          "substitutions" : {
+            "before" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg pagamento virou"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg pagamentos viraram"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

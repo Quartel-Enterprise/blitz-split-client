@@ -52,6 +52,7 @@ import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.CurrencyAmount
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
@@ -889,6 +890,48 @@ class GlobalBalancesViewModelTest {
             assertEquals(true, charge?.includesPixKey)
             assertEquals(true, charge?.canTogglePixKey)
             assertEquals(pixKey, viewModel.uiState.value.pixKey)
+        }
+
+    @Test
+    fun `GIVEN a group with its debts simplified WHEN tapping Cobrar THEN says whom they pay you instead of`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(simplifiedTrip(simplifies = true)),
+                bills = simplifiedTripBills,
+            )
+            val diego = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+                .single { it.name == "Diego" }
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(diego.id))
+
+            // Then
+            val charge = viewModel.uiState.value.charge
+            assertEquals(6_400L, charge?.amountMinor)
+            assertEquals(listOf(ChargeReroute("Viagem", listOf("Bruno"))), charge?.reroutes)
+            assertEquals(listOf(true), diego.groups.map { it.isSimplified })
+        }
+
+    @Test
+    fun `GIVEN the same debts not simplified WHEN looking at the people THEN Diego owes nobody here`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(simplifiedTrip(simplifies = false)),
+                bills = simplifiedTripBills,
+            )
+
+            // When
+            val people = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+
+            // Then
+            assertEquals(listOf("Bruno"), people.map { it.name })
+            assertEquals(listOf(false), people.single().groups.map { it.isSimplified })
         }
 
     @Test
@@ -1832,6 +1875,10 @@ class GlobalBalancesViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: a bill only one member paid, all of it on another, so the second owes the first that much.
@@ -1905,9 +1952,26 @@ class GlobalBalancesViewModelTest {
         isPending = false,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = emptyList(),
+        debtsAfter = emptyList(),
+        memberNames = emptyMap(),
     )
 
     private val route = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+
+    private val simplifiedTripBills = listOf(
+        owes(TRIP, DIEGO_TRIP, BRUNO_TRIP, 6_400L, id = "bill-diego"),
+        owes(TRIP, BRUNO_TRIP, ME_TRIP, 6_400L, id = "bill-bruno"),
+    )
+
+    // Why: Diego owes Bruno and Bruno owes you the same, which simplified is Diego paying you.
+    private fun simplifiedTrip(simplifies: Boolean): Group = group(
+        TRIP,
+        "Viagem",
+        me(ME_TRIP),
+        joined(BRUNO_TRIP, "Bruno", "bruno"),
+        joined(DIEGO_TRIP, "Diego", "diego"),
+    ).copy(simplifiesDebts = simplifies)
 
     private fun TestScope.prepareScenario(
         filter: BalancesFilter = BalancesFilter.ALL,
@@ -1971,6 +2035,10 @@ class GlobalBalancesViewModelTest {
     }
 
     private companion object {
+        const val TRIP = "trip"
+        const val ME_TRIP = "me-trip"
+        const val BRUNO_TRIP = "bruno-trip"
+        const val DIEGO_TRIP = "diego-trip"
         const val FLORIPA = "floripa"
         const val APE = "ape"
         const val CHURRASCO = "churrasco"

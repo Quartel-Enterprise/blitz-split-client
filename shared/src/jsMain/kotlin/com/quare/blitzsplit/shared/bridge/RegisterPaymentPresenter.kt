@@ -11,6 +11,8 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPe
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifiedPairNote
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
@@ -33,6 +35,26 @@ class JsReceiverKey(
     val type: String,
     val value: String,
     val text: String,
+)
+
+/*
+ * Why: "Dívida simplificada: Diego paga a você o que devia a Bruno." for a pair no bill made (isNewPair), "…: inclui o
+ * que Ana devia a você." for one that grew (13.5); insteadOf is whom the payer owed by the bills.
+ */
+class JsSimplifiedPairNote(
+    val isNewPair: Boolean,
+    val insteadOf: Array<JsSimplifyName>,
+)
+
+/*
+ * Why: 13.5c, in place of the form or "Pagar Ana": someone turned "Simplificar dívidas" the other way and the pair owes
+ * nothing anymore. A null name is "Alguém"; previousDebtMinor is what "Já paguei mesmo assim" records.
+ */
+class JsSimplifyChange(
+    val changedByName: String?,
+    val simplifiesDebts: Boolean,
+    val groupName: String,
+    val previousDebtMinor: Double,
 )
 
 // Why: amounts in the currency's minor unit and instants in epoch millis, as numbers JavaScript reads exactly.
@@ -81,6 +103,9 @@ class JsRegisterPaymentState(
     val pixQrSize: Int,
     val pixQrModules: Array<Boolean>,
     val canMarkAsPaid: Boolean,
+    val simplifiedNote: JsSimplifiedPairNote?,
+    val simplifyChange: JsSimplifyChange?,
+    val canPayAnyway: Boolean,
 )
 
 class RegisterPaymentPresenter(
@@ -137,6 +162,9 @@ class RegisterPaymentPresenter(
                     .orEmpty()
                     .toTypedArray(),
                 canMarkAsPaid = state.canMarkAsPaid,
+                simplifiedNote = state.simplifiedNote?.let(::toJsSimplifiedPairNote),
+                simplifyChange = state.simplifyChange?.let(::toJsSimplifyChange),
+                canPayAnyway = state.canPayAnyway,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -209,6 +237,11 @@ class RegisterPaymentPresenter(
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
     }
 
+    // Why: "Já paguei mesmo assim" of 13.5c.
+    fun payAnyway() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAnywayClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }
@@ -228,4 +261,16 @@ private fun toJsReceiverKey(key: ReceiverKey): JsReceiverKey = JsReceiverKey(
     type = key.type.name,
     value = key.value,
     text = key.text,
+)
+
+private fun toJsSimplifiedPairNote(note: SimplifiedPairNote): JsSimplifiedPairNote = JsSimplifiedPairNote(
+    isNewPair = note.isNewPair,
+    insteadOf = note.insteadOf.map { JsSimplifyName(it.name, it.isMe) }.toTypedArray(),
+)
+
+private fun toJsSimplifyChange(notice: SimplifyChangedNotice): JsSimplifyChange = JsSimplifyChange(
+    changedByName = notice.changedByName,
+    simplifiesDebts = notice.simplifiesDebts,
+    groupName = notice.groupName,
+    previousDebtMinor = notice.previousDebtMinor.toDouble(),
 )

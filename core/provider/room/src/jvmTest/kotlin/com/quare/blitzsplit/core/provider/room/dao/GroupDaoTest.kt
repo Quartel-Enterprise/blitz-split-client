@@ -14,6 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 // Why: the invite code and the member removal follow rules in the SQL itself, so it runs against SQLite rather than a fake.
@@ -915,6 +916,191 @@ class GroupDaoTest {
             assertEquals(INCOMES_JSON, group.splitIncomes)
         }
 
+    @Test
+    fun `GIVEN a group WHEN turning Simplificar dividas on THEN only the switch changes and waits`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(simplifyDebtsAt = 7L))
+
+        // When
+        dao.updateSimplifyDebts(
+            id = "group-1",
+            simplifyDebts = true,
+            change = CHANGE_JSON,
+            changedAt = 3L,
+            by = "user-1",
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertTrue(group.simplifyDebts)
+        assertEquals(8L, group.simplifyDebtsAt)
+        assertEquals("user-1", group.simplifyDebtsBy)
+        assertEquals(CHANGE_JSON, group.simplifyDebtsChange)
+        assertTrue(group.simplifyDebtsPending)
+        assertTrue(group.pendingSync)
+        assertEquals(5L, group.updatedAt)
+    }
+
+    @Test
+    fun `GIVEN the switch turned on here WHEN an older server row comes THEN keeps it waiting`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L))
+        dao.updateSimplifyDebts(
+            "group-1",
+            true,
+            CHANGE_JSON,
+            changedAt = 20L,
+            by = "user-1",
+        )
+
+        // When
+        dao.applyRemoteGroup(
+            entity(updatedAt = 9L).copy(
+                name = "Floripa",
+                simplifyDebtsAt = 10L,
+            ),
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertEquals("Floripa", group.name)
+        assertTrue(group.simplifyDebts)
+        assertTrue(group.simplifyDebtsPending)
+        assertTrue(group.pendingSync)
+        assertNull(group.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN the switch turned on here WHEN its own change comes back THEN it no longer waits`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L))
+        dao.updateSimplifyDebts(
+            "group-1",
+            true,
+            CHANGE_JSON,
+            changedAt = 20L,
+            by = "user-1",
+        )
+
+        // When
+        dao.applyRemoteGroup(
+            entity(updatedAt = 5L).copy(
+                simplifyDebts = true,
+                simplifyDebtsAt = 20L,
+                simplifyDebtsBy = "user-1",
+            ),
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertTrue(group.simplifyDebts)
+        assertFalse(group.simplifyDebtsPending)
+        assertNull(group.simplifyDebtsChange)
+        assertNull(group.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN the switch turned on here WHEN someone turns it off later THEN theirs wins and says so`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L))
+        dao.updateSimplifyDebts(
+            "group-1",
+            true,
+            CHANGE_JSON,
+            changedAt = 20L,
+            by = "user-1",
+        )
+
+        // When
+        dao.applyRemoteGroup(
+            entity(updatedAt = 5L).copy(
+                simplifyDebts = false,
+                simplifyDebtsAt = 30L,
+                simplifyDebtsBy = "ana",
+            ),
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertFalse(group.simplifyDebts)
+        assertFalse(group.simplifyDebtsPending)
+        assertEquals("ana", group.simplifyDebtsConflictBy)
+        assertEquals(30L, group.simplifyDebtsAt)
+    }
+
+    @Test
+    fun `GIVEN nothing changed here WHEN someone turns the switch on THEN takes it with no conflict`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L))
+
+        // When
+        dao.applyRemoteGroup(
+            entity(updatedAt = 5L).copy(
+                simplifyDebts = true,
+                simplifyDebtsAt = 30L,
+                simplifyDebtsBy = "ana",
+            ),
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertTrue(group.simplifyDebts)
+        assertEquals("ana", group.simplifyDebtsBy)
+        assertNull(group.simplifyDebtsConflictBy)
+    }
+
+    @Test
+    fun `GIVEN a conflict noticed WHEN clearing it THEN the switch stays as it is`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(updatedAt = 5L).copy(
+                simplifyDebtsConflictBy = "ana",
+                simplifyDebts = true,
+            ),
+        )
+
+        // When
+        dao.clearSimplifyDebtsConflict("group-1")
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertNull(group.simplifyDebtsConflictBy)
+        assertTrue(group.simplifyDebts)
+    }
+
+    @Test
+    fun `GIVEN a later change made while the push was in flight WHEN marking the switch synced THEN it still waits`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L))
+            dao.updateSimplifyDebts(
+                "group-1",
+                true,
+                CHANGE_JSON,
+                changedAt = 20L,
+                by = "user-1",
+            )
+            dao.updateSimplifyDebts(
+                "group-1",
+                false,
+                CHANGE_JSON,
+                changedAt = 21L,
+                by = "user-1",
+            )
+
+            // When
+            dao.markSimplifyDebtsSynced("group-1", syncedAt = 20L)
+
+            // Then
+            assertTrue(
+                dao
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .simplifyDebtsPending,
+            )
+        }
+
     private fun entity(
         id: String = "group-1",
         name: String = "Viagem Floripa",
@@ -939,6 +1125,12 @@ class GroupDaoTest {
         shape = null,
         photoUrl = null,
         pendingPhoto = null,
+        simplifyDebts = false,
+        simplifyDebtsAt = 0L,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(
@@ -1021,6 +1213,7 @@ class GroupDaoTest {
     }
 
     private companion object {
+        const val CHANGE_JSON = """{"before":[],"after":[]}"""
         const val SHARES_JSON = """{"mode":"shares","weights":[{"member_id":"ana","weight":3}]}"""
         const val INCOMES_JSON = """{"ana":900000}"""
     }

@@ -1,8 +1,10 @@
 import { ArrowRight, CircleCheck, Scale } from 'lucide-react'
-import type { GroupDetailPresenter, JsDebtRow, JsGroupDetailState, JsGroupFace } from 'blitzsplit-shared'
+import type { GroupDetailPresenter, JsDebtRow, JsDebtSimplification, JsGroupDetailState, JsGroupFace } from 'blitzsplit-shared'
 import { Avatar } from '@/components/common'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
+import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -25,7 +27,8 @@ const debtButtons: Record<string, MessageKey> = {
 
 /**
  * "Saldos", the group's tab beside Despesas and Membros, under the group's page: who owes whom, each pair once and
- * already netted, "Com você" first and "Entre os outros" under it. Each pair opens Registrar pagamento over it.
+ * already netted, "Com você" first and "Entre os outros" under it. Each pair opens Registrar pagamento over it. While
+ * "Simplificar dívidas" is on, "Dívidas simplificadas" sits over the pairs (13.4) and the pairs it made carry its icon.
  */
 export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
   const { header } = state
@@ -67,6 +70,7 @@ export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresen
               </Button>
             </section>
           )}
+          {state.showsSimplificationCard && state.simplification && <SimplificationAlert presenter={presenter} simplification={state.simplification} />}
           {state.myDebts.length > 0 && (
             <DebtSection id="balances-with-you" title={t('balances_withYou')} hint={myHint(state, formats.money)} debts={state.myDebts} presenter={presenter} formats={formats} />
           )}
@@ -80,10 +84,35 @@ export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresen
               formats={formats}
             />
           )}
-          {state.showsDebtNote && <p className="text-[13px] leading-[18px] text-muted-foreground">{t('balances_note')}</p>}
+          {state.showsDebtNote && (
+            <p className="text-[13px] leading-[18px] text-muted-foreground">{t(state.simplification ? 'balances_simplifiedNote' : 'balances_note')}</p>
+          )}
         </>
       )}
     </>
+  )
+}
+
+/** "Dívidas simplificadas · 5 pagamentos em vez de 7…" with "Como funciona" (13.4), at the top of the pairs. */
+function SimplificationAlert({ presenter, simplification }: { presenter: GroupDetailPresenter; simplification: JsDebtSimplification }) {
+  return (
+    <Alert role="note" className="border-primary/20 bg-primary/10 text-foreground has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] [&>svg]:text-primary">
+      <SimplifyIcon />
+      <AlertTitle className="font-semibold">{t('simplify_badge')}</AlertTitle>
+      <AlertDescription className="text-foreground/80">
+        {simplification.isAlreadyMinimal
+          ? t('balances_simplifiedMinimal')
+          : t('balances_simplifiedBody', { count: simplification.paymentCount, before: simplification.unsimplifiedPaymentCount })}
+      </AlertDescription>
+      <Button
+        variant="link"
+        size="sm"
+        className="col-span-2 col-start-2 h-auto justify-self-start p-0 text-[13px] text-foreground underline sm:col-span-1 sm:col-start-3 sm:row-span-2 sm:row-start-1 sm:self-center"
+        onClick={() => presenter.openSimplifyDebtsInfo()}
+      >
+        {t('simplify_howItWorks')}
+      </Button>
+    </Alert>
   )
 }
 
@@ -150,7 +179,10 @@ function DebtRowItem({ debt, presenter, formats }: { debt: JsDebtRow; presenter:
         <Face face={debt.toFace} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:gap-3">
-        <span className="truncate font-medium sm:flex-1">{sentence}</span>
+        <span className="flex min-w-0 items-center gap-1.5 sm:flex-1">
+          <span className="truncate font-medium">{sentence}</span>
+          {debt.isSimplified && <SimplifyIcon label={t('simplify_pairIcon')} className="size-3.5 text-muted-foreground" />}
+        </span>
         <span className={cn('text-sm font-semibold whitespace-nowrap tabular-nums sm:text-base', amount.tone)}>{amount.text}</span>
       </span>
       <Button

@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatu
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -374,6 +375,29 @@ class ActivityViewModelTest {
             assertEquals(EDIT_MERCADO, viewModel.uiState.value.expandedItemId)
         }
 
+    @Test
+    fun `GIVEN Simplificar dividas changed what you owe WHEN tapping Ver mudancas THEN opens what changed for you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(simplifyApe) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnChangesToggled(SIMPLIFY_APE))
+
+            // Then
+            val item = viewModel.uiState.value.items
+                .single { it.id == SIMPLIFY_APE }
+            assertEquals(SIMPLIFY_APE, viewModel.uiState.value.expandedItemId)
+            assertTrue(item.hasChangesToShow)
+            assertEquals(
+                listOf("Bruno", "Carla"),
+                item.simplification
+                    ?.myChanges
+                    ?.mapNotNull { it.name }
+                    ?.sorted(),
+            )
+        }
+
     // endregion
 
     // region Tapping in one column
@@ -529,6 +553,22 @@ class ActivityViewModelTest {
             navigator.backStack.value,
         )
     }
+
+    @Test
+    fun `GIVEN Simplificar dividas changed WHEN tapping it THEN opens the Saldos of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(simplifyApe) + defaultEvents)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnItemClicked(SIMPLIFY_APE))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.BALANCES)),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN another screen over Atividade WHEN tapping an item THEN opens nothing`() = runTest(testDispatcher) {
@@ -2489,6 +2529,10 @@ class ActivityViewModelTest {
             isCreatedByMe = true,
             defaultSplit = null,
             updatedAt = 0L,
+            simplifiesDebts = false,
+            isSimplifyDebtsPending = false,
+            simplifyDebtsChangedBy = null,
+            simplifyDebtsConflictBy = null,
         ),
         Group(
             id = FLORIPA,
@@ -2513,6 +2557,10 @@ class ActivityViewModelTest {
             isCreatedByMe = false,
             defaultSplit = null,
             updatedAt = 0L,
+            simplifiesDebts = false,
+            isSimplifyDebtsPending = false,
+            simplifyDebtsChangedBy = null,
+            simplifyDebtsConflictBy = null,
         ),
     )
 
@@ -2596,6 +2644,22 @@ class ActivityViewModelTest {
                 after = ActivityValue.none.copy(minor = 12_000L),
             ),
         ),
+    )
+
+    // Why: Ana turned "Simplificar dívidas" on in Apê 302: Bruno no longer pays this device's user, Carla does.
+    private val simplifyApe = event(
+        id = SIMPLIFY_APE,
+        kind = ActivityKind.SIMPLIFY_DEBTS_CHANGED,
+        seq = 9L,
+        targetId = null,
+        subject = "Apê 302",
+        occurredAt = NOW - 10 * MINUTE,
+        code = ActivityEvent.SIMPLIFY_ON,
+        debtsBefore = listOf(
+            ActivityDebt(CARLA_APE, BRUNO_APE, 6_400L),
+            ActivityDebt(BRUNO_APE, ME_APE, 6_400L),
+        ),
+        debtsAfter = listOf(ActivityDebt(CARLA_APE, ME_APE, 6_400L)),
     )
 
     private val pastelDeleted = event(
@@ -2696,6 +2760,9 @@ class ActivityViewModelTest {
         isPending: Boolean = false,
         commentId: String? = null,
         isCommentDeleted: Boolean = false,
+        code: String? = null,
+        debtsBefore: List<ActivityDebt> = emptyList(),
+        debtsAfter: List<ActivityDebt> = emptyList(),
     ): ActivityEvent = ActivityEvent(
         id = id,
         seq = seq,
@@ -2709,7 +2776,7 @@ class ActivityViewModelTest {
         occurredAt = occurredAt,
         subject = subject,
         amountMinor = 10_000L,
-        code = null,
+        code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         changes = changes,
@@ -2718,6 +2785,9 @@ class ActivityViewModelTest {
         isPending = isPending,
         commentId = commentId,
         isCommentDeleted = isCommentDeleted,
+        debtsBefore = debtsBefore,
+        debtsAfter = debtsAfter,
+        memberNames = emptyMap(),
     )
 
     private fun queued(
@@ -2845,5 +2915,6 @@ class ActivityViewModelTest {
         const val CARLA_BILL = "carla-bill"
         const val GONE_BILL = "gone-bill"
         const val PRAIA_BILL = "praia-bill"
+        const val SIMPLIFY_APE = "simplify-ape"
     }
 }

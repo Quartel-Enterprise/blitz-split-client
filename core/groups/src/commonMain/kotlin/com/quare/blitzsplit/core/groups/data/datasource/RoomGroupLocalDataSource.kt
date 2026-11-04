@@ -84,6 +84,36 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun updateSimplifyDebts(
+        id: String,
+        simplifyDebts: Boolean,
+        change: String?,
+        changedAt: Long,
+        by: String?,
+    ) {
+        dao.updateSimplifyDebts(
+            id = id,
+            simplifyDebts = simplifyDebts,
+            change = change,
+            changedAt = changedAt,
+            by = by,
+        )
+    }
+
+    override suspend fun markSimplifyDebtsSynced(
+        id: String,
+        syncedAt: Long,
+    ) {
+        dao.markSimplifyDebtsSynced(
+            id = id,
+            syncedAt = syncedAt,
+        )
+    }
+
+    override suspend fun clearSimplifyDebtsConflict(id: String) {
+        dao.clearSimplifyDebtsConflict(id)
+    }
+
     override suspend fun getSplitIncomes(id: String): String? = dao.getSplitIncomes(id)
 
     override suspend fun getDefaultSplit(id: String): String? = dao.getDefaultSplit(id)
@@ -137,10 +167,12 @@ class RoomGroupLocalDataSource(
     override suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,
+        syncedSimplifyDebtsAt: Long,
     ) {
         dao.markGroupSynced(
             id = id,
             syncedUpdatedAt = syncedUpdatedAt,
+            syncedSimplifyDebtsAt = syncedSimplifyDebtsAt,
         )
     }
 

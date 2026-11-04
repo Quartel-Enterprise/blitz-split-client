@@ -19,7 +19,7 @@
     <string name="edit_group_currency">Moeda</string>
     <string name="edit_group_currency_lock">Não muda depois da primeira despesa</string>
     <string name="edit_group_currency_locked">Travada</string>
-    <string name="edit_group_note">Qualquer pessoa do grupo pode mudar o nome, o ícone e o tipo.</string>
+    <string name="edit_group_note">Qualquer pessoa do grupo pode mudar o nome, o ícone, o tipo e Simplificar dívidas. A Atividade mostra quem mudou.</string>
     <string name="edit_group_offline_note">Sem internet: a mudança vale neste aparelho agora e chega aos outros quando ele reconectar. Uma foto nova sobe junto.</string>
     <string name="edit_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
     <string name="edit_group_default_split">Divisão padrão</string>
@@ -106,4 +106,82 @@
     </plurals>
     <string name="default_split_exception_shares_two">%1$d para %2$d</string>
     <string name="default_split_exception_percent_value">%d%%</string>
+    <string name="simplify_section">Pagamentos</string>
+    <string name="simplify_title">Simplificar dívidas</string>
+    <string name="simplify_status_off">Junta as dívidas do grupo para dar menos pagamentos. Ninguém paga nem recebe a mais.</string>
+    <plurals name="simplify_status_on">
+        <item quantity="one">Ligado · %1$d pagamento em vez de %2$d</item>
+        <item quantity="other">Ligado · %1$d pagamentos em vez de %2$d</item>
+    </plurals>
+    <string name="simplify_status_on_minimal">Ligado · já no mínimo de pagamentos</string>
+    <string name="simplify_status_pending_on">Ligado neste aparelho · aguardando envio</string>
+    <string name="simplify_status_pending_off">Desligado neste aparelho · aguardando envio</string>
+    <string name="simplify_status_needs_third">Com 2 pessoas já é um pagamento só. Fica disponível quando entrar a terceira pessoa.</string>
+    <string name="simplify_how_it_works">Como funciona</string>
+    <string name="simplify_offline_note">Sem internet: os pagamentos sugeridos já mudaram neste aparelho. O grupo vê quando ele reconectar.</string>
+    <string name="simplify_confirm_title_on">Simplificar dívidas?</string>
+    <string name="simplify_confirm_title_off">Desligar Simplificar dívidas?</string>
+    <plurals name="simplify_payments_label" tools:ignore="ImpliedQuantity">
+        <item quantity="one">pagamento</item>
+        <item quantity="other">pagamentos</item>
+    </plurals>
+    <plurals name="simplify_payments">
+        <item quantity="one">%d pagamento</item>
+        <item quantity="other">%d pagamentos</item>
+    </plurals>
+    <string name="simplify_confirm_counts">%1$s viram %2$s</string>
+    <string name="simplify_confirm_body_on">Cada pessoa continua pagando ou recebendo o mesmo total. Só muda quem paga a quem.</string>
+    <string name="simplify_confirm_body_off">Os pagamentos voltam a ser entre quem dividiu cada conta. Os totais não mudam.</string>
+    <string name="simplify_confirm_body_minimal">%s já está no mínimo. Ligue mesmo assim, e as próximas contas já entram simplificadas.</string>
+    <string name="simplify_confirm_what_changes">O que muda</string>
+    <string name="simplify_change_guest">%s · convidado</string>
+    <string name="simplify_change_amount_to">%1$s a %2$s</string>
+    <string name="simplify_change_amount_to_you">%s a você</string>
+    <string name="simplify_change_stops_paying">Não paga mais %s.</string>
+    <string name="simplify_change_stops_paying_me">Não paga mais %s.</string>
+    <string name="simplify_change_pays">Paga %s.</string>
+    <string name="simplify_change_pays_me">Paga %s.</string>
+    <string name="simplify_change_stops_receiving">Não recebe mais de %s.</string>
+    <string name="simplify_change_stops_receiving_me">Não recebe mais de %s.</string>
+    <string name="simplify_change_receives">Recebe de %s.</string>
+    <string name="simplify_change_receives_me">Recebe de %s.</string>
+    <string name="simplify_change_guest_note">Não tem o app: avise por Cobrar.</string>
+    <string name="simplify_you_lowercase">você</string>
+    <string name="simplify_queued_one">Você tem 1 pagamento na fila: %s. A simplificação conta com ele; se ele mudar, os pagamentos sugeridos se ajustam sozinhos.</string>
+    <string name="simplify_queued_paid_you">%1$s te pagou %2$s</string>
+    <string name="simplify_queued_you_paid">você pagou %1$s a %2$s</string>
+    <string name="simplify_queued_paid">%1$s pagou %2$s a %3$s</string>
+    <plurals name="simplify_queued_several">
+        <item quantity="one">Você tem %d pagamento na fila. A simplificação conta com ele; se ele mudar, os pagamentos sugeridos se ajustam sozinhos.</item>
+        <item quantity="other">Você tem %d pagamentos na fila. A simplificação conta com eles; se mudarem, os pagamentos sugeridos se ajustam sozinhos.</item>
+    </plurals>
+    <string name="simplify_confirm_foot_on">Todo mundo vê na Atividade. Quem passa a pagar ou receber de outra pessoa recebe um aviso. Dá para desligar quando quiser.</string>
+    <string name="simplify_confirm_foot_minimal">Todo mundo vê na Atividade. Dá para desligar quando quiser.</string>
+    <string name="simplify_confirm_foot_off_none">Todo mundo vê na Atividade.</string>
+    <plurals name="simplify_confirm_foot_off">
+        <item quantity="one">Mais %d pessoa muda. Todo mundo vê na Atividade, e quem muda recebe um aviso.</item>
+        <item quantity="other">Mais %d pessoas mudam. Todo mundo vê na Atividade, e quem muda recebe um aviso.</item>
+    </plurals>
+    <string name="simplify_confirm_not_now">Agora não</string>
+    <string name="simplify_confirm_cancel">Cancelar</string>
+    <string name="simplify_confirm_on">Simplificar</string>
+    <string name="simplify_confirm_minimal">Ligar mesmo assim</string>
+    <string name="simplify_confirm_off">Desligar</string>
+    <string name="simplify_info_back">Voltar</string>
+    <string name="simplify_info_intro">Num grupo, cada conta cria dívidas entre duas pessoas. Com o tempo, o dinheiro anda em círculo. Simplificar junta essas dívidas e sugere menos pagamentos.</string>
+    <string name="simplify_info_example">Um exemplo</string>
+    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a você.</string>
+    <string name="simplify_info_before">Antes</string>
+    <string name="simplify_info_after">Simplificado</string>
+    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a você. 2 pagamentos.</string>
+    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s direto a você. Elisa não paga nada. 1 pagamento.</string>
+    <string name="simplify_info_example_result">Simplificado, Carla paga %s direto a você, e Elisa não paga nada.</string>
+    <string name="simplify_info_total_title">O total não muda</string>
+    <string name="simplify_info_total_text">Quem devia %1$s no grupo continua devendo %1$s. Só muda para quem vai o dinheiro.</string>
+    <string name="simplify_info_stranger_title">Você pode dever a quem não dividiu conta com você</string>
+    <string name="simplify_info_stranger_text">Em Saldos do grupo, o rótulo Dívidas simplificadas avisa quando isso acontece.</string>
+    <string name="simplify_info_anyone_title">Qualquer pessoa liga ou desliga</string>
+    <string name="simplify_info_anyone_text">Em Editar grupo. A Atividade mostra quem mudou, e quem passa a pagar ou receber de outra pessoa recebe um aviso.</string>
+    <string name="simplify_info_undo_title">Desligar volta ao que era</string>
+    <string name="simplify_info_undo_text">Os pagamentos voltam a ser entre quem dividiu cada conta. Nenhuma despesa nem pagamento registrado muda.</string>
 </resources>

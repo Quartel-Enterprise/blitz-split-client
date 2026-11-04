@@ -635,7 +635,8 @@ private struct ActivityRowChanges: View {
         VStack(alignment: .leading, spacing: 8) {
             if isExpanded {
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(Array(item.changes.enumerated()), id: \.offset) { _, change in
+                    // Simplify debts lists what changed for this device's user, never the item's field changes (13.7b)
+                    ForEach(Array(ActivityBeforeAfter.of(item).enumerated()), id: \.offset) { _, change in
                         ActivityChangeLine(change: change)
                     }
                     Button(ActivityCopy.openLabel(item)) {
@@ -667,22 +668,52 @@ private struct ActivityRowChanges: View {
     }
 }
 
-/// "Amount  R$ 612,00 → R$ 642,00": the field, what it was, struck through, and what it is now.
+/// One line of what changed: what it is about (a field, or a person for Simplify debts), what it was and what it is.
+struct ActivityBeforeAfter {
+    let label: String
+    let before: String
+    let after: String
+
+    /// "Amount  R$ 612,00 → R$ 642,00", a field an edit changed.
+    init(change: ActivityChangeRow) {
+        label = ActivityCopy.field(change.field)
+        before = ActivityCopy.value(change.before, field: change.field)
+        after = ActivityCopy.value(change.after, field: change.field)
+    }
+
+    /// "Diego  didn't owe you → owes you $64", what Simplify debts changed with someone (13.7b).
+    init(change: ActivityDebtChange, currency: GroupCurrency?) {
+        label = PaymentCopy.name(change.name)
+        before = ActivityCopy.debtSide(change.beforeMinor, isBefore: true, currency: currency)
+        after = ActivityCopy.debtSide(change.afterMinor, isBefore: false, currency: currency)
+    }
+
+    /// What an item lists under "See changes": what changed for this device's user for Simplify debts, never its
+    /// field changes, and the fields an edit changed otherwise.
+    static func of(_ item: ActivityItem) -> [ActivityBeforeAfter] {
+        if let simplification = item.simplification {
+            return simplification.myChanges.map { ActivityBeforeAfter(change: $0, currency: item.currency) }
+        }
+        return item.changes.map { ActivityBeforeAfter(change: $0) }
+    }
+}
+
+/// "Amount  R$ 612,00 → R$ 642,00": what changed, what it was, struck through, and what it is now.
 struct ActivityChangeLine: View {
-    let change: ActivityChangeRow
+    let change: ActivityBeforeAfter
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(verbatim: ActivityCopy.field(change.field))
+            Text(verbatim: change.label)
                 .foregroundStyle(.secondary)
                 .frame(minWidth: 80, alignment: .leading)
-            Text(verbatim: ActivityCopy.value(change.before, field: change.field))
+            Text(verbatim: change.before)
                 .strikethrough()
                 .foregroundStyle(.secondary)
             Text(verbatim: "→")
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(Text("to"))
-            Text(verbatim: ActivityCopy.value(change.after, field: change.field))
+            Text(verbatim: change.after)
                 .fontWeight(.semibold)
         }
         .font(.subheadline)

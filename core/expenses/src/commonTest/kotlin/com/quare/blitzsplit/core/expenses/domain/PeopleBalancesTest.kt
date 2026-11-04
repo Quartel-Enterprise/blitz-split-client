@@ -412,10 +412,60 @@ class PeopleBalancesTest {
         assertEquals(listOf(GroupCurrency.BRL), balances.totals.map { it.currency })
     }
 
+    @Test
+    fun `GIVEN a group with simplifying on WHEN netting THEN its line is simplified and names whom the payer owed`() {
+        // Given
+        val groups = listOf(
+            group("floripa", "Viagem Floripa", me, bruno, diego, simplifiesDebts = true),
+            group("ape", "Apê 302", me, diego),
+        )
+        val money = mapOf(
+            "floripa" to moneyOf(
+                owes("floripa", diego.id, bruno.id, 10_000L, id = "uber"),
+                owes("floripa", bruno.id, me.id, 10_000L, id = "pousada"),
+            ),
+            "ape" to moneyOf(owes("ape", diego.id, me.id, 5_000L)),
+        )
+
+        // When
+        val people = PeopleBalances.of(groups, money).people
+
+        // Then
+        val person = people.single()
+        assertEquals("user:diego", person.key)
+        assertEquals(15_000L, person.netMinor)
+        assertEquals(listOf("floripa", "ape"), person.groups.map { it.groupId })
+        assertEquals(listOf(true, false), person.groups.map { it.isSimplified })
+        assertEquals(listOf(listOf("Bruno"), emptyList()), person.groups.map { it.insteadOfNames })
+    }
+
+    @Test
+    fun `GIVEN a pair simplified past someone no longer in the group WHEN netting THEN names nobody instead`() {
+        // Given
+        val groups = listOf(group("floripa", "Viagem Floripa", me, diego, simplifiesDebts = true))
+        val money = mapOf(
+            "floripa" to moneyOf(
+                owes("floripa", diego.id, "ex-member", 10_000L, id = "uber"),
+                owes("floripa", "ex-member", me.id, 10_000L, id = "pousada"),
+            ),
+        )
+
+        // When
+        val people = PeopleBalances.of(groups, money).people
+
+        // Then
+        val line = people.single().groups.single()
+        assertEquals(diego.id, line.memberId)
+        assertEquals(10_000L, line.amountMinor)
+        assertTrue(line.isSimplified)
+        assertEquals(emptyList(), line.insteadOfNames)
+    }
+
     private val me = member("me", "Pierre", isMe = true)
     private val ana = member("ana", "Ana", userId = "ana")
     private val bruno = member("bruno", "Bruno", userId = "bruno")
     private val carla = member("carla", "Carla", userId = "carla")
+    private val diego = member("diego", "Diego", userId = "diego")
 
     private fun member(
         id: String,
@@ -438,6 +488,7 @@ class PeopleBalancesTest {
         name: String,
         vararg members: GroupMember,
         currency: GroupCurrency = GroupCurrency.BRL,
+        simplifiesDebts: Boolean = false,
     ): Group = Group(
         id = id,
         name = name,
@@ -452,6 +503,10 @@ class PeopleBalancesTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = simplifiesDebts,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun moneyOf(vararg expenses: Expense): GroupMoney = GroupMoney(

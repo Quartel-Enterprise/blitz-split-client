@@ -96,6 +96,15 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    /*
+     * Why: "Como funciona" of "Simplificar dívidas" (13.2), from Editar grupo's row and Saldos' "Dívidas simplificadas":
+     * the same words for everyone, the example's amounts in the group's currency. Pushed over whichever opened it
+     * (inside Editar grupo's sheet on iOS and macOS, in its dialog's place on the web).
+     */
+    data class SimplifyDebtsInfo(
+        val currency: GroupCurrency,
+    ) : Route
+
     // Why: "Rachar conta", a new bill in the group, or "Editar conta" for expenseId, with "Dividir" drawn over it.
     data class SplitBill(
         val groupId: String,

@@ -57,4 +57,25 @@
     <string name="register_payment_pay_type_onchain">On-chain</string>
     <string name="register_payment_pay_otherwise">I paid another amount or another way</string>
     <string name="register_payment_pay_copied">Copied</string>
+    <string name="register_payment_simplified_none">Simplified debt.</string>
+    <string name="register_payment_simplified_new">Simplified debt: %1$s pays %2$s what they owed %3$s.</string>
+    <string name="register_payment_simplified_new_you_pay">Simplified debt: you pay %1$s what you owed %2$s.</string>
+    <string name="register_payment_simplified_new_pays_you">Simplified debt: %1$s pays you what they owed %2$s.</string>
+    <string name="register_payment_simplified_grown">Simplified debt: includes what %1$s owed %2$s.</string>
+    <string name="register_payment_simplified_grown_you">Simplified debt: includes what you owed %s.</string>
+    <string name="register_payment_you_lowercase">you</string>
+    <string name="register_payment_simplify_someone">Someone</string>
+    <string name="register_payment_simplify_on_paid">%1$s simplified the debts just now. You no longer owe %2$s in %3$s.</string>
+    <string name="register_payment_simplify_off_paid">%1$s turned off Simplify debts just now. You no longer owe %2$s in %3$s.</string>
+    <string name="register_payment_simplify_on_received">%1$s simplified the debts just now. %2$s no longer owes you in %3$s.</string>
+    <string name="register_payment_simplify_off_received">%1$s turned off Simplify debts just now. %2$s no longer owes you in %3$s.</string>
+    <string name="register_payment_simplify_on_between">%1$s simplified the debts just now. %2$s no longer owes %3$s in %4$s.</string>
+    <string name="register_payment_simplify_off_between">%1$s turned off Simplify debts just now. %2$s no longer owes %3$s in %4$s.</string>
+    <string name="register_payment_simplify_hint">If you already sent the money, mark it as paid anyway: the app redoes the math.</string>
+    <string name="register_payment_simplify_was_paid">%s · what you owed</string>
+    <string name="register_payment_simplify_was_received">%1$s · what %2$s owed you</string>
+    <string name="register_payment_simplify_was_between">%1$s · what %2$s owed</string>
+    <string name="register_payment_simplify_old_amount">Was %s</string>
+    <string name="register_payment_simplify_close">Close</string>
+    <string name="register_payment_simplify_paid_anyway">I paid anyway</string>
 </resources>

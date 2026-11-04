@@ -545,6 +545,7 @@ class ActivityUiStateTest {
         targetId = targetId,
         commentId = null,
         isCommentDeleted = false,
+        simplification = null,
     )
 
     private fun state(

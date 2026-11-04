@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 
@@ -49,7 +51,15 @@ data class GroupDetailUiState(
     val isAccountUnprotected: Boolean,
     // Why: Atividade's unread badge on Android's rail beside the screen.
     val activityUnreadCount: Int,
+    // Why: Saldos' "Dívidas simplificadas" (13.4) while the group's "Simplificar dívidas" is on; null while it is off.
+    val simplification: DebtSimplificationSummary?,
+    // Why: "Ana desligou depois de você" (13.1e), when this screen is the group's on top as it comes.
+    val simplifyConflict: SimplifyDebtsConflictNotice?,
 ) {
+    // Why: the card over the pairs, only while there is any to explain.
+    val showsSimplificationCard: Boolean
+        get() = simplification != null && (myDebts.isNotEmpty() || otherDebts.isNotEmpty())
+
     val showsProtectAccess: Boolean
         get() = joinedAs != null && isAccountUnprotected
 

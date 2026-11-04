@@ -37,7 +37,7 @@ object ContactBook {
         money: GroupMoney,
     ): List<Part> {
         val me = group.members.firstOrNull { it.isMe } ?: return emptyList()
-        val balances = GroupBalances.of(money.expenses, money.settlements)
+        val balances = GroupBalances.of(group, money.expenses, money.settlements)
         return group.members
             .filterNot { it.isMe }
             .map { member ->

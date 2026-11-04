@@ -64,7 +64,13 @@ class JsRoute internal constructor(
         is Route.ContactInvite -> route.personKey
         else -> null
     }
-    val currency: String? = (route as? Route.SettleUp)?.currency?.code
+
+    // Why: also the currency of "simplify-debts-info", whose example's amounts it formats.
+    val currency: String? = when (route) {
+        is Route.SettleUp -> route.currency.code
+        is Route.SimplifyDebtsInfo -> route.currency.code
+        else -> null
+    }
 
     // Why: the code of "shared-bill", a bill's link, which keys its page; null for every other route.
     val sharedBillCode: String? = (route as? Route.SharedBill)?.code

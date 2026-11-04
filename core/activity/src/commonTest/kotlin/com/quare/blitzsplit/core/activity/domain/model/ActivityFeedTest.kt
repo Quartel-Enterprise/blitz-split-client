@@ -83,6 +83,9 @@ class ActivityFeedTest {
         isPending = seq == null,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = emptyList(),
+        debtsAfter = emptyList(),
+        memberNames = emptyMap(),
     )
 
     private companion object {

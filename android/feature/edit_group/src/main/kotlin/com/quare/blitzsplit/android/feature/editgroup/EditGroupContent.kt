@@ -257,9 +257,17 @@ private fun EditGroupFieldsSection(
         state = state,
         onEvent = onEvent,
     )
+    SimplifyDebtsSection(
+        state = state,
+        onEvent = onEvent,
+    )
     Text(
         text = stringResource(
-            if (state.showsOfflineNotice) R.string.edit_group_offline_note else R.string.edit_group_note,
+            when {
+                state.showsSimplifyOfflineNotice -> R.string.simplify_offline_note
+                state.showsOfflineNotice -> R.string.edit_group_offline_note
+                else -> R.string.edit_group_note
+            },
         ),
         modifier = Modifier.padding(
             start = 20.dp,

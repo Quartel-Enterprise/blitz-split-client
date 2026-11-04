@@ -74,7 +74,7 @@ data class PeopleBalances(
             money: GroupMoney,
         ): List<Part> {
             val me = group.members.firstOrNull { it.isMe } ?: return emptyList()
-            val balances = GroupBalances.of(money.expenses, money.settlements)
+            val balances = GroupBalances.of(group, money.expenses, money.settlements)
             return balances.debts
                 .filter { it.fromMemberId == me.id || it.toMemberId == me.id }
                 .map { debt ->
@@ -92,6 +92,11 @@ data class PeopleBalances(
                             memberId = otherId,
                             meMemberId = me.id,
                             amountMinor = if (debt.toMemberId == me.id) debt.amountMinor else -debt.amountMinor,
+                            isSimplified = balances.isSimplified,
+                            insteadOfNames = balances
+                                .insteadOfOrNull(debt.fromMemberId, debt.toMemberId)
+                                .orEmpty()
+                                .mapNotNull { id -> group.members.firstOrNull { it.id == id }?.name },
                         ),
                     )
                 }

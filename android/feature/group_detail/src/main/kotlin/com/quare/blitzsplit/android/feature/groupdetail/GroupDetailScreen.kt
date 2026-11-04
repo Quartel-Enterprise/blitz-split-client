@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
+import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.model.GroupTab
@@ -71,6 +72,12 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         onUndo = { viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked) },
         onShown = { viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown) },
+    )
+    SimplifyConflictNoticeEffect(
+        notice = state.simplifyConflict,
+        snackbarHostState = snackbarHostState,
+        onActivityClick = { viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictActivityClicked) },
+        onDismiss = { viewModel.onEvent(GroupDetailUiEvent.OnSimplifyConflictDismissed) },
     )
     CategoryTeachNoticeEffect(
         teach = state.teach,

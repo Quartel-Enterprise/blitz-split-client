@@ -17,6 +17,12 @@
     <string name="push_settle_reminders">You have open balances in %1$s groups</string>
     <string name="push_added_to_group">%1$s added you to the group</string>
     <string name="push_member_joined">%1$s joined the group</string>
+    <string name="push_debts_simplified_to_you">%1$s simplified the debts. Now %2$s pays you %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s simplified the debts. Now you pay %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s simplified the debts. See how it is for you.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s turned off Simplify debts. Now %2$s pays you %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s turned off Simplify debts. Now you pay %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s turned off Simplify debts. See how it is for you.</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">You\'re not in this group</string>
     <string name="bill_link_not_in_group_message">This comment is in a group you\'re not in. Ask whoever sent you the link for the invite.</string>

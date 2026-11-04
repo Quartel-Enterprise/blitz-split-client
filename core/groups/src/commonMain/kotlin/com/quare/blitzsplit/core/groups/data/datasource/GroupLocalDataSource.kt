@@ -57,6 +57,22 @@ interface GroupLocalDataSource {
         updatedAt: Long,
     )
 
+    // Why: "Simplificar dívidas" saves only itself, with the pairs it changed for Atividade (13.7).
+    suspend fun updateSimplifyDebts(
+        id: String,
+        simplifyDebts: Boolean,
+        change: String?,
+        changedAt: Long,
+        by: String?,
+    )
+
+    suspend fun markSimplifyDebtsSynced(
+        id: String,
+        syncedAt: Long,
+    )
+
+    suspend fun clearSimplifyDebtsConflict(id: String)
+
     suspend fun getSplitIncomes(id: String): String?
 
     // Why: the stored JSON, so a new "Divisão padrão" keeps the keys a newer app wrote in it.
@@ -90,6 +106,8 @@ interface GroupLocalDataSource {
     suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,
+        // Why: the switch of "Simplificar dívidas" that went up, whose later change keeps the group pending.
+        syncedSimplifyDebtsAt: Long,
     )
 
     suspend fun markMemberSynced(
