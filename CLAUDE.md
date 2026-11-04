@@ -401,7 +401,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad's room or in the Mac's inspector) closes while the profile shows and opens again on back, Registrar pagamento starting over
     there (the whole debt, Pix, now, "Pagar Ana" again); Android keeps it as it was, and the web keeps Conta and
     Registrar pagamento mounted under the profile, whose back says "Voltar" (the tab's name only right above a tab).
-    A profile opened from settling up goes back to that form on its Acertar or Recebi rather than opening another.
+    A profile opened from settling up goes back to that form on its Acertar or Recebi rather than opening another;
+    opened from one group's Registrar pagamento, they open settling up for the net over it (Pierre's call).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0 · quitado") and "3 grupos" or the group's
