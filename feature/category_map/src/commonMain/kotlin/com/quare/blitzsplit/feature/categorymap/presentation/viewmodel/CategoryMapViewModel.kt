@@ -141,7 +141,10 @@ class CategoryMapViewModel(
 
             // Why: the section shown, which is the first one until a pick, never the id stored (null until then).
             is CategoryMapUiEvent.OnSectionSelected -> {
-                if (event.categoryId != uiState.value.selectedSection?.category?.id) {
+                if (event.categoryId != uiState.value.selectedSection
+                        ?.category
+                        ?.id
+                ) {
                     trackEvent("category_map_section_selected", emptyMap())
                 }
                 uiState.update { it.copy(selectedCategoryId = event.categoryId) }

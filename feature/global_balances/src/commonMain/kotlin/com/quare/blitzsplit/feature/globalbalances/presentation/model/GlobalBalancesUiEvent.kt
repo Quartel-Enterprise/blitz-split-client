@@ -4,9 +4,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-// Why: the screen these events come from, as their source param says.
-private const val SOURCE = "global_balances"
-
 sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
@@ -19,15 +16,18 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
             // Why: only someone the filter lists, never a stale tap the screen ignores.
             is OnPersonSelected -> EventAnalytics.Manual("balances_person_selected")
 
-            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
+            is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
 
-            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))
+            is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
 
-            is OnSettleClicked -> EventAnalytics.Automatic("settle_clicked", mapOf("source" to SOURCE))
+            is OnSettleClicked -> EventAnalytics.Automatic("settle_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
 
-            is OnReceivedClicked -> EventAnalytics.Automatic("received_clicked", mapOf("source" to SOURCE))
+            is OnReceivedClicked -> EventAnalytics.Automatic(
+                "received_clicked",
+                mapOf("source" to GLOBAL_BALANCES_SOURCE),
+            )
 
-            is OnChargeClicked -> EventAnalytics.Automatic("charge_clicked", mapOf("source" to SOURCE))
+            is OnChargeClicked -> EventAnalytics.Automatic("charge_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
 
             // Why: a toggle, sent only while the switch takes it, since it locks once the message was edited.
             is OnChargePixKeyToggled -> EventAnalytics.Manual("charge_pix_key_toggled")
@@ -55,12 +55,18 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
             OnActivityTabClicked,
             -> EventAnalytics.NotTracked
 
-            OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))
+            OnProfileClicked -> EventAnalytics.Automatic(
+                "profile_avatar_clicked",
+                mapOf("source" to GLOBAL_BALANCES_SOURCE),
+            )
 
             // Why: only a search that opens, never one refused over Cobrar.
             OnSearchClicked -> EventAnalytics.Manual("search_opened")
 
-            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+            OnUndoPaymentClicked -> EventAnalytics.Automatic(
+                "payment_undo_clicked",
+                mapOf("source" to GLOBAL_BALANCES_SOURCE),
+            )
 
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown -> EventAnalytics.NotTracked

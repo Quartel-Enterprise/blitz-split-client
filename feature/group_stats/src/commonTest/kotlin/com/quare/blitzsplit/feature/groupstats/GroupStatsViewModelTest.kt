@@ -1295,7 +1295,21 @@ class GroupStatsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a trip of one month WHEN picking Mes the period cannot show THEN still sends the grain tapped once`() =
+    fun `GIVEN Semana picked WHEN picking Semana again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.WEEK))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.WEEK))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a trip of one month WHEN picking Mes the period cannot show THEN sends nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1304,10 +1318,7 @@ class GroupStatsViewModelTest {
             viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.MONTH))
 
             // Then
-            assertEquals(
-                listOf("stats_grain_selected" to mapOf<String, Any>("grain" to StatsGrain.MONTH)),
-                trackedEvents,
-            )
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

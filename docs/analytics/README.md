@@ -297,7 +297,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `stats_custom_period_selected` | none | The days picked in "Escolher datas…" | `:feature:group_stats` |
 | `stats_people_view_selected` | `view` (`consumption`, `paid`) | "Por pessoa"'s Consumo or Pagou, another than the one showing | `:feature:group_stats` |
 | `stats_chart_type_selected` | `chart_type` | Barras or Linha, another than the one showing | `:feature:group_stats` |
-| `stats_grain_selected` | `grain` | Dia, Semana, Mês or Ano | `:feature:group_stats` |
+| `stats_grain_selected` | `grain` | Dia, Semana, Mês or Ano, another than the one showing or one that switches the period to the whole one | `:feature:group_stats` |
 | `stats_whole_period_clicked` | none | "Ver toda a viagem" of a period without bills | `:feature:group_stats` |
 | `category_map_profile_clicked` | none | "Abrir Perfil" on "Seu mapa fica só neste aparelho" | `:feature:category_map` |
 | `category_map_section_selected` | none | Another category picked beside its terms | `:feature:category_map` |

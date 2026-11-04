@@ -30,7 +30,8 @@ sealed interface GroupStatsUiEvent : TrackedUiEvent {
 
             is OnChartTypePicked -> EventAnalytics.Manual("stats_chart_type_selected")
 
-            is OnGrainPicked -> EventAnalytics.Automatic("stats_grain_selected", mapOf("grain" to grain))
+            // Why: only a grain the chart takes that changes it, or the period it switches to the whole one.
+            is OnGrainPicked -> EventAnalytics.Manual("stats_grain_selected")
 
             is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 

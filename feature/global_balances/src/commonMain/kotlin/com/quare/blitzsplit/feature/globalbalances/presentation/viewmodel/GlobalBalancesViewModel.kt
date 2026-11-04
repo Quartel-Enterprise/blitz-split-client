@@ -40,6 +40,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.GLOBAL_BALANCES_SOURCE
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
@@ -180,7 +181,13 @@ class GlobalBalancesViewModel(
     override fun handleEvent(event: GlobalBalancesUiEvent) {
         when (event) {
             is GlobalBalancesUiEvent.OnFilterChanged -> if (event.filter != uiState.value.filter) {
-                trackEvent("balances_filter_selected", mapOf("filter" to event.filter, "source" to "global_balances"))
+                trackEvent(
+                    "balances_filter_selected",
+                    mapOf(
+                        "filter" to event.filter,
+                        "source" to GLOBAL_BALANCES_SOURCE,
+                    ),
+                )
                 changeFilter(event.filter)
             }
 
@@ -249,7 +256,7 @@ class GlobalBalancesViewModel(
             // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
             GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
                 if (navigator.openSearchOver(HomeTab.BALANCES)) {
-                    trackEvent("search_opened", mapOf("source" to "global_balances"))
+                    trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
                 }
             }
 

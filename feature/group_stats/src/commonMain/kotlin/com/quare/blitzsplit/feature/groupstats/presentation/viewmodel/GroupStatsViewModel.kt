@@ -236,7 +236,9 @@ class GroupStatsViewModel(
         val calculator = createCalculatorOrNull() ?: return
         val span = calculator.findSpanOrNull(period, customSpan) ?: return
         if (!calculator.isEnabled(grain, span)) return
-        if (!span.canSplitBy(grain)) period = StatsPeriod.ALL
+        val switchesPeriod = !span.canSplitBy(grain)
+        if (grain != chart.grain || switchesPeriod) trackEvent("stats_grain_selected", mapOf("grain" to grain))
+        if (switchesPeriod) period = StatsPeriod.ALL
         keepChart(chart.copy(grain = grain))
     }
 
