@@ -179,7 +179,10 @@ class GlobalBalancesViewModel(
 
     override fun handleEvent(event: GlobalBalancesUiEvent) {
         when (event) {
-            is GlobalBalancesUiEvent.OnFilterChanged -> changeFilter(event.filter)
+            is GlobalBalancesUiEvent.OnFilterChanged -> if (event.filter != uiState.value.filter) {
+                trackEvent("balances_filter_selected", mapOf("filter" to event.filter, "source" to "global_balances"))
+                changeFilter(event.filter)
+            }
 
             is GlobalBalancesUiEvent.OnPersonExpandToggled -> toggle(event.personId)
 
@@ -242,10 +245,9 @@ class GlobalBalancesViewModel(
 
             // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
             GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
-                trackEvent("search_opened", mapOf("source" to "global_balances"))
-                navigator.openSearchOver(
-                    HomeTab.BALANCES,
-                )
+                if (navigator.openSearchOver(HomeTab.BALANCES)) {
+                    trackEvent("search_opened", mapOf("source" to "global_balances"))
+                }
             }
 
             GlobalBalancesUiEvent.OnUndoPaymentClicked -> undoSettledUp()

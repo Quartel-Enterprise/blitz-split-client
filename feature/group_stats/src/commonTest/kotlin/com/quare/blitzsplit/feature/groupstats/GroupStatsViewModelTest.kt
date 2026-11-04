@@ -1101,6 +1101,342 @@ class GroupStatsViewModelTest {
             assertEquals(statsStack + Route.Profile, navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the whole trip WHEN picking Este mes THEN sends the period picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+        // Then
+        assertEquals(
+            listOf("stats_period_selected" to mapOf<String, Any>("period" to StatsPeriod.THIS_MONTH)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN this month WHEN picking the whole trip from the menu THEN sends the whole period picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.ALL))
+
+            // Then
+            assertEquals(
+                listOf("stats_period_selected" to mapOf<String, Any>("period" to StatsPeriod.ALL)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a home WHEN picking Este ano THEN sends the year picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            group = home,
+            stored = homeBills,
+        )
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_YEAR))
+
+        // Then
+        assertEquals(
+            listOf("stats_period_selected" to mapOf<String, Any>("period" to StatsPeriod.THIS_YEAR)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a trip WHEN picking last month without bills THEN still sends the period picked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.LAST_MONTH))
+
+            // Then
+            assertEquals(
+                listOf("stats_period_selected" to mapOf<String, Any>("period" to StatsPeriod.LAST_MONTH)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a trip WHEN picking the days of Escolher datas THEN sends the custom period with no dates`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-10-20T10:00:00Z"),
+                    endMillis = millisOf("2026-10-28T10:00:00Z"),
+                ),
+            )
+
+            // Then
+            assertEquals(listOf("stats_custom_period_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a trip WHEN picking days past today THEN still sends only the custom period with no dates`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-11-15T10:00:00Z"),
+                    endMillis = millisOf("2026-10-20T10:00:00Z"),
+                ),
+            )
+
+            // Then
+            assertEquals(listOf("stats_custom_period_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Consumo WHEN picking Pagou THEN sends the people view picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+        // Then
+        assertEquals(
+            listOf("stats_people_view_selected" to mapOf<String, Any>("view" to StatsPeopleView.PAID)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Pagou WHEN picking Consumo THEN sends Consumo as the people view picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.CONSUMPTION))
+
+        // Then
+        assertEquals(
+            listOf("stats_people_view_selected" to mapOf<String, Any>("view" to StatsPeopleView.CONSUMPTION)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN bars WHEN picking Linha THEN sends the chart type picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnChartTypePicked(StatsChartType.LINE))
+
+        // Then
+        assertEquals(
+            listOf("stats_chart_type_selected" to mapOf<String, Any>("chart_type" to StatsChartType.LINE)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a line WHEN picking Barras THEN sends Barras as the chart type picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keptChart = StatsChartPreferences(StatsChartType.LINE, null))
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnChartTypePicked(StatsChartType.BARS))
+
+        // Then
+        assertEquals(
+            listOf("stats_chart_type_selected" to mapOf<String, Any>("chart_type" to StatsChartType.BARS)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN by day WHEN picking Semana THEN sends the grain picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.WEEK))
+
+        // Then
+        assertEquals(
+            listOf("stats_grain_selected" to mapOf<String, Any>("grain" to StatsGrain.WEEK)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a trip of one month WHEN picking Mes the period cannot show THEN still sends the grain tapped once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.MONTH))
+
+            // Then
+            assertEquals(
+                listOf("stats_grain_selected" to mapOf<String, Any>("grain" to StatsGrain.MONTH)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN this year of a home WHEN picking Ano THEN sends only the grain though the period switches`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                group = home,
+                stored = homeBills,
+            )
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_YEAR))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.YEAR))
+
+            // Then
+            assertEquals(
+                listOf("stats_grain_selected" to mapOf<String, Any>("grain" to StatsGrain.YEAR)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Por pessoa WHEN tapping Ana THEN sends the person clicked from the statistics without her id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "group_stats")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone who left in Por pessoa WHEN tapping their row THEN still sends the person clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            val withFormer = expense(
+                id = "dinner",
+                amountMinor = 20_000,
+                spentAt = today,
+                payers = listOf(paid(FORMER, 20_000)),
+                shares = listOf(share(FORMER, 10_000), share(PIERRE, 10_000)),
+            )
+            prepareScenario(stored = listOf(withFormer))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(FORMER))
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "group_stats")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the statistics WHEN tapping Maior despesa THEN sends the bill clicked from the statistics`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
+
+            // Then
+            assertEquals(listOf("bill_clicked" to mapOf<String, Any>("source" to "group_stats")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group without bills WHEN tapping Rachar conta THEN sends the split bill clicked from there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = emptyList())
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_clicked" to mapOf<String, Any>("source" to "group_stats")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN an empty last month WHEN tapping Ver toda a viagem THEN sends the whole period clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.LAST_MONTH))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnWholePeriodClicked)
+
+            // Then
+            assertEquals(listOf("stats_whole_period_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the statistics WHEN tapping back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the statistics WHEN the rail opens Grupos THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnRailTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the statistics WHEN they open and a sync brings a bill THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        expenses.expenses.value = tripBills + expense(
+            id = "taxi",
+            amountMinor = 5_000,
+            spentAt = today,
+            payers = listOf(paid(ANA, 5_000)),
+            shares = listOf(share(ANA, 2_500), share(PIERRE, 2_500)),
+        )
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val route = Route.GroupStats(GROUP_ID)
 
     // Why: the back stack the statistics open on, over the group's Despesas over Grupos.

@@ -10,10 +10,8 @@ private const val SOURCE = "global_balances"
 sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            is OnFilterChanged -> EventAnalytics.Automatic(
-                "balances_filter_selected",
-                mapOf("filter" to filter, "source" to SOURCE),
-            )
+            // Why: only another filter, never the one already picked.
+            is OnFilterChanged -> EventAnalytics.Manual("balances_filter_selected")
 
             // Why: a toggle, sent with where it ended up.
             is OnPersonExpandToggled -> EventAnalytics.Manual("balances_person_expand_toggled")

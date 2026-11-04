@@ -1910,6 +1910,339 @@ class RegisterPaymentViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN the form open WHEN typing the amount THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val typed = RegisterPaymentUiEvent.OnAmountChanged("10,00")
+
+        // When
+        viewModel.onEvent(typed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the form open WHEN tapping close THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val close = RegisterPaymentUiEvent.OnCloseClicked
+
+        // When
+        viewModel.onEvent(close)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an amount typed WHEN tapping Toda a divida THEN tracks the full debt tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("10,00")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnFullDebtClicked)
+
+        // Then
+        assertEquals(listOf("payment_full_debt_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the form open WHEN picking Transferencia THEN tracks the method picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val picked = RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.TRANSFER)
+
+        // When
+        viewModel.onEvent(picked)
+
+        // Then
+        assertEquals(
+            listOf("payment_method_selected" to mapOf<String, Any>("method" to SettlementMethod.TRANSFER)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the form open WHEN opening the Quando picker THEN tracks the date tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val opened = RegisterPaymentUiEvent.OnPaidAtOpened
+
+        // When
+        viewModel.onEvent(opened)
+
+        // Then
+        assertEquals(listOf("payment_date_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the form open WHEN picking a date THEN tracks the date picked without the date`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val picked = RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis - 24 * HOUR)
+
+            // When
+            viewModel.onEvent(picked)
+
+            // Then
+            assertEquals(listOf("payment_date_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the form open WHEN tapping a face THEN tracks the person tap from this screen with no id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tap = RegisterPaymentUiEvent.OnPersonClicked(ANA)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                listOf("person_clicked" to mapOf<String, Any>("source" to "register_payment")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana owes you WHEN confirming the whole debt THEN tracks the tap and the payment received`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    confirmClicked,
+                    paymentRecorded(
+                        method = SettlementMethod.PIX,
+                        kind = PaymentKind.RECEIVED,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Diego owes Bruno WHEN confirming part of it THEN tracks a partial payment between others`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = BRUNO,
+            )
+            typeAmount("30,50")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.TRANSFER))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    confirmClicked,
+                    paymentRecorded(
+                        method = SettlementMethod.TRANSFER,
+                        kind = PaymentKind.BETWEEN_OTHERS,
+                        isFullDebt = false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user owes Bruno WHEN confirming by cash THEN tracks the payment as paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = PIERRE,
+                to = BRUNO,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    confirmClicked,
+                    paymentRecorded(
+                        method = SettlementMethod.CASH,
+                        kind = PaymentKind.PAID,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN confirming THEN tracks the tap and the payment recorded`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                confirmClicked,
+                paymentRecorded(
+                    method = SettlementMethod.PIX,
+                    kind = PaymentKind.RECEIVED,
+                    isFullDebt = true,
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN an amount over the debt WHEN tapping confirm THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("200,00")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf(confirmClicked), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the amount cleared WHEN tapping confirm THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf(confirmClicked), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN nothing read yet WHEN tapping confirm THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isGroupRead = false)
+        typeAmount("10,00")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf(confirmClicked), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN tapping confirm THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(recordError = IllegalStateException("disk full"))
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf(confirmClicked), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a failed save WHEN confirming again and it saves THEN tracks both taps and one payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordError = IllegalStateException("disk full"))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            settlements.recordError = null
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    confirmClicked,
+                    confirmClicked,
+                    paymentRecorded(
+                        method = SettlementMethod.PIX,
+                        kind = PaymentKind.RECEIVED,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a second tap on confirm while saving WHEN the save finishes THEN tracks both taps and one payment`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(
+                listOf(
+                    confirmClicked,
+                    confirmClicked,
+                    paymentRecorded(
+                        method = SettlementMethod.PIX,
+                        kind = PaymentKind.RECEIVED,
+                        isFullDebt = true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a save in flight WHEN it has not finished yet THEN tracks only the tap`() = runTest(testDispatcher) {
+        // Given
+        val gate = CompletableDeferred<Unit>()
+        prepareScenario(recordGate = gate)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(listOf(confirmClicked), trackedEvents)
+    }
+
+    private val confirmClicked = "payment_confirm_clicked" to emptyMap<String, Any>()
+
+    // Why: a pair of one group always records a single payment through the form.
+    private fun paymentRecorded(
+        method: SettlementMethod,
+        kind: PaymentKind,
+        isFullDebt: Boolean,
+    ): Pair<String, Map<String, Any>> = "payment_recorded" to mapOf(
+        "method" to method,
+        "way" to "form",
+        "kind" to kind,
+        "groups" to 1,
+        "is_full_debt" to isFullDebt,
+    )
+
     // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
         viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged(""))

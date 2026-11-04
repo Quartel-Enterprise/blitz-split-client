@@ -10,7 +10,8 @@ sealed interface PaymentKeyUiEvent : TrackedUiEvent {
             // Why: a back, which each platform also does its own way: where it went is its screen view.
             OnBackClicked -> EventAnalytics.NotTracked
 
-            is OnTypeSelected -> EventAnalytics.Automatic("payment_key_type_selected", mapOf("type" to type))
+            // Why: only another type of the key's method, never the one already picked.
+            is OnTypeSelected -> EventAnalytics.Manual("payment_key_type_selected")
 
             // Why: typed letter by letter, and the field losing focus, which nobody taps; the key shows when saved.
             is OnInputChanged,

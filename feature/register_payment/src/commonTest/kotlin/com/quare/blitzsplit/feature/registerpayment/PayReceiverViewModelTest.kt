@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymen
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
@@ -720,6 +721,125 @@ class PayReceiverViewModelTest {
             assertTrue(state.showsReceiverKeys)
             assertTrue(state.canMarkAsPaid)
         }
+
+    @Test
+    fun `GIVEN Pix and Bitcoin keys WHEN picking Bitcoin THEN tracks the key method picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val picked = RegisterPaymentUiEvent.OnKeyMethodPicked(PaymentMethod.BITCOIN)
+
+            // When
+            viewModel.onEvent(picked)
+
+            // Then
+            assertEquals(
+                listOf("payment_key_method_selected" to mapOf<String, Any>("method" to PaymentMethod.BITCOIN)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the keys shown WHEN tapping Paguei outro valor THEN tracks the tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val tap = RegisterPaymentUiEvent.OnPayOtherwiseClicked
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(listOf("payment_pay_otherwise_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Pix shown WHEN tapping Marcar como pago THEN tracks the tap and the whole debt paid by Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(
+                listOf(markAsPaidClicked, paymentMarkedAsPaid(SettlementMethod.PIX)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Bitcoin shown WHEN tapping Marcar como pago THEN tracks the payment as another method`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(PaymentMethod.BITCOIN))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(
+                listOf(markAsPaidClicked, paymentMarkedAsPaid(SettlementMethod.OTHER)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN part of the debt typed WHEN tapping Marcar como pago THEN tracks the whole debt paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("10,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(
+                listOf(markAsPaidClicked, paymentMarkedAsPaid(SettlementMethod.PIX)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the form without keys WHEN tapping Marcar como pago THEN tracks only the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(brunoKeys = emptyList())
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf(markAsPaidClicked), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN tapping Marcar como pago THEN tracks only the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordError = IllegalStateException("disk full"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf(markAsPaidClicked), trackedEvents)
+        }
+
+    private val markAsPaidClicked = "payment_mark_as_paid_clicked" to emptyMap<String, Any>()
+
+    // Why: this device's user pays Bruno the whole debt of one group, the way "Marcar como pago" records it.
+    private fun paymentMarkedAsPaid(method: SettlementMethod): Pair<String, Map<String, Any>> =
+        "payment_recorded" to mapOf(
+            "method" to method,
+            "way" to "mark_as_paid",
+            "kind" to PaymentKind.PAID,
+            "groups" to 1,
+            "is_full_debt" to true,
+        )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 

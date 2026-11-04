@@ -613,6 +613,37 @@ class PickPaymentViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN the picker over Inicio WHEN tapping a pair THEN tracks the pair picked without its ids`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tap = PickPaymentUiEvent.OnPairClicked(
+                TRIP,
+                fromMemberId = BRUNO,
+                toMemberId = PIERRE,
+            )
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(listOf("pick_payment_pair_selected" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the picker over Inicio WHEN dismissing it THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val dismiss = PickPaymentUiEvent.OnDismissed
+
+        // When
+        viewModel.onEvent(dismiss)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val pierre = member(PIERRE, "Pierre Vieira", AvatarColor.BLUE, isMe = true)
     private val ana = member(ANA, "Ana Paula", AvatarColor.PEACH)
     private val bruno = member(BRUNO, "Bruno", AvatarColor.LILAC)

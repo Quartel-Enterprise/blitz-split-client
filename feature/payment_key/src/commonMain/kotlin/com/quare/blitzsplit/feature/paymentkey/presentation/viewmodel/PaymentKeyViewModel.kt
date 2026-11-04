@@ -163,6 +163,7 @@ class PaymentKeyViewModel(
 
     private fun selectType(type: PaymentKeyType) {
         if (type.method != route.method || type == uiState.value.type) return
+        trackEvent("payment_key_type_selected", mapOf("type" to type))
         drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed)
         val draft = drafts[type]
         val input = formatPaymentKeyInput(type, draft?.input.orEmpty())
