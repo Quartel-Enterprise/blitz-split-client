@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -8,6 +9,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
@@ -444,6 +446,467 @@ class BillCommentsTest {
         assertNull(row.authorMemberId)
     }
 
+    @Test
+    fun `GIVEN a deleted comment with a reply WHEN gathering the threads THEN keeps Comentario apagado over it`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                authorMemberId = PIERRE,
+                authorName = "Pierre",
+                body = "",
+                postedAt = now - 2 * HOUR,
+                isDeleted = true,
+                likes = listOf(like(memberId = ANA)),
+            ),
+            comment(
+                id = "r1",
+                threadId = "c1",
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val thread = threadsOf(comments, group, now, TimeZone.UTC).single()
+
+        // Then
+        val row = thread.comment
+        assertEquals("c1", row.id)
+        assertTrue(row.isDeleted)
+        assertTrue(row.likers.isEmpty())
+        assertEquals(0, row.likeCount)
+        assertFalse(row.isLikedByMe)
+        assertFalse(row.canInteract)
+        assertFalse(row.canChange)
+        assertEquals(listOf("r1"), thread.replies.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a deleted comment without replies WHEN gathering the threads THEN it is gone`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                body = "",
+                postedAt = now - 2 * HOUR,
+                isDeleted = true,
+            ),
+            comment(
+                id = "c2",
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val threads = threadsOf(comments, group, now, TimeZone.UTC)
+
+        // Then
+        assertEquals(listOf("c2"), threads.map { it.comment.id })
+    }
+
+    @Test
+    fun `GIVEN a deleted comment and its only reply deleted WHEN gathering the threads THEN the thread is gone`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                body = "",
+                postedAt = now - 2 * HOUR,
+                isDeleted = true,
+            ),
+            comment(
+                id = "r1",
+                threadId = "c1",
+                body = "",
+                postedAt = now - HOUR,
+                isDeleted = true,
+            ),
+        )
+
+        // When
+        val threads = threadsOf(comments, group, now, TimeZone.UTC)
+
+        // Then
+        assertTrue(threads.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a deleted reply WHEN gathering the threads THEN only the other replies show under the comment`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                postedAt = now - 3 * HOUR,
+            ),
+            comment(
+                id = "r1",
+                threadId = "c1",
+                body = "",
+                postedAt = now - 2 * HOUR,
+                isDeleted = true,
+            ),
+            comment(
+                id = "r2",
+                threadId = "c1",
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val thread = threadsOf(comments, group, now, TimeZone.UTC).single()
+
+        // Then
+        assertFalse(thread.comment.isDeleted)
+        assertEquals(listOf("r2"), thread.replies.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a comment edited and one never edited WHEN gathering the threads THEN only the first says editado`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                postedAt = now - 2 * HOUR,
+                editedAt = now - HOUR,
+            ),
+            comment(
+                id = "c2",
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val threads = threadsOf(comments, group, now, TimeZone.UTC)
+
+        // Then
+        assertTrue(threads[0].comment.isEdited)
+        assertFalse(threads[1].comment.isEdited)
+    }
+
+    @Test
+    fun `GIVEN likes by Ana someone who left and someone through the link WHEN gathering THEN names each liker`() {
+        // Given
+        val comments = listOf(
+            comment(
+                likes = listOf(
+                    like(
+                        memberId = ANA,
+                        name = "Ana",
+                    ),
+                    like(
+                        memberId = FORMER,
+                        name = "Carla",
+                    ),
+                    like(
+                        memberId = null,
+                        name = "Diego",
+                    ),
+                    like(
+                        memberId = null,
+                        name = null,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertEquals(
+            listOf(
+                BillCommentLiker(
+                    name = "Ana Paula",
+                    isMe = false,
+                ),
+                BillCommentLiker(
+                    name = "Carla",
+                    isMe = false,
+                ),
+                BillCommentLiker(
+                    name = "Diego",
+                    isMe = false,
+                ),
+                BillCommentLiker(
+                    name = null,
+                    isMe = false,
+                ),
+            ),
+            row.likers,
+        )
+        assertEquals(4, row.likeCount)
+        assertFalse(row.isLikedByMe)
+    }
+
+    @Test
+    fun `GIVEN the device user liked it on this device WHEN gathering the threads THEN the heart is filled`() {
+        // Given
+        val comments = listOf(
+            comment(
+                likes = listOf(
+                    like(memberId = ANA),
+                    like(
+                        memberId = PIERRE,
+                        name = "Pierre",
+                        isMine = true,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.isLikedByMe)
+        assertEquals(listOf(false, true), row.likers.map { it.isMe })
+        assertEquals(2, row.likeCount)
+    }
+
+    @Test
+    fun `GIVEN the member of the device user liked it on another device WHEN gathering THEN the like is theirs`() {
+        // Given
+        val comments = listOf(
+            comment(
+                likes = listOf(
+                    like(
+                        memberId = PIERRE,
+                        name = "Pierre",
+                        isMine = false,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertEquals(
+            listOf(
+                BillCommentLiker(
+                    name = "Pierre",
+                    isMe = true,
+                ),
+            ),
+            row.likers,
+        )
+        assertTrue(row.isLikedByMe)
+    }
+
+    @Test
+    fun `GIVEN a comment of the device user WHEN gathering the threads THEN they can change it and interact`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = PIERRE,
+                authorName = "Pierre",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.canChange)
+        assertTrue(row.canInteract)
+    }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN gathering the threads THEN the device user only interacts with it`() {
+        // Given
+        val comments = listOf(comment())
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertFalse(row.canChange)
+        assertTrue(row.canInteract)
+    }
+
+    @Test
+    fun `GIVEN the server says the caller wrote it on the link page WHEN gathering THEN it is theirs to change`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = null,
+                authorName = "Pierre",
+                isMine = true,
+                viaLink = true,
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, emptyList(), now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.isMe)
+        assertTrue(row.canChange)
+    }
+
+    @Test
+    fun `GIVEN the server says the caller liked it on the link page WHEN gathering THEN the heart is filled`() {
+        // Given
+        val comments = listOf(
+            comment(
+                likes = listOf(
+                    like(
+                        memberId = null,
+                        name = "Pierre",
+                        isMine = true,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, emptyList(), now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.isLikedByMe)
+        assertEquals(
+            listOf(
+                BillCommentLiker(
+                    name = "Pierre",
+                    isMe = true,
+                ),
+            ),
+            row.likers,
+        )
+    }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN replying to it THEN there is no reply target`() {
+        // Given
+        val threads = threadsOf(
+            listOf(
+                comment(
+                    id = "c1",
+                    body = "",
+                    postedAt = now - 2 * HOUR,
+                    isDeleted = true,
+                ),
+                comment(
+                    id = "r1",
+                    threadId = "c1",
+                    postedAt = now - HOUR,
+                ),
+            ),
+            group,
+            now,
+            TimeZone.UTC,
+        )
+
+        // When
+        val target = replyTargetOf(threads, "c1")
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a reply under a deleted comment WHEN replying to it THEN the reply joins that thread`() {
+        // Given
+        val threads = threadsOf(
+            listOf(
+                comment(
+                    id = "c1",
+                    body = "",
+                    postedAt = now - 2 * HOUR,
+                    isDeleted = true,
+                ),
+                comment(
+                    id = "r1",
+                    threadId = "c1",
+                    postedAt = now - HOUR,
+                ),
+            ),
+            group,
+            now,
+            TimeZone.UTC,
+        )
+
+        // When
+        val target = replyTargetOf(threads, "r1")
+
+        // Then
+        assertEquals("c1", target?.threadId)
+        assertEquals("r1", target?.commentId)
+        assertEquals("Bruno", target?.name)
+    }
+
+    @Test
+    fun `GIVEN a comment that is not shown WHEN replying to it THEN there is no reply target`() {
+        // Given
+        val threads = threadsOf(listOf(comment(id = "c1")), group, now, TimeZone.UTC)
+
+        // When
+        val target = replyTargetOf(threads, "unknown")
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a comment and its reply WHEN finding the reply THEN returns it`() {
+        // Given
+        val threads = threadsOf(
+            listOf(
+                comment(
+                    id = "c1",
+                    postedAt = now - 2 * HOUR,
+                ),
+                comment(
+                    id = "r1",
+                    threadId = "c1",
+                    authorMemberId = ANA,
+                    authorName = "Ana",
+                    postedAt = now - HOUR,
+                ),
+            ),
+            group,
+            now,
+            TimeZone.UTC,
+        )
+
+        // When
+        val found = threads.findComment("r1")
+
+        // Then
+        assertEquals("r1", found?.id)
+        assertEquals("Ana Paula", found?.authorName)
+    }
+
+    @Test
+    fun `GIVEN a deleted reply WHEN finding it THEN finds nothing`() {
+        // Given
+        val threads = threadsOf(
+            listOf(
+                comment(
+                    id = "c1",
+                    postedAt = now - 2 * HOUR,
+                ),
+                comment(
+                    id = "r1",
+                    threadId = "c1",
+                    body = "",
+                    postedAt = now - HOUR,
+                    isDeleted = true,
+                ),
+            ),
+            group,
+            now,
+            TimeZone.UTC,
+        )
+
+        // When
+        val found = threads.findComment("r1")
+
+        // Then
+        assertNull(found)
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val group = Group(
@@ -492,6 +955,10 @@ class BillCommentsTest {
         viaLink: Boolean = false,
         postedAt: Long = now - HOUR,
         isPending: Boolean = false,
+        editedAt: Long? = null,
+        isDeleted: Boolean = false,
+        isMine: Boolean = false,
+        likes: List<BillCommentLike> = emptyList(),
     ): BillComment = BillComment(
         id = id,
         expenseId = EXPENSE_ID,
@@ -505,10 +972,20 @@ class BillCommentsTest {
         viaLink = viaLink,
         postedAt = postedAt,
         isPending = isPending,
-        editedAt = null,
-        isDeleted = false,
-        isMine = false,
-        likes = emptyList(),
+        editedAt = editedAt,
+        isDeleted = isDeleted,
+        isMine = isMine,
+        likes = likes,
+    )
+
+    private fun like(
+        memberId: String?,
+        name: String? = null,
+        isMine: Boolean = false,
+    ): BillCommentLike = BillCommentLike(
+        memberId = memberId,
+        name = name,
+        isMine = isMine,
     )
 
     private companion object {

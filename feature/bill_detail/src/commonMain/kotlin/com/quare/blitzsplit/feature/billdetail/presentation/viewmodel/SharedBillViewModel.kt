@@ -118,9 +118,7 @@ class SharedBillViewModel(
     // Why: the comment typed keeps its id until it is up, so sending it again after a lost answer posts it once.
     private var commentId: String? = null
 
-    // Why: what was typed before "Editar" put a comment's text in the composer, given back once the edit ends.
-    private var draftBeforeEdit = ""
-    private var replyBeforeEdit: BillReplyTarget? = null
+    private val edit = CommentComposerEdit()
 
     // Why: the comment the link was shared at is looked for once, when the bill first shows.
     private var focusCommentId: String? = route.commentId
@@ -256,7 +254,12 @@ class SharedBillViewModel(
                 focusLinkedComment()
                 // Why: the comment being edited was deleted meanwhile, so the edit has nothing to save.
                 val editingId = uiState.value.editingCommentId
-                if (editingId != null && uiState.value.threads.findComment(editingId)?.canChange != true) stopEditing()
+                if (editingId != null && uiState.value.threads
+                        .findComment(editingId)
+                        ?.canChange != true
+                ) {
+                    stopEditing()
+                }
             }
         }
     }
@@ -389,30 +392,28 @@ class SharedBillViewModel(
     private fun startEditing(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canChange } ?: return
         if (!uiState.value.canChangeComments) return
-        if (!uiState.value.isEditingComment) {
-            draftBeforeEdit = uiState.value.commentDraft
-            replyBeforeEdit = uiState.value.replyTarget
-        }
-        uiState.update {
-            it.copy(
-                editingCommentId = comment.id,
-                commentDraft = comment.body,
-                replyTarget = null,
-            )
-        }
+        val state = uiState.value
+        show(
+            edit.start(
+                comment.id,
+                comment.body,
+                CommentComposer(state.editingCommentId, state.commentDraft, state.replyTarget),
+            ),
+        )
     }
 
     private fun stopEditing() {
-        if (!uiState.value.isEditingComment) return
+        if (uiState.value.isEditingComment) show(edit.stop())
+    }
+
+    private fun show(composer: CommentComposer) {
         uiState.update {
             it.copy(
-                editingCommentId = null,
-                commentDraft = draftBeforeEdit,
-                replyTarget = replyBeforeEdit,
+                editingCommentId = composer.editingCommentId,
+                commentDraft = composer.draft,
+                replyTarget = composer.replyTarget,
             )
         }
-        draftBeforeEdit = ""
-        replyBeforeEdit = null
     }
 
     // Why: straight to the server, so the edited text stays in the composer until it is up.

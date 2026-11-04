@@ -53,15 +53,6 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAc
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -77,6 +68,15 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 // Conta's "Anexos" (7.3g): the tiles, the signed URLs, adding and removing a photo and the viewer.
 class BillDetailAttachmentsTest {

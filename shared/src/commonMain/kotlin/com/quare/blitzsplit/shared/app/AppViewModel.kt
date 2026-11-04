@@ -26,7 +26,6 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +40,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 class AppViewModel(
     private val observeProfile: ObserveProfile,
@@ -131,7 +131,9 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
                 PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
-                SharedBillLink.codeOf(url)?.let { code -> return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url)) }
+                SharedBillLink.codeOf(url)?.let { code ->
+                    return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
+                }
                 BillCommentLink.targetOf(url)?.let { target -> return@onEach openBillCommentLink(target) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
@@ -175,16 +177,28 @@ class AppViewModel(
             val location = locateBill(target.expenseId)
             val groupId = when (location) {
                 is BillLocation.Found -> location.groupId
+
                 is BillLocation.Deleted -> location.groupId
+
                 BillLocation.OutOfReach -> null
-                BillLocation.Unknown -> return@launch run { billLinkNotice.value = BillLinkNoticeState(BillLinkNotice.OFFLINE) }
+
+                BillLocation.Unknown -> return@launch run {
+                    billLinkNotice.value =
+                        BillLinkNoticeState(BillLinkNotice.OFFLINE)
+                }
             }
             if (groupId == null || observeGroup(groupId).first() == null) {
                 billLinkNotice.value = BillLinkNoticeState(BillLinkNotice.NOT_IN_GROUP)
                 return@launch
             }
             if (location is BillLocation.Deleted) noticeBillGone(groupId, target.expenseId)
-            navigator.navigate(Route.GroupDetail(groupId, joinedAs = null, tab = GroupTab.EXPENSES))
+            navigator.navigate(
+                Route.GroupDetail(
+                    groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
             if (observeExpense(target.expenseId).first() != null) {
                 navigator.navigate(Route.BillDetail(groupId, target.expenseId, focusCommentId = target.commentId))
             }

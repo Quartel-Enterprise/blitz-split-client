@@ -34,7 +34,7 @@ class RoomBillCommentLocalDataSource(
         dao.insertCommentOnBill(entity)
     }
 
-    override suspend fun editComment(
+    override suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,

@@ -1362,7 +1362,13 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null), Route.Profile),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null),
+                    Route.Profile,
+                ),
                 navigator.backStack.value,
             )
         }

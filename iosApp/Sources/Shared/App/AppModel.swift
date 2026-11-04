@@ -9,6 +9,8 @@ final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
     private(set) var theme: ThemePreference
+    /// Why a comment's link opened nothing ("You're not in this group"), shown over wherever the app is; nil for none.
+    private(set) var billLinkNotice: BillLinkNotice?
     /// Whether the window has an iPad's room (`ScreenLayout.isLarge`), which decides whether a key or a bill opens as
     /// a sheet. Nil until the root first measures the window, so nothing is pushed or presented by a guess; it only
     /// changes when the window crosses the threshold, never on each step of a live resize.
@@ -38,6 +40,9 @@ final class AppModel {
         })
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
+        })
+        watches.add(viewModel.billLinkNoticeWatcher.observe { [weak self] state in
+            self?.billLinkNotice = state.notice
         })
     }
 
@@ -87,6 +92,12 @@ final class AppModel {
     /// Whether the root measured the window yet: until then it draws nothing, as while the start route loads.
     var isWindowMeasured: Bool {
         isLargeWindow != nil
+    }
+
+    /// "Go to Home" on the bill link's notice, or the notice closed some other way: back to Início.
+    func dismissBillLinkNotice() {
+        guard (holder.viewModel.billLinkNotice.value as? BillLinkNoticeState)?.notice != nil else { return }
+        holder.viewModel.onBillLinkNoticeDismissed()
     }
 
     /// The root's measure of the window, kept only when it moves `isLargeWindow`.

@@ -16,6 +16,9 @@ class FakeBillCommentRepository(
     val comments = MutableStateFlow(initialComments)
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+
+    // Why: when each like or its undoing was stamped, in the order they came.
+    val likedAts = mutableListOf<Long>()
     var addError: Throwable? = null
     var addGate: CompletableDeferred<Unit>? = null
     var changeError: Throwable? = null
@@ -37,28 +40,43 @@ class FakeBillCommentRepository(
         return Result.success(Unit)
     }
 
-    override suspend fun editComment(
+    override suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,
-    ): Result<Unit> = change(id) { it.copy(body = body, editedAt = editedAt) }
+    ): Result<Unit> = updateStored(id) {
+        it.copy(
+            body = body,
+            editedAt = editedAt,
+        )
+    }
 
-    override suspend fun deleteComment(id: String): Result<Unit> = change(id) { it.copy(body = "", isDeleted = true) }
+    override suspend fun deleteComment(id: String): Result<Unit> = updateStored(id) {
+        it.copy(
+            body = "",
+            isDeleted = true,
+        )
+    }
 
-    override suspend fun setLike(
+    override suspend fun updateLike(
         commentId: String,
         groupId: String,
         isLiked: Boolean,
         memberId: String?,
         likerName: String?,
         at: Long,
-    ): Result<Unit> = change(commentId) { comment ->
+    ): Result<Unit> = updateStored(commentId) { comment ->
+        likedAts += at
         val others = comment.likes.filterNot { it.isMine }
-        val mine = BillCommentLike(memberId = memberId, name = likerName, isMine = true)
+        val mine = BillCommentLike(
+            memberId = memberId,
+            name = likerName,
+            isMine = true,
+        )
         comment.copy(likes = if (isLiked) others + mine else others)
     }
 
-    private fun change(
+    private fun updateStored(
         id: String,
         transform: (BillComment) -> BillComment,
     ): Result<Unit> {

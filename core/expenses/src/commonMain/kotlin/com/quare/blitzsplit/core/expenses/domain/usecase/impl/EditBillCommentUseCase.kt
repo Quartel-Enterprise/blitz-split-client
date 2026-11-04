@@ -15,6 +15,6 @@ class EditBillCommentUseCase(
         body: String,
     ): Result<Unit> {
         if (!BillCommentRules.isBodyValid(body)) return Result.failure(IllegalArgumentException("Invalid comment"))
-        return repository.editComment(id, body.trim(), currentTimeMillis())
+        return repository.updateComment(id, body.trim(), currentTimeMillis())
     }
 }

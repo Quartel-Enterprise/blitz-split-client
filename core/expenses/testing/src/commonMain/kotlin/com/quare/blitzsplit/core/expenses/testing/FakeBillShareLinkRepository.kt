@@ -54,6 +54,9 @@ class FakeBillShareLinkRepository(
     var updateGate: CompletableDeferred<Unit>? = null
     var commentGate: CompletableDeferred<Unit>? = null
 
+    // Why: holds an edit, a deletion or a like of a comment until the test completes it.
+    var changeGate: CompletableDeferred<Unit>? = null
+
     override suspend fun fetchLink(expenseId: String): Result<BillShareLink?> {
         loadedLinkIds += expenseId
         loadGate?.await()
@@ -105,11 +108,12 @@ class FakeBillShareLinkRepository(
         return Result.success(commentOutcome)
     }
 
-    override suspend fun editSharedBillComment(
+    override suspend fun updateSharedBillComment(
         code: String,
         id: String,
         body: String,
     ): Result<SharedBillComment> {
+        changeGate?.await()
         changeError?.let { return Result.failure(it) }
         editedComments += Triple(code, id, body)
         return Result.success(changeOutcome)
@@ -119,16 +123,18 @@ class FakeBillShareLinkRepository(
         code: String,
         id: String,
     ): Result<SharedBillComment> {
+        changeGate?.await()
         changeError?.let { return Result.failure(it) }
         deletedComments += code to id
         return Result.success(changeOutcome)
     }
 
-    override suspend fun likeSharedBillComment(
+    override suspend fun updateSharedBillCommentLike(
         code: String,
         id: String,
         isLiked: Boolean,
     ): Result<SharedBillComment> {
+        changeGate?.await()
         changeError?.let { return Result.failure(it) }
         likedComments += Triple(code, id, isLiked)
         return Result.success(changeOutcome)

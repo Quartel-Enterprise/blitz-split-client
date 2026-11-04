@@ -81,7 +81,8 @@ interface BillCommentLikeDao {
         val pendingMine = getPendingCommentIds().toSet()
         upsertLikes(
             entities.filter { like ->
-                !(like.likerKey == BillCommentLikeEntity.ME && like.commentId in pendingMine) && hasComment(like.commentId)
+                !(like.likerKey == BillCommentLikeEntity.ME && like.commentId in pendingMine) &&
+                    hasComment(like.commentId)
             },
         )
     }

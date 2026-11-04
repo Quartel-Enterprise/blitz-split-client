@@ -19,7 +19,7 @@ interface BillCommentRepository {
     suspend fun addComment(comment: BillComment): Result<Unit>
 
     // Why: the author's new text, offline too; fails when the comment is gone or deleted.
-    suspend fun editComment(
+    suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,
@@ -29,7 +29,7 @@ interface BillCommentRepository {
     suspend fun deleteComment(id: String): Result<Unit>
 
     // Why: this device's user's like or its undoing, offline too; fails when the comment is gone.
-    suspend fun setLike(
+    suspend fun updateLike(
         commentId: String,
         groupId: String,
         isLiked: Boolean,

@@ -15,7 +15,7 @@ class LikeBillCommentUseCase(
         isLiked: Boolean,
         memberId: String?,
         likerName: String?,
-    ): Result<Unit> = repository.setLike(
+    ): Result<Unit> = repository.updateLike(
         commentId = commentId,
         groupId = groupId,
         isLiked = isLiked,

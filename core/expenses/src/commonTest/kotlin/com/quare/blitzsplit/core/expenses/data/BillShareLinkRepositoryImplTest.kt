@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -26,7 +27,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
-import kotlinx.coroutines.test.runTest
 
 class BillShareLinkRepositoryImplTest {
     private lateinit var remote: FakeBillShareLinkRemoteDataSource
@@ -387,6 +387,216 @@ class BillShareLinkRepositoryImplTest {
         assertIs<IllegalStateException>(result.exceptionOrNull())
     }
 
+    @Test
+    fun `GIVEN my comment on the link page WHEN editing it THEN sends the code the comment and the text`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        repository.updateSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+            body = "Já paguei, Ana",
+        )
+
+        // Then
+        assertEquals(
+            listOf<Any>(
+                EditSharedBillCommentParamsDto(
+                    code = CODE,
+                    id = "comment-9",
+                    body = "Já paguei, Ana",
+                ),
+            ),
+            remote.sentChanges,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server takes the edit WHEN editing through the link THEN is posted`() = runTest {
+        // Given
+        prepareScenario(commentStatus = "ok")
+
+        // When
+        val result = repository.updateSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+            body = "Já paguei",
+        )
+
+        // Then
+        assertEquals(SharedBillComment.POSTED, result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN the link stopped working WHEN editing through it THEN is not found`() = runTest {
+        // Given
+        prepareScenario(commentStatus = "not_found")
+
+        // When
+        val result = repository.updateSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+            body = "Já paguei",
+        )
+
+        // Then
+        assertEquals(SharedBillComment.NOT_FOUND, result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN editing through the link THEN fails`() = runTest {
+        // Given
+        prepareScenario(remoteError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.updateSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+            body = "Já paguei",
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN my comment on the link page WHEN deleting it THEN sends the code and the comment`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = repository.deleteSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+        )
+
+        // Then
+        assertEquals(SharedBillComment.POSTED, result.getOrThrow())
+        assertEquals(
+            listOf<Any>(
+                DeleteSharedBillCommentParamsDto(
+                    code = CODE,
+                    id = "comment-9",
+                ),
+            ),
+            remote.sentChanges,
+        )
+    }
+
+    @Test
+    fun `GIVEN the link became members only WHEN deleting through it THEN is members only`() = runTest {
+        // Given
+        prepareScenario(commentStatus = "members_only")
+
+        // When
+        val result = repository.deleteSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+        )
+
+        // Then
+        assertEquals(SharedBillComment.MEMBERS_ONLY, result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN deleting through the link THEN fails`() = runTest {
+        // Given
+        prepareScenario(remoteError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.deleteSharedBillComment(
+            code = CODE,
+            id = "comment-9",
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN a comment on the link page WHEN liking it THEN sends it liked`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = repository.updateSharedBillCommentLike(
+            code = CODE,
+            id = "comment-9",
+            isLiked = true,
+        )
+
+        // Then
+        assertEquals(SharedBillComment.POSTED, result.getOrThrow())
+        assertEquals(
+            listOf<Any>(
+                LikeSharedBillCommentParamsDto(
+                    code = CODE,
+                    id = "comment-9",
+                    liked = true,
+                ),
+            ),
+            remote.sentChanges,
+        )
+    }
+
+    @Test
+    fun `GIVEN a comment I liked on the link page WHEN undoing the like THEN sends it unliked`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        repository.updateSharedBillCommentLike(
+            code = CODE,
+            id = "comment-9",
+            isLiked = false,
+        )
+
+        // Then
+        assertEquals(
+            listOf<Any>(
+                LikeSharedBillCommentParamsDto(
+                    code = CODE,
+                    id = "comment-9",
+                    liked = false,
+                ),
+            ),
+            remote.sentChanges,
+        )
+    }
+
+    @Test
+    fun `GIVEN an answer of an unknown status WHEN liking through the link THEN fails`() = runTest {
+        // Given
+        prepareScenario(commentStatus = "rate_limited")
+
+        // When
+        val result = repository.updateSharedBillCommentLike(
+            code = CODE,
+            id = "comment-9",
+            isLiked = true,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN liking through the link THEN fails`() = runTest {
+        // Given
+        prepareScenario(remoteError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.updateSharedBillCommentLike(
+            code = CODE,
+            id = "comment-9",
+            isLiked = true,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
     private suspend fun comment(): Result<SharedBillComment> = repository.createSharedBillComment(
         code = CODE,
         id = "comment-9",
@@ -538,7 +748,7 @@ private class FakeBillShareLinkRemoteDataSource(
 
     val sentChanges = mutableListOf<Any>()
 
-    override suspend fun editSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto {
+    override suspend fun updateSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto {
         error?.let { throw it }
         sentChanges += params
         return SharedBillStatusDto(status = commentStatus)
@@ -550,7 +760,7 @@ private class FakeBillShareLinkRemoteDataSource(
         return SharedBillStatusDto(status = commentStatus)
     }
 
-    override suspend fun likeSharedBillComment(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto {
+    override suspend fun updateSharedBillCommentLike(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto {
         error?.let { throw it }
         sentChanges += params
         return SharedBillStatusDto(status = commentStatus)

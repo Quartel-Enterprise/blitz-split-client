@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-// Why: one comment on a bill ("Comentários", 7.3), as written on a device or as the server stamped it.
-// Only its author edits or deletes it (beta feedback 14).
+/*
+ * Why: one comment on a bill ("Comentários", 7.3), as written on a device or as the server stamped it.
+ * Only its author edits or deletes it (beta feedback 14).
+ */
 data class BillComment(
     val id: String,
     val expenseId: String,

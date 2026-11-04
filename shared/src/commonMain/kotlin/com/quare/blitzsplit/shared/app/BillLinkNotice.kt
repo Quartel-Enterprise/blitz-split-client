@@ -8,8 +8,3 @@ enum class BillLinkNotice {
     // Why: the bill isn't on the device and the server couldn't be asked: "Sem internet. Abra o link de novo quando reconectar."
     OFFLINE,
 }
-
-// Why: the notice shown, null for none, in a holder the platforms' watchers take.
-data class BillLinkNoticeState(
-    val notice: BillLinkNotice?,
-)

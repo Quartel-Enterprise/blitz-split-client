@@ -25,9 +25,9 @@ interface BillShareLinkRemoteDataSource {
 
     suspend fun createSharedBillComment(params: CommentOnSharedBillParamsDto): SharedBillStatusDto
 
-    suspend fun editSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto
+    suspend fun updateSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto
 
     suspend fun deleteSharedBillComment(params: DeleteSharedBillCommentParamsDto): SharedBillStatusDto
 
-    suspend fun likeSharedBillComment(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto
+    suspend fun updateSharedBillCommentLike(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto
 }

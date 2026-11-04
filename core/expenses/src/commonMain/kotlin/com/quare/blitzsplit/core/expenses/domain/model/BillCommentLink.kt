@@ -9,7 +9,9 @@ object BillCommentLink {
     const val COMMENT_PARAMETER = "comentario"
 
     // Why: any host, as an invite's, since the web app serves the path wherever it is hosted.
-    private val linkPattern = Regex("^https?://[^/?#]+/b/([0-9A-Fa-f-]{36})/?(\\?[^#]*)?(#.*)?$")
+    private val linkPattern = Regex(
+        "^https?://[^/?#]+/b/([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})/?(\\?[^#]*)?(#.*)?$",
+    )
 
     fun of(
         expenseId: String,
@@ -34,8 +36,3 @@ object BillCommentLink {
         ?.get(1)
         ?.takeIf { it.isNotEmpty() }
 }
-
-data class BillCommentTarget(
-    val expenseId: String,
-    val commentId: String?,
-)

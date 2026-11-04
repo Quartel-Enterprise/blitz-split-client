@@ -30,7 +30,7 @@ interface BillShareLinkRepository {
     ): Result<SharedBillComment>
 
     // Why: the caller's own comment, through the link; NEEDS_NAME never comes back.
-    suspend fun editSharedBillComment(
+    suspend fun updateSharedBillComment(
         code: String,
         id: String,
         body: String,
@@ -41,7 +41,7 @@ interface BillShareLinkRepository {
         id: String,
     ): Result<SharedBillComment>
 
-    suspend fun likeSharedBillComment(
+    suspend fun updateSharedBillCommentLike(
         code: String,
         id: String,
         isLiked: Boolean,

@@ -35,19 +35,19 @@ class BillCommentRepositoryImpl(
         local.insertComment(mapper.toEntity(comment))
     }
 
-    override suspend fun editComment(
+    override suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,
     ): Result<Unit> = suspendRunCatching {
-        check(local.editComment(id, body, editedAt)) { "No comment $id to edit" }
+        check(local.updateComment(id, body, editedAt)) { "No comment $id to edit" }
     }
 
     override suspend fun deleteComment(id: String): Result<Unit> = suspendRunCatching {
         check(local.deleteComment(id)) { "No comment $id" }
     }
 
-    override suspend fun setLike(
+    override suspend fun updateLike(
         commentId: String,
         groupId: String,
         isLiked: Boolean,

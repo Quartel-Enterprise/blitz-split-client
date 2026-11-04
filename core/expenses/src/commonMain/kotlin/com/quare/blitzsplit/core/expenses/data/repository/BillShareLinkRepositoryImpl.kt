@@ -73,12 +73,12 @@ class BillShareLinkRepositoryImpl(
         mapper.toDomain(remote.createSharedBillComment(params))
     }
 
-    override suspend fun editSharedBillComment(
+    override suspend fun updateSharedBillComment(
         code: String,
         id: String,
         body: String,
     ): Result<SharedBillComment> = suspendRunCatching {
-        mapper.toDomain(remote.editSharedBillComment(EditSharedBillCommentParamsDto(code, id, body)))
+        mapper.toDomain(remote.updateSharedBillComment(EditSharedBillCommentParamsDto(code, id, body)))
     }
 
     override suspend fun deleteSharedBillComment(
@@ -88,11 +88,11 @@ class BillShareLinkRepositoryImpl(
         mapper.toDomain(remote.deleteSharedBillComment(DeleteSharedBillCommentParamsDto(code, id)))
     }
 
-    override suspend fun likeSharedBillComment(
+    override suspend fun updateSharedBillCommentLike(
         code: String,
         id: String,
         isLiked: Boolean,
     ): Result<SharedBillComment> = suspendRunCatching {
-        mapper.toDomain(remote.likeSharedBillComment(LikeSharedBillCommentParamsDto(code, id, isLiked)))
+        mapper.toDomain(remote.updateSharedBillCommentLike(LikeSharedBillCommentParamsDto(code, id, isLiked)))
     }
 }

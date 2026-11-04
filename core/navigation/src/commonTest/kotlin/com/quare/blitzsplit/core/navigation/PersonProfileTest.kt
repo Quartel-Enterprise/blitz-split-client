@@ -20,7 +20,11 @@ class PersonProfileTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null), Route.ContactProfile(PERSON_KEY)),
+            listOf(
+                Route.Home,
+                Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
+                Route.ContactProfile(PERSON_KEY),
+            ),
             navigator.backStack.value,
         )
     }
@@ -129,7 +133,9 @@ class PersonProfileTest {
 
     private fun prepareScenario() {
         navigator =
-            BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null)) }
+            BackStackNavigator(startRoute = Route.Home).also {
+                it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null))
+            }
     }
 
     private companion object {

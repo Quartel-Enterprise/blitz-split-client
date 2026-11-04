@@ -108,6 +108,11 @@ class ExpenseRepositoryImpl(
     }
 
     override suspend fun fetchServerBill(id: String): Result<ServerBill?> = suspendRunCatching {
-        remote.fetchServerBill(id)?.let { ServerBill(groupId = it.groupId, isDeleted = it.isDeleted) }
+        remote.fetchServerBill(id)?.let {
+            ServerBill(
+                groupId = it.groupId,
+                isDeleted = it.isDeleted,
+            )
+        }
     }
 }

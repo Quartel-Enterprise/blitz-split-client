@@ -45,4 +45,3 @@ data class BillCommentRow(
     val canInteract: Boolean
         get() = !isDeleted
 }
-

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -32,20 +33,13 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillStatus
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +53,15 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class SharedBillViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -1068,7 +1071,588 @@ class SharedBillViewModelTest {
             assertEquals("photo-2", viewModel.uiState.value.viewedAttachmentId)
         }
 
-    private val route = Route.SharedBill(code = CODE, commentId = null)
+    @Test
+    fun `GIVEN a comment the caller wrote WHEN tapping Editar on it THEN its text goes in the composer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("mine", state.editingCommentId)
+            assertTrue(state.isEditingComment)
+            assertEquals("Valeu, Bruno!", state.commentDraft)
+            assertNull(state.replyTarget)
+        }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping Editar on it THEN nothing is edited`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("c1"))
+
+        // Then
+        assertNull(viewModel.uiState.value.editingCommentId)
+        assertEquals("", viewModel.uiState.value.commentDraft)
+    }
+
+    @Test
+    fun `GIVEN the page shown WHEN the internet goes THEN no comment can be changed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+        assertTrue(viewModel.uiState.value.canChangeComments)
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertFalse(viewModel.uiState.value.canChangeComments)
+    }
+
+    @Test
+    fun `GIVEN nobody signed in WHEN the page opens THEN no comment can be changed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            sharedBill = openBill(comments = withMine),
+            accountStatus = AccountStatus.LocalOnly,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.canChangeComments)
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote and no internet WHEN tapping Editar on it THEN nothing is edited`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            assertNull(viewModel.uiState.value.editingCommentId)
+        }
+
+    @Test
+    fun `GIVEN editing after typing a reply WHEN cancelling the edit THEN gives back what was typed and the reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditCancelled)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+            assertEquals("c1", state.replyTarget?.commentId)
+        }
+
+    @Test
+    fun `GIVEN a comment of the caller edited WHEN sending THEN saves it reads the bill again and ends the edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno! Até a próxima"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf(Triple(CODE, "mine", "Valeu, Bruno! Até a próxima")), links.editedComments)
+            assertTrue(links.postedComments.isEmpty())
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+            assertFalse(state.isChangingComment)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the link became only for the group WHEN saving an edit THEN reads the page again and the edit stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sharedBill = openBill(comments = withMine),
+                changeOutcome = SharedBillComment.MEMBERS_ONLY,
+            )
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno! Até a próxima"))
+            links.sharedBills.value = mapOf(CODE to SharedBill.MembersOnly)
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            val state = viewModel.uiState.value
+            assertEquals(SharedBillStatus.MEMBERS_ONLY, state.status)
+            assertEquals("mine", state.editingCommentId)
+            assertEquals("Valeu, Bruno! Até a próxima", state.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN the server does not answer WHEN saving an edit THEN says it failed keeps the edit and reads nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sharedBill = openBill(comments = withMine),
+                changeError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno! Até a próxima"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentChangeError), actions)
+            assertEquals(listOf(CODE), links.loadedCodes)
+            val state = viewModel.uiState.value
+            assertEquals("mine", state.editingCommentId)
+            assertEquals("Valeu, Bruno! Até a próxima", state.commentDraft)
+            assertFalse(state.isChangingComment)
+        }
+
+    @Test
+    fun `GIVEN editing a comment WHEN the page reads it again deleted THEN the edit ends`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu levo"))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+        links.sharedBills.value = mapOf(CODE to openBill(comments = thread))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertNull(state.editingCommentId)
+        assertEquals("Eu levo", state.commentDraft)
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote WHEN tapping Apagar on it THEN asks first`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+        // Then
+        assertEquals("mine", viewModel.uiState.value.commentToDelete)
+        assertTrue(links.deletedComments.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping Apagar on it THEN asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("c1"))
+
+        // Then
+        assertNull(viewModel.uiState.value.commentToDelete)
+    }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN dismissing THEN closes the question`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.commentToDelete)
+        assertTrue(links.deletedComments.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN confirming THEN deletes it on the server and reads the bill again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf(CODE to "mine"), links.deletedComments)
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            assertNull(viewModel.uiState.value.commentToDelete)
+        }
+
+    @Test
+    fun `GIVEN editing the comment Apagar asks about WHEN confirming THEN the edit ends too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN the server does not answer WHEN deleting a comment THEN says it failed and reads nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sharedBill = openBill(comments = withMine),
+                changeError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentChangeError), actions)
+            assertEquals(listOf(CODE), links.loadedCodes)
+        }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping its heart THEN likes it on the server and reads the bill again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(listOf(Triple(CODE, "c1", true)), links.likedComments)
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            assertFalse(viewModel.uiState.value.isChangingComment)
+        }
+
+    @Test
+    fun `GIVEN a comment the caller liked WHEN tapping its heart THEN undoes the like`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+        // Then
+        assertEquals(listOf(Triple(CODE, "c1", false)), links.likedComments)
+    }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN tapping its heart THEN nothing is liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = deletedOverReply))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(links.likedComments.isEmpty())
+            assertEquals(listOf(CODE), links.loadedCodes)
+        }
+
+    @Test
+    fun `GIVEN the page shown and the internet gone WHEN tapping a heart THEN nothing is liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(links.likedComments.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the link turned off meanwhile WHEN tapping a heart THEN the page says the link no longer works`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(changeOutcome = SharedBillComment.NOT_FOUND)
+            links.sharedBills.value = emptyMap()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(SharedBillStatus.NOT_FOUND, viewModel.uiState.value.status)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a like on its way WHEN the server has not answered yet THEN no other change can go`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(changeGate = CompletableDeferred())
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isChangingComment)
+            assertFalse(state.canChangeComments)
+        }
+
+    @Test
+    fun `GIVEN a like on its way WHEN tapping another heart before it answers THEN only the first goes`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(changeGate = gate)
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("r1"))
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Triple(CODE, "c1", true)), links.likedComments)
+            assertFalse(viewModel.uiState.value.isChangingComment)
+        }
+
+    @Test
+    fun `GIVEN a comment liked by Ana and the caller WHEN tapping its count THEN lists who liked it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    BillCommentLiker(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                    BillCommentLiker(
+                        name = "Pierre",
+                        isMe = true,
+                    ),
+                ),
+                viewModel.uiState.value.likesComment
+                    ?.likers,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment nobody liked WHEN tapping its count THEN Curtidas stays closed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+
+        // Then
+        assertNull(viewModel.uiState.value.likesCommentId)
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN dismissing it THEN closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.likesComment)
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN the page reads the comment again without likes THEN it closes by itself`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+            links.sharedBills.value = mapOf(CODE to openBill(comments = listOf(likedByMe.copy(likes = emptyList()))))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertNull(viewModel.uiState.value.likesComment)
+        }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN sharing it THEN hands the page link at it with its text and the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentShareClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf<SharedBillUiAction>(
+                    SharedBillUiAction.ShareComment(
+                        BillCommentShare(
+                            link = "https://blitzsplit.com/c/$CODE?comentario=c1",
+                            authorName = "Carla",
+                            isMe = false,
+                            billDescription = "Jantar no Ostradamus",
+                            body = "Quem trouxe o vinho?",
+                        ),
+                    ),
+                ),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN sharing it THEN nothing is shared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = deletedOverReply))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentShareClicked("c1"))
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN the page opens THEN counts only the reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = deletedOverReply))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(1, state.commentCount)
+            assertTrue(
+                state.threads
+                    .single()
+                    .comment.isDeleted,
+            )
+        }
+
+    @Test
+    fun `GIVEN a link shared at the reply of Diego WHEN the bill shows THEN highlights it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(focusCommentId = "r1")
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals("r1", state.focusedCommentId)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a link shared at a comment no longer there WHEN the bill shows THEN says it was deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                loadGate = gate,
+                focusCommentId = "gone",
+            )
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.focusedCommentId)
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentGone), actions)
+        }
+
+    @Test
+    fun `GIVEN a link shared at a comment opened offline WHEN the internet comes back THEN highlights it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                focusCommentId = "c1",
+            )
+            assertTrue(actions.isEmpty())
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals("c1", viewModel.uiState.value.focusedCommentId)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the highlight shown WHEN the page reads the bill again THEN nothing is highlighted again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(focusCommentId = "c1")
+            viewModel.onEvent(SharedBillUiEvent.OnFocusedCommentShown)
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            assertNull(viewModel.uiState.value.focusedCommentId)
+        }
+
+    @Test
+    fun `GIVEN a link shared at a comment gone WHEN the page reads the bill again THEN says so only once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                loadGate = gate,
+                focusCommentId = "gone",
+            )
+            gate.complete(Unit)
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentGone), actions)
+        }
+
+    // Why: the comment the link was shared at, set by each scenario.
+    private var route = Route.SharedBill(
+        code = CODE,
+        commentId = null,
+    )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlyToday = Instant.parse("2026-10-30T01:00:00Z").toEpochMilliseconds()
@@ -1099,6 +1683,53 @@ class SharedBillViewModelTest {
             authorName = "Diego",
             threadId = "c1",
             viaLink = true,
+        ),
+    )
+
+    // Why: what Carla and Diego wrote, then the caller's own comment, which the server says is theirs.
+    private val withMine = thread + comment(
+        id = "mine",
+        authorName = "Pierre",
+        threadId = null,
+        viaLink = true,
+        body = "Valeu, Bruno!",
+        isMine = true,
+    )
+
+    // Why: Carla deleted what she asked, which stays as "Comentário apagado" over Diego's answer.
+    private val deletedOverReply = listOf(
+        comment(
+            id = "c1",
+            authorName = "Carla",
+            threadId = null,
+            viaLink = false,
+            body = "",
+            isDeleted = true,
+        ),
+        comment(
+            id = "r1",
+            authorName = "Diego",
+            threadId = "c1",
+            viaLink = true,
+        ),
+    )
+
+    private val likedByMe = comment(
+        id = "c1",
+        authorName = "Carla",
+        threadId = null,
+        viaLink = false,
+        likes = listOf(
+            BillCommentLike(
+                memberId = null,
+                name = "Ana",
+                isMine = false,
+            ),
+            BillCommentLike(
+                memberId = null,
+                name = "Pierre",
+                isMine = true,
+            ),
         ),
     )
 
@@ -1147,6 +1778,10 @@ class SharedBillViewModelTest {
         authorName: String,
         threadId: String?,
         viaLink: Boolean,
+        body: String = "Quem trouxe o vinho?",
+        isMine: Boolean = false,
+        isDeleted: Boolean = false,
+        likes: List<BillCommentLike> = emptyList(),
     ): BillComment = BillComment(
         id = id,
         expenseId = EXPENSE_ID,
@@ -1156,14 +1791,14 @@ class SharedBillViewModelTest {
         authorName = authorName,
         threadId = threadId,
         replyToName = null,
-        body = "Quem trouxe o vinho?",
+        body = body,
         viaLink = viaLink,
         postedAt = yesterdayEvening,
         isPending = false,
         editedAt = null,
-        isDeleted = false,
-        isMine = false,
-        likes = emptyList(),
+        isDeleted = isDeleted,
+        isMine = isMine,
+        likes = likes,
     )
 
     // Why: by default Bruno paid R$ 642 split equally among Ana, Bruno and Carla, seen by someone signed in.
@@ -1205,13 +1840,21 @@ class SharedBillViewModelTest {
         commentError: Throwable? = null,
         timeZone: TimeZone = TimeZone.UTC,
         accountStatus: AccountStatus = AccountStatus.Anonymous("user-pierre"),
+        changeOutcome: SharedBillComment = SharedBillComment.POSTED,
+        changeError: Throwable? = null,
+        changeGate: CompletableDeferred<Unit>? = null,
+        focusCommentId: String? = null,
     ) {
+        route = route.copy(commentId = focusCommentId)
         isOnline.value = online
         links = FakeBillShareLinkRepository(initialSharedBills = mapOf(CODE to sharedBill)).also {
             it.sharedBillError = sharedBillError
             it.loadGate = loadGate
             it.commentOutcome = commentOutcome
             it.commentError = commentError
+            it.changeOutcome = changeOutcome
+            it.changeError = changeError
+            it.changeGate = changeGate
         }
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense))
         profiles = FakeProfileRepository(initialProfile = storedProfile)

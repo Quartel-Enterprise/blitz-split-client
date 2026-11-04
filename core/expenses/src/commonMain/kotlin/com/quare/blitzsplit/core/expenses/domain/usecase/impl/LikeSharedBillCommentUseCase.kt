@@ -11,5 +11,5 @@ class LikeSharedBillCommentUseCase(
         code: String,
         id: String,
         isLiked: Boolean,
-    ): Result<SharedBillComment> = repository.likeSharedBillComment(code, id, isLiked)
+    ): Result<SharedBillComment> = repository.updateSharedBillCommentLike(code, id, isLiked)
 }

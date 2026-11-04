@@ -3,6 +3,9 @@ package com.quare.blitzsplit.feature.billdetail.presentation.model
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface BillDetailUiEvent : UiEvent {
+    // Why: what "Comentários" handles on its own (BillDetailComments).
+    sealed interface CommentEvent : BillDetailUiEvent
+
     data object OnBackClicked : BillDetailUiEvent
 
     // Why: a person's face or name (the split, who paid, a comment's author, Histórico), which opens their profile.
@@ -27,55 +30,55 @@ sealed interface BillDetailUiEvent : UiEvent {
 
     data class OnCommentChanged(
         val text: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
     // Why: "Enviar comentário", offline too: it waits in the queue.
-    data object OnSendCommentClicked : BillDetailUiEvent
+    data object OnSendCommentClicked : CommentEvent
 
     // Why: "Responder" under a comment or a reply.
     data class OnReplyClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
     // Why: the ✕ of "Respondendo a Diego".
-    data object OnReplyCancelled : BillDetailUiEvent
+    data object OnReplyCancelled : CommentEvent
 
     // Why: "Editar" in the menu of the user's own comment, which puts its text in the composer.
     data class OnCommentEditClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
     // Why: the ✕ of "Editando comentário", which gives the composer back what was typed before.
-    data object OnCommentEditCancelled : BillDetailUiEvent
+    data object OnCommentEditCancelled : CommentEvent
 
     // Why: "Apagar" in the menu of the user's own comment, which asks first.
     data class OnCommentDeleteClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
-    data object OnCommentDeleteConfirmed : BillDetailUiEvent
+    data object OnCommentDeleteConfirmed : CommentEvent
 
-    data object OnCommentDeleteDismissed : BillDetailUiEvent
+    data object OnCommentDeleteDismissed : CommentEvent
 
     // Why: the heart, which likes it or undoes the like, offline too.
     data class OnCommentLikeClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
     // Why: the count beside the heart (a long press or a hover too), which lists who liked it.
     data class OnCommentLikesClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
-    data object OnCommentLikesDismissed : BillDetailUiEvent
+    data object OnCommentLikesDismissed : CommentEvent
 
     // Why: "Compartilhar" in a comment's menu: its link with its text, through the system share.
     data class OnCommentShareClicked(
         val commentId: String,
-    ) : BillDetailUiEvent
+    ) : CommentEvent
 
     // Why: the comment a link opened at was scrolled to and highlighted.
-    data object OnFocusedCommentShown : BillDetailUiEvent
+    data object OnFocusedCommentShown : CommentEvent
 
     // Why: "Desfazer" on the history's latest edit.
     data object OnUndoClicked : BillDetailUiEvent

@@ -22,7 +22,7 @@ interface BillCommentLocalDataSource {
     suspend fun insertComment(entity: BillCommentEntity)
 
     // Why: false when the comment is gone, or already deleted.
-    suspend fun editComment(
+    suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,

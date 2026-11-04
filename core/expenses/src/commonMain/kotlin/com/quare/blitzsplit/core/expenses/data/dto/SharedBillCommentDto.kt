@@ -12,15 +12,9 @@ data class SharedBillCommentDto(
     @SerialName("body") val body: String,
     @SerialName("via_link") val viaLink: Boolean?,
     @SerialName("posted_at") val postedAt: Long,
-    // Why: null on a server older than the comments' edits and likes.
-    @SerialName("edited_at") val editedAt: Long? = null,
-    @SerialName("is_deleted") val isDeleted: Boolean? = null,
-    @SerialName("is_mine") val isMine: Boolean? = null,
-    @SerialName("liked_by") val likedBy: List<SharedBillLikeDto>? = null,
-)
-
-@Serializable
-data class SharedBillLikeDto(
-    @SerialName("name") val name: String?,
-    @SerialName("is_mine") val isMine: Boolean,
+    // Why: the comments' edits and likes (beta feedback 14).
+    @SerialName("edited_at") val editedAt: Long?,
+    @SerialName("is_deleted") val isDeleted: Boolean?,
+    @SerialName("is_mine") val isMine: Boolean?,
+    @SerialName("liked_by") val likedBy: List<SharedBillLikeDto>?,
 )

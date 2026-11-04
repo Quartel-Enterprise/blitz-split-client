@@ -7,6 +7,10 @@
           {
             "/": "/g/*",
             "comment": "A group's invite link"
+          },
+          {
+            "/": "/b/*",
+            "comment": "A bill's comment link"
           }
         ]
       }

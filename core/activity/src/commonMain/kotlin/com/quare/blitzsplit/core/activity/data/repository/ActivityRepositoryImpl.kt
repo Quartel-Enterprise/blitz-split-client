@@ -53,11 +53,11 @@ class ActivityRepositoryImpl(
         val changedById = changedComments.associateBy { it.id }
         (recent + older.filterNot { it.id in recentIds })
             .filter { it.kind.isInFeed }
-            .map { event -> event.followingComment(changedById) }
+            .map { event -> event.toCommentAsNow(changedById) }
     }.distinctUntilChanged()
 
     // Why: a comment edited or deleted after its event came down reads as it is now, before the event's own copy does.
-    private fun ActivityEvent.followingComment(changedById: Map<String, ChangedCommentRow>): ActivityEvent {
+    private fun ActivityEvent.toCommentAsNow(changedById: Map<String, ChangedCommentRow>): ActivityEvent {
         val comment = commentId?.let(changedById::get) ?: return this
         return copy(
             body = if (comment.isDeleted) null else comment.body.take(MAX_FEED_BODY_LENGTH),

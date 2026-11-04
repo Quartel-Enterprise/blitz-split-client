@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -63,6 +64,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
@@ -71,15 +74,6 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarge
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -96,6 +90,15 @@ import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 class BillDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -2784,7 +2787,731 @@ class BillDetailViewModelTest {
             )
         }
 
-    private val route = Route.BillDetail(
+    @Test
+    fun `GIVEN a comment of the device user WHEN tapping Editar on it THEN its text goes in the composer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("mine", state.editingCommentId)
+            assertTrue(state.isEditingComment)
+            assertEquals("Paguei o gelo", state.commentDraft)
+            assertNull(state.replyTarget)
+        }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN tapping Editar on it THEN the composer keeps what was typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("c1"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertFalse(state.isEditingComment)
+            assertEquals("Eu levo", state.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN a deleted comment of the device user over a reply WHEN tapping Editar on it THEN nothing is edited`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = myDeletedOverReply)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("c1"))
+
+            // Then
+            assertNull(viewModel.uiState.value.editingCommentId)
+            assertEquals("", viewModel.uiState.value.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN editing after typing a reply WHEN cancelling the edit THEN gives back what was typed and the reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditCancelled)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+            assertEquals("c1", state.replyTarget?.commentId)
+            assertEquals(
+                "Paguei o gelo",
+                comments.comments.value
+                    .single { it.id == "mine" }
+                    .body,
+            )
+        }
+
+    @Test
+    fun `GIVEN editing one comment WHEN editing another and cancelling THEN gives back what was typed first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine + comment(
+                    id = "mine-2",
+                    authorMemberId = PIERRE,
+                    authorName = "Pierre",
+                    body = "Levo o carvão",
+                    postedAt = laterToday + 1,
+                ),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine-2"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditCancelled)
+
+            // Then
+            assertNull(viewModel.uiState.value.editingCommentId)
+            assertEquals("Eu levo", viewModel.uiState.value.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN a comment of the device user edited WHEN sending THEN saves the edit and gives the composer back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                online = false,
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf("c1", "mine"), comments.comments.value.map { it.id })
+            val saved = comments.comments.value.single { it.id == "mine" }
+            assertEquals("Paguei o gelo e o carvão", saved.body)
+            assertEquals(nowMillis, saved.editedAt)
+            assertTrue(saved.isPending)
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+            assertEquals("c1", state.replyTarget?.commentId)
+            val row = state.threads
+                .loadedItems()
+                .single { it.comment.id == "mine" }
+                .comment
+            assertTrue(row.isEdited)
+            assertEquals("Paguei o gelo e o carvão", row.body)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the device cannot keep the edit WHEN sending it THEN says it failed and the comment stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                commentChangeError = IllegalStateException("comment gone"),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentChangeError), actions)
+            assertEquals(
+                "Paguei o gelo",
+                comments.comments.value
+                    .single { it.id == "mine" }
+                    .body,
+            )
+        }
+
+    @Test
+    fun `GIVEN editing a comment WHEN a sync deletes it THEN the edit ends and gives back what was typed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+
+            // When
+            comments.comments.value = comments.comments.value.map {
+                if (it.id == "mine") {
+                    it.copy(
+                        body = "",
+                        isDeleted = true,
+                    )
+                } else {
+                    it
+                }
+            }
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN editing a comment WHEN a sync brings another comment THEN the edit goes on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+
+        // When
+        comments.comments.value = comments.comments.value + comment(
+            id = "c2",
+            authorMemberId = ANA,
+            authorName = "Ana",
+            postedAt = laterToday + 1,
+        )
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals("mine", state.editingCommentId)
+        assertEquals("Paguei o gelo e o carvão", state.commentDraft)
+    }
+
+    @Test
+    fun `GIVEN a comment of the device user WHEN tapping Apagar on it THEN asks first`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+        // Then
+        assertEquals("mine", viewModel.uiState.value.commentToDelete)
+        assertTrue(comments.comments.value.none { it.isDeleted })
+    }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN tapping Apagar on it THEN asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("c1"))
+
+        // Then
+        assertNull(viewModel.uiState.value.commentToDelete)
+    }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN dismissing THEN closes the question and keeps the comment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.commentToDelete)
+            assertTrue(comments.comments.value.none { it.isDeleted })
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN confirming offline THEN deletes it on the device and closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                online = false,
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            val deleted = comments.comments.value.single { it.id == "mine" }
+            assertTrue(deleted.isDeleted)
+            assertTrue(deleted.isPending)
+            val state = viewModel.uiState.value
+            assertNull(state.commentToDelete)
+            assertEquals(listOf("c1"), state.threads.loadedItems().map { it.comment.id })
+            assertEquals(1, state.commentCount)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a comment of the device user with a reply WHEN deleting it THEN Comentario apagado is uncounted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(
+                    myComment,
+                    comment(
+                        id = "r1",
+                        threadId = "mine",
+                        postedAt = laterToday + 1,
+                    ),
+                ),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            val thread = state.threads.loadedItems().single()
+            assertTrue(thread.comment.isDeleted)
+            assertEquals(listOf("r1"), thread.replies.map { it.id })
+            assertEquals(1, state.commentCount)
+        }
+
+    @Test
+    fun `GIVEN editing the comment Apagar asks about WHEN confirming THEN the edit ends too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.editingCommentId)
+            assertEquals("Eu levo", state.commentDraft)
+        }
+
+    @Test
+    fun `GIVEN the device cannot delete the comment WHEN confirming THEN says it failed and closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                commentChangeError = IllegalStateException("comment gone"),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentChangeError), actions)
+            assertNull(viewModel.uiState.value.commentToDelete)
+            assertTrue(comments.comments.value.none { it.isDeleted })
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario never asked WHEN a confirmation arrives THEN nothing is deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertTrue(comments.comments.value.none { it.isDeleted })
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no internet and a comment of Bruno WHEN tapping its heart THEN likes it on the device as the user`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(comment(id = "c1")),
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            val liked = comments.comments.value.single()
+            assertEquals(
+                listOf(
+                    BillCommentLike(
+                        memberId = PIERRE,
+                        name = "Pierre",
+                        isMine = true,
+                    ),
+                ),
+                liked.likes,
+            )
+            assertTrue(liked.isPending)
+            val row = viewModel.uiState.value.threads
+                .loadedItems()
+                .single()
+                .comment
+            assertTrue(row.isLikedByMe)
+            assertEquals(1, row.likeCount)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a comment the device user liked WHEN tapping its heart THEN undoes their like`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(likedByAnaAndMe))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(ANA),
+                comments.comments.value
+                    .single()
+                    .likes
+                    .map { it.memberId },
+            )
+            val row = viewModel.uiState.value.threads
+                .loadedItems()
+                .single()
+                .comment
+            assertFalse(row.isLikedByMe)
+            assertEquals(1, row.likeCount)
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN tapping its heart THEN nothing is liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = myDeletedOverReply)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(comments.likedAts.isEmpty())
+            assertEquals(
+                listOf(ANA),
+                comments.comments.value
+                    .single { it.id == "c1" }
+                    .likes
+                    .map { it.memberId },
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the device cannot keep the like WHEN tapping the heart THEN says it failed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedComments = listOf(comment(id = "c1")),
+            commentChangeError = IllegalStateException("comment gone"),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+        // Then
+        assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentChangeError), actions)
+        assertTrue(
+            comments.comments.value
+                .single()
+                .likes
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a comment liked by Ana and the device user WHEN tapping its count THEN lists who liked it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(likedByAnaAndMe))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+            // Then
+            val likes = viewModel.uiState.value.likesComment
+            assertEquals("c1", likes?.id)
+            assertEquals(
+                listOf(
+                    BillCommentLiker(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                    BillCommentLiker(
+                        name = "Pierre",
+                        isMe = true,
+                    ),
+                ),
+                likes?.likers,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment nobody liked WHEN tapping its count THEN Curtidas stays closed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+        // Then
+        assertNull(viewModel.uiState.value.likesCommentId)
+        assertNull(viewModel.uiState.value.likesComment)
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN dismissing it THEN closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(likedByAnaAndMe))
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.likesCommentId)
+        assertNull(viewModel.uiState.value.likesComment)
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN a sync takes its last like away THEN it closes by itself`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(likedByAnaAndMe))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+            // When
+            comments.comments.value = comments.comments.value.map { it.copy(likes = emptyList()) }
+
+            // Then
+            assertNull(viewModel.uiState.value.likesComment)
+        }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN a sync deletes the comment THEN it closes by itself`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(likedByAnaAndMe))
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+        // When
+        comments.comments.value = comments.comments.value.map {
+            it.copy(
+                body = "",
+                isDeleted = true,
+            )
+        }
+
+        // Then
+        assertNull(viewModel.uiState.value.likesComment)
+    }
+
+    @Test
+    fun `GIVEN no internet and a comment of Bruno WHEN sharing it THEN hands its link text and bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(comment(id = "c1")),
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf<BillDetailUiAction>(
+                    BillDetailUiAction.ShareComment(
+                        BillCommentShare(
+                            link = "https://blitzsplit.com/b/$EXPENSE_ID?comentario=c1",
+                            authorName = "Bruno",
+                            isMe = false,
+                            billDescription = "Mercado",
+                            body = "Quem trouxe o carvão?",
+                        ),
+                    ),
+                ),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment of the device user WHEN sharing it THEN says it is theirs`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked("mine"))
+
+        // Then
+        val share = (actions.single() as BillDetailUiAction.ShareComment).share
+        assertTrue(share.isMe)
+        assertEquals("Paguei o gelo", share.body)
+        assertEquals("https://blitzsplit.com/b/$EXPENSE_ID?comentario=mine", share.link)
+    }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN sharing it THEN nothing is shared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = myDeletedOverReply)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked("c1"))
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Conta opened at the comment of Bruno WHEN the comments show THEN highlights it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "c1",
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("c1", state.focusedCommentId)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Conta opened at a comment no longer there WHEN the comments show THEN says it was deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "gone",
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.focusedCommentId)
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentGone), actions)
+        }
+
+    @Test
+    fun `GIVEN Conta opened at a deleted comment over a reply WHEN the comments show THEN says it was deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = myDeletedOverReply,
+                focusCommentId = "c1",
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.focusedCommentId)
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentGone), actions)
+        }
+
+    @Test
+    fun `GIVEN Conta opened at a comment of a partial copy WHEN its first full sync ends THEN highlights it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "c1",
+                firstDownload = pendingDownload,
+            )
+            assertNull(viewModel.uiState.value.focusedCommentId)
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertEquals("c1", viewModel.uiState.value.focusedCommentId)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the comment a link opened at highlighted WHEN it was shown THEN the highlight goes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "c1",
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnFocusedCommentShown)
+
+            // Then
+            assertNull(viewModel.uiState.value.focusedCommentId)
+        }
+
+    @Test
+    fun `GIVEN the highlight shown WHEN a sync brings another comment THEN nothing is highlighted again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "c1",
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnFocusedCommentShown)
+
+            // When
+            comments.comments.value = comments.comments.value + comment(
+                id = "c2",
+                postedAt = laterToday + 1,
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.focusedCommentId)
+        }
+
+    @Test
+    fun `GIVEN the comment a link opened at is gone WHEN a sync brings more comments THEN says so only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                focusCommentId = "gone",
+                firstDownload = pendingDownload,
+            )
+            firstDownload.value = null
+
+            // When
+            comments.comments.value = comments.comments.value + comment(
+                id = "c2",
+                postedAt = laterToday + 1,
+            )
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentGone), actions)
+        }
+
+    // Why: the comment a link opened Conta at, set by each scenario.
+    private var route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
         focusCommentId = null,
@@ -2912,6 +3639,8 @@ class BillDetailViewModelTest {
         threadId: String? = null,
         body: String = "Quem trouxe o carvão?",
         postedAt: Long = earlierToday,
+        isDeleted: Boolean = false,
+        likes: List<BillCommentLike> = emptyList(),
     ): BillComment = BillComment(
         id = id,
         expenseId = EXPENSE_ID,
@@ -2926,9 +3655,9 @@ class BillDetailViewModelTest {
         postedAt = postedAt,
         isPending = false,
         editedAt = null,
-        isDeleted = false,
+        isDeleted = isDeleted,
         isMine = false,
-        likes = emptyList(),
+        likes = likes,
     )
 
     // Why: Bruno asked something and Ana answered him.
@@ -2943,6 +3672,52 @@ class BillDetailViewModelTest {
             authorName = "Ana",
             threadId = "c1",
             postedAt = laterToday,
+        ),
+    )
+
+    private fun like(
+        memberId: String?,
+        name: String?,
+        isMine: Boolean = false,
+    ): BillCommentLike = BillCommentLike(
+        memberId = memberId,
+        name = name,
+        isMine = isMine,
+    )
+
+    // Why: the device user (Pierre) said something after Bruno asked.
+    private val myComment = comment(
+        id = "mine",
+        authorMemberId = PIERRE,
+        authorName = "Pierre",
+        body = "Paguei o gelo",
+        postedAt = laterToday,
+    )
+
+    private val brunoAndMine = listOf(comment(id = "c1"), myComment)
+
+    // Why: Pierre deleted what he wrote, which stays as "Comentário apagado" over Bruno's reply.
+    private val myDeletedOverReply = listOf(
+        comment(
+            id = "c1",
+            authorMemberId = PIERRE,
+            authorName = "Pierre",
+            body = "",
+            isDeleted = true,
+            likes = listOf(like(ANA, "Ana")),
+        ),
+        comment(
+            id = "r1",
+            threadId = "c1",
+            postedAt = laterToday,
+        ),
+    )
+
+    private val likedByAnaAndMe = comment(
+        id = "c1",
+        likes = listOf(
+            like(ANA, "Ana"),
+            like(PIERRE, "Pierre", isMine = true),
         ),
     )
 
@@ -3071,7 +3846,10 @@ class BillDetailViewModelTest {
         historyGate: CompletableDeferred<Unit>? = null,
         historyError: Throwable? = null,
         firstDownload: FirstDownloadProgress? = null,
+        commentChangeError: Throwable? = null,
+        focusCommentId: String? = null,
     ) {
+        route = route.copy(focusCommentId = focusCommentId)
         isOnline.value = online
         this@BillDetailViewModelTest.firstDownload.value = firstDownload
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
@@ -3090,6 +3868,7 @@ class BillDetailViewModelTest {
         comments = FakeBillCommentRepository(initialComments = storedComments).also {
             it.addError = commentError
             it.addGate = commentGate
+            it.changeError = commentChangeError
         }
         activity = FakeActivityRepository(initialEvents = storedEvents).also {
             it.historyPage = serverHistory

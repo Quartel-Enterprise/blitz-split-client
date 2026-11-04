@@ -5,8 +5,8 @@ import com.quare.blitzsplit.core.expenses.data.dto.BillShareLinkDto
 import com.quare.blitzsplit.core.expenses.data.dto.CommentOnSharedBillParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.DeleteSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.EditSharedBillCommentParamsDto
-import com.quare.blitzsplit.core.expenses.data.dto.LikeSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseIdParamsDto
+import com.quare.blitzsplit.core.expenses.data.dto.LikeSharedBillCommentParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.SetBillLinkParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillCodeParamsDto
 import com.quare.blitzsplit.core.expenses.data.dto.SharedBillDto
@@ -51,11 +51,12 @@ class SupabaseBillShareLinkRemoteDataSource(
             parameters = params,
         ).decodeAs<SharedBillStatusDto>()
 
-    override suspend fun editSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto = postgrest
-        .rpc(
-            function = EDIT_SHARED_BILL_COMMENT,
-            parameters = params,
-        ).decodeAs<SharedBillStatusDto>()
+    override suspend fun updateSharedBillComment(params: EditSharedBillCommentParamsDto): SharedBillStatusDto =
+        postgrest
+            .rpc(
+                function = EDIT_SHARED_BILL_COMMENT,
+                parameters = params,
+            ).decodeAs<SharedBillStatusDto>()
 
     override suspend fun deleteSharedBillComment(params: DeleteSharedBillCommentParamsDto): SharedBillStatusDto =
         postgrest
@@ -64,11 +65,12 @@ class SupabaseBillShareLinkRemoteDataSource(
                 parameters = params,
             ).decodeAs<SharedBillStatusDto>()
 
-    override suspend fun likeSharedBillComment(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto = postgrest
-        .rpc(
-            function = LIKE_SHARED_BILL_COMMENT,
-            parameters = params,
-        ).decodeAs<SharedBillStatusDto>()
+    override suspend fun updateSharedBillCommentLike(params: LikeSharedBillCommentParamsDto): SharedBillStatusDto =
+        postgrest
+            .rpc(
+                function = LIKE_SHARED_BILL_COMMENT,
+                parameters = params,
+            ).decodeAs<SharedBillStatusDto>()
 
     private companion object {
         const val BILL_SHARE_LINKS = "bill_share_links"

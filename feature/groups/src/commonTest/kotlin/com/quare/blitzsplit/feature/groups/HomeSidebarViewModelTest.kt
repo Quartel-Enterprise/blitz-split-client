@@ -514,7 +514,11 @@ class HomeSidebarViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                stack = listOf(Route.Home, Route.Activity(personKey = null), Route.BillDetail("other", "b1", focusCommentId = null)),
+                stack = listOf(
+                    Route.Home,
+                    Route.Activity(personKey = null),
+                    Route.BillDetail("other", "b1", focusCommentId = null),
+                ),
             )
 
             // When

@@ -8,13 +8,9 @@ import com.quare.blitzsplit.core.expenses.data.dto.RemoteBillCommentLikeDto
 import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.BillCommentRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -26,6 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class BillCommentRepositoryImplTest {
     private lateinit var local: FakeBillCommentLocalDataSource
@@ -501,6 +502,778 @@ class BillCommentRepositoryImplTest {
         assertEquals(listOf("c-1"), local.entities.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN liked comments WHEN observing their bill THEN each comment carries its own likes with mine marked`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "c-1",
+                        postedAt = 1L,
+                    ),
+                    entity(
+                        id = "c-2",
+                        postedAt = 2L,
+                    ),
+                ),
+                storedLikes = listOf(
+                    like(
+                        commentId = "c-1",
+                        likerKey = "user-bruno",
+                    ),
+                    like(commentId = "c-1"),
+                    like(
+                        commentId = "c-2",
+                        likerKey = "user-bruno",
+                    ),
+                ),
+            )
+
+            // When
+            val comments = repository.observeComments(BILL_ID).first()
+
+            // Then
+            assertEquals(
+                listOf(
+                    listOf(
+                        BillCommentLike(
+                            memberId = "member-bruno",
+                            name = "Bruno",
+                            isMine = false,
+                        ),
+                        BillCommentLike(
+                            memberId = "member-pierre",
+                            name = "Pierre",
+                            isMine = true,
+                        ),
+                    ),
+                    listOf(
+                        BillCommentLike(
+                            memberId = "member-bruno",
+                            name = "Bruno",
+                            isMine = false,
+                        ),
+                    ),
+                ),
+                comments.map { it.likes },
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill being observed WHEN I like one of its comments THEN the comment shows my like`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+        val emissions = mutableListOf<List<BillComment>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeComments(BILL_ID).toList(emissions)
+        }
+
+        // When
+        repository.updateLike(
+            commentId = "c-1",
+            groupId = GROUP_ID,
+            isLiked = true,
+            memberId = "member-pierre",
+            likerName = "Pierre",
+            at = 5L,
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(
+                BillCommentLike(
+                    memberId = "member-pierre",
+                    name = "Pierre",
+                    isMine = true,
+                ),
+            ),
+            emissions.last().single().likes,
+        )
+    }
+
+    @Test
+    fun `GIVEN only a like waiting to go up WHEN observing pending changes THEN there are some`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val hasPending = repository.observeHasPendingChanges().first()
+
+        // Then
+        assertTrue(hasPending)
+    }
+
+    @Test
+    fun `GIVEN only a like waiting to go up WHEN observing the pending ids THEN something waits`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val ids = repository.observePendingIds().first()
+
+        // Then
+        assertTrue(ids.isNotEmpty())
+        assertFalse("c-1" in ids)
+    }
+
+    @Test
+    fun `GIVEN only synced likes WHEN observing the pending ids THEN nothing waits`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(like(commentId = "c-1")),
+        )
+
+        // When
+        val ids = repository.observePendingIds().first()
+
+        // Then
+        assertTrue(ids.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a like waiting to go up after a failed push WHEN I undo it THEN the pending ids change`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    updatedAt = 5L,
+                    pendingSync = true,
+                ),
+            ),
+        )
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observePendingIds().toList(emissions)
+        }
+
+        // When
+        repository.updateLike(
+            commentId = "c-1",
+            groupId = GROUP_ID,
+            isLiked = false,
+            memberId = "member-pierre",
+            likerName = "Pierre",
+            at = 9L,
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(2, emissions.size)
+        assertTrue(emissions[0] != emissions[1])
+    }
+
+    @Test
+    fun `GIVEN a synced comment WHEN editing it THEN the device keeps the new text pending with when it was edited`() =
+        runTest {
+            // Given
+            prepareScenario(stored = listOf(entity(id = "c-1")))
+
+            // When
+            val result = repository.updateComment(
+                id = "c-1",
+                body = "Já paguei, Ana",
+                editedAt = 9L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    entity(
+                        id = "c-1",
+                        body = "Já paguei, Ana",
+                        editedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                local.entities.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the comment is not on the device WHEN editing it THEN fails`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+
+        // When
+        val result = repository.updateComment(
+            id = "c-2",
+            body = "Já paguei",
+            editedAt = 9L,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(entity(id = "c-1")), local.entities.value)
+    }
+
+    @Test
+    fun `GIVEN a deleted comment WHEN editing it THEN fails and it stays deleted`() = runTest {
+        // Given
+        val tombstone = entity(
+            id = "c-1",
+            body = "",
+            isDeleted = true,
+        )
+        prepareScenario(stored = listOf(tombstone))
+
+        // When
+        val result = repository.updateComment(
+            id = "c-1",
+            body = "Voltei",
+            editedAt = 9L,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(tombstone), local.entities.value)
+    }
+
+    @Test
+    fun `GIVEN a synced comment WHEN deleting it THEN the device keeps a pending tombstone with no text`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+
+        // When
+        val result = repository.deleteComment("c-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                entity(
+                    id = "c-1",
+                    body = "",
+                    isDeleted = true,
+                    pendingSync = true,
+                ),
+            ),
+            local.entities.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN the comment is not on the device WHEN deleting it THEN fails`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+
+        // When
+        val result = repository.deleteComment("c-2")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(entity(id = "c-1")), local.entities.value)
+    }
+
+    @Test
+    fun `GIVEN a comment WHEN liking it THEN the device keeps my like pending at its time`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+
+        // When
+        val result = repository.updateLike(
+            commentId = "c-1",
+            groupId = GROUP_ID,
+            isLiked = true,
+            memberId = "member-pierre",
+            likerName = "Pierre",
+            at = 9L,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                like(
+                    commentId = "c-1",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                ),
+            ),
+            local.likes.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a comment I liked WHEN undoing the like THEN keeps it unliked and pending at the later time`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(entity(id = "c-1")),
+                storedLikes = listOf(
+                    like(
+                        commentId = "c-1",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.updateLike(
+                commentId = "c-1",
+                groupId = GROUP_ID,
+                isLiked = false,
+                memberId = "member-pierre",
+                likerName = "Pierre",
+                at = 9L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    like(
+                        commentId = "c-1",
+                        isLiked = false,
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                local.likes.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the comment is not on the device WHEN liking it THEN fails and keeps no like`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "c-1")))
+
+        // When
+        val result = repository.updateLike(
+            commentId = "c-2",
+            groupId = GROUP_ID,
+            isLiked = true,
+            memberId = "member-pierre",
+            likerName = "Pierre",
+            at = 9L,
+        )
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(local.likes.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an edit and a deletion made offline WHEN uploading THEN sends both with their changes`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "c-1",
+                    body = "Já paguei, Ana",
+                    postedAt = 1L,
+                    editedAt = 9L,
+                    pendingSync = true,
+                ),
+                entity(
+                    id = "c-2",
+                    body = "",
+                    postedAt = 2L,
+                    isDeleted = true,
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertTrue(result.isSuccess)
+        val sent = remote.inserted.single()
+        assertEquals(
+            listOf(
+                Triple("Já paguei, Ana", 9L, false),
+                Triple("", null, true),
+            ),
+            sent.map { Triple(it.body, it.editedAt, it.isDeleted) },
+        )
+        assertEquals(listOf(false, false), local.entities.value.map { it.pendingSync })
+    }
+
+    @Test
+    fun `GIVEN a comment edited again while its edit goes up WHEN the upload ends THEN the newer edit stays pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "c-1",
+                        body = "Já paguei",
+                        editedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+            )
+            remote.whileUpsertingComments = {
+                local.updateComment(
+                    id = "c-1",
+                    body = "Já paguei, Ana",
+                    editedAt = 10L,
+                )
+            }
+
+            // When
+            val result = repository.uploadPending(USER_ID)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                "Já paguei",
+                remote.inserted
+                    .single()
+                    .single()
+                    .body,
+            )
+            val stored = local.entities.value.single()
+            assertEquals("Já paguei, Ana" to true, stored.body to stored.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN likes toggled offline WHEN uploading THEN sends them as the user and marks them synced`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "c-1"),
+                entity(id = "c-2"),
+            ),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    updatedAt = 5L,
+                    pendingSync = true,
+                ),
+                like(
+                    commentId = "c-2",
+                    isLiked = false,
+                    updatedAt = 6L,
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                listOf(
+                    BillCommentLikeDto(
+                        commentId = "c-1",
+                        userId = USER_ID,
+                        groupId = GROUP_ID,
+                        isLiked = true,
+                        updatedAt = 5L,
+                    ),
+                    BillCommentLikeDto(
+                        commentId = "c-2",
+                        userId = USER_ID,
+                        groupId = GROUP_ID,
+                        isLiked = false,
+                        updatedAt = 6L,
+                    ),
+                ),
+            ),
+            remote.upsertedLikes,
+        )
+        assertEquals(listOf(false, false), local.likes.value.map { it.pendingSync })
+    }
+
+    @Test
+    fun `GIVEN pending comments and likes WHEN uploading THEN sends the comments before the likes`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+        val order = mutableListOf<String>()
+        remote.whileUpsertingComments = { order += "comments" }
+        remote.whileUpsertingLikes = { order += "likes" }
+
+        // When
+        repository.uploadPending(USER_ID)
+
+        // Then
+        assertEquals(listOf("comments", "likes"), order)
+    }
+
+    @Test
+    fun `GIVEN pending likes of two accounts groups WHEN uploading THEN sends and marks only the callers`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "mine"),
+                entity(
+                    id = "theirs",
+                    groupId = OTHER_GROUP_ID,
+                ),
+            ),
+            storedLikes = listOf(
+                like(
+                    commentId = "mine",
+                    pendingSync = true,
+                ),
+                like(
+                    commentId = "theirs",
+                    groupId = OTHER_GROUP_ID,
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPending(USER_ID)
+
+        // Then
+        assertEquals(listOf(listOf("mine")), remote.upsertedLikes.map { batch -> batch.map { it.commentId } })
+        assertEquals(
+            listOf("mine" to false, "theirs" to true),
+            local.likes.value.map { it.commentId to it.pendingSync },
+        )
+    }
+
+    @Test
+    fun `GIVEN no like waiting to go up WHEN uploading THEN sends no like to the server`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(like(commentId = "c-1")),
+        )
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(0, remote.likesUpsertCalls)
+        assertTrue(local.markedLikesSynced.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the server refuses the comments WHEN uploading THEN fails and sends no like`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+            remoteInsertError = IllegalStateException("network"),
+        )
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(0, remote.likesUpsertCalls)
+        assertEquals(listOf(true), local.likes.value.map { it.pendingSync })
+    }
+
+    @Test
+    fun `GIVEN the server refuses the likes WHEN uploading THEN fails and the likes stay pending`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    pendingSync = true,
+                ),
+            ),
+            likesUpsertError = IllegalStateException("network"),
+        )
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(local.markedLikesSynced.isEmpty())
+        assertEquals(listOf(true), local.likes.value.map { it.pendingSync })
+    }
+
+    @Test
+    fun `GIVEN a like undone while it goes up WHEN the upload ends THEN the undoing stays pending`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(
+                like(
+                    commentId = "c-1",
+                    updatedAt = 5L,
+                    pendingSync = true,
+                ),
+            ),
+        )
+        remote.whileUpsertingLikes = {
+            repository.updateLike(
+                commentId = "c-1",
+                groupId = GROUP_ID,
+                isLiked = false,
+                memberId = "member-pierre",
+                likerName = "Pierre",
+                at = 9L,
+            )
+        }
+
+        // When
+        val result = repository.uploadPending(USER_ID)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                like(
+                    commentId = "c-1",
+                    isLiked = false,
+                    updatedAt = 9L,
+                    pendingSync = true,
+                ),
+            ),
+            local.likes.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN comments edited and deleted on the server WHEN downloading THEN stores them as they are synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverRows = listOf(
+                    dto(
+                        id = "s-1",
+                        body = "Já paguei, Ana",
+                        editedAt = 9L,
+                    ),
+                    dto(
+                        id = "s-2",
+                        body = "",
+                        isDeleted = true,
+                    ),
+                ),
+            )
+
+            // When
+            repository.download(USER_ID)
+
+            // Then
+            assertEquals(
+                listOf(
+                    entity(
+                        id = "s-1",
+                        authorUserId = "user-ana",
+                        body = "Já paguei, Ana",
+                        editedAt = 9L,
+                    ),
+                    entity(
+                        id = "s-2",
+                        authorUserId = "user-ana",
+                        body = "",
+                        isDeleted = true,
+                    ),
+                ),
+                local.applied.single(),
+            )
+        }
+
+    @Test
+    fun `GIVEN likes on the server WHEN downloading THEN replaces the synced likes with mine kept under ME`() =
+        runTest {
+            // Given
+            prepareScenario(
+                serverRows = listOf(dto(id = "s-1")),
+                serverLikes = listOf(
+                    remoteLike(
+                        commentId = "s-1",
+                        userId = USER_ID,
+                    ),
+                    remoteLike(
+                        commentId = "s-1",
+                        userId = "user-bruno",
+                        isLiked = false,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.download(USER_ID)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    USER_ID to listOf(
+                        like(commentId = "s-1"),
+                        like(
+                            commentId = "s-1",
+                            likerKey = "user-bruno",
+                            isLiked = false,
+                        ),
+                    ),
+                ),
+                local.replacedLikes,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server fails to give the likes WHEN downloading THEN fails and replaces no like`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "c-1")),
+            storedLikes = listOf(like(commentId = "c-1")),
+            likesFetchError = IllegalStateException("network"),
+        )
+
+        // When
+        val result = repository.download(USER_ID)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(local.replacedLikes.isEmpty())
+        assertEquals(listOf(like(commentId = "c-1")), local.likes.value)
+    }
+
     private fun comment(id: String): BillComment = BillComment(
         id = id,
         expenseId = BILL_ID,
@@ -528,6 +1301,8 @@ class BillCommentRepositoryImplTest {
         body: String = "Já paguei",
         postedAt: Long = 1L,
         pendingSync: Boolean = false,
+        editedAt: Long? = null,
+        isDeleted: Boolean = false,
     ): BillCommentEntity = BillCommentEntity(
         id = id,
         expenseId = expenseId,
@@ -541,11 +1316,16 @@ class BillCommentRepositoryImplTest {
         viaLink = false,
         postedAt = postedAt,
         pendingSync = pendingSync,
-        editedAt = null,
-        isDeleted = false,
+        editedAt = editedAt,
+        isDeleted = isDeleted,
     )
 
-    private fun dto(id: String): BillCommentDto = BillCommentDto(
+    private fun dto(
+        id: String,
+        body: String = "Já paguei",
+        editedAt: Long? = null,
+        isDeleted: Boolean = false,
+    ): BillCommentDto = BillCommentDto(
         id = id,
         expenseId = BILL_ID,
         groupId = GROUP_ID,
@@ -554,11 +1334,44 @@ class BillCommentRepositoryImplTest {
         authorName = "Ana",
         threadId = null,
         replyToName = null,
-        body = "Já paguei",
+        body = body,
         viaLink = false,
         postedAt = 1L,
-        editedAt = null,
-        isDeleted = false,
+        editedAt = editedAt,
+        isDeleted = isDeleted,
+    )
+
+    private fun like(
+        commentId: String,
+        likerKey: String = BillCommentLikeEntity.ME,
+        groupId: String = GROUP_ID,
+        isLiked: Boolean = true,
+        updatedAt: Long = 5L,
+        pendingSync: Boolean = false,
+    ): BillCommentLikeEntity = BillCommentLikeEntity(
+        commentId = commentId,
+        likerKey = likerKey,
+        groupId = groupId,
+        memberId = if (likerKey == BillCommentLikeEntity.ME) "member-pierre" else "member-bruno",
+        likerName = if (likerKey == BillCommentLikeEntity.ME) "Pierre" else "Bruno",
+        isLiked = isLiked,
+        updatedAt = updatedAt,
+        pendingSync = pendingSync,
+    )
+
+    private fun remoteLike(
+        commentId: String,
+        userId: String,
+        isLiked: Boolean = true,
+    ): RemoteBillCommentLikeDto = RemoteBillCommentLikeDto(
+        id = "like-$commentId-$userId",
+        commentId = commentId,
+        userId = userId,
+        groupId = GROUP_ID,
+        memberId = if (userId == USER_ID) "member-pierre" else "member-bruno",
+        likerName = if (userId == USER_ID) "Pierre" else "Bruno",
+        isLiked = isLiked,
+        updatedAt = 5L,
     )
 
     private fun prepareScenario(
@@ -567,6 +1380,10 @@ class BillCommentRepositoryImplTest {
         insertError: Throwable? = null,
         remoteInsertError: Throwable? = null,
         fetchError: Throwable? = null,
+        storedLikes: List<BillCommentLikeEntity> = emptyList(),
+        serverLikes: List<RemoteBillCommentLikeDto> = emptyList(),
+        likesUpsertError: Throwable? = null,
+        likesFetchError: Throwable? = null,
     ) {
         local = FakeBillCommentLocalDataSource(
             groupOwners = mapOf(
@@ -575,8 +1392,15 @@ class BillCommentRepositoryImplTest {
             ),
             insertError = insertError,
             stored = stored,
+        ).also { it.likes.value = storedLikes }
+        remote = FakeBillCommentRemoteDataSource(
+            rows = serverRows,
+            insertError = remoteInsertError,
+            fetchError = fetchError,
+            likeRows = serverLikes,
+            likesUpsertError = likesUpsertError,
+            likesFetchError = likesFetchError,
         )
-        remote = FakeBillCommentRemoteDataSource(serverRows, remoteInsertError, fetchError)
         repository = BillCommentRepositoryImpl(
             local = local,
             remote = remote,
@@ -610,6 +1434,7 @@ private class FakeBillCommentLocalDataSource(
 
     val likes = MutableStateFlow(emptyList<BillCommentLikeEntity>())
     val replacedLikes = mutableListOf<Pair<String, List<BillCommentLikeEntity>>>()
+    val markedLikesSynced = mutableListOf<BillCommentLikeEntity>()
 
     override fun observeLikes(expenseId: String): Flow<List<BillCommentLikeEntity>> =
         combine(entities, likes) { comments, likes ->
@@ -632,14 +1457,24 @@ private class FakeBillCommentLocalDataSource(
     override suspend fun getPendingLikes(ownerUserId: String): List<BillCommentLikeEntity> =
         likes.value.filter { it.pendingSync && groupOwners[it.groupId] == ownerUserId }
 
-    override suspend fun editComment(
+    override suspend fun updateComment(
         id: String,
         body: String,
         editedAt: Long,
     ): Boolean {
         val comment = entities.value.firstOrNull { it.id == id && !it.isDeleted } ?: return false
         entities.update { list ->
-            list.map { if (it.id == comment.id) it.copy(body = body, editedAt = editedAt, pendingSync = true) else it }
+            list.map {
+                if (it.id == comment.id) {
+                    it.copy(
+                        body = body,
+                        editedAt = editedAt,
+                        pendingSync = true,
+                    )
+                } else {
+                    it
+                }
+            }
         }
         return true
     }
@@ -647,7 +1482,17 @@ private class FakeBillCommentLocalDataSource(
     override suspend fun deleteComment(id: String): Boolean {
         if (entities.value.none { it.id == id }) return false
         entities.update { list ->
-            list.map { if (it.id == id) it.copy(body = "", isDeleted = true, pendingSync = true) else it }
+            list.map {
+                if (it.id == id) {
+                    it.copy(
+                        body = "",
+                        isDeleted = true,
+                        pendingSync = true,
+                    )
+                } else {
+                    it
+                }
+            }
         }
         return true
     }
@@ -668,6 +1513,7 @@ private class FakeBillCommentLocalDataSource(
     }
 
     override suspend fun markLikesSynced(entities: List<BillCommentLikeEntity>) {
+        markedLikesSynced += entities
         likes.update { list -> list.map { if (it in entities) it.copy(pendingSync = false) else it } }
     }
 
@@ -687,10 +1533,17 @@ private class FakeBillCommentLocalDataSource(
         this.entities.update { list -> list.filterNot { it.id in ids } + entities }
     }
 
+    // Why: as Room, only the version that went up: an edit or a deletion made meanwhile stays pending.
     override suspend fun markSynced(entities: List<BillCommentEntity>) {
-        val ids = entities.map { it.id }
-        markedSynced += ids
-        this.entities.update { list -> list.map { if (it.id in ids) it.copy(pendingSync = false) else it } }
+        markedSynced += entities.map { it.id }
+        val sent = entities.associateBy { it.id }
+        this.entities.update { list ->
+            list.map { stored ->
+                val version = sent[stored.id]
+                val isSent = version != null && version.body == stored.body && version.isDeleted == stored.isDeleted
+                if (isSent) stored.copy(pendingSync = false) else stored
+            }
+        }
     }
 
     override suspend fun deleteGoneFromServer(
@@ -710,24 +1563,36 @@ private class FakeBillCommentRemoteDataSource(
     private val rows: List<BillCommentDto>,
     private val insertError: Throwable?,
     private val fetchError: Throwable?,
+    private val likeRows: List<RemoteBillCommentLikeDto>,
+    private val likesUpsertError: Throwable?,
+    private val likesFetchError: Throwable?,
 ) : BillCommentRemoteDataSource {
     val inserted = mutableListOf<List<BillCommentDto>>()
     var insertCalls = 0
 
     val upsertedLikes = mutableListOf<List<BillCommentLikeDto>>()
-    var likeRows: List<RemoteBillCommentLikeDto> = emptyList()
+    var likesUpsertCalls = 0
+
+    // Why: what happens on the device while a push is on its way, such as another edit or toggle.
+    var whileUpsertingComments: suspend () -> Unit = {}
+    var whileUpsertingLikes: suspend () -> Unit = {}
 
     override suspend fun upsertLikes(likes: List<BillCommentLikeDto>) {
+        likesUpsertCalls++
+        whileUpsertingLikes()
+        likesUpsertError?.let { throw it }
         upsertedLikes += likes
     }
 
     override suspend fun fetchLikes(): List<RemoteBillCommentLikeDto> {
         fetchError?.let { throw it }
+        likesFetchError?.let { throw it }
         return likeRows
     }
 
     override suspend fun upsertComments(comments: List<BillCommentDto>) {
         insertCalls++
+        whileUpsertingComments()
         insertError?.let { throw it }
         inserted += comments
     }

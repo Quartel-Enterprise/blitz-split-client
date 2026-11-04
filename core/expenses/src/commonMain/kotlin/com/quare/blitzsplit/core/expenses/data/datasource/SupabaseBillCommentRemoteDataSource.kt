@@ -26,10 +26,11 @@ class SupabaseBillCommentRemoteDataSource(
         postgrest.from(BILL_COMMENT_LIKES).upsert(likes) { onConflict = "comment_id,user_id" }
     }
 
-    override suspend fun fetchLikes(): List<RemoteBillCommentLikeDto> = postgrest.fetchAllById<RemoteBillCommentLikeDto>(
-        table = BILL_COMMENT_LIKES,
-        idOf = { it.id },
-    )
+    override suspend fun fetchLikes(): List<RemoteBillCommentLikeDto> =
+        postgrest.fetchAllById<RemoteBillCommentLikeDto>(
+            table = BILL_COMMENT_LIKES,
+            idOf = { it.id },
+        )
 
     private companion object {
         const val BILL_COMMENTS = "bill_comments"

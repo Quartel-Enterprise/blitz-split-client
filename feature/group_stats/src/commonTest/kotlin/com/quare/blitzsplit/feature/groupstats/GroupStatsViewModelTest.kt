@@ -1080,7 +1080,10 @@ class GroupStatsViewModelTest {
             viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(PIERRE))
 
             // Then
-            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat", focusCommentId = null) + Route.Profile, navigator.backStack.value)
+            assertEquals(
+                statsStack + Route.BillDetail(GROUP_ID, "boat", focusCommentId = null) + Route.Profile,
+                navigator.backStack.value,
+            )
         }
 
     @Test

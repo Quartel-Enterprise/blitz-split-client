@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -33,6 +34,8 @@ internal fun createPreviewBillDetailState(
     isPending: Boolean = false,
     // Why: answering Diego offline, with an earlier reply of this device's user still in the queue.
     isReplyingOffline: Boolean = false,
+    // Why: this device's user editing their own comment, "Editando comentário" over the composer.
+    isEditingComment: Boolean = false,
 ): BillDetailUiState {
     val payerId = if (isMePayer) "me" else "bruno"
     val people = listOf(
@@ -84,8 +87,20 @@ internal fun createPreviewBillDetailState(
         deletion = null,
         isDeleting = false,
         isLoaded = true,
-        threads = (if (isPending) emptyList() else createPreviewThreads(isReplyingOffline)).toLoaded(),
-        commentDraft = if (isReplyingOffline) "Sem pressa, Diego!" else "",
+        threads = (
+            if (isPending) {
+                emptyList()
+            } else {
+                createPreviewThreads(
+                    isReplyingOffline || isEditingComment,
+                )
+            }
+        ).toLoaded(),
+        commentDraft = when {
+            isReplyingOffline -> "Sem pressa, Diego!"
+            isEditingComment -> "Pode ser no Pix ou em dinheiro."
+            else -> ""
+        },
         replyTarget = if (isReplyingOffline) {
             BillReplyTarget(
                 threadId = "c4",
@@ -96,6 +111,10 @@ internal fun createPreviewBillDetailState(
         } else {
             null
         },
+        editingCommentId = "c5".takeIf { isEditingComment },
+        commentToDelete = null,
+        likesCommentId = null,
+        focusedCommentId = null,
         history = (if (isPending) createPendingPreviewHistory() else createPreviewHistory()).toLoaded(),
         isHistoryFromDeviceOnly = isReplyingOffline,
         isOnline = !isReplyingOffline,
@@ -167,6 +186,10 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
             previewInitialsOf("Carla"),
             AvatarColor.LILAC,
             "A cerveja que ficou comigo foi do Bruno, eu só tomei água.",
+            likers = listOf(
+                BillCommentLiker("Bruno", isMe = false),
+                BillCommentLiker("Pierre", isMe = true),
+            ),
         ),
         replies = listOf(
             createPreviewComment(
@@ -175,6 +198,7 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
                 previewInitialsOf("Bruno"),
                 AvatarColor.GREEN,
                 "Verdade, passei para mim. Sua parte ficou R$ 98,00.",
+                isEdited = true,
             ),
             createPreviewComment(
                 "c3",
@@ -211,6 +235,26 @@ private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThrea
             emptyList()
         },
     ),
+    // Why: a comment its author deleted, kept as "Comentário apagado" over the reply it had.
+    BillCommentThread(
+        comment = createPreviewComment(
+            "c6",
+            "Elisa",
+            previewInitialsOf("Elisa"),
+            AvatarColor.BLUE,
+            "",
+            isDeleted = true,
+        ),
+        replies = listOf(
+            createPreviewComment(
+                "c7",
+                "Ana",
+                previewInitialsOf("Ana"),
+                AvatarColor.BLUE,
+                "Combinado, fica para a próxima.",
+            ),
+        ),
+    ),
 )
 
 private fun createPreviewComment(
@@ -223,6 +267,9 @@ private fun createPreviewComment(
     viaLink: Boolean = false,
     replyToName: String? = null,
     isPending: Boolean = false,
+    isEdited: Boolean = false,
+    isDeleted: Boolean = false,
+    likers: List<BillCommentLiker> = emptyList(),
 ): BillCommentRow = BillCommentRow(
     id = id,
     authorMemberId = id,
@@ -236,6 +283,10 @@ private fun createPreviewComment(
     body = body,
     postedAt = PREVIEW_NOW,
     postedDay = RelativeDay.TODAY,
+    isEdited = isEdited,
+    isDeleted = isDeleted,
+    likers = likers,
+    isLikedByMe = likers.any { it.isMe },
     isPending = isPending,
 )
 

@@ -14,6 +14,6 @@ class EditSharedBillCommentUseCase(
         body: String,
     ): Result<SharedBillComment> {
         if (!BillCommentRules.isBodyValid(body)) return Result.failure(IllegalArgumentException("Invalid comment"))
-        return repository.editSharedBillComment(code, id, body.trim())
+        return repository.updateSharedBillComment(code, id, body.trim())
     }
 }
