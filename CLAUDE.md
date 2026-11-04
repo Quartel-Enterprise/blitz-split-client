@@ -266,6 +266,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - Android's Perfil › Preferências › "Aparência" is a row ("Sistema", "Sistema · cores dinâmicas") opening a sheet
+    as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
+    (Sistema half light, half dark, in the wallpaper's colors while they are on), then "Cores dinâmicas" with an ⓘ
+    explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Entendi" back to the sheet); a bottom sheet
+    on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
+  - "Cores dinâmicas" (Material You) shows in Aparência only where the platform draws a scheme from the wallpaper,
+    Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the
+    brand's Material scheme for the wallpaper's in light and dark alike, while the groups', avatars' and categories'
+    own colors stay the brand's. Kept per device and never synced (`usesDynamicColors` in `device_settings`, so it
+    outlives a sign out); a choice restored onto a device that can't draw it reads as off. The Apple apps and the web
+    have no such scheme and show nothing.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
@@ -387,8 +398,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
     left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
     (`BillHistoryEntry.canUndo`).
-  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's files,
-    the web's files or its camera), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
+  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's and the
+    web's files), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
     them from the viewer ("Remover foto", no question, as the boards draw none). "Anexos · 2 de 5 fotos" lists the
     receipt the bill was read from first (badge "Cupom", never removed from Conta; reading it is 7.1e), then the photos
     as "Foto 2" with who added it and when, since the server keeps no caption, then "Adicionar foto" while there is
@@ -537,7 +548,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Escolher foto", "Tirar foto" and "Usar este ícone", a 480 dp dialog where Editar grupo is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
     sources and ✓), the shape and color picked there reaching the form only on "Usar este ícone"; the web ("Cor do
-    ícone", "Usar uma foto" and, with a camera, "Tirar foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
+    ícone" and "Usar uma foto") and the Mac (the colors and "Escolher foto…", a file) pick the color in the form.
     Only Android draws and picks the shape (Biscoito, Pétala, Quadrado, Círculo, as the boards draw them, a group
     made before shapes as the old Quadrado); the Apple apps and the web keep every group in their rounded square.
     The photo is the profile's 512x512 JPEG framed in "Ajustar foto" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
@@ -713,8 +724,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Divisão" (never on "Editar conta", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
     leave it out there; Início's shortcut still opens it), online only ("Precisa de internet. Preencha à mão ou leia
     o cupom quando reconectar."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
-    the gallery and the shutter; the Mac picks a file, and the web opens the browser's camera (a webcam too) with "Escolher arquivo" in it, a file
-    chooser where the browser has no camera. The
+    the gallery and the shutter; the Mac and the web pick a file (a phone's browser offers its camera there). The
     photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
     a failed one included; the photo is never kept there. While it reads, "Foto do cupom" says "Lendo o cupom…",
@@ -777,13 +787,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     a pasted link opens.
   - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
     configurações" offers "Configurações", which opens the app's settings page.
-  - The web's "Tirar foto" (beta feedback 2): wherever the web takes a photo from a file (Seu perfil, Editar perfil,
-    Novo grupo, Editar grupo, Conta's Anexos, Ler cupom fiscal) it also offers the browser's camera, a desktop's
-    webcam too, but only while the browser lists a camera (`useCameras`). One dialog (`CameraCaptureDialog`, a
-    drawer on a phone) shows it live, the selfie camera mirrored and the photo never, with the shutter, "Tirar outra"
-    and "Usar foto", "Trocar câmera" with more than one and the flashlight where the browser has it; "Usar foto"
-    hands the JPEG on as a file picked would be, so a profile's or a group's goes through "Ajustar foto". A camera
-    refused says so ("Sem acesso à câmera") with "Tentar de novo" and "Escolher arquivo", and closing stops it.
   - Foldables and the iPhone Duo follow the fold the device reports, never the window alone (decision 8: Android's
     `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
     book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its

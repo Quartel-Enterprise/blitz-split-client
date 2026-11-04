@@ -102,8 +102,10 @@ export function CameraCaptureDialog({
     // Why: still inside the click, so the browser lets the file chooser open.
     onChooseFile?.()
   }
+  // Why: back to the camera asked for first, since a camera switched to that failed would fail again and hide the switch.
   const tryAgain = () => {
     setCaptureFailed(false)
+    setDeviceId(null)
     retry()
   }
 

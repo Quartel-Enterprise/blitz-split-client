@@ -14,6 +14,7 @@ export interface PhotoPicker {
   closeCamera: () => void
 }
 
+/** A screen's photo source: hand it to `PhotoPickerInputs`, and open it with `chooseFile` or, with a camera, `takePhoto`. */
 export function usePhotoPicker(): PhotoPicker {
   const input = useRef<HTMLInputElement>(null)
   const cameras = useCameras()
@@ -38,7 +39,8 @@ export function PhotoPickerInputs({ picker, receiver, facing, title }: { picker:
           facing={facing}
           title={title}
           onCaptured={(jpeg) => receiver.photoPicked?.(jpeg)}
-          onUnreadable={receiver.photoUnreadable}
+          // Why: called on the receiver, since a presenter's method reads its own `this`.
+          onUnreadable={() => receiver.photoUnreadable?.()}
           onChooseFile={picker.chooseFile}
           onClose={picker.closeCamera}
         />

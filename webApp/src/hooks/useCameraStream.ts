@@ -64,11 +64,13 @@ export function useCameraStream(
         }
         stream.current = media
         started.current?.()
-        if (!video.current) return
-        video.current.srcObject = media
         setTrack(media.getVideoTracks()[0] ?? null)
+        // Why: a video not mounted yet gets the stream, and plays, from the effect below once it is.
+        const element = video.current
+        if (!element) return
+        element.srcObject = media
         try {
-          await video.current.play()
+          await element.play()
         } catch {
           // Why: the camera was allowed, so a video that won't play is a failure, not a refusal of the camera.
           if (isActive) setProblem('failed')
@@ -91,13 +93,19 @@ export function useCameraStream(
     }
   }, [isEnabled, facingMode, deviceId, prefersHighResolution, video, attempt])
 
-  // Why: the video may be a new element while the camera runs (a dialog becoming a drawer as a phone turns), which
-  // shows nothing until it gets the stream again.
+  // Why: the video may be mounted only after the camera answered, or be a new element while it runs (a dialog becoming
+  // a drawer as a phone turns), which shows nothing until it gets the stream again.
   useEffect(() => {
     const element = video.current
-    if (!element || !stream.current || element.srcObject === stream.current) return
-    element.srcObject = stream.current
-    element.play().catch(() => {})
+    const media = stream.current
+    if (!element || !media || element.srcObject === media) return
+    element.srcObject = media
+    element
+      .play()
+      .then(() => {
+        if (stream.current === media) setIsPlaying(true)
+      })
+      .catch(() => {})
   })
 
   const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
