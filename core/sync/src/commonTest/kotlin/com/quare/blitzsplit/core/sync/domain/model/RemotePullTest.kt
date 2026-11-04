@@ -10,15 +10,13 @@ class RemotePullTest {
     private val userId = "pierre"
 
     @Test
-    fun `GIVEN events whose seq the device already has WHEN planning THEN still pulls what they tell of`() {
+    fun `GIVEN events the device may already have WHEN planning THEN still pulls what they tell of`() {
         // Given
         val changes = listOf(
             event(
-                seq = 9L,
                 kind = ActivityKind.BILL_EDITED,
             ),
             event(
-                seq = 10L,
                 kind = ActivityKind.COMMENT_ADDED,
             ),
         )
@@ -42,7 +40,6 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
                 groupId = "floripa",
             ),
@@ -81,7 +78,6 @@ class RemotePullTest {
             RemotePull.of(
                 listOf(
                     event(
-                        seq = 11L,
                         kind = kind,
                     ),
                 ),
@@ -106,7 +102,6 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.COMMENT_ADDED,
             ),
         )
@@ -134,7 +129,6 @@ class RemotePullTest {
             RemotePull.of(
                 listOf(
                     event(
-                        seq = 11L,
                         kind = kind,
                     ),
                 ),
@@ -164,7 +158,6 @@ class RemotePullTest {
             RemotePull.of(
                 listOf(
                     event(
-                        seq = 11L,
                         kind = kind,
                     ),
                 ),
@@ -192,7 +185,6 @@ class RemotePullTest {
             RemotePull.of(
                 listOf(
                     event(
-                        seq = 11L,
                         kind = kind,
                     ),
                 ),
@@ -209,27 +201,8 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = null,
             ),
-        )
-
-        // When
-        val pull = RemotePull.of(changes, userId)
-
-        // Then
-        assertTrue(pull.isFullSync)
-    }
-
-    @Test
-    fun `GIVEN the channel joined among other changes WHEN planning THEN asks for a full sync`() {
-        // Given
-        val changes = listOf(
-            event(
-                seq = 11L,
-                kind = ActivityKind.BILL_EDITED,
-            ),
-            RemoteChange.Joined,
         )
 
         // When
@@ -244,7 +217,6 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.MEMBER_ADDED,
                 groupId = "floripa",
             ),
@@ -315,15 +287,12 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_CREATED,
             ),
             event(
-                seq = 12L,
                 kind = ActivityKind.PAYMENT_RECORDED,
             ),
             event(
-                seq = 13L,
                 kind = ActivityKind.GROUP_EDITED,
             ),
         )
@@ -341,12 +310,10 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_CREATED,
                 groupId = "floripa",
             ),
             event(
-                seq = 12L,
                 kind = ActivityKind.PAYMENT_RECORDED,
                 groupId = "ape-302",
             ),
@@ -364,12 +331,10 @@ class RemotePullTest {
         // Given
         val changes = listOf(
             event(
-                seq = 11L,
                 kind = ActivityKind.COMMENT_ADDED,
                 groupId = "ape-302",
             ),
             event(
-                seq = 12L,
                 kind = ActivityKind.BILL_EDITED,
                 groupId = "floripa",
             ),
@@ -390,11 +355,9 @@ class RemotePullTest {
     }
 
     private fun event(
-        seq: Long,
         kind: ActivityKind?,
         groupId: String = "floripa",
     ): RemoteChange.GroupEvent = RemoteChange.GroupEvent(
-        seq = seq,
         groupId = groupId,
         kind = kind,
     )

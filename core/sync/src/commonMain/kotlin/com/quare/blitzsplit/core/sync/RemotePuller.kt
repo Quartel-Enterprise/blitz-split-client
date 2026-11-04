@@ -51,13 +51,13 @@ class RemotePuller(
         withContext(NonCancellable) { writes.forEach { write -> write() } }
     }
 
-    // Why: Atividade's new events last, so the feed comes down with what it tells of.
+    // Why: the groups side by side, each writing its rows together; Atividade's new events last, with what they tell of.
     suspend fun pull(
         userId: String,
         pull: RemotePull,
     ) {
         if (pull.pullsOwnProfile) profileRepository.downloadProfile(userId).getOrThrow()
-        pull.groupIds.forEach { groupId -> downloadGroup(userId, groupId) }
+        coroutineScope { pull.groupIds.map { groupId -> async { downloadGroup(userId, groupId) } }.awaitAll() }
         if (pull.pullsComments) billCommentRepository.download(userId).getOrThrow()
         if (pull.pullsAttachments) billAttachmentRepository.download(userId).getOrThrow()
         if (pull.pullsMemberPhotos) groupRepository.downloadMemberPhotos().getOrThrow()

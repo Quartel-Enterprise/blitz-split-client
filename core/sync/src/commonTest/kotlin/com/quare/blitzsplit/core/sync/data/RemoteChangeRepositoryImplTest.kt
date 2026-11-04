@@ -28,12 +28,11 @@ class RemoteChangeRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN an activity event recorded WHEN observing THEN gives its seq group and kind`() = runTest {
+    fun `GIVEN an activity event recorded WHEN observing THEN gives its group and kind`() = runTest {
         // Given
         prepareScenario(
             heard = listOf(
                 RemoteChangeDto.ActivityInsert(
-                    seq = 42L,
                     groupId = "floripa",
                     kind = "bill_edited",
                 ),
@@ -47,7 +46,6 @@ class RemoteChangeRepositoryImplTest {
         assertEquals(
             listOf<RemoteChange>(
                 RemoteChange.GroupEvent(
-                    seq = 42L,
                     groupId = "floripa",
                     kind = ActivityKind.BILL_EDITED,
                 ),
@@ -62,7 +60,6 @@ class RemoteChangeRepositoryImplTest {
         prepareScenario(
             heard = listOf(
                 RemoteChangeDto.ActivityInsert(
-                    seq = 43L,
                     groupId = "floripa",
                     kind = "poll_created",
                 ),
@@ -76,7 +73,6 @@ class RemoteChangeRepositoryImplTest {
         assertEquals(
             listOf<RemoteChange>(
                 RemoteChange.GroupEvent(
-                    seq = 43L,
                     groupId = "floripa",
                     kind = null,
                 ),
@@ -105,7 +101,6 @@ class RemoteChangeRepositoryImplTest {
                 RemoteChangeDto.Joined,
                 RemoteChangeDto.ProfileUpdate(id = "ana"),
                 RemoteChangeDto.ActivityInsert(
-                    seq = 44L,
                     groupId = "ape-302",
                     kind = "comment_added",
                 ),
@@ -121,7 +116,6 @@ class RemoteChangeRepositoryImplTest {
                 RemoteChange.Joined,
                 RemoteChange.ProfileChanged(userId = "ana"),
                 RemoteChange.GroupEvent(
-                    seq = 44L,
                     groupId = "ape-302",
                     kind = ActivityKind.COMMENT_ADDED,
                 ),

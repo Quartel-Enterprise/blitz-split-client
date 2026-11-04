@@ -8,9 +8,11 @@ import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,16 +43,51 @@ class SupabaseRemoteChangeRemoteDataSource(
             launch(start = CoroutineStart.UNDISPATCHED) {
                 profiles.collect { action -> decode<RemoteChangeDto.ProfileUpdate>(action.record)?.let { send(it) } }
             }
-            // Why: a rejoin after the socket dropped goes through SUBSCRIBING again, so each join counts once.
-            launch(start = CoroutineStart.UNDISPATCHED) {
-                channel.status
-                    .filter { it == RealtimeChannel.Status.SUBSCRIBED }
-                    .collect { send(RemoteChangeDto.Joined) }
-            }
+            launch(start = CoroutineStart.UNDISPATCHED) { announceJoins(channel) }
             channel.subscribe()
-            awaitCancellation()
+            failOnceRefused(channel)
         } finally {
             withContext(NonCancellable) { realtime.removeChannel(channel) }
+        }
+    }
+
+    /*
+     * Why: each join is a moment to catch up, the channel's first and every one after the socket dropped. The socket's
+     * coming back counts too: the channel's rejoin may pass through SUBSCRIBING too fast for a StateFlow collector to
+     * see, while the socket stays down at least the reconnect delay.
+     */
+    private suspend fun ProducerScope<RemoteChangeDto>.announceJoins(channel: RealtimeChannel) {
+        var hasJoined = false
+        launch(start = CoroutineStart.UNDISPATCHED) {
+            var wasDown = false
+            realtime.status.collect { status ->
+                if (status != Realtime.Status.CONNECTED) {
+                    wasDown = true
+                } else if (wasDown) {
+                    wasDown = false
+                    if (hasJoined) send(RemoteChangeDto.Joined)
+                }
+            }
+        }
+        channel.status
+            .filter { it == RealtimeChannel.Status.SUBSCRIBED }
+            .collect {
+                hasJoined = true
+                send(RemoteChangeDto.Joined)
+            }
+    }
+
+    /*
+     * Why: a channel the server refuses or closes falls back to UNSUBSCRIBED, and supabase-kt stops rejoining after a
+     * few tries (2 s apart); one left there longer fails, so RemoteChangeListener listens again later. A socket that
+     * drops and comes back rejoins well within it.
+     */
+    private suspend fun failOnceRefused(channel: RealtimeChannel) {
+        channel.status.collectLatest { status ->
+            if (status == RealtimeChannel.Status.UNSUBSCRIBED) {
+                delay(REFUSED_AFTER_MILLIS)
+                error("The real time channel was refused or closed")
+            }
         }
     }
 
@@ -66,5 +103,6 @@ class SupabaseRemoteChangeRemoteDataSource(
         const val SCHEMA = "public"
         const val EVENTS = "activity_events"
         const val PROFILES = "profiles"
+        const val REFUSED_AFTER_MILLIS = 20_000L
     }
 }

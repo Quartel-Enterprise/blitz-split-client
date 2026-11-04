@@ -178,11 +178,14 @@ the tables as the sync brings them.
   `ProcessLifecycleOwner`, Apple's scene phase other than `.background` and the page's `visibilitychange`), online,
   with an account and a profile (`RemoteChangeListener`). Bible Planner learned the first: a token refreshed in the
   background reaches a dead socket, which supabase-kt's `setAuth` crashes on. Leaving any of them leaves the channel;
-  a channel that fails listens again 30 seconds later.
-- **Catching up**: each time the channel joins (coming to the front, back online, the socket back after it dropped)
-  a full sync brings what nobody heard meanwhile, and shows as one. It is spared only when a sync began after the join
-  (`startedSyncs`), which already read after it; the launch's sync, and the one coming back online starts, usually
-  begin before the join completes, so those moments run two full syncs back to back.
+  a channel that fails listens again 30 seconds later. A batch's pull and a catch-up run in the app's scope, so
+  leaving the front never stops one halfway.
+- **Catching up**: each time the channel joins (coming to the front, back online, the socket back after it dropped,
+  which the socket's own reconnection also announces) a full sync brings what nobody heard meanwhile, and shows as
+  one. It is spared when a sync started reading the groups after the join (`groupReadsStarted`), which already brought
+  everything since: the launch's, or the one coming back online starts, usually do, since the profile and the keys
+  come first. A channel the server refuses or closes, which supabase-kt stops rejoining, fails after 20 seconds and
+  listens again 30 seconds later.
 - **The pull** (`RemotePull`, each kind's `RemoteReach`, `RemotePuller`): what is heard within half a second pulls
   once, under the sync lock. A bill, a payment, a group's edit, its link or a rename pulls that group alone
   (`RemotePuller.downloadGroup`: the group and members, categories, bills and payments, read together and written in

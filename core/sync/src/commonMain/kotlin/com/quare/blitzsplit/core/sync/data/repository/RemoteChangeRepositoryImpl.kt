@@ -16,7 +16,6 @@ class RemoteChangeRepositoryImpl(
             RemoteChangeDto.Joined -> RemoteChange.Joined
 
             is RemoteChangeDto.ActivityInsert -> RemoteChange.GroupEvent(
-                seq = dto.seq,
                 groupId = dto.groupId,
                 kind = ActivityKind.fromCodeOrNull(dto.kind),
             )

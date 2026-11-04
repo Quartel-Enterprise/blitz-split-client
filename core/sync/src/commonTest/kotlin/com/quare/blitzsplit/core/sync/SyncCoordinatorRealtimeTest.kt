@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -43,6 +44,7 @@ class SyncCoordinatorRealtimeTest {
     private lateinit var profile: FakeProfileRepository
     private lateinit var gatedProfile: GatedDownloadProfileRepository
     private lateinit var groups: FakeGroupRepository
+    private lateinit var gatedGroups: GatedDownloadGroupRepository
     private lateinit var categories: FakeCategoryRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -245,7 +247,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -268,7 +269,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -290,7 +290,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.PAYMENT_RECORDED,
             ),
         )
@@ -308,7 +307,6 @@ class SyncCoordinatorRealtimeTest {
         prepareScenario()
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -328,7 +326,6 @@ class SyncCoordinatorRealtimeTest {
         prepareScenario()
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -338,7 +335,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 12L,
                 kind = ActivityKind.PAYMENT_RECORDED,
                 groupId = APE,
             ),
@@ -359,19 +355,16 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_CREATED,
             ),
         )
         remoteChanges.changes.emit(
             event(
-                seq = 12L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
         remoteChanges.changes.emit(
             event(
-                seq = 13L,
                 kind = ActivityKind.PAYMENT_RECORDED,
             ),
         )
@@ -389,7 +382,6 @@ class SyncCoordinatorRealtimeTest {
         prepareScenario()
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -399,7 +391,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 12L,
                 kind = ActivityKind.BILL_EDITED,
                 groupId = APE,
             ),
@@ -420,7 +411,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.COMMENT_ADDED,
             ),
         )
@@ -444,7 +434,6 @@ class SyncCoordinatorRealtimeTest {
             // When
             remoteChanges.changes.emit(
                 event(
-                    seq = 11L,
                     kind = ActivityKind.ATTACHMENT_ADDED,
                 ),
             )
@@ -467,7 +456,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.MEMBER_JOINED,
             ),
         )
@@ -489,7 +477,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.GROUP_DELETED,
             ),
         )
@@ -509,7 +496,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = null,
             ),
         )
@@ -530,7 +516,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -551,7 +536,6 @@ class SyncCoordinatorRealtimeTest {
             // When
             remoteChanges.changes.emit(
                 event(
-                    seq = 11L,
                     kind = ActivityKind.MEMBER_ADDED,
                 ),
             )
@@ -607,7 +591,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -625,7 +608,6 @@ class SyncCoordinatorRealtimeTest {
         prepareScenario(syncInFlight = true)
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -656,10 +638,27 @@ class SyncCoordinatorRealtimeTest {
     }
 
     @Test
-    fun `GIVEN the channel joined during a sync begun before WHEN that sync ends THEN still catches up after it`() =
+    fun `GIVEN the channel joined before a sync in flight read the groups WHEN that sync ends THEN no catch up runs`() =
         runTest {
             // Given
             prepareScenario(syncInFlight = true)
+            remoteChanges.changes.emit(RemoteChange.Joined)
+            runCurrent()
+
+            // When
+            syncGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.registrationCount)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN the channel joined while a sync read the groups WHEN that sync ends THEN still catches up after it`() =
+        runTest {
+            // Given
+            prepareScenario(syncReadingGroups = true)
             remoteChanges.changes.emit(RemoteChange.Joined)
             runCurrent()
 
@@ -729,7 +728,6 @@ class SyncCoordinatorRealtimeTest {
         // When
         remoteChanges.changes.emit(
             event(
-                seq = 11L,
                 kind = ActivityKind.BILL_EDITED,
             ),
         )
@@ -743,11 +741,9 @@ class SyncCoordinatorRealtimeTest {
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
 
     private fun event(
-        seq: Long,
         kind: ActivityKind?,
         groupId: String = FLORIPA,
     ): RemoteChange.GroupEvent = RemoteChange.GroupEvent(
-        seq = seq,
         groupId = groupId,
         kind = kind,
     )
@@ -763,11 +759,13 @@ class SyncCoordinatorRealtimeTest {
         inFront: Boolean = true,
         failingListens: Int = 0,
         syncInFlight: Boolean = false,
+        syncReadingGroups: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status)
         profile = FakeProfileRepository(initialProfile = storedProfile)
         gatedProfile = GatedDownloadProfileRepository(profile)
         groups = FakeGroupRepository()
+        gatedGroups = GatedDownloadGroupRepository(groups)
         categories = FakeCategoryRepository()
         expenses = FakeExpenseRepository()
         settlements = FakeSettlementRepository()
@@ -783,7 +781,7 @@ class SyncCoordinatorRealtimeTest {
             profileRepository = gatedProfile,
             paymentKeyRepository = paymentKeys,
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
-            groupRepository = groups,
+            groupRepository = gatedGroups,
             groupPinRepository = FakeGroupPinRepository(),
             expenseRepository = expenses,
             settlementRepository = settlements,
@@ -825,6 +823,11 @@ class SyncCoordinatorRealtimeTest {
             coordinator.retry()
             runCurrent()
         }
+        if (syncReadingGroups) {
+            gatedGroups.gate = syncGate
+            coordinator.retry()
+            runCurrent()
+        }
     }
 
     private companion object {
@@ -840,6 +843,17 @@ class SyncCoordinatorRealtimeTest {
 }
 
 // Holds the profile download, the first step of a sync after registering, while a gate is set and closed.
+private class GatedDownloadGroupRepository(
+    private val delegate: FakeGroupRepository,
+) : GroupRepository by delegate {
+    var gate: CompletableDeferred<Unit>? = null
+
+    override suspend fun downloadGroups(userId: String): Result<Unit> {
+        gate?.await()
+        return delegate.downloadGroups(userId)
+    }
+}
+
 private class GatedDownloadProfileRepository(
     private val delegate: FakeProfileRepository,
 ) : ProfileRepository by delegate {

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
  * The changes a test sends, as the server's real time would; `listeners` counts the channels listening right now and
  * `joinCount` every attempt to listen. The next `failingListens` attempts fail, as a channel the server refuses.
  */
-class FakeRemoteChangeRepository : RemoteChangeRepository {
+internal class FakeRemoteChangeRepository : RemoteChangeRepository {
     val changes = MutableSharedFlow<RemoteChange>(extraBufferCapacity = 16)
     var listeners = 0
         private set

@@ -12,7 +12,6 @@ sealed interface RemoteChange {
 
     // Why: an event of Atividade, which the server records for everything done in a group; null for a kind a newer server records.
     data class GroupEvent(
-        val seq: Long,
         val groupId: String,
         val kind: ActivityKind?,
     ) : RemoteChange

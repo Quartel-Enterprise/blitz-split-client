@@ -27,7 +27,7 @@ data class RemotePull(
             val reaches = events.map { RemoteReach.of(it.kind) }.toSet()
             val hasNewMember = RemoteReach.MEMBERS in reaches
             return RemotePull(
-                isFullSync = changes.any { it is RemoteChange.Joined } || RemoteReach.EVERYTHING in reaches,
+                isFullSync = RemoteReach.EVERYTHING in reaches,
                 groupIds = events
                     .filter { RemoteReach.of(it.kind) in RemoteReach.groupReaches }
                     .map { it.groupId }

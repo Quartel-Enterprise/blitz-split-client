@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.RemoteChange
 import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
@@ -36,7 +37,7 @@ class RemoteChangeListener(
         combine(
             appForeground.observe(),
             connectivityObserver.observe(),
-            accountRepository.observeStatus().map(::userIdOrNull),
+            accountRepository.observeStatus().map { it.userIdOrNull() },
             profileRepository.observeProfile().map { profile -> profile != null },
         ) { isForeground, isOnline, userId, hasProfile ->
             userId?.takeIf { isForeground && isOnline && hasProfile }

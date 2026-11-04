@@ -9,7 +9,6 @@ sealed interface RemoteChangeDto {
     // Why: the columns of an activity_events insert the pull needs; the payload itself is never applied.
     @Serializable
     data class ActivityInsert(
-        @SerialName("seq") val seq: Long,
         @SerialName("group_id") val groupId: String,
         @SerialName("kind") val kind: String,
     ) : RemoteChangeDto
