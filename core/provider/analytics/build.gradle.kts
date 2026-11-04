@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.PathSensitivity
+
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
 }
@@ -22,4 +24,20 @@ kotlin {
             implementation(libs.firebase.analytics)
         }
     }
+}
+
+// Why: AnalyticsCatalogTest reads the features' and the core modules' sources and the catalog, which aren't this module's inputs.
+tasks.named<Test>("jvmTest") {
+    inputs
+        .files(
+            fileTree(rootProject.layout.projectDirectory) {
+                include("feature/**/src/*Main/**/*.kt", "core/**/src/*Main/**/*.kt")
+                exclude("**/build/**")
+            },
+        ).withPropertyName("declarationSources")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(rootProject.layout.projectDirectory.file("docs/analytics/README.md"))
+        .withPropertyName("analyticsCatalog")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }

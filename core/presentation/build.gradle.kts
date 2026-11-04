@@ -9,6 +9,8 @@ kotlin {
             api(libs.kotlinx.coroutines.core)
             // Why: a UiState section that loads on its own is a Loadable, so "not yet" never reads as empty.
             api(libs.quare.loadable)
+            // Why: TrackedViewModel's TrackEvent, which every feature's ViewModel hands it.
+            api(projects.core.provider.analytics)
         }
     }
 }
