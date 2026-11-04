@@ -33,8 +33,17 @@ export async function startAnalytics(): Promise<void> {
     const analytics = initializeAnalytics(app, {
       config: { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false },
     })
-    attachAnalytics((name, params) => logEvent(analytics, name, params))
+    attachAnalytics((name, params) => logEvent(analytics, name, name === 'screen_view' ? webScreenView(params) : params))
   } catch {
     // Analytics only counts what people do; a page that can't load it works as before
   }
+}
+
+/**
+ * The shared code's screen_view carries GA4's screen_name and screen_class, which Android's and Apple's SDKs read; the
+ * web SDK reads the same screen from firebase_screen and firebase_screen_class instead.
+ */
+function webScreenView(params: Record<string, unknown>): Record<string, unknown> {
+  const { screen_name: screen, screen_class: screenClass, ...rest } = params
+  return { ...rest, firebase_screen: screen, firebase_screen_class: screenClass }
 }

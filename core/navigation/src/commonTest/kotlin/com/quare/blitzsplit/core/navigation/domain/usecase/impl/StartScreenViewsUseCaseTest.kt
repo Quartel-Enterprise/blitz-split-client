@@ -5,9 +5,11 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.milliseconds
 
 class StartScreenViewsUseCaseTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -16,16 +18,21 @@ class StartScreenViewsUseCaseTest {
     private val events = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @Test
-    fun `GIVEN Inicio on top WHEN starting THEN sends its screen view at once`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(startRoute = Route.Home)
+    fun `GIVEN Inicio on top WHEN starting THEN sends its screen view once it stays on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(startRoute = Route.Home)
 
-        // When
-        startScreenViews()
+            stay()
 
-        // Then
-        assertEquals(listOf(screenView("home")), events)
-    }
+            // When
+            startScreenViews()
+
+            stay()
+
+            // Then
+            assertEquals(listOf(screenView("home")), events)
+        }
 
     @Test
     fun `GIVEN screens shown before starting WHEN starting THEN sends only the one on top`() = runTest(testDispatcher) {
@@ -34,8 +41,12 @@ class StartScreenViewsUseCaseTest {
         navigator.navigate(Route.ProfileSetup)
         navigator.replaceAll(Route.Home)
 
+        stay()
+
         // When
         startScreenViews()
+
+        stay()
 
         // Then
         assertEquals(listOf(screenView("home")), events)
@@ -47,8 +58,12 @@ class StartScreenViewsUseCaseTest {
         prepareScenario(startRoute = Route.Home)
         startScreenViews()
 
+        stay()
+
         // When
         navigator.navigate(Route.Groups)
+
+        stay()
 
         // Then
         assertEquals(listOf(screenView("home"), screenView("groups")), events)
@@ -62,6 +77,8 @@ class StartScreenViewsUseCaseTest {
         prepareScenario(startRoute = Route.Groups)
         startScreenViews()
 
+        stay()
+
         // When
         navigator.navigate(
             Route.GroupDetail(
@@ -70,6 +87,8 @@ class StartScreenViewsUseCaseTest {
                 tab = GroupTab.BALANCES,
             ),
         )
+
+        stay()
 
         // Then
         assertEquals(
@@ -88,10 +107,15 @@ class StartScreenViewsUseCaseTest {
         // Given
         prepareScenario(startRoute = Route.Home)
         startScreenViews()
+        stay()
         navigator.navigate(Route.Profile)
+
+        stay()
 
         // When
         navigator.navigateBack()
+
+        stay()
 
         // Then
         assertEquals(listOf(screenView("home"), screenView("profile"), screenView("home")), events)
@@ -112,6 +136,8 @@ class StartScreenViewsUseCaseTest {
             )
             startScreenViews()
 
+            stay()
+
             // When
             navigator.replaceAbove(
                 size = 1,
@@ -121,6 +147,8 @@ class StartScreenViewsUseCaseTest {
                     tab = GroupTab.EXPENSES,
                 ),
             )
+
+            stay()
 
             // Then
             assertEquals(
@@ -142,6 +170,8 @@ class StartScreenViewsUseCaseTest {
         )
         startScreenViews()
 
+        stay()
+
         // When
         navigator.replaceTop(
             Route.GroupDetail(
@@ -150,6 +180,8 @@ class StartScreenViewsUseCaseTest {
                 tab = GroupTab.EXPENSES,
             ),
         )
+
+        stay()
 
         // Then
         val groupView = screenView("group_detail", mapOf("tab" to GroupTab.EXPENSES, "is_join" to false))
@@ -162,8 +194,12 @@ class StartScreenViewsUseCaseTest {
         prepareScenario(startRoute = Route.Home)
         startScreenViews()
 
+        stay()
+
         // When
         startScreenViews()
+
+        stay()
 
         // Then
         assertEquals(listOf(screenView("home")), events)
@@ -176,11 +212,37 @@ class StartScreenViewsUseCaseTest {
         startScreenViews()
         startScreenViews()
 
+        stay()
+
         // When
         navigator.navigate(Route.Contacts)
 
+        stay()
+
         // Then
         assertEquals(listOf(screenView("home"), screenView("contacts")), events)
+    }
+
+    @Test
+    fun `GIVEN started WHEN a screen comes on top and goes at once THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(startRoute = Route.Home)
+            startScreenViews()
+            stay()
+
+            // When
+            navigator.navigate(Route.Profile)
+            navigator.navigateBack()
+            stay()
+
+            // Then
+            assertEquals(listOf(screenView("home")), events)
+        }
+
+    // Why: a screen on top as long as one counts.
+    private fun TestScope.stay() {
+        advanceTimeBy(screenStay + 1.milliseconds)
     }
 
     // Why: GA4's screen_view, the screen's name as both its name and class, beside the route's own params.

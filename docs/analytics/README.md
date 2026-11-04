@@ -21,9 +21,12 @@ Screen views are tracked ([below](#screen-views)); each user action's event come
 ## Screen views
 
 `StartScreenViews` (`:core:navigation`) sends GA4's `screen_view` each time another route comes on top of the back
-stack, going back to one included, once per route: another group's Despesas is another view, the same route drawn again
-is not. It starts once `AppViewModel` picked the first screen, so the welcome the stack holds before that never counts.
-`screen_name` and `screen_class` are the route's name (`RouteScreenView.kt`, a `when` with no `else`, so a new route
+stack and stays there for half a second, going back to one included, once per route: another group's Despesas is
+another view, the same route drawn again is not. One gone at once never counts, nor does the screen under it coming
+back: the Mac pops Perfil and Mapa de categorias right away to open them in Ajustes, so Ajustes is not a screen view
+there (Notificações, kept inside the profile on the Mac and the web, isn't either). It starts once `AppViewModel` picked the first screen, so the welcome the stack holds before that never counts.
+`screen_name` and `screen_class` (the web's adapter renames them `firebase_screen` and `firebase_screen_class`, which
+its SDK reads) are the route's name (`RouteScreenView.kt`, a `when` with no `else`, so a new route
 can't ship without one); a few routes add what kind of visit it was, never whose:
 
 | `screen_name` | Params |

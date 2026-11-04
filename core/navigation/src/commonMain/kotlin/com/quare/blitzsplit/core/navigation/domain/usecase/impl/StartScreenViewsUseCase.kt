@@ -5,16 +5,27 @@ import com.quare.blitzsplit.core.navigation.analytics.toScreenView
 import com.quare.blitzsplit.core.navigation.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.milliseconds
 
 /*
- * Why: a screen counts each time it comes on top, back to it included, and once per route: another group's Despesas
+ * Why: a route only counts once it stays on top for a moment, so one gone at once never does, and neither does the
+ * screen under it coming back: the Mac pops Perfil and Mapa de categorias right away to open them in Ajustes, and a
+ * link replaces Início with the group it opens.
+ */
+internal val screenStay = 500.milliseconds
+
+/*
+ * Why: a screen counts each time it comes on top and stays, back to it included, and once per route: another group's Despesas
  * is another view, the same one drawn again is not. Every window of the Mac shares the back stack, so it starts once.
  */
+@OptIn(FlowPreview::class)
 internal class StartScreenViewsUseCase(
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
@@ -28,6 +39,8 @@ internal class StartScreenViewsUseCase(
         navigator.backStack
             .map { routes -> routes.lastOrNull() }
             .filterNotNull()
+            .distinctUntilChanged()
+            .debounce(screenStay)
             .distinctUntilChanged()
             .onEach { route ->
                 val screenView = route.toScreenView()
