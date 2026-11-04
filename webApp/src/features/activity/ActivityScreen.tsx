@@ -213,6 +213,8 @@ function useEndReached(isEnabled: boolean, itemCount: number, onEnd: () => void)
 /** One item: the face with the kind's badge, "Bruno editou Jantar", its detail, the group and the time, the unread dot. */
 function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityPresenter; item: JsActivityItem; isWide: boolean; isSelected: boolean }) {
   const showsChanges = !isWide && item.hasChangesToShow
+  // Why: a deleted comment's row has no line under its headline.
+  const detail = detailLine(item)
   return (
     <div className={cn('relative border-b', isSelected && 'bg-muted')}>
       <button
@@ -228,7 +230,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <HeadlineLine item={item} className="text-sm leading-5" />
           {/* Why: a comment's quoted text keeps its two lines on the desktop too. */}
-          <span className={cn('text-[13px] leading-[18px] text-muted-foreground', isWide && item.kind !== 'comment_added' ? 'line-clamp-1' : 'line-clamp-2')}>{detailLine(item)}</span>
+          {detail && <span className={cn('text-[13px] leading-[18px] text-muted-foreground', isWide && item.kind !== 'comment_added' ? 'line-clamp-1' : 'line-clamp-2')}>{detail}</span>}
           <ItemMeta item={item} />
         </span>
         {item.isUnread && (
@@ -495,7 +497,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
           </table>
         </div>
       ) : (
-        !item.deletion && <p className="text-sm leading-relaxed">{detailLine(item)}</p>
+        !item.deletion && detailLine(item) && <p className="text-sm leading-relaxed">{detailLine(item)}</p>
       )}
       {item.deletion && (
         <div role="note" className="flex gap-2.5 rounded-lg border bg-muted/40 p-3 text-[13px] leading-relaxed">
@@ -516,7 +518,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
               <Avatar initial={other.actorInitials} color={other.actorColor} className="size-7 text-[11px]" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <HeadlineLine item={other} className="text-[13px]" />
-                <span className="truncate text-xs text-muted-foreground">{detailLine(other)}</span>
+                {detailLine(other) && <span className="truncate text-xs text-muted-foreground">{detailLine(other)}</span>}
               </span>
               <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                 {other.isPending ? t('activity_pending') : formatDayTime(other.occurredAt, other.relativeDay)}

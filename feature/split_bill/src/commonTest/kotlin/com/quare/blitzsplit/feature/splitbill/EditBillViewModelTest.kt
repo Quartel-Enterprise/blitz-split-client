@@ -740,7 +740,11 @@ class EditBillViewModelTest {
     fun `GIVEN Conta of another bill under it WHEN the delete finishes THEN only goes back once`() =
         runTest(testDispatcher) {
             // Given
-            val otherBill = Route.BillDetail(GROUP_ID, expenseId = "expense-2")
+            val otherBill = Route.BillDetail(
+                GROUP_ID,
+                expenseId = "expense-2",
+                focusCommentId = null,
+            )
             prepareScenario(
                 underneath = listOf(
                     Route.Groups,
@@ -1147,7 +1151,7 @@ class EditBillViewModelTest {
         scansReceipt = false,
     )
 
-    private val billDetail = Route.BillDetail(GROUP_ID, EXPENSE_ID)
+    private val billDetail = Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null)
 
     private val fullStack =
         listOf(

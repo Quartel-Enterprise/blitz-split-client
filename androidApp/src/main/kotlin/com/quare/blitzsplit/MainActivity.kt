@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(LocalShowsBitcoinInSats provides showsBitcoinInSats) {
                     FoldLayoutRoot {
                         AppNavDisplay(appViewModel = appViewModel)
+                        BillLinkNoticeDialog(appViewModel = appViewModel)
                     }
                 }
                 val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()

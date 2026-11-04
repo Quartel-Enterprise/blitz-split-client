@@ -21,7 +21,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
@@ -46,7 +49,6 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.historyOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.myPartNoteOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.payersOf
-import com.quare.blitzsplit.feature.billdetail.presentation.mapper.replyTargetOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.tilesOf
@@ -83,11 +85,14 @@ class BillDetailViewModel(
     private val noticeBillGone: NoticeBillGone,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
-    private val addBillComment: AddBillComment,
     private val updateExpense: UpdateExpense,
     private val addBillAttachment: AddBillAttachment,
     private val removeBillAttachment: RemoveBillAttachment,
     private val loadBillAttachmentImage: LoadBillAttachmentImage,
+    addBillComment: AddBillComment,
+    editBillComment: EditBillComment,
+    deleteBillComment: DeleteBillComment,
+    likeBillComment: LikeBillComment,
     loadBillAttachmentUrls: LoadBillAttachmentUrls,
     loadBillHistory: LoadBillHistory,
     observeFirstDownload: ObserveFirstDownload,
@@ -125,6 +130,10 @@ class BillDetailViewModel(
                 threads = Loadable.Loading,
                 commentDraft = "",
                 replyTarget = null,
+                editingCommentId = null,
+                commentToDelete = null,
+                likesCommentId = null,
+                focusedCommentId = null,
                 history = Loadable.Loading,
                 isHistoryFromDeviceOnly = false,
                 isOnline = true,
@@ -144,13 +153,28 @@ class BillDetailViewModel(
     private var expense: Expense? = null
     private var myMemberId: String? = null
     private var shownGroup: Group? = null
-    private var comments: List<BillComment> = emptyList()
+    private var commentList: List<BillComment> = emptyList()
     private var events: List<ActivityEvent> = emptyList()
     private var attachments: List<BillAttachment> = emptyList()
     private var imageUrls: Map<String, String> = emptyMap()
 
     // Why: a restored account's comments and photos only come with its first full sync, so online they load until then.
     private var isCopyWhole = false
+
+    // Why: the bill's comments are read from the device on their own, so they show only once that read answered.
+    private var areCommentsRead = false
+
+    private val comments = BillDetailComments(
+        route = route,
+        uiState = uiState,
+        scope = viewModelScope,
+        addBillComment = addBillComment,
+        editBillComment = editBillComment,
+        deleteBillComment = deleteBillComment,
+        likeBillComment = likeBillComment,
+        me = { shownGroup?.members?.firstOrNull { it.isMe } },
+        emit = uiAction::emit,
+    )
 
     private val historyRead = BillHistoryRead(
         loadBillHistory = loadBillHistory,
@@ -206,7 +230,8 @@ class BillDetailViewModel(
             }.launchIn(viewModelScope)
         observeBillComments(route.expenseId)
             .onEach { comments ->
-                this.comments = comments
+                commentList = comments
+                areCommentsRead = true
                 showThreads()
             }.launchIn(viewModelScope)
         observeBillHistory(route.expenseId)
@@ -261,6 +286,8 @@ class BillDetailViewModel(
 
     fun onEvent(event: BillDetailUiEvent) {
         when (event) {
+            is BillDetailUiEvent.CommentEvent -> comments.onEvent(event)
+
             BillDetailUiEvent.OnBackClicked -> leave()
 
             is BillDetailUiEvent.OnPersonClicked -> openPerson(event.memberId)
@@ -283,14 +310,6 @@ class BillDetailViewModel(
                     )
                 }
             }
-
-            is BillDetailUiEvent.OnCommentChanged -> uiState.update { it.copy(commentDraft = event.text) }
-
-            BillDetailUiEvent.OnSendCommentClicked -> sendComment()
-
-            is BillDetailUiEvent.OnReplyClicked -> replyTo(event.commentId)
-
-            BillDetailUiEvent.OnReplyCancelled -> uiState.update { it.copy(replyTarget = null) }
 
             BillDetailUiEvent.OnUndoClicked -> undo()
 
@@ -443,8 +462,10 @@ class BillDetailViewModel(
 
     private fun showThreads() {
         val group = shownGroup ?: return
-        val threads = threadsOf(comments, group, currentTimeMillis(), currentTimeZone())
-        uiState.update { it.copy(threads = if (isCopyWhole) threads.toLoaded() else Loadable.Loading) }
+        val threads = threadsOf(commentList, group, currentTimeMillis(), currentTimeZone())
+        val isShown = isCopyWhole && areCommentsRead
+        uiState.update { it.copy(threads = if (isShown) threads.toLoaded() else Loadable.Loading) }
+        if (isShown) comments.onShown(threads, commentList)
     }
 
     private fun showHistory() {
@@ -468,49 +489,6 @@ class BillDetailViewModel(
                 expenseId = route.expenseId,
             ),
         )
-    }
-
-    private fun replyTo(commentId: String) {
-        val threads = uiState.value.threads.valueOrNull() ?: return
-        val target = replyTargetOf(threads, commentId) ?: return
-        uiState.update { it.copy(replyTarget = target) }
-    }
-
-    private fun sendComment() {
-        val state = uiState.value
-        if (!state.canSendComment) return
-        val me = shownGroup?.members?.firstOrNull { it.isMe }
-        val replyTarget = state.replyTarget
-        uiState.update {
-            it.copy(
-                commentDraft = "",
-                replyTarget = null,
-            )
-        }
-        viewModelScope.launch {
-            addBillComment(
-                expenseId = route.expenseId,
-                groupId = route.groupId,
-                body = state.commentDraft,
-                threadId = replyTarget?.threadId,
-                replyToName = replyTarget?.answeredName,
-                authorMemberId = me?.id,
-                authorName = me?.name,
-            ).onFailure {
-                // Why: back in the field only while nothing new was typed there, which would be lost.
-                uiState.update {
-                    if (it.commentDraft.isEmpty() && it.replyTarget == null) {
-                        it.copy(
-                            commentDraft = state.commentDraft,
-                            replyTarget = replyTarget,
-                        )
-                    } else {
-                        it
-                    }
-                }
-                uiAction.emit(BillDetailUiAction.ShowCommentError)
-            }
-        }
     }
 
     // Why: the latest edit's "before" saved over the bill, offline too, as a new edit everyone sees.

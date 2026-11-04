@@ -1,5 +1,5 @@
 import { CloudOff, Info, Link2Off, Lock } from 'lucide-react'
-import { SharedBillPresenter, type JsRoute, type JsSharedBillState } from 'blitzsplit-shared'
+import { SharedBillPresenter, type JsRoute, type JsSharedBillAction, type JsSharedBillState } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -7,7 +7,7 @@ import { BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from '@/features/bill-detail/BillAttachments'
-import { BillComments, CommentComposer } from '@/features/bill-detail/BillComments'
+import { BillComments, CommentComposer, CommentDialogs, shareComment } from '@/features/bill-detail/BillComments'
 import { BillBody, type Money } from '@/features/bill-detail/BillDetailSheet'
 import { t } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
@@ -16,14 +16,18 @@ import { formatMoney } from '@/lib/money'
 /**
  * A bill's link opened (7.3h), blitzsplit.com/c/<code>: a page of its own, outside the home's frame, in a centered
  * column (the phone's whole width). It draws the bill as Conta does, read-only (no Editar, Apagar, Histórico nor
- * adding or removing photos), its attachments and comments; whoever is signed in comments, in the group or not.
+ * adding or removing photos), its attachments and comments; whoever is signed in comments, in the group or not, and
+ * likes comments and edits and deletes their own, online only. A link shared at a comment scrolls to it.
  */
 export function SharedBillScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new SharedBillPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsSharedBillState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
-    if (action === 'comment-error') toast(t('sharedBill_commentError'))
-    if (action === 'needs-name') toast(t('sharedBill_needsName'))
+  useActions(presenter, (p, onAction: (action: JsSharedBillAction) => void) => p.observeActions(onAction), (action) => {
+    if (action.type === 'comment-error') toast(t('sharedBill_commentError'))
+    if (action.type === 'needs-name') toast(t('sharedBill_needsName'))
+    if (action.type === 'comment-change-error') toast(t('sharedBill_commentChangeError'))
+    if (action.type === 'comment-gone') toast(t('billDetail_commentGone'))
+    if (action.type === 'share-comment' && action.share) shareComment(action.share)
   })
   if (!presenter || !state) return null
   return (
@@ -98,9 +102,13 @@ function OpenBill({ presenter, state }: { presenter: SharedBillPresenter; state:
   const composerRef = useRef<HTMLTextAreaElement>(null)
   const localUrls = useLocalPhotoUrls(state.attachments)
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
-  // Why: "Responder" leaves the person typing the reply.
+  // Why: "Responder" and "Editar" leave the person typing the reply or the edit.
   const onReply = (commentId: string) => {
     presenter.reply(commentId)
+    composerRef.current?.focus()
+  }
+  const onEditComment = (commentId: string) => {
+    presenter.editComment(commentId)
     composerRef.current?.focus()
   }
   return (
@@ -117,7 +125,14 @@ function OpenBill({ presenter, state }: { presenter: SharedBillPresenter; state:
         description={<p className="text-[13px] text-muted-foreground">{formatDayTime(state.spentAt, state.spentDay)}</p>}
       />
       <div className="flex flex-col gap-3">
-        <BillComments state={state} onReply={state.showsComposer ? onReply : undefined} />
+        {/* Why: the heart, Editar and Apagar go straight to the server, so they wait while it can't be reached. */}
+        <BillComments
+          state={state}
+          presenter={presenter}
+          canChange={state.canChangeComments}
+          onReply={state.showsComposer ? onReply : undefined}
+          onEdit={onEditComment}
+        />
         {state.showsComposer && <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className="border-t pt-3" />}
         {state.showsSignInToComment && (
           <div className="flex flex-col items-start gap-3 rounded-lg border px-4 py-3.5 sm:flex-row sm:items-center">
@@ -129,6 +144,7 @@ function OpenBill({ presenter, state }: { presenter: SharedBillPresenter; state:
         )}
       </div>
       <AttachmentViewer presenter={presenter} state={state} localUrls={localUrls} />
+      <CommentDialogs state={state} presenter={presenter} isBusy={state.isChangingComment} />
     </>
   )
 }

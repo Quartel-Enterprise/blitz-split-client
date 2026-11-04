@@ -389,7 +389,7 @@ class GroupsSearchTest {
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
                 ),
-                Route.BillDetail("churrasco", "carne"),
+                Route.BillDetail("churrasco", "carne", focusCommentId = null),
             ),
             navigator.backStack.value,
         )

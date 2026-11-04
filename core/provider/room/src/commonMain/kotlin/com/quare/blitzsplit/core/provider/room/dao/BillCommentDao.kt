@@ -2,9 +2,9 @@ package com.quare.blitzsplit.core.provider.room.dao
 
 import androidx.room3.Dao
 import androidx.room3.Insert
-import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
+import androidx.room3.Upsert
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -43,23 +43,56 @@ interface BillCommentDao {
         insertComment(entity)
     }
 
+    // Why: the author's edit, kept on the device first, offline too; a deleted comment stays deleted.
+    @Query(
+        "UPDATE bill_comment SET body = :body, editedAt = :editedAt, pendingSync = 1 " +
+            "WHERE id = :id AND isDeleted = 0",
+    )
+    suspend fun editComment(
+        id: String,
+        body: String,
+        editedAt: Long,
+    ): Int
+
+    // Why: a tombstone with no text, which the sync takes up; its replies stay.
+    @Query("UPDATE bill_comment SET body = '', isDeleted = 1, pendingSync = 1 WHERE id = :id")
+    suspend fun deleteComment(id: String): Int
+
     @Query("SELECT EXISTS(SELECT 1 FROM expense WHERE id = :id)")
     suspend fun hasBill(id: String): Boolean
 
     @Insert
     suspend fun insertComment(entity: BillCommentEntity)
 
-    // Why: a comment is never edited, so the server's copy (its author and thread as stamped there) replaces the device's.
+    /*
+     * Why: the server's copy (its author and thread as stamped there) replaces the device's, but for one edited or
+     * deleted here and not up yet, whose change would be lost before it goes up.
+     */
     @Transaction
     suspend fun applyRemoteToBills(entities: List<BillCommentEntity>) {
-        upsertComments(entities.filter { hasBill(it.expenseId) })
+        val pendingIds = getPendingIds().toSet()
+        upsertComments(entities.filter { it.id !in pendingIds && hasBill(it.expenseId) })
     }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("SELECT id FROM bill_comment WHERE pendingSync = 1")
+    suspend fun getPendingIds(): List<String>
+
+    // Why: an upsert, never REPLACE, whose delete and insert would cascade to the comment's likes (pending ones too).
+    @Upsert
     suspend fun upsertComments(entities: List<BillCommentEntity>)
 
-    @Query("UPDATE bill_comment SET pendingSync = 0 WHERE id IN (:ids)")
-    suspend fun markSynced(ids: List<String>)
+    // Why: only the version that went up; one edited again meanwhile still waits.
+    @Transaction
+    suspend fun markSynced(entities: List<BillCommentEntity>) {
+        entities.forEach { markSynced(it.id, it.body, it.isDeleted) }
+    }
+
+    @Query("UPDATE bill_comment SET pendingSync = 0 WHERE id = :id AND body = :body AND isDeleted = :isDeleted")
+    suspend fun markSynced(
+        id: String,
+        body: String,
+        isDeleted: Boolean,
+    )
 
     // Why: the server answers every comment of the user's groups, so a synced one missing there was dropped there.
     @Transaction

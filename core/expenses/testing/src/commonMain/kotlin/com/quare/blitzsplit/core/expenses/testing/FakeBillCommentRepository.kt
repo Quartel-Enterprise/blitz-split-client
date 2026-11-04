@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.testing
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -15,8 +16,12 @@ class FakeBillCommentRepository(
     val comments = MutableStateFlow(initialComments)
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+
+    // Why: when each like or its undoing was stamped, in the order they came.
+    val likedAts = mutableListOf<Long>()
     var addError: Throwable? = null
     var addGate: CompletableDeferred<Unit>? = null
+    var changeError: Throwable? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
@@ -32,6 +37,52 @@ class FakeBillCommentRepository(
         addGate?.await()
         addError?.let { return Result.failure(it) }
         comments.update { it + comment }
+        return Result.success(Unit)
+    }
+
+    override suspend fun updateComment(
+        id: String,
+        body: String,
+        editedAt: Long,
+    ): Result<Unit> = updateStored(id) {
+        it.copy(
+            body = body,
+            editedAt = editedAt,
+        )
+    }
+
+    override suspend fun deleteComment(id: String): Result<Unit> = updateStored(id) {
+        it.copy(
+            body = "",
+            isDeleted = true,
+        )
+    }
+
+    override suspend fun updateLike(
+        commentId: String,
+        groupId: String,
+        isLiked: Boolean,
+        memberId: String?,
+        likerName: String?,
+        at: Long,
+    ): Result<Unit> = updateStored(commentId) { comment ->
+        likedAts += at
+        val others = comment.likes.filterNot { it.isMine }
+        val mine = BillCommentLike(
+            memberId = memberId,
+            name = likerName,
+            isMine = true,
+        )
+        comment.copy(likes = if (isLiked) others + mine else others)
+    }
+
+    private fun updateStored(
+        id: String,
+        transform: (BillComment) -> BillComment,
+    ): Result<Unit> {
+        changeError?.let { return Result.failure(it) }
+        if (comments.value.none { it.id == id }) return Result.failure(IllegalStateException("No comment $id"))
+        comments.update { list -> list.map { if (it.id == id) transform(it).copy(isPending = true) else it } }
         return Result.success(Unit)
     }
 

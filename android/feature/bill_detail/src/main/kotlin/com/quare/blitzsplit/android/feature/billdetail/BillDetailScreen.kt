@@ -1,17 +1,21 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
-import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.platform.rememberGalleryPhotoSaver
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
+import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -28,22 +32,38 @@ fun BillDetailScreen(
     viewModel: BillDetailViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
-        when (action) {
-            BillDetailUiAction.ShowDeleteError -> R.string.bill_detail_delete_error
+    val context = LocalContext.current
+    val resources = LocalResources.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewModel) {
+        viewModel.uiAction.collect { action ->
+            val message = when (action) {
+                // Why: a comment's "Compartilhar" goes through the system share, the only action that isn't a message.
+                is BillDetailUiAction.ShareComment -> {
+                    context.shareText(shareCommentTextOf(resources, action.share))
+                    null
+                }
 
-            BillDetailUiAction.ShowCommentError -> R.string.bill_detail_comment_error
+                BillDetailUiAction.ShowDeleteError -> R.string.bill_detail_delete_error
 
-            BillDetailUiAction.ShowUndoError -> R.string.bill_detail_undo_error
+                BillDetailUiAction.ShowCommentError -> R.string.bill_detail_comment_error
 
-            is BillDetailUiAction.ShowPhotoError -> when (action.error) {
-                BillPhotoError.UNREADABLE -> R.string.bill_detail_photo_unreadable
-                BillPhotoError.TOO_LARGE -> R.string.bill_detail_photo_too_large
-                BillPhotoError.NO_ROOM -> R.string.bill_detail_photo_no_room
-                BillPhotoError.FAILED -> R.string.bill_detail_photo_failed
+                BillDetailUiAction.ShowCommentChangeError -> R.string.bill_detail_comment_change_error
+
+                BillDetailUiAction.ShowCommentGone -> R.string.bill_detail_comment_gone
+
+                BillDetailUiAction.ShowUndoError -> R.string.bill_detail_undo_error
+
+                is BillDetailUiAction.ShowPhotoError -> when (action.error) {
+                    BillPhotoError.UNREADABLE -> R.string.bill_detail_photo_unreadable
+                    BillPhotoError.TOO_LARGE -> R.string.bill_detail_photo_too_large
+                    BillPhotoError.NO_ROOM -> R.string.bill_detail_photo_no_room
+                    BillPhotoError.FAILED -> R.string.bill_detail_photo_failed
+                }
+
+                BillDetailUiAction.ShowRemovePhotoError -> R.string.bill_detail_remove_photo_error
             }
-
-            BillDetailUiAction.ShowRemovePhotoError -> R.string.bill_detail_remove_photo_error
+            message?.let { showReplacingSnackbar(snackbarHostState, resources.getString(it)) }
         }
     }
     // Why: "Adicionar foto" picks one as Editar perfil does, from the camera or the system photo picker.
@@ -53,7 +73,6 @@ fun BillDetailScreen(
         onPhotoUnreadable = { viewModel.onEvent(BillDetailUiEvent.OnPhotoUnreadable) },
     )
     val scope = rememberCoroutineScope()
-    val resources = LocalResources.current
     val saveToGallery = rememberGalleryPhotoSaver { isSaved ->
         scope.showReplacingSnackbar(
             snackbarHostState = snackbarHostState,
@@ -85,6 +104,15 @@ fun BillDetailScreen(
             money = rememberMoneyFormatter(state.currency),
             onConfirm = { viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed) },
             onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed) },
+        )
+    }
+    if (state.commentToDelete != null) {
+        DeleteCommentDialog(onEvent = viewModel::onEvent)
+    }
+    state.likesComment?.let { comment ->
+        CommentLikesSheet(
+            comment = comment,
+            onEvent = viewModel::onEvent,
         )
     }
 }

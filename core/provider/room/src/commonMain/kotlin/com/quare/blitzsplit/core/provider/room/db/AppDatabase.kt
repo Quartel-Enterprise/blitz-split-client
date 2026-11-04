@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
 import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
+import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
 import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
@@ -27,6 +28,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
 import com.quare.blitzsplit.core.provider.room.entity.CategoryTermEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
@@ -65,8 +67,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         MemberPaymentKeyEntity::class,
         BillCommentEntity::class,
         BillAttachmentEntity::class,
+        BillCommentLikeEntity::class,
     ],
-    version = 32,
+    version = 33,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -193,6 +196,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 31,
             to = 32,
         ),
+        AutoMigration(
+            from = 32,
+            to = 33,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -228,4 +235,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun billCommentDao(): BillCommentDao
 
     abstract fun billAttachmentDao(): BillAttachmentDao
+
+    abstract fun billCommentLikeDao(): BillCommentLikeDao
 }

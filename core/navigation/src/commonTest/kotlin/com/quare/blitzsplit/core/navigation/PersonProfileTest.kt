@@ -20,7 +20,11 @@ class PersonProfileTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID), Route.ContactProfile(PERSON_KEY)),
+            listOf(
+                Route.Home,
+                Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
+                Route.ContactProfile(PERSON_KEY),
+            ),
             navigator.backStack.value,
         )
     }
@@ -38,7 +42,7 @@ class PersonProfileTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID), Route.Profile),
+            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null), Route.Profile),
             navigator.backStack.value,
         )
     }
@@ -56,7 +60,7 @@ class PersonProfileTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID), Route.Profile),
+            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null), Route.Profile),
             navigator.backStack.value,
         )
     }
@@ -74,7 +78,7 @@ class PersonProfileTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID)),
+            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null)),
             navigator.backStack.value,
         )
     }
@@ -129,7 +133,9 @@ class PersonProfileTest {
 
     private fun prepareScenario() {
         navigator =
-            BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID)) }
+            BackStackNavigator(startRoute = Route.Home).also {
+                it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null))
+            }
     }
 
     private companion object {

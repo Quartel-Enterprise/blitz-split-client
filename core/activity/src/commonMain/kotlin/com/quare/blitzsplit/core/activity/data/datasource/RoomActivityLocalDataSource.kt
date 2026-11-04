@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedPaymentRow
@@ -32,7 +33,11 @@ class RoomActivityLocalDataSource(
 
     override fun observeLiveGroupIds(): Flow<List<String>> = dao.observeLiveGroupIds()
 
+    override fun observeChangedComments(): Flow<List<ChangedCommentRow>> = dao.observeChangedComments()
+
     override suspend fun getState(): ActivityStateEntity? = dao.getState()
+
+    override suspend fun getEvent(id: String): ActivityEventEntity? = dao.getEvent(id)
 
     override suspend fun getMaxSeq(): Long? = dao.getMaxSeq()
 

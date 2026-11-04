@@ -189,6 +189,17 @@
         }
       }
     },
+    "%@ commented on “%@”: “%@” %@" : {
+      "comment" : "A comment shared: its author, the bill, the comment and its link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ comentou em “%2$@”: “%3$@” %4$@"
+          }
+        }
+      }
+    },
     "%@ created the bill" : {
       "comment" : "Bill history",
       "localizations" : {
@@ -207,6 +218,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ criou a conta sem internet"
+          }
+        }
+      }
+    },
+    "%@ deleted a comment on %@" : {
+      "comment" : "Activity: someone deleted their comment on a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou um comentário em %2$@"
           }
         }
       }
@@ -385,6 +407,47 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "em média %lld dias"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld likes" : {
+      "comment" : "VoiceOver: how many people liked a comment",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld like"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld likes"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld curtida"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld curtidas"
                 }
               }
             }
@@ -598,6 +661,17 @@
         }
       }
     },
+    "Cancel editing" : {
+      "comment" : "Closes \"Editing comment\" over the bill's comment field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar edição"
+          }
+        }
+      }
+    },
     "Change icon or photo" : {
       "comment" : "Edit group's button under the avatar, which opens the group icon sheet",
       "localizations" : {
@@ -647,6 +721,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Círculo"
+          }
+        }
+      }
+    },
+    "Comment deleted" : {
+      "comment" : "A deleted comment kept over its replies",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comentário apagado"
+          }
+        }
+      }
+    },
+    "Comment on “%@”: “%@” %@" : {
+      "comment" : "A comment shared whose author has no name: the bill, the comment and its link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comentário em “%1$@”: “%2$@” %3$@"
           }
         }
       }
@@ -758,6 +854,17 @@
         }
       }
     },
+    "Couldn't save the change to the comment." : {
+      "comment" : "Editing, deleting or liking a comment couldn't be kept on the device",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar a mudança no comentário."
+          }
+        }
+      }
+    },
     "Couldn't turn off the link. Try again." : {
       "comment" : "Share bill: turning the link off failed",
       "localizations" : {
@@ -765,6 +872,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para desativar o link. Tente de novo."
+          }
+        }
+      }
+    },
+    "Delete comment?" : {
+      "comment" : "Asked before deleting your own comment on a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar comentário?"
           }
         }
       }
@@ -800,6 +918,17 @@
         }
       }
     },
+    "Editing comment" : {
+      "comment" : "Over the bill's comment field while editing your own comment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editando comentário"
+          }
+        }
+      }
+    },
     "Gallery" : {
       "comment" : "The profile photo viewer: choose a photo",
       "localizations" : {
@@ -807,6 +936,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Galeria"
+          }
+        }
+      }
+    },
+    "Go to Home" : {
+      "comment" : "Closes the notice of a comment's link that opened nothing, back to Início",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir para o início"
           }
         }
       }
@@ -851,6 +991,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quanto tempo cada um leva, em média, para acertar sua parte nas contas do período. O que segue em aberto conta até hoje."
+          }
+        }
+      }
+    },
+    "I commented on “%@”: “%@” %@" : {
+      "comment" : "A comment shared by its author: the bill, the comment and its link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comentei em “%1$@”: “%2$@” %3$@"
           }
         }
       }
@@ -1251,6 +1402,17 @@
         }
       }
     },
+    "It leaves the bill for everyone. Its replies stay." : {
+      "comment" : "The message of Delete comment?",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ele sai da conta para todos. As respostas continuam."
+          }
+        }
+      }
+    },
     "Later" : {
       "comment" : "Pay with a key (4.5): closes without marking",
       "localizations" : {
@@ -1314,6 +1476,28 @@
         }
       }
     },
+    "Like" : {
+      "comment" : "Likes a comment: the heart",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curtir"
+          }
+        }
+      }
+    },
+    "Likes" : {
+      "comment" : "Who liked a comment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curtidas"
+          }
+        }
+      }
+    },
     "Loading" : {
       "comment" : "VoiceOver's label of a shimmering placeholder while a section loads",
       "localizations" : {
@@ -1367,6 +1551,17 @@
         }
       }
     },
+    "No internet" : {
+      "comment" : "A comment's link couldn't be checked offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet"
+          }
+        }
+      }
+    },
     "No internet. Your data shows up once you're back online." : {
       "comment" : "Under a shimmer while the account's first full sync waits for the internet",
       "localizations" : {
@@ -1406,6 +1601,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On-chain"
+          }
+        }
+      }
+    },
+    "Open the link again once you're back online." : {
+      "comment" : "The message of No internet, for a comment's link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abra o link de novo quando reconectar."
           }
         }
       }
@@ -1829,6 +2035,61 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Girar"
+          }
+        }
+      }
+    },
+    "That comment was deleted." : {
+      "comment" : "A comment's link opened the bill, but the comment is gone",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esse comentário foi apagado."
+          }
+        }
+      }
+    },
+    "This comment is in a group you're not in. Ask whoever sent you the link for the invite." : {
+      "comment" : "The message of You're not in this group, for a comment's link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esse comentário é de um grupo em que você não está. Peça o convite a quem te mandou o link."
+          }
+        }
+      }
+    },
+    "Unlike" : {
+      "comment" : "Undoes the like on a comment: the filled heart",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descurtir"
+          }
+        }
+      }
+    },
+    "You're not in this group" : {
+      "comment" : "A comment's link opened a bill of a group the person isn't in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você não está neste grupo"
+          }
+        }
+      }
+    },
+    "edited" : {
+      "comment" : "After a comment's time, once its author changed it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "editado"
           }
         }
       }

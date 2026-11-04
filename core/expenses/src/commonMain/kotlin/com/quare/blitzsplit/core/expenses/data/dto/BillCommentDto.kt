@@ -17,4 +17,7 @@ data class BillCommentDto(
     @SerialName("body") val body: String,
     @SerialName("via_link") val viaLink: Boolean,
     @SerialName("posted_at") val postedAt: Long,
+    // Why: the server keeps the newer edit, and the tombstone over any edit.
+    @SerialName("edited_at") val editedAt: Long?,
+    @SerialName("is_deleted") val isDeleted: Boolean,
 )

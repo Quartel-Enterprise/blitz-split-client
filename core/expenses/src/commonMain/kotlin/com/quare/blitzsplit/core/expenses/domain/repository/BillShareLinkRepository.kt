@@ -28,4 +28,22 @@ interface BillShareLinkRepository {
         replyToName: String?,
         authorName: String?,
     ): Result<SharedBillComment>
+
+    // Why: the caller's own comment, through the link; NEEDS_NAME never comes back.
+    suspend fun updateSharedBillComment(
+        code: String,
+        id: String,
+        body: String,
+    ): Result<SharedBillComment>
+
+    suspend fun deleteSharedBillComment(
+        code: String,
+        id: String,
+    ): Result<SharedBillComment>
+
+    suspend fun updateSharedBillCommentLike(
+        code: String,
+        id: String,
+        isLiked: Boolean,
+    ): Result<SharedBillComment>
 }

@@ -6,7 +6,9 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -73,7 +75,48 @@ class JsBillCommentRow(
     val postedAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the time.
     val postedDay: String,
+    // Why: "editado" after the time.
+    val isEdited: Boolean,
+    // Why: "Comentário apagado", a deleted top comment kept over its replies, with no face, name nor actions.
+    val isDeleted: Boolean,
+    // Why: whoever liked it, in the order they did.
+    val likers: Array<JsBillCommentLiker>,
+    val likeCount: Int,
+    // Why: the heart filled.
+    val isLikedByMe: Boolean,
+    // Why: the heart, "Responder" and the menu's "Compartilhar"; never on a deleted comment.
+    val canInteract: Boolean,
+    // Why: the menu's "Editar" and "Apagar", only on the user's own.
+    val canChange: Boolean,
     val isPending: Boolean,
+)
+
+// Why: one name of "Curtidas"; name null when the server kept none ("Alguém"), isMe "Você" whatever the name.
+class JsBillCommentLiker(
+    val name: String?,
+    val isMe: Boolean,
+)
+
+/*
+ * Why: what a comment's "Compartilhar" sends, "Ana comentou em “Jantar”: “…” <link>", worded by the page; authorName
+ * null when the server kept none.
+ */
+class JsBillCommentShare(
+    val link: String,
+    val authorName: String?,
+    val isMe: Boolean,
+    val billDescription: String,
+    val body: String,
+)
+
+/*
+ * Why: type is "delete-error", "comment-error", "comment-change-error", "comment-gone", "share-comment" (share),
+ * "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large", "photo-error" or "remove-photo-error"; share
+ * is null for anything but "share-comment".
+ */
+class JsBillDetailAction(
+    val type: String,
+    val share: JsBillCommentShare?,
 )
 
 class JsBillCommentThread(
@@ -145,6 +188,15 @@ class JsBillDetailState(
     val threads: Array<JsBillCommentThread>?,
     val commentDraft: String,
     val replyTarget: JsBillReplyTarget?,
+    // Why: "Editando comentário" over the composer, which holds the comment's text, while not null.
+    val editingCommentId: String?,
+    val isEditingComment: Boolean,
+    // Why: "Apagar comentário?", open while not null.
+    val commentToDelete: String?,
+    // Why: "Curtidas", the comment whose likes are listed, open while not null.
+    val likesComment: JsBillCommentRow?,
+    // Why: the comment a link opened Conta at, scrolled to and highlighted once (focusedCommentShown), then null.
+    val focusedCommentId: String?,
     // Why: "Histórico", the most recent first; empty hides it, null while the server's history loads (shimmer).
     val history: Array<JsBillHistoryDay>?,
     // Why: the history shows only the device's lines: offline, or the server's read failed.
@@ -206,6 +258,11 @@ class BillDetailPresenter(
                     ?.toTypedArray(),
                 commentDraft = state.commentDraft,
                 replyTarget = state.replyTarget?.let(::toJsBillReplyTarget),
+                editingCommentId = state.editingCommentId,
+                isEditingComment = state.isEditingComment,
+                commentToDelete = state.commentToDelete,
+                likesComment = state.likesComment?.let(::toJsBillCommentRow),
+                focusedCommentId = state.focusedCommentId,
                 history = state.history
                     .valueOrNull()
                     ?.map { toJsBillHistoryDay(it, state.categories) }
@@ -232,27 +289,35 @@ class BillDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    /*
-     * Why: "delete-error", "comment-error", "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large",
-     * "photo-error" or "remove-photo-error", a toast in the page's words.
-     */
-    fun observeActions(onAction: (String) -> Unit): JsWatch {
+    fun observeActions(onAction: (JsBillDetailAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                BillDetailUiAction.ShowDeleteError -> "delete-error"
+                BillDetailUiAction.ShowDeleteError -> JsBillDetailAction("delete-error", null)
 
-                BillDetailUiAction.ShowCommentError -> "comment-error"
+                BillDetailUiAction.ShowCommentError -> JsBillDetailAction("comment-error", null)
 
-                BillDetailUiAction.ShowUndoError -> "undo-error"
+                BillDetailUiAction.ShowCommentChangeError -> JsBillDetailAction("comment-change-error", null)
 
-                is BillDetailUiAction.ShowPhotoError -> when (action.error) {
-                    BillPhotoError.UNREADABLE -> "photo-unreadable"
-                    BillPhotoError.NO_ROOM -> "photo-no-room"
-                    BillPhotoError.TOO_LARGE -> "photo-too-large"
-                    BillPhotoError.FAILED -> "photo-error"
-                }
+                BillDetailUiAction.ShowCommentGone -> JsBillDetailAction("comment-gone", null)
 
-                BillDetailUiAction.ShowRemovePhotoError -> "remove-photo-error"
+                is BillDetailUiAction.ShareComment -> JsBillDetailAction(
+                    type = "share-comment",
+                    share = toJsBillCommentShare(action.share),
+                )
+
+                BillDetailUiAction.ShowUndoError -> JsBillDetailAction("undo-error", null)
+
+                is BillDetailUiAction.ShowPhotoError -> JsBillDetailAction(
+                    type = when (action.error) {
+                        BillPhotoError.UNREADABLE -> "photo-unreadable"
+                        BillPhotoError.NO_ROOM -> "photo-no-room"
+                        BillPhotoError.TOO_LARGE -> "photo-too-large"
+                        BillPhotoError.FAILED -> "photo-error"
+                    },
+                    share = null,
+                )
+
+                BillDetailUiAction.ShowRemovePhotoError -> JsBillDetailAction("remove-photo-error", null)
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -302,6 +367,46 @@ class BillDetailPresenter(
 
     fun cancelReply() {
         viewModel.onEvent(BillDetailUiEvent.OnReplyCancelled)
+    }
+
+    fun editComment(commentId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked(commentId))
+    }
+
+    fun cancelEdit() {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditCancelled)
+    }
+
+    fun deleteComment(commentId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked(commentId))
+    }
+
+    fun confirmDeleteComment() {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+    }
+
+    fun dismissDeleteComment() {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteDismissed)
+    }
+
+    fun likeComment(commentId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked(commentId))
+    }
+
+    fun openLikes(commentId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked(commentId))
+    }
+
+    fun closeLikes() {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesDismissed)
+    }
+
+    fun shareComment(commentId: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked(commentId))
+    }
+
+    fun focusedCommentShown() {
+        viewModel.onEvent(BillDetailUiEvent.OnFocusedCommentShown)
     }
 
     fun undo() {
@@ -378,7 +483,7 @@ private fun toJsMyPartNote(note: MyPartNote): JsMyPartNote = when (note) {
     )
 }
 
-private fun toJsBillCommentRow(row: BillCommentRow): JsBillCommentRow = JsBillCommentRow(
+internal fun toJsBillCommentRow(row: BillCommentRow): JsBillCommentRow = JsBillCommentRow(
     id = row.id,
     authorMemberId = row.authorMemberId,
     authorName = row.authorName,
@@ -391,7 +496,27 @@ private fun toJsBillCommentRow(row: BillCommentRow): JsBillCommentRow = JsBillCo
     body = row.body,
     postedAt = row.postedAt.toDouble(),
     postedDay = toJsRelativeDay(row.postedDay),
+    isEdited = row.isEdited,
+    isDeleted = row.isDeleted,
+    likers = row.likers.map(::toJsBillCommentLiker).toTypedArray(),
+    likeCount = row.likeCount,
+    isLikedByMe = row.isLikedByMe,
+    canInteract = row.canInteract,
+    canChange = row.canChange,
     isPending = row.isPending,
+)
+
+private fun toJsBillCommentLiker(liker: BillCommentLiker): JsBillCommentLiker = JsBillCommentLiker(
+    name = liker.name,
+    isMe = liker.isMe,
+)
+
+internal fun toJsBillCommentShare(share: BillCommentShare): JsBillCommentShare = JsBillCommentShare(
+    link = share.link,
+    authorName = share.authorName,
+    isMe = share.isMe,
+    billDescription = share.billDescription,
+    body = share.body,
 )
 
 internal fun toJsBillCommentThread(thread: BillCommentThread): JsBillCommentThread = JsBillCommentThread(

@@ -3,11 +3,19 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.activity.domain.usecase.FindActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentTarget
+import com.quare.blitzsplit.core.expenses.domain.model.BillLocation
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
+import com.quare.blitzsplit.core.expenses.domain.usecase.LocateBill
+import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
@@ -45,9 +53,12 @@ class AppViewModel(
     private val observeBitcoinInSats: ObserveBitcoinInSats,
     private val linkInbox: LinkInbox,
     private val markActivityRead: MarkActivityRead,
+    private val findActivityEvent: FindActivityEvent,
     private val observeGroup: ObserveGroup,
     private val observeExpense: ObserveExpense,
     private val syncNow: SyncNow,
+    private val locateBill: LocateBill,
+    private val noticeBillGone: NoticeBillGone,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -73,6 +84,12 @@ class AppViewModel(
     val backStackWatcher: FlowWatcher<List<Route>> = FlowWatcher(navigator.backStack)
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
     val bitcoinInSatsWatcher: FlowWatcher<Boolean> = FlowWatcher(showsBitcoinInSats)
+
+    // Why: "Você não está neste grupo" over wherever the app is, while a comment's link can't open its bill.
+    val billLinkNotice: StateFlow<BillLinkNoticeState>
+        field = MutableStateFlow(BillLinkNoticeState(null))
+
+    val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
 
     init {
         startSync()
@@ -134,7 +151,10 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
                 PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
-                SharedBillLink.codeOf(url)?.let { code -> return@onEach openSharedBill(code) }
+                SharedBillLink.codeOf(url)?.let { code ->
+                    return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
+                }
+                BillCommentLink.targetOf(url)?.let { target -> return@onEach openBillCommentLink(target) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
                     code = target.code,
@@ -150,9 +170,69 @@ class AppViewModel(
     }
 
     // Why: a bill's link (7.3h) opens its page as an invite does, the same one coming back to the top.
-    private fun openSharedBill(code: String) {
+    private fun openSharedBill(
+        code: String,
+        commentId: String?,
+    ) {
         val openIndex = navigator.backStack.value.indexOfFirst { it is Route.SharedBill && it.code == code }
-        if (openIndex < 0) navigator.navigate(Route.SharedBill(code)) else navigator.popTo(openIndex + 1)
+        val route = Route.SharedBill(code, commentId)
+        when {
+            openIndex < 0 -> navigator.navigate(route)
+
+            // Why: the same page shared at a comment opens again at it, read anew.
+            commentId != null -> navigator.replaceAbove(
+                size = openIndex,
+                route = route,
+            )
+
+            else -> navigator.popTo(openIndex + 1)
+        }
+    }
+
+    /*
+     * Why: a comment's link opens the bill's Conta over its group's Despesas, over Grupos, scrolled to the comment, as a
+     * push notification's tap does: after a sync of a few seconds at most, since the comment may be newer than this
+     * device's copy. A deleted bill opens Despesas, which says so; a group the person isn't in, or a link this device
+     * can't check offline, says so over wherever the app is. Without a profile there is no group to be in.
+     */
+    private fun openBillCommentLink(target: BillCommentTarget) {
+        if (Route.Home !in navigator.backStack.value) return showBillLinkNotice(BillLinkNotice.NOT_IN_GROUP)
+        navigator.openHomeTab(HomeTab.GROUPS)
+        val tabTop = navigator.backStack.value
+        viewModelScope.launch {
+            withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
+            if (navigator.backStack.value != tabTop) return@launch
+            val location = locateBill(target.expenseId)
+            val groupId = when (location) {
+                is BillLocation.Found -> location.groupId
+                is BillLocation.Deleted -> location.groupId
+                BillLocation.OutOfReach -> return@launch showBillLinkNotice(BillLinkNotice.NOT_IN_GROUP)
+                BillLocation.Unknown -> return@launch showBillLinkNotice(BillLinkNotice.OFFLINE)
+            }
+            // Why: the server says the person is in it, so a group not on the device yet comes with a later sync.
+            if (observeGroup(groupId).first() == null) return@launch
+            if (location is BillLocation.Deleted) noticeBillGone(groupId, target.expenseId)
+            navigator.navigate(
+                Route.GroupDetail(
+                    groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
+            if (location is BillLocation.Found && location.isOnDevice) {
+                navigator.navigate(Route.BillDetail(groupId, target.expenseId, focusCommentId = target.commentId))
+            }
+        }
+    }
+
+    private fun showBillLinkNotice(notice: BillLinkNotice) {
+        billLinkNotice.value = BillLinkNoticeState(notice)
+    }
+
+    // Why: "Ir para o início" on the notice, back to Início when there is one (the welcome otherwise).
+    fun onBillLinkNoticeDismissed() {
+        billLinkNotice.value = BillLinkNoticeState(null)
+        if (Route.Home in navigator.backStack.value) navigator.openHomeTab(HomeTab.HOME)
     }
 
     /*
@@ -173,8 +253,14 @@ class AppViewModel(
         viewModelScope.launch {
             withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
             if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return@launch
+            // Why: a comment's notification opens Conta at the comment, as its item in Atividade does.
+            val commentId = link.eventId
+                ?.let { findActivityEvent(it) }
+                ?.takeUnless { it.isCommentDeleted }
+                ?.commentId
             link.routesAbove
                 .filter { route -> route !is Route.BillDetail || observeExpense(route.expenseId).first() != null }
+                .map { route -> if (route is Route.BillDetail) route.copy(focusCommentId = commentId) else route }
                 .forEach(navigator::navigate)
         }
     }
