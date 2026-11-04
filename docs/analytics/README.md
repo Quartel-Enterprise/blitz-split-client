@@ -197,6 +197,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_accepted` | `source` (`startup`, `manual`) | "Abrir na App Store" on "Atualização disponível" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Agora não" or Esc on "Atualização disponível" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | The avatar that opens Perfil | `:feature:groups`, `:feature:global_balances` |
+| `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`) | The web's logo, which opens Home (a tap on Home itself counts too); Contacts and Activity send nothing until they move to tracked events | `:feature:groups`, `:feature:global_balances` |
 | `search_opened` | `source` (`home`, `groups`, `global_balances`) | Buscar opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | Tudo, Grupos, Pessoas or Despesas | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |

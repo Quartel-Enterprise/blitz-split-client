@@ -72,6 +72,7 @@ export function GroupsScreen() {
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      onBrand={() => presenter.openBrand()}
       search={search}
       overlays={
         <>

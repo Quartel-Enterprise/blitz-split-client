@@ -60,6 +60,9 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
                 mapOf("source" to GLOBAL_BALANCES_SOURCE),
             )
 
+            // Why: the web's logo, which opens Home; the tabs it stands beside are not tracked, their screen view is.
+            OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
+
             // Why: only a search that opens, never one refused over Cobrar.
             OnSearchClicked -> EventAnalytics.Manual("search_opened")
 
@@ -146,6 +149,9 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
     data object OnActivityTabClicked : GlobalBalancesUiEvent
 
     data object OnProfileClicked : GlobalBalancesUiEvent
+
+    // Why: the web's logo, which opens Home as its tab does.
+    data object OnBrandClicked : GlobalBalancesUiEvent
 
     // Why: "Buscar" (5.2), the same search as Grupos', over Saldos: the magnifier, the web's ⌘K.
     data object OnSearchClicked : GlobalBalancesUiEvent

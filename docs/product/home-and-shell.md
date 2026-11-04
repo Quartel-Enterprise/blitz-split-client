@@ -27,3 +27,6 @@ The home's five tabs and the web's and the Mac's shell.
     the toolbar held below it, into the content (Groups' Open / Settled up, which a search's results hide at
     every width, a group's Expenses / Balances / Members), and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
     per tab by `measuringNarrowWindow()`).
+  - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
+    page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
+    `brand_clicked` where the screen's ViewModel tracks its events.

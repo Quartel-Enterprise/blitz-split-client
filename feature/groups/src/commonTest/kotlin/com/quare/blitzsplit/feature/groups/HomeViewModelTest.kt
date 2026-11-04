@@ -2357,6 +2357,18 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `GIVEN Home WHEN tapping the logo THEN tracks brand_clicked from the home`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnBrandClicked)
+
+        // Then
+        assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN Inicio WHEN tapping the avatar THEN tracks profile_avatar_clicked from the home`() =
         runTest(testDispatcher) {
             // Given

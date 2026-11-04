@@ -242,7 +242,9 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
-            GlobalBalancesUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
+            GlobalBalancesUiEvent.OnHomeTabClicked, GlobalBalancesUiEvent.OnBrandClicked -> navigator.openHomeTab(
+                Route.Home,
+            )
 
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 

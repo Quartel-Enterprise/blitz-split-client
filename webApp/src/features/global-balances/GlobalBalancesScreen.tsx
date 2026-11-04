@@ -78,6 +78,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      onBrand={() => presenter.openBrand()}
       search={search}
       overlays={state.charge && <ChargeDialog presenter={presenter} state={state} charge={state.charge} />}
     >
