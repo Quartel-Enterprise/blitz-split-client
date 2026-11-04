@@ -76,4 +76,14 @@
     <string name="group_stats_category_percent">%d%%</string>
     <string name="group_stats_category_pie">Divisão por categoria: %s</string>
     <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
+    <string name="group_stats_settling">Acertos</string>
+    <string name="group_stats_settles_fastest">Acerta mais rápido</string>
+    <string name="group_stats_settles_slowest">Demora mais para acertar</string>
+    <plurals name="group_stats_settling_days">
+        <item quantity="one">em média %d dia</item>
+        <item quantity="other">em média %d dias</item>
+    </plurals>
+    <string name="group_stats_settling_same_day">em média no mesmo dia</string>
+    <string name="group_stats_settling_open">%s em aberto</string>
+    <string name="group_stats_settling_note">Quanto tempo cada um leva, em média, para acertar sua parte nas contas do período. O que segue em aberto conta até hoje.</string>
 </resources>

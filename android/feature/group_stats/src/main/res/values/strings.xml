@@ -76,4 +76,14 @@
     <string name="group_stats_category_percent">%d%%</string>
     <string name="group_stats_category_pie">Split by category: %s</string>
     <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
+    <string name="group_stats_settling">Settling up</string>
+    <string name="group_stats_settles_fastest">Settles fastest</string>
+    <string name="group_stats_settles_slowest">Slowest to settle</string>
+    <plurals name="group_stats_settling_days">
+        <item quantity="one">%d day on average</item>
+        <item quantity="other">%d days on average</item>
+    </plurals>
+    <string name="group_stats_settling_same_day">same day on average</string>
+    <string name="group_stats_settling_open">%s still open</string>
+    <string name="group_stats_settling_note">How long each one takes, on average, to settle their share of the period\'s bills. What\'s still open counts until today.</string>
 </resources>

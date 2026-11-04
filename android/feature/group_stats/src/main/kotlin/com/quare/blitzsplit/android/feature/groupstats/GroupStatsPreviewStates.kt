@@ -20,6 +20,8 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettling
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlin.time.Duration.Companion.days
 
@@ -105,12 +107,42 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             amountMinor = 72_000L,
             isPending = false,
         ),
+        settling = StatsSettling(
+            fastest = createPreviewSettler(
+                "Ana",
+                AvatarColor.GREEN,
+                averageDays = 1,
+                openMinor = 0L,
+            ),
+            slowest = createPreviewSettler(
+                "Bruno",
+                AvatarColor.PEACH,
+                averageDays = 12,
+                openMinor = 8_000L,
+            ),
+        ),
         categories = createPreviewCategories(),
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
         activityUnreadCount = 0,
     )
 }
+
+private fun createPreviewSettler(
+    name: String,
+    color: AvatarColor,
+    averageDays: Int,
+    openMinor: Long,
+): StatsSettler = StatsSettler(
+    memberId = name,
+    name = name,
+    initials = previewInitialsOf(name),
+    avatarColor = color,
+    photoUrl = null,
+    isMe = false,
+    averageDays = averageDays,
+    openMinor = openMinor,
+)
 
 // Why: a trip mostly spent on lodging and food, as the canvas draws it.
 private fun createPreviewCategories(): List<StatsCategoryRow> {

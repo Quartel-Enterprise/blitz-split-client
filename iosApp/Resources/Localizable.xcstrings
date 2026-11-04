@@ -318,6 +318,17 @@
         }
       }
     },
+    "%@ still open" : {
+      "comment" : "The group statistics: Settling up, what the period's bills put on someone that nothing covered yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ em aberto"
+          }
+        }
+      }
+    },
     "%@ turned off the link" : {
       "comment" : "Bill history: the share link",
       "localizations" : {
@@ -336,6 +347,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ativou o link para qualquer pessoa"
+          }
+        }
+      }
+    },
+    "%lld days on average" : {
+      "comment" : "The group statistics: Settling up, how many days someone takes on average to settle their share",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld day on average"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld days on average"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "em média %lld dia"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "em média %lld dias"
+                }
+              }
+            }
           }
         }
       }
@@ -768,6 +820,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Horizontal"
+          }
+        }
+      }
+    },
+    "How long each one takes, on average, to settle their share of the period's bills. What's still open counts until today." : {
+      "comment" : "The group statistics: under Settling up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto tempo cada um leva, em média, para acertar sua parte nas contas do período. O que segue em aberto conta até hoje."
           }
         }
       }
@@ -1735,6 +1798,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Girar"
+          }
+        }
+      }
+    },
+    "same day on average" : {
+      "comment" : "The group statistics: Settling up, someone who settles their share the same day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "em média no mesmo dia"
+          }
+        }
+      }
+    },
+    "Settles fastest" : {
+      "comment" : "The group statistics: whoever settles their share of the period's bills fastest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerta mais rápido"
+          }
+        }
+      }
+    },
+    "Settling up" : {
+      "comment" : "The group statistics: section of who settles their share fastest and slowest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acertos"
+          }
+        }
+      }
+    },
+    "Slowest to settle" : {
+      "comment" : "The group statistics: whoever takes the longest to settle their share of the period's bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demora mais para acertar"
           }
         }
       }

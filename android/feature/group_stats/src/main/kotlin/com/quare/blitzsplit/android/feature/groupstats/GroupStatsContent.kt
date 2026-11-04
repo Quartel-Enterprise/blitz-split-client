@@ -65,8 +65,8 @@ private enum class StatsLayout {
 
     /*
      * Why: a phone and a tablet lying down, in the group's pane beside the groups too: the total and Por categoria in
-     * the first column, Ao longo do tempo on top of the second, so it shows without scrolling, then Por pessoa and
-     * Maior despesa.
+     * the first column, Ao longo do tempo on top of the second, so it shows without scrolling, then Por pessoa,
+     * Acertos and Maior despesa.
      */
     COLUMNS,
 
@@ -74,8 +74,8 @@ private enum class StatsLayout {
     BOOK,
 
     /*
-     * Why: a tabletop: the total and Ao longo do tempo in the top half, Por categoria and Por pessoa below, scrolling;
-     * the grains' note and Maior despesa go, so the top half fits.
+     * Why: a tabletop: the total and Ao longo do tempo in the top half, Por categoria beside Por pessoa and Acertos
+     * below, scrolling; the grains' note and Maior despesa go, so the top half fits.
      */
     TABLETOP,
 }
@@ -366,6 +366,12 @@ private fun StatsColumn(
                 onEvent = onEvent,
             )
         }
+        item(key = "settling") {
+            StatsSettlingSection(
+                state = state,
+                money = money,
+            )
+        }
         item(key = "time") {
             StatsOverTimeSection(
                 state = state,
@@ -412,7 +418,10 @@ private fun StatsSummaryColumn(
     }
 }
 
-// Why: the second of two columns, or a book's half after the hinge: Ao longo do tempo, Por pessoa and Maior despesa.
+/*
+ * Why: the second of two columns, or a book's half after the hinge: Ao longo do tempo, Por pessoa, Acertos and Maior
+ * despesa.
+ */
 @Composable
 private fun StatsOverTimeColumn(
     state: GroupStatsUiState,
@@ -438,6 +447,10 @@ private fun StatsOverTimeColumn(
             money = money,
             onEvent = onEvent,
         )
+        StatsSettlingSection(
+            state = state,
+            money = money,
+        )
         StatsBiggestSection(
             state = state,
             money = money,
@@ -449,7 +462,7 @@ private fun StatsOverTimeColumn(
 
 /*
  * Why: a tabletop: the total and Ao longo do tempo side by side, down against the hinge in the top half; Por categoria
- * and Por pessoa side by side in the bottom half, scrolling under the thumb.
+ * beside Por pessoa and Acertos in the bottom half, scrolling under the thumb.
  */
 @Composable
 private fun StatsTabletopLayout(
@@ -510,12 +523,17 @@ private fun StatsTabletopLayout(
                     pieSize = twoColumnsPieSize,
                     modifier = Modifier.weight(1f),
                 )
-                StatsPeopleSection(
-                    state = state,
-                    money = money,
-                    onEvent = onEvent,
-                    modifier = Modifier.weight(1f),
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    StatsPeopleSection(
+                        state = state,
+                        money = money,
+                        onEvent = onEvent,
+                    )
+                    StatsSettlingSection(
+                        state = state,
+                        money = money,
+                    )
+                }
             }
         },
         modifier = Modifier.fillMaxSize(),

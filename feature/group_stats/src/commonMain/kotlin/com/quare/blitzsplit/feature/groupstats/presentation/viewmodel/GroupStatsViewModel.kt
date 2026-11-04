@@ -7,9 +7,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -32,6 +34,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettling
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -39,6 +42,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 
 /*
  * Why: "Estatísticas do grupo" (6.6), from the bills on the device, offline included, so a sync bringing other
@@ -53,6 +58,7 @@ class GroupStatsViewModel(
     private val updateStatsChartPreferences: UpdateStatsChartPreferences,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
     observeCategoryTree: ObserveCategoryTree,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
@@ -91,6 +97,7 @@ class GroupStatsViewModel(
                 bars = emptyList(),
                 grainNotes = emptyList(),
                 biggestExpense = null,
+                settling = null,
                 categories = emptyList(),
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
@@ -102,6 +109,8 @@ class GroupStatsViewModel(
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
+    private var settlements: List<Settlement> = emptyList()
+    private var settling: Pair<SettlingInputs, StatsSettling?>? = null
     private var categoryTree = CategoryTree.appOnly
     private var chart = StatsChartPreferences.initial
 
@@ -118,17 +127,20 @@ class GroupStatsViewModel(
     private var isDownloadRead = false
 
     init {
+        // Why: the payments come with the bills, so "Acertos" is never drawn from the bills alone while they load.
         combine(
             observeGroup(route.groupId),
             observeExpenses(route.groupId),
+            observeSettlements(route.groupId),
             observeStatsChartPreferences(),
-            ::Triple,
-        ).onEach { (group, expenses, chart) ->
-            this.group = group
-            this.expenses = expenses
-            keepStoredChart(chart)
-            isGone = group == null
-            if (group == null) leave() else render()
+            ::StatsSources,
+        ).onEach { sources ->
+            group = sources.group
+            expenses = sources.expenses
+            settlements = sources.settlements
+            keepStoredChart(sources.chart)
+            isGone = sources.group == null
+            if (sources.group == null) leave() else render()
         }.launchIn(viewModelScope)
         observeCategoryTree(route.groupId)
             .onEach { tree ->
@@ -232,13 +244,15 @@ class GroupStatsViewModel(
         viewModelScope.launch { updateStatsChartPreferences(chart) }
     }
 
-    private fun createCalculatorOrNull(): StatsCalculator? {
+    private fun createCalculatorOrNull(
+        timeZone: TimeZone = currentTimeZone(),
+        today: LocalDate = SpentDay.dateOf(currentTimeMillis(), timeZone),
+    ): StatsCalculator? {
         val group = group ?: return null
-        val timeZone = currentTimeZone()
         return StatsCalculator(
             group = group,
             expenses = expenses,
-            today = SpentDay.dateOf(currentTimeMillis(), timeZone),
+            today = today,
             timeZone = timeZone,
             categories = categoryTree,
         )
@@ -246,8 +260,9 @@ class GroupStatsViewModel(
 
     private fun render() {
         val group = group ?: return
-        val calculator = createCalculatorOrNull() ?: return
         val timeZone = currentTimeZone()
+        val today = SpentDay.dateOf(currentTimeMillis(), timeZone)
+        val calculator = createCalculatorOrNull(timeZone, today) ?: return
         val span = calculator.findSpanOrNull(period, customSpan) ?: calculator.allSpan
         val spending = calculator.createSpending(span)
         val grain = calculator.findGrain(chart.grain, span)
@@ -298,11 +313,27 @@ class GroupStatsViewModel(
             bars = calculator.createBars(spending, span, grain),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
+            settling = findSettling(SettlingInputs(group, expenses, settlements, span, today, timeZone)),
             categories = calculator.createCategories(spending),
             isLoaded = isDownloadRead,
             homeTab = uiState.value.homeTab,
             activityUnreadCount = uiState.value.activityUnreadCount,
         )
+    }
+
+    // Why: the whole history replays only when what it reads changed, not on Consumo/Pagou, the chart or a download tick.
+    private fun findSettling(inputs: SettlingInputs): StatsSettling? {
+        val cached = settling
+        if (cached != null && cached.first == inputs) return cached.second
+        val result = SettlingCalculator(
+            group = inputs.group,
+            expenses = inputs.expenses,
+            settlements = inputs.settlements,
+            today = inputs.today,
+            timeZone = inputs.timeZone,
+        ).createOrNull(inputs.span)
+        settling = inputs to result
+        return result
     }
 
     private fun openBiggestExpense() {
@@ -335,6 +366,22 @@ class GroupStatsViewModel(
         dividend: Long,
         divisor: Long,
     ): Long = (dividend + divisor / 2) / divisor
+
+    private data class SettlingInputs(
+        val group: Group,
+        val expenses: List<Expense>,
+        val settlements: List<Settlement>,
+        val span: DateSpan,
+        val today: LocalDate,
+        val timeZone: TimeZone,
+    )
+
+    private class StatsSources(
+        val group: Group?,
+        val expenses: List<Expense>,
+        val settlements: List<Settlement>,
+        val chart: StatsChartPreferences,
+    )
 
     private companion object {
         const val PERCENT = 100L

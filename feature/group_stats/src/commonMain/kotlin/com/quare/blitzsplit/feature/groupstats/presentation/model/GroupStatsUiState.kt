@@ -52,6 +52,8 @@ data class GroupStatsUiState(
     val bars: List<StatsBar>,
     val grainNotes: List<StatsGrainNote>,
     val biggestExpense: StatsBiggestExpense?,
+    // Why: "Acertos", the only figure that reads the payments too; null until two people had a debt in the period.
+    val settling: StatsSettling?,
     // Why: "Por categoria" and the pie, the largest first; a bill without one counts in "Outros".
     val categories: List<StatsCategoryRow>,
     // Why: nothing is drawn until Room and whether the account's copy is whole are read.
