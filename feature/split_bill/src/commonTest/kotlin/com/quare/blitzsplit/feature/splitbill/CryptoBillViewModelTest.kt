@@ -64,6 +64,7 @@ class CryptoBillViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var bitcoinInSats: MutableStateFlow<Boolean>
     private lateinit var groupsRead: MutableStateFlow<Boolean>
+    private lateinit var heldGroupRead: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
 
@@ -246,7 +247,7 @@ class CryptoBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN Bitcoin em satoshis turned off while open WHEN a sync brings the group again THEN it stays in bitcoin`() =
+    fun `GIVEN sats turned off while open WHEN a sync brings the group again THEN it stays in bitcoin`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(sats = true)
@@ -1385,6 +1386,54 @@ class CryptoBillViewModelTest {
             assertTrue(state.showsReceiptCamera)
         }
 
+    @Test
+    fun `GIVEN a real group asked WHEN a bitcoin group picked is still being read THEN no camera opens yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip, bitcoin),
+                route = fromHome(TRIP_ID, scansReceipt = true),
+                heldGroupId = BTC_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(BTC_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            val pending = viewModel.uiState.value
+            heldGroupRead.value = true
+
+            // Then
+            assertTrue(pending.isPickedGroupLoading)
+            assertFalse(pending.showsReceiptCamera)
+            val loaded = viewModel.uiState.value
+            assertEquals(BTC_ID, loaded.groupId)
+            assertFalse(loaded.isReceiptCameraRequested)
+            assertFalse(loaded.showsReceiptCamera)
+        }
+
+    @Test
+    fun `GIVEN a real group picked over bitcoin WHEN the groups come before it is read THEN the camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(bitcoin, trip),
+                route = fromHome(BTC_ID, scansReceipt = true),
+                heldGroupId = TRIP_ID,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // When
+            groupsRead.value = false
+            groupsRead.value = true
+            heldGroupRead.value = true
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertTrue(state.showsReceiptCamera)
+        }
+
     // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
@@ -1516,8 +1565,10 @@ class CryptoBillViewModelTest {
         storedBills: List<Expense> = emptyList(),
         decimalSeparator: Char = ',',
         areGroupsRead: Boolean = true,
+        heldGroupId: String? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
+        heldGroupRead = MutableStateFlow(heldGroupId == null)
         groupsRead = MutableStateFlow(areGroupsRead)
         expenses = FakeExpenseRepository(initialExpenses = storedBills)
         bitcoinInSats = MutableStateFlow(sats)
@@ -1544,7 +1595,10 @@ class CryptoBillViewModelTest {
             currentTimeMillis = { NOW_MILLIS },
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { decimalSeparator },
-            observeGroup = ObserveGroupUseCase(groups),
+            observeGroup = { id ->
+                val read = ObserveGroupUseCase(groups)(id)
+                if (id == heldGroupId) heldGroupRead.filter { it }.flatMapLatest { read } else read
+            },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groupsRead.filter { it }.flatMapLatest { groups.groups } },
             observeExpenses = ObserveExpensesUseCase(expenses),

@@ -144,6 +144,7 @@ internal fun createPreviewBillState(
 ): SplitBillUiState = SplitBillUiState(
     isEditing = isEditing,
     groupId = PREVIEW_TRIP_ID,
+    pickedGroupId = PREVIEW_TRIP_ID,
     groupName = "Viagem Floripa",
     groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.PEACH,

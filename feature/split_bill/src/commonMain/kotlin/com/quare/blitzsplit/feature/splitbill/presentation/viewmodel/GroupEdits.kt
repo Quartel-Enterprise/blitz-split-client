@@ -32,6 +32,7 @@ internal fun createInitialBillState(
     return SplitBillUiState(
         isEditing = route.expenseId != null,
         groupId = route.groupId,
+        pickedGroupId = route.groupId,
         groupName = "",
         groupInitials = "",
         groupColor = AvatarColor.entries.first(),
@@ -107,30 +108,20 @@ internal fun SplitBillUiState.withShowsSats(
         splitEditor = splitEditor?.toUnit(showsSats, inUnit),
         itemsEditor = itemsEditor?.copy(showsSats = showsSats),
         itemEditor = itemEditor?.let { editor ->
+            val typesAmounts = editor.mode == ItemSplitMode.AMOUNT
             editor.copy(
                 showsSats = showsSats,
                 unitPriceText = inUnit(editor.unitPriceText, editor.currency),
                 rows = editor.rows.map { row ->
-                    if (editor.mode ==
-                        ItemSplitMode.AMOUNT
-                    ) {
-                        row.copy(valueText = inUnit(row.valueText, editor.currency))
-                    } else {
-                        row
-                    }
+                    if (typesAmounts) row.copy(valueText = inUnit(row.valueText, editor.currency)) else row
                 },
             )
         },
         feeEditor = feeEditor?.let { editor ->
+            val isCouvert = editor.fee == ItemsFee.COUVERT
             editor.copy(
                 showsSats = showsSats,
-                valueText = if (editor.fee ==
-                    ItemsFee.COUVERT
-                ) {
-                    inUnit(editor.valueText, editor.currency)
-                } else {
-                    editor.valueText
-                },
+                valueText = if (isCouvert) inUnit(editor.valueText, editor.currency) else editor.valueText,
             )
         },
     )
@@ -147,35 +138,38 @@ private fun PayerAmounts.toUnit(
 private fun SplitEditor.toUnit(
     showsSats: Boolean,
     inUnit: (String, GroupCurrency) -> String,
-): SplitEditor = copy(
-    showsSats = showsSats,
-    rows = rows.map { row ->
-        if (mode ==
-            SplitMode.AMOUNT
-        ) {
-            row.copy(valueText = inUnit(row.valueText, currency))
-        } else {
-            row
-        }
-    },
-)
+): SplitEditor {
+    val typesAmounts = mode == SplitMode.AMOUNT
+    return copy(
+        showsSats = showsSats,
+        rows = rows.map { row -> if (typesAmounts) row.copy(valueText = inUnit(row.valueText, currency)) else row },
+    )
+}
 
 /*
  * Why: Início's "Ler cupom fiscal" for a bill whose group splits in a cryptocurrency, once no other group is being
  * picked: the bill opens alone, and the camera doesn't open later when the bill moves to another group.
  */
-internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState =
-    if (isReceiptCameraRequested && currency.isCrypto && isLoaded && groups.isNotEmpty() && groupSelection == null) {
+internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState {
+    val isAskingNothing = groups.isNotEmpty() && groupSelection == null && !isPickedGroupLoading
+    return if (isReceiptCameraRequested && currency.isCrypto && isLoaded && isAskingNothing) {
         copy(isReceiptCameraRequested = false)
     } else {
         this
     }
-
-// Why: "Continuar" closes the question; the same group picked again shows nothing new, so the receipt's request settles.
-internal fun SplitBillUiState.withGroupConfirmed(pickedGroupId: String): SplitBillUiState {
-    val closed = copy(groupSelection = null)
-    return if (pickedGroupId == groupId) closed.withReceiptRequestSettled() else closed
 }
+
+/*
+ * Why: "Continuar" closes the question, the group picked pending until it is read; the same group picked again shows
+ * nothing new, so the receipt's request settles here.
+ */
+internal fun SplitBillUiState.withGroupConfirmed(
+    pickedGroupId: String,
+    isAccepted: Boolean,
+): SplitBillUiState = copy(
+    groupSelection = null,
+    pickedGroupId = if (isAccepted) pickedGroupId else this.pickedGroupId,
+).withReceiptRequestSettled()
 
 /*
  * Why: the split and the several payers add up to the bill's amount, 0 while the field holds no valid amount. What

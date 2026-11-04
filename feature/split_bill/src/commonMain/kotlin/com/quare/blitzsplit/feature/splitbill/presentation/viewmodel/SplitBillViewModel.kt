@@ -30,7 +30,6 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
-import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -99,8 +98,8 @@ class SplitBillViewModel(
     // Why: the group last shown, so another one picked starts over who paid and how it splits among its own people.
     private var shownGroupId: String? = null
 
-    // Why: the home's "Rachar conta" asks for the group once, as the groups first load; a sync never asks again.
-    private var hasAskedForGroup = false
+    // Why: "Rachar em qual grupo?" (7.1i), whose "Continuar" moves a new bill to the group picked.
+    private val groupPicking = GroupPicking(uiState, route, groupId)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -206,7 +205,7 @@ class SplitBillViewModel(
             .launchIn(viewModelScope)
         if (settledPairs == null) {
             observeGroupsByActivity()
-                .onEach(::showGroups)
+                .onEach(groupPicking::show)
                 .launchIn(viewModelScope)
         } else {
             settledPairs.showIn(uiState)
@@ -235,20 +234,13 @@ class SplitBillViewModel(
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
-            SplitBillUiEvent.OnGroupClicked -> uiState.update {
-                if (it.canChangeGroup) it.copy(groupSelection = GroupSelection(groupId = it.groupId)) else it
-            }
+            SplitBillUiEvent.OnGroupClicked -> groupPicking.open()
 
-            is SplitBillUiEvent.OnGroupPicked -> uiState.update { it.withGroupPicked(event.groupId) }
+            is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
-            SplitBillUiEvent.OnGroupDone -> confirmGroup()
+            SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()
 
-            SplitBillUiEvent.OnGroupDismissed -> uiState.update {
-                it
-                    .copy(
-                        groupSelection = null,
-                    ).withReceiptRequestSettled()
-            }
+            SplitBillUiEvent.OnGroupDismissed -> groupPicking.dismiss()
 
             is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
@@ -344,26 +336,6 @@ class SplitBillViewModel(
         }
     }
 
-    private fun showGroups(groups: List<Group>) {
-        val asks = route.picksGroupFirst && !hasAskedForGroup && groups.size > 1
-        hasAskedForGroup = true
-        uiState.update {
-            it
-                .withGroups(
-                    groups = groups.map(::toBillGroup),
-                    asks = asks,
-                    billGroupId = groupId.value,
-                ).withReceiptRequestSettled()
-        }
-    }
-
-    private fun confirmGroup() {
-        val state = uiState.value
-        val picked = state.groupSelection?.groupId ?: return
-        uiState.update { it.withGroupConfirmed(picked) }
-        if (!state.isSaving && state.groups.any { it.id == picked }) groupId.value = picked
-    }
-
     private fun handle(
         group: Group?,
         expense: Expense?,
@@ -382,10 +354,12 @@ class SplitBillViewModel(
             else -> {
                 isBillMissing = false
                 val previous = editedExpense
-                if (previous ==
-                    null
-                ) {
-                    fill(group, expense)
+                val isFirstRead = previous == null
+                if (isFirstRead) {
+                    fill(
+                        group,
+                        expense,
+                    )
                 } else {
                     uiState.update { it.withChangeNoticed(group, previous, expense) }
                 }
@@ -405,7 +379,9 @@ class SplitBillViewModel(
     // Why: a new bill whose picked group went goes back to the group it was opened for, and closes once that one went.
     private fun handleGroupGone() {
         isGroupGone = route.expenseId != null || groupId.value == route.groupId
-        if (isGroupGone) exits.leave() else groupId.value = route.groupId
+        if (isGroupGone) return exits.leave()
+        uiState.update { it.copy(pickedGroupId = route.groupId) }
+        groupId.value = route.groupId
     }
 
     /*

@@ -32,6 +32,8 @@ export function setShowsBitcoinInSats(isOn: boolean) {
 /** The cryptocurrencies, which no browser has a symbol for: "₿" and "Ξ", where Intl puts a currency's own. */
 const cryptoSymbols: Record<string, string> = { BTC: '₿', ETH: 'Ξ' }
 
+const SYMBOL_PATTERN_CURRENCY = 'USD'
+
 function isSats(currency: string | undefined): boolean {
   return currency === 'BTC' && showsBitcoinInSats
 }
@@ -72,7 +74,9 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
   try {
     const symbol = cryptoSymbols[currency]
     if (symbol === undefined) return moneyFormat(currency, digits).format(major)
-    return moneyFormat(currency, digits)
+    // Why: the pattern of a currency with a symbol ("$0.5", "US$ 0,5"), as Android and Apple place ₿ and Ξ; Intl
+    // spaces a currency it only knows by its code ("BTC 0.5").
+    return moneyFormat(SYMBOL_PATTERN_CURRENCY, digits)
       .formatToParts(major)
       .map((part) => (part.type === 'currency' ? symbol : part.value))
       .join('')

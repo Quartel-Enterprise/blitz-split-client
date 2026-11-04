@@ -792,6 +792,7 @@ class SplitBillUiStateTest {
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupId = "group-1",
+        pickedGroupId = "group-1",
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,

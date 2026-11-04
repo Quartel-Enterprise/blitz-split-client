@@ -121,3 +121,14 @@ fun rememberMoneyFormatter(currency: GroupCurrency): MoneyFormatter {
         )
     }
 }
+
+// Why: one formatter per currency of a list (Saldo geral's totals), all following bitcoin's unit and the language.
+@Composable
+fun rememberMoneyFormatters(currencies: List<GroupCurrency>): Map<GroupCurrency, MoneyFormatter> {
+    val locale = LocalLocale.current.platformLocale
+    val showsSats = LocalShowsBitcoinInSats.current
+    val satsText = rememberSatsText()
+    return remember(currencies, locale, showsSats, satsText) {
+        currencies.associateWith { MoneyFormatter(it, locale, showsSats, satsText) }
+    }
+}

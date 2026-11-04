@@ -25,6 +25,8 @@ data class SplitBillUiState(
     val isEditing: Boolean,
     // Why: the group the bill goes to, which a new bill may change ("Rachar em qual grupo?").
     val groupId: String,
+    // Why: the group "Rachar em qual grupo?" last confirmed, which groupId becomes once it is read.
+    val pickedGroupId: String,
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
@@ -212,7 +214,11 @@ data class SplitBillUiState(
      */
     val showsReceiptCamera: Boolean
         get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving &&
-            !currency.isCrypto
+            !currency.isCrypto && !isPickedGroupLoading
+
+    // Why: until the group picked is read, the currency is still the last group's, which says nothing about its receipt.
+    val isPickedGroupLoading: Boolean
+        get() = pickedGroupId != groupId
 
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING
