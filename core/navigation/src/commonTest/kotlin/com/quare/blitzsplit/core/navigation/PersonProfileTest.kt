@@ -12,30 +12,44 @@ class PersonProfileTest {
         prepareScenario()
 
         // When
-        navigator.openPersonProfile(personKey = PERSON_KEY, isMe = false)
+        navigator.openPersonProfile(
+            personKey = PERSON_KEY,
+            isMe = false,
+        )
 
         // Then
-        assertEquals(listOf(Route.Home, BILL, Route.ContactProfile(PERSON_KEY)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID), Route.ContactProfile(PERSON_KEY)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN this device's user in a bill WHEN opening them THEN opens Perfil over the bill`() {
+    fun `GIVEN the device user in a bill WHEN opening them THEN opens Perfil over the bill`() {
         // Given
         prepareScenario()
 
         // When
-        navigator.openPersonProfile(personKey = PERSON_KEY, isMe = true)
+        navigator.openPersonProfile(
+            personKey = PERSON_KEY,
+            isMe = true,
+        )
 
         // Then
-        assertEquals(listOf(Route.Home, BILL, Route.Profile), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.BillDetail(GROUP_ID, EXPENSE_ID), Route.Profile),
+            navigator.backStack.value,
+        )
     }
 
     private fun prepareScenario() {
-        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(BILL) }
+        navigator =
+            BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID)) }
     }
 
     private companion object {
         const val PERSON_KEY = "name:ana"
-        val BILL = Route.BillDetail("group-1", "expense-1")
+        const val GROUP_ID = "group-1"
+        const val EXPENSE_ID = "expense-1"
     }
 }

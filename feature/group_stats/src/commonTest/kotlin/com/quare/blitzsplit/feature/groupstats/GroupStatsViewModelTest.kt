@@ -819,7 +819,148 @@ class GroupStatsViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN Por pessoa with someone who left WHEN the statistics open THEN only the members open a profile`() =
+        runTest(testDispatcher) {
+            // Given
+            val withFormer = expense(
+                id = "dinner",
+                amountMinor = 30_000,
+                spentAt = today,
+                payers = listOf(paid(FORMER, 30_000)),
+                shares = listOf(share(FORMER, 10_000), share(PIERRE, 10_000), share(ANA, 10_000)),
+            )
+            prepareScenario(stored = listOf(withFormer))
+
+            // When
+            val people = viewModel.uiState.value.people
+
+            // Then
+            assertEquals(
+                mapOf(PIERRE to true, ANA to true, BRUNO to true, FORMER to false),
+                people.associate { it.memberId to it.opensProfile },
+            )
+        }
+
+    @Test
+    fun `GIVEN Pagou with someone who left WHEN picking it THEN the former member still opens no profile`() =
+        runTest(testDispatcher) {
+            // Given
+            val withFormer = expense(
+                id = "dinner",
+                amountMinor = 20_000,
+                spentAt = today,
+                payers = listOf(paid(FORMER, 20_000)),
+                shares = listOf(share(PIERRE, 20_000)),
+            )
+            prepareScenario(stored = listOf(withFormer))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+            // Then
+            val people = viewModel.uiState.value.people
+            assertFalse(people.single { it.memberId == FORMER }.opensProfile)
+            assertTrue(people.single { it.memberId == PIERRE }.opensProfile)
+        }
+
+    @Test
+    fun `GIVEN a guest in Por pessoa WHEN tapping their row THEN opens their contact profile by name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(group = trip.copy(members = listOf(pierre, ana, member(BRUNO, "Bruno  Lima"))))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(statsStack + Route.ContactProfile("name:bruno lima"), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN someone who joined in Por pessoa WHEN tapping their row THEN opens their contact profile by account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(group = trip.copy(members = listOf(pierre, ana.copy(userId = "user-ana"), bruno)))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(statsStack + Route.ContactProfile("user:user-ana"), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN this device user in Por pessoa WHEN tapping their row THEN opens Perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(group = trip.copy(members = listOf(pierre.copy(userId = "user-pierre"), ana, bruno)))
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(PIERRE))
+
+        // Then
+        assertEquals(statsStack + Route.Profile, navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN someone who left in Por pessoa WHEN tapping their row THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        val withFormer = expense(
+            id = "dinner",
+            amountMinor = 20_000,
+            spentAt = today,
+            payers = listOf(paid(FORMER, 20_000)),
+            shares = listOf(share(FORMER, 10_000), share(PIERRE, 10_000)),
+        )
+        prepareScenario(stored = listOf(withFormer))
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(FORMER))
+
+        // Then
+        assertEquals(statsStack, navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the statistics WHEN tapping a person nobody in the group is THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked("member-unknown"))
+
+            // Then
+            assertEquals(statsStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill over the statistics WHEN a person tap reaches them THEN nothing more opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(statsStack + Route.BillDetail(GROUP_ID, "boat"), navigator.backStack.value)
+        }
+
     private val route = Route.GroupStats(GROUP_ID)
+
+    // Why: the back stack the statistics open on, over the group's Despesas over Grupos.
+    private val statsStack: List<Route>
+        get() = listOf(
+            Route.Groups,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            route,
+        )
 
     // Why: Thursday, 29 October 2026, in the afternoon.
     private val today = millisOf("2026-10-29T15:00:00Z")

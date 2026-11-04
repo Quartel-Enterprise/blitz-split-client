@@ -38,7 +38,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -49,6 +48,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiSt
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val sectionPadding = Modifier.padding(
     start = 4.dp,

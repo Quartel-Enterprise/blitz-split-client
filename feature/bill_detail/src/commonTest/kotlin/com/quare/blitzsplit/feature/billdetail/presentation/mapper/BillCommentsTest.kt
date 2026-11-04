@@ -333,6 +333,117 @@ class BillCommentsTest {
         assertEquals("", row.initials)
     }
 
+    @Test
+    fun `GIVEN a comment by Ana in the group WHEN gathering the threads THEN its author opens Ana`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = ANA,
+                authorName = "Ana",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertEquals(ANA, row.authorMemberId)
+    }
+
+    @Test
+    fun `GIVEN a comment by the device user WHEN gathering the threads THEN its author opens them too`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = PIERRE,
+                authorName = "Pierre",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertEquals(PIERRE, row.authorMemberId)
+    }
+
+    @Test
+    fun `GIVEN a reply by Bruno to Ana WHEN gathering the threads THEN each author opens their own member`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                authorMemberId = ANA,
+                authorName = "Ana",
+                postedAt = now - 2 * HOUR,
+            ),
+            comment(
+                id = "r1",
+                threadId = "c1",
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val thread = threadsOf(comments, group, now, TimeZone.UTC).single()
+
+        // Then
+        assertEquals(ANA, thread.comment.authorMemberId)
+        assertEquals(BRUNO, thread.replies.single().authorMemberId)
+    }
+
+    @Test
+    fun `GIVEN a comment by someone who left WHEN gathering the threads THEN its author opens nobody`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = FORMER,
+                authorName = "Carla",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertNull(row.authorMemberId)
+    }
+
+    @Test
+    fun `GIVEN a comment through the link by someone outside the group WHEN gathering THEN its author opens nobody`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = null,
+                authorName = "Diego",
+                viaLink = true,
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertNull(row.authorMemberId)
+    }
+
+    @Test
+    fun `GIVEN no member known WHEN gathering the threads THEN no author opens a profile`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = ANA,
+                authorName = "Ana",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, emptyList(), now, TimeZone.UTC).single().comment
+
+        // Then
+        assertNull(row.authorMemberId)
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val group = Group(

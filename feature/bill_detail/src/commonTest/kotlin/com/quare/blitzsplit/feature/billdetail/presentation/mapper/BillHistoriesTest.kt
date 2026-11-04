@@ -1205,6 +1205,100 @@ class BillHistoriesTest {
         assertNull(undo)
     }
 
+    @Test
+    fun `GIVEN an edit by Ana WHEN building the history THEN the line opens Ana`() {
+        // Given
+        val events = listOf(event(kind = ActivityKind.ATTACHMENT_REMOVED))
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertEquals(ANA, entry.actorMemberId)
+    }
+
+    @Test
+    fun `GIVEN the device user created the bill WHEN building the history THEN the line opens them too`() {
+        // Given
+        val events = listOf(
+            event(
+                kind = ActivityKind.BILL_CREATED,
+                actorMemberId = PIERRE,
+                actorName = "Pierre",
+            ),
+        )
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertEquals(PIERRE, entry.actorMemberId)
+    }
+
+    @Test
+    fun `GIVEN an edit known only by the account of Bruno WHEN building the history THEN the line opens Bruno`() {
+        // Given
+        val events = listOf(
+            event(
+                kind = ActivityKind.ATTACHMENT_REMOVED,
+                actorMemberId = null,
+                actorUserId = BRUNO_USER,
+                actorName = "Bruno",
+            ),
+        )
+        val joined = group.copy(
+            members = group.members.map {
+                if (it.id ==
+                    BRUNO
+                ) {
+                    it.copy(userId = BRUNO_USER)
+                } else {
+                    it
+                }
+            },
+        )
+
+        // When
+        val entry = historyOf(events, expense(), joined, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertEquals(BRUNO, entry.actorMemberId)
+    }
+
+    @Test
+    fun `GIVEN an edit by someone who left the group WHEN building the history THEN the line opens nobody`() {
+        // Given
+        val events = listOf(
+            event(
+                kind = ActivityKind.ATTACHMENT_REMOVED,
+                actorMemberId = FORMER,
+                actorUserId = "user-gone",
+                actorName = "Diego",
+            ),
+        )
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertNull(entry.actorMemberId)
+    }
+
+    @Test
+    fun `GIVEN a bill created offline WHEN building the history THEN the line not up yet opens the device user`() {
+        // Given
+        val pending = expense(
+            isPending = true,
+            updatedAt = now - 30 * MINUTE,
+        )
+
+        // When
+        val entry = historyOf(emptyList(), pending, group, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertEquals(PIERRE, entry.actorMemberId)
+    }
+
     private fun millisOf(iso: String): Long = Instant.parse(iso).toEpochMilliseconds()
 
     private fun entriesOf(events: List<ActivityEvent>): List<BillHistoryEntry> =
@@ -1319,6 +1413,7 @@ class BillHistoriesTest {
         id: String = "event-1",
         kind: ActivityKind = ActivityKind.BILL_EDITED,
         actorMemberId: String? = ANA,
+        actorUserId: String? = null,
         actorName: String? = "Ana",
         occurredAt: Long = now - HOUR,
         amountMinor: Long? = 48_000,
@@ -1330,7 +1425,7 @@ class BillHistoriesTest {
         seq = 1L,
         groupId = GROUP_ID,
         kind = kind,
-        actorUserId = null,
+        actorUserId = actorUserId,
         actorMemberId = actorMemberId,
         actorName = actorName,
         groupName = "Viagem de Floripa",
@@ -1398,6 +1493,7 @@ class BillHistoriesTest {
         const val BRUNO = "member-3"
         const val CARLA = "member-4"
         const val FORMER = "member-9"
+        const val BRUNO_USER = "user-bruno"
         const val MINUTE = 60_000L
         const val HOUR = 60 * MINUTE
     }

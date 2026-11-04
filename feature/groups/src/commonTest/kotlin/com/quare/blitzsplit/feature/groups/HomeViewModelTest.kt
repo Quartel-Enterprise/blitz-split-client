@@ -579,32 +579,31 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN you owe Ana WHEN tapping her face THEN opens her profile over Inicio`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(trio()),
-                storedExpenses = listOf(
-                    bill(
-                        "dinner",
-                        paidBy = "Ana",
-                        amountMinor = 9000L,
-                    ),
+    fun `GIVEN you owe Ana WHEN tapping her face THEN opens her profile over Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Ana",
+                    amountMinor = 9000L,
                 ),
-            )
+            ),
+        )
 
-            // When
-            viewModel.onEvent(HomeUiEvent.OnPersonClicked("name:ana", GroupCurrency.BRL))
+        // When
+        viewModel.onEvent(HomeUiEvent.OnPersonClicked("name:ana", GroupCurrency.BRL))
 
-            // Then
-            assertEquals(
-                listOf(
-                    Route.Home,
-                    Route.ContactProfile("name:ana"),
-                ),
-                navigator.backStack.value,
-            )
-        }
+        // Then
+        assertEquals(
+            listOf(
+                Route.Home,
+                Route.ContactProfile("name:ana"),
+            ),
+            navigator.backStack.value,
+        )
+    }
 
     @Test
     fun `GIVEN you owe Diego who left the group WHEN tapping his face THEN opens settling up with him`() =

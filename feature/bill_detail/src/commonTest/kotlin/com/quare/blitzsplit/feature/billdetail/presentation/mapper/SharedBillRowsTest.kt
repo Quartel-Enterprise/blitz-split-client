@@ -139,6 +139,32 @@ class SharedBillRowsTest {
     }
 
     @Test
+    fun `GIVEN whoever paid left the group WHEN listing the payers THEN keeps their member id and opens no profile`() {
+        // Given
+        val bill = bill(payers = listOf(part(FORMER, null, 64_200)))
+
+        // When
+        val payer = payersOf(bill).single()
+
+        // Then
+        assertEquals(FORMER, payer.memberId)
+        assertFalse(payer.opensProfile)
+    }
+
+    @Test
+    fun `GIVEN a part and a payer named WHEN listing the people of a link THEN nobody opens a profile`() {
+        // Given
+        val bill = bill(payers = listOf(part(DIEGO, "Diego", 64_200)))
+
+        // When
+        val people = peopleOf(bill)
+
+        // Then
+        assertEquals(listOf(ANA, BRUNO, CARLA, DIEGO), people.map { it.memberId })
+        assertTrue(people.none { it.opensProfile })
+    }
+
+    @Test
     fun `GIVEN the receipt and two photos WHEN making the tiles THEN only the photos are numbered 1 and 2`() {
         // Given
         val attachments = listOf(

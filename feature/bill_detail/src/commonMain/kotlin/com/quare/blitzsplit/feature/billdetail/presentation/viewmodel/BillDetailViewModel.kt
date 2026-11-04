@@ -542,9 +542,8 @@ class BillDetailViewModel(
 
     // Why: only someone still in the group has a profile, and only Conta on top takes the tap.
     private fun openPerson(memberId: String) {
-        val member = shownGroup?.members?.firstOrNull { it.id == memberId } ?: return
-        if (!isOnTop()) return
-        navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
+        val member = shownGroup?.members?.firstOrNull { it.id == memberId }
+        if (member != null && isOnTop()) navigator.openPersonProfile(PeopleBalances.keyOf(member), member.isMe)
     }
 
     private fun edit() {

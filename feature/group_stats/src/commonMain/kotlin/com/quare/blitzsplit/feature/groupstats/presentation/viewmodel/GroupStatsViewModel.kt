@@ -177,9 +177,11 @@ class GroupStatsViewModel(
 
             GroupStatsUiEvent.OnBiggestExpenseClicked -> openBiggestExpense()
 
-            is GroupStatsUiEvent.OnPersonClicked -> group?.members
-                ?.firstOrNull { it.id == event.memberId }
-                ?.let { member -> open(personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe)) }
+            is GroupStatsUiEvent.OnPersonClicked ->
+                group
+                    ?.members
+                    ?.firstOrNull { it.id == event.memberId }
+                    ?.let { member -> open(personProfileRouteOf(PeopleBalances.keyOf(member), member.isMe)) }
 
             GroupStatsUiEvent.OnSplitBillClicked -> open(
                 Route.SplitBill(
