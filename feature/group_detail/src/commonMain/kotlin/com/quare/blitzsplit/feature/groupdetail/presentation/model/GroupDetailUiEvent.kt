@@ -54,7 +54,8 @@ sealed interface GroupDetailUiEvent : TrackedUiEvent {
 
             is OnPaymentClicked -> EventAnalytics.Automatic("payment_clicked", mapOf("source" to SOURCE))
 
-            OnPaymentDeleteConfirmed -> EventAnalytics.Automatic("payment_delete_confirmed")
+            // Why: only an answer to a question still open, as its cancellation.
+            OnPaymentDeleteConfirmed -> EventAnalytics.Manual("payment_delete_confirmed")
 
             // Why: only a question still open, since Apple's alert also closes itself after Apagar.
             OnPaymentDeleteDismissed -> EventAnalytics.Manual("payment_delete_cancelled")

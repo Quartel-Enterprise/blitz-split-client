@@ -235,7 +235,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `settle_clicked` | `source` (`group_detail`) | "Acertar" on "Seu saldo neste grupo" | `:feature:group_detail` |
 | `debt_clicked` | `source` (`group_detail`) | "Acertar", "Recebi" or "Já pagou" on a pair of Saldos | `:feature:group_detail` |
 | `payment_clicked` | `source` (`group_detail`) | A payment of Despesas, which asks "Apagar este acerto?" | `:feature:group_detail` |
-| `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed | `:feature:group_detail` |
+| `payment_delete_confirmed` | none | "Apagar este acerto?" confirmed, while it was open | `:feature:group_detail` |
 | `payment_delete_cancelled` | none | "Apagar este acerto?" closed without confirming, while it was open | `:feature:group_detail` |
 | `category_teach_clicked` | none | "Ensinar" on "Ensinar ao mapa?" | `:feature:group_detail` |
 | `category_teach_dismissed` | none | "Agora não" on it, or Cancelar on which word | `:feature:group_detail` |

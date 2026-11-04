@@ -2405,6 +2405,18 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN no payment asked to delete WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN Apagar este acerto asked WHEN confirming THEN tracks payment_delete_confirmed with no params`() =
         runTest(testDispatcher) {
             // Given

@@ -397,6 +397,7 @@ class GroupDetailViewModel(
 
     private fun deletePayment() {
         val payment = uiState.value.paymentToDelete ?: return
+        trackEvent("payment_delete_confirmed", emptyMap())
         uiState.update { it.copy(paymentToDelete = null) }
         screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
