@@ -38,6 +38,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WelcomeViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var navigator: BackStackNavigator
@@ -390,6 +391,7 @@ class WelcomeViewModelTest {
         navigator = BackStackNavigator(startRoute = Route.Welcome)
         isOnline = MutableStateFlow(online)
         viewModel = WelcomeViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),

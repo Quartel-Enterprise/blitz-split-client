@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
@@ -27,7 +28,8 @@ class RecoveryCodeViewModel(
     private val providerConnector: ProviderConnector,
     observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<RecoveryCodeUiEvent>(trackEvent) {
     val uiState: StateFlow<RecoveryCodeUiState>
         field = MutableStateFlow(
             RecoveryCodeUiState(
@@ -79,7 +81,7 @@ class RecoveryCodeViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: RecoveryCodeUiEvent) {
+    override fun handleEvent(event: RecoveryCodeUiEvent) {
         when (event) {
             RecoveryCodeUiEvent.OnCopyClicked -> emitWithCode(RecoveryCodeUiAction::CopyToClipboard)
 

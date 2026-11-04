@@ -34,6 +34,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DeleteAccountViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -499,6 +500,7 @@ class DeleteAccountViewModelTest {
         this@DeleteAccountViewModelTest.deleteResult = deleteResult
         deleteGate = if (deleteHangs) CompletableDeferred() else null
         viewModel = DeleteAccountViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             deleteAccount = DeleteAccount {
                 deletions++

@@ -1,8 +1,26 @@
 package com.quare.blitzsplit.feature.deleteaccount.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface DeleteAccountUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "delete_account"
+
+sealed interface DeleteAccountUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnBackClicked -> EventAnalytics.Automatic("back_clicked", mapOf("source" to SOURCE))
+
+            is OnConfirmChanged -> EventAnalytics.Automatic(
+                "delete_account_confirm_toggled",
+                mapOf("is_checked" to isChecked),
+            )
+
+            OnDeleteClicked -> EventAnalytics.Automatic("delete_account_clicked")
+
+            OnExportClicked -> EventAnalytics.Automatic("data_export_clicked", mapOf("source" to SOURCE))
+        }
+
     // Why: the back arrow, "Cancelar" and a native dismiss of the sheet or dialog.
     data object OnBackClicked : DeleteAccountUiEvent
 

@@ -146,7 +146,9 @@ class AnalyticsCatalogTest {
     @Test
     fun `GIVEN every trackEvent call WHEN looking for its event THEN a Manual of its module declares it`() {
         // Given
-        val modules = File(repoRoot, "feature").mainSources().map { it.moduleRoot() }.toSet()
+        val modules = (File(repoRoot, "feature").mainSources() + File(repoRoot, "core").mainSources())
+            .map { it.moduleRoot() }
+            .toSet()
 
         // When
         val violations = modules.flatMap { module ->
@@ -166,9 +168,11 @@ class AnalyticsCatalogTest {
         .flatMap { file -> findAutomaticNames(file.readText()) + findManualNames(file.readText()) }
         .toSortedSet()
 
-    private fun findDeclarationFiles(): List<File> = File(repoRoot, "feature")
-        .mainSources()
-        .filter { file -> file.readText().contains("EventAnalytics.") }
+    // Why: the features, and the core modules that name an event several features share ("Ajustar foto"'s).
+    private fun findDeclarationFiles(): List<File> = (
+        File(repoRoot, "feature").mainSources() +
+            File(repoRoot, "core").mainSources()
+    ).filter { file -> file.readText().contains("EventAnalytics.") }
         .toList()
 
     private fun findAutomaticNames(text: String): Set<String> =

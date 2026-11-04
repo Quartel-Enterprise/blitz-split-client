@@ -1,9 +1,37 @@
 package com.quare.blitzsplit.feature.recoverycode.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface RecoveryCodeUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "recovery_code"
+
+sealed interface RecoveryCodeUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copied")
+
+            OnSaveToPasswordManagerClicked -> EventAnalytics.Automatic("recovery_code_save_clicked")
+
+            OnConnectInsteadClicked -> EventAnalytics.Automatic("recovery_code_connect_instead_clicked")
+
+            is OnProviderClicked -> EventAnalytics.Automatic(
+                "sign_in_provider_clicked",
+                mapOf("provider" to provider, "source" to SOURCE),
+            )
+
+            is OnIdTokenReceived -> EventAnalytics.NotTracked
+
+            OnNativeSignInFailed -> EventAnalytics.Automatic("native_sign_in_failed", mapOf("source" to SOURCE))
+
+            OnNativeSignInCancelled -> EventAnalytics.Automatic("native_sign_in_cancelled", mapOf("source" to SOURCE))
+
+            OnRemindLaterClicked -> EventAnalytics.Automatic("recovery_code_snoozed")
+
+            OnSavedClicked -> EventAnalytics.Automatic("recovery_code_saved_clicked")
+        }
+
     data object OnCopyClicked : RecoveryCodeUiEvent
 
     data object OnSaveToPasswordManagerClicked : RecoveryCodeUiEvent

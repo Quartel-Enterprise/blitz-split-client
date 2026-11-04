@@ -38,6 +38,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProfileSetupViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var navigator: BackStackNavigator
@@ -691,6 +692,7 @@ class ProfileSetupViewModelTest {
         val account = FakeAccountRepository().also { it.sessionUser = sessionUser }
         val getSessionUser = GetSessionUserUseCase(account)
         viewModel = ProfileSetupViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(profiles),
             getSessionUser = {
                 sessionArrival?.await()

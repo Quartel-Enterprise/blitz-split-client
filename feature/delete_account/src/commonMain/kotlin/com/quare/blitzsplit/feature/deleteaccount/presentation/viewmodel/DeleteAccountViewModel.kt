@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiAction
@@ -30,7 +31,8 @@ class DeleteAccountViewModel(
     private val exportUserData: ExportUserData,
     observeAccountStatus: ObserveAccountStatus,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DeleteAccountUiEvent>(trackEvent) {
     val uiState: StateFlow<DeleteAccountUiState>
         field = MutableStateFlow(
             DeleteAccountUiState(
@@ -59,7 +61,7 @@ class DeleteAccountViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: DeleteAccountUiEvent) {
+    override fun handleEvent(event: DeleteAccountUiEvent) {
         when (event) {
             DeleteAccountUiEvent.OnBackClicked -> leave()
             is DeleteAccountUiEvent.OnConfirmChanged -> confirm(event.isChecked)

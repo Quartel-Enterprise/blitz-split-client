@@ -1,11 +1,12 @@
 package com.quare.blitzsplit.feature.welcome.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
 import com.quare.blitzsplit.core.sync.signin.ProviderSignInController
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeError
@@ -25,7 +26,8 @@ class WelcomeViewModel(
     private val navigator: Navigator,
     providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<WelcomeUiEvent>(trackEvent) {
     val uiState: StateFlow<WelcomeUiState>
         field = MutableStateFlow(
             WelcomeUiState(
@@ -58,7 +60,7 @@ class WelcomeViewModel(
         signIn.observeBrowserSignIn(isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome })
     }
 
-    fun onEvent(event: WelcomeUiEvent) {
+    override fun handleEvent(event: WelcomeUiEvent) {
         when (event) {
             is WelcomeUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
             is WelcomeUiEvent.OnIdTokenReceived -> handleIdToken(event)

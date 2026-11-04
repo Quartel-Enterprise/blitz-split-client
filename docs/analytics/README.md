@@ -126,3 +126,28 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 
 | Event | Params | Sent when | Feature |
 | --- | --- | --- | --- |
+| `sign_in_provider_clicked` | `provider` (`google`, `apple`), `source` (`welcome`, `restore`, `recovery_code`) | Google's or Apple's button, before its sign in starts | `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
+| `native_sign_in_failed` | `source` | The platform's own sign in sheet failed | `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
+| `native_sign_in_cancelled` | `source` | The platform's own sign in sheet was closed | `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
+| `error_dismissed` | `source` (`welcome`, `restore`) | An error's message closed | `:feature:welcome`, `:feature:restore` |
+| `back_clicked` | `source` (`profile_setup`, `restore`, `delete_account`) | The screen's own back, Cancelar or ✕ | `:feature:profile_setup`, `:feature:restore`, `:feature:delete_account` |
+| `welcome_use_without_account_clicked` | none | Boas-vindas' "Usar sem conta" | `:feature:welcome` |
+| `welcome_restore_clicked` | none | Boas-vindas' "Já usei em outro aparelho" | `:feature:welcome` |
+| `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
+| `photo_picked` | `source` (`profile_setup`) | A photo handed back by the camera or the picker | `:feature:profile_setup` |
+| `photo_crop_turned` | `source` | "Ajustar foto"'s Girar | `:core:presentation` (each screen with a photo) |
+| `photo_crop_mirrored` | `source`, `axis` (`horizontal`, `vertical`) | "Ajustar foto"'s Horizontal or Vertical | `:core:presentation` (each screen with a photo) |
+| `photo_crop_confirmed` | `source` | "Ajustar foto"'s Pronto | `:core:presentation` (each screen with a photo) |
+| `photo_crop_dismissed` | `source` | "Ajustar foto" closed without Pronto | `:core:presentation` (each screen with a photo) |
+| `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
+| `restore_code_submitted` | none | Recuperar's Recuperar, with the code typed or read | `:feature:restore` |
+| `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
+| `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
+| `recovery_code_copied` | none | The recovery code's Copiar | `:feature:recovery_code` |
+| `recovery_code_save_clicked` | none | "Salvar no gerenciador de senhas" | `:feature:recovery_code` |
+| `recovery_code_connect_instead_clicked` | none | "Conectar Google ou Apple em vez disso" | `:feature:recovery_code` |
+| `recovery_code_snoozed` | none | "Lembrar depois" | `:feature:recovery_code` |
+| `recovery_code_saved_clicked` | none | "Já guardei" | `:feature:recovery_code` |
+| `delete_account_confirm_toggled` | `is_checked` | Excluir conta's confirmation checkbox | `:feature:delete_account` |
+| `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
+| `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |

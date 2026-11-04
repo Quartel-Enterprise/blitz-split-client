@@ -31,8 +31,8 @@ tasks.withType<Test>().configureEach {
     if (name == "jvmTest") {
         inputs
             .files(
-                fileTree(rootProject.layout.projectDirectory.dir("feature")) {
-                    include("**/src/*Main/**/*.kt")
+                fileTree(rootProject.layout.projectDirectory) {
+                    include("feature/**/src/*Main/**/*.kt", "core/**/src/*Main/**/*.kt")
                     exclude("**/build/**")
                 },
             ).withPropertyName("featureSources")

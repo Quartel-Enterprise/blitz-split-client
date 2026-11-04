@@ -1,9 +1,42 @@
 package com.quare.blitzsplit.feature.restore.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface RestoreUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "restore"
+
+sealed interface RestoreUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            is OnCodeChanged -> EventAnalytics.NotTracked
+
+            OnRestoreClicked -> EventAnalytics.Automatic("restore_code_submitted")
+
+            OnScanQrClicked -> EventAnalytics.Automatic("restore_scan_qr_clicked")
+
+            // Why: the camera handing back what it read, which OnRestoreClicked's path then checks.
+            is OnQrScanned -> EventAnalytics.NotTracked
+
+            is OnProviderClicked -> EventAnalytics.Automatic(
+                "sign_in_provider_clicked",
+                mapOf("provider" to provider, "source" to SOURCE),
+            )
+
+            is OnIdTokenReceived -> EventAnalytics.NotTracked
+
+            OnNativeSignInFailed -> EventAnalytics.Automatic("native_sign_in_failed", mapOf("source" to SOURCE))
+
+            OnNativeSignInCancelled -> EventAnalytics.Automatic("native_sign_in_cancelled", mapOf("source" to SOURCE))
+
+            OnStartFreshClicked -> EventAnalytics.Automatic("restore_start_fresh_clicked")
+
+            OnBackClicked -> EventAnalytics.Automatic("back_clicked", mapOf("source" to SOURCE))
+
+            OnErrorDismissed -> EventAnalytics.Automatic("error_dismissed", mapOf("source" to SOURCE))
+        }
+
     data class OnCodeChanged(
         val code: String,
     ) : RestoreUiEvent

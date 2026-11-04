@@ -35,6 +35,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RecoveryCodeViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var viewModel: RecoveryCodeViewModel
@@ -419,6 +420,7 @@ class RecoveryCodeViewModelTest {
             it.connectResult = connectResult
         }
         viewModel = RecoveryCodeViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
