@@ -48,6 +48,7 @@ internal class ItemsEditing(
                     totalMinor = editor.totalMinor,
                     payerIds = editor.payerIds,
                     currency = state.currency,
+                    showsSats = state.showsSats,
                 ),
             )
         }
@@ -142,7 +143,7 @@ internal class ItemsEditing(
             is SplitBillUiEvent.OnItemQuantityChanged -> changeQuantity { AmountInput.parseWhole(event.text) ?: it }
 
             is SplitBillUiEvent.OnItemPriceChanged -> editItem {
-                val unitPriceText = TypedText.toAmountText(it.unitPriceText, event.text, it.currency, separator())
+                val unitPriceText = TypedText.toAmountText(it.unitPriceText, event.text, it.currency, it.showsSats, separator())
                 it.withTotal(it.quantity, unitPriceText, separator())
             }
 
@@ -179,7 +180,7 @@ internal class ItemsEditing(
                 val text = if (editor.fee == ItemsFee.SERVICE) {
                     TypedText.toPercentText(event.text)
                 } else {
-                    TypedText.toAmountText(editor.valueText, event.text, editor.currency, separator())
+                    TypedText.toAmountText(editor.valueText, event.text, editor.currency, editor.showsSats, separator())
                 }
                 state.copy(feeEditor = editor.copy(valueText = text))
             }
@@ -232,6 +233,7 @@ internal class ItemsEditing(
                     people = items.people,
                     payerIds = items.payerIds,
                     currency = items.currency,
+                    showsSats = items.showsSats,
                     decimalSeparator = separator(),
                     priceMinor = priceMinor?.takeIf { ExpenseRules.isAmountValid(it, items.currency) },
                 ),
@@ -304,7 +306,7 @@ internal class ItemsEditing(
         val editor = uiState.value.itemEditor ?: return
         when (editor.mode) {
             ItemSplitMode.AMOUNT -> editPerson(memberId) {
-                it.copy(valueText = TypedText.toAmountText(it.valueText, text, editor.currency, separator()))
+                it.copy(valueText = TypedText.toAmountText(it.valueText, text, editor.currency, editor.showsSats, separator()))
             }
 
             ItemSplitMode.PERCENT -> editPerson(memberId) { it.copy(valueText = TypedText.toPercentText(text)) }

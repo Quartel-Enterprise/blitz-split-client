@@ -22,6 +22,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 internal fun createInitialBillState(
     route: Route.SplitBill,
     now: Long,
+    showsSats: Boolean,
 ): SplitBillUiState {
     val currency = GroupCurrency.BRL
     return SplitBillUiState(
@@ -35,6 +36,7 @@ internal fun createInitialBillState(
         groups = emptyList(),
         groupSelection = null,
         currency = currency,
+        showsSats = showsSats,
         people = emptyList(),
         amountText = "",
         description = "",
@@ -47,7 +49,7 @@ internal fun createInitialBillState(
         spentAt = now,
         spentDay = RelativeDay.TODAY,
         latestSpentAt = now,
-        split = createEmptySplit(currency),
+        split = createEmptySplit(currency, showsSats),
         splitEditor = null,
         isSplitEditorAsDefaultChecked = false,
         itemsEditor = null,
@@ -79,13 +81,23 @@ internal fun createInitialBillState(
     )
 }
 
+// Why: nothing is typed before the form loads, so the fields take bitcoin's unit before anything is in them.
+internal fun SplitBillUiState.withShowsSats(showsSats: Boolean): SplitBillUiState = copy(
+    showsSats = showsSats,
+    split = split.copy(showsSats = showsSats),
+)
+
 // Why: everyone in, equally, until the group's people arrive.
-internal fun createEmptySplit(currency: GroupCurrency): SplitEditor = SplitEditor(
+internal fun createEmptySplit(
+    currency: GroupCurrency,
+    showsSats: Boolean,
+): SplitEditor = SplitEditor(
     mode = SplitMode.EQUAL,
     rows = emptyList(),
     totalMinor = 0L,
     payerIds = emptyList(),
     currency = currency,
+    showsSats = showsSats,
     items = null,
 )
 
@@ -131,7 +143,7 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
     severalPayers = null,
     payerSelection = null,
     payerAmounts = null,
-    split = createEmptySplit(currency),
+    split = createEmptySplit(currency, showsSats),
     splitEditor = null,
     itemsEditor = null,
     itemEditor = null,
@@ -159,7 +171,7 @@ internal fun SplitBillUiState.withGroupShown(
     decimalSeparator: Char,
 ): SplitBillUiState {
     val severalPayers = severalPayers
-        ?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator)
+        ?.withPeople(people, group.currency, showsSats, keepsFormer = isEditing, decimalSeparator)
         ?.takeIf { it.payers.isNotEmpty() }
     val payerId = if (severalPayers != null) {
         ""
@@ -177,7 +189,7 @@ internal fun SplitBillUiState.withGroupShown(
         groupPhotoUrl = group.photo?.toImageUrl(),
         currency = group.currency,
         // Why: moved to a group of another currency, the bill keeps the number typed, not its digits.
-        amountText = TypedText.toCurrency(amountText, currency, group.currency, decimalSeparator),
+        amountText = TypedText.toCurrency(amountText, currency, group.currency, showsSats, decimalSeparator),
         people = people,
         payerId = payerId,
         severalPayers = severalPayers,
@@ -185,7 +197,13 @@ internal fun SplitBillUiState.withGroupShown(
         payerSelection = payerSelection?.takeIf { selection ->
             selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
         },
-        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing, decimalSeparator),
+        payerAmounts = payerAmounts?.withPeople(
+            people,
+            group.currency,
+            showsSats,
+            keepsFormer = isEditing,
+            decimalSeparator,
+        ),
         isLoaded = true,
     )
 }

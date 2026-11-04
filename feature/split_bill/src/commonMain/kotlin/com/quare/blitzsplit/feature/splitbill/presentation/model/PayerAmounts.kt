@@ -15,6 +15,7 @@ data class PayerAmounts(
     // Why: the bill's amount, 0 while the field holds no valid amount.
     val totalMinor: Long,
     val currency: GroupCurrency,
+    val showsSats: Boolean,
 ) {
     /*
      * Why: who paid and how much, in the rows' order. This and the facts below are worked out once per state, like
@@ -22,7 +23,7 @@ data class PayerAmounts(
      */
     val payers: List<ExpensePayer> = rows.mapNotNull { row ->
         AmountInput
-            .parse(row.amountText, currency)
+            .parse(row.amountText, currency, showsSats)
             ?.takeIf { it > 0 }
             ?.let {
                 ExpensePayer(

@@ -353,6 +353,7 @@ class DeviceSettingsRepositoryImplTest {
             stored = settings(
                 theme = "system",
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
         )
 
@@ -378,6 +379,7 @@ class DeviceSettingsRepositoryImplTest {
                     settings(
                         theme = "system",
                         usesDynamicColors = true,
+                        showsBitcoinInSats = false,
                     ),
                 ),
                 local.rows.values.toList(),
@@ -393,6 +395,7 @@ class DeviceSettingsRepositoryImplTest {
             stored = settings(
                 theme = "dark",
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
         )
 
@@ -405,6 +408,7 @@ class DeviceSettingsRepositoryImplTest {
                 settings(
                     theme = "dark",
                     usesDynamicColors = false,
+                    showsBitcoinInSats = false,
                 ),
             ),
             local.rows.values.toList(),
@@ -439,6 +443,7 @@ class DeviceSettingsRepositoryImplTest {
                         statsChartType = "line",
                         statsGrain = "week",
                         usesDynamicColors = true,
+                        showsBitcoinInSats = false,
                     ),
                 ),
                 local.rows.values.toList(),
@@ -455,6 +460,7 @@ class DeviceSettingsRepositoryImplTest {
             stored = settings(
                 theme = "light",
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
         )
 
@@ -467,6 +473,7 @@ class DeviceSettingsRepositoryImplTest {
                 settings(
                     theme = "dark",
                     usesDynamicColors = true,
+                    showsBitcoinInSats = false,
                 ),
             ),
             local.rows.values.toList(),
@@ -481,6 +488,7 @@ class DeviceSettingsRepositoryImplTest {
             stored = settings(
                 theme = "system",
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
         )
         repository.updateGroupsLayout(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.COMPACT))
@@ -498,6 +506,7 @@ class DeviceSettingsRepositoryImplTest {
                     statsChartType = "line",
                     statsGrain = "month",
                     usesDynamicColors = true,
+                    showsBitcoinInSats = false,
                 ),
             ),
             local.rows.values.toList(),
@@ -513,6 +522,7 @@ class DeviceSettingsRepositoryImplTest {
                 stored = settings(
                     theme = "system",
                     usesDynamicColors = true,
+                    showsBitcoinInSats = false,
                 ),
             )
 
@@ -530,6 +540,7 @@ class DeviceSettingsRepositoryImplTest {
         statsChartType: String? = null,
         statsGrain: String? = null,
         usesDynamicColors: Boolean = false,
+        showsBitcoinInSats: Boolean = false,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -538,6 +549,7 @@ class DeviceSettingsRepositoryImplTest {
         statsChartType = statsChartType,
         statsGrain = statsGrain,
         usesDynamicColors = usesDynamicColors,
+        showsBitcoinInSats = showsBitcoinInSats,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -588,6 +600,7 @@ private class FakeDeviceSettingsLocalDataSource(
             statsChartType = null,
             statsGrain = null,
             usesDynamicColors = false,
+            showsBitcoinInSats = false,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

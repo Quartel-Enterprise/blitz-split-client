@@ -15,6 +15,7 @@ internal fun payerAmountsOf(
     expense: Expense,
     people: List<BillPerson>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     decimalSeparator: Char,
 ): PayerAmounts {
     val paidById = expense.payers.groupBy { it.memberId }.mapValues { (_, payers) -> payers.sumOf { it.amountMinor } }
@@ -24,6 +25,7 @@ internal fun payerAmountsOf(
                 AmountInput.format(
                     amountMinor = it,
                     currency = currency,
+                    showsSats = showsSats,
                     decimalSeparator = decimalSeparator,
                 )
             }.orEmpty()
@@ -47,6 +49,7 @@ internal fun payerAmountsOf(
         rows = memberRows + formerRows,
         totalMinor = expense.amountMinor,
         currency = currency,
+        showsSats = showsSats,
     )
 }
 
@@ -56,7 +59,7 @@ internal fun payerAmountsOf(
  */
 internal fun SplitBillUiState.toPayerAmounts(decimalSeparator: Char): PayerAmounts {
     val total = amountMinor?.takeIf { isAmountValid } ?: 0L
-    val paidText = if (total > 0) AmountInput.format(total, currency, decimalSeparator) else ""
+    val paidText = if (total > 0) AmountInput.format(total, currency, showsSats, decimalSeparator) else ""
     val memberRows = people.map { person ->
         PayerAmountRow(
             memberId = person.id,
@@ -73,6 +76,7 @@ internal fun SplitBillUiState.toPayerAmounts(decimalSeparator: Char): PayerAmoun
         rows = memberRows + listOfNotNull(formerRow),
         totalMinor = total,
         currency = currency,
+        showsSats = showsSats,
     )
 }
 
@@ -84,11 +88,14 @@ internal fun SplitBillUiState.toPayerAmounts(decimalSeparator: Char): PayerAmoun
 internal fun PayerAmounts.withPeople(
     people: List<BillPerson>,
     currency: GroupCurrency,
+    showsSats: Boolean,
     keepsFormer: Boolean,
     decimalSeparator: Char,
 ): PayerAmounts {
     val rows = rows.map { row ->
-        row.copy(amountText = TypedText.toCurrency(row.amountText, this.currency, currency, decimalSeparator))
+        row.copy(
+            amountText = TypedText.toCurrency(row.amountText, this.currency, currency, showsSats, decimalSeparator),
+        )
     }
     val byId = rows.associateBy { it.memberId }
     val memberRows = people.map { person ->
@@ -106,6 +113,7 @@ internal fun PayerAmounts.withPeople(
     return copy(
         rows = memberRows + formerRows,
         currency = currency,
+        showsSats = showsSats,
     )
 }
 
@@ -178,7 +186,7 @@ internal fun SplitBillUiState.withPayerAmount(
         .firstOrNull { it.memberId == memberId }
         ?.amountText
         .orEmpty()
-    val amountText = TypedText.toAmountText(previous, text, amounts.currency, decimalSeparator)
+    val amountText = TypedText.toAmountText(previous, text, amounts.currency, amounts.showsSats, decimalSeparator)
     return copy(payerAmounts = amounts.withAmountText(memberId, amountText))
 }
 

@@ -66,7 +66,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         BillCommentEntity::class,
         BillAttachmentEntity::class,
     ],
-    version = 31,
+    version = 32,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -188,6 +188,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 30,
             to = 31,
+        ),
+        AutoMigration(
+            from = 31,
+            to = 32,
         ),
     ],
 )

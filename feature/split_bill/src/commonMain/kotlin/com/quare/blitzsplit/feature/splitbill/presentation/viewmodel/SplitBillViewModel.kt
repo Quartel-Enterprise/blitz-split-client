@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -42,7 +43,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -71,6 +74,7 @@ class SplitBillViewModel(
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     categoryUseCases: BillCategoryUseCases,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -78,6 +82,7 @@ class SplitBillViewModel(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
+                showsSats = false,
             ),
         )
 
@@ -183,8 +188,11 @@ class SplitBillViewModel(
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(group, expenseFlow, ::Pair)
-            .onEach { (group, expense) ->
+        // Why: bitcoin's unit as the form opens; the fields keep it, so what was typed never changes its meaning.
+        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        combine(group, expenseFlow, showsSats, ::Triple)
+            .onEach { (group, expense, sats) ->
+                if (!uiState.value.isLoaded) uiState.update { it.withShowsSats(sats) }
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
@@ -468,7 +476,7 @@ class SplitBillViewModel(
         uiState.update { state ->
             state
                 .copy(
-                    amountText = TypedText.toAmountText(state.amountText, text, state.currency, separator),
+                    amountText = TypedText.toAmountText(state.amountText, text, state.currency, state.showsSats, separator),
                     hasEditedAmount = true,
                 ).withBillTotal()
         }

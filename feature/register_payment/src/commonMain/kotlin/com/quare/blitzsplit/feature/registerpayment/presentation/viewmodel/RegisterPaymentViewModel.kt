@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
@@ -49,7 +50,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -83,6 +86,7 @@ class RegisterPaymentViewModel(
     observeGroupBalances: ObserveGroupBalances,
     observePeopleBalances: ObservePeopleBalances,
     observeFirstDownload: ObserveFirstDownload,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RegisterPaymentUiState>
@@ -132,10 +136,13 @@ class RegisterPaymentViewModel(
             .map { it?.toUserId }
             .distinctUntilChanged()
             .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
-        combine(targets, keys, observeFirstDownload()) { target, (userId, receiverKeys), download ->
-            KeyedTarget(target, userId, receiverKeys, download)
+        // Why: the field keeps bitcoin's unit as the form opened, so what was typed never changes its meaning.
+        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        combine(targets, keys, observeFirstDownload(), showsSats) { target, (userId, receiverKeys), download, sats ->
+            KeyedTarget(target, userId, receiverKeys, download, sats)
         }.filter { it.target?.toUserId == it.userId }
             .onEach { keyed ->
+                if (!hasRead) uiState.update { it.copy(showsSats = keyed.showsSats) }
                 hasRead = true
                 receiverKeys = keyed.keys
                 firstDownload = keyed.download
@@ -159,6 +166,7 @@ class RegisterPaymentViewModel(
                             previous = it.amountText,
                             typed = event.text,
                             currency = it.currency,
+                            showsSats = it.showsSats,
                             decimalSeparator = decimalSeparator(),
                         ),
                         hasEditedAmount = true,
@@ -168,7 +176,7 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnFullDebtClicked -> uiState.update {
                 it.copy(
-                    amountText = toAmountText(it.debtMinor, it.currency),
+                    amountText = toAmountText(it.debtMinor, it.currency, it.showsSats),
                     hasEditedAmount = false,
                 )
             }
@@ -202,6 +210,7 @@ class RegisterPaymentViewModel(
         val now = currentTimeMillis()
         return RegisterPaymentUiState(
             currency = GroupCurrency.BRL,
+            showsSats = false,
             from = null,
             to = null,
             debtMinor = 0L,
@@ -352,7 +361,7 @@ class RegisterPaymentViewModel(
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {
                     it.amountText
                 } else {
-                    toAmountText(target.debtMinor, target.currency)
+                    toAmountText(target.debtMinor, target.currency, it.showsSats)
                 },
                 isLoaded = true,
             )
@@ -476,9 +485,11 @@ class RegisterPaymentViewModel(
     private fun toAmountText(
         amountMinor: Long,
         currency: GroupCurrency,
+        showsSats: Boolean,
     ): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
+        showsSats = showsSats,
         decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
     )
 

@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -32,15 +31,19 @@ data class DefaultSplitFigures(
             people: List<DefaultSplitPerson>,
             incomeFallback: Map<String, Long>,
             currency: GroupCurrency,
+            showsSats: Boolean,
         ): DefaultSplitFigures {
             val incomes = people
-                .mapNotNull { person -> AmountInput.parse(person.incomeText, currency)?.let { person.id to it } }
+                .mapNotNull { person ->
+                    AmountInput.parse(person.incomeText, currency, showsSats)?.let { person.id to it }
+                }
                 .toMap()
             val weights = weightsOf(mode, people, incomes, incomeFallback)
             val exampleTotalMinor = exampleTotalOf(
                 mode = mode,
                 count = weights.values.count { it > 0 },
                 currency = currency,
+                showsSats = showsSats,
             )
             return DefaultSplitFigures(
                 weights = weights,
@@ -74,8 +77,10 @@ data class DefaultSplitFigures(
             mode: DefaultSplitMode,
             count: Int,
             currency: GroupCurrency,
+            showsSats: Boolean,
         ): Long {
-            val unit = ExpenseRules.minorPerMajorFor(currency)
+            // Why: "Numa conta de 100" in what is typed, so bitcoin in satoshis says 100 sats.
+            val unit = (1..currency.getTypedFractionDigits(showsSats)).fold(1L) { unit, _ -> unit * 10 }
             if (mode != DefaultSplitMode.EQUAL || count == 0) return EXAMPLE_UNITS * unit
             val step = findLeastCommonMultiple(ROUND_UNITS, count.toLong())
             return (EXAMPLE_UNITS + step - 1) / step * step * unit

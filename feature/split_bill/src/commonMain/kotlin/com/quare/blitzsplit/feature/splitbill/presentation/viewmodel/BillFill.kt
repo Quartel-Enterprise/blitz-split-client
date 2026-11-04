@@ -23,6 +23,7 @@ internal fun SplitBillUiState.toFilledWith(
             expense = expense,
             people = people,
             currency = group.currency,
+            showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         )
     }
@@ -31,6 +32,7 @@ internal fun SplitBillUiState.toFilledWith(
         amountText = AmountInput.format(
             amountMinor = expense.amountMinor,
             currency = group.currency,
+            showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
         description = expense.description,
@@ -44,6 +46,7 @@ internal fun SplitBillUiState.toFilledWith(
             expense = expense,
             people = people,
             currency = group.currency,
+            showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
     )

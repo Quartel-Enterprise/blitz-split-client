@@ -28,4 +28,7 @@ data class DeviceSettingsEntity(
     // Why: Material You (Android 12 and later), the scheme drawn from the wallpaper instead of the brand's; off until turned on.
     @ColumnInfo(defaultValue = "0")
     val usesDynamicColors: Boolean,
+    // Why: "Bitcoin em satoshis", every bitcoin amount shown and typed in whole sats; off until turned on.
+    @ColumnInfo(defaultValue = "0")
+    val showsBitcoinInSats: Boolean,
 )

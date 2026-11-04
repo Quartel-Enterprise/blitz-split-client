@@ -27,8 +27,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileCha
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
@@ -72,6 +74,7 @@ class ProfileViewModel(
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val updateThemePreference: UpdateThemePreference,
     private val updateDynamicColors: UpdateDynamicColors,
+    private val updateBitcoinInSats: UpdateBitcoinInSats,
     private val retrySync: RetrySync,
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
@@ -87,6 +90,7 @@ class ProfileViewModel(
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
     observeDynamicColors: ObserveDynamicColors,
+    observeBitcoinInSats: ObserveBitcoinInSats,
     dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
@@ -113,6 +117,7 @@ class ProfileViewModel(
                 theme = ThemePreference.SYSTEM,
                 showsDynamicColors = dynamicColorSupport(),
                 usesDynamicColors = false,
+                showsBitcoinInSats = false,
                 activeNotificationCount = Loadable.Loading,
                 dialog = null,
                 hasConfirmedCodeSaved = false,
@@ -135,7 +140,7 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        // Why: isLoaded once the profile, account, theme, colors and what waits to go up each answered once.
+        // Why: isLoaded once the profile, account, theme, colors, bitcoin's unit and what waits to go up each answered.
         combine(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
@@ -147,7 +152,9 @@ class ProfileViewModel(
                 hasPendingPreferences = observePendingNotificationPreferenceChanges(),
                 isOnline = connectivityObserver.observe(),
             ),
-            observeDynamicColors().onEach { isOn -> uiState.update { it.copy(usesDynamicColors = isOn) } },
+            combine(observeDynamicColors(), observeBitcoinInSats()) { isDynamic, showsSats ->
+                uiState.update { it.copy(usesDynamicColors = isDynamic, showsBitcoinInSats = showsSats) }
+            },
         ) { _, _, _, _, _ -> }
             .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
@@ -200,6 +207,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnAppearanceClicked -> openAppearance()
             ProfileUiEvent.OnDynamicColorsInfoClicked -> openDynamicColorsInfo()
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
+            is ProfileUiEvent.OnBitcoinInSatsToggled -> viewModelScope.launch { updateBitcoinInSats(event.isOn) }
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))

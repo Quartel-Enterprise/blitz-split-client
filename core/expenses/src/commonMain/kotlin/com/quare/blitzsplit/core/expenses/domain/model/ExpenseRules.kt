@@ -9,7 +9,17 @@ object ExpenseRules {
     // Why: "até R$ 100 milhões", in the major unit of whatever currency the group splits in.
     private const val MAX_AMOUNT_MAJOR = 100_000_000L
 
-    fun maxAmountMinorFor(currency: GroupCurrency): Long = MAX_AMOUNT_MAJOR * minorPerMajorFor(currency)
+    // Why: never more bitcoin than will ever exist.
+    private const val MAX_BITCOIN = 21_000_000L
+
+    // Why: below the ether there is (about 120 million), and the most the web's numbers count to the unit (9e15).
+    private const val MAX_ETHER = 90_000_000L
+
+    fun maxAmountMinorFor(currency: GroupCurrency): Long = when (currency) {
+        GroupCurrency.BTC -> MAX_BITCOIN
+        GroupCurrency.ETH -> MAX_ETHER
+        else -> MAX_AMOUNT_MAJOR
+    } * minorPerMajorFor(currency)
 
     fun isAmountValid(
         amountMinor: Long?,

@@ -19,6 +19,7 @@ data class SplitEditor(
     // Why: who paid the bill, who keep the cents a split can't share evenly while they are in it.
     val payerIds: List<String>,
     val currency: GroupCurrency,
+    val showsSats: Boolean,
     // Why: "Itens da conta" while the bill splits by its items, null in any other mode.
     val items: BillItems?,
 ) {
@@ -32,7 +33,7 @@ data class SplitEditor(
     val entries: List<SplitEntry> = rows.map { row ->
         val value = when (mode) {
             SplitMode.EQUAL -> if (row.isIncluded) 1L else 0L
-            SplitMode.AMOUNT -> AmountInput.parse(row.valueText, currency) ?: 0L
+            SplitMode.AMOUNT -> AmountInput.parse(row.valueText, currency, showsSats) ?: 0L
             SplitMode.PERCENT -> AmountInput.parseWhole(row.valueText) ?: 0L
             SplitMode.SHARES -> row.parts
             SplitMode.ITEMS -> itemsBreakdown?.people?.firstOrNull { it.memberId == row.person.id }?.totalMinor ?: 0L

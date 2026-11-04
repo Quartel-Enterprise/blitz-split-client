@@ -14,6 +14,8 @@ import software.quare.loadable.valueOrNull
 
 data class RegisterPaymentUiState(
     val currency: GroupCurrency,
+    // Why: bitcoin typed in whole satoshis, as Preferências' "Bitcoin em satoshis" was when the form opened.
+    val showsSats: Boolean,
     // Why: null until Room is read, and for someone no longer in the group ("Ex-membro").
     val from: PaymentPerson?,
     val to: PaymentPerson?,
@@ -125,7 +127,7 @@ data class RegisterPaymentUiState(
         }
 
     val amountMinor: Long?
-        get() = AmountInput.parse(amountText, currency)
+        get() = AmountInput.parse(amountText, currency, showsSats)
 
     /*
      * Why: across several groups only the whole net settles, since a part of it can't say which group it closes;

@@ -39,6 +39,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = false,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
@@ -68,6 +69,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = false,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
@@ -91,6 +93,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
@@ -121,6 +124,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
@@ -145,6 +149,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
@@ -158,6 +163,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
             it.copy(
                 theme = "dark",
                 usesDynamicColors = true,
+                showsBitcoinInSats = false,
             )
         }
 
@@ -174,6 +180,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 statsChartType = null,
                 statsGrain = null,
                 usesDynamicColors = false,
+                showsBitcoinInSats = false,
             ),
             dataSource.observe().first(),
         )
