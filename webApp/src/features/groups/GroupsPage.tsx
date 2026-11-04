@@ -213,7 +213,7 @@ function SummaryCards({ presenter, state }: { presenter: GroupsPresenter; state:
         action={t('groups_summaryToReceiveAction')}
         amounts={amountsOf(totals, (total) => total.toReceiveMinor)}
         caption={inGroups(summary.toReceiveGroupCount)}
-        tone="text-primary"
+        tone="text-positive"
         isEnabled={summary.canOpenToReceive}
         onClick={() => presenter.openToReceive()}
       />

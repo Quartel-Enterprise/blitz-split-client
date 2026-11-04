@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
+import { balanceTone } from '@/features/balances/BalanceCard'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
@@ -342,7 +343,7 @@ function paidText(payers: JsBillPayer[]): string {
 function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
   const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
   const word = balance < 0 ? t('billDetail_myPartOwe') : balance > 0 ? t('billDetail_myPartGetBack') : t('billDetail_myPartSettled')
-  const tone = balance < 0 ? 'text-destructive' : balance > 0 ? 'text-primary' : 'text-muted-foreground'
+  const tone = balanceTone(balance)
   const noteText = note ? myPartNoteText(note, money) : null
   return (
     <div className="flex flex-col gap-1 rounded-xl border bg-card px-4 py-3.5">

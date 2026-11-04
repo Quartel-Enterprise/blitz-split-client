@@ -20,6 +20,9 @@ struct BoraRacharApp: App {
     /// The shared back stack's view, made once the shared code started: every window draws it, and on the Mac the
     /// Settings window too.
     @State private var app: AppModel
+    /// Every scene's phase at once: real time listens to the other devices' changes only while some window isn't in
+    /// the background (inactive still shows it: Control Center pulled down, the Mac's window behind another app's).
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         CrashReporting.start()
@@ -42,6 +45,9 @@ struct BoraRacharApp: App {
                 .onReceive(NotificationCenter.default.publisher(for: Self.didBecomeActive)) { _ in
                     BlitzSplitApple.shared.handleAppResumed()
                 }
+        }
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            BlitzSplitApple.shared.setAppForeground(isForeground: phase != .background)
         }
         #if os(macOS)
         .defaultSize(width: 960, height: 680)

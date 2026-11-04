@@ -30,6 +30,7 @@ class FakeGroupRepository(
     // Why: the groups the server holds, which a first download brings down one by one.
     var serverGroups: List<Group> = emptyList()
     val downloadedGroupIds = mutableListOf<String>()
+    var memberPhotoDownloads = 0
     var firstDownloadError: Throwable? = null
     var createError: Throwable? = null
     val addedMembers = mutableListOf<Pair<String, GroupMember>>()
@@ -281,6 +282,11 @@ class FakeGroupRepository(
             downloadedGroupIds += groupId
             serverGroups.firstOrNull { it.id == groupId }?.let { group -> groups.value += group }
         }
+    }
+
+    override suspend fun downloadMemberPhotos(): Result<Unit> {
+        memberPhotoDownloads++
+        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 
     override suspend fun clear() {

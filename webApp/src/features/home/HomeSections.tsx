@@ -69,7 +69,7 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
         amountMinor={toReceive?.toReceiveMinor ?? 0}
         caption={summary.canOpenToReceive ? people(toReceive?.toReceiveCount ?? 0) : t('home_nobodyOwesYou')}
         action={t('groups_summaryToReceiveAction')}
-        tone="text-primary"
+        tone="text-positive"
         isEnabled={summary.canOpenToReceive}
         onClick={() => presenter.openToReceive()}
       />

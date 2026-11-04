@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
+import com.quare.blitzsplit.core.model.userIdOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

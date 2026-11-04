@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter

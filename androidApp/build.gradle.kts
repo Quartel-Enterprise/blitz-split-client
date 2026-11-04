@@ -92,6 +92,7 @@ dependencies {
     implementation(projects.core.provider.supabase)
     implementation(projects.core.profile)
     implementation(projects.core.provider.crashlytics)
+    implementation(projects.core.sync)
     implementation(projects.android.platform)
 
     // Android UI
@@ -134,6 +135,8 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
+    // Why: real time listens while the app is in front, a rotation or a second activity not counting as leaving it
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.viewmodelNavigation3)
     implementation(libs.navigation3.runtime)
     implementation(libs.navigation3.ui)

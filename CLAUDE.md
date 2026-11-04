@@ -65,6 +65,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     which Android's `MoneyFormatter`, Apple's `GroupCurrency.format` and the web's `formatMoney` apply), Cobrar's
     message included. Amount fields and their placeholders keep the currency's decimals, and what a machine reads
     (the Pix BR Code) keeps its exact format.
+  - Money coming to you is green, what you owe the brand's orange (Pierre's call, as the legacy app): a positive net
+    or share, "a receber", "te deve", Te devem's and A receber's totals, in `#006C4C` light and `#6EDBAA` dark (a
+    teal-leaning green that colorblind eyes still tell apart from the orange), never the accent blue of links and
+    buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the wallpaper's by
+    Cores dinâmicas. Zero stays muted, debts between two others keep their color, and a status that adds up
+    ("Fechou") stays the accent. No preference inverts them: the sign and the words already say which way the money
+    goes.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Moeda (Novo grupo, Editar grupo) lists BTC and ETH last,
     under their own "Criptomoedas" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
@@ -156,6 +163,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it as edited,
     "Carla apagou um comentário em Jantar" once deleted), which open the bill's Conta at the comment; a bill's attachments and its share link show only in its Conta's Histórico, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
+  - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
+    show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
+    group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else
+    Atividade records (comments, photos, the invite link changed, a charge, a group deleted with its "Grupo apagado"),
+    Atividade's feed and badge with them, plus a member's profile photo and this user's own profile changed on another
+    of their devices. Each platform says when it is in front (Android's process, an Apple scene not in the background,
+    the page visible); coming back to the front, back online or with the socket back syncs once to catch up. The
+    server's Realtime only says what changed and the device pulls it as its sync does, so Room stays the one source
+    of truth (`RemoteChange`, `RemotePull`, the inserts of `activity_events` and the updates of `profiles`; see
+    [docs/architecture/data-sources-and-sync.md](docs/architecture/data-sources-and-sync.md#real-time)).
   - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
     event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
     grupos" for a bill created, edited or deleted while you are its payer or in its split (before the change too) and

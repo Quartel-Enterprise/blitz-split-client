@@ -76,6 +76,7 @@ androidx-credentials-playServicesAuth = { module = "androidx.credentials:credent
 # Android UI takes the AndroidX artifacts it maps to.
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelNavigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
@@ -145,6 +146,7 @@ supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "s
 supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
 supabase-functions = { module = "io.github.jan-tennert.supabase:functions-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
 
 # QR codes: the encoder alone, no Compose, so the three UIs draw the same matrix

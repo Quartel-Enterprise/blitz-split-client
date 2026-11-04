@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMes
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
@@ -240,7 +241,11 @@ private fun SummaryTotalCell(
             text = amount,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = if (isOwed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+            color = when {
+                !isEnabled -> MaterialTheme.colorScheme.onSurfaceVariant
+                isOwed -> positiveAmountColor()
+                else -> MaterialTheme.colorScheme.error
+            },
             maxLines = 1,
         )
     }

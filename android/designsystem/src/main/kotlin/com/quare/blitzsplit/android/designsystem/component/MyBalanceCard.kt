@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 
 /*
@@ -103,7 +104,7 @@ private fun BalanceHeading(
             text = money.toSignedText(net),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = if (net < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            color = if (net < 0) MaterialTheme.colorScheme.error else positiveAmountColor(),
         )
         Text(
             text = stringResource(

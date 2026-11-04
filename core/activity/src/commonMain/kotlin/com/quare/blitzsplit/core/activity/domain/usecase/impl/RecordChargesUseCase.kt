@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.RecordCharges
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import kotlinx.coroutines.flow.first
 

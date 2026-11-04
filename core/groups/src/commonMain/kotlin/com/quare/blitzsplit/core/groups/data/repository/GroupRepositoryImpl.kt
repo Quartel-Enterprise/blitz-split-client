@@ -375,6 +375,10 @@ class GroupRepositoryImpl(
         remotePhotos?.let { photos -> local.replaceMemberPhotos(photos.mapNotNull(mapper::toEntity)) }
     }
 
+    override suspend fun downloadMemberPhotos(): Result<Unit> = suspendRunCatching {
+        local.replaceMemberPhotos(remote.fetchMemberPhotos().mapNotNull(mapper::toEntity))
+    }
+
     override suspend fun fetchFirstDownloadGroupIds(): Result<List<String>> = suspendRunCatching {
         remote.fetchFirstDownloadGroupIds()
     }

@@ -94,6 +94,8 @@ class SyncCoordinatorTest {
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var firstDownload: FirstDownload
+    private val remoteChanges = FakeRemoteChangeRepository()
+    private val appForeground = AppForeground()
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
     private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
@@ -7187,7 +7189,9 @@ class SyncCoordinatorTest {
                 // Why: only the cases that assert when the device leaves log it, so the others keep their exact logs.
                 calls = if (logsPushDevice) calls else mutableListOf(),
             ),
+            remoteChangeRepository = remoteChanges,
             firstDownload = firstDownload,
+            appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             crashReporter = CrashReporter { reportedFailures += it },
             scope = backgroundScope,

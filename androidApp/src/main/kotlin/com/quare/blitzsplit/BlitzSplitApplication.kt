@@ -1,6 +1,7 @@
 package com.quare.blitzsplit
 
 import android.app.Application
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting
 import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
@@ -13,5 +14,6 @@ class BlitzSplitApplication : Application() {
         if (BuildConfig.HAS_FIREBASE) startCrashReporting(isDebug = BuildConfig.DEBUG)
         startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
         PushSetup.start(this, setPushDevice = get())
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppForegroundObserver(reportAppForeground = get()))
     }
 }

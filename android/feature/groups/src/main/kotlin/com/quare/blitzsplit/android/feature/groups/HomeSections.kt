@@ -51,7 +51,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -338,7 +340,7 @@ internal fun HomeSummaryCard(
                         }
                     },
                     amounts = listOf(toReceiveMoney.toText(toReceive?.toReceiveMinor ?: 0L)),
-                    amountColor = MaterialTheme.colorScheme.primary,
+                    amountColor = positiveAmountColor(),
                     isEnabled = summary.canOpenToReceive,
                     onClick = { onEvent(HomeUiEvent.OnToReceiveClicked) },
                 )

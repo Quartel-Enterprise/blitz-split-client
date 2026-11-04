@@ -61,6 +61,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
+import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -454,7 +455,7 @@ private fun BalanceCard(
                     text = money.toSignedText(net.amountMinor),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
-                    color = netColorOf(net.amountMinor),
+                    color = amountColorOf(net.amountMinor),
                 )
                 Text(
                     text = when (state.balanceNote) {
