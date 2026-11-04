@@ -9,9 +9,9 @@ data class ItemsPersonTotal(
     val extraMinor: Long,
 ) {
     val totalMinor: Long
-        get() = itemsMinor + serviceMinor + couvertMinor + extraMinor
+        get() = itemsMinor.toSaturatedSum(serviceMinor).toSaturatedSum(couvertMinor).toSaturatedSum(extraMinor)
 
     // Why: "R$ 14,50 de serviço e couvert", the difference shared with them included.
     val feesMinor: Long
-        get() = serviceMinor + couvertMinor + extraMinor
+        get() = serviceMinor.toSaturatedSum(couvertMinor).toSaturatedSum(extraMinor)
 }

@@ -77,7 +77,7 @@ class SearchViewModel(
 
             is SearchUiEvent.OnBillClicked -> openInstead(
                 groupRouteOf(event.groupId, GroupTab.EXPENSES),
-                Route.BillDetail(event.groupId, event.expenseId),
+                Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null),
             )
 
             SearchUiEvent.OnClosed -> if (isOnTop()) navigator.navigateBack()

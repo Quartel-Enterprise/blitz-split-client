@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack is replaced by
@@ -76,6 +77,21 @@ struct RootView: View {
         .environment(\.invitePopover, app.invitePopover)
         .environment(\.dismissInvitePopover, { app.invitePopover = nil })
         .tint(Palette.accent)
+        // A comment's link this device can't open: a group the person isn't in, or no internet to find out
+        .alert(
+            app.billLinkNotice == .offline ? Text("No internet") : Text("You're not in this group"),
+            isPresented: isBillLinkNoticePresented,
+        ) {
+            Button("Go to Home") {
+                app.dismissBillLinkNotice()
+            }
+        } message: {
+            if app.billLinkNotice == .offline {
+                Text("Open the link again once you're back online.")
+            } else {
+                Text("This comment is in a group you're not in. Ask whoever sent you the link for the invite.")
+            }
+        }
         .onChange(of: app.theme, initial: true) { _, theme in
             WindowAppearance.apply(theme)
         }
@@ -89,6 +105,16 @@ struct RootView: View {
         #endif
         // Outermost, so the sheets inherit the window the root measured
         .measuringWindow { app.windowMeasured($0) }
+    }
+
+    /// Closing the bill link's notice any way goes back to Início, as "Go to Home" does.
+    private var isBillLinkNoticePresented: Binding<Bool> {
+        Binding(
+            get: { app.billLinkNotice != nil },
+            set: { isPresented in
+                if !isPresented { app.dismissBillLinkNotice() }
+            },
+        )
     }
 
     #if os(macOS)

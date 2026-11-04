@@ -2065,6 +2065,7 @@ class ReceiptViewModelTest {
                 attachments += RecordedAttachment(expenseId, groupId, kind, image.jpeg.toList(), addedByMemberId)
                 attachResult
             },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
     }

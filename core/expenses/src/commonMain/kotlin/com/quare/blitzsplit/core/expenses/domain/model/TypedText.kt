@@ -13,38 +13,75 @@ object TypedText {
      * typing 1, 2, 3 reads "0,01", "0,12", "1,23", a separator typed changes nothing, and nobody has to know whether
      * the comma or the dot is the decimal one. Anything else, a paste or an autofill, is read as an amount instead
      * ("12,5" is "12,50", "1,234.56" or "R$ 1.234,56" the same), since it comes whole from elsewhere. A digit past the
-     * digits the largest amount allowed has, or a paste that is no amount, keeps the field as it was.
+     * digits the largest amount allowed has, or a paste that is no amount, keeps the field as it was. Bitcoin in
+     * satoshis (`showsSats`) takes whole sats, with no decimals.
      */
     fun toAmountText(
         previous: String,
         typed: String,
         currency: GroupCurrency,
+        showsSats: Boolean,
         decimalSeparator: Char,
     ): String {
         val amountMinor = if (isKeystroke(previous, typed)) {
             typedAmountOf(typed, currency)
         } else {
-            pastedAmountOf(previous, typed, currency)
+            pastedAmountOf(previous, typed, currency, showsSats)
         } ?: return previous
         if (amountMinor == 0L) return ""
-        return AmountInput.format(amountMinor, currency, amountSeparatorOf(decimalSeparator))
+        return AmountInput.format(amountMinor, currency, showsSats, amountSeparatorOf(decimalSeparator))
     }
 
     /*
      * Why: an amount field's text once the form moves to another currency: the same number, its decimals cut to the
      * new currency's ("12,50" in reais is "12" in yen, and "1.250" in yen "1.250,00" in reais), not its digits read
-     * again, which would make R$ 90,00 ¥ 9.000.
+     * again, which would make R$ 90,00 ¥ 9.000. Bitcoin in satoshis keeps the number of sats ("12.345" sats is
+     * "12.345,00" in reais). A number no currency's cap comes near, past what a Long holds, empties the field.
      */
     fun toCurrency(
         text: String,
         from: GroupCurrency,
         to: GroupCurrency,
+        showsSats: Boolean,
         decimalSeparator: Char,
     ): String {
         if (from == to) return text
-        val amountMinor = AmountInput.parse(text, from) ?: return ""
-        val converted = amountMinor * ExpenseRules.minorPerMajorFor(to) / ExpenseRules.minorPerMajorFor(from)
-        return if (converted == 0L) "" else AmountInput.format(converted, to, amountSeparatorOf(decimalSeparator))
+        val amountMinor = AmountInput.parse(text, from, showsSats) ?: return ""
+        val fromDigits = from.getTypedFractionDigits(showsSats)
+        val toDigits = to.getTypedFractionDigits(showsSats)
+        val converted = if (toDigits >= fromDigits) {
+            val factor = getPowerOfTen(toDigits - fromDigits)
+            if (amountMinor > Long.MAX_VALUE / factor) return ""
+            amountMinor * factor
+        } else {
+            amountMinor / getPowerOfTen(fromDigits - toDigits)
+        }
+        return if (converted == 0L) {
+            ""
+        } else {
+            AmountInput.format(converted, to, showsSats, amountSeparatorOf(decimalSeparator))
+        }
+    }
+
+    /*
+     * Why: an amount field's text once Preferências' "Bitcoin em satoshis" changes while a form is open: the same
+     * amount in the other unit ("0,00012345" bitcoin is "12.345" sats), so what was typed keeps its value. Any other
+     * currency types the same either way and keeps its text.
+     */
+    fun toUnit(
+        text: String,
+        currency: GroupCurrency,
+        showedSats: Boolean,
+        showsSats: Boolean,
+        decimalSeparator: Char,
+    ): String {
+        if (currency.getTypedFractionDigits(showedSats) == currency.getTypedFractionDigits(showsSats)) return text
+        val amountMinor = AmountInput.parse(text, currency, showedSats) ?: return ""
+        return if (amountMinor == 0L) {
+            ""
+        } else {
+            AmountInput.format(amountMinor, currency, showsSats, amountSeparatorOf(decimalSeparator))
+        }
     }
 
     // Why: a whole percentage, 0 to 100.
@@ -55,9 +92,10 @@ object TypedText {
         typed: String,
         mode: SplitMode,
         currency: GroupCurrency,
+        showsSats: Boolean,
         decimalSeparator: Char,
     ): String = if (mode == SplitMode.AMOUNT) {
-        toAmountText(previous, typed, currency, decimalSeparator)
+        toAmountText(previous, typed, currency, showsSats, decimalSeparator)
     } else {
         toPercentText(typed)
     }
@@ -111,12 +149,15 @@ object TypedText {
         previous: String,
         typed: String,
         currency: GroupCurrency,
+        showsSats: Boolean,
     ): Long? {
         val pasted = if (previous.isNotEmpty() && typed.startsWith(previous)) typed.drop(previous.length) else typed
         return AmountInput
-            .parse(pasted.filter { it.isDigit() || it in amountSeparators }, currency)
+            .parse(pasted.filter { it.isDigit() || it in amountSeparators }, currency, showsSats)
             ?.takeIf { it.toString().length <= maxDigitsOf(currency) }
     }
+
+    private fun getPowerOfTen(exponent: Int): Long = (1..exponent).fold(1L) { power, _ -> power * 10 }
 
     private val amountSeparators = setOf(',', '.')
 

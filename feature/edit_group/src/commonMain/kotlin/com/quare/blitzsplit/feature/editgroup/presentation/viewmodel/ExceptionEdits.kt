@@ -142,4 +142,5 @@ private fun DefaultSplitUiState.figuresOf(
     people = people,
     incomeFallback = emptyMap(),
     currency = currency,
+    showsSats = showsSats,
 )

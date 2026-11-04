@@ -9,9 +9,22 @@ object SharedBillLink {
 
     fun of(code: String): String = BASE_URL + code
 
+    // Why: "Compartilhar" on a comment of the link's page, which opens the page scrolled to it.
+    fun of(
+        code: String,
+        commentId: String,
+    ): String = "${of(code)}?${BillCommentLink.COMMENT_PARAMETER}=$commentId"
+
     // Why: "blitzsplit.com/c/7Hk2pQ8x", the link as the sheet shows it.
     fun displayOf(link: String): String = link.substringAfter("://")
 
     // Why: the code of a bill's link, null for any other URL.
     fun codeOf(url: String): String? = linkPattern.matchEntire(url.trim())?.groupValues?.get(1)
+
+    // Why: the comment a bill's link was shared at, null for none or any other URL.
+    fun commentIdOf(url: String): String? = linkPattern
+        .matchEntire(url.trim())
+        ?.groupValues
+        ?.get(2)
+        ?.let(BillCommentLink::commentIdOf)
 }

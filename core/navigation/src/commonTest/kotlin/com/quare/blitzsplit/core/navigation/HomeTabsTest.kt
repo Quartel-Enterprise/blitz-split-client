@@ -23,7 +23,7 @@ class HomeTabsTest {
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
             ),
-            Route.BillDetail(GROUP_ID, EXPENSE_ID),
+            Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
         )
         val tab = Route.Groups
 
@@ -578,7 +578,7 @@ class HomeTabsTest {
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
                 ),
-                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
                 route,
             )
 
@@ -660,7 +660,7 @@ class HomeTabsTest {
                 Route.Home,
                 Route.Contacts,
                 route,
-                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
                 route,
             )
 
@@ -678,7 +678,7 @@ class HomeTabsTest {
         val stack =
             listOf(
                 Route.Home,
-                Route.BillDetail(GROUP_ID, EXPENSE_ID),
+                Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
                 route,
                 Route.Contacts,
                 route,

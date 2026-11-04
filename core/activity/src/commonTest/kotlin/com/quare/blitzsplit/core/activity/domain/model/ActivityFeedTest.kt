@@ -81,6 +81,8 @@ class ActivityFeedTest {
         sharesCount = null,
         body = null,
         isPending = seq == null,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private companion object {

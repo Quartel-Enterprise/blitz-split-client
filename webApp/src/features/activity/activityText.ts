@@ -96,7 +96,9 @@ export function actorName(item: JsActivityItem): string {
 
 export function headline(item: JsActivityItem): Headline {
   const isDefaultSplitOnly = item.kind === 'group_edited' && item.changes.length === 1 && item.changes[0].field === 'default_split'
-  const verb = t(isDefaultSplitOnly ? 'activity_groupDefaultSplit' : (verbs[item.kind] ?? 'activity_billEdited'))
+  // Why: a comment deleted since reads "Ana apagou um comentário em Jantar", with no text under it.
+  const verbKey = isDefaultSplitOnly ? 'activity_groupDefaultSplit' : item.isCommentDeleted ? 'activity_commentDeleted' : (verbs[item.kind] ?? 'activity_billEdited')
+  const verb = t(verbKey)
   const isPayment = item.kind === 'payment_recorded' || item.kind === 'payment_undone'
   const subject = isPayment ? null : groupKinds.has(item.kind) ? item.groupName : (item.subject ?? item.groupName)
   return { who: actorName(item), verb, subject: subject ?? null }
@@ -186,7 +188,7 @@ export function detailLine(item: JsActivityItem): string {
     case 'charge_sent':
       return t('activity_detailChargeSent', { amount })
     case 'comment_added':
-      return item.body ? `“${item.body}”` : ''
+      return item.body && !item.isCommentDeleted ? `“${item.body}”` : ''
     default:
       return amount
   }

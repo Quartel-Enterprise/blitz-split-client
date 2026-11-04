@@ -233,6 +233,221 @@ class BillItemsSplitTest {
     }
 
     @Test
+    fun `GIVEN 570 reais of items at 10 percent WHEN working out the service THEN it is 57 reais`() {
+        // Given
+        val itemsMinor = 57_000L
+
+        // When
+        val service = BillItemsSplit.serviceOf(
+            itemsMinor = itemsMinor,
+            servicePercent = 10,
+        )
+
+        // Then
+        assertEquals(5_700L, service)
+    }
+
+    @Test
+    fun `GIVEN the largest items whose percentage fits a Long WHEN working out the service THEN it rounds half up`() {
+        // Given
+        val itemsMinor = 922_337_203_685_477_575L
+
+        // When
+        val service = BillItemsSplit.serviceOf(
+            itemsMinor = itemsMinor,
+            servicePercent = 10,
+        )
+
+        // Then
+        assertEquals(92_233_720_368_547_758L, service)
+    }
+
+    @Test
+    fun `GIVEN items at the largest Long WHEN working out 10 percent of service THEN it is about a tenth`() {
+        // Given
+        val itemsMinor = Long.MAX_VALUE
+
+        // When
+        val service = BillItemsSplit.serviceOf(
+            itemsMinor = itemsMinor,
+            servicePercent = 10,
+        )
+
+        // Then
+        val tenth = itemsMinor / 10
+        assertTrue(service in tenth - 10..tenth, "service $service is not about $tenth")
+    }
+
+    @Test
+    fun `GIVEN items held at the largest Long WHEN working out 100 percent of service THEN it is about the items`() {
+        // Given
+        val itemsMinor = Long.MAX_VALUE
+
+        // When
+        val service = BillItemsSplit.serviceOf(
+            itemsMinor = itemsMinor,
+            servicePercent = 100,
+        )
+
+        // Then
+        assertTrue(service in itemsMinor - 100..itemsMinor, "service $service is not about $itemsMinor")
+    }
+
+    @Test
+    fun `GIVEN items at the largest Long WHEN working out 1 percent of service THEN it is about a hundredth`() {
+        // Given
+        val itemsMinor = Long.MAX_VALUE
+
+        // When
+        val service = BillItemsSplit.serviceOf(
+            itemsMinor = itemsMinor,
+            servicePercent = 1,
+        )
+
+        // Then
+        val hundredth = itemsMinor / 100
+        assertTrue(service in hundredth - 1..hundredth, "service $service is not about $hundredth")
+    }
+
+    @Test
+    fun `GIVEN two items of 999 at the ether cap WHEN breaking down THEN the items hold at the largest Long`() {
+        // Given
+        val split = items(
+            items = listOf(
+                item(
+                    id = "first",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+                item(
+                    id = "second",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(ANA, 1)),
+                ),
+            ),
+            servicePercent = 0,
+            couvertMinor = 0,
+            couvertMemberIds = listOf(PIERRE, ANA),
+        )
+
+        // When
+        val breakdown = BillItemsSplit.breakdownOf(split, payerIds = listOf(PIERRE))
+
+        // Then
+        assertEquals(Long.MAX_VALUE, breakdown.itemsMinor)
+    }
+
+    @Test
+    fun `GIVEN one person with two items of 999 at the ether cap WHEN breaking down THEN theirs never wrap`() {
+        // Given
+        val split = items(
+            items = listOf(
+                item(
+                    id = "first",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+                item(
+                    id = "second",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+            ),
+            servicePercent = 0,
+            couvertMinor = 0,
+            couvertMemberIds = listOf(PIERRE),
+        )
+
+        // When
+        val breakdown = BillItemsSplit.breakdownOf(split, payerIds = listOf(PIERRE))
+
+        // Then
+        assertEquals(listOf(Long.MAX_VALUE), breakdown.people.map { it.itemsMinor })
+    }
+
+    @Test
+    fun `GIVEN a couvert of 16 digits for a thousand people WHEN breaking down THEN it holds at the largest Long`() {
+        // Given
+        val table = (1..1_000).map { "member$it" }
+        val split = items(
+            items = emptyList(),
+            servicePercent = 0,
+            couvertMinor = 9_999_999_999_999_999,
+            couvertMemberIds = table,
+        )
+
+        // When
+        val breakdown = BillItemsSplit.breakdownOf(split, payerIds = listOf(table.first()))
+
+        // Then
+        assertEquals(Long.MAX_VALUE, breakdown.couvertMinor)
+    }
+
+    @Test
+    fun `GIVEN items past a Long with 10 percent of service WHEN breaking down THEN the service is positive`() {
+        // Given
+        val split = items(
+            items = listOf(
+                item(
+                    id = "first",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+                item(
+                    id = "second",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+            ),
+            servicePercent = 10,
+            couvertMinor = 0,
+            couvertMemberIds = listOf(PIERRE),
+        )
+
+        // When
+        val breakdown = BillItemsSplit.breakdownOf(split, payerIds = listOf(PIERRE))
+
+        // Then
+        assertTrue(breakdown.serviceMinor > 0, "service ${breakdown.serviceMinor} is not positive")
+    }
+
+    @Test
+    fun `GIVEN items past a Long with 10 percent of service WHEN breaking down THEN the total stays over any bill`() {
+        // Given
+        val split = items(
+            items = listOf(
+                item(
+                    id = "first",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+                item(
+                    id = "second",
+                    quantity = 999,
+                    unitPriceMinor = ETHER_CAP,
+                    entries = listOf(entry(PIERRE, 1)),
+                ),
+            ),
+            servicePercent = 10,
+            couvertMinor = 0,
+            couvertMemberIds = listOf(PIERRE),
+        )
+
+        // When
+        val breakdown = BillItemsSplit.breakdownOf(split, payerIds = listOf(PIERRE))
+
+        // Then
+        assertTrue(breakdown.totalMinor > ETHER_CAP, "total ${breakdown.totalMinor} is under the ether cap")
+    }
+
+    @Test
     fun `GIVEN items the server would refuse WHEN checking their shape THEN they are not well formed`() {
         // Given
         val valid = items(
@@ -316,5 +531,8 @@ class BillItemsSplitTest {
         const val PIERRE = "pierre"
         const val ANA = "ana"
         const val BRUNO = "bruno"
+
+        // Why: 90 million ether in its minor unit, the largest price an item may have.
+        const val ETHER_CAP = 9_000_000_000_000_000L
     }
 }

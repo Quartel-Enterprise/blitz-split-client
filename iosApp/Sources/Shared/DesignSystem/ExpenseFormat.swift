@@ -1,13 +1,32 @@
 import Foundation
+import Observation
 import Shared
+
+/// Preferências' "Bitcoin in satoshis" as `AppModel` last read it: every bitcoin amount drawn follows it, and a view
+/// that writes one redraws when it changes, since `GroupCurrency.format` reads it inside the body.
+@Observable
+final class BitcoinUnit {
+    static let shared = BitcoinUnit()
+
+    var showsSats = false
+
+    private init() {}
+}
 
 /// Amounts arrive in the group currency's minor unit (cents, or whole yen) and dates as epoch millis: each is
 /// written here the way the device's language writes it.
 extension GroupCurrency {
     /// "R$ 312,50" in Portuguese, "R$312.50" in English: 31250 cents in the group's currency. Decimals that are all
-    /// zero don't show ("R$ 312"), as `getDisplayFractionDigits` decides for each amount.
+    /// zero don't show ("R$ 312"), as `getDisplayFractionDigits` decides for each amount. Bitcoin and ether take
+    /// "₿" and "Ξ" where the language puts a currency's symbol, with only the decimals the amount needs ("₿ 0,00125"),
+    /// and bitcoin in satoshis is whole sats ("125.000 sats").
     func format(_ minor: Int64) -> String {
-        decimal(of: minor).formatted(.currency(code: code).precision(.fractionLength(shownDigits(of: minor))))
+        if showsSats { return String(localized: "\(formatPlain(minor)) sats") }
+        if let cryptoSymbol {
+            return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
+                .string(from: decimal(of: minor) as NSDecimalNumber) ?? formatPlain(minor)
+        }
+        return decimal(of: minor).formatted(.currency(code: code).precision(.fractionLength(shownDigits(of: minor))))
     }
 
     /// "+R$ 600" or "−R$ 118,50", with a true minus sign: what a bill does to a balance. Zero takes no sign.
@@ -23,13 +42,16 @@ extension GroupCurrency {
         decimal(of: minor).formatted(.number.precision(.fractionLength(shownDigits(of: minor))))
     }
 
-    /// "0,00" or "0.00": the placeholder of an amount field, with the currency's digits.
+    /// "0,00" or "0.00": the placeholder of an amount field, with the digits it types ("0" for bitcoin in sats).
     var zeroPlaceholder: String {
-        Decimal(0).formatted(.number.precision(.fractionLength(Int(fractionDigits))))
+        Decimal(0).formatted(.number.precision(.fractionLength(typedDigits)))
     }
 
-    /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it).
-    @MainActor var symbol: String {
+    /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it; "₿", "Ξ", or
+    /// "sats" for bitcoin in satoshis).
+    var symbol: String {
+        if showsSats { return String(localized: "sats") }
+        if let cryptoSymbol { return cryptoSymbol }
         if let symbol = Self.symbols[code] { return symbol }
         let formatter = NumberFormatter()
         formatter.locale = .current
@@ -40,15 +62,47 @@ extension GroupCurrency {
         return symbol
     }
 
+    /// "₿" and "Ξ", which no locale knows as a currency's symbol; nil for every other currency.
+    private var cryptoSymbol: String? {
+        switch self {
+        case .btc: "₿"
+        case .eth: "Ξ"
+        default: nil
+        }
+    }
+
+    private var showsSats: Bool {
+        self == .btc && BitcoinUnit.shared.showsSats
+    }
+
+    private var typedDigits: Int {
+        Int(getTypedFractionDigits(showsSats: BitcoinUnit.shared.showsSats))
+    }
+
     private func shownDigits(of minor: Int64) -> Int {
-        Int(getDisplayFractionDigits(amountMinor: minor))
+        Int(getDisplayFractionDigits(amountMinor: minor, showsSats: BitcoinUnit.shared.showsSats))
     }
 
+    /// The number shown: the major unit, or the minor one itself for bitcoin in sats.
     private func decimal(of minor: Int64) -> Decimal {
-        Decimal(minor) / pow(Decimal(10), Int(fractionDigits))
+        Decimal(minor) / pow(Decimal(10), typedDigits)
     }
 
-    @MainActor private static var symbols: [String: String] = [:]
+    private static func cryptoFormatter(symbol: String, digits: Int) -> NumberFormatter {
+        let key = "\(symbol):\(digits)"
+        if let formatter = cryptoFormatters[key] { return formatter }
+        let formatter = NumberFormatter()
+        formatter.locale = .current
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = symbol
+        formatter.minimumFractionDigits = digits
+        formatter.maximumFractionDigits = digits
+        cryptoFormatters[key] = formatter
+        return formatter
+    }
+
+    private static var symbols: [String: String] = [:]
+    private static var cryptoFormatters: [String: NumberFormatter] = [:]
 }
 
 enum ExpenseFormat {

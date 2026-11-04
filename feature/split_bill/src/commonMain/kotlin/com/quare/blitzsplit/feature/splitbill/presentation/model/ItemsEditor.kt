@@ -20,6 +20,7 @@ data class ItemsEditor(
     // Why: who paid, who keep the cents an item can't share evenly while they consumed it.
     val payerIds: List<String>,
     val currency: GroupCurrency,
+    val showsSats: Boolean,
 ) {
     val breakdown: ItemsBreakdown = BillItemsSplit.breakdownOf(split, payerIds)
 

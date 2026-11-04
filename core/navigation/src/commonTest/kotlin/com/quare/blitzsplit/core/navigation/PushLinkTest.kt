@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class PushLinkTest {
-    private val billRoute = Route.BillDetail(GROUP_ID, TARGET_ID)
+    private val billRoute = Route.BillDetail(GROUP_ID, TARGET_ID, focusCommentId = null)
 
     @Test
     fun `GIVEN a link with every parameter WHEN reading it THEN keeps the kind event group and target`() {

@@ -52,7 +52,7 @@ export function AmountInput({
         autoComplete="off"
         autoFocus={autoFocus}
         value={value}
-        placeholder={amountPlaceholder(fractionDigits)}
+        placeholder={amountPlaceholder(fractionDigits, currency)}
         aria-invalid={isInvalid}
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value)}

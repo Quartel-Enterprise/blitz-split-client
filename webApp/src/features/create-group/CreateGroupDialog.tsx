@@ -1,9 +1,10 @@
-import { Camera, Check, ChevronDown, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { Camera, ChevronDown, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { CreateGroupPresenter, type JsCreateGroupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
+import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -180,12 +181,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
-              {state.currencies.map((currency) => (
-                <DropdownMenuItem key={currency} onSelect={() => presenter.selectCurrency(currency)}>
-                  <span className="flex-1">{currencyLabel(currency)}</span>
-                  {currency === state.currency && <Check />}
-                </DropdownMenuItem>
-              ))}
+              <CurrencyMenuItems currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

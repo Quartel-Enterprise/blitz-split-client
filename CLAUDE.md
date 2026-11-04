@@ -71,6 +71,19 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     buttons, and never swapped for the wallpaper's by Cores dinâmicas. Zero stays muted, debts between two others
     keep their color, and a status that adds up ("Fechou") stays the accent. No preference inverts them: the sign and
     the words already say which way the money goes.
+  - Bitcoin and Ether (Pierre's calls, beta feedback 7): Moeda (Novo grupo, Editar grupo) lists BTC and ETH last,
+    under their own "Criptomoedas" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
+    Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
+    bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
+    count to the unit), every other currency keeping 100 million (`ExpenseRules.maxAmountMinorFor`, the API's
+    `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts a symbol and only the decimals the amount
+    needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8 ("0,00000001"). Perfil › Preferências' "Bitcoin em
+    satoshis" (always shown, Ajustes on the Mac), kept per device and never synced (`showsBitcoinInSats` in
+    `device_settings`), shows every bitcoin amount as whole sats ("125.000 sats", the field's symbol "sats") and
+    types them so (`GroupCurrency.getTypedFractionDigits`); a form open when it changes (the Mac's Ajustes is a window
+    of its own) turns what was typed into the new unit, keeping its value (`TypedText.toUnit`). "Ler cupom fiscal"
+    isn't offered in a group in either (no receipt is printed in them), and Início's shortcut opens such a bill
+    without the camera; the reader refuses them too.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
@@ -146,8 +159,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
     never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
     web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
-    other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it), which
-    open the bill's Conta; a bill's attachments and its share link show only in its Conta's Histórico, never in the
+    other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it as edited,
+    "Carla apagou um comentário em Jantar" once deleted), which open the bill's Conta at the comment; a bill's attachments and its share link show only in its Conta's Histórico, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
   - Push notifications (page 12's "só o que te envolve", Perfil › Notificações 4.8) go to every device of whom an
     event involves, never its author nor anyone no longer in the group, under the toggles: "Nova despesa nos meus
@@ -416,10 +429,27 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     phone), all over the group.
   - Conta's "Comentários" (7.3c to 7.3f): anyone in the group comments, offline too (the comment waits in the queue,
     "Na fila · sai ao reconectar", like a bill, `bill_comments`), and "Responder" answers a comment or a reply, one
-    level deep: a reply to a reply joins its thread and names whom it answers. A comment is never edited nor
-    deleted. "Enviar comentário" stays disabled until something is typed (1 to 1000 letters); the composer is pinned
-    at the bottom on a phone and under the comments in two columns. Offline, a banner says "Sem internet.
-    Comentários e fotos ficam na fila e saem ao reconectar.". "Histórico" lists what was done to the bill, by day,
+    level deep: a reply to a reply joins its thread and names whom it answers. "Enviar comentário" stays disabled
+    until something is typed (1 to 1000 letters); the composer is pinned at the bottom on a phone and under the
+    comments in two columns. Offline, a banner says "Sem internet. Comentários e fotos ficam na fila e saem ao
+    reconectar.". Each comment (beta feedback 14, Pierre's call) has a heart and a menu (⋮/⋯, the row's long press
+    and right click): the heart likes it or undoes the like, one per person, offline too through the queue
+    (`bill_comment_likes`, the newer toggle wins), with the count beside it, which opens "Curtidas" (who liked it, in
+    the order they did); "Compartilhar" sends "Ana comentou em “Jantar”: “…”" with the comment's
+    link through the system share, offline too; "Editar" and "Apagar" only on the user's own. Editar puts the text in
+    the composer ("Editando comentário", ✕ gives back what was typed, "Salvar"), and an edited comment says "editado"
+    after its time, with no history; Apagar asks "Apagar comentário?" first. Both work offline through the queue like
+    a new comment: the newer edit wins on the server (`edited_at`), a deletion is a tombstone that wins over any edit,
+    and only its author may do either (the server's RLS). A deleted comment with replies stays as "Comentário apagado"
+    over them; one without replies, and a deleted reply, go. Edits, deletions and likes record no Atividade event and
+    push nothing: Comentários' row shows the text as edited, and "Ana apagou um comentário em Jantar" once deleted. A
+    comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`), which the apps claim
+    (App Links, Universal Links) and the web opens, opens the bill's Conta over its group's Despesas, over Grupos,
+    scrolled to the comment and highlighted, after a sync of a few seconds as a push notification's tap
+    (`Route.BillDetail.focusCommentId`); a deleted comment opens Conta with "Esse comentário foi apagado", a deleted
+    bill its group's Despesas with "Esta conta foi apagada", and someone outside the group (or without a profile)
+    gets "Você não está neste grupo" with "Ir para o início" (offline: "Sem internet", `BillLinkNotice`). A comment's
+    tap in Atividade scrolls Conta to it too. "Histórico" lists what was done to the bill, by day,
     the most recent first, never the comments: created ("Igual entre 5 · R$ 312", "criou a conta sem internet"
     while it waits to go up), each edit's first change with the others under it ("trocou a categoria", "mudou a
     divisão" with each part that moved), photos added in a row as one line, a photo removed and the share link
@@ -445,11 +475,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     fails with "Tentar de novo". Laid out as Contatos' "Convidar com link ou QR": a bottom sheet on an Android phone,
     a 560 dp dialog on its tablets (a book's right half), a sheet on iOS (a 540 pt form sheet with an iPad's room) and
     the Mac, a 480 px dialog on the web (a drawer on a phone). The link opens only on the web (`Route.SharedBill`,
-    page 7.3h), since the apps claim only `/g/` links: the bill, who paid, each one's part, the attachments and the
+    page 7.3h), since the apps claim only `/g/` and `/b/` links: the bill, who paid, each one's part, the attachments and the
     comments, never the balances nor the group's other bills, under "Esta conta é do grupo X" (the server doesn't
     say who shared it, and a group's own category shows as Outros). "Só quem está na conta" opens it to the group's
     members signed in; "Qualquer pessoa" to anyone, and any device with an account (an anonymous one too) comments
-    there, in the group or not, online only. "Entrar" goes through the app's own sign in (Boas-vindas without a
+    there, in the group or not, online only, and likes, shares (the page's link at the comment, `/c/<code>?comentario=`,
+    which scrolls to it) and edits and deletes their own comments there, online only. "Entrar" goes through the app's own sign in (Boas-vindas without a
     profile, else Perfil) and the link opens again when the browser's Google or Apple sign in comes back within 15
     minutes, or once Boas-vindas makes the profile on the page ("Usar sem conta"). A link only the group opens
     offers "Entrar" until the device has a Google or Apple account; a member with the bill on the device gets "Abrir

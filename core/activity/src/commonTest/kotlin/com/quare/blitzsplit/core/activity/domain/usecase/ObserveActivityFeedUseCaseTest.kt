@@ -165,6 +165,8 @@ class ObserveActivityFeedUseCaseTest {
         sharesCount = null,
         body = null,
         isPending = false,
+        commentId = null,
+        isCommentDeleted = false,
     )
 
     private fun prepareScenario(status: AccountStatus) {

@@ -464,6 +464,12 @@ private fun BillDetailContentReplyOfflinePreview() {
     PreviewBillDetailContent(createPreviewBillDetailState(isReplyingOffline = true))
 }
 
+@DevicePreviews
+@Composable
+private fun BillDetailContentEditingCommentPreview() {
+    PreviewBillDetailContent(createPreviewBillDetailState(isEditingComment = true))
+}
+
 // Why: a preview draws no dialog window, so the book's right half, where Conta opens, is drawn by hand around it.
 @Preview(
     name = "Book",

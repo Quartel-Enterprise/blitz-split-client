@@ -29,15 +29,21 @@ val DefaultSplitMode.labelRes: Int
         DefaultSplitMode.INCOME -> R.string.designsystem_default_split_income
     }
 
-// Why: "Real brasileiro (R$)", named by the platform in the device's language.
+// Why: "Real brasileiro (R$)", named by the platform in the device's language; "Bitcoin (₿)", which it doesn't know.
 @Composable
 fun groupCurrencyLabel(
     currency: GroupCurrency,
     locale: Locale,
 ): String {
-    val label = remember(currency, locale) {
-        val platform = Currency.getInstance(currency.code)
-        platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
+    val label = when (currency) {
+        GroupCurrency.BTC -> stringResource(R.string.designsystem_currency_bitcoin) to "₿"
+
+        GroupCurrency.ETH -> stringResource(R.string.designsystem_currency_ether) to "Ξ"
+
+        else -> remember(currency, locale) {
+            val platform = Currency.getInstance(currency.code)
+            platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
+        }
     }
     return stringResource(R.string.designsystem_currency_value, label.first, label.second)
 }

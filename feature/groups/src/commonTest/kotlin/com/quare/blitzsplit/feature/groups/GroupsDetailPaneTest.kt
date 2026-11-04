@@ -166,7 +166,7 @@ class GroupsDetailPaneTest {
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
-            navigator.navigate(Route.BillDetail("churrasco", "carne"))
+            navigator.navigate(Route.BillDetail("churrasco", "carne", focusCommentId = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("ape"))
@@ -180,7 +180,7 @@ class GroupsDetailPaneTest {
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
                     ),
-                    Route.BillDetail("churrasco", "carne"),
+                    Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
                 navigator.backStack.value,
             )

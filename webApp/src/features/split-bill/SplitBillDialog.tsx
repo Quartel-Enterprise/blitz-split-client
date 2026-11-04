@@ -744,7 +744,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
         inputMode="numeric"
         autoComplete="off"
         value={value}
-        placeholder={amountPlaceholder(fractionDigits)}
+        placeholder={amountPlaceholder(fractionDigits, currency)}
         aria-label={t('splitBill_payerAmountLabel', { name })}
         onChange={(event) => setValue(event.target.value)}
         className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground/60"

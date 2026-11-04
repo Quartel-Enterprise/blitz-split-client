@@ -184,7 +184,7 @@ class HomePaneTest {
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
             ),
-            Route.BillDetail("trip", "dinner"),
+            Route.BillDetail("trip", "dinner", focusCommentId = null),
         )
 
         // When

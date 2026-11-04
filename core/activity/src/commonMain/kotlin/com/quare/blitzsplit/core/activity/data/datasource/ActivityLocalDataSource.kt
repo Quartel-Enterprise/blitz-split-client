@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.activity.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedGroupRow
 import com.quare.blitzsplit.core.provider.room.entity.QueuedPaymentRow
@@ -26,7 +27,11 @@ interface ActivityLocalDataSource {
 
     fun observeLiveGroupIds(): Flow<List<String>>
 
+    fun observeChangedComments(): Flow<List<ChangedCommentRow>>
+
     suspend fun getState(): ActivityStateEntity?
+
+    suspend fun getEvent(id: String): ActivityEventEntity?
 
     suspend fun getMaxSeq(): Long?
 

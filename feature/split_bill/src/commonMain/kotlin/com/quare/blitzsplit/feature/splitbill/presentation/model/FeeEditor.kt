@@ -10,6 +10,7 @@ data class FeeEditor(
     val fee: ItemsFee,
     val valueText: String,
     val currency: GroupCurrency,
+    val showsSats: Boolean,
 ) {
     // Why: the percentage or the amount in the minor unit, 0 when empty, null for what isn't one.
     val value: Long? = if (valueText.isBlank()) {
@@ -20,7 +21,7 @@ data class FeeEditor(
 
             ItemsFee.COUVERT ->
                 AmountInput
-                    .parse(valueText, currency)
+                    .parse(valueText, currency, showsSats)
                     ?.takeIf { it <= ExpenseRules.maxAmountMinorFor(currency) }
         }
     }

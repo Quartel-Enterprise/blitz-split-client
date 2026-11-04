@@ -25,6 +25,8 @@ data class SplitBillUiState(
     val isEditing: Boolean,
     // Why: the group the bill goes to, which a new bill may change ("Rachar em qual grupo?").
     val groupId: String,
+    // Why: the group "Rachar em qual grupo?" last confirmed, which groupId becomes once it is read.
+    val pickedGroupId: String,
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
@@ -37,6 +39,8 @@ data class SplitBillUiState(
     // Why: the "Rachar em qual grupo?" sheet, open while not null, with what is marked in it until "Continuar".
     val groupSelection: GroupSelection?,
     val currency: GroupCurrency,
+    // Why: bitcoin typed in whole satoshis while Preferências' "Bitcoin em satoshis" is on.
+    val showsSats: Boolean,
     // Why: in the order they were added to the group, the creator first.
     val people: List<BillPerson>,
     // Why: the "Valor" field as typed, "312,00" or "312.00".
@@ -115,7 +119,7 @@ data class SplitBillUiState(
     val isLoaded: Boolean,
 ) {
     val amountMinor: Long?
-        get() = AmountInput.parse(amountText, currency)
+        get() = AmountInput.parse(amountText, currency, showsSats)
 
     val isAmountValid: Boolean
         get() = ExpenseRules.isAmountValid(amountMinor, currency)
@@ -192,20 +196,29 @@ data class SplitBillUiState(
         get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
             !isDeleting && !isFormLocked
 
-    // Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e).
+    /*
+     * Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e). Never in bitcoin
+     * or ether, which no receipt is printed in, and the reader can't convert to.
+     */
     val showsScanReceipt: Boolean
-        get() = !isEditing && receipt == null
+        get() = !isEditing && receipt == null && !currency.isCrypto
 
     // Why: reading needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
     val canScanReceipt: Boolean
-        get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt
+        get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt && !currency.isCrypto
 
     /*
      * Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
-     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open.
+     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open. Início's
+     * "Ler cupom fiscal" on a group in a cryptocurrency opens the bill alone.
      */
     val showsReceiptCamera: Boolean
-        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving
+        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving &&
+            !currency.isCrypto && !isPickedGroupLoading
+
+    // Why: until the group picked is read, the currency is still the last group's, which says nothing about its receipt.
+    val isPickedGroupLoading: Boolean
+        get() = pickedGroupId != groupId
 
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING

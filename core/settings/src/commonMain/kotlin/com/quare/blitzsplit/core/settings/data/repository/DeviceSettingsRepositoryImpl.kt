@@ -74,4 +74,14 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun updateDynamicColors(isOn: Boolean) {
         local.update { entity -> entity.copy(usesDynamicColors = isOn) }
     }
+
+    // Why: no row yet shows bitcoin in bitcoin.
+    override fun observeBitcoinInSats(): Flow<Boolean> = local
+        .observe()
+        .map { entity -> entity?.showsBitcoinInSats ?: false }
+        .distinctUntilChanged()
+
+    override suspend fun updateBitcoinInSats(isOn: Boolean) {
+        local.update { entity -> entity.copy(showsBitcoinInSats = isOn) }
+    }
 }

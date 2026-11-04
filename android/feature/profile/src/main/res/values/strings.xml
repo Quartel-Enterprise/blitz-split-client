@@ -101,6 +101,8 @@
     <string name="profile_unlink_offline">Needs an internet connection.</string>
     <string name="profile_unlink_failed">Couldn\'t disconnect. Try again.</string>
     <string name="profile_unlink_confirm">Disconnect</string>
+    <string name="profile_bitcoin_in_sats">Bitcoin in satoshis</string>
+    <string name="profile_bitcoin_in_sats_detail">Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
     <string name="profile_photo_open">View photo</string>

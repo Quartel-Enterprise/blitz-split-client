@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.data.datasource
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
+import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
 import kotlinx.coroutines.flow.Flow
 
 class RoomExpenseLocalDataSource(
@@ -13,6 +14,8 @@ class RoomExpenseLocalDataSource(
     override fun observeAllExpenses(): Flow<List<ExpenseWithEditor>> = dao.observeAllExpenses()
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = dao.observeExpense(id)
+
+    override suspend fun findStoredBill(id: String): StoredBillRow? = dao.findStoredBill(id)
 
     override fun observePendingDeletionGroupIds(): Flow<List<String>> = dao.observePendingDeletionGroupIds()
 
