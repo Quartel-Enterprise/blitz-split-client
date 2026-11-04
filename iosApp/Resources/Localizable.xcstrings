@@ -868,6 +868,17 @@
         }
       }
     },
+    "%@ is a guest without the app. Click to note what you paid them; they get no notice." : {
+      "comment" : "Home on the Mac: the hover of a guest this device's user owes; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Clique para anotar o que você pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
     "%@ is a guest without the app. Tap to note what they paid you; they get no notice." : {
       "comment" : "Home: a guest's long press; %@ is their name",
       "localizations" : {
@@ -875,6 +886,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ é convidado e não tem o app. Toque para anotar o que ele te pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
+    "%@ is a guest without the app. Tap to note what you paid them; they get no notice." : {
+      "comment" : "Home: the long press of a guest this device's user owes; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Toque para anotar o que você pagou; ele não recebe aviso."
           }
         }
       }

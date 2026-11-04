@@ -215,7 +215,7 @@ internal fun PersonFaceBadge(
         return
     }
     // Why: TalkBack says "Você" for this device's user, as the sentence under the faces does.
-    val name = if (person.isMe) stringResource(R.string.register_payment_you) else person.name
+    val name = if (person.isMe) stringResource(DesignR.string.designsystem_you) else person.name
     AvatarBadge(
         initial = person.initials,
         color = person.avatarColor,

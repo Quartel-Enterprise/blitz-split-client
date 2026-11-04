@@ -12,7 +12,6 @@
     <string name="register_payment_remaining_between">%1$s will still owe %2$s %3$s</string>
     <string name="register_payment_amount">Amount paid</string>
     <string name="register_payment_full_debt">The whole debt</string>
-    <string name="register_payment_you">You</string>
     <string name="register_payment_method">How it was paid</string>
     <string name="register_payment_info">It becomes a payment in the group: it shows in Expenses and can be undone.</string>
     <string name="register_payment_for_others">You\'re recording this for %1$s and %2$s.</string>

@@ -49,12 +49,18 @@ enum HomeCopy {
         person.netMinor < 0 ? String(localized: "Settle up") : String(localized: "Record payment")
     }
 
-    /// A guest's long press (a hover on the Mac): they have no app, so they never hear of the payment.
+    /// A guest's long press (a hover on the Mac): they have no app, so they never hear of the payment, whichever way
+    /// it goes.
     static func guestHint(_ person: HomePerson) -> String {
+        let youOwe = person.netMinor < 0
         #if os(macOS)
-        String(localized: "\(name(person)) is a guest without the app. Click to note what they paid you; they get no notice.")
+        return youOwe
+            ? String(localized: "\(name(person)) is a guest without the app. Click to note what you paid them; they get no notice.")
+            : String(localized: "\(name(person)) is a guest without the app. Click to note what they paid you; they get no notice.")
         #else
-        String(localized: "\(name(person)) is a guest without the app. Tap to note what they paid you; they get no notice.")
+        return youOwe
+            ? String(localized: "\(name(person)) is a guest without the app. Tap to note what you paid them; they get no notice.")
+            : String(localized: "\(name(person)) is a guest without the app. Tap to note what they paid you; they get no notice.")
         #endif
     }
 

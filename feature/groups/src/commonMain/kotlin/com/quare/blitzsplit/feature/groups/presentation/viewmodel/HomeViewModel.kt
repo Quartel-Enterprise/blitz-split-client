@@ -7,7 +7,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -143,13 +142,6 @@ class HomeViewModel(
     private var rows = emptyList<GroupRow>()
     private var groups = emptyList<Group>()
 
-    // Why: whom "Você deve" settles up with straight away, as the global Saldos has them.
-    private var peopleBalances = PeopleBalances(
-        people = emptyList(),
-        totals = emptyList(),
-        me = null,
-    )
-
     // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
@@ -229,7 +221,6 @@ class HomeViewModel(
             }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
-                peopleBalances = people
                 uiState.update {
                     it.copy(
                         people = homePeopleOf(people).toLoaded(),
@@ -389,7 +380,8 @@ class HomeViewModel(
         key: String,
         currency: GroupCurrency,
     ) {
-        if (peopleBalances.findPersonOrNull(key, currency.code) == null) return
+        val people = uiState.value.people.valueOrNull() ?: return
+        if (people.none { it.key == key && it.currency == currency }) return
         open(
             Route.SettleUp(
                 personKey = key,
