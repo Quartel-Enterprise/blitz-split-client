@@ -138,7 +138,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto"'s Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
 | `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`) | "Ajustar foto" closed without Pronto | `:core:presentation`, from `:feature:profile_setup` and `:feature:create_group` |
 | `profile_setup_continue_clicked` | none | Seu perfil's Continuar | `:feature:profile_setup` |
-| `retry_clicked` | `source` (`restore`) | Recuperar's button while offline, its "Tentar de novo" | `:feature:restore` |
+| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`) | "Tentar de novo" after a failure, and Recuperar's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join` |
 | `restore_code_submitted` | none | Recuperar's button or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Recuperar's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Recuperar's "Começar do zero" | `:feature:restore` |
@@ -151,7 +151,6 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Excluir conta's Excluir | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Excluir conta's Cancelar, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`) | "Exportar meus dados" | `:feature:delete_account` |
-| `retry_clicked` | `source` (`invite`, `join_invite`) | "Tentar de novo" after a failure | `:feature:invite`, `:feature:join` |
 | `invite_link_copy_clicked` | `source` (`invite`) | Convidar's Copiar | `:feature:invite` |
 | `invite_link_share_clicked` | `source` (`invite`) | Convidar's "Compartilhar link" | `:feature:invite` |
 | `invite_see_who_joined_clicked` | none | Convidar's "Ver quem já entrou" | `:feature:invite` |
