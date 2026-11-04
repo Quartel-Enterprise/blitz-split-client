@@ -50,6 +50,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class ShareBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -630,6 +631,251 @@ class ShareBillViewModelTest {
         assertEquals(listOf(Route.Groups, groupRoute, billRoute), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN the link shown WHEN the sheet opens THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.canChangeLink)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a link for the bill members WHEN picking anyone with the link THEN sends the visibility changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.ANYONE))
+
+            // Then
+            assertEquals(
+                listOf("bill_link_visibility_changed" to mapOf<String, Any>("visibility" to BillLinkVisibility.ANYONE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a link anyone opens WHEN picking only the bill members THEN sends the visibility changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedLinks = mapOf(EXPENSE_ID to BillShareLink("Ab12Cd34", BillLinkVisibility.ANYONE)))
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.MEMBERS))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "bill_link_visibility_changed" to mapOf<String, Any>("visibility" to BillLinkVisibility.MEMBERS),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a link for the bill members WHEN picking that again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.MEMBERS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the link shown offline WHEN picking anyone with the link THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.ANYONE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a change on its way WHEN picking again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        links.updateGate = CompletableDeferred()
+        viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.ANYONE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.MEMBERS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the link not known yet WHEN picking anyone with the link THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadGate = CompletableDeferred())
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.ANYONE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the link shown WHEN tapping Copiar THEN sends the link copy clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnCopyClicked)
+
+        // Then
+        assertEquals(listOf("bill_link_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the link shown offline WHEN tapping Copiar THEN still sends the link copy clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnCopyClicked)
+
+            // Then
+            assertEquals(listOf("bill_link_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the link not known yet WHEN tapping Copiar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(loadGate = CompletableDeferred())
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnCopyClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the link shown WHEN tapping Enviar link THEN sends the link send clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnSendClicked)
+
+        // Then
+        assertEquals(listOf("bill_link_send_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the link not known yet WHEN tapping Enviar link THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(loadGate = CompletableDeferred())
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnSendClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the link shown WHEN tapping Desativar link THEN sends the link disable clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnDisableClicked)
+
+            // Then
+            assertEquals(listOf("bill_link_disable_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the link shown offline WHEN tapping Desativar link THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        isOnline.value = false
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnDisableClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a change of who opens it on its way WHEN tapping Desativar link THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            links.updateGate = CompletableDeferred()
+            viewModel.onEvent(ShareBillUiEvent.OnVisibilityPicked(BillLinkVisibility.ANYONE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnDisableClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the link failed to load WHEN tapping Tentar de novo THEN sends the retry clicked from the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getLinkError = IllegalStateException("server"))
+            links.getLinkError = null
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "share_bill")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a failed load and no internet WHEN tapping Tentar de novo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getLinkError = IllegalStateException("server"))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(ShareBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the sheet open WHEN closing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ShareBillUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val route = Route.ShareBill(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
@@ -747,6 +993,7 @@ class ShareBillViewModelTest {
             it.navigate(route)
         }
         viewModel = ShareBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             loadBillShareLink = LoadBillShareLinkUseCase(links),

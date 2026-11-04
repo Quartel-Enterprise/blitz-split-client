@@ -64,6 +64,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class SharedBillViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var links: FakeBillShareLinkRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -308,6 +309,43 @@ class SharedBillViewModelTest {
         assertEquals(listOf(CODE, CODE), links.loadedCodes)
         assertEquals(SharedBillStatus.OPEN, viewModel.uiState.value.status)
     }
+
+    @Test
+    fun `GIVEN the page failed while a read still hangs WHEN tapping Tentar de novo THEN reads the bill again`() =
+        runTest(testDispatcher) {
+            // Given
+            val hangingRead = CompletableDeferred<Unit>()
+            prepareScenario(loadGate = hangingRead)
+            isOnline.value = false
+            isOnline.value = true
+            links.loadGate = null
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf(CODE, CODE), links.loadedCodes)
+            assertEquals(SharedBillStatus.OPEN, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN a retry over a hanging read WHEN the old read answers THEN the page keeps the new one`() =
+        runTest(testDispatcher) {
+            // Given
+            val hangingRead = CompletableDeferred<Unit>()
+            prepareScenario(loadGate = hangingRead)
+            isOnline.value = false
+            isOnline.value = true
+            links.loadGate = null
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+            links.sharedBills.value = emptyMap()
+
+            // When
+            hangingRead.complete(Unit)
+
+            // Then
+            assertEquals(SharedBillStatus.OPEN, viewModel.uiState.value.status)
+        }
 
     @Test
     fun `GIVEN no internet WHEN the page opens THEN says it failed and asks the server nothing`() =
@@ -1306,6 +1344,25 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Apagar comentario asks and the internet gone WHEN confirming THEN closes it and says it failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+            isOnline.value = false
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertNull(viewModel.uiState.value.commentToDelete)
+            assertTrue(links.deletedComments.isEmpty())
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentChangeError), actions)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN editing the comment Apagar asks about WHEN confirming THEN the edit ends too`() =
         runTest(testDispatcher) {
             // Given
@@ -1648,6 +1705,759 @@ class SharedBillViewModelTest {
             assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowCommentGone), actions)
         }
 
+    @Test
+    fun `GIVEN an open link WHEN the page opens THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(SharedBillStatus.OPEN, state.status)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the page failed WHEN tapping Tentar de novo THEN sends the retry clicked from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBillError = IllegalStateException("server"))
+            links.sharedBillError = null
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the page failed while a read still hangs WHEN tapping Tentar de novo THEN sends the retry clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadGate = CompletableDeferred())
+            isOnline.value = false
+            isOnline.value = true
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the bill being read WHEN tapping Tentar de novo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(loadGate = CompletableDeferred())
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnRetryClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertEquals(listOf(CODE), links.loadedCodes)
+    }
+
+    @Test
+    fun `GIVEN a profile on the device WHEN tapping Entrar THEN sends the sign in clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(accountStatus = AccountStatus.LocalOnly)
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSignInClicked)
+
+        // Then
+        assertEquals(listOf("shared_bill_sign_in_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the page already closed WHEN tapping Entrar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(accountStatus = AccountStatus.LocalOnly)
+        navigator.navigateBack()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSignInClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Abrir no app offered WHEN tapping it THEN sends the open in app clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            sharedBill = openBill(isMember = true),
+            storedExpense = expense,
+        )
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnOpenInAppClicked)
+
+        // Then
+        assertEquals(listOf("shared_bill_open_in_app_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a member without the bill on the device WHEN tapping Abrir no app THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(isMember = true))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnOpenInAppClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the profile open over the page WHEN a late Abrir no app arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sharedBill = openBill(isMember = true),
+                storedExpense = expense,
+            )
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnOpenInAppClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the page open WHEN closing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the page open WHEN tapping the second photo THEN sends the attachment clicked from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-2"))
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the page open WHEN tapping a photo that is not there THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("gone"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer on the receipt WHEN paging to the first photo THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("receipt"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnViewerPageChanged("photo-1"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the viewer open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-1"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnViewerDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment typed WHEN sending it THEN sends the comment send clicked from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to false,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN replying to Carla WHEN sending THEN the comment send clicked says it is a reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Eu trouxe"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to true,
+                        "is_edit" to false,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment of the caller edited WHEN sending THEN the comment send clicked says it is an edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno e Ana!"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to true,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN editing and then replying to Carla WHEN saving THEN the comment send clicked is not a reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno e Ana!"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to true,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment typed WHEN the internet goes and sending it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+        isOnline.value = false
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN nobody signed in WHEN sending a comment THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(accountStatus = AccountStatus.LocalOnly)
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment on its way WHEN sending it again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        links.commentGate = CompletableDeferred()
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the page open WHEN typing a comment THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN replying to it THEN sends the comment reply clicked from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_reply_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the page open WHEN replying to a comment that is not there THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("gone"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN replying to Carla WHEN cancelling the reply THEN sends the reply cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnReplyCancelled)
+
+        // Then
+        assertEquals(listOf("comment_reply_cancelled" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN replying to nobody WHEN cancelling the reply THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnReplyCancelled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote WHEN tapping Editar on it THEN sends the comment edit clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            assertEquals(
+                listOf("comment_edit_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping Editar on it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote and no internet WHEN tapping Editar on it THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN editing a comment WHEN cancelling the edit THEN sends the edit cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditClicked("mine"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditCancelled)
+
+        // Then
+        assertEquals(listOf("comment_edit_cancelled" to mapOf<String, Any>("source" to "shared_bill")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no comment being edited WHEN cancelling the edit THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentEditCancelled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote WHEN tapping Apagar on it THEN sends the comment delete clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping Apagar on it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment the caller wrote and no internet WHEN tapping Apagar on it THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN confirming THEN sends the comment delete confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_confirmed" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario never asked WHEN a confirmation arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN dismissing THEN sends the comment delete cancelled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = withMine))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteClicked("mine"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteDismissed)
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_cancelled" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario never asked WHEN a dismiss arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = withMine))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN tapping its heart THEN sends the like toggled as liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_like_toggled" to mapOf<String, Any>(
+                        "is_liked" to true,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment the caller liked WHEN tapping its heart THEN sends the like toggled as not liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_like_toggled" to mapOf<String, Any>(
+                        "is_liked" to false,
+                        "source" to "shared_bill",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN tapping its heart THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = deletedOverReply))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the page shown and the internet gone WHEN tapping a heart THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN nobody signed in WHEN tapping a heart THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(accountStatus = AccountStatus.LocalOnly)
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a like on its way WHEN tapping another heart before it answers THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(changeGate = CompletableDeferred())
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("c1"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikeClicked("r1"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a comment liked by Ana and the caller WHEN tapping its count THEN sends the likes clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_likes_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment nobody liked WHEN tapping its count THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = listOf(likedByMe)))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesClicked("c1"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentLikesDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the comment of Carla WHEN sharing it THEN sends the comment share clicked from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCommentShareClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_share_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN sharing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(sharedBill = openBill(comments = deletedOverReply))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnCommentShareClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a link shared at the reply of Diego WHEN it was shown THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(focusCommentId = "r1")
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnFocusedCommentShown)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     // Why: the comment the link was shared at, set by each scenario.
     private var route = Route.SharedBill(
         code = CODE,
@@ -1860,6 +2670,7 @@ class SharedBillViewModelTest {
         profiles = FakeProfileRepository(initialProfile = storedProfile)
         navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
         viewModel = SharedBillViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             loadSharedBill = LoadSharedBillUseCase(links),

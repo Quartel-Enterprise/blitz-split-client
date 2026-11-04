@@ -101,6 +101,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class BillDetailViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -3153,6 +3154,26 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Apagar comentario asks while the bill is being deleted WHEN confirming THEN the comment stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                deleteGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertTrue(comments.comments.value.none { it.isDeleted })
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN no internet and a comment of Bruno WHEN tapping its heart THEN likes it on the device as the user`() =
         runTest(testDispatcher) {
             // Given
@@ -3548,6 +3569,986 @@ class BillDetailViewModelTest {
             assertTrue(actions.isEmpty())
         }
 
+    @Test
+    fun `GIVEN the bill is open WHEN tapping Bruno THEN sends the person clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(listOf("person_clicked" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN someone who left the group paid WHEN tapping them THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpense = expense(
+                payerId = FORMER,
+                shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(FORMER))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Editar conta is open over the bill WHEN a late tap on Bruno arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping Editar THEN sends the bill edit clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+        // Then
+        assertEquals(listOf("bill_edit_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Editar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a native back already closed the bill WHEN tapping Editar THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Editar THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping Compartilhar THEN sends the bill share clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf("bill_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Compartilhar conta already open WHEN tapping Compartilhar again THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Compartilhar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Compartilhar THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(deleteGate = CompletableDeferred())
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN going back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping Apagar THEN sends the bill delete clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar already asks WHEN tapping Apagar again THEN sends the bill delete clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Apagar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar asks WHEN dismissing THEN sends the bill delete cancelled from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_cancelled" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar never asked WHEN a dismiss arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar asks WHEN confirming THEN sends the bill delete confirmed from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_confirmed" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar never asked WHEN a confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar confirmed WHEN the dialog dismisses itself as it closes THEN sends only the confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            trackedEvents.clear()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed)
+
+            // Then
+            assertEquals(
+                listOf("bill_delete_confirmed" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the delete on its way WHEN confirming again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the delete on its way WHEN dismissing the question THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ana edited the bill last WHEN tapping Desfazer THEN sends the bill undo clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(totalEdit, created))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertEquals(listOf("bill_undo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the server history still loading WHEN tapping Desfazer THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(totalEdit, created),
+            historyGate = CompletableDeferred(),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Desfazer on its way WHEN tapping it again THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(totalEdit, created),
+            updateGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill changed since the latest edit WHEN tapping Desfazer THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(description = "Mercado do Zé"),
+                storedEvents = listOf(descriptionEdit("Feira", "Mercado"), created),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Desfazer THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(totalEdit, created),
+            deleteGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill was only created WHEN tapping Desfazer THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(created))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no internet and a comment typed WHEN sending it THEN sends the comment send clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo o gelo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to false,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN replying to Bruno WHEN sending THEN the comment send clicked says it is a reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu trouxe"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to true,
+                        "is_edit" to false,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment of the device user edited WHEN sending THEN the comment send clicked says it is an edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to true,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN editing and then replying to Bruno WHEN saving THEN the comment send clicked is not a reply`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei o gelo e o carvão"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_send_clicked" to mapOf<String, Any>(
+                        "is_reply" to false,
+                        "is_edit" to true,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN only spaces typed WHEN sending the comment THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("   "))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN sending a comment THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo o gelo"))
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN typing a comment THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo o gelo"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment by Bruno WHEN replying to it THEN sends the comment reply clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_reply_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN replying to a comment that is not there THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("gone"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN replying to it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = myDeletedOverReply)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN replying to Bruno WHEN cancelling the reply THEN sends the reply cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(comment(id = "c1")))
+        viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnReplyCancelled)
+
+        // Then
+        assertEquals(listOf("comment_reply_cancelled" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN replying to nobody WHEN cancelling the reply THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnReplyCancelled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment of the device user WHEN tapping Editar on it THEN sends the comment edit clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            assertEquals(
+                listOf("comment_edit_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN tapping Editar on it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Editar on their comment THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                deleteGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN editing a comment WHEN cancelling the edit THEN sends the edit cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditClicked("mine"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditCancelled)
+
+        // Then
+        assertEquals(listOf("comment_edit_cancelled" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no comment being edited WHEN cancelling the edit THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentEditCancelled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment of the device user WHEN tapping Apagar on it THEN sends the comment delete clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN tapping Apagar on it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = brunoAndMine)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN confirming THEN sends the comment delete confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_confirmed" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario asks while the bill is being deleted WHEN confirming THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = brunoAndMine,
+                deleteGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario never asked WHEN a confirmation arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario asks WHEN dismissing THEN sends the comment delete cancelled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteDismissed)
+
+            // Then
+            assertEquals(
+                listOf("comment_delete_cancelled" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar comentario confirmed WHEN the dialog dismisses itself as it closes THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = brunoAndMine)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteClicked("mine"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no internet and a comment of Bruno WHEN tapping its heart THEN sends the like toggled as liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(comment(id = "c1")),
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_like_toggled" to mapOf<String, Any>(
+                        "is_liked" to true,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment the device user liked WHEN tapping its heart THEN sends the like toggled as not liked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(likedByAnaAndMe))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "comment_like_toggled" to mapOf<String, Any>(
+                        "is_liked" to false,
+                        "source" to "bill_detail",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a heart just tapped WHEN tapping it again THEN the second like toggled undoes the first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertEquals(listOf(true, false), trackedEvents.map { it.second["is_liked"] })
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN tapping its heart THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = myDeletedOverReply)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping a heart THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedComments = listOf(comment(id = "c1")),
+            deleteGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikeClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment liked by Ana and the device user WHEN tapping its count THEN sends the likes clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(likedByAnaAndMe))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_likes_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment nobody liked WHEN tapping its count THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Curtidas open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(likedByAnaAndMe))
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesClicked("c1"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentLikesDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a comment of Bruno WHEN sharing it THEN sends the comment share clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked("c1"))
+
+            // Then
+            assertEquals(
+                listOf("comment_share_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a deleted comment kept over a reply WHEN sharing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = myDeletedOverReply)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentShareClicked("c1"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the comment a link opened at highlighted WHEN it was shown THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(comment(id = "c1")),
+                focusCommentId = "c1",
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnFocusedCommentShown)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
     // Why: the comment a link opened Conta at, set by each scenario.
     private var route = Route.BillDetail(
         groupId = GROUP_ID,
@@ -3923,6 +4924,7 @@ class BillDetailViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
             deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),

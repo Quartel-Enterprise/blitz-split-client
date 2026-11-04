@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillShareLink
@@ -13,7 +12,10 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.billdetail.presentation.model.SHARE_BILL_SOURCE
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillError
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.ShareBillUiEvent
@@ -43,7 +45,8 @@ class ShareBillViewModel(
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ShareBillUiEvent>(trackEvent) {
     val uiState: StateFlow<ShareBillUiState>
         field = MutableStateFlow(
             ShareBillUiState(
@@ -103,16 +106,18 @@ class ShareBillViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ShareBillUiEvent) {
+    override fun handleEvent(event: ShareBillUiEvent) {
         when (event) {
             is ShareBillUiEvent.OnVisibilityPicked -> changeVisibility(event.visibility)
 
             ShareBillUiEvent.OnCopyClicked -> uiState.value.link?.let { link ->
+                trackEvent("bill_link_copy_clicked", emptyMap())
                 viewModelScope.launch { uiAction.emit(ShareBillUiAction.CopyLink(link)) }
                 copiedFeedback.start()
             }
 
             ShareBillUiEvent.OnSendClicked -> uiState.value.link?.let { link ->
+                trackEvent("bill_link_send_clicked", emptyMap())
                 viewModelScope.launch {
                     uiAction.emit(ShareBillUiAction.SendLink(link, uiState.value.description))
                 }
@@ -122,17 +127,21 @@ class ShareBillViewModel(
 
             ShareBillUiEvent.OnRetryClicked -> if (uiState.value.isOnline) {
                 uiState.update { it.copy(hasFailed = false) }
-                loadOnce()
+                // Why: only a retry that reads the link again, never one while a read is under way.
+                if (loadOnce()) trackEvent("retry_clicked", mapOf("source" to SHARE_BILL_SOURCE))
             }
 
             ShareBillUiEvent.OnCloseClicked -> leave()
         }
     }
 
-    // Why: once per sheet, the first time it is online; again only after a failure, through "Tentar de novo".
-    private fun loadOnce() {
+    /*
+     * Why: once per sheet, the first time it is online; again only after a failure, through "Tentar de novo". Says
+     * whether it started a read.
+     */
+    private fun loadOnce(): Boolean {
         val state = uiState.value
-        if (state.link != null || isFetching || state.hasFailed) return
+        if (state.link != null || isFetching || state.hasFailed) return false
         isFetching = true
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
@@ -152,11 +161,13 @@ class ShareBillViewModel(
             }
             shown?.let(::show)
         }
+        return true
     }
 
     private fun changeVisibility(visibility: BillLinkVisibility) {
         val state = uiState.value
         if (!state.canChangeLink || visibility == state.visibility) return
+        trackEvent("bill_link_visibility_changed", mapOf("visibility" to visibility))
         val before = state.visibility
         uiState.update {
             it.copy(
@@ -178,6 +189,7 @@ class ShareBillViewModel(
 
     private fun disable() {
         if (!uiState.value.canChangeLink) return
+        trackEvent("bill_link_disable_clicked", emptyMap())
         uiState.update { it.copy(isUpdating = true) }
         viewModelScope.launch {
             disableBillShareLink(route.expenseId)

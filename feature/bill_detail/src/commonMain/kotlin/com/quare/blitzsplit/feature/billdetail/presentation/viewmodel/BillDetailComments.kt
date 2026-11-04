@@ -8,8 +8,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.replyTargetOf
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BILL_DETAIL_SOURCE
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
@@ -36,7 +38,11 @@ internal class BillDetailComments(
     private val likeBillComment: LikeBillComment,
     private val me: () -> GroupMember?,
     private val emit: suspend (BillDetailUiAction) -> Unit,
+    private val trackEvent: TrackEvent,
 ) {
+    // Why: the source param of Conta's comment events, apart from the shared page's.
+    private val sourceParams: Map<String, Any> = mapOf("source" to BILL_DETAIL_SOURCE)
+
     private val edit = CommentComposerEdit()
 
     // Why: the like each heart was last set to, until the device's copy shows it, so a quick second tap undoes the first.
@@ -48,18 +54,40 @@ internal class BillDetailComments(
     fun onEvent(event: BillDetailUiEvent.CommentEvent) {
         when (event) {
             is BillDetailUiEvent.OnCommentChanged -> uiState.update { it.copy(commentDraft = event.text) }
+
             BillDetailUiEvent.OnSendCommentClicked -> send()
+
             is BillDetailUiEvent.OnReplyClicked -> replyTo(event.commentId)
-            BillDetailUiEvent.OnReplyCancelled -> uiState.update { it.copy(replyTarget = null) }
+
+            BillDetailUiEvent.OnReplyCancelled -> if (uiState.value.replyTarget != null) {
+                trackEvent("comment_reply_cancelled", sourceParams)
+                uiState.update { it.copy(replyTarget = null) }
+            }
+
             is BillDetailUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
-            BillDetailUiEvent.OnCommentEditCancelled -> stopEditing()
+
+            BillDetailUiEvent.OnCommentEditCancelled -> if (uiState.value.isEditingComment) {
+                trackEvent("comment_edit_cancelled", sourceParams)
+                stopEditing()
+            }
+
             is BillDetailUiEvent.OnCommentDeleteClicked -> askToDelete(event.commentId)
+
             BillDetailUiEvent.OnCommentDeleteConfirmed -> delete()
-            BillDetailUiEvent.OnCommentDeleteDismissed -> uiState.update { it.copy(commentToDelete = null) }
+
+            BillDetailUiEvent.OnCommentDeleteDismissed -> if (uiState.value.commentToDelete != null) {
+                trackEvent("comment_delete_cancelled", sourceParams)
+                uiState.update { it.copy(commentToDelete = null) }
+            }
+
             is BillDetailUiEvent.OnCommentLikeClicked -> toggleLike(event.commentId)
+
             is BillDetailUiEvent.OnCommentLikesClicked -> showLikes(event.commentId)
+
             BillDetailUiEvent.OnCommentLikesDismissed -> uiState.update { it.copy(likesCommentId = null) }
+
             is BillDetailUiEvent.OnCommentShareClicked -> share(event.commentId)
+
             BillDetailUiEvent.OnFocusedCommentShown -> uiState.update { it.copy(focusedCommentId = null) }
         }
     }
@@ -111,12 +139,22 @@ internal class BillDetailComments(
     private fun replyTo(commentId: String) {
         val threads = uiState.value.threads.valueOrNull() ?: return
         val target = replyTargetOf(threads, commentId) ?: return
+        trackEvent("comment_reply_clicked", sourceParams)
         uiState.update { it.copy(replyTarget = target) }
     }
 
     private fun send() {
         val state = uiState.value
         if (!state.canSendComment) return
+        trackEvent(
+            "comment_send_clicked",
+            mapOf(
+                // Why: an edit saves only its text, whatever reply was picked meanwhile.
+                "is_reply" to (state.replyTarget != null && state.editingCommentId == null),
+                "is_edit" to (state.editingCommentId != null),
+                "source" to BILL_DETAIL_SOURCE,
+            ),
+        )
         state.editingCommentId?.let { return saveEdit(it) }
         val me = me()
         val replyTarget = state.replyTarget
@@ -171,6 +209,7 @@ internal class BillDetailComments(
     private fun startEditing(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canChange } ?: return
         if (!uiState.value.areActionsEnabled) return
+        trackEvent("comment_edit_clicked", sourceParams)
         show(edit.start(comment.id, comment.body, composerOf(uiState.value)))
     }
 
@@ -196,12 +235,16 @@ internal class BillDetailComments(
 
     private fun askToDelete(commentId: String) {
         if (findCommentOrNull(commentId)?.canChange != true || !uiState.value.areActionsEnabled) return
+        trackEvent("comment_delete_clicked", sourceParams)
         uiState.update { it.copy(commentToDelete = commentId) }
     }
 
     // Why: a tombstone, offline too; an edit of it under way ends with it.
+    // Why: never while the bill itself is being deleted, as every other comment action waits for it.
     private fun delete() {
         val commentId = uiState.value.commentToDelete ?: return
+        if (!uiState.value.areActionsEnabled) return
+        trackEvent("comment_delete_confirmed", sourceParams)
         uiState.update { it.copy(commentToDelete = null) }
         if (uiState.value.editingCommentId == commentId) stopEditing()
         scope.launch {
@@ -215,6 +258,7 @@ internal class BillDetailComments(
         if (!uiState.value.areActionsEnabled) return
         val me = me()
         val isLiked = !(likesSet[comment.id] ?: comment.isLikedByMe)
+        trackEvent("comment_like_toggled", mapOf("is_liked" to isLiked, "source" to BILL_DETAIL_SOURCE))
         likesSet[comment.id] = isLiked
         scope.launch {
             likeBillComment(
@@ -232,6 +276,7 @@ internal class BillDetailComments(
 
     private fun showLikes(commentId: String) {
         if ((findCommentOrNull(commentId)?.likeCount ?: 0) == 0) return
+        trackEvent("comment_likes_clicked", sourceParams)
         uiState.update { it.copy(likesCommentId = commentId) }
     }
 
@@ -245,6 +290,7 @@ internal class BillDetailComments(
             billDescription = uiState.value.description,
             body = comment.body,
         )
+        trackEvent("comment_share_clicked", sourceParams)
         scope.launch { emit(BillDetailUiAction.ShareComment(share)) }
     }
 }

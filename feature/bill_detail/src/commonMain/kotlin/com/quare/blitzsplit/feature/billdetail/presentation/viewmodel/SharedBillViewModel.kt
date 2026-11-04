@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -23,8 +22,10 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.payersOf
@@ -35,6 +36,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
+import com.quare.blitzsplit.feature.billdetail.presentation.model.SHARED_BILL_SOURCE
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillStatus
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.SharedBillUiEvent
@@ -71,7 +73,11 @@ class SharedBillViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeAccountStatus: ObserveAccountStatus,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<SharedBillUiEvent>(trackEvent) {
+    // Why: the source param of the shared page's events, apart from Conta's.
+    private val sourceParams: Map<String, Any> = mapOf("source" to SHARED_BILL_SOURCE)
+
     val uiState: StateFlow<SharedBillUiState>
         field = MutableStateFlow(
             SharedBillUiState(
@@ -160,34 +166,67 @@ class SharedBillViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: SharedBillUiEvent) {
+    override fun handleEvent(event: SharedBillUiEvent) {
         when (event) {
-            SharedBillUiEvent.OnRetryClicked -> load()
+            // Why: only a retry that reads the bill again, never one while a read is under way.
+            SharedBillUiEvent.OnRetryClicked -> retry()
+
             SharedBillUiEvent.OnSignInClicked -> signIn()
+
             SharedBillUiEvent.OnOpenInAppClicked -> openInApp()
+
             SharedBillUiEvent.OnCloseClicked -> leave()
+
             is SharedBillUiEvent.OnCommentChanged -> changeComment(event.text)
+
             SharedBillUiEvent.OnSendCommentClicked -> sendComment()
+
             is SharedBillUiEvent.OnReplyClicked -> replyTo(event.commentId)
-            SharedBillUiEvent.OnReplyCancelled -> answer(null)
-            is SharedBillUiEvent.OnAttachmentClicked -> view(event.id)
-            is SharedBillUiEvent.OnViewerPageChanged -> view(event.id)
+
+            SharedBillUiEvent.OnReplyCancelled -> if (uiState.value.replyTarget != null) {
+                trackEvent("comment_reply_cancelled", sourceParams)
+                answer(null)
+            }
+
+            is SharedBillUiEvent.OnAttachmentClicked -> if (openViewer(event.id)) {
+                trackEvent("bill_attachment_clicked", sourceParams)
+            }
+
+            is SharedBillUiEvent.OnViewerPageChanged -> openViewer(event.id)
+
             SharedBillUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
+
             is SharedBillUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
-            SharedBillUiEvent.OnCommentEditCancelled -> stopEditing()
+
+            SharedBillUiEvent.OnCommentEditCancelled -> if (uiState.value.isEditingComment) {
+                trackEvent("comment_edit_cancelled", sourceParams)
+                stopEditing()
+            }
+
             is SharedBillUiEvent.OnCommentDeleteClicked -> askToDeleteComment(event.commentId)
+
             SharedBillUiEvent.OnCommentDeleteConfirmed -> deleteComment()
-            SharedBillUiEvent.OnCommentDeleteDismissed -> uiState.update { it.copy(commentToDelete = null) }
+
+            SharedBillUiEvent.OnCommentDeleteDismissed -> if (uiState.value.commentToDelete != null) {
+                trackEvent("comment_delete_cancelled", sourceParams)
+                uiState.update { it.copy(commentToDelete = null) }
+            }
+
             is SharedBillUiEvent.OnCommentLikeClicked -> toggleLike(event.commentId)
+
             is SharedBillUiEvent.OnCommentLikesClicked -> showLikes(event.commentId)
+
             SharedBillUiEvent.OnCommentLikesDismissed -> uiState.update { it.copy(likesCommentId = null) }
+
             is SharedBillUiEvent.OnCommentShareClicked -> shareComment(event.commentId)
+
             SharedBillUiEvent.OnFocusedCommentShown -> uiState.update { it.copy(focusedCommentId = null) }
         }
     }
 
-    private fun load() {
-        if (loading?.isActive == true) return
+    // Why: whether it started a read, since one already under way takes it.
+    private fun load(): Boolean {
+        if (loading?.isActive == true) return false
         loading = viewModelScope.launch {
             if (shown == null) uiState.update { it.copy(status = SharedBillStatus.LOADING) }
             loadSharedBill(route.code)
@@ -195,6 +234,16 @@ class SharedBillViewModel(
                 // Why: a page already drawn keeps what it shows when a reload fails.
                 .onFailure { if (shown == null) uiState.update { it.copy(status = SharedBillStatus.FAILED) } }
         }
+        return true
+    }
+
+    /*
+     * Why: "Tentar de novo" on a page that says it failed starts a new read even while an older one still hangs (the
+     * connection dropped mid-read), which would otherwise leave the button doing nothing until it times out.
+     */
+    private fun retry() {
+        if (uiState.value.status == SharedBillStatus.FAILED) loading?.cancel()
+        if (load()) trackEvent("retry_clicked", sourceParams)
     }
 
     // Why: a read already under way may have left before what changed (a comment up, a session), so it starts over.
@@ -286,6 +335,7 @@ class SharedBillViewModel(
 
     private fun signIn() {
         if (!isOnTop()) return
+        trackEvent("shared_bill_sign_in_clicked", emptyMap())
         viewModelScope.launch {
             if (observeProfile().first() == null) {
                 navigator.replaceAll(Route.Welcome)
@@ -298,6 +348,7 @@ class SharedBillViewModel(
     private fun openInApp() {
         val bill = shown ?: return
         if (!uiState.value.canOpenInApp || !isOnTop()) return
+        trackEvent("shared_bill_open_in_app_clicked", emptyMap())
         // Why: in one step, so the web never draws Despesas without its Conta in between.
         navigator.replaceAbove(
             size = navigator.backStack.value.size - 1,
@@ -317,7 +368,9 @@ class SharedBillViewModel(
     }
 
     private fun replyTo(commentId: String) {
-        answer(replyTargetOf(uiState.value.threads, commentId) ?: return)
+        val target = replyTargetOf(uiState.value.threads, commentId) ?: return
+        trackEvent("comment_reply_clicked", sourceParams)
+        answer(target)
     }
 
     private fun answer(target: BillReplyTarget?) {
@@ -330,11 +383,24 @@ class SharedBillViewModel(
         uiState.update { it.copy(commentDraft = text) }
     }
 
+    private fun trackSendClicked(isEdit: Boolean) {
+        trackEvent(
+            "comment_send_clicked",
+            mapOf(
+                // Why: an edit saves only its text, whatever reply was picked meanwhile.
+                "is_reply" to (!isEdit && uiState.value.replyTarget != null),
+                "is_edit" to isEdit,
+                "source" to SHARED_BILL_SOURCE,
+            ),
+        )
+    }
+
     // Why: straight to the server, so what was typed stays in the field until it is up.
     private fun sendComment() {
         val state = uiState.value
         if (!state.canSendComment) return
         state.editingCommentId?.let { return saveEdit(it) }
+        trackSendClicked(isEdit = false)
         val replyTarget = state.replyTarget
         val id = commentId ?: Uuid.random().toString().also { commentId = it }
         uiState.update { it.copy(isSendingComment = true) }
@@ -391,6 +457,7 @@ class SharedBillViewModel(
     private fun startEditing(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canChange } ?: return
         if (!uiState.value.canChangeComments) return
+        trackEvent("comment_edit_clicked", sourceParams)
         val state = uiState.value
         show(
             edit.start(
@@ -418,37 +485,64 @@ class SharedBillViewModel(
     // Why: straight to the server, so the edited text stays in the composer until it is up.
     private fun saveEdit(commentId: String) {
         val body = uiState.value.commentDraft
-        change(onPosted = { if (uiState.value.editingCommentId == commentId) stopEditing() }) {
+        change(
+            onStarted = { trackSendClicked(isEdit = true) },
+            onPosted = { if (uiState.value.editingCommentId == commentId) stopEditing() },
+        ) {
             editSharedBillComment(route.code, commentId, body)
         }
     }
 
     private fun askToDeleteComment(commentId: String) {
         if (findCommentOrNull(commentId)?.canChange != true || !uiState.value.canChangeComments) return
+        trackEvent("comment_delete_clicked", sourceParams)
         uiState.update { it.copy(commentToDelete = commentId) }
     }
 
+    /*
+     * Why: a delete the page can't make now (offline, or a change still on its way) closes the question and says so,
+     * as one the server refuses does (Pierre's call), and the edit of that comment goes on.
+     */
     private fun deleteComment() {
         val commentId = uiState.value.commentToDelete ?: return
         uiState.update { it.copy(commentToDelete = null) }
+        if (!uiState.value.canChangeComments) {
+            viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShowCommentChangeError) }
+            return
+        }
         if (uiState.value.editingCommentId == commentId) stopEditing()
-        change { deleteSharedBillComment(route.code, commentId) }
+        change(onStarted = { trackEvent("comment_delete_confirmed", sourceParams) }) {
+            deleteSharedBillComment(route.code, commentId)
+        }
     }
 
     private fun toggleLike(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
-        change { likeSharedBillComment(route.code, comment.id, !comment.isLikedByMe) }
+        change(
+            onStarted = {
+                trackEvent(
+                    "comment_like_toggled",
+                    mapOf(
+                        "is_liked" to !comment.isLikedByMe,
+                        "source" to SHARED_BILL_SOURCE,
+                    ),
+                )
+            },
+        ) { likeSharedBillComment(route.code, comment.id, !comment.isLikedByMe) }
     }
 
     /*
      * Why: one change at a time, read again from the server once it answered; a link changed meanwhile reads again too,
-     * so the page says what it shows now.
+     * so the page says what it shows now. onStarted counts the tap only once the page takes the change (online,
+     * signed in, none in flight).
      */
     private fun change(
+        onStarted: () -> Unit = {},
         onPosted: () -> Unit = {},
         request: suspend () -> Result<SharedBillComment>,
     ) {
         if (!uiState.value.canChangeComments) return
+        onStarted()
         uiState.update { it.copy(isChangingComment = true) }
         viewModelScope.launch {
             val outcome = request().getOrNull()
@@ -468,6 +562,7 @@ class SharedBillViewModel(
 
     private fun showLikes(commentId: String) {
         if ((findCommentOrNull(commentId)?.likeCount ?: 0) == 0) return
+        trackEvent("comment_likes_clicked", sourceParams)
         uiState.update { it.copy(likesCommentId = commentId) }
     }
 
@@ -480,11 +575,15 @@ class SharedBillViewModel(
             billDescription = uiState.value.description,
             body = comment.body,
         )
+        trackEvent("comment_share_clicked", sourceParams)
         viewModelScope.launch { uiAction.emit(SharedBillUiAction.ShareComment(share)) }
     }
 
-    private fun view(id: String) {
-        if (uiState.value.attachments.any { it.id == id }) uiState.update { it.copy(viewedAttachmentId = id) }
+    // Why: whether the viewer took it, so a tap on a tile counts only when it opens.
+    private fun openViewer(id: String): Boolean {
+        if (uiState.value.attachments.none { it.id == id }) return false
+        uiState.update { it.copy(viewedAttachmentId = id) }
+        return true
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

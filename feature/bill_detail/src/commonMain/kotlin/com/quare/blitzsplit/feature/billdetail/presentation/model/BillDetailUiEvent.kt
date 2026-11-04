@@ -1,8 +1,73 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface BillDetailUiEvent : UiEvent {
+sealed interface BillDetailUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: a back, which each platform also does its own way: where it went is its screen view.
+            OnBackClicked -> EventAnalytics.NotTracked
+
+            // Why: typed letter by letter; what was typed shows in the comment sent.
+            is OnCommentChanged -> EventAnalytics.NotTracked
+
+            // Why: a close, or a comment a link opened at shown, which nobody tapped.
+            OnCommentLikesDismissed,
+            OnFocusedCommentShown,
+            OnViewerDismissed,
+            -> EventAnalytics.NotTracked
+
+            // Why: a swipe through the viewer, like a scroll.
+            is OnViewerPageChanged -> EventAnalytics.NotTracked
+
+            OnSendCommentClicked -> CommentTap.SEND.analytics
+
+            is OnReplyClicked -> CommentTap.REPLY.analytics
+
+            OnReplyCancelled -> CommentTap.REPLY_CANCEL.analytics
+
+            is OnCommentEditClicked -> CommentTap.EDIT.analytics
+
+            OnCommentEditCancelled -> CommentTap.EDIT_CANCEL.analytics
+
+            is OnCommentDeleteClicked -> CommentTap.DELETE.analytics
+
+            OnCommentDeleteConfirmed -> CommentTap.DELETE_CONFIRM.analytics
+
+            OnCommentDeleteDismissed -> CommentTap.DELETE_CANCEL.analytics
+
+            is OnCommentLikeClicked -> CommentTap.LIKE.analytics
+
+            is OnCommentLikesClicked -> CommentTap.LIKES.analytics
+
+            is OnCommentShareClicked -> CommentTap.SHARE.analytics
+
+            is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
+
+            is OnPersonClicked -> EventAnalytics.Manual("person_clicked")
+
+            OnEditClicked -> EventAnalytics.Manual("bill_edit_clicked")
+
+            OnShareClicked -> EventAnalytics.Manual("bill_share_clicked")
+
+            OnDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
+
+            OnDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
+
+            OnDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
+
+            OnUndoClicked -> EventAnalytics.Manual("bill_undo_clicked")
+
+            // Why: a photo handed back, which stands for the tap that opened the camera or the picker.
+            is OnPhotoPicked -> EventAnalytics.Manual("photo_picked")
+
+            // Why: the picker handing back an item the UI couldn't read, not a tap.
+            OnPhotoUnreadable -> EventAnalytics.NotTracked
+
+            is OnRemoveAttachmentClicked -> EventAnalytics.Manual("bill_attachment_removed")
+        }
+
     // Why: what "Comentários" handles on its own (BillDetailComments).
     sealed interface CommentEvent : BillDetailUiEvent
 
