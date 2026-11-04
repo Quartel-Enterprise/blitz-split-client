@@ -15,10 +15,7 @@ sealed interface HomeUiEvent : UiEvent {
     // Why: pulled down on Android and iOS.
     data object OnRefresh : HomeUiEvent
 
-    /*
-     * Why: a face of "Saldos com pessoas": their profile, as Contatos opens it (Pierre's call, beta feedback 18), whose
-     * Acertar and Recebi settle the net; someone no longer in the group has none, so it settles up with them instead.
-     */
+    // Why: a face of "Saldos com pessoas": settling up with them (4.5) or Recebi (6.5), for the net.
     data class OnPersonClicked(
         val key: String,
         val currency: GroupCurrency,

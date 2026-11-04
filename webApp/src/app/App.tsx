@@ -115,6 +115,13 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   const isProfilePage = page?.name === 'contact-profile' || page?.name === 'profile'
   const billUnderPage = !bill && isProfilePage && stack[pageIndex - 1]?.name === 'bill-detail' ? stack[pageIndex - 1] : undefined
   const panelBill = bill ?? billUnderPage
+  // Why: a person's profile opened from a payment's face takes the page too, and the payment stays mounted (closed)
+  // under it, so back finds the form with what was typed.
+  const paymentUnderPage =
+    isProfilePage && (stack[pageIndex - 1]?.name === 'register-payment' || stack[pageIndex - 1]?.name === 'settle-up')
+      ? stack[pageIndex - 1]
+      : undefined
+  const payment = isRegisterPayment ? top : paymentUnderPage
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
   return (
     <>
@@ -140,8 +147,12 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
       {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
       {isPickPayment && <PickPaymentDialog />}
-      {isRegisterPayment && (
-        <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
+      {payment && (
+        <RegisterPaymentDialog
+          key={`${payment.groupId ?? payment.personKey}/${payment.fromMemberId ?? payment.currency}/${payment.toMemberId ?? ''}`}
+          route={payment}
+          isCovered={payment !== top}
+        />
       )}
     </>
   )

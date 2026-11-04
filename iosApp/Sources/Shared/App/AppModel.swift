@@ -114,13 +114,13 @@ final class AppModel {
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
         get {
-            pathEntries.filter { !isHiddenBill($0) }
+            pathEntries.filter { !isHiddenUnderScreen($0) }
         }
         set {
             guard newValue.count < path.count else { return }
-            // Keeps a hidden bill right under the first entry popped, so the inspector shows it again
+            // Keeps a hidden bill or payment right under the first entry popped, so it shows again
             let entries = pathEntries
-            let visible = entries.indices.filter { !isHiddenBill(entries[$0]) }
+            let visible = entries.indices.filter { !isHiddenUnderScreen(entries[$0]) }
             holder.viewModel.navigator.popTo(size: Int32(visible[newValue.count] + 1))
         }
     }
@@ -131,16 +131,15 @@ final class AppModel {
         return Array(windowStack.dropFirst().dropLast(modals + inspected))
     }
 
-    /// A bill drawn outside the window's stack (a sheet with an iPad's room, the Mac's inspector) under a screen it
-    /// opened (a person's profile, item 18): it is never pushed as a page, so it closes while that screen shows, with
-    /// whatever sheet that screen opens over the window, and opens again once it is popped. An iPhone pushes the bill.
-    private func isHiddenBill(_ route: AppRoute) -> Bool {
-        guard case .billDetail = route else { return false }
+    /// An entry drawn outside the window's stack (any sheet, a bill with an iPad's room, the Mac's inspector) under a
+    /// screen it opened (a person's profile from a bill or a payment, item 18): it is never pushed as a page, so it
+    /// closes while that screen shows, with whatever sheet that screen opens over the window, and opens again once it
+    /// is popped. An iPhone pushes the bill.
+    private func isHiddenUnderScreen(_ route: AppRoute) -> Bool {
         #if os(macOS)
-        return root == .home
-        #else
-        return presentsAsSheet(route)
+        if case .billDetail = route { return root == .home }
         #endif
+        return presentsAsSheet(route)
     }
 
     /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room, a key on the Mac,

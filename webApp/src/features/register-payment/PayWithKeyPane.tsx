@@ -1,12 +1,12 @@
 import { Copy, Loader2 } from 'lucide-react'
 import type { JsReceiverKey, JsRegisterPaymentState, RegisterPaymentPresenter } from 'blitzsplit-shared'
 import { toast } from 'sonner'
-import { Avatar } from '@/components/common'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { QrCode } from '@/features/invite/InviteDialog'
+import { ProfileFace } from '@/features/register-payment/PaymentFaces'
 import { t } from '@/i18n'
 import type { PaymentKeyType } from '@/lib/paymentKey'
 
@@ -21,7 +21,11 @@ export function payWithKeyPane(
 ): PaneParts {
   const name = nameOrFormer(state.to?.name)
   return {
-    leading: state.to && <Avatar initial={state.to.initials} color={state.to.color} className="mb-1 size-12 text-base" />,
+    leading: state.to && (
+      <span className="mb-1 flex">
+        <ProfileFace presenter={presenter} person={state.to} className="size-12 text-base" />
+      </span>
+    ),
     title: t('payWithKey_title', { name, amount: money(state.debtMinor) }),
     description: state.groupName
       ? t('payWithKey_group', { group: state.groupName })

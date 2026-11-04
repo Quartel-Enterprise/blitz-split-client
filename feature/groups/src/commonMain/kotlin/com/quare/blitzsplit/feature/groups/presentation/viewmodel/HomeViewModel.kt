@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -142,6 +143,13 @@ class HomeViewModel(
     private var rows = emptyList<GroupRow>()
     private var groups = emptyList<Group>()
 
+    // Why: whom "Você deve" settles up with straight away, as the global Saldos has them.
+    private var peopleBalances = PeopleBalances(
+        people = emptyList(),
+        totals = emptyList(),
+        me = null,
+    )
+
     // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
@@ -221,6 +229,7 @@ class HomeViewModel(
             }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
+                peopleBalances = people
                 uiState.update {
                     it.copy(
                         people = homePeopleOf(people).toLoaded(),
@@ -279,7 +288,7 @@ class HomeViewModel(
 
             HomeUiEvent.OnRefresh -> refresh()
 
-            is HomeUiEvent.OnPersonClicked -> openPerson(event.key, event.currency)
+            is HomeUiEvent.OnPersonClicked -> openSettleUp(event.key, event.currency)
 
             HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
@@ -375,26 +384,17 @@ class HomeViewModel(
         if (isOnTop()) navigator.navigate(route)
     }
 
-    /*
-     * Why: the person's profile; someone no longer in the group has none, so their face settles the net across their
-     * groups as in Saldos, "Acertar" or "Recebi".
-     */
-    private fun openPerson(
+    // Why: the net with that person, settled across their groups as in Saldos: "Acertar" or "Recebi".
+    private fun openSettleUp(
         key: String,
         currency: GroupCurrency,
     ) {
-        val person = uiState.value.people
-            .valueOrNull()
-            ?.firstOrNull { it.key == key && it.currency == currency } ?: return
+        if (peopleBalances.findPersonOrNull(key, currency.code) == null) return
         open(
-            if (person.opensProfile) {
-                Route.ContactProfile(key)
-            } else {
-                Route.SettleUp(
-                    personKey = key,
-                    currency = currency,
-                )
-            },
+            Route.SettleUp(
+                personKey = key,
+                currency = currency,
+            ),
         )
     }
 

@@ -39,5 +39,10 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
     // Why: "Paguei outro valor ou de outro jeito" of "Pagar Ana", which opens the form in its place.
     data object OnPayOtherwiseClicked : RegisterPaymentUiEvent
 
+    // Why: who paid or who received, whose face opens their profile over the form (beta feedback 18), as Conta's do.
+    data class OnPersonClicked(
+        val personId: String,
+    ) : RegisterPaymentUiEvent
+
     data object OnCloseClicked : RegisterPaymentUiEvent
 }

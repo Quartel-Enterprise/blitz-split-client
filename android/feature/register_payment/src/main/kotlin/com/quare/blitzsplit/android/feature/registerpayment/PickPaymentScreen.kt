@@ -360,6 +360,7 @@ private fun createPreviewPerson(
     avatarColor = color,
     photoUrl = null,
     isMe = isMe,
+    personKey = "name:${name.lowercase()}",
 )
 
 @DevicePreviews

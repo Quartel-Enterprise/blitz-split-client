@@ -200,6 +200,11 @@ class RegisterPaymentPresenter(
         viewModel.onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked)
     }
 
+    // Why: who paid or who received, by JsPaymentPerson.id, whose face opens their profile over the dialog.
+    fun openPerson(personId: String) {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(personId))
+    }
+
     fun close() {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
     }

@@ -44,30 +44,17 @@ enum HomeCopy {
         return person.isGuest ? String(localized: "\(label), guest without the app") : label
     }
 
-    /// What tapping a face opens: the person's profile; a former member's settling up with whom you owe, or recording
-    /// what they paid you.
+    /// What tapping a face opens: settling up with whom you owe, recording what someone paid you.
     static func accessibilityHint(_ person: HomePerson) -> String {
-        if person.opensProfile {
-            return String(localized: "Opens the profile", comment: "What tapping a person's face or name does")
-        }
-        return formerAction(person)
-    }
-
-    /// The guest face's menu item, what the tap does as a command: "Open profile", or a former member's settling up.
-    static func actionTitle(_ person: HomePerson) -> String {
-        person.opensProfile ? String(localized: "Open profile", comment: "Home: a face's menu item") : formerAction(person)
-    }
-
-    private static func formerAction(_ person: HomePerson) -> String {
         person.netMinor < 0 ? String(localized: "Settle up") : String(localized: "Record payment")
     }
 
-    /// A guest's long press (a hover on the Mac): they have no app, so they never hear of what is noted.
+    /// A guest's long press (a hover on the Mac): they have no app, so they never hear of the payment.
     static func guestHint(_ person: HomePerson) -> String {
         #if os(macOS)
-        String(localized: "\(name(person)) is a guest without the app: they don't hear about what you note. Click to see their profile.")
+        String(localized: "\(name(person)) is a guest without the app. Click to note what they paid you; they get no notice.")
         #else
-        String(localized: "\(name(person)) is a guest without the app: they don't hear about what you note. Tap to see their profile.")
+        String(localized: "\(name(person)) is a guest without the app. Tap to note what they paid you; they get no notice.")
         #endif
     }
 

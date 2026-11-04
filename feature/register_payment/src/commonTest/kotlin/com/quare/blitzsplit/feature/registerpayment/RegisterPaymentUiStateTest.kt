@@ -524,6 +524,7 @@ class RegisterPaymentUiStateTest {
         AvatarColor.BLUE,
         photoUrl = null,
         isMe = true,
+        personKey = "name:pierre",
     )
     private val ana = PaymentPerson(
         "member-1",
@@ -532,6 +533,7 @@ class RegisterPaymentUiStateTest {
         AvatarColor.PEACH,
         photoUrl = null,
         isMe = false,
+        personKey = "name:ana",
     )
     private val twoGroups = listOf("floripa", "ape").map { groupId ->
         PersonGroupBalance(
@@ -552,6 +554,7 @@ class RegisterPaymentUiStateTest {
         AvatarColor.SAND,
         photoUrl = null,
         isMe = false,
+        personKey = "name:diego",
     )
 
     private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)

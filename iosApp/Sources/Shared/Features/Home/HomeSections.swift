@@ -21,8 +21,8 @@ struct HomeSectionHeader: View {
     }
 }
 
-/// "Balances with people": a row of faces, whom you owe first, then who owes you. A face opens the person's profile
-/// (a former member's settling up); a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover
+/// "Balances with people": a row of faces, whom you owe first, then who owes you. A face settles up with them, or
+/// records what they paid you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover
 /// on the Mac. Until they are read (nil), and while the first download fills the device, faces shimmer in their place.
 struct HomePeopleSection: View {
     let people: [HomePerson]?
@@ -110,7 +110,7 @@ private struct PersonFace: View {
         .contextMenu {
             if person.isGuest {
                 Text(verbatim: HomeCopy.guestHint(person))
-                Button(HomeCopy.actionTitle(person), systemImage: "person.crop.circle", action: action)
+                Button(HomeCopy.accessibilityHint(person), systemImage: "banknote", action: action)
             }
         }
         #else

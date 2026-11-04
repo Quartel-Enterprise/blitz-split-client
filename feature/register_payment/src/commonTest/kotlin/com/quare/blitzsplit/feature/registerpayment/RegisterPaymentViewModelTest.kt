@@ -294,6 +294,7 @@ class RegisterPaymentViewModelTest {
                     AvatarColor.PEACH,
                     photoUrl = null,
                     isMe = false,
+                    personKey = "name:ana",
                 ),
                 state.from,
             )
@@ -305,6 +306,7 @@ class RegisterPaymentViewModelTest {
                     AvatarColor.BLUE,
                     photoUrl = null,
                     isMe = true,
+                    personKey = "name:pierre vieira",
                 ),
                 state.to,
             )
@@ -331,6 +333,7 @@ class RegisterPaymentViewModelTest {
                 AvatarColor.BLUE,
                 photoUrl = null,
                 isMe = true,
+                personKey = "name:pierre vieira",
             ),
             state.from,
         )
@@ -342,6 +345,7 @@ class RegisterPaymentViewModelTest {
                 AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = false,
+                personKey = "name:bruno",
             ),
             state.to,
         )
@@ -370,6 +374,7 @@ class RegisterPaymentViewModelTest {
                 AvatarColor.SAND,
                 photoUrl = null,
                 isMe = false,
+                personKey = "name:diego",
             ),
             state.from,
         )
@@ -381,6 +386,7 @@ class RegisterPaymentViewModelTest {
                 AvatarColor.GREEN,
                 photoUrl = null,
                 isMe = false,
+                personKey = "name:bruno",
             ),
             state.to,
         )
@@ -1598,6 +1604,242 @@ class RegisterPaymentViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN Ana joined with an account WHEN the screen opens THEN her face carries her account key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithAnaJoined)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("user:$ANA_USER", state.from?.personKey)
+            assertEquals("name:pierre vieira", state.to?.personKey)
+        }
+
+    @Test
+    fun `GIVEN Ana is a guest WHEN tapping her face THEN opens her profile over the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+                Route.ContactProfile("name:ana"),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN Ana joined with an account WHEN tapping her face THEN opens her account profile over the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithAnaJoined)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    route,
+                    Route.ContactProfile("user:$ANA_USER"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user pays Bruno WHEN tapping the receiver face THEN opens Bruno profile over the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = PIERRE,
+                to = BRUNO,
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    route,
+                    Route.ContactProfile("name:bruno"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana pays this device user WHEN tapping their own face THEN opens Perfil over the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(PIERRE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    route,
+                    Route.Profile,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana pays this device user WHEN tapping someone outside the pair THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(BRUNO))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the payer left the group WHEN tapping their face THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        removeMember(ANA)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN nothing read yet WHEN tapping a face THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isGroupRead = false)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a payment being saved WHEN tapping a face THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(recordGate = CompletableDeferred())
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping a face THEN the back stack stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                route,
+                Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
     // Why: the field emptied, then the amount put in whole, as pasting it does.
     private fun typeAmount(text: String) {
         viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged(""))
@@ -1659,6 +1901,19 @@ class RegisterPaymentViewModelTest {
             debtor = DIEGO,
             8_000L,
         ),
+    )
+
+    // Why: Ana joined with her account, so Saldos keys her by it rather than by her name.
+    private val tripWithAnaJoined = trip.copy(
+        members = trip.members.map {
+            if (it.id ==
+                ANA
+            ) {
+                it.copy(userId = ANA_USER)
+            } else {
+                it
+            }
+        },
     )
 
     private fun member(
@@ -1790,6 +2045,7 @@ class RegisterPaymentViewModelTest {
         const val PIERRE = "member-2"
         const val BRUNO = "member-3"
         const val DIEGO = "member-4"
+        const val ANA_USER = "ana-user"
         const val MINUTE = 60_000L
         const val HOUR = 60 * MINUTE
     }

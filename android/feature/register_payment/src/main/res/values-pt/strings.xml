@@ -12,6 +12,7 @@
     <string name="register_payment_remaining_between">%1$s ainda vai dever %3$s a %2$s</string>
     <string name="register_payment_amount">Valor pago</string>
     <string name="register_payment_full_debt">Toda a dívida</string>
+    <string name="register_payment_you">Você</string>
     <string name="register_payment_method">Como foi pago</string>
     <string name="register_payment_info">Vira um acerto no grupo: aparece em Despesas e dá para desfazer.</string>
     <string name="register_payment_for_others">Você está registrando por %1$s e %2$s.</string>
