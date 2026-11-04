@@ -17600,47 +17600,6 @@
         }
       }
     },
-    "· Read from the receipt, %lld items" : {
-      "comment" : "Split a bill on the Mac: the receipt was read with its items",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Read from the receipt, %lld item"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Read from the receipt, %lld items"
-                }
-              }
-            }
-          }
-        },
-        "pt-BR" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Lido do cupom, %lld item"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Lido do cupom, %lld itens"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "· Read from the receipt" : {
       "comment" : "Split a bill on the Mac: the receipt was read",
       "localizations" : {

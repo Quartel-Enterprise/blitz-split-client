@@ -65,6 +65,9 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Divisão", which opens "Dividir".
     data object OnSplitClicked : SplitBillUiEvent
 
+    // Why: "14 itens" beside "Lido do cupom", which opens Dividir straight on "Itens", the receipt's items in it.
+    data object OnReceiptItemsClicked : SplitBillUiEvent
+
     // Why: Igual, Valores, % or Partes; Itens opens "Itens da conta" in Dividir's place.
     data class OnSplitModeClicked(
         val mode: SplitMode,

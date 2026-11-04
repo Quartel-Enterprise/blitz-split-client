@@ -61,7 +61,10 @@ internal fun BillFieldsSection(
     if (!state.isEditing && state.categoryMatches.size > 1) {
         MatchedTermsRow(state)
     }
-    ReceiptReadRow(state)
+    ReceiptReadRow(
+        state = state,
+        onEvent = onEvent,
+    )
     AmountField(
         state = state,
         money = money,

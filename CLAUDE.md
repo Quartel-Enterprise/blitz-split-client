@@ -756,7 +756,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     beta feedback 17, `SplitBillUiState.isFormLocked`: descrição, categoria, valor, grupo, quem pagou, quando and
     divisão; a sheet or picker left open closes as the read starts), while × on "Foto do cupom" still cancels it. Once read it fills the total, the description (the place)
     and Quando (the day printed, with its time or the form's, never after now), shows "Lido do cupom" and "14 itens" under the description, and its items
-    wait for Dividir's Itens; the split stays the group's default until Itens or another mode is picked. Its category
+    wait for Dividir's Itens, which "14 itens" opens straight away (Pierre's call, `OnReceiptItemsClicked`: Dividir
+    under it, so back goes there; the Mac's count is a link); the split stays the group's default until Itens or another mode is picked. Its category
     is one of the app's or of the group's own, which go with the photo with the person's map terms counting in that
     group (a term of another group's category or of Outros stays out, one of a deleted category as where its bills
     go, `ReceiptCategoryHints`), so "ração" among the items can choose the group's "Pet", which reads as where its
