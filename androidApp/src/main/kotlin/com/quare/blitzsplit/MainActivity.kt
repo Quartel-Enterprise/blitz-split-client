@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
 import com.quare.blitzsplit.android.designsystem.layout.FoldLayoutRoot
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.android.feature.inappupdate.InAppUpdateDownloadOverlay
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
                     FoldLayoutRoot {
                         AppNavDisplay(appViewModel = appViewModel)
                         BillLinkNoticeDialog(appViewModel = appViewModel)
+                        InAppUpdateDownloadOverlay()
                     }
                 }
                 val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()

@@ -173,6 +173,7 @@ struct RootView: View {
         case .notificationSettings: NotificationSettingsView()
         case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
+        case let .inAppUpdate(route): InAppUpdateView(route: route)
         }
     }
 }

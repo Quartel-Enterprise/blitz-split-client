@@ -84,4 +84,13 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun updateBitcoinInSats(isOn: Boolean) {
         local.update { entity -> entity.copy(showsBitcoinInSats = isOn) }
     }
+
+    override fun observeLastUpdatePromptAt(): Flow<Long?> = local
+        .observe()
+        .map { entity -> entity?.lastUpdatePromptAt }
+        .distinctUntilChanged()
+
+    override suspend fun updateLastUpdatePromptAt(epochMillis: Long) {
+        local.update { entity -> entity.copy(lastUpdatePromptAt = epochMillis) }
+    }
 }

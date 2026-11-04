@@ -105,6 +105,7 @@ dependencies {
     implementation(projects.core.provider.crashlytics)
     implementation(projects.core.provider.analytics)
     implementation(projects.core.sync)
+    implementation(projects.core.inAppUpdate)
     implementation(projects.android.platform)
 
     // Android UI
@@ -133,6 +134,7 @@ dependencies {
     implementation(projects.android.feature.deleteAccount)
     implementation(projects.android.feature.notificationSettings)
     implementation(projects.android.feature.categoryMap)
+    implementation(projects.android.feature.inAppUpdate)
 
     // Atividade's push notifications (Crashlytics comes with :core:provider:crashlytics)
     implementation(platform(libs.firebase.bom))

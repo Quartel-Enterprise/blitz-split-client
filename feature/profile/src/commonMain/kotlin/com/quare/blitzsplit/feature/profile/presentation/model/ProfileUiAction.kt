@@ -20,4 +20,9 @@ sealed interface ProfileUiAction {
     data class OpenUrl(
         val url: String,
     ) : ProfileUiAction
+
+    // Why: "Buscar atualizações" with nothing to offer, said in a snackbar, a toast or a banner.
+    data class ShowUpdateCheckResult(
+        val result: UpdateCheckResult,
+    ) : ProfileUiAction
 }

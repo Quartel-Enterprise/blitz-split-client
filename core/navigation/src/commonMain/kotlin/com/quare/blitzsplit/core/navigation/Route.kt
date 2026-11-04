@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.PaymentMethod
+import com.quare.blitzsplit.core.model.UpdatePromptSource
 
 /*
  * Why: one back stack shared by every UI. Android hands it to Navigation 3, SwiftUI binds it to
@@ -44,6 +45,17 @@ sealed interface Route {
      * change the photo at once, as Bible Planner's.
      */
     data object ProfilePhoto : Route
+
+    /*
+     * Why: "Atualização disponível" over wherever the app is, on iOS and macOS only: the App Store's newer version and
+     * "Abrir na App Store". Android hands the update to Google Play's own flow, and the web always serves the latest.
+     */
+    data class InAppUpdate(
+        // Why: the App Store's version, shown as "Versão 2.1.0"; null when the store didn't say.
+        val versionName: String?,
+        val storeUrl: String,
+        val source: UpdatePromptSource,
+    ) : Route
 
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
     data object DeleteAccount : Route
