@@ -1076,6 +1076,7 @@ class SplitEditorTest {
         payerIds = listOf(PIERRE),
         items = null,
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     private fun row(

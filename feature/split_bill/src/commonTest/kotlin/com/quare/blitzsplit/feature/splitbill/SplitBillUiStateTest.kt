@@ -529,6 +529,7 @@ class SplitBillUiStateTest {
         },
         totalMinor = 10_000L,
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     // Why: a 100,00 bill between Ana and Pierre, who paid, split equally unless the mode says otherwise.
@@ -557,6 +558,7 @@ class SplitBillUiStateTest {
         groups = groups,
         groupSelection = null,
         currency = GroupCurrency.BRL,
+        showsSats = false,
         people = people,
         amountText = amountText,
         description = "Mercado",
@@ -584,6 +586,7 @@ class SplitBillUiStateTest {
             payerIds = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId),
             items = null,
             currency = GroupCurrency.BRL,
+            showsSats = false,
         ),
         splitEditor = null,
         isSplitEditorAsDefaultChecked = false,

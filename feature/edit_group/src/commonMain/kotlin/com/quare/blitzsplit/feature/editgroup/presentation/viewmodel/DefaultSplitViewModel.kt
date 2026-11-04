@@ -17,9 +17,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
-import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitFigures
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
@@ -385,7 +385,13 @@ class DefaultSplitViewModel(
     private fun updateForm(transform: (DefaultSplitUiState) -> DefaultSplitUiState) {
         uiState.update { state ->
             val next = transform(state)
-            val figures = DefaultSplitFigures.of(next.mode, next.people, next.incomeFallback, next.currency, next.showsSats)
+            val figures = DefaultSplitFigures.of(
+                next.mode,
+                next.people,
+                next.incomeFallback,
+                next.currency,
+                next.showsSats,
+            )
             next.copy(
                 figures = figures,
                 hasChanges = next.isChangedFrom(opened, figures),

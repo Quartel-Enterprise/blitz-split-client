@@ -13,7 +13,7 @@ class TypedTextTest {
         val text = "R$ 1.234,56abc"
 
         // When
-        val kept = TypedText.toAmountText("12,34", "12,34$text", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("12,34", "12,34$text", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -37,8 +37,8 @@ class TypedTextTest {
         val text = "12,50"
 
         // When
-        val amount = TypedText.toSplitValueText("", text, SplitMode.AMOUNT, GroupCurrency.BRL, ',')
-        val percent = TypedText.toSplitValueText("", text, SplitMode.PERCENT, GroupCurrency.BRL, ',')
+        val amount = TypedText.toSplitValueText("", text, SplitMode.AMOUNT, GroupCurrency.BRL, false, ',')
+        val percent = TypedText.toSplitValueText("", text, SplitMode.PERCENT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", amount)
@@ -112,7 +112,7 @@ class TypedTextTest {
         val previous = "99"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.CLP, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.CLP, false, ',')
 
         // Then
         assertEquals("999", kept)
@@ -136,7 +136,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "$previous,", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -148,7 +148,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "$previous.", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -160,7 +160,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}a", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}a", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -172,7 +172,7 @@ class TypedTextTest {
         val previous = ""
 
         // When
-        val kept = TypedText.toAmountText(previous, ",", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, ",", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -184,7 +184,7 @@ class TypedTextTest {
         val previous = "1,23"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -196,7 +196,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("123,45", kept)
@@ -208,7 +208,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous.dropLast(1), GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -220,7 +220,7 @@ class TypedTextTest {
         val previous = ""
 
         // When
-        val kept = TypedText.toAmountText(previous, "0", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -232,7 +232,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, previous, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, previous, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -244,7 +244,7 @@ class TypedTextTest {
         val previous = "100.000.000,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100.000.000,00", kept)
@@ -256,7 +256,7 @@ class TypedTextTest {
         val previous = "99.999.999,99"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}9", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("999.999.999,99", kept)
@@ -268,7 +268,7 @@ class TypedTextTest {
         val previous = "123.456.789"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.JPY, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}1", GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("123.456.789", kept)
@@ -280,7 +280,7 @@ class TypedTextTest {
         val pasted = "12,5"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", kept)
@@ -292,7 +292,7 @@ class TypedTextTest {
         val pasted = "50"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("50,00", kept)
@@ -304,7 +304,7 @@ class TypedTextTest {
         val pasted = "R$ 1.234,56"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -316,7 +316,7 @@ class TypedTextTest {
         val pasted = "1,234.56"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", kept)
@@ -328,7 +328,7 @@ class TypedTextTest {
         val previous = "12,34"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}56,78", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}56,78", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("56,78", kept)
@@ -340,7 +340,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "250,75", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "250,75", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("250,75", kept)
@@ -352,7 +352,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "1.000.000.000", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "1.000.000.000", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -364,7 +364,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "1234567890123", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "1234567890123", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -376,7 +376,7 @@ class TypedTextTest {
         val pasted = "100000000"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100.000.000,00", kept)
@@ -388,7 +388,7 @@ class TypedTextTest {
         val previous = "1,00"
 
         // When
-        val kept = TypedText.toAmountText(previous, "${previous}abc", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "${previous}abc", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,00", kept)
@@ -400,7 +400,7 @@ class TypedTextTest {
         val pasted = "0,00"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", kept)
@@ -412,7 +412,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toSplitValueText(previous, "0,012", SplitMode.AMOUNT, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText(previous, "0,012", SplitMode.AMOUNT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -424,7 +424,7 @@ class TypedTextTest {
         val typed = "2,5"
 
         // When
-        val kept = TypedText.toSplitValueText("2,", typed, SplitMode.SHARES, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText("2,", typed, SplitMode.SHARES, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("25", kept)
@@ -436,7 +436,7 @@ class TypedTextTest {
         val typed = "1000"
 
         // When
-        val kept = TypedText.toSplitValueText("100", typed, SplitMode.PERCENT, GroupCurrency.BRL, ',')
+        val kept = TypedText.toSplitValueText("100", typed, SplitMode.PERCENT, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("100", kept)
@@ -448,7 +448,7 @@ class TypedTextTest {
         val text = "12,50"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("12", converted)
@@ -460,7 +460,7 @@ class TypedTextTest {
         val text = "1.250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.250,00", converted)
@@ -472,7 +472,7 @@ class TypedTextTest {
         val text = "1,250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.USD, '.')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.USD, false, '.')
 
         // Then
         assertEquals("1,250.00", converted)
@@ -484,7 +484,7 @@ class TypedTextTest {
         val text = "1,250"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, '٫')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, '٫')
 
         // Then
         assertEquals("1,250.00", converted)
@@ -496,7 +496,7 @@ class TypedTextTest {
         val text = "12,5"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,5", converted)
@@ -508,7 +508,7 @@ class TypedTextTest {
         val text = "abc"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -520,7 +520,7 @@ class TypedTextTest {
         val text = ""
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.JPY, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -532,7 +532,7 @@ class TypedTextTest {
         val text = "0,50"
 
         // When
-        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, ',')
+        val converted = TypedText.toCurrency(text, GroupCurrency.BRL, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("", converted)
@@ -544,7 +544,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, "7", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "7", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,07", kept)
@@ -556,7 +556,7 @@ class TypedTextTest {
         val previous = "0,05"
 
         // When
-        val kept = TypedText.toAmountText(previous, "0,05,1", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0,05,1", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,51", kept)
@@ -568,7 +568,7 @@ class TypedTextTest {
         val previous = "0,12"
 
         // When
-        val kept = TypedText.toAmountText(previous, "0,0123", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "0,0123", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1,23", kept)
@@ -580,7 +580,7 @@ class TypedTextTest {
         val previous = "0,01"
 
         // When
-        val kept = TypedText.toAmountText(previous, "12", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "12", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,12", kept)
@@ -592,7 +592,7 @@ class TypedTextTest {
         val pasted = "0,5"
 
         // When
-        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText("", pasted, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("0,50", kept)
@@ -604,7 +604,7 @@ class TypedTextTest {
         val previous = "1.234,56"
 
         // When
-        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, ',')
+        val kept = TypedText.toAmountText(previous, "12,5", GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("12,50", kept)
@@ -617,6 +617,6 @@ class TypedTextTest {
         decimalSeparator: Char,
     ): List<String> = keys
         .runningFold("") { previous, key ->
-            TypedText.toAmountText(previous, previous + key, currency, decimalSeparator)
+            TypedText.toAmountText(previous, previous + key, currency, false, decimalSeparator)
         }.drop(1)
 }

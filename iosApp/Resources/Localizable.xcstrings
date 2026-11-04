@@ -555,6 +555,16 @@
         }
       }
     },
+    "Bitcoin in satoshis" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitcoin em satoshis"
+          }
+        }
+      }
+    },
     "Bringing your groups" : {
       "comment" : "Groups: the card in the overall balance's place during a new device's first download",
       "localizations" : {
@@ -755,6 +765,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para desativar o link. Tente de novo."
+          }
+        }
+      }
+    },
+    "Cryptocurrencies" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criptomoedas"
           }
         }
       }
@@ -1842,6 +1862,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acertos"
+          }
+        }
+      }
+    },
+    "Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats)." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra e digita valores em bitcoin em sats (1 ₿ = 100.000.000 sats)."
           }
         }
       }

@@ -153,7 +153,12 @@ class ProfileViewModel(
                 isOnline = connectivityObserver.observe(),
             ),
             combine(observeDynamicColors(), observeBitcoinInSats()) { isDynamic, showsSats ->
-                uiState.update { it.copy(usesDynamicColors = isDynamic, showsBitcoinInSats = showsSats) }
+                uiState.update {
+                    it.copy(
+                        usesDynamicColors = isDynamic,
+                        showsBitcoinInSats = showsSats,
+                    )
+                }
             },
         ) { _, _, _, _, _ -> }
             .onEach { uiState.update { it.copy(isLoaded = true) } }

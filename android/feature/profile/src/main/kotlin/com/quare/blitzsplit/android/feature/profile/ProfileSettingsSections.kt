@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
@@ -23,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.labelRes
@@ -74,6 +78,26 @@ internal fun PreferencesSection(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: every bitcoin amount shown and typed in whole sats on this device, groups in bitcoin or not yet.
+        SectionRow(
+            icon = Icons.Outlined.CurrencyBitcoin,
+            headline = stringResource(R.string.profile_bitcoin_in_sats),
+            modifier = Modifier.toggleable(
+                value = state.showsBitcoinInSats,
+                enabled = state.isLoaded,
+                role = Role.Switch,
+                onValueChange = { onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(it)) },
+            ),
+            supporting = stringResource(R.string.profile_bitcoin_in_sats_detail),
+            trailing = {
+                Switch(
+                    checked = state.showsBitcoinInSats,
+                    onCheckedChange = null,
+                    enabled = state.isLoaded,
                 )
             },
         )

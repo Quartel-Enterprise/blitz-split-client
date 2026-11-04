@@ -196,7 +196,9 @@ internal fun SplitEditor.withValueTyped(
     decimalSeparator: Char,
 ): SplitEditor = withRows { row ->
     if (row.person.id == memberId) {
-        row.copy(valueText = TypedText.toSplitValueText(row.valueText, typed, mode, currency, showsSats, decimalSeparator))
+        row.copy(
+            valueText = TypedText.toSplitValueText(row.valueText, typed, mode, currency, showsSats, decimalSeparator),
+        )
     } else {
         row
     }

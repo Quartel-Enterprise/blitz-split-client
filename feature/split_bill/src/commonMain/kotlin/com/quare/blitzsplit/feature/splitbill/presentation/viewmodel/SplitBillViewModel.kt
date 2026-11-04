@@ -25,12 +25,11 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.navigation.Navigator
-import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
-import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
@@ -369,7 +368,11 @@ class SplitBillViewModel(
             else -> {
                 isBillMissing = false
                 val previous = editedExpense
-                if (previous == null) fill(group, expense) else noticeChange(group, previous, expense)
+                if (previous == null) {
+                    fill(group, expense)
+                } else {
+                    uiState.update { it.withChangeNoticed(group, previous, expense) }
+                }
                 editedExpense = expense
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
@@ -411,25 +414,6 @@ class SplitBillViewModel(
         uiState.update { it.toFilledWith(group, expense, separator, spentDay) }
         val split = uiState.value.split
         amountAnchor = if (split.mode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
-    }
-
-    // Why: someone else's save that a sync brought, while the form keeps what is being typed here.
-    private fun noticeChange(
-        group: Group,
-        previous: Expense,
-        expense: Expense,
-    ) {
-        if (expense.updatedAt == previous.updatedAt || expense.isPending) return
-        val changer = group.members.firstOrNull { it.id == expense.updatedByMemberId }
-        uiState.update {
-            it.copy(
-                conflict = BillConflict(
-                    changerName = changer?.name,
-                    changerIsMe = changer?.isMe == true,
-                    changedAt = expense.updatedAt,
-                ),
-            )
-        }
     }
 
     // Why: a new bill's category picks its split, the exception of its category or the group's default (7.1k).
@@ -476,7 +460,13 @@ class SplitBillViewModel(
         uiState.update { state ->
             state
                 .copy(
-                    amountText = TypedText.toAmountText(state.amountText, text, state.currency, state.showsSats, separator),
+                    amountText = TypedText.toAmountText(
+                        state.amountText,
+                        text,
+                        state.currency,
+                        state.showsSats,
+                        separator,
+                    ),
                     hasEditedAmount = true,
                 ).withBillTotal()
         }

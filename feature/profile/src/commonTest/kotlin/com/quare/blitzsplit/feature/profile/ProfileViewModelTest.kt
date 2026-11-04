@@ -64,6 +64,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -4316,6 +4317,8 @@ class ProfileViewModelTest {
                 notificationPreferences.hasPendingChanges
             },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
+            updateBitcoinInSats = {},
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

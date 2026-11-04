@@ -260,7 +260,8 @@ private struct OfflineSection: View {
     }
 }
 
-/// Appearance, and on iPhone and iPad the row that opens the notification settings (the Mac shows them inline).
+/// Appearance, bitcoin in satoshis, and on iPhone and iPad the row that opens the notification settings (the Mac shows
+/// them inline).
 private struct PreferencesSection: View {
     let model: ProfileModel
 
@@ -276,6 +277,15 @@ private struct PreferencesSection: View {
                 Text("System").tag(ThemePreference.system)
                 Text("Light").tag(ThemePreference.light)
                 Text("Dark").tag(ThemePreference.dark)
+            }
+            Toggle(
+                isOn: Binding(
+                    get: { model.state.showsBitcoinInSats },
+                    set: { model.send(ProfileUiEventOnBitcoinInSatsToggled(isOn: $0)) },
+                ),
+            ) {
+                Text("Bitcoin in satoshis")
+                Text("Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).")
             }
             #if os(iOS)
             Button {

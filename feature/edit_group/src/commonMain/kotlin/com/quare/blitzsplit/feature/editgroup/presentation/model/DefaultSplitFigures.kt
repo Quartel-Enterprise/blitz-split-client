@@ -36,8 +36,7 @@ data class DefaultSplitFigures(
             val incomes = people
                 .mapNotNull { person ->
                     AmountInput.parse(person.incomeText, currency, showsSats)?.let { person.id to it }
-                }
-                .toMap()
+                }.toMap()
             val weights = weightsOf(mode, people, incomes, incomeFallback)
             val exampleTotalMinor = exampleTotalOf(
                 mode = mode,

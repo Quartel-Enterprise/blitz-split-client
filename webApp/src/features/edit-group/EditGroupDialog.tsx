@@ -1,14 +1,15 @@
-import { Camera, Check, ChevronDown, ChevronRight, CircleAlert, ImageIcon, Loader2, Lock } from 'lucide-react'
+import { Camera, ChevronDown, ChevronRight, CircleAlert, ImageIcon, Loader2, Lock } from 'lucide-react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker } from '@/components/common'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
+import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -182,12 +183,7 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
-                {state.currencies.map((currency) => (
-                  <DropdownMenuItem key={currency} onSelect={() => presenter.selectCurrency(currency)}>
-                    <span className="flex-1">{currencyLabel(currency)}</span>
-                    {currency === state.currency && <Check />}
-                  </DropdownMenuItem>
-                ))}
+                <CurrencyMenuItems currencies={state.currencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
               </DropdownMenuContent>
             </DropdownMenu>
           )}

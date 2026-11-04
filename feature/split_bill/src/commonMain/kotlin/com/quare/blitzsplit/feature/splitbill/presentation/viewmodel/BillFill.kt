@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 // Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed.
@@ -48,6 +49,23 @@ internal fun SplitBillUiState.toFilledWith(
             currency = group.currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
+        ),
+    )
+}
+
+// Why: someone else's save that a sync brought, while the form keeps what is being typed here.
+internal fun SplitBillUiState.withChangeNoticed(
+    group: Group,
+    previous: Expense,
+    expense: Expense,
+): SplitBillUiState {
+    if (expense.updatedAt == previous.updatedAt || expense.isPending) return this
+    val changer = group.members.firstOrNull { it.id == expense.updatedByMemberId }
+    return copy(
+        conflict = BillConflict(
+            changerName = changer?.name,
+            changerIsMe = changer?.isMe == true,
+            changedAt = expense.updatedAt,
         ),
     )
 }

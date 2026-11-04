@@ -10,7 +10,7 @@ class GroupCurrencyTest {
         val amountMinor = 50_000L
 
         // When
-        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor)
+        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor, showsSats = false)
 
         // Then
         assertEquals(0, digits)
@@ -22,7 +22,7 @@ class GroupCurrencyTest {
         val amountMinor = 1_250L
 
         // When
-        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor)
+        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor, showsSats = false)
 
         // Then
         assertEquals(2, digits)
@@ -34,7 +34,7 @@ class GroupCurrencyTest {
         val amountMinor = -1_250L
 
         // When
-        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor)
+        val digits = GroupCurrency.BRL.getDisplayFractionDigits(amountMinor, showsSats = false)
 
         // Then
         assertEquals(2, digits)
@@ -46,7 +46,7 @@ class GroupCurrencyTest {
         val amountMinor = 1_234L
 
         // When
-        val digits = GroupCurrency.JPY.getDisplayFractionDigits(amountMinor)
+        val digits = GroupCurrency.JPY.getDisplayFractionDigits(amountMinor, showsSats = false)
 
         // Then
         assertEquals(0, digits)

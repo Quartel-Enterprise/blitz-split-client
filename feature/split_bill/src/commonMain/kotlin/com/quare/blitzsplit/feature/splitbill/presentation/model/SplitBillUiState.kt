@@ -194,20 +194,25 @@ data class SplitBillUiState(
         get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
             !isDeleting && !isFormLocked
 
-    // Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e).
+    /*
+     * Why: "Ler cupom fiscal" under "Divisão", only on a new bill and until a receipt is picked (7.1e). Never in bitcoin
+     * or ether, which no receipt is printed in, and the reader can't convert to.
+     */
     val showsScanReceipt: Boolean
-        get() = !isEditing && receipt == null
+        get() = !isEditing && receipt == null && !currency.isCrypto
 
     // Why: reading needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
     val canScanReceipt: Boolean
-        get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt
+        get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt && !currency.isCrypto
 
     /*
      * Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
-     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open.
+     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open. Início's
+     * "Ler cupom fiscal" on a group in a cryptocurrency opens the bill alone.
      */
     val showsReceiptCamera: Boolean
-        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving
+        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving &&
+            !currency.isCrypto
 
     val isReadingReceipt: Boolean
         get() = receipt?.status == ReceiptStatus.READING

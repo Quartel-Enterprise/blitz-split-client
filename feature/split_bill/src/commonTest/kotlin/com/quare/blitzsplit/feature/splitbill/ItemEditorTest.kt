@@ -208,9 +208,9 @@ class ItemEditorTest {
     @Test
     fun `GIVEN the service field WHEN typing over 100 or a couvert past the limit THEN it cannot be saved`() {
         // Given
-        val service = FeeEditor(ItemsFee.SERVICE, "101", GroupCurrency.BRL)
-        val couvert = FeeEditor(ItemsFee.COUVERT, "100000001", GroupCurrency.BRL)
-        val empty = FeeEditor(ItemsFee.SERVICE, "", GroupCurrency.BRL)
+        val service = FeeEditor(ItemsFee.SERVICE, "101", GroupCurrency.BRL, false)
+        val couvert = FeeEditor(ItemsFee.COUVERT, "100000001", GroupCurrency.BRL, false)
+        val empty = FeeEditor(ItemsFee.SERVICE, "", GroupCurrency.BRL, false)
 
         // When
         val canSave = listOf(service, couvert, empty).map { it.canSave }
@@ -250,6 +250,7 @@ class ItemEditorTest {
         lastEditedMemberId = null,
         payerIds = listOf(PIERRE),
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     private fun itemsEditor(
@@ -277,6 +278,7 @@ class ItemEditorTest {
         totalMinor = totalMinor,
         payerIds = listOf(PIERRE),
         currency = GroupCurrency.BRL,
+        showsSats = false,
     )
 
     private fun person(

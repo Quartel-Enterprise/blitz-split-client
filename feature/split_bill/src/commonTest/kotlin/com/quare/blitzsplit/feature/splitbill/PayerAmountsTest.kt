@@ -155,6 +155,7 @@ class PayerAmountsTest {
             ),
             totalMinor = 31_200L,
             currency = GroupCurrency.BRL,
+            showsSats = false,
         )
 
         // When
@@ -184,6 +185,7 @@ class PayerAmountsTest {
         rows = typed.map { (memberId, text) -> PayerAmountRow(memberId, person(memberId), text) },
         totalMinor = totalMinor,
         currency = currency,
+        showsSats = false,
     )
 
     private companion object {

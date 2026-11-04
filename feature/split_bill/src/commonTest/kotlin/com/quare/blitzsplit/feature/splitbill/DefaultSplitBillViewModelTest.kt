@@ -1219,6 +1219,7 @@ class DefaultSplitBillViewModelTest {
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

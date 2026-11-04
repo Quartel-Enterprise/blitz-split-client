@@ -1779,6 +1779,7 @@ class RegisterPaymentViewModelTest {
             },
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

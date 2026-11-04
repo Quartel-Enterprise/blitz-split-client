@@ -35,6 +35,7 @@ import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
+import { setShowsBitcoinInSats } from '@/lib/money'
 import { applyTheme } from '@/lib/theme'
 
 /**
@@ -46,6 +47,9 @@ export function App() {
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
   const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
+  const showsBitcoinInSats = useWatch(app, (presenter, onChange: (isOn: boolean) => void) => presenter.observeBitcoinInSats(onChange))
+  // Why: set before the screens under it draw, so this render's amounts already follow it; a change redraws them all.
+  setShowsBitcoinInSats(showsBitcoinInSats ?? false)
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {
     if (isReady && theme) applyTheme(theme)

@@ -97,7 +97,11 @@ class AppViewModel(
      * for bitcoin's unit, so no amount shows in bitcoin before turning into sats.
      */
     private fun followTheme() {
-        combine(observeThemePreference(), observeDynamicColors(), observeBitcoinInSats()) { preference, isDynamic, sats ->
+        combine(
+            observeThemePreference(),
+            observeDynamicColors(),
+            observeBitcoinInSats(),
+        ) { preference, isDynamic, sats ->
             theme.value = preference
             usesDynamicColors.value = isDynamic
             showsBitcoinInSats.value = sats

@@ -24,6 +24,7 @@ import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSpli
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -580,6 +581,7 @@ class DefaultSplitViewModelTest {
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
     }

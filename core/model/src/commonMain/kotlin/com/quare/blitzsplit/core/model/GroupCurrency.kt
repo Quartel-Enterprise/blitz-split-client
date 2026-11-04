@@ -61,10 +61,20 @@ enum class GroupCurrency(
     CHF("CHF", setOf("CH", "LI")),
 
     // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
-    BTC("BTC", emptySet(), fractionDigits = CRYPTO_FRACTION_DIGITS, isCrypto = true),
+    BTC(
+        "BTC",
+        emptySet(),
+        fractionDigits = 8,
+        isCrypto = true,
+    ),
 
     // Why: 8 decimals, not ETH's 18 (wei), which a Long of the minor unit holds only up to about 9 ether.
-    ETH("ETH", emptySet(), fractionDigits = CRYPTO_FRACTION_DIGITS, isCrypto = true),
+    ETH(
+        "ETH",
+        emptySet(),
+        fractionDigits = 8,
+        isCrypto = true,
+    ),
     ;
 
     val minorPerMajor: Long = (1..fractionDigits).fold(1L) { units, _ -> units * 10 }
@@ -104,8 +114,7 @@ enum class GroupCurrency(
         }
 
         fun fromCodeOrNull(code: String): GroupCurrency? = entries.firstOrNull { it.code == code }
+
+        private const val DECIMAL_BASE = 10L
     }
 }
-
-private const val CRYPTO_FRACTION_DIGITS = 8
-private const val DECIMAL_BASE = 10L

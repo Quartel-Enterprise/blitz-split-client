@@ -13,7 +13,7 @@ class AmountInputTest {
         val text = "1.234,56"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(123_456L, amount)
@@ -25,7 +25,7 @@ class AmountInputTest {
         val text = "1,234.56"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.USD)
+        val amount = AmountInput.parse(text, GroupCurrency.USD, false)
 
         // Then
         assertEquals(123_456L, amount)
@@ -37,7 +37,7 @@ class AmountInputTest {
         val text = "12,5"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(1_250L, amount)
@@ -49,7 +49,7 @@ class AmountInputTest {
         val text = "12"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(1_200L, amount)
@@ -61,7 +61,7 @@ class AmountInputTest {
         val text = "0,5"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(50L, amount)
@@ -73,7 +73,7 @@ class AmountInputTest {
         val text = ",50"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(50L, amount)
@@ -85,7 +85,7 @@ class AmountInputTest {
         val text = "12,"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(1_200L, amount)
@@ -97,7 +97,7 @@ class AmountInputTest {
         val text = "12,345"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(1_234_500L, amount)
@@ -109,7 +109,7 @@ class AmountInputTest {
         val text = "1.234"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(123_400L, amount)
@@ -121,7 +121,7 @@ class AmountInputTest {
         val text = "1.234.567"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(123_456_700L, amount)
@@ -133,7 +133,7 @@ class AmountInputTest {
         val text = "1,50,25"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(1_502_500L, amount)
@@ -145,7 +145,7 @@ class AmountInputTest {
         val text = " 1 234,56 "
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(123_456L, amount)
@@ -157,7 +157,7 @@ class AmountInputTest {
         val text = "12a"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -169,7 +169,7 @@ class AmountInputTest {
         val text = "R$ 12,00"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -181,7 +181,7 @@ class AmountInputTest {
         val text = "-5"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -193,7 +193,7 @@ class AmountInputTest {
         val text = ""
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -205,7 +205,7 @@ class AmountInputTest {
         val text = "   "
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -217,19 +217,19 @@ class AmountInputTest {
         val text = ","
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
     }
 
     @Test
-    fun `GIVEN 13 whole digits WHEN parsing THEN it is no amount`() {
+    fun `GIVEN more digits than a Long of the minor unit holds WHEN parsing THEN it is no amount`() {
         // Given
-        val text = "1234567890123"
+        val text = "12345678901234567"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertNull(amount)
@@ -241,7 +241,7 @@ class AmountInputTest {
         val text = "123456789012"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(12_345_678_901_200L, amount)
@@ -253,7 +253,7 @@ class AmountInputTest {
         val text = "1.500"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.JPY)
+        val amount = AmountInput.parse(text, GroupCurrency.JPY, false)
 
         // Then
         assertEquals(1_500L, amount)
@@ -265,7 +265,7 @@ class AmountInputTest {
         val text = "2500"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.CLP)
+        val amount = AmountInput.parse(text, GroupCurrency.CLP, false)
 
         // Then
         assertEquals(2_500L, amount)
@@ -277,7 +277,7 @@ class AmountInputTest {
         val text = "12,5"
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.PYG)
+        val amount = AmountInput.parse(text, GroupCurrency.PYG, false)
 
         // Then
         assertEquals(125L, amount)
@@ -289,7 +289,7 @@ class AmountInputTest {
         val amountMinor = 123_456L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234,56", text)
@@ -301,7 +301,7 @@ class AmountInputTest {
         val amountMinor = 5L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.USD, '.')
+        val text = AmountInput.format(amountMinor, GroupCurrency.USD, false, '.')
 
         // Then
         assertEquals("0.05", text)
@@ -313,7 +313,7 @@ class AmountInputTest {
         val amountMinor = 1_500L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.JPY, ',')
+        val text = AmountInput.format(amountMinor, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("1.500", text)
@@ -322,10 +322,10 @@ class AmountInputTest {
     @Test
     fun `GIVEN an amount the app formatted WHEN parsing it back THEN reads the same amount`() {
         // Given
-        val text = AmountInput.format(624_000L, GroupCurrency.BRL, ',')
+        val text = AmountInput.format(624_000L, GroupCurrency.BRL, false, ',')
 
         // When
-        val amount = AmountInput.parse(text, GroupCurrency.BRL)
+        val amount = AmountInput.parse(text, GroupCurrency.BRL, false)
 
         // Then
         assertEquals(624_000L, amount)
@@ -337,7 +337,7 @@ class AmountInputTest {
         val amountMinor = -123_456L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("-1.234,56", text)
@@ -433,7 +433,7 @@ class AmountInputTest {
         val amountMinor = 123_456_789L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("1.234.567,89", text)
@@ -445,7 +445,7 @@ class AmountInputTest {
         val amountMinor = 123_456_789L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.USD, '.')
+        val text = AmountInput.format(amountMinor, GroupCurrency.USD, false, '.')
 
         // Then
         assertEquals("1,234,567.89", text)
@@ -457,7 +457,7 @@ class AmountInputTest {
         val amountMinor = 1_500L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.JPY, '.')
+        val text = AmountInput.format(amountMinor, GroupCurrency.JPY, false, '.')
 
         // Then
         assertEquals("1,500", text)
@@ -469,7 +469,7 @@ class AmountInputTest {
         val amountMinor = 99_999L
 
         // When
-        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
+        val text = AmountInput.format(amountMinor, GroupCurrency.BRL, false, ',')
 
         // Then
         assertEquals("999,99", text)
@@ -481,8 +481,8 @@ class AmountInputTest {
         val amountMinor = 0L
 
         // When
-        val reais = AmountInput.format(amountMinor, GroupCurrency.BRL, ',')
-        val yen = AmountInput.format(amountMinor, GroupCurrency.JPY, ',')
+        val reais = AmountInput.format(amountMinor, GroupCurrency.BRL, false, ',')
+        val yen = AmountInput.format(amountMinor, GroupCurrency.JPY, false, ',')
 
         // Then
         assertEquals("0,00", reais)
@@ -492,10 +492,10 @@ class AmountInputTest {
     @Test
     fun `GIVEN reais formatted with a comma WHEN parsing them back THEN reads the same amounts`() {
         // Given
-        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.BRL, ',') }
+        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.BRL, false, ',') }
 
         // When
-        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.BRL) }
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.BRL, false) }
 
         // Then
         assertEquals(centAmounts, amounts)
@@ -504,10 +504,10 @@ class AmountInputTest {
     @Test
     fun `GIVEN dollars formatted with a dot WHEN parsing them back THEN reads the same amounts`() {
         // Given
-        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.USD, '.') }
+        val texts = centAmounts.map { AmountInput.format(it, GroupCurrency.USD, false, '.') }
 
         // When
-        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.USD) }
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.USD, false) }
 
         // Then
         assertEquals(centAmounts, amounts)
@@ -516,10 +516,10 @@ class AmountInputTest {
     @Test
     fun `GIVEN yen formatted with a comma WHEN parsing them back THEN reads the same amounts`() {
         // Given
-        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, ',') }
+        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, false, ',') }
 
         // When
-        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY) }
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY, false) }
 
         // Then
         assertEquals(yenAmounts, amounts)
@@ -528,10 +528,10 @@ class AmountInputTest {
     @Test
     fun `GIVEN yen formatted with a dot WHEN parsing them back THEN reads the same amounts`() {
         // Given
-        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, '.') }
+        val texts = yenAmounts.map { AmountInput.format(it, GroupCurrency.JPY, false, '.') }
 
         // When
-        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY) }
+        val amounts = texts.map { AmountInput.parse(it, GroupCurrency.JPY, false) }
 
         // Then
         assertEquals(yenAmounts, amounts)

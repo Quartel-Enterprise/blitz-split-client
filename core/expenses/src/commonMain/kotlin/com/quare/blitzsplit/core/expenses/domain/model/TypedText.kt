@@ -50,11 +50,11 @@ object TypedText {
         val fromDigits = from.getTypedFractionDigits(showsSats)
         val toDigits = to.getTypedFractionDigits(showsSats)
         val converted = if (toDigits >= fromDigits) {
-            val factor = powerOfTen(toDigits - fromDigits)
+            val factor = getPowerOfTen(toDigits - fromDigits)
             if (amountMinor > Long.MAX_VALUE / factor) return ""
             amountMinor * factor
         } else {
-            amountMinor / powerOfTen(fromDigits - toDigits)
+            amountMinor / getPowerOfTen(fromDigits - toDigits)
         }
         return if (converted == 0L) {
             ""
@@ -136,7 +136,7 @@ object TypedText {
             ?.takeIf { it.toString().length <= maxDigitsOf(currency) }
     }
 
-    private fun powerOfTen(exponent: Int): Long = (1..exponent).fold(1L) { power, _ -> power * 10 }
+    private fun getPowerOfTen(exponent: Int): Long = (1..exponent).fold(1L) { power, _ -> power * 10 }
 
     private val amountSeparators = setOf(',', '.')
 
