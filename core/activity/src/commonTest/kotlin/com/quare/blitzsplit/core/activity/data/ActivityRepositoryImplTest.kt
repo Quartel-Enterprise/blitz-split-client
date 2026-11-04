@@ -1261,7 +1261,7 @@ class ActivityRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN events downloaded and a charge not up yet WHEN reading the newest seq THEN answers the newest downloaded`() =
+    fun `GIVEN events and a charge not up yet WHEN reading the newest seq THEN answers the newest downloaded`() =
         runTest {
             // Given
             prepareScenario(

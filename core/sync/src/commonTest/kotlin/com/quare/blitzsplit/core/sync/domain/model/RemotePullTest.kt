@@ -28,7 +28,7 @@ class RemotePullTest {
         val pull = RemotePull.of(changes, newestSeq, userId)
 
         // Then
-        assertEquals(RemotePull(), pull)
+        assertEquals(expectedPull(), pull)
     }
 
     @Test
@@ -47,7 +47,7 @@ class RemotePullTest {
 
         // Then
         assertEquals(
-            RemotePull(
+            expectedPull(
                 groupIds = setOf("floripa"),
                 pullsActivity = true,
             ),
@@ -87,7 +87,7 @@ class RemotePullTest {
         // Then
         pulls.forEach { pull ->
             assertEquals(
-                RemotePull(
+                expectedPull(
                     groupIds = setOf("floripa"),
                     pullsActivity = true,
                 ),
@@ -111,7 +111,7 @@ class RemotePullTest {
 
         // Then
         assertEquals(
-            RemotePull(
+            expectedPull(
                 pullsComments = true,
                 pullsActivity = true,
             ),
@@ -141,7 +141,7 @@ class RemotePullTest {
         // Then
         pulls.forEach { pull ->
             assertEquals(
-                RemotePull(
+                expectedPull(
                     pullsAttachments = true,
                     pullsActivity = true,
                 ),
@@ -170,7 +170,7 @@ class RemotePullTest {
         }
 
         // Then
-        pulls.forEach { pull -> assertEquals(RemotePull(pullsActivity = true), pull) }
+        pulls.forEach { pull -> assertEquals(expectedPull(pullsActivity = true), pull) }
     }
 
     @Test
@@ -257,7 +257,7 @@ class RemotePullTest {
 
         // Then
         assertEquals(
-            RemotePull(
+            expectedPull(
                 groupIds = setOf("floripa"),
                 pullsActivity = true,
             ),
@@ -274,7 +274,7 @@ class RemotePullTest {
         val pull = RemotePull.of(changes, newestSeq, userId)
 
         // Then
-        assertEquals(RemotePull(pullsOwnProfile = true), pull)
+        assertEquals(expectedPull(pullsOwnProfile = true), pull)
     }
 
     @Test
@@ -286,7 +286,7 @@ class RemotePullTest {
         val pull = RemotePull.of(changes, newestSeq, userId)
 
         // Then
-        assertEquals(RemotePull(pullsMemberPhotos = true), pull)
+        assertEquals(expectedPull(pullsMemberPhotos = true), pull)
     }
 
     @Test
@@ -306,7 +306,7 @@ class RemotePullTest {
 
         // Then
         assertEquals(
-            RemotePull(
+            expectedPull(
                 pullsOwnProfile = true,
                 pullsMemberPhotos = true,
             ),
@@ -384,7 +384,7 @@ class RemotePullTest {
 
         // Then
         assertEquals(
-            RemotePull(
+            expectedPull(
                 groupIds = setOf("floripa"),
                 pullsActivity = true,
                 pullsComments = true,
@@ -401,5 +401,23 @@ class RemotePullTest {
         seq = seq,
         groupId = groupId,
         kind = kind,
+    )
+
+    private fun expectedPull(
+        isFullSync: Boolean = false,
+        groupIds: Set<String> = emptySet(),
+        pullsActivity: Boolean = false,
+        pullsComments: Boolean = false,
+        pullsAttachments: Boolean = false,
+        pullsOwnProfile: Boolean = false,
+        pullsMemberPhotos: Boolean = false,
+    ): RemotePull = RemotePull(
+        isFullSync = isFullSync,
+        groupIds = groupIds,
+        pullsActivity = pullsActivity,
+        pullsComments = pullsComments,
+        pullsAttachments = pullsAttachments,
+        pullsOwnProfile = pullsOwnProfile,
+        pullsMemberPhotos = pullsMemberPhotos,
     )
 }

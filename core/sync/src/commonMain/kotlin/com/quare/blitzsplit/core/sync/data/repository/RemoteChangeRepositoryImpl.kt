@@ -14,11 +14,13 @@ class RemoteChangeRepositoryImpl(
     override fun observeChanges(): Flow<RemoteChange> = remote.observeChanges().map { dto ->
         when (dto) {
             RemoteChangeDto.Joined -> RemoteChange.Joined
+
             is RemoteChangeDto.ActivityInsert -> RemoteChange.GroupEvent(
                 seq = dto.seq,
                 groupId = dto.groupId,
                 kind = ActivityKind.fromCodeOrNull(dto.kind),
             )
+
             is RemoteChangeDto.ProfileUpdate -> RemoteChange.ProfileChanged(userId = dto.id)
         }
     }

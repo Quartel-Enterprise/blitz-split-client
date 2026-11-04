@@ -24,26 +24,18 @@ import com.quare.blitzsplit.core.sync.domain.model.RemotePull
 import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import software.quare.connectivity.NetworkConnectivityObserver
 
 /*
@@ -66,13 +58,30 @@ class SyncCoordinator(
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
     private val pushDeviceRepository: PushDeviceRepository,
-    private val remoteChangeRepository: RemoteChangeRepository,
     private val firstDownload: FirstDownload,
-    private val appForeground: AppForeground,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
+    remoteChangeRepository: RemoteChangeRepository,
+    appForeground: AppForeground,
 ) {
     private val syncLock = Mutex()
+    private val remoteChangeListener = RemoteChangeListener(
+        remoteChangeRepository = remoteChangeRepository,
+        appForeground = appForeground,
+        connectivityObserver = connectivityObserver,
+        accountRepository = accountRepository,
+        profileRepository = profileRepository,
+    )
+    private val remotePuller = RemotePuller(
+        profileRepository = profileRepository,
+        groupRepository = groupRepository,
+        categoryRepository = categoryRepository,
+        expenseRepository = expenseRepository,
+        settlementRepository = settlementRepository,
+        billCommentRepository = billCommentRepository,
+        billAttachmentRepository = billAttachmentRepository,
+        activityRepository = activityRepository,
+    )
     private var started = false
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
@@ -481,12 +490,6 @@ class SyncCoordinator(
             }
     }
 
-    private fun userIdOrNull(status: AccountStatus): String? = when (status) {
-        AccountStatus.LocalOnly -> null
-        is AccountStatus.Anonymous -> status.userId
-        is AccountStatus.Connected -> status.userId
-    }
-
     /*
      * Why: "Lembrar depois" shows the code again on the next launch, not right away. A saved code the
      * app closed on while it was opened from the profile is still saved.
@@ -503,7 +506,7 @@ class SyncCoordinator(
      * Why: a first download (5.1d) asks the server which groups are coming, then brings each one whole, the latest
      * activity first, so Início and Grupos count "3 de 7 grupos" and what came is usable before the rest. A group's
      * rows are all read first, then written in Room's foreign key order with no round trip in between, so no screen
-     * shows a group with its bills and without its payments (downloadGroup). The count stays until the sync settles; the
+     * shows a group with its bills and without its payments (RemotePuller.downloadGroup). The count stays until the sync settles; the
      * full download right after it takes off what left meanwhile and brings the rest of the account.
      */
     private suspend fun downloadGroupByGroup(userId: String) {
@@ -511,79 +514,24 @@ class SyncCoordinator(
         // Why: with none coming there is nothing to count, so it never reads "0 de 0 grupos".
         if (groupIds.isNotEmpty()) firstDownload.expect(groupIds.size)
         groupIds.forEach { groupId ->
-            downloadGroup(userId, groupId)
+            remotePuller.downloadGroup(userId, groupId)
             firstDownload.groupArrived()
         }
         // Why: "7 de 7 grupos" stays until the rest of the sync settles, which ends it, never a bar that runs again.
     }
 
     /*
-     * Why: a group's rows are all read first, then written in Room's foreign key order with no round trip in between,
-     * so no screen shows a group with its bills and without its payments. Nothing leaves the device, which only the
-     * full download decides.
-     */
-    private suspend fun downloadGroup(
-        userId: String,
-        groupId: String,
-    ) {
-        val writes = coroutineScope {
-            listOf(
-                async { groupRepository.fetchGroupDownload(userId, groupId) },
-                async { categoryRepository.fetchGroupCategories(groupId) },
-                async { expenseRepository.fetchGroupExpenses(groupId) },
-                async { settlementRepository.fetchGroupSettlements(groupId) },
-            ).awaitAll()
-        }.map { it.getOrThrow() }
-        withContext(NonCancellable) { writes.forEach { write -> write() } }
-    }
-
-    /*
-     * Why: real time (beta feedback 13): another device's change reaches this one while the app is open, without
-     * waiting for the next sync. Only in front, as Bible Planner learned: a token refreshed in the background reaches a
-     * socket that died, which supabase-kt's setAuth crashes on. And online with an account and a profile, as any sync.
-     * Leaving any of those leaves the channel; coming back joins it again, which catches up on what was missed.
+     * Why: a join is caught up apart, right away and in the app's scope like any sync, so a slow one never holds the
+     * channel's buffer nor stops halfway when the app leaves the front.
      */
     private suspend fun followRemoteChanges() {
-        combine(
-            appForeground.observe(),
-            connectivityObserver.observe(),
-            accountRepository.observeStatus().map(::userIdOrNull),
-            profileRepository.observeProfile().map { profile -> profile != null },
-        ) { isForeground, isOnline, userId, hasProfile ->
-            userId?.takeIf { isForeground && isOnline && hasProfile }
-        }.distinctUntilChanged()
-            .collectLatest { userId -> if (userId != null) followRemoteChanges(userId) }
-    }
-
-    /*
-     * Why: the changes come in bursts (a sync pushing a queue, a guest merged), so what is heard within a moment pulls
-     * once. A join is caught up apart, right away and in the app's scope like any sync, so a slow one never holds the
-     * channel's buffer nor stops halfway when the app leaves the front. A channel that fails listens again a little
-     * later, since real time is only a nicety over the sync.
-     */
-    private suspend fun followRemoteChanges(userId: String): Unit = coroutineScope {
-        val heard = Channel<RemoteChange>(Channel.UNLIMITED)
-        launch {
-            remoteChangeRepository
-                .observeChanges()
-                .retryWhen { _, _ ->
-                    delay(RELISTEN_MILLIS)
-                    true
-                }.collect { change ->
-                    if (change is RemoteChange.Joined) {
-                        val syncsBeforeJoin = startedSyncs.value
-                        scope.launch { catchUp(syncsBeforeJoin) }
-                    } else {
-                        heard.send(change)
-                    }
-                }
-        }
-        while (true) {
-            val batch = mutableListOf(heard.receive())
-            delay(PULL_BATCH_MILLIS)
-            while (true) batch += heard.tryReceive().getOrNull() ?: break
-            pullRemoteChanges(userId, batch)
-        }
+        remoteChangeListener.listen(
+            onJoined = {
+                val syncsBeforeJoin = startedSyncs.value
+                scope.launch { catchUp(syncsBeforeJoin) }
+            },
+            onChanges = ::pullRemoteChanges,
+        )
     }
 
     /*
@@ -615,23 +563,11 @@ class SyncCoordinator(
                     newestSeq = activityRepository.getNewestSeq() ?: 0L,
                     userId = userId,
                 )
-                if (!pull.isFullSync) pullLocked(userId, pull)
+                if (!pull.isFullSync) remotePuller.pull(userId, pull)
                 !pull.isFullSync
             }.getOrDefault(false)
         }
         if (!isPulled) scope.launch { syncUntilSettled() }
-    }
-
-    private suspend fun pullLocked(
-        userId: String,
-        pull: RemotePull,
-    ) {
-        if (pull.pullsOwnProfile) profileRepository.downloadProfile(userId).getOrThrow()
-        pull.groupIds.forEach { groupId -> downloadGroup(userId, groupId) }
-        if (pull.pullsComments) billCommentRepository.download(userId).getOrThrow()
-        if (pull.pullsAttachments) billAttachmentRepository.download(userId).getOrThrow()
-        if (pull.pullsMemberPhotos) groupRepository.downloadMemberPhotos().getOrThrow()
-        if (pull.pullsActivity) activityRepository.downloadActivity(userId).getOrThrow()
     }
 
     /*
@@ -645,13 +581,5 @@ class SyncCoordinator(
         ) { isOnline, profile -> !isOnline && profile != null }
             .distinctUntilChanged()
             .collect { isOfflineWithProfile -> if (isOfflineWithProfile) firstDownload.end() }
-    }
-
-    private companion object {
-        // Why: how long a change heard waits for the rest of its burst before pulling.
-        const val PULL_BATCH_MILLIS = 500L
-
-        // Why: how long a channel that failed (the server refused it, the socket gave up) waits to listen again.
-        const val RELISTEN_MILLIS = 30_000L
     }
 }

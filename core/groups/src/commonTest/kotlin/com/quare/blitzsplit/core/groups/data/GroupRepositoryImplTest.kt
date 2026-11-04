@@ -3826,7 +3826,7 @@ class GroupRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN photos on the device WHEN downloading the member photos THEN the server photos with one take their place`() =
+    fun `GIVEN photos on the device WHEN downloading the member photos THEN the server photos replace them`() =
         runTest {
             // Given
             prepareScenario(
@@ -3869,7 +3869,7 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN the photos fail to load WHEN downloading the member photos THEN it fails and keeps the device's`() =
+    fun `GIVEN the photos fail to load WHEN downloading the member photos THEN it fails and keeps the stored ones`() =
         runTest {
             // Given
             val storedPhotos = listOf(

@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.sync.data.datasource.RemoteChangeRemoteDataSour
 import com.quare.blitzsplit.core.sync.data.datasource.SupabaseRemoteChangeRemoteDataSource
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapper
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
+import com.quare.blitzsplit.core.sync.data.repository.RemoteChangeRepositoryImpl
+import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
@@ -19,8 +21,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
-import com.quare.blitzsplit.core.sync.data.repository.RemoteChangeRepositoryImpl
-import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
