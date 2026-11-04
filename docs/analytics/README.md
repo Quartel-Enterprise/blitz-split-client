@@ -30,7 +30,8 @@ No event is tracked yet: each user action's event comes with its feature, throug
   personalization is off on all of them.
 - **A screen view the SDK makes up**: Android's and Apple's automatic screen reporting are off and gtag sends no
   `page_view`, since the activity, the view controllers and the browser's history don't name the app's screens.
-  Screen views come from the shared back stack, the same on every UI.
+  Screen views are to come from the shared back stack, the same on every UI; until that is tracked, no build sends
+  any.
 
 ## Consent
 

@@ -1,5 +1,3 @@
-import { initializeApp } from 'firebase/app'
-import { initializeAnalytics, isSupported, logEvent } from 'firebase/analytics'
 import { attachAnalytics } from 'blitzsplit-shared'
 
 /**
@@ -19,6 +17,11 @@ const config = {
 export async function startAnalytics(): Promise<void> {
   if (import.meta.env.DEV || Object.values(config).some((value) => value === '')) return
   try {
+    // Why: loaded only here, so a build without the config, or a page that never gets this far, downloads no Firebase
+    const [{ initializeApp }, { initializeAnalytics, isSupported, logEvent }] = await Promise.all([
+      import('firebase/app'),
+      import('firebase/analytics'),
+    ])
     if (!(await isSupported())) return
     const app = initializeApp(config)
     const analytics = initializeAnalytics(app, {
