@@ -586,6 +586,297 @@ class DefaultSplitViewModelTest {
             assertNull(state.exceptionEditor)
         }
 
+    @Test
+    fun `GIVEN the screen open WHEN tapping back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Igual WHEN picking Partes THEN sends the mode picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.SHARES))
+
+        // Then
+        assertEquals(
+            listOf("default_split_mode_selected" to mapOf<String, Any>("mode" to DefaultSplitMode.SHARES)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN Igual WHEN leaving Ana out THEN sends the person toggled without who`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+
+        // Then
+        assertEquals(listOf("default_split_person_toggled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Partes WHEN adding a part to Ana THEN sends the parts changed up without who`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnPartsIncreased(ANA))
+
+            // Then
+            assertEquals(
+                listOf("default_split_parts_changed" to mapOf<String, Any>("direction" to "up")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Partes WHEN taking a part from Pierre THEN sends the parts changed down without who`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnPartsDecreased(PIERRE))
+
+            // Then
+            assertEquals(
+                listOf("default_split_parts_changed" to mapOf<String, Any>("direction" to "down")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Porcentagem WHEN typing a percentage THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home.copy(defaultSplit = percent(75L, 25L)))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnPercentChanged(ANA, "15"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Pela renda WHEN typing an income THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "9.000,00"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ana left out WHEN tapping Salvar THEN sends the save clicked event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(listOf("default_split_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping Adicionar excecao THEN sends the exception add clicked event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+
+            // Then
+            assertEquals(listOf("default_split_exception_add_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an exception for Mercado WHEN opening it THEN sends the exception clicked without its category`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+
+            // Then
+            assertEquals(listOf("default_split_exception_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a new exception WHEN picking Mercado THEN sends the category picked without the category`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD_MARKET.key))
+
+            // Then
+            assertEquals(
+                listOf("default_split_exception_category_picked" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the exception for Mercado open WHEN picking Porcentagem THEN sends the exception mode picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(DefaultSplitMode.PERCENT))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "default_split_exception_mode_selected" to mapOf<String, Any>("mode" to DefaultSplitMode.PERCENT),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the Mercado exception open WHEN leaving Ana out THEN sends the exception person toggled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPersonToggled(ANA))
+
+            // Then
+            assertEquals(
+                listOf("default_split_exception_person_toggled" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the exception in Partes WHEN adding a part to Ana THEN sends the exception parts changed up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(DefaultSplitMode.SHARES))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPartsIncreased(ANA))
+
+            // Then
+            assertEquals(
+                listOf("default_split_exception_parts_changed" to mapOf<String, Any>("direction" to "up")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the exception in Partes WHEN taking a part from Pierre THEN sends the exception parts changed down`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(DefaultSplitMode.SHARES))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPartsDecreased(PIERRE))
+
+            // Then
+            assertEquals(
+                listOf("default_split_exception_parts_changed" to mapOf<String, Any>("direction" to "down")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the exception in Porcentagem WHEN typing a percentage THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(DefaultSplitMode.PERCENT))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPercentChanged(PIERRE, "40"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a new exception for Mercado WHEN tapping Salvar excecao THEN sends the exception save clicked event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD_MARKET.key))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked)
+
+            // Then
+            assertEquals(listOf("default_split_exception_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the exception for Mercado open WHEN removing it THEN sends the exception remove clicked event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionRemoveClicked)
+
+            // Then
+            assertEquals(listOf("default_split_exception_remove_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a new exception open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val market = CategorySplit(
         AppCategory.FOOD_MARKET.key,
         DefaultSplitMode.EQUAL,
