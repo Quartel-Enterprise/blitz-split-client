@@ -6,6 +6,8 @@ import SwiftUI
 final class CategoryMapModel {
     private(set) var state: CategoryMapUiState
     private(set) var saveErrorCount = 0
+    private(set) var categorySaveErrorCount = 0
+    private(set) var categoryDeleteErrorCount = 0
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createCategoryMapViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -18,6 +20,8 @@ final class CategoryMapModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             if action is CategoryMapUiActionShowSaveError { self?.saveErrorCount += 1 }
+            if action is CategoryMapUiActionShowCategorySaveError { self?.categorySaveErrorCount += 1 }
+            if action is CategoryMapUiActionShowCategoryDeleteError { self?.categoryDeleteErrorCount += 1 }
         })
     }
 
@@ -103,6 +107,12 @@ struct CategoryMapScreen: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Menu("More options", systemImage: "ellipsis") {
+                        // A category goes in a group (9.4), so with none on the device there is nowhere to create one
+                        if state.canCreateCategory {
+                            Button("New category", systemImage: "folder.badge.plus") {
+                                model.send(CategoryMapUiEventOnNewCategoryClicked(parentId: nil))
+                            }
+                        }
                         Button("Restore default", systemImage: "arrow.counterclockwise") {
                             model.send(CategoryMapUiEventOnRestoreClicked.shared)
                         }
@@ -114,6 +124,7 @@ struct CategoryMapScreen: View {
             NavigationStack { TermFormView(model: model) }
                 .formSheetSizing()
         }
+        .mapCategorySheet(model: model)
         .restoreMapAlert(model: model)
         .glassToast("Couldn't save the map. Try again.", trigger: model.saveErrorCount)
         .safeAreaInset(edge: .bottom) {
@@ -213,6 +224,7 @@ struct MapDetailSections: View {
             Section {
                 MapSectionRows(section: section, model: model)
                 AddInSectionButton(section: section, model: model)
+                NewSubcategoryButton(section: section, model: model)
             } header: {
                 HStack(spacing: 12) {
                     CategoryBadge(category: section.category, size: 44)
@@ -223,6 +235,9 @@ struct MapDetailSections: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
+                    Spacer()
+                    EditCategoryButton(category: section.category, model: model)
+                        .labelStyle(.iconOnly)
                 }
                 .textCase(nil)
                 .padding(.bottom, 4)
@@ -242,6 +257,7 @@ struct MapSectionCard: View {
         Section {
             MapSectionRows(section: section, model: model)
             AddInSectionButton(section: section, model: model)
+            NewSubcategoryButton(section: section, model: model)
         } header: {
             HStack(spacing: 12) {
                 CategoryBadge(category: section.category, size: 32)
@@ -252,6 +268,9 @@ struct MapSectionCard: View {
                     Text(verbatim: CategoryMapCopy.count(section))
                         .font(.caption)
                 }
+                Spacer()
+                EditCategoryButton(category: section.category, model: model)
+                    .labelStyle(.iconOnly)
             }
             .textCase(nil)
         }
@@ -277,6 +296,12 @@ struct MapSectionRows: View {
                         Text("only in \(group)")
                             .font(.caption)
                             .foregroundStyle(Palette.accent)
+                    }
+                    if !row.isOnlyMain {
+                        Spacer()
+                        EditCategoryButton(category: row.category, model: model)
+                            .labelStyle(.iconOnly)
+                            .buttonStyle(.borderless)
                     }
                 }
                 TermChipsRow(row: row, model: model)

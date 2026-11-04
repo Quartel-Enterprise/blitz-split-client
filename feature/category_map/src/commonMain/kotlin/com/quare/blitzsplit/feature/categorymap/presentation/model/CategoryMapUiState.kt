@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMap
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -21,13 +24,18 @@ data class CategoryMapUiState(
     val map: CategoryMap,
     // Why: the app's categories with those of every group on the device among them.
     val categories: CategoryTree,
-    val groupNames: Map<String, String>,
+    val groups: List<MapGroup>,
     val query: String,
     val selectedCategoryId: String?,
     val termForm: TermForm?,
     // Why: "“café” saiu do mapa" with "Desfazer" (9.1d), until another change or the notice goes.
     val removedTerm: MapTerm?,
     val isRestoreConfirmOpen: Boolean,
+    // Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" (9.4), a group's, as a bill's Categoria opens it.
+    val categoryForm: CategoryForm?,
+    val categoryDeletion: CategoryDeletion?,
+    // Why: how many of the form's group's bills each category has, by the category they read as.
+    val categoryUsage: Map<String, Int>,
     val isOnline: Boolean,
     // Why: with Google or Apple the map reaches the person's other devices; otherwise it stays on this one (9.1h).
     val isConnected: Boolean,
@@ -49,6 +57,7 @@ data class CategoryMapUiState(
         if (!isLoaded) return@lazy emptyList()
         categories.branches.mapNotNull { branch ->
             val main = branch.category
+            // Why: the lines with terms, and a group's subcategory with none yet, to add its first one (9.4).
             val rows = (branch.subcategories.map { it to false } + (main to true))
                 .map { (category, isOnlyMain) ->
                     MapRow(
@@ -57,7 +66,7 @@ data class CategoryMapUiState(
                         groupName = groupNameOf(category).takeIf { category.parentId != null && !isOnlyMain },
                         terms = terms.filter { it.categoryId == category.id },
                     )
-                }.filter { it.terms.isNotEmpty() }
+                }.filter { it.terms.isNotEmpty() || (it.category.isGroupCategory && !it.isOnlyMain) }
             MapSection(
                 category = main,
                 groupName = groupNameOf(main),
@@ -153,13 +162,41 @@ data class CategoryMapUiState(
                 formCategory != null
         }
 
+    // Why: a category goes in a group, so with none on the device there is nowhere to create one (9.4).
+    val canCreateCategory: Boolean
+        get() = canEditMap && groups.isNotEmpty()
+
+    // Why: "Nova categoria" (9.4) as a bill's Categoria draws it, checked against the categories of its group alone.
+    val categoryEditor: CategoryEditor?
+        get() = categoryForm?.let(::categoryEditorOf)
+
+    // Why: also the form a sheet still closing holds, once categoryForm is gone.
+    fun categoryEditorOf(form: CategoryForm): CategoryEditor {
+        val group = groups.firstOrNull { it.id == form.groupId }
+        val tree = categories.ofGroup(form.groupId)
+        return CategoryEditor(
+            form = form,
+            categories = tree,
+            groupName = group?.name.orEmpty(),
+            creatorName = form.createdByMemberId?.let { group?.memberNames?.get(it) },
+            usage = CategoryEditor.usageOf(tree, form.categoryId, categoryUsage),
+            deletion = categoryDeletion,
+            isOnline = isOnline,
+        )
+    }
+
+    // Why: "Grupo", only for a new category: one being edited stays in its group.
+    val canPickCategoryGroup: Boolean
+        get() = categoryForm?.isEditing == false && groups.size > 1
+
     // Why: every category a term may send titles to, in the picker's order, the groups' with their group's name.
     val categoryOptions: List<Category>
         get() = categories.all
 
     fun findTermOrNull(key: String): MapTerm? = terms.firstOrNull { it.key == key }
 
-    fun groupNameOf(category: Category): String? = categories.groupIdOf(category.id)?.let(groupNames::get)
+    fun groupNameOf(category: Category): String? =
+        categories.groupIdOf(category.id)?.let { id -> groups.firstOrNull { it.id == id }?.name }
 
     private fun matchStartOrNull(
         key: String,

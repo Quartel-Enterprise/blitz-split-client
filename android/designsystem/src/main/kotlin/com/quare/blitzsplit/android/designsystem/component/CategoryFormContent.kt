@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.splitbill
+package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,8 +44,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
+import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.categoryIconLabel
+import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.imageVector
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -54,29 +56,51 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryDeletion
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+
+private val previewActions = CategoryFormActions(
+    onNameChanged = {},
+    onParentPicked = {},
+    onIconPicked = {},
+    onSave = {},
+    onDismiss = {},
+    onDelete = {},
+)
+
+// Why: what "Nova categoria" sends back, to a bill's ViewModel or the map's.
+@Immutable
+data class CategoryFormActions(
+    val onNameChanged: (String) -> Unit,
+    val onParentPicked: (String?) -> Unit,
+    val onIconPicked: (CategoryIcon) -> Unit,
+    val onSave: () -> Unit,
+    val onDismiss: () -> Unit,
+    val onDelete: () -> Unit,
+)
 
 /*
- * Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" (7.8) in the picker's place: the name and where it
- * goes on one side, the icon on the other when lying down, as the canvas draws it.
+ * Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" (7.8), in a bill's picker's place or over the map
+ * (9.4): the name and where it goes on one side, the icon on the other when lying down, as the canvas draws it.
+ * groupField is the map's "Grupo", above the name.
  */
 @Composable
-internal fun CategoryFormContent(
-    state: SplitBillUiState,
-    form: CategoryForm,
+fun CategoryFormContent(
+    editor: CategoryEditor,
     isDialog: Boolean,
     snackbarHostState: SnackbarHostState,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    actions: CategoryFormActions,
+    groupField: (@Composable () -> Unit)? = null,
 ) {
+    val form = editor.form
     val title = stringResource(
         when {
-            form.isEditing -> R.string.split_bill_category_form_edit
-            form.isSubcategory -> R.string.split_bill_category_form_sub
-            else -> R.string.split_bill_category_form_new
+            form.isEditing -> R.string.designsystem_category_form_edit
+            form.isSubcategory -> R.string.designsystem_category_form_sub
+            else -> R.string.designsystem_category_form_new
         },
     )
     ColumnsFormLayout(
@@ -84,60 +108,56 @@ internal fun CategoryFormContent(
             title = title,
             subtitle = null,
             navigationIcon = Icons.AutoMirrored.Outlined.ArrowBack,
-            navigationLabel = stringResource(R.string.split_bill_back),
-            onNavigate = { onEvent(SplitBillUiEvent.OnCategoryFormDismissed) },
-            confirmLabel = stringResource(R.string.split_bill_save),
-            isConfirmEnabled = state.canSaveCategory,
-            onConfirm = { onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked) },
-            cancelLabel = stringResource(R.string.split_bill_cancel),
+            navigationLabel = stringResource(R.string.designsystem_back),
+            onNavigate = actions.onDismiss,
+            confirmLabel = stringResource(R.string.designsystem_category_save),
+            isConfirmEnabled = editor.canSave,
+            onConfirm = actions.onSave,
+            cancelLabel = stringResource(R.string.designsystem_confirm_cancel),
             isNavigationAtEndInDialog = false,
             iconAction = null,
         ),
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,
         first = {
+            groupField?.invoke()
             NameField(
-                state = state,
-                form = form,
-                onEvent = onEvent,
+                editor = editor,
+                onNameChanged = actions.onNameChanged,
             )
             ParentField(
-                state = state,
-                form = form,
-                onEvent = onEvent,
+                editor = editor,
+                onParentPicked = actions.onParentPicked,
             )
-            PreviewRow(
-                state = state,
-                form = form,
-            )
-            if (state.showsOfflineNotice) {
+            PreviewRow(editor = editor)
+            if (editor.showsOfflineNotice) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(
                         Icons.Outlined.CloudOff,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                     )
-                    NoteText(stringResource(R.string.split_bill_category_offline))
+                    NoteText(stringResource(R.string.designsystem_category_offline))
                 }
             }
-            NoteText(groupNoteOf(state, form))
+            NoteText(groupNoteOf(editor))
         },
         second = {
             if (!form.isSubcategory) {
                 IconGrid(
                     selected = form.icon,
-                    onEvent = onEvent,
+                    onIconPicked = actions.onIconPicked,
                 )
             }
             if (form.isEditing) {
-                TextButton(onClick = { onEvent(SplitBillUiEvent.OnCategoryDeleteClicked) }) {
+                TextButton(onClick = actions.onDelete) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                     )
                     Text(
-                        text = stringResource(R.string.split_bill_category_delete),
+                        text = stringResource(R.string.designsystem_category_delete),
                         modifier = Modifier.padding(start = 8.dp),
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -149,40 +169,38 @@ internal fun CategoryFormContent(
 
 @Composable
 private fun NameField(
-    state: SplitBillUiState,
-    form: CategoryForm,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    editor: CategoryEditor,
+    onNameChanged: (String) -> Unit,
 ) {
-    val parent = form.parentId?.let { state.categories.findOrNull(it) }
+    val form = editor.form
+    val parent = editor.parent
     val help = when {
-        state.isCategoryNameTaken && parent != null -> stringResource(
-            R.string.split_bill_category_name_taken_in,
+        editor.isNameTaken && parent != null -> stringResource(
+            R.string.designsystem_category_name_taken_in,
             form.name.trim(),
-            categoryNameOf(parent),
+            categoryName(parent),
         )
 
-        state.isCategoryNameTaken -> stringResource(R.string.split_bill_category_name_taken, form.name.trim())
+        editor.isNameTaken -> stringResource(R.string.designsystem_category_name_taken, form.name.trim())
 
         form.isEditing -> listOfNotNull(
-            state.categories.findOrNull(form.categoryId)?.let { creatorNameOrNull(state, it) }?.let {
-                stringResource(R.string.split_bill_category_created_by, it)
-            },
+            editor.creatorName?.let { stringResource(R.string.designsystem_category_created_by, it) },
             pluralStringResource(
-                R.plurals.split_bill_category_used_in,
-                state.categoryFormUsage,
-                state.categoryFormUsage,
+                R.plurals.designsystem_category_used_in,
+                editor.usage,
+                editor.usage,
             ),
         ).joinToString(" · ")
 
-        else -> stringResource(R.string.split_bill_category_name_help)
+        else -> stringResource(R.string.designsystem_category_name_help)
     }
     OutlinedTextField(
         value = form.name,
-        onValueChange = { onEvent(SplitBillUiEvent.OnCategoryNameChanged(it)) },
+        onValueChange = onNameChanged,
         modifier = Modifier.fillMaxWidth(),
-        label = { Text(stringResource(R.string.split_bill_category_name)) },
+        label = { Text(stringResource(R.string.designsystem_category_name)) },
         supportingText = { Text(help) },
-        isError = state.isCategoryNameTaken,
+        isError = editor.isNameTaken,
         singleLine = true,
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
     )
@@ -191,36 +209,57 @@ private fun NameField(
 // Why: "Dentro de": a main category, or inside one; a category with subcategories stays a main one.
 @Composable
 private fun ParentField(
-    state: SplitBillUiState,
-    form: CategoryForm,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    editor: CategoryEditor,
+    onParentPicked: (String?) -> Unit,
+) {
+    val parent = editor.parent
+    val help = when {
+        editor.isParentLocked -> stringResource(R.string.designsystem_category_parent_locked)
+        parent != null -> stringResource(R.string.designsystem_category_parent_help_sub, categoryName(parent))
+        else -> stringResource(R.string.designsystem_category_parent_help)
+    }
+    val noneLabel = stringResource(R.string.designsystem_category_parent_none)
+    CategoryDropdownField(
+        label = stringResource(R.string.designsystem_category_parent),
+        value = parent?.let { categoryName(it) } ?: noneLabel,
+        help = help,
+        isEnabled = !editor.isParentLocked,
+        options = listOf(null to noneLabel) + editor.parents.map { it.id to categoryName(it) },
+        onPicked = onParentPicked,
+    )
+}
+
+/*
+ * Why: a read-only field that opens its menu wherever it is tapped, the way a select does: "Dentro de", and the map's
+ * "Grupo".
+ */
+@Composable
+fun CategoryDropdownField(
+    label: String,
+    value: String,
+    help: String?,
+    isEnabled: Boolean,
+    options: List<Pair<String?, String>>,
+    onPicked: (String?) -> Unit,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    val parent = form.parentId?.let { state.categories.findOrNull(it) }
-    val noneLabel = stringResource(R.string.split_bill_category_parent_none)
-    val help = when {
-        state.isCategoryParentLocked -> stringResource(R.string.split_bill_category_parent_locked)
-        parent != null -> stringResource(R.string.split_bill_category_parent_help_sub, categoryNameOf(parent))
-        else -> stringResource(R.string.split_bill_category_parent_help)
-    }
     Box {
         OutlinedTextField(
-            value = parent?.let { categoryNameOf(it) } ?: noneLabel,
+            value = value,
             onValueChange = {},
             readOnly = true,
-            enabled = !state.isCategoryParentLocked,
+            enabled = isEnabled,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.split_bill_category_parent)) },
-            supportingText = { Text(help) },
+            label = { Text(label) },
+            supportingText = help?.let { { Text(it) } },
             trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, contentDescription = null) },
         )
-        // Why: the read-only field opens the menu wherever it is tapped, the way a select does.
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .padding(bottom = 24.dp)
+                .padding(bottom = if (help != null) 24.dp else 0.dp)
                 .clickable(
-                    enabled = !state.isCategoryParentLocked,
+                    enabled = isEnabled,
                     role = Role.DropdownList,
                     onClick = { isExpanded = true },
                 ),
@@ -229,19 +268,12 @@ private fun ParentField(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
         ) {
-            DropdownMenuItem(
-                text = { Text(noneLabel) },
-                onClick = {
-                    isExpanded = false
-                    onEvent(SplitBillUiEvent.OnCategoryParentPicked(null))
-                },
-            )
-            state.categoryParents.forEach { option ->
+            options.forEach { (id, name) ->
                 DropdownMenuItem(
-                    text = { Text(categoryNameOf(option)) },
+                    text = { Text(name) },
                     onClick = {
                         isExpanded = false
-                        onEvent(SplitBillUiEvent.OnCategoryParentPicked(option.id))
+                        onPicked(id)
                     },
                 )
             }
@@ -249,16 +281,12 @@ private fun ParentField(
     }
 }
 
-// Why: "Assim aparece nas contas: Alimentação › Feira", with the icon it gets.
+// Why: "Assim aparece nas contas: Alimentação › Feira", with the icon and color it gets.
 @Composable
-private fun PreviewRow(
-    state: SplitBillUiState,
-    form: CategoryForm,
-) {
+private fun PreviewRow(editor: CategoryEditor) {
     val isDark = LocalIsDarkTheme.current
-    val parent = form.parentId?.let { state.categories.findOrNull(it) }
-    val color = parent?.color ?: state.categories.findOrNull(form.categoryId)?.color ?: state.category.color
-    val name = form.name.trim()
+    val parent = editor.parent
+    val name = editor.form.name.trim()
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -272,27 +300,23 @@ private fun PreviewRow(
         ) {
             Surface(
                 shape = RoundedCornerShape(12.dp),
-                color = color.toContainerColor(isDark),
-                contentColor = color.toContentColor(isDark),
+                color = editor.color.toContainerColor(isDark),
+                contentColor = editor.color.toContentColor(isDark),
                 modifier = Modifier.size(40.dp),
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        form.icon.imageVector,
+                        editor.form.icon.imageVector,
                         contentDescription = null,
                         modifier = Modifier.size(22.dp),
                     )
                 }
             }
             Column {
-                NoteText(stringResource(R.string.split_bill_category_preview))
+                NoteText(stringResource(R.string.designsystem_category_preview))
                 Text(
                     text = if (parent != null) {
-                        stringResource(
-                            com.quare.blitzsplit.android.designsystem.R.string.designsystem_category_path,
-                            categoryNameOf(parent),
-                            name,
-                        )
+                        stringResource(R.string.designsystem_category_path, categoryName(parent), name)
                     } else {
                         name
                     },
@@ -309,10 +333,10 @@ private fun PreviewRow(
 @Composable
 private fun IconGrid(
     selected: CategoryIcon,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    onIconPicked: (CategoryIcon) -> Unit,
 ) {
     Text(
-        text = stringResource(R.string.split_bill_category_icon),
+        text = stringResource(R.string.designsystem_category_icon),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -342,7 +366,7 @@ private fun IconGrid(
                     .selectable(
                         selected = isSelected,
                         role = Role.RadioButton,
-                        onClick = { onEvent(SplitBillUiEvent.OnCategoryIconPicked(icon)) },
+                        onClick = { onIconPicked(icon) },
                     ),
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -364,69 +388,75 @@ private fun NoteText(text: String) {
 
 // Why: "Fica para todo o Viagem Floripa…", or what an edit changes, with the bills that already use it.
 @Composable
-private fun groupNoteOf(
-    state: SplitBillUiState,
-    form: CategoryForm,
-): String = if (form.isEditing) {
+private fun groupNoteOf(editor: CategoryEditor): String = if (editor.form.isEditing) {
     pluralStringResource(
-        R.plurals.split_bill_category_edit_note,
-        state.categoryFormUsage,
-        state.groupName,
-        state.categoryFormUsage,
-        form.name.trim(),
+        R.plurals.designsystem_category_edit_note,
+        editor.usage,
+        editor.groupName,
+        editor.usage,
+        editor.form.name.trim(),
     )
 } else {
-    stringResource(R.string.split_bill_category_group_note, state.groupName)
+    stringResource(R.string.designsystem_category_group_note, editor.groupName)
 }
 
 // Why: "Apagar “Churrasco”?" says where its bills go (7.8f).
 @Composable
-internal fun DeleteCategoryDialog(
-    state: SplitBillUiState,
+fun DeleteCategoryDialog(
     deletion: CategoryDeletion,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    groupName: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    val name = categoryNameOf(deletion.category)
+    val name = categoryName(deletion.category)
     ConfirmDialog(
-        title = stringResource(R.string.split_bill_category_delete_title, name),
+        title = stringResource(R.string.designsystem_category_delete_title, name),
         message = if (deletion.billCount > 0) {
             pluralStringResource(
-                R.plurals.split_bill_category_delete_text,
+                R.plurals.designsystem_category_delete_text,
                 deletion.billCount,
                 deletion.billCount,
                 name,
-                categoryNameOf(deletion.movesTo),
-                state.groupName,
+                categoryName(deletion.movesTo),
+                groupName,
             )
         } else {
-            stringResource(R.string.split_bill_category_delete_none, state.groupName)
+            stringResource(R.string.designsystem_category_delete_none, groupName)
         },
-        confirmLabel = stringResource(R.string.split_bill_category_delete_confirm),
-        onConfirm = { onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed) },
-        onDismiss = { onEvent(SplitBillUiEvent.OnCategoryDeleteDismissed) },
+        confirmLabel = stringResource(R.string.designsystem_category_delete_confirm),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
         isBusy = deletion.isDeleting,
         placement = rememberDialogPlacement(),
     )
 }
 
+private fun buildPreviewEditor(form: CategoryForm): CategoryEditor = CategoryEditor(
+    form = form,
+    categories = CategoryTree.appOnly,
+    groupName = "Viagem Floripa",
+    creatorName = null,
+    usage = 0,
+    deletion = null,
+    isOnline = false,
+)
+
 @DevicePreviews
 @Composable
 private fun CategoryFormContentPreview() {
-    val form = CategoryForm(
-        categoryId = null,
-        name = "Pet",
-        parentId = null,
-        icon = CategoryIcon.PAW,
-        createdByMemberId = null,
-        isSaving = false,
-    )
     BlitzSplitTheme {
         CategoryFormContent(
-            state = createPreviewBillState(isOnline = false).copy(categoryForm = form),
-            form = form,
+            editor = buildPreviewEditor(
+                CategoryForm.create(
+                    categories = CategoryTree.appOnly,
+                    groupId = "group",
+                    parentId = null,
+                    name = "Pet",
+                ),
+            ),
             isDialog = false,
             snackbarHostState = SnackbarHostState(),
-            onEvent = {},
+            actions = previewActions,
         )
     }
 }
@@ -434,21 +464,19 @@ private fun CategoryFormContentPreview() {
 @DevicePreviews
 @Composable
 private fun CategoryFormContentSubcategoryPreview() {
-    val form = CategoryForm(
-        categoryId = null,
-        name = "Feira",
-        parentId = "food",
-        icon = CategoryIcon.FOOD,
-        createdByMemberId = null,
-        isSaving = false,
-    )
     BlitzSplitTheme {
         CategoryFormContent(
-            state = createPreviewBillState().copy(categoryForm = form),
-            form = form,
+            editor = buildPreviewEditor(
+                CategoryForm.create(
+                    categories = CategoryTree.appOnly,
+                    groupId = "group",
+                    parentId = "food",
+                    name = "Feira",
+                ),
+            ),
             isDialog = false,
             snackbarHostState = SnackbarHostState(),
-            onEvent = {},
+            actions = previewActions,
         )
     }
 }

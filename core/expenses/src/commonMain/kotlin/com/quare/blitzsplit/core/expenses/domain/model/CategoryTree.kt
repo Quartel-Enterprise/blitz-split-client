@@ -64,6 +64,22 @@ class CategoryTree private constructor(
     // Why: the subcategories a group category has, which it can't become a subcategory with (two levels only).
     fun hasSubcategories(id: String): Boolean = branchOf(id)?.subcategories?.isNotEmpty() == true
 
+    // Why: a new main category's color, as of() gives it by its place among the group's main categories, deleted too.
+    val nextMainColor: AvatarColor
+        get() = AvatarColor.entries[groupCategories.values.count { it.parentId == null } % AvatarColor.entries.size]
+
+    /*
+     * Why: one group's categories out of every group's (the map's, flow 9), which a category created or edited there
+     * is checked against, as a bill's Categoria checks its group's.
+     */
+    fun ofGroup(groupId: String): CategoryTree = of(groupCategories.values.filter { it.groupId == groupId })
+
+    // Why: how many bills each category has, by the category they read as: "usada em 3 contas" (7.8e).
+    fun usageOf(expenses: List<Expense>): Map<String, Int> = expenses
+        .filter { it.categoryId != null }
+        .groupingBy { resolve(it.categoryId).id }
+        .eachCount()
+
     companion object {
         // Why: two levels, so a deleted subcategory reaches a live category in at most two steps.
         private const val MAX_DEPTH = 3

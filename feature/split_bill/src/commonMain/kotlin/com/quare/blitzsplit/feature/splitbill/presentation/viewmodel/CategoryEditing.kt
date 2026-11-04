@@ -9,7 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryDeletion
+import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -104,14 +104,15 @@ internal class CategoryEditing(
             is SplitBillUiEvent.OnEditCategoryClicked -> uiState.update { it.withEditCategoryForm(event.categoryId) }
 
             is SplitBillUiEvent.OnCategoryNameChanged -> uiState.update { state ->
-                state.copy(categoryForm = state.categoryForm?.copy(name = CategoryRules.toCapped(event.text)))
+                state.copy(categoryForm = state.categoryForm?.withName(event.text))
             }
 
-            is SplitBillUiEvent.OnCategoryParentPicked -> uiState.update { it.withCategoryParent(event.parentId) }
+            is SplitBillUiEvent.OnCategoryParentPicked -> uiState.update { state ->
+                state.copy(categoryForm = state.categoryForm?.withParent(state.categories, event.parentId))
+            }
 
             is SplitBillUiEvent.OnCategoryIconPicked -> uiState.update { state ->
-                val form = state.categoryForm?.takeIf { !it.isSubcategory } ?: return@update state
-                state.copy(categoryForm = form.copy(icon = event.icon))
+                state.copy(categoryForm = state.categoryForm?.withIcon(event.icon))
             }
 
             SplitBillUiEvent.OnCategoryFormSaveClicked -> save()
@@ -140,54 +141,38 @@ internal class CategoryEditing(
     private fun save() {
         val state = uiState.value
         val form = state.categoryForm ?: return
-        if (!state.canSaveCategory) return
+        if (state.categoryEditor?.canSave != true) return
         uiState.update { it.copy(categoryForm = form.copy(isSaving = true)) }
         val meId = state.people.firstOrNull { it.isMe }?.id
         scope.launch {
-            saveGroupCategory(
-                categoryId = form.categoryId,
-                groupId = state.groupId,
-                name = form.name,
-                parentId = form.parentId,
-                icon = form.icon,
-                createdByMemberId = form.createdByMemberId ?: meId,
-            ).onSuccess { id ->
-                if (form.isEditing) {
-                    uiState.update { it.copy(categoryForm = null) }
-                } else {
-                    // Why: the new category reaches the tree a moment later, through Room.
-                    uiState.update {
-                        it.copy(
-                            categoryId = id,
-                            isCategoryPicked = true,
-                            categoryForm = null,
-                            categoryPicker = null,
-                        )
+            saveGroupCategory(form, meId)
+                .onSuccess { id ->
+                    if (form.isEditing) {
+                        uiState.update { it.copy(categoryForm = null) }
+                    } else {
+                        // Why: the new category reaches the tree a moment later, through Room.
+                        uiState.update {
+                            it.copy(
+                                categoryId = id,
+                                isCategoryPicked = true,
+                                categoryForm = null,
+                                categoryPicker = null,
+                            )
+                        }
+                        onCategoryChanged()
                     }
-                    onCategoryChanged()
+                }.onFailure {
+                    uiState.update { it.copy(categoryForm = it.categoryForm?.copy(isSaving = false)) }
+                    emit(SplitBillUiAction.ShowCategorySaveError)
                 }
-            }.onFailure {
-                uiState.update { it.copy(categoryForm = it.categoryForm?.copy(isSaving = false)) }
-                emit(SplitBillUiAction.ShowCategorySaveError)
-            }
         }
     }
 
     private fun askToDelete() {
-        val state = uiState.value
-        val id = state.categoryForm?.categoryId ?: return
-        val category = state.categories.findOrNull(id) ?: return
-        val movesTo = category.parentId?.let { state.categories.resolve(it) } ?: state.categories.other
-        uiState.update {
-            it.copy(
-                categoryDeletion = CategoryDeletion(
-                    category = category,
-                    billCount = state.categoryFormUsage,
-                    movesTo = movesTo,
-                    isDeleting = false,
-                ),
-            )
-        }
+        val deletion = uiState.value.categoryEditor
+            ?.withDeletionAsked()
+            ?.deletion ?: return
+        uiState.update { it.copy(categoryDeletion = deletion) }
     }
 
     // Why: back to the picker; a bill that had it reads as where its bills go.

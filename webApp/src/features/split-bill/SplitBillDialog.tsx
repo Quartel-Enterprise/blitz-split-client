@@ -13,6 +13,7 @@ import {
 import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
 import { Avatar } from '@/components/common'
 import { AmountInput, controlClass, WhenField } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
@@ -33,7 +34,7 @@ import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
-import { categoryFormPane, categoryHint, categoryPane, CategoryDeleteDialog } from './CategoryPane'
+import { categoryHint, categoryPane } from './CategoryPane'
 import { ReceiptFailureAlert, ReceiptField, ReceiptInput, ReceiptReadChips, useReceiptInput } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
@@ -116,7 +117,7 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
   }
 
   let pane: PaneParts
-  if (categoryForm) pane = categoryFormPane(presenter.categories, state, categoryForm)
+  if (categoryForm) pane = categoryFormPane(presenter.categories, categoryForm, state.categories.icons)
   else if (isCategoryOpen) pane = categoryPane(presenter.categories, state, isWide)
   else if (items && state.itemEditor && !isDesktop) pane = itemPane(presenter.items, state, state.itemEditor, money)
   else if (items && state.feeEditor && !isDesktop) pane = feePane(presenter.items, state, state.feeEditor)
@@ -152,7 +153,7 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
       {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
       {isDesktop && !editor && payerAmounts && <SeveralPayersDialog presenter={presenter} state={state} amounts={payerAmounts} money={money} />}
       {deletion}
-      {state.categories.deletion && <CategoryDeleteDialog presenter={presenter.categories} state={state} deletion={state.categories.deletion} />}
+      {state.categories.deletion && <CategoryDeleteDialog actions={presenter.categories} deletion={state.categories.deletion} groupName={state.groupName} />}
     </>
   )
 }

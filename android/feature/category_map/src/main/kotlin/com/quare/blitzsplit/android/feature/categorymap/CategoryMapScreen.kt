@@ -20,11 +20,15 @@ fun CategoryMapScreen(viewModel: CategoryMapViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val saveError = stringResource(R.string.category_map_save_error)
+    val categorySaveError = stringResource(R.string.category_map_category_save_error)
+    val categoryDeleteError = stringResource(R.string.category_map_category_delete_error)
     val undo = stringResource(R.string.category_map_undo)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 CategoryMapUiAction.ShowSaveError -> snackbarHostState.showSnackbar(saveError)
+                CategoryMapUiAction.ShowCategorySaveError -> snackbarHostState.showSnackbar(categorySaveError)
+                CategoryMapUiAction.ShowCategoryDeleteError -> snackbarHostState.showSnackbar(categoryDeleteError)
             }
         }
     }

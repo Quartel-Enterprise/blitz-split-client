@@ -23,32 +23,6 @@ class JsCategorySuggestion(
     val isSelected: Boolean,
 )
 
-// Why: "Nova categoria" or "Editar categoria"; icon is the CategoryIcon's code.
-class JsCategoryForm(
-    val categoryId: String?,
-    val name: String,
-    val parentId: String?,
-    val parent: JsCategory?,
-    val icon: String,
-    val createdByMemberId: String?,
-    val isSaving: Boolean,
-    val isEditing: Boolean,
-    val isSubcategory: Boolean,
-    val isNameTaken: Boolean,
-    val isParentLocked: Boolean,
-    val parents: Array<JsCategory>,
-    // Why: the group's bills with it or one of its subcategories, "usada em 3 contas".
-    val usage: Int,
-    val canSave: Boolean,
-)
-
-class JsCategoryDeletion(
-    val category: JsCategory,
-    val billCount: Int,
-    val movesTo: JsCategory,
-    val isDeleting: Boolean,
-)
-
 /*
  * Why: the bill's category and "Categoria" (7.7, 7.8). hint is "by-term", "by-longest-term", "by-receipt", "no-term",
  * "changed" or "picked"; the picker's fields are only meaningful while isPickerOpen.
@@ -120,32 +94,8 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
         isSearching = state.isSearchingCategories,
         results = state.categoryResults.map(::toJsCategory).toTypedArray(),
         showsNoneFound = state.showsNoCategoryFound,
-        form = state.categoryForm?.let { form ->
-            JsCategoryForm(
-                categoryId = form.categoryId,
-                name = form.name,
-                parentId = form.parentId,
-                parent = form.parentId?.let { tree.findOrNull(it) }?.let(::toJsCategory),
-                icon = form.icon.code,
-                createdByMemberId = form.createdByMemberId,
-                isSaving = form.isSaving,
-                isEditing = form.isEditing,
-                isSubcategory = form.isSubcategory,
-                isNameTaken = state.isCategoryNameTaken,
-                isParentLocked = state.isCategoryParentLocked,
-                parents = state.categoryParents.map(::toJsCategory).toTypedArray(),
-                usage = state.categoryFormUsage,
-                canSave = state.canSaveCategory,
-            )
-        },
-        deletion = state.categoryDeletion?.let {
-            JsCategoryDeletion(
-                category = toJsCategory(it.category),
-                billCount = it.billCount,
-                movesTo = toJsCategory(it.movesTo),
-                isDeleting = it.isDeleting,
-            )
-        },
+        form = state.categoryEditor?.let(::toJsCategoryForm),
+        deletion = state.categoryDeletion?.let(::toJsCategoryDeletion),
         defaultSplitException = state.defaultSplitException?.let(::toJsCategory),
         icons = CategoryIcon.entries.map { it.code }.toTypedArray(),
     )

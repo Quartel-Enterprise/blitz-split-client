@@ -75,7 +75,14 @@ fun CategoryMapContent(
                     }
                 },
                 // Why: adding and restoring take no change until the map is read (canEditMap).
-                actions = { if (state.canEditMap) MapActionsMenu(onEvent = onEvent) },
+                actions = {
+                    if (state.canEditMap) {
+                        MapActionsMenu(
+                            canCreateCategory = state.canCreateCategory,
+                            onEvent = onEvent,
+                        )
+                    }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -141,6 +148,12 @@ fun CategoryMapContent(
             onEvent = onEvent,
         )
     }
+    if (state.categoryForm != null) {
+        CategoryFormDialog(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
     if (state.isRestoreConfirmOpen) {
         RestoreMapDialog(
             state = state,
@@ -150,7 +163,10 @@ fun CategoryMapContent(
 }
 
 @Composable
-private fun MapActionsMenu(onEvent: (CategoryMapUiEvent) -> Unit) {
+private fun MapActionsMenu(
+    canCreateCategory: Boolean,
+    onEvent: (CategoryMapUiEvent) -> Unit,
+) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     IconButton(onClick = {
         onEvent(
@@ -176,6 +192,16 @@ private fun MapActionsMenu(onEvent: (CategoryMapUiEvent) -> Unit) {
             expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
         ) {
+            // Why: a category goes in a group (9.4), so with none on the device there is nowhere to create one.
+            if (canCreateCategory) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.category_map_new_category)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+                    },
+                )
+            }
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.category_map_restore)) },
                 onClick = {

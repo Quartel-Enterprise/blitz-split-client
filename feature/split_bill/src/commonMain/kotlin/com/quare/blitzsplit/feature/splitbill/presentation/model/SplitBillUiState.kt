@@ -4,8 +4,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryNames
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -355,41 +358,23 @@ data class SplitBillUiState(
     val openCategoryBranch: CategoryBranch?
         get() = categoryPicker?.openMainId?.let { categories.branchOf(it) }
 
-    // Why: "Já existe Churrasco em Alimentação. Escolha outro nome." (7.8c), among the app's names and the group's.
-    val isCategoryNameTaken: Boolean
-        get() {
-            val form = categoryForm ?: return false
-            val name = form.name.trim()
-            if (name.isEmpty()) return false
-            return categories.hasGroupName(form.parentId, name, form.categoryId) ||
-                categories.all.any { it.app != null && it.parentId == form.parentId && CategoryNames.isNamed(it, name) }
-        }
+    /*
+     * Why: "Nova categoria", "Nova subcategoria" and "Editar categoria" (7.8) over the picker, as the map opens it too,
+     * with "Apagar “X”?" over it.
+     */
+    val categoryEditor: CategoryEditor?
+        get() = categoryForm?.let(::categoryEditorOf)
 
-    // Why: a category that has subcategories stays a main one, as there are only two levels.
-    val isCategoryParentLocked: Boolean
-        get() = categoryForm?.categoryId?.let(categories::hasSubcategories) == true
-
-    // Why: "Dentro de": "Nenhuma: categoria principal" and every main category but the one being edited.
-    val categoryParents: List<Category>
-        get() = categories.branches.map { it.category }.filter { it.id != categoryForm?.categoryId && !it.isOther }
-
-    // Why: "Criada por Ana · usada em 3 contas", the group's bills with it or a subcategory of it.
-    val categoryFormUsage: Int
-        get() {
-            val id = categoryForm?.categoryId ?: return 0
-            val subcategories = categories
-                .branchOf(id)
-                ?.subcategories
-                .orEmpty()
-                .map { it.id }
-            return (listOf(id) + subcategories).sumOf { categoryUsage[it] ?: 0 }
-        }
-
-    val canSaveCategory: Boolean
-        get() {
-            val form = categoryForm ?: return false
-            return CategoryRules.isNameValid(form.name) && !isCategoryNameTaken && !form.isSaving
-        }
+    // Why: also the form a page still fading out holds, once categoryForm is gone.
+    fun categoryEditorOf(form: CategoryForm): CategoryEditor = CategoryEditor(
+        form = form,
+        categories = categories,
+        groupName = groupName,
+        creatorName = people.firstOrNull { it.id == form.createdByMemberId }?.name,
+        usage = CategoryEditor.usageOf(categories, form.categoryId, categoryUsage),
+        deletion = categoryDeletion,
+        isOnline = isOnline,
+    )
 
     // Why: "Apagar conta" only when editing, and not while saving or deleting.
     val canDelete: Boolean

@@ -54,53 +54,6 @@ enum CategoryPickerCopy {
         if branch.subcategories.isEmpty { return String(localized: "No subcategories") }
         return String(localized: "\(branch.subcategories.count) subcategories")
     }
-
-    /// "Já existe Churrasco em Alimentação", "Criada por Ana · usada em 3 contas" or the name's rules.
-    static func nameHelp(_ form: CategoryForm, state: SplitBillUiState) -> String {
-        let name = form.name.trimmingCharacters(in: .whitespaces)
-        let parent = form.parentId.flatMap { state.categories.findOrNull(id: $0) }
-        if state.isCategoryNameTaken {
-            if let parent {
-                return String(localized: "\(name) already exists in \(CategoryCopy.name(parent)). Pick another name.")
-            }
-            return String(localized: "\(name) already exists. Pick another name.")
-        }
-        if form.isEditing {
-            let creator = state.categories.findOrNull(id: form.categoryId)
-                .flatMap { category in state.people.first { $0.id == category.createdByMemberId } }
-            let used = String(localized: "used in \(Int(state.categoryFormUsage)) bills")
-            guard let creator else { return used }
-            return "\(String(localized: "Created by \(creator.name)")) · \(used)"
-        }
-        return String(localized: "Up to 30 letters. It can't repeat inside the same category.")
-    }
-
-    static func parentHelp(_ form: CategoryForm, state: SplitBillUiState) -> String {
-        if state.isCategoryParentLocked { return String(localized: "It has subcategories, so it stays a main category.") }
-        if let parent = form.parentId.flatMap({ state.categories.findOrNull(id: $0) }) {
-            return String(localized: "A subcategory uses the icon of \(CategoryCopy.name(parent)).")
-        }
-        return String(localized: "Pick a category to create a subcategory.")
-    }
-
-    static func groupNote(_ form: CategoryForm, state: SplitBillUiState) -> String {
-        if form.isEditing {
-            let name = form.name.trimmingCharacters(in: .whitespaces)
-            return String(localized: "Changing the name or the place counts for all of \(state.groupName) and for the \(Int(state.categoryFormUsage)) bills that already use \(name).")
-        }
-        return String(localized: "It belongs to all of \(state.groupName): anyone in the group can use, edit and delete it.")
-    }
-
-    static func formTitle(_ form: CategoryForm) -> String {
-        if form.isEditing { return String(localized: "Edit category") }
-        return form.isSubcategory ? String(localized: "New subcategory") : String(localized: "New category")
-    }
-
-    static func deletionMessage(_ deletion: CategoryDeletion, state: SplitBillUiState) -> String {
-        let name = CategoryCopy.name(deletion.category)
-        if deletion.billCount == 0 { return String(localized: "The category goes for all of \(state.groupName).") }
-        return String(localized: "The \(Int(deletion.billCount)) bills with \(name) move to \(CategoryCopy.name(deletion.movesTo)). The category goes for all of \(state.groupName).")
-    }
 }
 
 /// "Category" (7.7), pushed over "Split a bill" on iPhone and iPad: the search, "Suggested" and "All categories",
@@ -403,139 +356,32 @@ extension View {
     }
 }
 
-/// "New category", "New subcategory" or "Edit category" (7.8), pushed over "Category": the name and where it goes,
-/// the icon of a main category, what it looks like on bills and who it is for.
+/// "New category", "New subcategory" or "Edit category" (7.8), pushed over "Category", as the map opens it too.
 struct CategoryFormView: View {
     let model: SplitBillModel
 
-    private var state: SplitBillUiState {
-        model.state
-    }
-
-    private let iconColumns = [GridItem(.adaptive(minimum: 44), spacing: 8)]
-
     var body: some View {
-        Form {
-            if let form = state.categoryForm {
-                Section {
-                    TextField("Name", text: name)
-                    #if os(iOS)
-                        .textInputAutocapitalization(.sentences)
-                    #endif
-                } header: {
-                    Text("Name")
-                } footer: {
-                    Text(verbatim: CategoryPickerCopy.nameHelp(form, state: state))
-                        .foregroundStyle(state.isCategoryNameTaken ? Palette.negative : .secondary)
-                }
-                Section {
-                    Picker("Inside", selection: parent) {
-                        Text("None: main category").tag(String?.none)
-                        ForEach(state.categoryParents, id: \.id) { option in
-                            Text(verbatim: CategoryCopy.name(option)).tag(String?.some(option.id))
-                        }
-                    }
-                    .disabled(state.isCategoryParentLocked)
-                } footer: {
-                    Text(verbatim: CategoryPickerCopy.parentHelp(form, state: state))
-                }
-                if !form.isSubcategory {
-                    Section("Icon") {
-                        LazyVGrid(columns: iconColumns, spacing: 8) {
-                            ForEach(CategoryIcon.entries, id: \.self) { icon in
-                                iconButton(icon, isSelected: icon == form.icon)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-                Section {
-                    LabeledContent("How it shows on bills") {
-                        Text(verbatim: preview(form))
-                    }
-                } footer: {
-                    VStack(alignment: .leading, spacing: 6) {
-                        if state.showsOfflineNotice {
-                            Label("Offline: the category can already be used on this \(DeviceName.current) and reaches the group once back online.", systemImage: "icloud.slash")
-                        }
-                        Text(verbatim: CategoryPickerCopy.groupNote(form, state: state))
-                    }
-                }
-                if form.isEditing {
-                    Section {
-                        Button("Delete category", role: .destructive) {
-                            model.send(SplitBillUiEventOnCategoryDeleteClicked.shared)
-                        }
-                    }
-                }
-            }
-        }
-        .navigationTitle(state.categoryForm.map(CategoryPickerCopy.formTitle) ?? "")
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        .toolbar {
-            #if os(macOS)
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    model.send(SplitBillUiEventOnCategoryFormDismissed.shared)
-                }
-            }
-            #endif
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save", systemImage: "checkmark") {
-                    model.send(SplitBillUiEventOnCategoryFormSaveClicked.shared)
-                }
-                .buttonStyle(.glassProminent)
-                .disabled(!state.canSaveCategory)
-            }
-        }
-        .categoryDeletionAlert(model: model)
-    }
-
-    private func iconButton(_ icon: CategoryIcon, isSelected: Bool) -> some View {
-        Button {
-            model.send(SplitBillUiEventOnCategoryIconPicked(icon: icon))
-        } label: {
-            Image(systemName: CategoryCopy.symbol(icon))
-                .font(.title3)
-                .frame(width: 44, height: 44)
-                .foregroundStyle(isSelected ? Color.white : Palette.accent)
-                .background(isSelected ? Palette.accent : Color.secondary.opacity(0.12), in: .rect(cornerRadius: 12))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(CategoryCopy.iconLabel(icon))
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    private func preview(_ form: CategoryForm) -> String {
-        let name = form.name.trimmingCharacters(in: .whitespaces)
-        guard let parent = form.parentId.flatMap({ state.categories.findOrNull(id: $0) }) else { return name }
-        return "\(CategoryCopy.name(parent)) › \(name)"
-    }
-
-    private var name: Binding<String> {
-        Binding(
-            get: { model.current.categoryForm?.name ?? "" },
-            set: { model.send(SplitBillUiEventOnCategoryNameChanged(text: $0)) },
+        CategoryEditorForm(
+            editor: model.state.categoryEditor,
+            actions: CategoryEditorActions(
+                name: Binding(
+                    get: { model.current.categoryForm?.name ?? "" },
+                    set: { model.send(SplitBillUiEventOnCategoryNameChanged(text: $0)) },
+                ),
+                parent: Binding(
+                    get: { model.state.categoryForm?.parentId },
+                    set: { model.send(SplitBillUiEventOnCategoryParentPicked(parentId: $0)) },
+                ),
+                pickIcon: { model.send(SplitBillUiEventOnCategoryIconPicked(icon: $0)) },
+                save: { model.send(SplitBillUiEventOnCategoryFormSaveClicked.shared) },
+                dismiss: { model.send(SplitBillUiEventOnCategoryFormDismissed.shared) },
+                askToDelete: { model.send(SplitBillUiEventOnCategoryDeleteClicked.shared) },
+            ),
         )
-    }
-
-    private var parent: Binding<String?> {
-        Binding(
-            get: { model.state.categoryForm?.parentId },
-            set: { model.send(SplitBillUiEventOnCategoryParentPicked(parentId: $0)) },
-        )
-    }
-}
-
-extension View {
-    /// "Delete “Churrasco”?" (7.8f), saying where its bills go.
-    func categoryDeletionAlert(model: SplitBillModel) -> some View {
-        let deletion = model.state.categoryDeletion
-        return alert(
-            deletion.map { String(localized: "Delete “\(CategoryCopy.name($0.category))”?") } ?? "",
-            isPresented: Binding(
+        .categoryDeletionAlert(
+            model.state.categoryDeletion,
+            groupName: model.state.groupName,
+            isShown: Binding(
                 get: { model.state.categoryDeletion != nil },
                 set: { shown in
                     if !shown, model.current.categoryDeletion?.isDeleting == false {
@@ -543,16 +389,8 @@ extension View {
                     }
                 },
             ),
-        ) {
-            Button("Delete", role: .destructive) {
-                model.send(SplitBillUiEventOnCategoryDeleteConfirmed.shared)
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            if let deletion {
-                Text(verbatim: CategoryPickerCopy.deletionMessage(deletion, state: model.state))
-            }
-        }
+            onConfirm: { model.send(SplitBillUiEventOnCategoryDeleteConfirmed.shared) },
+        )
     }
 }
 

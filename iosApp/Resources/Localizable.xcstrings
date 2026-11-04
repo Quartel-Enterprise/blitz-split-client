@@ -1241,6 +1241,17 @@
         }
       }
     },
+    "New subcategory in %@" : {
+      "comment" : "Category map: create a subcategory in a main category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova subcategoria em %@"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "pt-BR" : {
@@ -3525,6 +3536,17 @@
         }
       }
     },
+    "Edit “%@”" : {
+      "comment" : "Category map: edit a group's category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar “%@”"
+          }
+        }
+      }
+    },
     "Edit “%@”…" : {
       "comment" : "Mac menu: edit a group's category",
       "localizations" : {
@@ -4027,6 +4049,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nova Categoria…"
+          }
+        }
+      }
+    },
+    "New Subcategory in %@…" : {
+      "comment" : "Mac category map: create a subcategory",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova Subcategoria em %@…"
           }
         }
       }

@@ -20,7 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.CreateNewFolder
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
@@ -83,14 +88,19 @@ internal fun SectionCard(
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SectionHeader(section = section)
+            SectionHeader(
+                section = section,
+                state = state,
+                onEvent = onEvent,
+            )
             SectionRowsList(
                 section = section,
                 state = state,
                 onEvent = onEvent,
             )
-            AddInSectionButton(
+            AddInSectionButtonRow(
                 section = section,
+                state = state,
                 onEvent = onEvent,
             )
         }
@@ -98,13 +108,17 @@ internal fun SectionCard(
 }
 
 @Composable
-private fun SectionHeader(section: MapSection) {
+private fun SectionHeader(
+    section: MapSection,
+    state: CategoryMapUiState,
+    onEvent: (CategoryMapUiEvent) -> Unit,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CategoryBadge(category = section.category)
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = categoryName(section.category),
                 style = MaterialTheme.typography.titleMedium,
@@ -115,6 +129,27 @@ private fun SectionHeader(section: MapSection) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        EditCategoryButton(
+            category = section.category,
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: "Editar categoria" on a group's category (9.4); the app's can't be edited.
+@Composable
+private fun EditCategoryButton(
+    category: Category,
+    state: CategoryMapUiState,
+    onEvent: (CategoryMapUiEvent) -> Unit,
+) {
+    if (!state.canCreateCategory || !category.isGroupCategory) return
+    IconButton(onClick = { onEvent(CategoryMapUiEvent.OnEditCategoryClicked(category.id)) }) {
+        Icon(
+            imageVector = Icons.Outlined.Edit,
+            contentDescription = stringResource(R.string.category_map_edit_category, categoryName(category)),
+        )
     }
 }
 
@@ -149,10 +184,17 @@ private fun TermsLine(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        val editLabel = stringResource(R.string.category_map_edit_category, categoryName(row.category))
+        val isEditable = state.canCreateCategory && row.category.isGroupCategory && !row.isOnlyMain
         Column(
             modifier = Modifier
                 .width(rowLabelWidth)
-                .padding(top = 7.dp),
+                .clickable(
+                    enabled = isEditable,
+                    onClickLabel = editLabel,
+                    role = Role.Button,
+                    onClick = { onEvent(CategoryMapUiEvent.OnEditCategoryClicked(row.category.id)) },
+                ).padding(top = 7.dp),
         ) {
             Text(
                 text = rowLabelOf(row),
@@ -235,19 +277,45 @@ internal fun TermChip(
     }
 }
 
+// Why: "Adicionar termo em X", and "Nova subcategoria em X" in every main category but Outros (9.4).
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun AddInSectionButton(
+private fun AddInSectionButtonRow(
     section: MapSection,
+    state: CategoryMapUiState,
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
-    TextButton(onClick = { onEvent(CategoryMapUiEvent.OnAddTermClicked(section.category.id, "")) }) {
+    val name = categoryName(section.category)
+    FlowRow {
+        IconTextButton(
+            icon = Icons.Outlined.Add,
+            text = stringResource(R.string.category_map_add_in, name),
+            onClick = { onEvent(CategoryMapUiEvent.OnAddTermClicked(section.category.id, "")) },
+        )
+        if (state.canCreateCategory && !section.category.isOther) {
+            IconTextButton(
+                icon = Icons.Outlined.CreateNewFolder,
+                text = stringResource(R.string.category_map_new_subcategory_in, name),
+                onClick = { onEvent(CategoryMapUiEvent.OnNewCategoryClicked(section.category.id)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun IconTextButton(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(onClick = onClick) {
         Icon(
-            imageVector = Icons.Outlined.Add,
+            imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(18.dp),
         )
         Text(
-            text = stringResource(R.string.category_map_add_in, categoryName(section.category)),
+            text = text,
             modifier = Modifier.padding(start = 8.dp),
         )
     }
@@ -329,7 +397,7 @@ internal fun SectionDetailPane(
                 category = section.category,
                 size = 48.dp,
             )
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = categoryName(section.category),
                     style = MaterialTheme.typography.headlineSmall,
@@ -340,6 +408,11 @@ internal fun SectionDetailPane(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            EditCategoryButton(
+                category = section.category,
+                state = state,
+                onEvent = onEvent,
+            )
         }
         Surface(
             shape = RoundedCornerShape(20.dp),
@@ -354,8 +427,9 @@ internal fun SectionDetailPane(
                     state = state,
                     onEvent = onEvent,
                 )
-                AddInSectionButton(
+                AddInSectionButtonRow(
                     section = section,
+                    state = state,
                     onEvent = onEvent,
                 )
             }

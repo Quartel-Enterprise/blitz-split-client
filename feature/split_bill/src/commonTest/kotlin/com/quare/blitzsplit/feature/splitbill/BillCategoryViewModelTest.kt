@@ -292,10 +292,10 @@ class BillCategoryViewModelTest {
         val elsewhere = viewModel.uiState.value
 
         // Then
-        assertTrue(group.isCategoryNameTaken)
-        assertFalse(group.canSaveCategory)
-        assertTrue(app.isCategoryNameTaken)
-        assertFalse(elsewhere.isCategoryNameTaken)
+        assertEquals(true, group.categoryEditor?.isNameTaken)
+        assertEquals(false, group.categoryEditor?.canSave)
+        assertEquals(true, app.categoryEditor?.isNameTaken)
+        assertEquals(false, elsewhere.categoryEditor?.isNameTaken)
         assertEquals(CategoryIcon.HOME, elsewhere.categoryForm?.icon)
     }
 

@@ -1743,6 +1743,8 @@ export const en = {
   defaultSplit_exceptionModeEqual: 'Equal',
   defaultSplit_exceptionModeShares: 'Shares',
   defaultSplit_exceptionModePercent: 'Percentage',
+  categoryMap_categoryGroup: 'Group',
+  categoryMap_newSubcategoryIn: 'New subcategory in {name}',
   categoryMap_title: 'Category map',
   categoryMap_search: 'Search terms',
   categoryMap_add: 'Add term',

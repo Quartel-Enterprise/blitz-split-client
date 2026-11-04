@@ -72,4 +72,10 @@
         <item quantity="one">Os %d termos que você criou continuam.</item>
         <item quantity="other">Os %d termos que você criou continuam.</item>
     </plurals>
+    <string name="category_map_new_category">Nova categoria</string>
+    <string name="category_map_new_subcategory_in">Nova subcategoria em %s</string>
+    <string name="category_map_edit_category">Editar %s</string>
+    <string name="category_map_category_group">Grupo</string>
+    <string name="category_map_category_save_error">Não deu para salvar a categoria. Tente de novo.</string>
+    <string name="category_map_category_delete_error">Não deu para apagar a categoria. Tente de novo.</string>
 </resources>
