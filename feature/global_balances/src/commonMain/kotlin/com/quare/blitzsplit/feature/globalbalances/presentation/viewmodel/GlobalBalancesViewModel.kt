@@ -220,13 +220,15 @@ class GlobalBalancesViewModel(
                 )
             }
 
-            is GlobalBalancesUiEvent.OnChargeShareClicked -> emitForCharge(
-                GlobalBalancesUiAction.ShareMessage(event.message),
-            )
+            is GlobalBalancesUiEvent.OnChargeShareClicked -> {
+                if (uiState.value.charge != null) trackEvent("charge_share_clicked", emptyMap())
+                emitForCharge(GlobalBalancesUiAction.ShareMessage(event.message))
+            }
 
-            is GlobalBalancesUiEvent.OnChargeCopyClicked -> emitForCharge(
-                GlobalBalancesUiAction.CopyMessage(event.message),
-            )
+            is GlobalBalancesUiEvent.OnChargeCopyClicked -> {
+                if (uiState.value.charge != null) trackEvent("charge_copy_clicked", emptyMap())
+                emitForCharge(GlobalBalancesUiAction.CopyMessage(event.message))
+            }
 
             GlobalBalancesUiEvent.OnChargeDismissed -> dismissCharge()
 

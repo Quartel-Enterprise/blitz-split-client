@@ -740,6 +740,20 @@ class PayReceiverViewModelTest {
         }
 
     @Test
+    fun `GIVEN Bitcoin shown WHEN picking Bitcoin again THEN tracks nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(PaymentMethod.BITCOIN))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(PaymentMethod.BITCOIN))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the keys shown WHEN tapping Paguei outro valor THEN tracks the tap`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

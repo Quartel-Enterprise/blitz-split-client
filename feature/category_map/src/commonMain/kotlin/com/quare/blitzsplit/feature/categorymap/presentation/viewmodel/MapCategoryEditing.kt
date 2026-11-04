@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.categorymap.presentation.model.CATEGORY_MAP_SOURCE
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
@@ -47,9 +48,20 @@ internal class MapCategoryEditing(
 
     fun onEvent(event: CategoryMapUiEvent.Categories) {
         when (event) {
-            is CategoryMapUiEvent.OnNewCategoryClicked -> openNew(event.parentId)
+            is CategoryMapUiEvent.OnNewCategoryClicked -> {
+                if (uiState.value.canCreateCategory) {
+                    trackEvent(
+                        "category_create_clicked",
+                        mapOf("is_subcategory" to (event.parentId != null), "source" to CATEGORY_MAP_SOURCE),
+                    )
+                }
+                openNew(event.parentId)
+            }
 
-            is CategoryMapUiEvent.OnEditCategoryClicked -> openEdit(event.categoryId)
+            is CategoryMapUiEvent.OnEditCategoryClicked -> {
+                trackEvent("category_edit_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
+                openEdit(event.categoryId)
+            }
 
             is CategoryMapUiEvent.OnCategoryNameChanged -> changeForm { _, form -> form.withName(event.text) }
 
@@ -70,7 +82,7 @@ internal class MapCategoryEditing(
             is CategoryMapUiEvent.OnCategoryIconPicked -> changeForm { _, form -> form.withIcon(event.icon) }
 
             CategoryMapUiEvent.OnCategoryFormSaveClicked -> {
-                trackEvent("category_save_clicked", mapOf("source" to SOURCE))
+                trackEvent("category_save_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
                 save()
             }
 
@@ -97,7 +109,7 @@ internal class MapCategoryEditing(
                 if (deletion != null &&
                     !deletion.isDeleting
                 ) {
-                    trackEvent("category_delete_cancelled", mapOf("source" to SOURCE))
+                    trackEvent("category_delete_cancelled", mapOf("source" to CATEGORY_MAP_SOURCE))
                 }
                 uiState.update {
                     if (it.categoryDeletion?.isDeleting == true) it else it.copy(categoryDeletion = null)
@@ -162,7 +174,7 @@ internal class MapCategoryEditing(
                         mapOf(
                             "is_new" to !form.isEditing,
                             "is_subcategory" to (form.parentId != null),
-                            "source" to SOURCE,
+                            "source" to CATEGORY_MAP_SOURCE,
                         ),
                     )
                     uiState.update {
@@ -193,7 +205,7 @@ internal class MapCategoryEditing(
     // Why: its terms read as where its bills go, its parent or Outros, as a deleted category's do (9.1).
     private fun delete() {
         val deletion = uiState.value.categoryDeletion?.takeIf { !it.isDeleting } ?: return
-        trackEvent("category_delete_confirmed", mapOf("source" to SOURCE))
+        trackEvent("category_delete_confirmed", mapOf("source" to CATEGORY_MAP_SOURCE))
         uiState.update { it.copy(categoryDeletion = deletion.copy(isDeleting = true)) }
         scope.launch {
             deleteGroupCategory(deletion.category.id)
@@ -210,10 +222,5 @@ internal class MapCategoryEditing(
                     emit(CategoryMapUiAction.ShowCategoryDeleteError)
                 }
         }
-    }
-
-    private companion object {
-        // Why: the screen these events come from, as their source param says.
-        const val SOURCE = "category_map"
     }
 }

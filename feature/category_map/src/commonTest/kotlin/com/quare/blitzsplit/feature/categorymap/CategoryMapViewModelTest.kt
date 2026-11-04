@@ -448,6 +448,39 @@ class CategoryMapViewModelTest {
         }
 
     @Test
+    fun `GIVEN Transporte picked beside its terms WHEN picking it again THEN sends nothing more`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(AppCategory.TRANSPORT.key))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(AppCategory.TRANSPORT.key))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the map not read yet WHEN adding a term or restoring THEN sends nothing`() = runTest {
+        // Given
+        prepareScenario(holdsGroupCategories = true)
+
+        // When
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the map open WHEN Adicionar termo from the bar THEN sends the add clicked from the map`() = runTest {
         // Given
         prepareScenario()

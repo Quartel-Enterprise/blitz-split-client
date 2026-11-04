@@ -1966,6 +1966,20 @@ class RegisterPaymentViewModelTest {
     }
 
     @Test
+    fun `GIVEN Transferencia picked WHEN picking it again THEN tracks nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.TRANSFER))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.TRANSFER))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the form open WHEN opening the Quando picker THEN tracks the date tap`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1979,18 +1993,17 @@ class RegisterPaymentViewModelTest {
     }
 
     @Test
-    fun `GIVEN the form open WHEN picking a date THEN tracks the date picked without the date`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val picked = RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis - 24 * HOUR)
+    fun `GIVEN the form open WHEN picking a date THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val picked = RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis - 24 * HOUR)
 
-            // When
-            viewModel.onEvent(picked)
+        // When
+        viewModel.onEvent(picked)
 
-            // Then
-            assertEquals(listOf("payment_date_selected" to emptyMap<String, Any>()), trackedEvents)
-        }
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
 
     @Test
     fun `GIVEN the form open WHEN tapping a face THEN tracks the person tap from this screen with no id`() =

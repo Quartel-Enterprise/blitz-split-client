@@ -34,9 +34,10 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
             // Why: typed letter by letter; whether it was edited shows when the message goes.
             is OnChargeMessageChanged -> EventAnalytics.NotTracked
 
-            is OnChargeShareClicked -> EventAnalytics.Automatic("charge_share_clicked")
+            // Why: only while Cobrar is open, never a late tap once it closed.
+            is OnChargeShareClicked -> EventAnalytics.Manual("charge_share_clicked")
 
-            is OnChargeCopyClicked -> EventAnalytics.Automatic("charge_copy_clicked")
+            is OnChargeCopyClicked -> EventAnalytics.Manual("charge_copy_clicked")
 
             // Why: a close, which each platform also does its own way: where it went is its screen view.
             OnChargeDismissed -> EventAnalytics.NotTracked

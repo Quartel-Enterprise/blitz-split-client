@@ -1999,6 +1999,22 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN Cobrar closed WHEN a late Enviar or Copiar arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN Cobrar open WHEN switching the Pix key off THEN sends that it is left out`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

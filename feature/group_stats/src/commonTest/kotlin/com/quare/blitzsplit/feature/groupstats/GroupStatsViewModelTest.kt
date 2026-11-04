@@ -1267,6 +1267,19 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN Consumo and bars WHEN picking Consumo or Barras again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.CONSUMPTION))
+        viewModel.onEvent(GroupStatsUiEvent.OnChartTypePicked(StatsChartType.BARS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN by day WHEN picking Semana THEN sends the grain picked`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

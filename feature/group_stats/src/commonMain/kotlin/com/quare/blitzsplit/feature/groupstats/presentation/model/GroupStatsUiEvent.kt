@@ -25,12 +25,10 @@ sealed interface GroupStatsUiEvent : TrackedUiEvent {
 
             is OnCustomPeriodPicked -> EventAnalytics.Automatic("stats_custom_period_selected")
 
-            is OnPeopleViewPicked -> EventAnalytics.Automatic("stats_people_view_selected", mapOf("view" to view))
+            // Why: only another option, never the one showing, as Apple's Picker reports only a change.
+            is OnPeopleViewPicked -> EventAnalytics.Manual("stats_people_view_selected")
 
-            is OnChartTypePicked -> EventAnalytics.Automatic(
-                "stats_chart_type_selected",
-                mapOf("chart_type" to chartType),
-            )
+            is OnChartTypePicked -> EventAnalytics.Manual("stats_chart_type_selected")
 
             is OnGrainPicked -> EventAnalytics.Automatic("stats_grain_selected", mapOf("grain" to grain))
 

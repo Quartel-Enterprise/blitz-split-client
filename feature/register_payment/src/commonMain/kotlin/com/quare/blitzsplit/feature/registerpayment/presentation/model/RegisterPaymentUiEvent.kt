@@ -16,16 +16,21 @@ sealed interface RegisterPaymentUiEvent : TrackedUiEvent {
 
             OnFullDebtClicked -> EventAnalytics.Automatic("payment_full_debt_clicked")
 
-            is OnMethodPicked -> EventAnalytics.Automatic("payment_method_selected", mapOf("method" to method))
+            // Why: only another method, never the one picked, as Apple's Picker reports only a change.
+            is OnMethodPicked -> EventAnalytics.Manual("payment_method_selected")
 
             OnPaidAtOpened -> EventAnalytics.Automatic("payment_date_clicked")
 
-            is OnPaidAtChanged -> EventAnalytics.Automatic("payment_date_selected")
+            /*
+             * Why: Apple's and the web's pickers send each step (a day, the time wheel) as it turns, like typing; the
+             * tap that opened it counts, and the date shows in the payment recorded.
+             */
+            is OnPaidAtChanged -> EventAnalytics.NotTracked
 
             // Why: the tap, then the payment once it is saved.
             OnConfirmClicked -> EventAnalytics.Manual(setOf("payment_confirm_clicked", "payment_recorded"))
 
-            is OnKeyMethodPicked -> EventAnalytics.Automatic("payment_key_method_selected", mapOf("method" to method))
+            is OnKeyMethodPicked -> EventAnalytics.Manual("payment_key_method_selected")
 
             OnMarkAsPaidClicked -> EventAnalytics.Manual(setOf("payment_mark_as_paid_clicked", "payment_recorded"))
 

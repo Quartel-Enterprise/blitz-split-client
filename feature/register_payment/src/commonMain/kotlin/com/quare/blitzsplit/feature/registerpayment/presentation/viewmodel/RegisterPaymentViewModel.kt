@@ -184,7 +184,10 @@ class RegisterPaymentViewModel(
                 )
             }
 
-            is RegisterPaymentUiEvent.OnMethodPicked -> uiState.update { it.copy(method = event.method) }
+            is RegisterPaymentUiEvent.OnMethodPicked -> if (event.method != uiState.value.method) {
+                trackEvent("payment_method_selected", mapOf("method" to event.method))
+                uiState.update { it.copy(method = event.method) }
+            }
 
             RegisterPaymentUiEvent.OnPaidAtOpened -> refreshPaidAtLimit()
 
@@ -196,6 +199,9 @@ class RegisterPaymentViewModel(
             }
 
             is RegisterPaymentUiEvent.OnKeyMethodPicked -> {
+                if (event.method != uiState.value.shownKeyMethod) {
+                    trackEvent("payment_key_method_selected", mapOf("method" to event.method))
+                }
                 uiState.update { it.copy(keyMethod = event.method) }
                 refreshPixCode()
             }

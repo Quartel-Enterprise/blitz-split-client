@@ -181,12 +181,16 @@ class GroupStatsViewModel(
 
             is GroupStatsUiEvent.OnCustomPeriodPicked -> pickCustomPeriod(event.startMillis, event.endMillis)
 
-            is GroupStatsUiEvent.OnPeopleViewPicked -> {
+            is GroupStatsUiEvent.OnPeopleViewPicked -> if (event.view != peopleView) {
+                trackEvent("stats_people_view_selected", mapOf("view" to event.view))
                 peopleView = event.view
                 render()
             }
 
-            is GroupStatsUiEvent.OnChartTypePicked -> keepChart(chart.copy(chartType = event.chartType))
+            is GroupStatsUiEvent.OnChartTypePicked -> if (event.chartType != chart.chartType) {
+                trackEvent("stats_chart_type_selected", mapOf("chart_type" to event.chartType))
+                keepChart(chart.copy(chartType = event.chartType))
+            }
 
             is GroupStatsUiEvent.OnGrainPicked -> pickGrain(event.grain)
 

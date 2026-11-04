@@ -139,11 +139,20 @@ class CategoryMapViewModel(
 
             is CategoryMapUiEvent.OnQueryChanged -> uiState.update { it.copy(query = event.text) }
 
-            is CategoryMapUiEvent.OnSectionSelected -> uiState.update { it.copy(selectedCategoryId = event.categoryId) }
+            is CategoryMapUiEvent.OnSectionSelected -> if (event.categoryId != uiState.value.selectedCategoryId) {
+                trackEvent("category_map_section_selected", emptyMap())
+                uiState.update { it.copy(selectedCategoryId = event.categoryId) }
+            }
 
-            is CategoryMapUiEvent.OnAddTermClicked -> openNewTerm(event.categoryId, event.text)
+            is CategoryMapUiEvent.OnAddTermClicked -> {
+                trackEvent("category_term_add_clicked", mapOf("entry" to event.entry))
+                openNewTerm(event.categoryId, event.text)
+            }
 
-            is CategoryMapUiEvent.OnTermClicked -> openTerm(event.key)
+            is CategoryMapUiEvent.OnTermClicked -> {
+                trackEvent("category_term_clicked", emptyMap())
+                openTerm(event.key)
+            }
 
             is CategoryMapUiEvent.OnTermTextChanged -> uiState.update { state ->
                 state.copy(termForm = state.termForm?.copy(text = event.text.take(MAX_TYPED)))
@@ -184,7 +193,10 @@ class CategoryMapViewModel(
 
             CategoryMapUiEvent.OnRemovedNoticeDismissed -> uiState.update { it.copy(removedTerm = null) }
 
-            CategoryMapUiEvent.OnRestoreClicked -> uiState.update { it.copy(isRestoreConfirmOpen = true) }
+            CategoryMapUiEvent.OnRestoreClicked -> {
+                trackEvent("category_map_restore_clicked", emptyMap())
+                uiState.update { it.copy(isRestoreConfirmOpen = true) }
+            }
 
             CategoryMapUiEvent.OnRestoreConfirmed -> {
                 if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_confirmed", emptyMap())
