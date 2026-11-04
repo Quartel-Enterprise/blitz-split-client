@@ -1,4 +1,4 @@
-import { CircleAlert, Loader2, ScanText, X } from 'lucide-react'
+import { ChevronRight, CircleAlert, Loader2, ScanText, X } from 'lucide-react'
 import type { JsBillReceipt, JsSplitBillState, SplitBillPresenter } from 'blitzsplit-shared'
 import { useEffect } from 'react'
 import { PhotoPickerInputs, usePhotoPicker, type PhotoPicker } from '@/components/PhotoPicker'
@@ -68,14 +68,21 @@ export function ReceiptField({ presenter, state, picker }: { presenter: SplitBil
   )
 }
 
-/** "Lido do cupom" and "14 itens" under the description once a receipt was read. */
-export function ReceiptReadChips({ receipt }: { receipt: JsBillReceipt | null | undefined }) {
+/** "Lido do cupom" and "14 itens" under the description once a receipt was read; the items open Dividir on "Itens". */
+export function ReceiptReadChips({ presenter, receipt }: { presenter: SplitBillPresenter; receipt: JsBillReceipt | null | undefined }) {
   if (receipt?.status !== 'read') return null
   return (
     <div className="flex gap-1.5">
       <span className="flex h-[22px] items-center rounded-md bg-primary/10 px-2 text-xs font-semibold text-primary">{t('splitBill_receiptRead')}</span>
       {receipt.itemCount > 0 && (
-        <span className="flex h-[22px] items-center rounded-md border border-border px-2 text-xs">{t(receipt.itemCount === 1 ? 'splitBill_receiptItemsOne' : 'splitBill_receiptItemsOther', { count: receipt.itemCount })}</span>
+        <button
+          type="button"
+          className="relative flex h-[22px] items-center gap-0.5 rounded-md border border-border pr-1 pl-2 text-xs after:absolute after:-inset-y-2.5 after:inset-x-0 after:content-[''] hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+          onClick={() => presenter.openReceiptItems()}
+        >
+          {t(receipt.itemCount === 1 ? 'splitBill_receiptItemsOne' : 'splitBill_receiptItemsOther', { count: receipt.itemCount })}
+          <ChevronRight className="size-3.5" aria-hidden />
+        </button>
       )}
     </div>
   )

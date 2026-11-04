@@ -1786,6 +1786,8 @@ export const pt: Record<MessageKey, string> = {
   defaultSplit_exceptionModeEqual: 'Igual',
   defaultSplit_exceptionModeShares: 'Partes',
   defaultSplit_exceptionModePercent: 'Porcentagem',
+  categoryMap_categoryGroup: 'Grupo',
+  categoryMap_newSubcategoryIn: 'Nova subcategoria em {name}',
   categoryMap_title: 'Mapa de categorias',
   categoryMap_search: 'Buscar termo',
   categoryMap_add: 'Adicionar termo',

@@ -213,4 +213,40 @@
     <string name="designsystem_loading">Carregando</string>
     <string name="designsystem_open_profile">Abrir perfil</string>
     <string name="designsystem_waiting_for_internet">Sem internet. Seus dados aparecem quando reconectar.</string>
+    <plurals name="designsystem_category_delete_text">
+        <item quantity="one">A %1$d conta com %2$s passa para %3$s. A categoria some para todo o %4$s.</item>
+        <item quantity="other">As %1$d contas com %2$s passam para %3$s. A categoria some para todo o %4$s.</item>
+    </plurals>
+    <plurals name="designsystem_category_edit_note">
+        <item quantity="one">Mudar o nome ou o lugar vale para todo o %1$s e para a %2$d conta que já usa %3$s.</item>
+        <item quantity="other">Mudar o nome ou o lugar vale para todo o %1$s e para as %2$d contas que já usam %3$s.</item>
+    </plurals>
+    <plurals name="designsystem_category_used_in">
+        <item quantity="one">usada em %d conta</item>
+        <item quantity="other">usada em %d contas</item>
+    </plurals>
+    <string name="designsystem_category_created_by">Criada por %s</string>
+    <string name="designsystem_category_delete">Apagar categoria</string>
+    <string name="designsystem_category_delete_confirm">Apagar</string>
+    <string name="designsystem_category_delete_none">A categoria some para todo o %s.</string>
+    <string name="designsystem_category_delete_title">Apagar “%s”?</string>
+    <string name="designsystem_category_form_edit">Editar categoria</string>
+    <string name="designsystem_category_form_new">Nova categoria</string>
+    <string name="designsystem_category_form_sub">Nova subcategoria</string>
+    <string name="designsystem_category_group_note">Fica para todo o %s: qualquer pessoa do grupo pode usar, editar e apagar.</string>
+    <string name="designsystem_category_icon">Ícone</string>
+    <string name="designsystem_category_name">Nome</string>
+    <string name="designsystem_category_name_help">Até 30 letras. Não pode repetir dentro da mesma categoria.</string>
+    <string name="designsystem_category_name_taken">Já existe %s. Escolha outro nome.</string>
+    <string name="designsystem_category_name_taken_in">Já existe %1$s em %2$s. Escolha outro nome.</string>
+    <string name="designsystem_category_offline">Sem internet: a categoria já pode ser usada neste aparelho e aparece para o grupo ao reconectar.</string>
+    <string name="designsystem_category_parent">Dentro de</string>
+    <string name="designsystem_category_parent_help">Escolha uma categoria para criar uma subcategoria.</string>
+    <string name="designsystem_category_parent_help_sub">Subcategoria usa o ícone de %s.</string>
+    <string name="designsystem_category_parent_locked">Tem subcategorias, então continua principal.</string>
+    <string name="designsystem_category_parent_none">Nenhuma: categoria principal</string>
+    <string name="designsystem_category_preview">Assim aparece nas contas</string>
+    <string name="designsystem_category_save">Salvar</string>
+    <string name="designsystem_category_save_error">Não deu para salvar a categoria. Tente de novo.</string>
+    <string name="designsystem_category_delete_error">Não deu para apagar a categoria. Tente de novo.</string>
 </resources>

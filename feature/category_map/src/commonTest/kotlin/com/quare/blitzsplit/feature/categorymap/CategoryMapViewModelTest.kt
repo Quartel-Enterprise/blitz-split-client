@@ -4,11 +4,13 @@ import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -469,11 +471,14 @@ class CategoryMapViewModelTest {
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },
             restoreCategoryMap = RestoreCategoryMapUseCase(terms) { NOW },
+            saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
+            deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             observeMapCategories = {
                 groupCategories.filterNotNull().flatMapLatest { ObserveMapCategoriesUseCase(categories)() }
             },
-            observeGroups = { flowOf(listOf(trip)) },
+            observeGroupsByActivity = { flowOf(listOf(trip)) },
+            observeExpenses = { flowOf(emptyList()) },
             observeAccount = {
                 flowOf(
                     AccountSnapshot(

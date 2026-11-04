@@ -1,6 +1,4 @@
-package com.quare.blitzsplit.feature.splitbill.presentation.model
-
-import com.quare.blitzsplit.core.expenses.domain.model.Category
+package com.quare.blitzsplit.core.expenses.domain.model
 
 // Why: "Apagar “Churrasco”?" (7.8f): "As 3 contas com Churrasco passam para Alimentação."
 data class CategoryDeletion(

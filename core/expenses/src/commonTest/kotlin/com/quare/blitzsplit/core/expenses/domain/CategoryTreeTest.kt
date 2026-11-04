@@ -3,7 +3,9 @@ package com.quare.blitzsplit.core.expenses.domain
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -146,6 +148,163 @@ class CategoryTreeTest {
         assertNull(unknown)
         assertEquals(AppCategory.FOOD_MARKET.key, tree.readAsOrNull(AppCategory.FOOD_MARKET.key)?.id)
     }
+
+    @Test
+    fun `GIVEN two groups with the same subcategory name WHEN taking one group THEN only its categories count`() {
+        // Given
+        val otherChurrasco = churrasco.copy(
+            id = "churrasco-2",
+            groupId = "group-2",
+        )
+        val merged = CategoryTree.ofGroups(listOf(churrasco, praia, otherChurrasco))
+
+        // When
+        val tree = merged.ofGroup("group-2")
+
+        // Then
+        assertEquals("churrasco-2", tree.findOrNull("churrasco-2")?.id)
+        assertNull(tree.findOrNull("churrasco"))
+        assertNull(tree.findOrNull("praia"))
+        assertFalse(tree.hasGroupName(AppCategory.FOOD.key, "Churrasco", exceptId = "churrasco-2"))
+    }
+
+    @Test
+    fun `GIVEN a group without categories WHEN taking it out of the merged tree THEN only the app ones are left`() {
+        // Given
+        val merged = CategoryTree.ofGroups(listOf(churrasco, praia))
+
+        // When
+        val tree = merged.ofGroup("group-2")
+
+        // Then
+        assertEquals(CategoryTree.appOnly.all.map { it.id }, tree.all.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a deleted subcategory WHEN taking its group out THEN its bills still read as its parent`() {
+        // Given
+        val merged = CategoryTree.ofGroups(listOf(churrasco.copy(isDeleted = true), praia))
+
+        // When
+        val tree = merged.ofGroup("group-1")
+
+        // Then
+        assertEquals(AppCategory.FOOD.key, tree.resolve("churrasco").id)
+        assertEquals("praia", tree.findOrNull("praia")?.id)
+    }
+
+    @Test
+    fun `GIVEN only the app categories WHEN asking the next main color THEN it is the first of the palette`() {
+        // Given
+        val tree = CategoryTree.appOnly
+
+        // When
+        val color = tree.nextMainColor
+
+        // Then
+        assertEquals(AvatarColor.entries.first(), color)
+    }
+
+    @Test
+    fun `GIVEN a deleted main a live main and a sub WHEN asking the next main color THEN mains count`() {
+        // Given
+        val bar = praia.copy(
+            id = "bar",
+            name = "Bar",
+        )
+        val tree = CategoryTree.of(listOf(praia.copy(isDeleted = true), bar, churrasco))
+
+        // When
+        val color = tree.nextMainColor
+
+        // Then
+        assertEquals(AvatarColor.entries[2], color)
+    }
+
+    @Test
+    fun `GIVEN as many main categories as colors WHEN asking the next main color THEN it starts the palette again`() {
+        // Given
+        val mains = AvatarColor.entries.indices.map { index ->
+            praia.copy(
+                id = "main-$index",
+                name = "Main $index",
+            )
+        }
+        val tree = CategoryTree.of(mains)
+
+        // When
+        val color = tree.nextMainColor
+
+        // Then
+        assertEquals(AvatarColor.entries.first(), color)
+    }
+
+    @Test
+    fun `GIVEN a new main category WHEN it is saved THEN it gets the color the tree said came next`() {
+        // Given
+        val before = CategoryTree.of(listOf(praia))
+        val bar = praia.copy(
+            id = "bar",
+            name = "Bar",
+        )
+
+        // When
+        val after = CategoryTree.of(listOf(praia, bar))
+
+        // Then
+        assertEquals(before.nextMainColor, after.findOrNull("bar")?.color)
+    }
+
+    @Test
+    fun `GIVEN bills in a live and a deleted subcategory WHEN counting usage THEN each counts by what it reads as`() {
+        // Given
+        val tree = CategoryTree.of(listOf(churrasco.copy(isDeleted = true)))
+        val bills = listOf(
+            bill("1", AppCategory.FOOD_MARKET.key),
+            bill("2", AppCategory.FOOD_MARKET.key),
+            bill("3", "churrasco"),
+            bill("4", AppCategory.FOOD.key),
+            bill("5", null),
+        )
+
+        // When
+        val usage = tree.usageOf(bills)
+
+        // Then
+        assertEquals(mapOf(AppCategory.FOOD_MARKET.key to 2, AppCategory.FOOD.key to 2), usage)
+    }
+
+    @Test
+    fun `GIVEN a bill of an unknown category WHEN counting usage THEN it counts for Outros`() {
+        // Given
+        val tree = CategoryTree.appOnly
+        val bills = listOf(bill("1", "of-a-group-gone"))
+
+        // When
+        val usage = tree.usageOf(bills)
+
+        // Then
+        assertEquals(mapOf(AppCategory.OTHER.key to 1), usage)
+    }
+
+    private fun bill(
+        id: String,
+        categoryId: String?,
+    ): Expense = Expense(
+        id = id,
+        groupId = "group-1",
+        description = id,
+        amountMinor = 1_000L,
+        splitMode = SplitMode.EQUAL,
+        payers = emptyList(),
+        shares = emptyList(),
+        items = null,
+        categoryId = categoryId,
+        spentAt = 0L,
+        isPending = false,
+        updatedAt = 0L,
+        updatedByMemberId = null,
+    )
 
     private val churrasco = GroupCategory(
         id = "churrasco",

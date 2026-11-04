@@ -64,6 +64,29 @@ class CategoryTree private constructor(
     // Why: the subcategories a group category has, which it can't become a subcategory with (two levels only).
     fun hasSubcategories(id: String): Boolean = branchOf(id)?.subcategories?.isNotEmpty() == true
 
+    // Why: a new main category's color, as of() gives it by its place among the group's main categories, deleted too.
+    val nextMainColor: AvatarColor
+        get() = mainColorOf(null)
+
+    /*
+     * Why: the color a category gets as a main one, as of() gives it by its place among the group's main categories,
+     * deleted too: its own for a main one, the slot it takes for a subcategory made a main one, the next for a new one.
+     */
+    fun mainColorOf(categoryId: String?): AvatarColor =
+        findColorAt(groupCategories.values.takeWhile { it.id != categoryId }.count { it.parentId == null })
+
+    /*
+     * Why: one group's categories out of every group's (the map's, flow 9), which a category created or edited there
+     * is checked against, as a bill's Categoria checks its group's.
+     */
+    fun ofGroup(groupId: String): CategoryTree = of(groupCategories.values.filter { it.groupId == groupId })
+
+    // Why: how many bills each category has, by the category they read as: "usada em 3 contas" (7.8e).
+    fun usageOf(expenses: List<Expense>): Map<String, Int> = expenses
+        .filter { it.categoryId != null }
+        .groupingBy { resolve(it.categoryId).id }
+        .eachCount()
+
     companion object {
         // Why: two levels, so a deleted subcategory reaches a live category in at most two steps.
         private const val MAX_DEPTH = 3
@@ -88,7 +111,7 @@ class CategoryTree private constructor(
                 val category = groupCategoryOf(
                     category = main,
                     icon = main.icon ?: CategoryIcon.DOTS,
-                    color = AvatarColor.entries[colorIndexes.getValue(main.id) % AvatarColor.entries.size],
+                    color = findColorAt(colorIndexes.getValue(main.id)),
                 )
                 CategoryBranch(
                     category = category,
@@ -130,6 +153,8 @@ class CategoryTree private constructor(
 
         // Why: the app's alone, for a bill whose group has no category of its own; built once, as it never changes.
         val appOnly: CategoryTree by lazy { of(emptyList()) }
+
+        private fun findColorAt(mainIndex: Int): AvatarColor = AvatarColor.entries[mainIndex % AvatarColor.entries.size]
 
         private fun groupSubcategoriesOf(
             groupCategories: List<GroupCategory>,

@@ -53,6 +53,22 @@ internal class ItemsEditing(
         }
     }
 
+    // Why: Itens picked in Dividir, which hides "Usar como padrão do grupo" with the other modes.
+    fun openInSplit() {
+        open()
+        uiState.update { it.withSplitAsDefaultSettled() }
+    }
+
+    /*
+     * Why: "14 itens" beside "Lido do cupom": Dividir opens under the items, so their back goes to it. Nothing opens
+     * once the bill moved to a group of another currency, whose Itens would otherwise open empty.
+     */
+    fun openFromReceipt() {
+        if (receiptItems(uiState.value.currency) == null) return
+        uiState.update { it.withSplitOpened() }
+        openInSplit()
+    }
+
     // Why: the bill's split once "Pronto" closes the items, and Dividir under them.
     fun confirm() {
         val state = uiState.value

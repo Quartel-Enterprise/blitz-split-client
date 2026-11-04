@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DocumentScanner
@@ -44,11 +45,18 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 
 private const val RECEIPT_LINE_COUNT = 4
 
-// Why: "Lido do cupom" and "14 itens" under the description once a receipt was read (7.1e).
+// Why: "Lido do cupom" and "14 itens" under the description once a receipt was read (7.1e); the items open Itens.
 @Composable
-internal fun ReceiptReadRow(state: SplitBillUiState) {
+internal fun ReceiptReadRow(
+    state: SplitBillUiState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
     val receipt = state.receipt?.takeIf { it.status == ReceiptStatus.READ } ?: return
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // Why: the tappable "14 itens" takes a 48 dp touch target around its 32 dp chip; "Lido do cupom" lines up with it.
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.secondaryContainer,
@@ -77,16 +85,21 @@ internal fun ReceiptReadRow(state: SplitBillUiState) {
         }
         if (receipt.itemCount > 0) {
             Surface(
+                onClick = { onEvent(SplitBillUiEvent.OnReceiptItemsClicked) },
                 shape = RoundedCornerShape(8.dp),
                 color = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .heightIn(min = 32.dp)
-                        .padding(horizontal = 12.dp),
-                    contentAlignment = Alignment.Center,
+                        .padding(
+                            start = 12.dp,
+                            end = 6.dp,
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = pluralStringResource(
@@ -95,6 +108,11 @@ internal fun ReceiptReadRow(state: SplitBillUiState) {
                             receipt.itemCount,
                         ),
                         style = MaterialTheme.typography.labelLarge,
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
                     )
                 }
             }

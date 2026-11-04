@@ -72,4 +72,8 @@
         <item quantity="one">The %d terms you created stay.</item>
         <item quantity="other">The %d terms you created stay.</item>
     </plurals>
+    <string name="category_map_new_category">New category</string>
+    <string name="category_map_new_subcategory_in">New subcategory in %s</string>
+    <string name="category_map_edit_category">Edit %s</string>
+    <string name="category_map_category_group">Group</string>
 </resources>

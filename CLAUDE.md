@@ -726,7 +726,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Editing (a long press or a right click on the group's category, "Editar “X”…" on the Mac) says how many bills
     use it; deleting asks "Apagar “X”?" saying where its bills go: they move to its parent, or Outros, at read time,
     since a deleted category stays as a tombstone (`CategoryTree.resolve`), its subcategories going with it. A new
-    category is picked for the bill at once.
+    category is picked for the bill at once. Rachar conta's Categoria and Mapa de categorias open the same form
+    (`CategoryForm`, `CategoryEditor` in `:core:expenses`).
   - "Mapa de categorias" (flow 9, `Route.CategoryMap`, `:feature:category_map`): each person's map of words to
     categories, valid in every group, on the device and offline first (`category_term`, the server's
     `category_terms`), synced to the person's other devices under their account and cleared on sign out; while the
@@ -741,6 +742,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and removes there; a term of a category of a group no longer on the device isn't shown, nor counted for the empty
     map or "Mover para X" (`CategoryMapUiState.terms`), though its change waiting to go up still counts in the queue.
     Terms have 2 to 30 letters, digits and spaces.
+    The map also creates, edits and deletes categories (9.4, Pierre's call, beta feedback 19), always a group's
+    (`GroupCategory`, "Nova categoria"'s rules, offline and synced to the group's members), since there are no personal
+    categories: "Nova categoria" in the ⋮/⋯ menu (the Mac's "Nova Categoria…" beside Restaurar padrão) and "Nova
+    subcategoria em Transporte" in every main category but Outros, only once there is a group on the device
+    (`CategoryMapUiState.canCreateCategory`). A new subcategory of a group's category goes in that group; anything else
+    starts in the group with the latest activity, and "Grupo" changes it while there are two or more
+    (`canPickCategoryGroup`), never while editing; its name and "Dentro de" are checked against that group alone
+    (`CategoryTree.ofGroup`). Saving a new one opens "Novo termo" in it at once (Cancelar leaves it without terms), and
+    a group's subcategory shows in its card even with no term yet. A group's category is edited from its pencil (the
+    Mac's "Categorias" menu under the table), with Apagar there, which waits until its bills are read; the app's
+    categories stay as they are.
     "Buscar termo" finds words starting with what is typed, accents ignored ("2 termos com “uber”"), else offers
     "Adicionar “pizzaria”"; an empty map offers Adicionar termo and Restaurar padrão; offline with changes queued it
     says "Offline · 2 alterações na fila" and each queued term has the orange dot. It opens from Perfil ›

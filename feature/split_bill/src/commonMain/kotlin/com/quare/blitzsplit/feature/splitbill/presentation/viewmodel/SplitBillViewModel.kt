@@ -265,9 +265,10 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSplitClicked -> openSplit()
 
+            SplitBillUiEvent.OnReceiptItemsClicked -> items.openFromReceipt()
+
             is SplitBillUiEvent.OnSplitModeClicked -> if (event.mode == SplitMode.ITEMS) {
-                items.open()
-                uiState.update { it.withSplitAsDefaultSettled() }
+                items.openInSplit()
             } else {
                 editSplit { it.toMode(event.mode, separator) }
             }

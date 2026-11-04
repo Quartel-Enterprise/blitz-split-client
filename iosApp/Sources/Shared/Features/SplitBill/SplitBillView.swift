@@ -423,7 +423,9 @@ private struct PhoneSplitBill: View {
                         MatchedTerms(matches: state.categoryMatches)
                     }
                     if let receipt = state.receipt, receipt.status == .read {
-                        ReceiptReadChips(receipt: receipt)
+                        ReceiptReadChips(receipt: receipt) {
+                            model.send(SplitBillUiEventOnReceiptItemsClicked.shared)
+                        }
                     }
                 }
             }

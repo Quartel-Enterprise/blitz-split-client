@@ -1326,6 +1326,17 @@
         }
       }
     },
+    "New subcategory in %@" : {
+      "comment" : "Category map: create a subcategory in a main category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova subcategoria em %@"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "pt-BR" : {
@@ -3676,6 +3687,17 @@
         }
       }
     },
+    "Edit “%@”" : {
+      "comment" : "Category map: edit a group's category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar “%@”"
+          }
+        }
+      }
+    },
     "Edit “%@”…" : {
       "comment" : "Mac menu: edit a group's category",
       "localizations" : {
@@ -4178,6 +4200,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nova Categoria…"
+          }
+        }
+      }
+    },
+    "New Subcategory in %@…" : {
+      "comment" : "Mac category map: create a subcategory",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova Subcategoria em %@…"
           }
         }
       }
@@ -17747,47 +17780,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lendo…"
-          }
-        }
-      }
-    },
-    "· Read from the receipt, %lld items" : {
-      "comment" : "Split a bill on the Mac: the receipt was read with its items",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Read from the receipt, %lld item"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Read from the receipt, %lld items"
-                }
-              }
-            }
-          }
-        },
-        "pt-BR" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Lido do cupom, %lld item"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "· Lido do cupom, %lld itens"
-                }
-              }
-            }
           }
         }
       }

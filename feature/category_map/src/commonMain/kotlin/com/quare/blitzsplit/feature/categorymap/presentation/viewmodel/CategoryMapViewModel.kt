@@ -6,12 +6,15 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMap
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -20,6 +23,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
+import com.quare.blitzsplit.feature.categorymap.presentation.model.MapGroup
 import com.quare.blitzsplit.feature.categorymap.presentation.model.TermForm
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,9 +44,12 @@ class CategoryMapViewModel(
     private val saveCategoryTerm: SaveCategoryTerm,
     private val removeCategoryTerm: RemoveCategoryTerm,
     private val restoreCategoryMap: RestoreCategoryMap,
+    saveGroupCategory: SaveGroupCategory,
+    deleteGroupCategory: DeleteGroupCategory,
     observeCategoryMap: ObserveCategoryMap,
     observeMapCategories: ObserveMapCategories,
-    observeGroups: ObserveGroups,
+    observeGroupsByActivity: ObserveGroupsByActivity,
+    observeExpenses: ObserveExpenses,
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
@@ -53,12 +60,15 @@ class CategoryMapViewModel(
                 isLoaded = false,
                 map = CategoryMap.of(emptyList()),
                 categories = CategoryTree.appOnly,
-                groupNames = emptyMap(),
+                groups = emptyList(),
                 query = "",
                 selectedCategoryId = null,
                 termForm = null,
                 removedTerm = null,
                 isRestoreConfirmOpen = false,
+                categoryForm = null,
+                categoryDeletion = null,
+                categoryBills = null,
                 isOnline = true,
                 isConnected = false,
             ),
@@ -70,21 +80,42 @@ class CategoryMapViewModel(
     val stateWatcher: FlowWatcher<CategoryMapUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<CategoryMapUiAction> = FlowWatcher(uiAction)
 
+    private val categoryEditing = MapCategoryEditing(
+        uiState = uiState,
+        scope = viewModelScope,
+        saveGroupCategory = saveGroupCategory,
+        deleteGroupCategory = deleteGroupCategory,
+        emit = uiAction::emit,
+    )
+
     init {
         // Why: one read, so the terms never show against the app's categories alone, nor without the account.
         combine(
             observeCategoryMap(),
             observeMapCategories(),
-            observeGroups(),
+            // Why: a bill or payment that moves neither a group nor their order leaves the map as it is.
+            observeGroupsByActivity().distinctUntilChanged(),
             observeAccount().map { account -> account.status is AccountStatus.Connected }.distinctUntilChanged(),
             observeFirstDownload().map { it == null }.distinctUntilChanged(),
         ) { map, tree, groups, isConnected, isWhole ->
+            val mapGroups = groups.map { group ->
+                MapGroup(
+                    id = group.id,
+                    name = group.name,
+                    memberNames = group.members.associate { member -> member.id to member.name },
+                    meId = group.members.firstOrNull { member -> member.isMe }?.id,
+                )
+            }
             uiState.update {
+                // Why: a form whose group left the device (deleted or left elsewhere) has nowhere to save to.
+                val form = it.categoryForm?.takeIf { form -> mapGroups.any { group -> group.id == form.groupId } }
                 it.copy(
                     isLoaded = isWhole,
                     map = map,
                     categories = tree,
-                    groupNames = groups.associate { group -> group.id to group.name },
+                    groups = mapGroups,
+                    categoryForm = form,
+                    categoryDeletion = it.categoryDeletion?.takeIf { form != null },
                     isConnected = isConnected,
                 )
             }
@@ -93,6 +124,7 @@ class CategoryMapViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
+        categoryEditing.observe(observeExpenses)
     }
 
     fun onEvent(event: CategoryMapUiEvent) {
@@ -151,6 +183,8 @@ class CategoryMapViewModel(
             CategoryMapUiEvent.OnRestoreConfirmed -> restore()
 
             CategoryMapUiEvent.OnRestoreDismissed -> uiState.update { it.copy(isRestoreConfirmOpen = false) }
+
+            is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
         }
     }
 
@@ -158,7 +192,9 @@ class CategoryMapViewModel(
         this is CategoryMapUiEvent.OnTermClicked ||
         this == CategoryMapUiEvent.OnUndoRemoveClicked ||
         this == CategoryMapUiEvent.OnRestoreClicked ||
-        this == CategoryMapUiEvent.OnRestoreConfirmed
+        this == CategoryMapUiEvent.OnRestoreConfirmed ||
+        this is CategoryMapUiEvent.OnNewCategoryClicked ||
+        this is CategoryMapUiEvent.OnEditCategoryClicked
 
     // Why: the Mac draws it in Ajustes, where the back stack doesn't end on this screen.
     private fun leave() {

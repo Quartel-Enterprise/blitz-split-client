@@ -93,9 +93,10 @@ struct ReceiptFailureText: View {
     }
 }
 
-/// "Lido do cupom" and "14 itens" under the description once a receipt was read.
+/// "Lido do cupom" and "14 itens" under the description once a receipt was read; the items open Dividir on "Itens".
 struct ReceiptReadChips: View {
     let receipt: BillReceipt
+    let onItemsTapped: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
@@ -106,12 +107,22 @@ struct ReceiptReadChips: View {
                 .frame(height: 30)
                 .background(Palette.accent.opacity(0.12), in: .capsule)
             if receipt.itemCount > 0 {
-                Text("\(Int(receipt.itemCount)) items")
+                Button(action: onItemsTapped) {
+                    HStack(spacing: 2) {
+                        Text("\(Int(receipt.itemCount)) items")
+                        Image(systemName: "chevron.right")
+                            .font(.caption2.weight(.semibold))
+                            .accessibilityHidden(true)
+                    }
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 12)
+                    .padding(.leading, 12)
+                    .padding(.trailing, 10)
                     .frame(height: 30)
                     .background(.fill.tertiary, in: .capsule)
+                    .contentShape(.capsule)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -225,15 +236,18 @@ struct MacReceiptRow: View {
                         Text("Reading…")
                             .foregroundStyle(.secondary)
                     case .read:
-                        Group {
-                            if receipt.itemCount > 0 {
-                                Text("· Read from the receipt, \(Int(receipt.itemCount)) items")
-                            } else {
-                                Text("· Read from the receipt")
+                        Text("· Read from the receipt")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Palette.accent)
+                        if receipt.itemCount > 0 {
+                            Button("\(Int(receipt.itemCount)) items") {
+                                model.send(SplitBillUiEventOnReceiptItemsClicked.shared)
                             }
+                            .buttonStyle(.link)
+                            // Why: two links side by side, the items and "Remover", read apart.
+                            Text(verbatim: "·")
+                                .foregroundStyle(.secondary)
                         }
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Palette.accent)
                     default:
                         EmptyView()
                     }
