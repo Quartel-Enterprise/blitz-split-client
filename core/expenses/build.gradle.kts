@@ -21,6 +21,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(projects.core.expenses.testing)
+            implementation(projects.core.groups.testing)
             implementation(libs.kotlinx.coroutines.test)
         }
         jvmTest.dependencies {

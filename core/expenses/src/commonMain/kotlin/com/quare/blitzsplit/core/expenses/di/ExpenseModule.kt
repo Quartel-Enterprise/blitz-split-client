@@ -116,6 +116,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetBillShareLink
+import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
@@ -166,6 +167,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetBillShareLinkUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetSimplifiesDebtsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import kotlinx.datetime.TimeZone
@@ -208,6 +210,7 @@ val expenseModule = module {
     factoryOf(::ConsumeRecordedPaymentUseCase).bind<ConsumeRecordedPayment>()
     factoryOf(::ObservePeopleBalancesUseCase).bind<ObservePeopleBalances>()
     factoryOf(::SettleUpUseCase).bind<SettleUp>()
+    factoryOf(::SetSimplifiesDebtsUseCase).bind<SetSimplifiesDebts>()
     factoryOf(::ObserveSettledUpUseCase).bind<ObserveSettledUp>()
     singleOf(::RoomGroupCategoryLocalDataSource).bind<GroupCategoryLocalDataSource>()
     singleOf(::SupabaseGroupCategoryRemoteDataSource).bind<GroupCategoryRemoteDataSource>()

@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,7 +29,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 /*
  * Why: "Por grupo", what each group adds to the net with someone, then the net: "Líquido, já compensado" over several
  * groups, "Total" for one. Saldos opens it inside a row, and Registrar pagamento shows it when settling up across groups.
- * Where onGroupClick is given, a group's badge and name open it.
+ * Where onGroupClick is given, a group's badge and name open it. A group whose "Simplificar dívidas" is on says so
+ * (13.6), since its part may be owed to someone no bill was split with.
  */
 @Composable
 fun PersonGroupsCard(
@@ -83,6 +86,7 @@ fun PersonGroupsCard(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        if (part.isSimplified) SimplifiedDebtsLabel(modifier = Modifier.padding(top = 2.dp))
                     }
                     Text(
                         text = money.toSignedText(part.amountMinor),
@@ -135,4 +139,35 @@ fun debtColorOf(kind: DebtKind): Color = when (kind) {
     DebtKind.YOU_OWE -> MaterialTheme.colorScheme.error
     DebtKind.OWES_YOU -> positiveAmountColor()
     DebtKind.BETWEEN_OTHERS -> MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+// Why: "Dívidas simplificadas", the boards' small tag with the simplification's icon, under the group's name.
+@Composable
+fun SimplifiedDebtsLabel(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraSmall,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = 6.dp,
+                vertical = 2.dp,
+            ),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = simplifyDebtsIcon(),
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+            )
+            Text(
+                text = stringResource(R.string.designsystem_simplified_debts),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
 }

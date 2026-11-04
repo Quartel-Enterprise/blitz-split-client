@@ -338,7 +338,8 @@ struct MainTabView: View {
     }
     #endif
 
-    /// What the tabs push over themselves: a group's expenses, balances, members or statistics, a bill, an invite
+    /// What the tabs push over themselves: a group's expenses, balances, members or statistics, how simplifying debts
+    /// works, a bill, an invite
     /// opened from its link, a group's invite with an iPad's room, the profile, its editor, its category map and, on
     /// iPhone, a key.
     /// Contacts also pushes a person's profile (which Balances pushes too), the agenda, and Balances opened from a
@@ -354,6 +355,8 @@ struct MainTabView: View {
         case let .groupDetail(route): GroupDetailView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
+        // "How it works" of Simplify debts, from the group's Balances; the Mac opens it as a sheet
+        case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
         case let .invite(route): InviteView(route: route)

@@ -112,6 +112,10 @@ class ObserveGroupsByActivityUseCaseTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = updatedAt,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: saved later than it was spent, which is what counts.

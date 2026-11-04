@@ -330,6 +330,22 @@ class CreateGroupUseCaseTest {
         assertEquals(photo, repository.createdGroups.single().photo)
     }
 
+    @Test
+    fun `GIVEN a new group WHEN creating it THEN Simplificar dividas is off and waits for nothing`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        createGroup()
+
+        // Then
+        val created = repository.createdGroups.single()
+        assertFalse(created.simplifiesDebts)
+        assertFalse(created.isSimplifyDebtsPending)
+        assertNull(created.simplifyDebtsChangedBy)
+        assertNull(created.simplifyDebtsConflictBy)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),

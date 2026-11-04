@@ -714,6 +714,12 @@ class RoomBillAttachmentLocalDataSourceTest {
         shape = null,
         photoUrl = null,
         pendingPhoto = null,
+        simplifyDebts = false,
+        simplifyDebtsAt = 0L,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun expense(

@@ -127,4 +127,23 @@
         <item quantity="one">%d tipo</item>
         <item quantity="other">%d tipos</item>
     </plurals>
+    <string name="activity_kind_simplify_on">%1$s ligou Simplificar dívidas em %2$s</string>
+    <string name="activity_kind_simplify_off">%1$s desligou Simplificar dívidas em %2$s</string>
+    <plurals name="activity_detail_simplify_counts">
+        <item quantity="one">%1$d pagamento virou %2$d.</item>
+        <item quantity="other">%1$d pagamentos viraram %2$d.</item>
+    </plurals>
+    <string name="activity_detail_simplify_pays_you">Agora %1$s te paga %2$s</string>
+    <string name="activity_detail_simplify_you_pay">Agora você paga %2$s a %1$s</string>
+    <string name="activity_detail_simplify_and_owed_you">, e %s não te deve mais</string>
+    <string name="activity_detail_simplify_and_you_owed">, e você não deve mais a %s</string>
+    <string name="activity_detail_simplify_owed_you">%s não te deve mais</string>
+    <string name="activity_detail_simplify_you_owed">Você não deve mais a %s</string>
+    <string name="activity_simplify_owed_you">te devia %s</string>
+    <string name="activity_simplify_you_owed">você devia %s</string>
+    <string name="activity_simplify_did_not_owe">não te devia</string>
+    <string name="activity_simplify_owes_you">te deve %s</string>
+    <string name="activity_simplify_you_owe">você deve %s</string>
+    <string name="activity_simplify_owes_nothing">não deve mais</string>
+    <string name="activity_open_group_balances">Ver saldos do grupo</string>
 </resources>

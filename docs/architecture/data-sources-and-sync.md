@@ -291,6 +291,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     `group_members`, the `<member code>` of a personal link `blitzsplit.com/g/<code>/<member code>`) follows the same
     path: read back from the members' upsert and stored with `GroupDao.updateMemberInviteCode`, outside
     Last-Write-Wins, so a member added offline has no personal link until it goes up.
+  - **"Simplificar dívidas"** (page 13): the switch is a field of the group row with its own Last-Write-Wins stamp,
+    `simplifyDebtsAt`, apart from `updatedAt`. `GroupDao.updateSimplifyDebts` writes it alone, with the pairs before and
+    after it changed (`simplifyDebtsChange`, the JSON the server copies into Atividade's event and its push) and
+    `simplifyDebtsPending`, without moving `updatedAt`, so pushing it never sends this device's copy of the name over
+    a newer one; the server's `keep_newer_group` takes a newer switch even from an older row and keeps a newer one
+    under a newer row. `markGroupSynced` also compares the stamp, so a switch changed while the push was in flight
+    keeps the group pending, and `markSimplifyDebtsSynced` stops it waiting once the upsert answers with its stamp.
+    `applyRemoteGroup` takes the server's switch only when its stamp is not older (`updateSimplifyDebtsFromRemote`),
+    keeps the group pending while this device's newer switch still waits (`keepSimplifyDebtsPending`), and records
+    the server's account in `simplifyDebtsConflictBy` when its later change beat one still waiting here: the conflict
+    of 13.1e, which the first screen of the group on top shows and clears (`ConsumeSimplifyDebtsConflict`).
   - **Changing the invite link** ("Trocar link"): only the group's creator, online, through the `rotate_invite_code`
     RPC, which answers with the new code. `SyncCoordinator.rotateInviteCode` stores it with
     `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't

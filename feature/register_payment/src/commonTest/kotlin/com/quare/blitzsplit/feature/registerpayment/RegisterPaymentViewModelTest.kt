@@ -1948,6 +1948,10 @@ class RegisterPaymentViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: Ana owes Pierre 162,30, Pierre owes Bruno 50,00 and Diego owes Bruno 80,00; Ana and Bruno owe nothing.
@@ -2093,7 +2097,7 @@ class RegisterPaymentViewModelTest {
             encodeQrCode = EncodeQrCodeUseCase(),
             observeGroup = if (isGroupRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeGroupBalances = if (areBalancesRead) {
-                ObserveGroupBalancesUseCase(expenses, settlements)
+                ObserveGroupBalancesUseCase(expenses, settlements, groups)
             } else {
                 ObserveGroupBalances { balancesNeverAnswer }
             },

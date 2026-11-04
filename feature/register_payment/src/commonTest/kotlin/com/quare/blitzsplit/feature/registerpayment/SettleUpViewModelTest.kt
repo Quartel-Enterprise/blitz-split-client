@@ -559,6 +559,10 @@ class SettleUpViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun TestScope.prepareScenario(
@@ -603,7 +607,7 @@ class SettleUpViewModelTest {
             observeMemberPaymentKeys = ObserveMemberPaymentKeysUseCase(paymentKeys),
             encodeQrCode = EncodeQrCodeUseCase(),
             observeGroup = ObserveGroupUseCase(groups),
-            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
+            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements, groups),
             observePeopleBalances = ObservePeopleBalancesUseCase(
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,

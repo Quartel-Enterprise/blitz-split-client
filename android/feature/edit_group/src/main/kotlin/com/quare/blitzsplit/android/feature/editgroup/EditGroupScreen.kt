@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
+import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
@@ -29,7 +30,7 @@ fun EditGroupScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     BackHandler { viewModel.onEvent(EditGroupUiEvent.OnCloseClicked) }
-    // Why: the camera's "Permita a câmera nas configurações" shows over the form.
+    // Why: the camera's "Permita a câmera nas configurações" and the conflict of 13.1e show over the form.
     val snackbarHostState = remember { SnackbarHostState() }
     val pickers = rememberPhotoPickers(
         snackbarHostState = snackbarHostState,
@@ -51,6 +52,20 @@ fun EditGroupScreen(
                 .navigationBarsPadding(),
         )
     }
+    state.simplifyConfirmation?.let { confirmation ->
+        SimplifyDebtsDialog(
+            confirmation = confirmation,
+            currency = state.currency,
+            isChanging = state.isChangingSimplifyDebts,
+            onEvent = viewModel::onEvent,
+        )
+    }
+    SimplifyConflictNoticeEffect(
+        notice = state.simplifyConflict,
+        snackbarHostState = snackbarHostState,
+        onActivityClick = { viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked) },
+        onDismiss = { viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictDismissed) },
+    )
     // Why: the rounded square every group's photo is drawn in, whatever the group's shape.
     state.photoCrop?.let { editor ->
         PhotoCropDialog(

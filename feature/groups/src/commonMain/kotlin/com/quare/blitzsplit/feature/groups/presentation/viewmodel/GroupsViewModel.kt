@@ -555,7 +555,7 @@ class GroupsViewModel(
         val item = groupsWithMoney.firstOrNull { it.group.id == groupId } ?: return null
         return GroupExitTarget(
             group = item.group,
-            balances = GroupBalances.of(item.expenses, item.settlements),
+            balances = GroupBalances.of(item.group, item.expenses, item.settlements),
             billCount = item.expenses.size,
         )
     }

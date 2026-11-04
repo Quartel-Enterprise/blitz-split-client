@@ -1,18 +1,109 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
+import com.quare.blitzsplit.core.groups.domain.model.Group
+
 /*
  * Why: who owes whom in a group, from its bills' payers and shares and the payments recorded since. Each pair shows
- * once, already netted: if Ana owes you and you owe her, only the difference stays.
+ * once, already netted: if Ana owes you and you owe her, only the difference stays. With "Simplificar dívidas" on
+ * (13.1), debts are the fewest payments that keep each one's total instead.
  */
 data class GroupBalances(
     // Why: the largest first.
     val debts: List<Debt>,
     // Why: "Ninguém deve nada ainda" before the first bill; "Todo mundo acertou" once there were some.
     val hasBills: Boolean,
+    // Why: the pairs as each bill made them while "Simplificar dívidas" is on; null while it is off.
+    val unsimplifiedDebts: List<Debt>?,
 ) {
+    // Why: "Dívidas simplificadas" (13.4) above the pairs, and in Saldos' "Por grupo" (13.6).
+    val isSimplified: Boolean
+        get() = unsimplifiedDebts != null
+
+    // Why: "5 pagamentos em vez de 7", what the group would have with it off.
+    val unsimplifiedCount: Int
+        get() = (unsimplifiedDebts ?: debts).size
+
     // Why: "Todo mundo acertou", the card that offers "Apagar grupo".
     val isEveryoneSettled: Boolean
         get() = hasBills && debts.isEmpty()
+
+    // Why: the icon of 13.4 on a pair no bill made, "Diego → você", which the simplification brought.
+    fun isSimplifiedPair(debt: Debt): Boolean = unsimplifiedDebts?.none {
+        it.fromMemberId == debt.fromMemberId && it.toMemberId == debt.toMemberId
+    } == true
+
+    /*
+     * Why: whom the payer owed by the bills instead, for a pair the simplification made or grew: "Diego paga a você o
+     * que devia a Bruno" (13.5), "em vez de pagar o Bruno você paga direto para mim" (13.6b). Their debts to anyone
+     * else that went or shrank, by member id; null for a pair as the bills made it or one that only shrank, or while it
+     * is off.
+     */
+    fun insteadOfOrNull(
+        fromMemberId: String,
+        toMemberId: String,
+    ): List<String>? {
+        val raw = unsimplifiedDebts ?: return null
+        val debtMinor = debtOf(fromMemberId, toMemberId)
+        val rawMinor = raw.firstOrNull { it.fromMemberId == fromMemberId && it.toMemberId == toMemberId }?.amountMinor
+        if (debtMinor == 0L || (rawMinor != null && rawMinor >= debtMinor)) return null
+        return raw
+            .filter { it.fromMemberId == fromMemberId && it.toMemberId != toMemberId }
+            .filter { debtOf(fromMemberId, it.toMemberId) < it.amountMinor }
+            .map { it.toMemberId }
+    }
+
+    /*
+     * Why: the greatest debtor pays the greatest creditor until both are even, at most members - 1 payments. Ties go
+     * by the order they joined the group in (memberOrder; someone no longer in it after, by id), so every device gets
+     * the same pairs, offline too. A group already at its fewest payments keeps its pairs, so turning it on never
+     * moves who pays whom without saving a payment (13.3c).
+     */
+    fun toSimplified(memberOrder: List<String>): GroupBalances {
+        val raw = unsimplifiedDebts ?: debts
+        val nets = mutableMapOf<String, Long>()
+        raw.forEach {
+            nets[it.toMemberId] = nets.getOrElse(it.toMemberId) { 0L } + it.amountMinor
+            nets[it.fromMemberId] = nets.getOrElse(it.fromMemberId) { 0L } - it.amountMinor
+        }
+        val rank = memberOrder.withIndex().associate { it.value to it.index }
+        val largestFirst = compareByDescending<Map.Entry<String, Long>> { it.value }
+            .thenBy { rank[it.key] ?: Int.MAX_VALUE }
+            .thenBy { it.key }
+        val credits = nets.filterValues { it > 0 }.toMutableMap()
+        val owed = nets.filterValues { it < 0 }.mapValues { -it.value }.toMutableMap()
+        val payments = mutableListOf<Debt>()
+        while (credits.isNotEmpty() && owed.isNotEmpty()) {
+            val debtor = owed.entries.minWith(largestFirst)
+            val creditor = credits.entries.minWith(largestFirst)
+            val paid = minOf(debtor.value, creditor.value)
+            payments += Debt(debtor.key, creditor.key, paid)
+            owed.reduce(debtor.key, debtor.value - paid)
+            credits.reduce(creditor.key, creditor.value - paid)
+        }
+        return copy(
+            debts = if (payments.size < raw.size) toSorted(payments) else raw,
+            unsimplifiedDebts = raw,
+        )
+    }
+
+    /*
+     * Why: the pairs as the group shows them now, whichever switch these were worked out with, so a screen reading the
+     * group and its balances from two flows never shows one's pairs with the other's switch.
+     */
+    fun toShownFor(group: Group): GroupBalances {
+        val raw = copy(
+            debts = unsimplifiedDebts ?: debts,
+            unsimplifiedDebts = null,
+        )
+        return if (group.simplifiesDebts) raw.toSimplified(group.members.map { it.id }) else raw
+    }
+
+    private fun MutableMap<String, Long>.reduce(
+        key: String,
+        left: Long,
+    ) {
+        if (left == 0L) remove(key) else put(key, left)
+    }
 
     /*
      * Why: "Seu saldo neste grupo" and each member's balance, also when only payments are left (their bill was
@@ -41,6 +132,14 @@ data class GroupBalances(
         ?.toMemberId
 
     companion object {
+        // Why: the pairs as the group shows them, simplified while its "Simplificar dívidas" is on.
+        fun of(
+            group: Group,
+            expenses: List<Expense>,
+            settlements: List<Settlement>,
+        ): GroupBalances = of(expenses, settlements).toShownFor(group)
+
+        // Why: the pairs as each bill and payment make them, whatever the group's "Simplificar dívidas".
         fun of(
             expenses: List<Expense>,
             settlements: List<Settlement>,
@@ -59,16 +158,19 @@ data class GroupBalances(
                         net < 0 -> Debt(second, first, -net)
                         else -> null
                     }
-                }.sortedWith(
-                    compareByDescending<Debt> { it.amountMinor }
-                        .thenBy { it.fromMemberId }
-                        .thenBy { it.toMemberId },
-                )
+                }
             return GroupBalances(
-                debts = debts,
+                debts = toSorted(debts),
                 hasBills = expenses.isNotEmpty(),
+                unsimplifiedDebts = null,
             )
         }
+
+        private fun toSorted(debts: List<Debt>): List<Debt> = debts.sortedWith(
+            compareByDescending<Debt> { it.amountMinor }
+                .thenBy { it.fromMemberId }
+                .thenBy { it.toMemberId },
+        )
 
         /*
          * Why: within one bill, whoever paid more than their part is owed by whoever paid less, matched in the

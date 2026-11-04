@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.activity.data.mapper
 import com.quare.blitzsplit.core.activity.data.dto.ActivityEventDto
 import com.quare.blitzsplit.core.activity.data.dto.ChargeEventDto
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -55,8 +56,26 @@ class ActivityMapperImpl : ActivityMapper {
             commentId = data.findText("comment_id"),
             isCommentDeleted = (data["deleted"] as? JsonPrimitive)?.contentOrNull == "true",
             isPending = entity.pendingSync,
+            debtsBefore = debtsOf(data["before"]),
+            debtsAfter = debtsOf(data["after"]),
+            memberNames = (data["names"] as? JsonObject)
+                .orEmpty()
+                .mapNotNull { (id, name) -> (name as? JsonPrimitive).textOrNull()?.let { id to it } }
+                .toMap(),
         )
     }
+
+    // Why: a pair a newer server writes differently is left out rather than read wrong.
+    private fun debtsOf(element: JsonElement?): List<ActivityDebt> = (element as? JsonArray)
+        .orEmpty()
+        .mapNotNull { it as? JsonObject }
+        .mapNotNull { pair ->
+            ActivityDebt(
+                fromMemberId = pair.findText("from") ?: return@mapNotNull null,
+                toMemberId = pair.findText("to") ?: return@mapNotNull null,
+                amountMinor = pair.findLong("amount") ?: return@mapNotNull null,
+            )
+        }
 
     // Why: a photo's kind and the link's visibility by their own keys, so another key in the same data never wins.
     private fun codeOf(
@@ -65,6 +84,7 @@ class ActivityMapperImpl : ActivityMapper {
     ): String? = when (kind) {
         ActivityKind.ATTACHMENT_ADDED, ActivityKind.ATTACHMENT_REMOVED -> data.findText("attachment_kind")
         ActivityKind.BILL_LINK_CHANGED -> data.findText("visibility")
+        ActivityKind.SIMPLIFY_DEBTS_CHANGED -> simplifyCodeOf((data["simplify_debts"] as? JsonPrimitive)?.contentOrNull)
         else -> data.findText("split_mode") ?: data.findText("type") ?: data.findText("method")
     }
 
@@ -147,13 +167,18 @@ class ActivityMapperImpl : ActivityMapper {
         savedAt = row.updatedAt,
     )
 
+    // Why: a switch of "Simplificar dívidas" waiting to go up words as one, even with other edits waiting with it.
     override fun toQueued(row: QueuedGroupRow): QueuedChange = QueuedChange(
         id = row.id,
         groupId = row.id,
-        kind = if (row.isNew) ActivityKind.GROUP_CREATED else ActivityKind.GROUP_EDITED,
+        kind = when {
+            row.isNew -> ActivityKind.GROUP_CREATED
+            row.simplifyDebtsPending -> ActivityKind.SIMPLIFY_DEBTS_CHANGED
+            else -> ActivityKind.GROUP_EDITED
+        },
         subject = row.name,
         amountMinor = null,
-        code = row.type,
+        code = if (!row.isNew && row.simplifyDebtsPending) simplifyCodeOf(row.simplifyDebts.toString()) else row.type,
         fromMemberId = null,
         toMemberId = null,
         savedAt = row.updatedAt,
@@ -245,6 +270,12 @@ class ActivityMapperImpl : ActivityMapper {
                 value = value,
             )
         }
+
+    private fun simplifyCodeOf(value: String?): String? = when (value) {
+        "true" -> ActivityEvent.SIMPLIFY_ON
+        "false" -> ActivityEvent.SIMPLIFY_OFF
+        else -> null
+    }
 
     private fun JsonObject.findText(key: String): String? = (this[key] as? JsonPrimitive).textOrNull()
 

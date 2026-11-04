@@ -74,6 +74,10 @@ internal fun group(
     isCreatedByMe = true,
     defaultSplit = null,
     updatedAt = updatedAt,
+    simplifiesDebts = false,
+    isSimplifyDebtsPending = false,
+    simplifyDebtsChangedBy = null,
+    simplifyDebtsConflictBy = null,
 )
 
 internal fun bill(

@@ -26,6 +26,7 @@ class ActivityKindTest {
             "member_removed",
             "member_released",
             "member_renamed",
+            "simplify_debts_changed",
             "charge_sent",
             "comment_added",
             "attachment_added",

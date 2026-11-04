@@ -542,6 +542,30 @@ class PushLinkTest {
         assertEquals(listOf(groupRoute(GroupTab.EXPENSES)), routes)
     }
 
+    @Test
+    fun `GIVEN Simplificar dividas turned on or off WHEN asking what opens above THEN is the group Saldos`() {
+        // Given
+        val links = listOf(
+            "debts_simplified_to_you",
+            "debts_simplified_from_you",
+            "debts_simplified_other",
+            "debts_unsimplified_to_you",
+            "debts_unsimplified_from_you",
+            "debts_unsimplified_other",
+        ).map {
+            pushLink(
+                kind = it,
+                targetId = null,
+            )
+        }
+
+        // When
+        val routes = links.map { it.routesAbove }
+
+        // Then
+        assertEquals(List(links.size) { listOf(groupRoute(GroupTab.BALANCES)) }, routes)
+    }
+
     private fun groupRoute(tab: GroupTab): Route = Route.GroupDetail(
         GROUP_ID,
         joinedAs = null,

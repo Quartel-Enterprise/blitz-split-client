@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -128,6 +129,26 @@ class GroupRepositoryImpl(
             splitIncomes = mapper.encodeIncomes(incomes),
             updatedAt = updatedAt,
         )
+    }
+
+    // Why: this device's own account is who changed it, until the server says so; none before any account.
+    override suspend fun updateSimplifiesDebts(
+        groupId: String,
+        simplifiesDebts: Boolean,
+        change: SimplifyDebtsChange,
+        changedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateSimplifyDebts(
+            id = groupId,
+            simplifyDebts = simplifiesDebts,
+            change = mapper.encode(change),
+            changedAt = changedAt,
+            by = profileLocal.get()?.ownerUserId,
+        )
+    }
+
+    override suspend fun consumeSimplifyDebtsConflict(groupId: String): Result<Unit> = suspendRunCatching {
+        local.clearSimplifyDebtsConflict(groupId)
     }
 
     override suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>> = suspendRunCatching {
@@ -261,6 +282,16 @@ class GroupRepositoryImpl(
                             inviteCode = it,
                         )
                     }
+                    /*
+                     * Why: the row comes back with the server's switch, this device's change when it took it; a
+                     * later one from someone else waits for the download, which tells the conflict (13.1e).
+                     */
+                    dto.simplifyDebtsAt?.let {
+                        local.markSimplifyDebtsSynced(
+                            id = dto.id,
+                            syncedAt = it,
+                        )
+                    }
                 }
         }
         if (pendingMembers.isNotEmpty()) {
@@ -284,6 +315,7 @@ class GroupRepositoryImpl(
             local.markGroupSynced(
                 id = it.id,
                 syncedUpdatedAt = it.updatedAt,
+                syncedSimplifyDebtsAt = it.simplifyDebtsAt,
             )
         }
         pendingMembers.forEach {

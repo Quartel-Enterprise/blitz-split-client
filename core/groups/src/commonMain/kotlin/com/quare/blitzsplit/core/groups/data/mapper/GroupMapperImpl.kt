@@ -6,10 +6,14 @@ import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
+import com.quare.blitzsplit.core.groups.data.dto.SimplifyDebtsChangeDto
+import com.quare.blitzsplit.core.groups.data.dto.SimplifyDebtsPairDto
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -72,6 +76,10 @@ class GroupMapperImpl : GroupMapper {
                 isCreatedByMe = group.createdBy == group.ownerUserId,
                 defaultSplit = defaultSplitOf(group.defaultSplit),
                 updatedAt = group.updatedAt,
+                simplifiesDebts = group.simplifyDebts,
+                isSimplifyDebtsPending = group.simplifyDebtsPending,
+                simplifyDebtsChangedBy = group.simplifyDebtsBy,
+                simplifyDebtsConflictBy = group.simplifyDebtsConflictBy,
             )
         }
     }
@@ -102,6 +110,12 @@ class GroupMapperImpl : GroupMapper {
             )
         },
         splitIncomes = null,
+        simplifyDebts = group.simplifiesDebts,
+        simplifyDebtsAt = 0L,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -161,6 +175,10 @@ class GroupMapperImpl : GroupMapper {
         updatedAt = entity.updatedAt,
         inviteCode = null,
         defaultSplit = objectOrNull(entity.defaultSplit),
+        simplifyDebts = entity.simplifyDebts,
+        simplifyDebtsAt = entity.simplifyDebtsAt,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = objectOrNull(entity.simplifyDebtsChange.takeIf { entity.simplifyDebtsPending }),
     )
 
     /*
@@ -200,6 +218,12 @@ class GroupMapperImpl : GroupMapper {
         // Why: never on the server; applyRemoteGroup leaves the ones this device has alone.
         splitIncomes = null,
         pendingPhoto = null,
+        simplifyDebts = dto.simplifyDebts ?: false,
+        simplifyDebtsAt = dto.simplifyDebtsAt ?: 0L,
+        simplifyDebtsBy = dto.simplifyDebtsBy,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     override fun toEntity(
@@ -260,6 +284,20 @@ class GroupMapperImpl : GroupMapper {
         )
         return JsonObject(objectOrNull(over).orEmpty() + known.jsonObject).toString()
     }
+
+    override fun encode(change: SimplifyDebtsChange): String = json
+        .encodeToJsonElement(
+            SimplifyDebtsChangeDto(
+                before = change.before.map(::toDto),
+                after = change.after.map(::toDto),
+            ),
+        ).toString()
+
+    private fun toDto(pair: SimplifyDebtsPair): SimplifyDebtsPairDto = SimplifyDebtsPairDto(
+        from = pair.fromMemberId,
+        to = pair.toMemberId,
+        amount = pair.amountMinor,
+    )
 
     override fun encodeIncomes(incomes: Map<String, Long>): String? = incomes.takeIf { it.isNotEmpty() }?.let {
         json.encodeToString(it)

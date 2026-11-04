@@ -179,7 +179,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     recorded or undone that you paid or received; "Lembretes de acerto" for a charge sent to you and, every Monday at
     10:00 in Brasília, "Você tem saldo em aberto em Apê 302" (or "em 3 grupos") while you owe or are owed;
     "Convites e novos membros" (off by default) for being added to a group and someone joining yours. No amount in
-    them. The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
+    them, but for "Simplificar dívidas" (below), whose `debts_simplified_*` and `debts_unsimplified_*` (under
+    "Lembretes de acerto") name the new pair's amount, which the server writes out (Pierre's call). The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
     insert), and each device words them in its language from a kind and the names (Android's channels are the four
     toggles, Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana lançou “Jantar”
     com você". A tap opens what the item's tap in Atividade opens, over Atividade (after a sync when its group isn't
@@ -580,13 +581,38 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     link. The released person gets no notice: the group just leaves their devices on the next sync. On Android its
     dialogs (rename, add, remove, release, and "Convite pessoal", a bottom sheet elsewhere) open in a book's right half;
     a phone lying down, Android and iPhone, draws it in the group's two columns, the header and balance on the left.
-  - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
-    group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
+  - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (simplified across the group only
+    while its "Simplificar dívidas" is on, below), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
     mundo acertou" offers "Apagar grupo". An Android tabletop (6.2) draws Saldos alone, full screen, even where its
     other tabs stay beside Grupos' list lying down: a one-line bar, the tabs and "Seu saldo neste grupo" above the
     hinge, and the pairs under it, "Com você" beside "Entre os outros" while both have one, with no "Rachar conta".
+  - "Simplificar dívidas" (page 13, `GroupBalances.toSimplified`, `SetSimplifiesDebts`): a group's switch, off in every
+    group, in Editar grupo's "Pagamentos" under Moeda and Divisão padrão, free. While on, the group's pairs are the
+    fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
+    members − 1, ties by the order they joined, so every device gets the same pairs offline; payments recorded only
+    move the nets, and a group already at its fewest payments keeps its pairs (13.3c). Any member turns it on or off,
+    offline too, at once and apart from Salvar ("aguardando envio" with the orange dot meanwhile); with 2 people it is
+    off and disabled with the reason (13.1c), and a group already on can still turn it off. The switch opens its
+    confirmation first: "7 pagamentos → 5 pagamentos" and what changes for each person (you first, a guest with
+    "avise por Cobrar", the payments still in the queue, 13.3d), "Ligar mesmo assim" when it saves none; turning off
+    names only what changes for you and counts the others (13.3b); "Como funciona" (13.2, `Route.SimplifyDebtsInfo`)
+    explains it. It syncs with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's
+    `updatedAt`, so an edit of the name never undoes it nor it the name; when someone's later change beats this
+    device's, the group's screen or Editar grupo, whichever is on top first, says "Ana desligou depois de você" once,
+    with "Ver na Atividade" (the Atividade tab, 13.1e). Everything that reads the group's pairs follows it: Saldos
+    (the card "Dívidas simplificadas" with Como funciona over the pairs, the icon on a pair no bill made, 13.4),
+    "Seu saldo neste grupo", Acertar, Recebi, Já pagou, Membros' balances, Grupos' rows, Início's faces and "Quem
+    pagou a quem?", the global Saldos and Contatos ("Dívidas simplificadas" on the group's line of "Por grupo", and
+    Cobrar saying "em vez de pagar Bruno você paga direto para mim; o seu total não mudou", 13.6). Registrar pagamento
+    says why a pair it made or grew is there ("Dívida simplificada: Diego paga a você o que devia a Bruno.", 13.5),
+    and a pair that owes nothing only because the switch flipped while it was open stays with "Já paguei mesmo
+    assim", which records what was owed (13.5c, a pair of one group). Atividade's `simplify_debts_changed` (Pessoas e
+    grupos) says "7 pagamentos viraram 5. Agora Diego te paga R$ 64, e Ana não te deve mais." with "Ver mudanças" of
+    what changed for you, from the pairs the device that changed it sent; whoever now pays or receives from someone
+    else gets a push (13.7), never who changed it. "Editar conta"'s warning after a payment (7.4b) keeps the pairs as
+    the bills make them.
   - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0 ·
     você está quitado" when settled, and its "Acertar" opens Registrar pagamento with whoever you owe the most, hidden
     when you owe nobody.

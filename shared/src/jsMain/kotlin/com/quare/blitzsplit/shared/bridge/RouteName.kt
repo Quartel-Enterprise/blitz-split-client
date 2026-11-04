@@ -27,6 +27,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.SharedBill -> "shared-bill"
     is Route.EditGroup -> "edit-group"
     is Route.DefaultSplit -> "default-split"
+    is Route.SimplifyDebtsInfo -> "simplify-debts-info"
     is Route.GroupStats -> "group-stats"
     is Route.JoinInvite -> "join-invite"
     is Route.JoinPick -> "join-pick"

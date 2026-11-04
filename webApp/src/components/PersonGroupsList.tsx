@@ -1,6 +1,7 @@
 import type { JsPersonGroup } from 'blitzsplit-shared'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { SimplifiedBadge } from '@/features/simplify-debts/SimplifyIcon'
 import { t } from '@/i18n'
 import { formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -8,7 +9,7 @@ import { cn } from '@/lib/utils'
 /**
  * "Por grupo": what each group adds to the net with someone, then the net, "Líquido, já compensado" over several groups
  * and "Total" for one. Saldos opens it in a row, and Registrar pagamento shows it when settling up across groups.
- * Where onGroupClick is given, a group's badge and name open it.
+ * Where onGroupClick is given, a group's badge and name open it. A group whose "Simplificar dívidas" is on says so.
  */
 export function PersonGroupsList({
   groups,
@@ -36,7 +37,10 @@ export function PersonGroupsList({
             <GroupAvatar initials={group.initials} color={group.color} className="size-6 rounded-md text-[10px]" />
             <span className="flex min-w-0 flex-1 flex-col text-left">
               <span className="truncate">{group.name}</span>
-              <span className="text-xs text-muted-foreground">{t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}</span>
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                {t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}
+                {group.isSimplified && <SimplifiedBadge />}
+              </span>
             </span>
             <span className={cn('tabular-nums', balanceTone(group.amountMinor))}>{signed(group.amountMinor)}</span>
           </>

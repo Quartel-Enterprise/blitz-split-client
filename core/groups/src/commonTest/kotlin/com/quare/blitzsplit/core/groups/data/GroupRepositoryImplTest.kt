@@ -21,6 +21,8 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
+import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -3546,6 +3549,10 @@ class GroupRepositoryImplTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     @Test
@@ -3586,7 +3593,8 @@ class GroupRepositoryImplTest {
             {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
             "added_at":1,"updated_at":2,"invite_code":"abc","shape":"petal","photo_url":null,
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
-            "rounding":[{"category":"food","mode":"equal"}]}}
+            "rounding":[{"category":"food","mode":"equal"}]},
+            "simplify_debts":false,"simplify_debts_at":0,"simplify_debts_by":null,"simplify_debts_change":null}
             """.trimIndent(),
         )
         prepareScenario(remoteGroups = listOf(serverRow))
@@ -5351,6 +5359,508 @@ class GroupRepositoryImplTest {
         assertEquals(ProfilePhoto.Remote(serverPhotoUrl), shown.photo)
     }
 
+    @Test
+    fun `GIVEN a group WHEN turning on Simplificar dividas THEN the device holds it pending by the profile account`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                profileOwnerUserId = "user-1",
+            )
+
+            // When
+            val result = turnOnSimplifyDebts()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val shown = repository.observeGroups().first().single()
+            assertTrue(shown.simplifiesDebts)
+            assertTrue(shown.isSimplifyDebtsPending)
+            assertEquals("user-1", shown.simplifyDebtsChangedBy)
+            assertEquals(9L, local.group("group-1")?.simplifyDebtsAt)
+            assertEquals(true, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group WHEN turning on Simplificar dividas THEN keeps the pairs it moved as the server JSON`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                profileOwnerUserId = "user-1",
+            )
+
+            // When
+            turnOnSimplifyDebts()
+
+            // Then
+            assertEquals(
+                Json.parseToJsonElement(simplificationJson),
+                Json.parseToJsonElement(local.group("group-1")!!.simplifyDebtsChange!!),
+            )
+        }
+
+    @Test
+    fun `GIVEN a group WHEN turning on Simplificar dividas THEN its other fields and last change stay`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    name = "Apê 302",
+                    updatedAt = 5L,
+                ),
+            ),
+            profileOwnerUserId = "user-1",
+        )
+
+        // When
+        turnOnSimplifyDebts()
+
+        // Then
+        val stored = local.group("group-1")!!
+        assertEquals(5L, stored.updatedAt)
+        assertEquals("Apê 302", stored.name)
+        assertEquals(
+            5L,
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .updatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN no account yet WHEN turning on Simplificar dividas THEN it waits with nobody as who changed it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        ownerUserId = null,
+                    ),
+                ),
+                profileOwnerUserId = null,
+            )
+
+            // When
+            val result = turnOnSimplifyDebts()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val shown = repository.observeGroups().first().single()
+            assertTrue(shown.simplifiesDebts)
+            assertTrue(shown.isSimplifyDebtsPending)
+            assertNull(shown.simplifyDebtsChangedBy)
+        }
+
+    @Test
+    fun `GIVEN the device cannot write WHEN turning on Simplificar dividas THEN it fails`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            groupWriteError = IllegalStateException("disk full"),
+        )
+
+        // When
+        val result = turnOnSimplifyDebts()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(local.group("group-1")!!.simplifyDebts)
+    }
+
+    @Test
+    fun `GIVEN someone turned it off after this device WHEN consuming the notice THEN the group no longer has it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(id = "group-1").copy(
+                        simplifyDebtsAt = 30L,
+                        simplifyDebtsBy = "user-2",
+                        simplifyDebtsConflictBy = "user-2",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.consumeSimplifyDebtsConflict("group-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            val shown = repository.observeGroups().first().single()
+            assertNull(shown.simplifyDebtsConflictBy)
+            assertEquals("user-2", shown.simplifyDebtsChangedBy)
+        }
+
+    @Test
+    fun `GIVEN the switch turned on here WHEN uploading THEN sends it with its stamp and the change and no author`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val pushed = remote.upsertedGroups.single().single()
+            assertEquals(true, pushed.simplifyDebts)
+            assertEquals(9L, pushed.simplifyDebtsAt)
+            assertNull(pushed.simplifyDebtsBy)
+            assertEquals(Json.parseToJsonElement(simplificationJson).jsonObject, pushed.simplifyDebtsChange)
+        }
+
+    @Test
+    fun `GIVEN a renamed group with the switch already up WHEN uploading THEN sends the switch without a change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "abc",
+                    ).copy(
+                        simplifyDebts = true,
+                        simplifyDebtsAt = 4L,
+                        simplifyDebtsBy = "user-2",
+                    ),
+                ),
+            )
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val pushed = remote.upsertedGroups.single().single()
+            assertEquals(true, pushed.simplifyDebts)
+            assertEquals(4L, pushed.simplifyDebtsAt)
+            assertNull(pushed.simplifyDebtsBy)
+            assertNull(pushed.simplifyDebtsChange)
+        }
+
+    @Test
+    fun `GIVEN the switch turned on here WHEN the server takes it THEN it no longer waits`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    inviteCode = "abc",
+                ),
+            ),
+            profileOwnerUserId = "user-1",
+        )
+        turnOnSimplifyDebts()
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")!!
+        assertTrue(stored.simplifyDebts)
+        assertFalse(stored.simplifyDebtsPending)
+        assertNull(stored.simplifyDebtsChange)
+        assertFalse(stored.pendingSync)
+        assertFalse(
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .isSimplifyDebtsPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server refuses the row WHEN uploading THEN the switch keeps waiting with its change`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    inviteCode = "abc",
+                ),
+            ),
+            profileOwnerUserId = "user-1",
+        )
+        turnOnSimplifyDebts()
+        remote.refusedGroupIds = setOf("group-1")
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")!!
+        assertTrue(stored.simplifyDebtsPending)
+        assertEquals(
+            Json.parseToJsonElement(simplificationJson),
+            Json.parseToJsonElement(stored.simplifyDebtsChange!!),
+        )
+    }
+
+    @Test
+    fun `GIVEN the server keeps a later change of the switch WHEN uploading THEN this device change keeps waiting`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            remote.serverSimplifyDebtsAt = mapOf("group-1" to 30L)
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(true, local.group("group-1")?.simplifyDebtsPending)
+            assertTrue(
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .isSimplifyDebtsPending,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server refused the switch for a later one of Ana WHEN downloading THEN takes hers as a conflict`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        inviteCode = "abc",
+                        simplifyDebts = false,
+                        simplifyDebtsAt = 30L,
+                        simplifyDebtsBy = "user-2",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            remote.refusedGroupIds = setOf("group-1")
+            repository.uploadPendingGroups("user-1")
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            val shown = repository.observeGroups().first().single()
+            assertFalse(shown.simplifiesDebts)
+            assertFalse(shown.isSimplifyDebtsPending)
+            assertEquals("user-2", shown.simplifyDebtsChangedBy)
+            assertEquals("user-2", shown.simplifyDebtsConflictBy)
+        }
+
+    @Test
+    fun `GIVEN the switch changes while its push is in flight WHEN uploading THEN the newer change keeps waiting`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            remote.onUpsertGroups = { turnOffSimplifyDebts() }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")!!
+            assertFalse(stored.simplifyDebts)
+            assertEquals(20L, stored.simplifyDebtsAt)
+            assertTrue(stored.simplifyDebtsPending)
+        }
+
+    @Test
+    fun `GIVEN the switch changed while its push was in flight WHEN uploading next THEN sends the newer change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            remote.onUpsertGroups = { turnOffSimplifyDebts() }
+            repository.uploadPendingGroups("user-1")
+            remote.onUpsertGroups = {}
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(2, remote.upsertedGroups.size)
+            val pushed = remote.upsertedGroups.last().single()
+            assertEquals(false, pushed.simplifyDebts)
+            assertEquals(20L, pushed.simplifyDebtsAt)
+            assertFalse(local.group("group-1")!!.simplifyDebtsPending)
+        }
+
+    @Test
+    fun `GIVEN the switch changed while its push was in flight WHEN the push ends THEN changes are still pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "abc",
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            remote.onUpsertGroups = { turnOffSimplifyDebts() }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN a group on the server whose photo fails to go up WHEN uploading THEN its switch keeps waiting`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "abc",
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            photoRemote.uploadError = IllegalStateException("no connection")
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(remote.upsertedGroups.isEmpty())
+            val stored = local.group("group-1")!!
+            assertTrue(stored.simplifyDebtsPending)
+            assertTrue(stored.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a new group whose photo Storage refuses WHEN uploading THEN the switch its row took up stops waiting`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+                profileOwnerUserId = "user-1",
+            )
+            turnOnSimplifyDebts()
+            photoRemote.refusesUploads = true
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(
+                9L,
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .simplifyDebtsAt,
+            )
+            val stored = local.group("group-1")!!
+            assertFalse(stored.simplifyDebtsPending)
+            assertTrue(stored.pendingSync)
+        }
+
+    private val simplificationJson =
+        """{"before":[{"from":"m-2","to":"m-1","amount":3000},{"from":"m-3","to":"m-2","amount":3000}],""" +
+            """"after":[{"from":"m-3","to":"m-1","amount":3000}]}"""
+
+    private val simplification = SimplifyDebtsChange(
+        before = listOf(
+            SimplifyDebtsPair(
+                fromMemberId = "m-2",
+                toMemberId = "m-1",
+                amountMinor = 3_000L,
+            ),
+            SimplifyDebtsPair(
+                fromMemberId = "m-3",
+                toMemberId = "m-2",
+                amountMinor = 3_000L,
+            ),
+        ),
+        after = listOf(
+            SimplifyDebtsPair(
+                fromMemberId = "m-3",
+                toMemberId = "m-1",
+                amountMinor = 3_000L,
+            ),
+        ),
+    )
+
+    private suspend fun turnOnSimplifyDebts(): Result<Unit> = repository.updateSimplifiesDebts(
+        groupId = "group-1",
+        simplifiesDebts = true,
+        change = simplification,
+        changedAt = 9L,
+    )
+
+    private suspend fun turnOffSimplifyDebts() {
+        repository.updateSimplifiesDebts(
+            groupId = "group-1",
+            simplifiesDebts = false,
+            change = SimplifyDebtsChange(
+                before = simplification.after,
+                after = simplification.before,
+            ),
+            changedAt = 20L,
+        )
+    }
+
     private val photoJpeg = byteArrayOf(1, 2, 3)
     private val newPhotoJpeg = byteArrayOf(4, 5, 6)
     private val oldPhotoUrl = "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=1"
@@ -5400,6 +5910,12 @@ class GroupRepositoryImplTest {
         shape = shape,
         photoUrl = photoUrl,
         pendingPhoto = pendingPhoto,
+        simplifyDebts = false,
+        simplifyDebtsAt = 0L,
+        simplifyDebtsBy = null,
+        simplifyDebtsChange = null,
+        simplifyDebtsPending = false,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(
@@ -5447,6 +5963,9 @@ class GroupRepositoryImplTest {
         inviteCode: String? = null,
         shape: String? = null,
         photoUrl: String? = null,
+        simplifyDebts: Boolean? = null,
+        simplifyDebtsAt: Long? = null,
+        simplifyDebtsBy: String? = null,
     ): GroupDto = GroupDto(
         id = id,
         createdBy = createdBy,
@@ -5460,6 +5979,10 @@ class GroupRepositoryImplTest {
         defaultSplit = null,
         shape = shape,
         photoUrl = photoUrl,
+        simplifyDebts = simplifyDebts,
+        simplifyDebtsAt = simplifyDebtsAt,
+        simplifyDebtsBy = simplifyDebtsBy,
+        simplifyDebtsChange = null,
     )
 
     private fun memberDto(
@@ -5740,9 +6263,11 @@ private class FakeGroupLocalDataSource(
     override suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,
+        syncedSimplifyDebtsAt: Long,
     ) {
         groups.value = groups.value.map {
-            if (it.id == id && it.updatedAt == syncedUpdatedAt) it.copy(pendingSync = false) else it
+            val isSynced = it.id == id && it.updatedAt == syncedUpdatedAt && it.simplifyDebtsAt == syncedSimplifyDebtsAt
+            if (isSynced) it.copy(pendingSync = false) else it
         }
     }
 
@@ -5792,6 +6317,12 @@ private class FakeGroupLocalDataSource(
                         pendingSync = false,
                         pendingPhoto = null,
                         splitIncomes = current.splitIncomes,
+                        simplifyDebts = current.simplifyDebts,
+                        simplifyDebtsAt = current.simplifyDebtsAt,
+                        simplifyDebtsBy = current.simplifyDebtsBy,
+                        simplifyDebtsChange = current.simplifyDebtsChange,
+                        simplifyDebtsPending = current.simplifyDebtsPending,
+                        simplifyDebtsConflictBy = current.simplifyDebtsConflictBy,
                     ),
                 )
         }
@@ -5801,6 +6332,72 @@ private class FakeGroupLocalDataSource(
                 inviteCode = it,
             )
         }
+        val now = group(entity.id)
+        if (current != null && now != null && now.ownerUserId == entity.ownerUserId &&
+            now.simplifyDebtsAt <= entity.simplifyDebtsAt
+        ) {
+            val isConflict = now.simplifyDebtsPending &&
+                now.simplifyDebts != entity.simplifyDebts &&
+                now.simplifyDebtsAt < entity.simplifyDebtsAt
+            put(
+                now.copy(
+                    simplifyDebts = entity.simplifyDebts,
+                    simplifyDebtsAt = entity.simplifyDebtsAt,
+                    simplifyDebtsBy = entity.simplifyDebtsBy,
+                    simplifyDebtsChange = null,
+                    simplifyDebtsPending = false,
+                    simplifyDebtsConflictBy = if (isConflict) entity.simplifyDebtsBy else now.simplifyDebtsConflictBy,
+                ),
+            )
+        }
+        group(
+            entity.id,
+        )?.takeIf { it.simplifyDebtsPending && !it.pendingSync }?.let { put(it.copy(pendingSync = true)) }
+    }
+
+    override suspend fun updateSimplifyDebts(
+        id: String,
+        simplifyDebts: Boolean,
+        change: String?,
+        changedAt: Long,
+        by: String?,
+    ) {
+        groupWriteError?.let { throw it }
+        groups.value = groups.value.map {
+            if (it.id == id) {
+                it.copy(
+                    simplifyDebts = simplifyDebts,
+                    simplifyDebtsChange = change,
+                    simplifyDebtsAt = maxOf(changedAt, it.simplifyDebtsAt + 1),
+                    simplifyDebtsBy = by,
+                    simplifyDebtsPending = true,
+                    simplifyDebtsConflictBy = null,
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun markSimplifyDebtsSynced(
+        id: String,
+        syncedAt: Long,
+    ) {
+        groups.value = groups.value.map {
+            if (it.id == id && it.simplifyDebtsAt == syncedAt && it.simplifyDebtsPending) {
+                it.copy(
+                    simplifyDebtsPending = false,
+                    simplifyDebtsChange = null,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun clearSimplifyDebtsConflict(id: String) {
+        groups.value = groups.value.map { if (it.id == id) it.copy(simplifyDebtsConflictBy = null) else it }
     }
 
     override suspend fun updateInviteCode(
@@ -5977,7 +6574,11 @@ private class FakeGroupRemoteDataSource(
     val upsertedMembers = mutableListOf<List<GroupMemberDto>>()
     val deletedMemberIds = mutableListOf<List<String>>()
     var deleteMembersError: Throwable? = null
-    var onUpsertGroups: () -> Unit = {}
+    var onUpsertGroups: suspend () -> Unit = {}
+
+    // Why: rows the server leaves out of its answer, and the switch stamp it answers with in place of the one sent.
+    var refusedGroupIds: Set<String> = emptySet()
+    var serverSimplifyDebtsAt: Map<String, Long> = emptyMap()
     val releasedMemberIds = mutableListOf<String>()
     var releasedMember: GroupMemberDto? = null
     var releaseError: Throwable? = null
@@ -6005,7 +6606,14 @@ private class FakeGroupRemoteDataSource(
         onUpsertGroups()
         upsertGroupsError?.let { throw it }
         upsertedGroups += groups
-        return groups.map { it.copy(inviteCode = inviteCodes[it.id]) }
+        return groups
+            .filterNot { it.id in refusedGroupIds }
+            .map {
+                it.copy(
+                    inviteCode = inviteCodes[it.id],
+                    simplifyDebtsAt = serverSimplifyDebtsAt[it.id] ?: it.simplifyDebtsAt,
+                )
+            }
     }
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> {

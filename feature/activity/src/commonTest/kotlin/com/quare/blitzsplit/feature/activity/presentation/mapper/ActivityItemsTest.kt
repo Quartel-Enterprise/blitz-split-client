@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.activity.presentation.mapper
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
@@ -23,9 +24,11 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDeletion
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityFilter
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
+import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityTarget
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
@@ -770,6 +773,7 @@ class ActivityItemsTest {
                 ActivityKind.MEMBER_REMOVED to ActivityTarget.MEMBERS,
                 ActivityKind.MEMBER_RELEASED to ActivityTarget.MEMBERS,
                 ActivityKind.MEMBER_RENAMED to ActivityTarget.MEMBERS,
+                ActivityKind.SIMPLIFY_DEBTS_CHANGED to ActivityTarget.BALANCES,
                 ActivityKind.CHARGE_SENT to ActivityTarget.BALANCES,
                 ActivityKind.COMMENT_ADDED to ActivityTarget.BILL,
                 ActivityKind.ATTACHMENT_ADDED to ActivityTarget.BILL,
@@ -1101,6 +1105,414 @@ class ActivityItemsTest {
         assertNull(name)
     }
 
+    // region Simplificar dívidas
+
+    @Test
+    fun `GIVEN Simplificar dividas turned on WHEN mapping the feed THEN counts payments and what changed for you`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(
+                        debt(CARLA_APE, BRUNO_APE, 6_400L),
+                        debt(BRUNO_APE, ME_APE, 6_400L),
+                        debt(ANA_APE, ME_APE, 5_000L),
+                    ),
+                    debtsAfter = listOf(
+                        debt(CARLA_APE, ME_APE, 6_400L),
+                        debt(ANA_APE, ME_APE, 5_000L),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val simplification = entriesOf(feed, groups).single().item.simplification
+
+        // Then
+        assertEquals(
+            ActivitySimplification(
+                paymentsBefore = 3,
+                paymentsAfter = 2,
+                myChanges = listOf(
+                    debtChange("Carla", 0L, 6_400L),
+                    debtChange("Bruno", 6_400L, 0L),
+                ),
+            ),
+            simplification,
+        )
+    }
+
+    @Test
+    fun `GIVEN you owed someone before and someone else after WHEN mapping the feed THEN what you owe is negative`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    code = ActivityEvent.SIMPLIFY_OFF,
+                    debtsBefore = listOf(debt(ME_APE, BRUNO_APE, 3_000L)),
+                    debtsAfter = listOf(
+                        debt(ME_APE, ANA_APE, 3_000L),
+                        debt(ANA_APE, BRUNO_APE, 3_000L),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(
+            setOf(
+                debtChange("Ana", 0L, -3_000L),
+                debtChange("Bruno", -3_000L, 0L),
+            ),
+            changes?.toSet(),
+        )
+    }
+
+    @Test
+    fun `GIVEN changes of different sizes WHEN mapping the feed THEN lists the largest change first`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(
+                        debt(ANA_APE, ME_APE, 5_000L),
+                        debt(BRUNO_APE, ME_APE, 2_000L),
+                    ),
+                    debtsAfter = listOf(
+                        debt(ANA_APE, ME_APE, 1_000L),
+                        debt(BRUNO_APE, ME_APE, 9_000L),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(
+            listOf(
+                debtChange("Bruno", 2_000L, 9_000L),
+                debtChange("Ana", 5_000L, 1_000L),
+            ),
+            changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN a balance with you that stayed the same WHEN mapping the feed THEN leaves that person out`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(
+                        debt(ANA_APE, ME_APE, 5_000L),
+                        debt(BRUNO_APE, CARLA_APE, 2_000L),
+                    ),
+                    debtsAfter = listOf(debt(ANA_APE, ME_APE, 5_000L)),
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(emptyList(), item.simplification?.myChanges)
+        assertEquals(2, item.simplification?.paymentsBefore)
+        assertEquals(1, item.simplification?.paymentsAfter)
+        assertFalse(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN a counterpart renamed since the event WHEN mapping the feed THEN names them as the group does now`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = emptyList(),
+                    debtsAfter = listOf(debt(BRUNO_APE, ME_APE, 2_000L)),
+                    memberNames = mapOf(BRUNO_APE to "Bruno antigo"),
+                ),
+            ),
+        )
+
+        // When
+        val change = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+            ?.single()
+
+        // Then
+        assertEquals("Bruno", change?.name)
+    }
+
+    @Test
+    fun `GIVEN a counterpart no longer in the group WHEN mapping the feed THEN names them as the event wrote down`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt("gone-member", ME_APE, 2_000L)),
+                    debtsAfter = emptyList(),
+                    memberNames = mapOf("gone-member" to "Elisa"),
+                ),
+            ),
+        )
+
+        // When
+        val change = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+            ?.single()
+
+        // Then
+        assertEquals(debtChange("Elisa", 2_000L, 0L), change)
+    }
+
+    @Test
+    fun `GIVEN a counterpart nobody knows the name of WHEN mapping the feed THEN the change has no name`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt("gone-member", ME_APE, 2_000L)),
+                    debtsAfter = emptyList(),
+                ),
+            ),
+        )
+
+        // When
+        val change = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+            ?.single()
+
+        // Then
+        assertEquals(debtChange(null, 2_000L, 0L), change)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas in a group not on the device WHEN mapping the feed THEN only counts payments`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    groupId = PRAIA,
+                    groupName = "Praia",
+                    debtsBefore = listOf(
+                        debt("ana-praia", "me-praia", 5_000L),
+                        debt("bruno-praia", "ana-praia", 5_000L),
+                    ),
+                    debtsAfter = listOf(debt("bruno-praia", "me-praia", 5_000L)),
+                    memberNames = mapOf("ana-praia" to "Ana", "bruno-praia" to "Bruno", "me-praia" to "Pierre"),
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(
+            ActivitySimplification(
+                paymentsBefore = 2,
+                paymentsAfter = 1,
+                myChanges = emptyList(),
+            ),
+            item.simplification,
+        )
+        assertFalse(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas switched here and not sent WHEN mapping the feed THEN waits with no detail`() {
+        // Given
+        val feed = feed(
+            queued = listOf(
+                queued(
+                    id = APE,
+                    kind = ActivityKind.SIMPLIFY_DEBTS_CHANGED,
+                    subject = "Apê 302",
+                    code = ActivityEvent.SIMPLIFY_ON,
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.isPending)
+        assertNull(item.simplification)
+        assertTrue(item.isSimplifyTurnedOn)
+        assertFalse(item.hasChangesToShow)
+        assertEquals(ActivityTarget.BALANCES, item.target)
+    }
+
+    @Test
+    fun `GIVEN an event of another kind WHEN mapping the feed THEN has no simplification`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "edit",
+                    kind = ActivityKind.GROUP_EDITED,
+                    debtsBefore = listOf(debt(ANA_APE, ME_APE, 5_000L)),
+                ),
+            ),
+        )
+
+        // When
+        val simplification = entriesOf(feed, groups).single().item.simplification
+
+        // Then
+        assertNull(simplification)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas turned on WHEN mapping the feed THEN says it was turned on`() {
+        // Given
+        val feed = feed(events = listOf(simplifyEvent(code = ActivityEvent.SIMPLIFY_ON)))
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.isSimplifyTurnedOn)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas turned off WHEN mapping the feed THEN says it was turned off`() {
+        // Given
+        val feed = feed(events = listOf(simplifyEvent(code = ActivityEvent.SIMPLIFY_OFF)))
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertFalse(item.isSimplifyTurnedOn)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas that changed something for you WHEN mapping the feed THEN offers Ver mudancas`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt(BRUNO_APE, ME_APE, 2_000L)),
+                    debtsAfter = listOf(debt(ANA_APE, ME_APE, 2_000L)),
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN an edited bill with changes WHEN mapping the feed THEN offers Ver mudancas`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "edit",
+                    kind = ActivityKind.BILL_EDITED,
+                    changes = listOf(
+                        ActivityChange(
+                            field = ActivityField.AMOUNT,
+                            before = ActivityValue.none.copy(minor = 61_200L),
+                            after = ActivityValue.none.copy(minor = 64_200L),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertTrue(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN an edited bill with no change written down WHEN mapping the feed THEN offers no Ver mudancas`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "edit",
+                    kind = ActivityKind.BILL_EDITED,
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertFalse(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN a group edited with changes WHEN mapping the feed THEN offers no Ver mudancas`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "edit",
+                    kind = ActivityKind.GROUP_EDITED,
+                    changes = listOf(
+                        ActivityChange(
+                            field = ActivityField.NAME,
+                            before = ActivityValue.none.copy(text = "Apê"),
+                            after = ActivityValue.none.copy(text = "Apê 302"),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertFalse(item.hasChangesToShow)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas changed WHEN filtering by type THEN Pessoas e grupos keeps it and Pagamentos not`() {
+        // Given
+        val entry = entriesOf(feed(events = listOf(simplifyEvent())), groups).single()
+        val peopleAndGroups = ActivityFilter.none.copy(types = listOf(ActivityType.PEOPLE_AND_GROUPS))
+        val payments = ActivityFilter.none.copy(types = listOf(ActivityType.PAYMENTS))
+
+        // When
+        val matches = listOf(entry.matches(peopleAndGroups), entry.matches(payments))
+
+        // Then
+        assertEquals(listOf(true, false), matches)
+    }
+
+    // endregion
+
     private val groups = listOf(
         group(
             id = APE,
@@ -1174,6 +1586,10 @@ class ActivityItemsTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = 0L,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     // Why: the app's categories only, for the cases that don't name one.
@@ -1219,6 +1635,10 @@ class ActivityItemsTest {
         fromMemberId: String? = null,
         toMemberId: String? = null,
         changes: List<ActivityChange> = emptyList(),
+        code: String? = null,
+        debtsBefore: List<ActivityDebt> = emptyList(),
+        debtsAfter: List<ActivityDebt> = emptyList(),
+        memberNames: Map<String, String> = emptyMap(),
     ): ActivityEvent = ActivityEvent(
         id = id,
         seq = seq,
@@ -1232,7 +1652,7 @@ class ActivityItemsTest {
         occurredAt = occurredAt,
         subject = subject,
         amountMinor = 10_000L,
-        code = null,
+        code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         changes = changes,
@@ -1241,6 +1661,50 @@ class ActivityItemsTest {
         isPending = false,
         commentId = null,
         isCommentDeleted = false,
+        debtsBefore = debtsBefore,
+        debtsAfter = debtsAfter,
+        memberNames = memberNames,
+    )
+
+    // Why: "Simplificar dívidas" switched in Apê 302 by Ana.
+    private fun simplifyEvent(
+        code: String? = ActivityEvent.SIMPLIFY_ON,
+        groupId: String = APE,
+        groupName: String? = "Apê 302",
+        debtsBefore: List<ActivityDebt> = emptyList(),
+        debtsAfter: List<ActivityDebt> = emptyList(),
+        memberNames: Map<String, String> = emptyMap(),
+    ): ActivityEvent = event(
+        id = "simplify",
+        kind = ActivityKind.SIMPLIFY_DEBTS_CHANGED,
+        groupId = groupId,
+        groupName = groupName,
+        targetId = null,
+        subject = groupName,
+        code = code,
+        debtsBefore = debtsBefore,
+        debtsAfter = debtsAfter,
+        memberNames = memberNames,
+    )
+
+    private fun debt(
+        from: String,
+        to: String,
+        amountMinor: Long,
+    ): ActivityDebt = ActivityDebt(
+        fromMemberId = from,
+        toMemberId = to,
+        amountMinor = amountMinor,
+    )
+
+    private fun debtChange(
+        name: String?,
+        beforeMinor: Long,
+        afterMinor: Long,
+    ): ActivityDebtChange = ActivityDebtChange(
+        name = name,
+        beforeMinor = beforeMinor,
+        afterMinor = afterMinor,
     )
 
     private fun payment(
@@ -1272,13 +1736,14 @@ class ActivityItemsTest {
         fromMemberId: String? = null,
         toMemberId: String? = null,
         savedAt: Long = NOW,
+        code: String? = null,
     ): QueuedChange = QueuedChange(
         id = id,
         groupId = groupId,
         kind = kind,
         subject = subject,
         amountMinor = 10_000L,
-        code = null,
+        code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         savedAt = savedAt,

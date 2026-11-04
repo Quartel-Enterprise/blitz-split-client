@@ -37,6 +37,17 @@ class JsPersonGroup(
     val initials: String,
     val color: String,
     val amountMinor: Double,
+    // Why: "Dívidas simplificadas" on the group's line of "Por grupo" (13.6).
+    val isSimplified: Boolean,
+)
+
+/*
+ * Why: a group where the person pays you only because "Simplificar dívidas" is on, which Cobrar's message explains
+ * (13.6b): "A Viagem Floripa simplificou as dívidas, então em vez de pagar Bruno você paga direto para mim…".
+ */
+class JsChargeReroute(
+    val groupName: String,
+    val insteadOfNames: Array<String>,
 )
 
 class JsPersonRow(
@@ -80,6 +91,7 @@ class JsChargeDraft(
     val includesPixKey: Boolean,
     val canTogglePixKey: Boolean,
     val editedMessage: String?,
+    val reroutes: Array<JsChargeReroute>,
 )
 
 class JsGlobalBalancesState(
@@ -330,6 +342,7 @@ internal fun toJsPersonGroup(part: PersonGroupBalance): JsPersonGroup = JsPerson
     initials = part.groupInitials,
     color = part.groupColor.code,
     amountMinor = part.amountMinor.toDouble(),
+    isSimplified = part.isSimplified,
 )
 
 private fun toJsPersonRow(row: PersonRow): JsPersonRow = JsPersonRow(
@@ -365,4 +378,11 @@ private fun toJsChargeDraft(charge: ChargeDraft): JsChargeDraft = JsChargeDraft(
     includesPixKey = charge.includesPixKey,
     canTogglePixKey = charge.canTogglePixKey,
     editedMessage = charge.editedMessage,
+    reroutes = charge.reroutes
+        .map {
+            JsChargeReroute(
+                groupName = it.groupName,
+                insteadOfNames = it.insteadOfNames.toTypedArray(),
+            )
+        }.toTypedArray(),
 )

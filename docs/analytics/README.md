@@ -10,12 +10,35 @@ every UI.
 | Piece | Where | Does |
 | --- | --- | --- |
 | `TrackEvent` | `:core:provider:analytics`'s `domain/usecase` | How the shared code tracks an event: a name and its params. A Boolean goes as `"true"` or `"false"` (GA4 has no boolean), a whole number as a Long, any other as a Double, an enum as its name in lowercase; any other value is left out, never sent as its text |
-| `AnalyticsHub` | `:core:provider:analytics` | Where the events go: once an app attaches its platform's `AnalyticsService`. The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
+| `AnalyticsHub` | `:core:provider:analytics` | Where the events go, an SDK that throws losing only that event: once an app attaches its platform's `AnalyticsService`. The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
 | `FirebaseAnalyticsService` | `:core:provider:analytics`'s `androidMain` | Android's, attached by `BlitzSplitApplication` |
 | `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | Apple's, attached through `BlitzSplitApple.attachAnalytics` once the shared code started |
 | `firebaseAnalytics.ts` | `webApp/src/analytics` | The web's, through `firebase/analytics`, attached through the exported `attachAnalytics` |
 
-No event is tracked yet: each user action's event comes with its feature, through `TrackEvent`.
+Screen views are tracked ([below](#screen-views)); each user action's event comes with its feature, through
+`TrackEvent`.
+
+## Screen views
+
+`StartScreenViews` (`:core:provider:analytics`, which `ScreenViewTracker` behind it follows the back stack for) sends GA4's `screen_view` each time another route comes on top of the back
+stack and stays there for half a second, going back to one included, once per route: another group's Despesas is
+another view, the same route drawn again is not. One gone at once never counts, nor does the screen under it coming
+back: the Mac pops Perfil and Mapa de categorias right away to open them in Ajustes, so Ajustes is not a screen view
+there (Notificações, kept inside the profile on the Mac and the web, isn't either). It starts once `AppViewModel` drew the first screen, so the welcome the stack holds before that never counts.
+`screen_name` and `screen_class` (the web's adapter renames them `firebase_screen` and `firebase_screen_class`, which
+its SDK reads) are the route's name (`RouteScreenView.kt`, a `when` with no `else`, so a new route
+can't ship without one); a few routes add what kind of screen it is, which stays true each time it comes back on top, never how it was opened (the tap's own event says that) nor whose:
+
+| `screen_name` | Params |
+| --- | --- |
+| `invite` | `is_new_group` (right after Novo grupo) |
+| `split_bill` | `is_edit` (Editar conta) |
+| `register_payment` | `offers_keys` ("Pagar Ana") |
+| `contact_invite` | `is_guest` (a guest's personal link) |
+| `activity` | `is_person` (one person's history) |
+| `join_invite` | `is_personal` (a personal link) |
+| `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
+| Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
 
 ## What is never sent
 
@@ -30,8 +53,7 @@ No event is tracked yet: each user action's event comes with its feature, throug
   personalization is off on all of them.
 - **A screen view the SDK makes up**: Android's and Apple's automatic screen reporting are off and gtag sends no
   `page_view`, since the activity, the view controllers and the browser's history don't name the app's screens.
-  Screen views are to come from the shared back stack, the same on every UI; until that is tracked, no build sends
-  any.
+  Screen views come from the shared back stack ([Screen views](#screen-views)), the same on every UI.
 
 ## Consent
 

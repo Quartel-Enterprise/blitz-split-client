@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -16,8 +18,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -40,6 +44,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /*
  * Why: the group's screen: its header, read once, over Despesas, Saldos and Membros, whose pick is this screen's own
@@ -51,6 +56,7 @@ class GroupDetailViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
+    private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeCategoryTree: ObserveCategoryTree,
     teachUseCases: CategoryTeachUseCases,
@@ -81,6 +87,8 @@ class GroupDetailViewModel(
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
                 activityUnreadCount = 0,
+                simplification = null,
+                simplifyConflict = null,
             ),
         )
 
@@ -107,6 +115,12 @@ class GroupDetailViewModel(
      */
     private var categoryTree = CategoryTree.appOnly
     private var showAgain: (() -> Unit)? = null
+
+    // Why: the group as last shown, whose conflict (13.1e) waits until this screen is on top again.
+    private var shownGroup: Group? = null
+
+    // Why: the conflict shows once, not again from an emission that came before its consume landed.
+    private var isConsumingConflict = false
 
     private val teaching = CategoryTeaching(
         groupId = route.groupId,
@@ -147,6 +161,9 @@ class GroupDetailViewModel(
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
+            .launchIn(viewModelScope)
+        useCases.navigator.backStack
+            .onEach { shownGroup?.let(::showConflict) }
             .launchIn(viewModelScope)
         useCases
             .observeActivityUnreadCount()
@@ -224,6 +241,30 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
+
+            GroupDetailUiEvent.OnSimplifyDebtsInfoClicked -> screen.open(
+                Route.SimplifyDebtsInfo(uiState.value.header.currency),
+            )
+
+            GroupDetailUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
+
+            // Why: Atividade's tab lists both changes, as Android's rail beside the group opens it.
+            GroupDetailUiEvent.OnSimplifyConflictActivityClicked -> {
+                uiState.update { it.copy(simplifyConflict = null) }
+                screen.openHomeTab(HomeTab.ACTIVITY)
+            }
+        }
+    }
+
+    // Why: 13.1e shows once, on whichever screen of the group is on top first.
+    private fun showConflict(group: Group) {
+        if (!screen.isOnTop() || isConsumingConflict) return
+        val notice = SimplifyDebtsConflicts.noticeOrNull(group) ?: return
+        isConsumingConflict = true
+        uiState.update { it.copy(simplifyConflict = notice) }
+        viewModelScope.launch {
+            consumeSimplifyDebtsConflict(route.groupId)
+            isConsumingConflict = false
         }
     }
 
@@ -234,6 +275,8 @@ class GroupDetailViewModel(
         balances: GroupBalances,
     ) {
         showAgain = { show(group, expenses, settlements, balances) }
+        shownGroup = group
+        showConflict(group)
         val timeZone = currentTimeZone()
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
@@ -267,9 +310,10 @@ class GroupDetailViewModel(
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
                     .sortedBy { debt -> debt.fromMemberId != meId }
-                    .map { debt -> debtRowOf(debt, group, meId) },
-                otherDebts = others.map { debt -> debtRowOf(debt, group, meId) },
+                    .map { debt -> debtRowOf(debt, group, meId, balances) },
+                otherDebts = others.map { debt -> debtRowOf(debt, group, meId, balances) },
                 hasBills = balances.hasBills,
+                simplification = DebtSimplificationSummary.ofOrNull(balances),
                 isLoaded = true,
             )
         }

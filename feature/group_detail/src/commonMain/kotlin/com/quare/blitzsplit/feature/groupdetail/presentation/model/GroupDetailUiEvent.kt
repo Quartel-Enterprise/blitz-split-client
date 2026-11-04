@@ -93,4 +93,13 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
     data object OnProtectAccessClicked : GroupDetailUiEvent
+
+    // Why: "Como funciona" on Saldos' "Dívidas simplificadas" (13.4).
+    data object OnSimplifyDebtsInfoClicked : GroupDetailUiEvent
+
+    // Why: the notice of 13.1e went away.
+    data object OnSimplifyConflictDismissed : GroupDetailUiEvent
+
+    // Why: its "Ver na Atividade".
+    data object OnSimplifyConflictActivityClicked : GroupDetailUiEvent
 }

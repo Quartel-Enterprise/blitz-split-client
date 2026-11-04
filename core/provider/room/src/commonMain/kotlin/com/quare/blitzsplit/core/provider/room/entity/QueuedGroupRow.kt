@@ -7,4 +7,7 @@ data class QueuedGroupRow(
     val type: String,
     val isNew: Boolean,
     val updatedAt: Long,
+    // Why: "Simplificar dívidas" changed here and not up yet, "Você ligou Simplificar dívidas" waiting to go up.
+    val simplifyDebtsPending: Boolean,
+    val simplifyDebts: Boolean,
 )

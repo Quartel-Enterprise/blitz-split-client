@@ -12,6 +12,7 @@ import { LoadingRegion, SkeletonCard, SkeletonRows } from '@/components/ui/skele
 import { balanceTone, nameOrFormer, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
+import { SimplifiedBadge } from '@/features/simplify-debts/SimplifyIcon'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -427,6 +428,7 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
                   <GroupAvatar initials={group.initials} color={group.color} className="size-6 shrink-0 rounded-md text-[10px]" />
                   <span className="truncate">{group.name}</span>
                 </button>
+                {group.isSimplified && <SimplifiedBadge className="mb-1.5 ml-[34px]" />}
               </td>
               <td className="px-4 text-muted-foreground">{t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}</td>
               <td className={cn('px-4 text-right tabular-nums', balanceTone(group.amountMinor))}>{signed(group.amountMinor)}</td>

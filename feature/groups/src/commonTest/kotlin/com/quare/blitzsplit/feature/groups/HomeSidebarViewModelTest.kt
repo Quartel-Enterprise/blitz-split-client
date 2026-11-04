@@ -603,6 +603,10 @@ class HomeSidebarViewModelTest {
         isCreatedByMe = true,
         defaultSplit = null,
         updatedAt = updatedAt,
+        simplifiesDebts = false,
+        isSimplifyDebtsPending = false,
+        simplifyDebtsChangedBy = null,
+        simplifyDebtsConflictBy = null,
     )
 
     private fun member(name: String): GroupMember = GroupMember(

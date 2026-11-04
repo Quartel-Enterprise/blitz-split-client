@@ -49,6 +49,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
+import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
@@ -76,6 +77,10 @@ internal fun iconOf(type: ActivityType): ImageVector = when (type) {
     ActivityType.CHARGES -> Icons.AutoMirrored.Outlined.Send
 }
 
+// Why: "Simplificar dívidas" draws its own icon (13.7), a drawable rather than one of Material's.
+private val ActivityItem.isSimplifyBadge: Boolean
+    get() = kind == ActivityKind.SIMPLIFY_DEBTS_CHANGED && !isTargetDeleted
+
 @Composable
 private fun badgeColorsOf(item: ActivityItem): Pair<Color, Color> {
     val colors = MaterialTheme.colorScheme
@@ -86,6 +91,8 @@ private fun badgeColorsOf(item: ActivityItem): Pair<Color, Color> {
             colors.primaryContainer to colors.onPrimaryContainer
 
         item.kind.type == ActivityType.PAYMENTS -> colors.tertiaryContainer to colors.onTertiaryContainer
+
+        item.kind == ActivityKind.SIMPLIFY_DEBTS_CHANGED -> colors.secondaryContainer to colors.onSecondaryContainer
 
         else -> colors.surfaceContainerHigh to colors.onSurfaceVariant
     }
@@ -127,7 +134,7 @@ internal fun ActorAvatarIcon(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = iconOf(item),
+                imageVector = if (item.isSimplifyBadge) simplifyDebtsIcon() else iconOf(item),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
                 tint = content,
@@ -307,7 +314,7 @@ private fun ChangesToggle(
     }
 }
 
-// Why: "Valor  R$ 612,00 → R$ 642,00", one line per field, as the bill's history writes them.
+// Why: "Valor  R$ 612,00 → R$ 642,00", one line per field, as the bill's history writes them; per person for 13.7b.
 @Composable
 internal fun ChangeList(
     item: ActivityItem,
@@ -317,41 +324,59 @@ internal fun ChangeList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        item.changes.forEach { change ->
-            val field = fieldLabelOf(change.field)
-            val before = changeValueTextOf(change.field, change.before)
-            val after = changeValueTextOf(change.field, change.after)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics(mergeDescendants = true) { contentDescription = "$field: $before → $after" },
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = field,
-                    modifier = Modifier.width(96.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = before,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = "→",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = after,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+        val simplification = item.simplification
+        if (simplification != null) {
+            SimplificationChangeList(
+                item = item,
+                simplification = simplification,
+            )
+            return@Column
         }
+        item.changes.forEach { change ->
+            ChangeLineRow(
+                label = fieldLabelOf(change.field),
+                before = changeValueTextOf(change.field, change.before),
+                after = changeValueTextOf(change.field, change.after),
+            )
+        }
+    }
+}
+
+@Composable
+internal fun ChangeLineRow(
+    label: String,
+    before: String,
+    after: String,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) { contentDescription = "$label: $before → $after" },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.width(96.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = before,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "→",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = after,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 

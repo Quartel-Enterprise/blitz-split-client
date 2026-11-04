@@ -26,6 +26,38 @@ enum class PushMessage(
     SETTLE_REMINDERS("settle_reminders", R.string.push_settle_reminders, PushChannel.SETTLE_REMINDERS),
     ADDED_TO_GROUP("added_to_group", R.string.push_added_to_group, PushChannel.INVITES),
     MEMBER_JOINED("member_joined", R.string.push_member_joined, PushChannel.INVITES),
+
+    // Why: "Simplificar dívidas" turned on or off (13.7), who now pays you, whom you now pay or neither.
+    DEBTS_SIMPLIFIED_TO_YOU(
+        "debts_simplified_to_you",
+        R.string.push_debts_simplified_to_you,
+        PushChannel.SETTLE_REMINDERS,
+    ),
+    DEBTS_SIMPLIFIED_FROM_YOU(
+        "debts_simplified_from_you",
+        R.string.push_debts_simplified_from_you,
+        PushChannel.SETTLE_REMINDERS,
+    ),
+    DEBTS_SIMPLIFIED_OTHER(
+        "debts_simplified_other",
+        R.string.push_debts_simplified_other,
+        PushChannel.SETTLE_REMINDERS,
+    ),
+    DEBTS_UNSIMPLIFIED_TO_YOU(
+        "debts_unsimplified_to_you",
+        R.string.push_debts_unsimplified_to_you,
+        PushChannel.SETTLE_REMINDERS,
+    ),
+    DEBTS_UNSIMPLIFIED_FROM_YOU(
+        "debts_unsimplified_from_you",
+        R.string.push_debts_unsimplified_from_you,
+        PushChannel.SETTLE_REMINDERS,
+    ),
+    DEBTS_UNSIMPLIFIED_OTHER(
+        "debts_unsimplified_other",
+        R.string.push_debts_unsimplified_other,
+        PushChannel.SETTLE_REMINDERS,
+    ),
     ;
 
     companion object {

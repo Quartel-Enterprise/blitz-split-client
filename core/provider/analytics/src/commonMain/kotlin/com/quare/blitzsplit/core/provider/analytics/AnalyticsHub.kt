@@ -26,7 +26,7 @@ class AnalyticsHub {
         if (attached != null) {
             // Why: the queue attach is still sending goes first, so a newer event never overtakes the opening screen.
             sendPending(attached)
-            attached.logEvent(event.name, event.params)
+            attached.send(event)
             return
         }
         enqueue(event)
@@ -42,7 +42,12 @@ class AnalyticsHub {
     }
 
     private fun sendPending(service: AnalyticsService) {
-        pending.exchange(emptyList()).forEach { event -> service.logEvent(event.name, event.params) }
+        pending.exchange(emptyList()).forEach { event -> service.send(event) }
+    }
+
+    // Why: Analytics only counts what people do: an SDK that throws loses that event, never the tap nor the screen.
+    private fun AnalyticsService.send(event: AnalyticsEvent) {
+        runCatching { logEvent(event.name, event.params) }
     }
 
     private companion object {

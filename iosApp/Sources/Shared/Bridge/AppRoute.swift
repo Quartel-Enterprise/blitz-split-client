@@ -38,6 +38,9 @@ enum AppRoute: Hashable, Identifiable {
     /// The group's default split, pushed inside Edit group's sheet; holds the Kotlin route itself, which its ViewModel
     /// reads the group from.
     case defaultSplit(RouteDefaultSplit)
+    /// "How it works" of "Simplify debts", pushed inside Edit group's sheet or over the group; holds the Kotlin route
+    /// itself, whose currency the example's amounts are in.
+    case simplifyDebtsInfo(RouteSimplifyDebtsInfo)
     /// The group's statistics; holds the Kotlin route itself, which its ViewModel reads the group from.
     case groupStats(RouteGroupStats)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
@@ -85,6 +88,7 @@ enum AppRoute: Hashable, Identifiable {
         case let shareBill as RouteShareBill: self = .shareBill(shareBill)
         case let editGroup as RouteEditGroup: self = .editGroup(editGroup)
         case let defaultSplit as RouteDefaultSplit: self = .defaultSplit(defaultSplit)
+        case let simplifyDebtsInfo as RouteSimplifyDebtsInfo: self = .simplifyDebtsInfo(simplifyDebtsInfo)
         case let groupStats as RouteGroupStats: self = .groupStats(groupStats)
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
@@ -128,7 +132,8 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return !isLargeWindow
             #endif
-        case .joinWithLink, .joinInvite, .search:
+        // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere
+        case .joinWithLink, .joinInvite, .search, .simplifyDebtsInfo:
             #if os(macOS)
             return true
             #else
@@ -152,12 +157,13 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, the
-    /// category map inside Split a bill's (9.0), and on the Mac "Who are you" inside the invite's. From the profile the
+    /// Pushed inside the sheet under it rather than over the window: the default split and "How it works" of Simplify
+    /// debts inside Edit group's sheet, the category map inside Split a bill's (9.0), and on the Mac "Who are you"
+    /// inside the invite's. From the profile the
     /// map is pushed as any screen; the Mac never pushes it, since it lives in Ajustes (`AppModel`).
     var pushesInSheet: Bool {
         switch self {
-        case .defaultSplit, .categoryMap:
+        case .defaultSplit, .categoryMap, .simplifyDebtsInfo:
             return true
         case .joinPick:
             #if os(macOS)

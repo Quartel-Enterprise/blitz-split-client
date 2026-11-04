@@ -187,6 +187,12 @@ struct GroupDetailView: View {
             onShown: { model?.send(GroupDetailUiEventOnRecordedPaymentNoticeShown.shared) },
         )
         .glassToast("Couldn't teach the map. Try again.", trigger: model?.teachErrorCount ?? 0)
+        // "Ana turned it off after you" (13.1e), on whichever of the group's tabs is in front
+        .simplifyConflictBanner(
+            model?.state.simplifyConflict,
+            onActivity: { model?.send(GroupDetailUiEventOnSimplifyConflictActivityClicked.shared) },
+            onDismiss: { model?.send(GroupDetailUiEventOnSimplifyConflictDismissed.shared) },
+        )
         .safeAreaInset(edge: .bottom) {
             // "Teach the map?" belongs to Expenses, the tab the bill landed on
             if let model, model.tab == .expenses, let teach = model.state.teach, !teach.isPickingWord {

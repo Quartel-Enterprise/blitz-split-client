@@ -5,7 +5,8 @@ import { formatMoney, formatNames } from '@/lib/money'
 
 /**
  * Cobrar's message in the page's language, from the debt, the groups and, if wanted, the Pix key; a guest's also says
- * what went into the bill. Once edited, the text typed.
+ * what went into the bill, and a group whose "Simplificar dívidas" has them pay you instead of someone else explains it
+ * (13.6b). Once edited, the text typed.
  */
 export function chargeMessageOf(charge: JsChargeDraft, pixKey: string | null | undefined): string {
   if (charge.editedMessage != null) return charge.editedMessage
@@ -22,5 +23,7 @@ export function chargeMessageOf(charge: JsChargeDraft, pixKey: string | null | u
     : charge.guestPaidMinor != null
       ? t('globalBalances_messageGuestPaid', { ...params, paid: money(charge.guestPaidMinor) })
       : t('globalBalances_messageGuest', params)
-  return charge.includesPixKey && pixKey ? t('globalBalances_messagePix', { message: body, key: pixKey }) : body
+  const reroutes = charge.reroutes.map((reroute) => t('globalBalances_messageReroute', { group: reroute.groupName, names: formatNames(reroute.insteadOfNames) }))
+  const message = [body, ...reroutes].join(' ')
+  return charge.includesPixKey && pixKey ? t('globalBalances_messagePix', { message, key: pixKey }) : message
 }
