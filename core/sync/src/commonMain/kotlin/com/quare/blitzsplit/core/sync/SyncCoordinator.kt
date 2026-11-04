@@ -560,6 +560,8 @@ class SyncCoordinator(
     ) {
         val isPulled = syncLock.withLock {
             suspendRunCatching {
+                // Why: a sign out, an erased profile or another user may have taken the lock first.
+                if (!isSignedInWithProfile(userId)) return@suspendRunCatching true
                 val pull = RemotePull.of(
                     changes = changes,
                     userId = userId,
@@ -570,6 +572,10 @@ class SyncCoordinator(
         }
         if (!isPulled) scope.launch { syncUntilSettled() }
     }
+
+    private suspend fun isSignedInWithProfile(userId: String): Boolean =
+        userIdOrNull(accountRepository.observeStatus().first()) == userId &&
+            profileRepository.observeProfile().first() != null
 
     /*
      * Why: a first download ends with a sync, which never runs offline, so offline its count goes; the account still
