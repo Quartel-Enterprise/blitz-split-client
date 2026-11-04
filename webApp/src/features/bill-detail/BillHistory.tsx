@@ -116,7 +116,7 @@ function HistoryLine({
       <span className="relative size-7 shrink-0">
         <PersonButton
           isRound
-          label={entry.actorIsMe ? t('activity_openMyProfile') : t('activity_openActorProfile', { name: historyActor(entry) })}
+          label={entry.actorIsMe ? t('person_openMyProfile') : t('person_openProfile', { name: historyActor(entry) })}
           onOpen={openActor}
           className="flex"
         >

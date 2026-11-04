@@ -25,7 +25,7 @@ export function ProfileFace({
   return (
     <PersonButton
       onOpen={person ? () => presenter.openPerson(person.id) : null}
-      label={person ? (person.isMe ? t('registerPayment_openMyProfile') : t('registerPayment_openProfile', { name: person.name })) : undefined}
+      label={person ? (person.isMe ? t('person_openMyProfile') : t('person_openProfile', { name: person.name })) : undefined}
       isRound
       className="flex"
     >

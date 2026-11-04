@@ -146,15 +146,23 @@ final class AppModel {
         return Array(windowStack.dropFirst().dropLast(modals + inspected))
     }
 
-    /// An entry drawn outside the window's stack (any sheet, a bill with an iPad's room, the Mac's inspector) under a
-    /// screen it opened (a person's profile from a bill or a payment, item 18): it is never pushed as a page, so it
-    /// closes while that screen shows, with whatever sheet that screen opens over the window, and opens again once it
-    /// is popped. An iPhone pushes the bill.
+    /// A bill drawn outside the window's stack (a sheet with an iPad's room, the Mac's inspector) or Record payment's
+    /// sheet under a screen it opened (a person's profile, item 18): it is never pushed as a page, so it closes while
+    /// that screen shows, with whatever sheet that screen opens over the window, and opens again once it is popped. An
+    /// iPhone pushes the bill. Any other sheet keeps its own way under a pushed screen.
     private func isHiddenUnderScreen(_ route: AppRoute) -> Bool {
-        #if os(macOS)
-        if case .billDetail = route { return root == .home }
-        #endif
-        return presentsAsSheet(route)
+        switch route {
+        case .billDetail:
+            #if os(macOS)
+            return root == .home
+            #else
+            return presentsAsSheet(route)
+            #endif
+        case .registerPayment, .settleUp:
+            return presentsAsSheet(route)
+        default:
+            return false
+        }
     }
 
     /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room, a key on the Mac,

@@ -1974,15 +1974,7 @@ class RegisterPaymentViewModelTest {
 
     // Why: Ana joined with her account, so Saldos keys her by it rather than by her name.
     private val tripWithAnaJoined = trip.copy(
-        members = trip.members.map {
-            if (it.id ==
-                ANA
-            ) {
-                it.copy(userId = ANA_USER)
-            } else {
-                it
-            }
-        },
+        members = trip.members.map { member -> if (member.id == ANA) member.copy(userId = ANA_USER) else member },
     )
 
     private fun member(
