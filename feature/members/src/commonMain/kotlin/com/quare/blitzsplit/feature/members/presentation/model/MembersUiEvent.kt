@@ -22,21 +22,29 @@ sealed interface MembersUiEvent : TrackedUiEvent {
             // Why: the sheet closed, which each platform also does its own way (a swipe, a tap outside).
             OnPersonalInviteDismissed -> EventAnalytics.NotTracked
 
-            OnPersonalLinkCopyClicked -> EventAnalytics.Automatic("personal_invite_copy_clicked")
+            OnPersonalLinkCopyClicked -> EventAnalytics.Automatic(
+                "invite_link_copy_clicked",
+                mapOf("source" to "personal_invite"),
+            )
 
-            OnPersonalLinkShareClicked -> EventAnalytics.Automatic("personal_invite_share_clicked")
+            OnPersonalLinkShareClicked -> EventAnalytics.Automatic(
+                "invite_link_share_clicked",
+                mapOf("source" to "personal_invite"),
+            )
 
             is OnRemoveClicked -> EventAnalytics.Automatic("member_remove_clicked")
 
             OnRemoveConfirmed -> EventAnalytics.Automatic("member_remove_confirmed")
 
-            OnRemoveDismissed -> EventAnalytics.Automatic("member_remove_cancelled")
+            // Why: only a question still open, since Apple's alert also closes itself after Remover.
+            OnRemoveDismissed -> EventAnalytics.Manual("member_remove_cancelled")
 
             is OnReleaseClicked -> EventAnalytics.Automatic("member_release_clicked")
 
             OnReleaseConfirmed -> EventAnalytics.Automatic("member_release_confirmed")
 
-            OnReleaseDismissed -> EventAnalytics.Automatic("member_release_cancelled")
+            // Why: only a question still open and not waiting on the server, which keeps it open until it answers.
+            OnReleaseDismissed -> EventAnalytics.Manual("member_release_cancelled")
 
             is OnDraftChanged -> EventAnalytics.NotTracked
 

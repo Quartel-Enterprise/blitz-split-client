@@ -120,7 +120,7 @@ class InviteViewModel(
 
             InviteUiEvent.OnChangeLinkConfirmed -> changeLink()
 
-            InviteUiEvent.OnChangeLinkDismissed -> uiState.update { it.copy(isConfirmingLinkChange = false) }
+            InviteUiEvent.OnChangeLinkDismissed -> dismissChangeLink()
         }
     }
 
@@ -208,5 +208,11 @@ class InviteViewModel(
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {
         if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
+    }
+
+    private fun dismissChangeLink() {
+        if (!uiState.value.isConfirmingLinkChange) return
+        trackEvent("invite_link_change_cancelled", emptyMap())
+        uiState.update { it.copy(isConfirmingLinkChange = false) }
     }
 }

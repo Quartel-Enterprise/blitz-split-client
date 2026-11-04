@@ -26,7 +26,8 @@ sealed interface InviteUiEvent : TrackedUiEvent {
 
             OnChangeLinkConfirmed -> EventAnalytics.Automatic("invite_link_change_confirmed")
 
-            OnChangeLinkDismissed -> EventAnalytics.Automatic("invite_link_change_cancelled")
+            // Why: only a question still open, since Apple's alert also closes itself after Trocar.
+            OnChangeLinkDismissed -> EventAnalytics.Manual("invite_link_change_cancelled")
         }
 
     data object OnCloseClicked : InviteUiEvent

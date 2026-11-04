@@ -146,7 +146,7 @@ class MembersViewModel(
 
             MembersUiEvent.OnRemoveConfirmed -> remove()
 
-            MembersUiEvent.OnRemoveDismissed -> uiState.update { it.copy(memberToRemove = null) }
+            MembersUiEvent.OnRemoveDismissed -> dismissRemove()
 
             is MembersUiEvent.OnReleaseClicked -> askToRelease(event.memberId)
 
@@ -407,8 +407,17 @@ class MembersViewModel(
     }
 
     // Why: a release on its way can't be called back, so its confirmation waits for the answer.
+    private fun dismissRemove() {
+        if (uiState.value.memberToRemove == null) return
+        trackEvent("member_remove_cancelled", emptyMap())
+        uiState.update { it.copy(memberToRemove = null) }
+    }
+
     private fun dismissRelease() {
-        uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = null) }
+        val state = uiState.value
+        if (state.memberToRelease == null || state.isReleasing) return
+        trackEvent("member_release_cancelled", emptyMap())
+        uiState.update { it.copy(memberToRelease = null) }
     }
 
     // Why: online only, so the confirmation stays open until the server answers, and closes either way.

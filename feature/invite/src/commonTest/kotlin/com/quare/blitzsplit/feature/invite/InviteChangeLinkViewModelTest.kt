@@ -549,6 +549,48 @@ class InviteChangeLinkViewModelTest {
         }
 
     @Test
+    fun `GIVEN the link changed WHEN the Apple alert then closes itself THEN sends no cancelled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_confirmed" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN it is dismissed twice THEN sends one cancelled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+            viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "invite_link_change_clicked" to emptyMap<String, Any>(),
+                    "invite_link_change_cancelled" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
     fun `GIVEN the confirmation open WHEN it is dismissed THEN sends the cancelled event after the tap one`() =
         runTest(testDispatcher) {
             // Given

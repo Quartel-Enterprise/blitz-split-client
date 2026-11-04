@@ -77,9 +77,7 @@ class JoinWithLinkViewModel(
                 uiAction.emit(JoinWithLinkUiAction.OpenCameraSettings)
             }
 
-            JoinWithLinkUiEvent.OnTorchClicked -> uiState.update {
-                it.copy(isTorchOn = !it.isTorchOn && it.showsTorch)
-            }
+            JoinWithLinkUiEvent.OnTorchClicked -> toggleTorch()
 
             is JoinWithLinkUiEvent.OnQrScanned -> scan(event.content)
 
@@ -154,4 +152,9 @@ class JoinWithLinkViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+
+    private fun toggleTorch() {
+        uiState.update { it.copy(isTorchOn = !it.isTorchOn && it.showsTorch) }
+        trackEvent("join_with_link_torch_toggled", mapOf("is_on" to uiState.value.isTorchOn))
+    }
 }

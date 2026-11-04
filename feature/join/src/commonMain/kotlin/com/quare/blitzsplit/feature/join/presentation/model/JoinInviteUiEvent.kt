@@ -10,10 +10,18 @@ sealed interface JoinInviteUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnJoinClicked -> EventAnalytics.Automatic("join_invite_join_clicked")
+
             OnNotMeClicked -> EventAnalytics.Automatic("join_invite_not_me_clicked")
+
             OnNotNowClicked -> EventAnalytics.Automatic("join_invite_not_now_clicked")
+
+            // Why: a back, which each platform also does its own way: where it went is its screen view.
+            OnBackClicked -> EventAnalytics.NotTracked
+
             OnRetryClicked -> EventAnalytics.Automatic("retry_clicked", mapOf("source" to SOURCE))
+
             OnGoHomeClicked -> EventAnalytics.Automatic("join_invite_go_home_clicked")
+
             OnScanAnotherClicked -> EventAnalytics.Automatic("join_invite_scan_another_clicked")
         }
 
@@ -28,6 +36,9 @@ sealed interface JoinInviteUiEvent : TrackedUiEvent {
 
     // Why: "Agora não" and the close button.
     data object OnNotNowClicked : JoinInviteUiEvent
+
+    // Why: Android's system back, which leaves as "Agora não" does but is no tap of it.
+    data object OnBackClicked : JoinInviteUiEvent
 
     // Why: "Tentar de novo", offline.
     data object OnRetryClicked : JoinInviteUiEvent

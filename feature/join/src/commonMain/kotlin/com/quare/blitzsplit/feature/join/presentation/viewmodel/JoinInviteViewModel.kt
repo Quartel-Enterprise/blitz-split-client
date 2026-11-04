@@ -108,7 +108,7 @@ class JoinInviteViewModel(
         when (event) {
             JoinInviteUiEvent.OnJoinClicked -> if (uiState.value.isPersonal) joinAsPersonalMember() else pick()
             JoinInviteUiEvent.OnNotMeClicked -> pick()
-            JoinInviteUiEvent.OnNotNowClicked -> leave()
+            JoinInviteUiEvent.OnNotNowClicked, JoinInviteUiEvent.OnBackClicked -> leave()
             JoinInviteUiEvent.OnRetryClicked -> retry()
             JoinInviteUiEvent.OnGoHomeClicked -> if (isOnTop()) navigator.popTo(1)
             JoinInviteUiEvent.OnScanAnotherClicked -> scanAnother()

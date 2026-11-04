@@ -1498,6 +1498,18 @@ class JoinInviteViewModelTest {
     }
 
     @Test
+    fun `GIVEN the invite on top WHEN the Android back leaves it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN the invite on top WHEN tapping not now THEN sends the not now event`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

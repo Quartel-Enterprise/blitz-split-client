@@ -2833,7 +2833,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     "personal_invite_clicked" to noParams,
-                    "personal_invite_copy_clicked" to noParams,
+                    "invite_link_copy_clicked" to mapOf<String, Any>("source" to "personal_invite"),
                 ),
                 trackedEvents,
             )
@@ -2849,7 +2849,10 @@ class MembersViewModelTest {
             viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
 
             // Then
-            assertEquals(listOf("personal_invite_copy_clicked" to noParams), trackedEvents)
+            assertEquals(
+                listOf("invite_link_copy_clicked" to mapOf<String, Any>("source" to "personal_invite")),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -2866,7 +2869,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     "personal_invite_clicked" to noParams,
-                    "personal_invite_share_clicked" to noParams,
+                    "invite_link_share_clicked" to mapOf<String, Any>("source" to "personal_invite"),
                 ),
                 trackedEvents,
             )
@@ -2908,6 +2911,27 @@ class MembersViewModelTest {
 
             // When
             viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_remove_clicked" to noParams,
+                    "member_remove_confirmed" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla removed WHEN the Apple alert then closes itself THEN sends no cancellation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveDismissed)
 
             // Then
             assertEquals(
@@ -3007,7 +3031,7 @@ class MembersViewModelTest {
         }
 
     @Test
-    fun `GIVEN the server answering the release of Bruno WHEN dismissing it THEN still sends the cancellation`() =
+    fun `GIVEN the server answering the release of Bruno WHEN dismissing it THEN sends no cancellation`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(waitsForServer = true)
@@ -3022,7 +3046,6 @@ class MembersViewModelTest {
                 listOf(
                     "member_release_clicked" to noParams,
                     "member_release_confirmed" to noParams,
-                    "member_release_cancelled" to noParams,
                 ),
                 trackedEvents,
             )

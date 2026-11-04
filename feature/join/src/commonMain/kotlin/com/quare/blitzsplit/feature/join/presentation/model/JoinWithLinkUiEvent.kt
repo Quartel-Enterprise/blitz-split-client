@@ -14,7 +14,8 @@ sealed interface JoinWithLinkUiEvent : TrackedUiEvent {
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("camera_settings_clicked", mapOf("source" to SOURCE))
 
-            OnTorchClicked -> EventAnalytics.Automatic("join_with_link_torch_clicked")
+            // Why: a toggle, sent with where it ended up.
+            OnTorchClicked -> EventAnalytics.Manual("join_with_link_torch_toggled")
 
             // Why: what the camera read, never its content; the invite it opens is a screen view.
             is OnQrScanned -> EventAnalytics.NotTracked

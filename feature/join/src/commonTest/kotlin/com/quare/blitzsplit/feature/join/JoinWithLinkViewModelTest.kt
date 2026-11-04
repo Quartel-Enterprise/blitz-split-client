@@ -1050,22 +1050,21 @@ class JoinWithLinkViewModelTest {
         }
 
     @Test
-    fun `GIVEN a camera with a flashlight WHEN tapping the torch THEN sends the torch event`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
-            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+    fun `GIVEN a camera with a flashlight WHEN tapping the torch THEN sends it toggled on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
-            // When
-            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
 
-            // Then
-            assertEquals(listOf("join_with_link_torch_clicked" to emptyMap<String, Any>()), trackedEvents)
-        }
+        // Then
+        assertEquals(listOf("join_with_link_torch_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+    }
 
     @Test
-    fun `GIVEN a camera without a flashlight WHEN tapping the torch THEN still sends the torch event`() =
+    fun `GIVEN a camera without a flashlight WHEN tapping the torch THEN sends it toggled off`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1076,7 +1075,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
 
             // Then
-            assertEquals(listOf("join_with_link_torch_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf("join_with_link_torch_toggled" to mapOf<String, Any>("is_on" to false)), trackedEvents)
             assertFalse(viewModel.uiState.value.isTorchOn)
         }
 
