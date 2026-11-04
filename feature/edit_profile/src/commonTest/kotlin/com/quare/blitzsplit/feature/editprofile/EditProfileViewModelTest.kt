@@ -45,6 +45,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditProfileViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var account: FakeAccountRepository
@@ -1628,6 +1629,7 @@ class EditProfileViewModelTest {
         if (!holdsSession) heldSession.complete(Unit)
         sessionReads = 0
         viewModel = EditProfileViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             validateDisplayName = ValidateDisplayNameUseCase(),
             loadCropPhoto = LoadCropPhotoUseCase(
                 encodeImage = BillImageEncoder { source ->

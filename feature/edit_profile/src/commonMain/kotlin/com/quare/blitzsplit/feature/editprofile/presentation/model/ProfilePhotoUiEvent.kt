@@ -1,9 +1,32 @@
 package com.quare.blitzsplit.feature.editprofile.presentation.model
 
 import com.quare.blitzsplit.core.model.PhotoCropEvent
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
+import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
-sealed interface ProfilePhotoUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "profile_photo"
+
+sealed interface ProfilePhotoUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: an item the picker handed back that the UI couldn't read, or a close, which nobody tapped to act.
+            OnPhotoUnreadable,
+            OnDismissed,
+            -> EventAnalytics.NotTracked
+
+            // Why: a photo handed back by the camera or the gallery, which the viewer's shortcuts open straight away.
+            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
+
+            is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
+
+            OnPhotoRemoved -> EventAnalytics.Automatic("photo_removed", mapOf("source" to SOURCE))
+
+            // Why: only while the account has a photo to use.
+            OnAccountPhotoSelected -> EventAnalytics.Manual("account_photo_selected")
+        }
+
     // Why: "Tirar foto" and "Galeria" open each platform's own camera or picker, which hands over the file it returned.
     class OnPhotoPicked(
         val source: ByteArray,

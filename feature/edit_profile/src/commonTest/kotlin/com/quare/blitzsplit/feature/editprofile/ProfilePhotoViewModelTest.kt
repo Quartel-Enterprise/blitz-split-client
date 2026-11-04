@@ -41,6 +41,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProfilePhotoViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var account: FakeAccountRepository
@@ -902,6 +903,7 @@ class ProfilePhotoViewModelTest {
         if (!holdsSession) heldSession.complete(Unit)
         avatarEncodings = 0
         viewModel = ProfilePhotoViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             // Why: straight to the repository, so savedProfiles holds exactly what the viewer handed over.
             saveProfile = { profile ->
                 heldSave.await()

@@ -3,9 +3,100 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
-import com.quare.blitzsplit.core.presentation.UiEvent
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ProfileUiEvent : UiEvent {
+// Why: the screen these events come from, as their source param says.
+private const val SOURCE = "profile"
+
+sealed interface ProfileUiEvent : TrackedUiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            // Why: a back, which each platform also does its own way: where it went is its screen view.
+            OnBackClicked -> EventAnalytics.NotTracked
+
+            // Why: what the platform's sign in hands back, which the tap on its button already counted.
+            is OnIdTokenReceived -> EventAnalytics.NotTracked
+
+            OnEditClicked -> EventAnalytics.Automatic("profile_edit_clicked")
+
+            OnAvatarClicked -> EventAnalytics.Automatic("profile_photo_clicked", mapOf("source" to SOURCE))
+
+            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
+
+            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(SOURCE)
+
+            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(SOURCE)
+
+            OnRecoveryCodeClicked -> EventAnalytics.Automatic("profile_recovery_code_clicked")
+
+            OnExportClicked -> EventAnalytics.Automatic("data_export_clicked", mapOf("source" to SOURCE))
+
+            is OnBitcoinInSatsToggled -> EventAnalytics.Automatic("bitcoin_in_sats_toggled", mapOf("is_on" to isOn))
+
+            OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
+
+            OnCategoryMapClicked -> EventAnalytics.Automatic("category_map_clicked", mapOf("source" to SOURCE))
+
+            OnPrivacyPolicyClicked -> EventAnalytics.Automatic("privacy_policy_clicked")
+
+            OnTermsClicked -> EventAnalytics.Automatic("terms_clicked")
+
+            OnCancelScheduledSignOutClicked -> EventAnalytics.Automatic("sign_out_scheduled_cancel_clicked")
+
+            is OnCodeSavedChanged -> EventAnalytics.Automatic(
+                "erase_code_saved_toggled",
+                mapOf("is_checked" to isChecked),
+            )
+
+            /*
+             * Why: each counts only when the profile takes it (nothing signing out or unlinking, the dialog it answers
+             * still open, the row or switch there to tap, another theme), never a late tap.
+             */
+            OnVisibilityInfoClicked -> EventAnalytics.Manual("profile_visibility_info_clicked")
+
+            OnDialogDismissed -> EventAnalytics.Manual("profile_dialog_cancelled")
+
+            OnConnectClicked -> EventAnalytics.Manual("profile_connect_clicked")
+
+            is OnAddPaymentKeyClicked -> EventAnalytics.Manual("payment_key_add_clicked")
+
+            is OnPaymentKeyClicked -> EventAnalytics.Manual("payment_key_clicked")
+
+            OnAccountClicked -> EventAnalytics.Manual("profile_account_clicked")
+
+            OnUnlinkConfirmed -> EventAnalytics.Manual("profile_unlink_confirmed")
+
+            OnDeleteAccountClicked -> EventAnalytics.Manual("profile_delete_account_clicked")
+
+            OnRetrySyncClicked -> EventAnalytics.Manual("sync_retry_clicked")
+
+            is OnThemeSelected -> EventAnalytics.Manual("theme_selected")
+
+            OnAppearanceClicked -> EventAnalytics.Manual("profile_appearance_clicked")
+
+            OnDynamicColorsInfoClicked -> EventAnalytics.Manual("profile_dynamic_colors_info_clicked")
+
+            is OnDynamicColorsToggled -> EventAnalytics.Manual("dynamic_colors_toggled")
+
+            OnCheckForUpdatesClicked -> EventAnalytics.Manual("check_for_updates_clicked")
+
+            OnSignOutClicked -> EventAnalytics.Manual("sign_out_clicked")
+
+            OnSignOutConfirmed -> EventAnalytics.Manual("sign_out_confirmed")
+
+            OnSignOutWhenSyncedClicked -> EventAnalytics.Manual("sign_out_when_synced_clicked")
+
+            OnSignOutNowClicked -> EventAnalytics.Manual("sign_out_now_clicked")
+
+            OnCopyCodeClicked -> EventAnalytics.Manual("erase_code_copy_clicked")
+
+            OnConnectInsteadClicked -> EventAnalytics.Manual("erase_connect_instead_clicked")
+
+            OnEraseConfirmed -> EventAnalytics.Manual("profile_erase_confirmed")
+        }
+
     data object OnBackClicked : ProfileUiEvent
 
     data object OnEditClicked : ProfileUiEvent

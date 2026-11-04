@@ -126,17 +126,17 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 
 | Event | Params | Sent when | Feature |
 | --- | --- | --- | --- |
-| `sign_in_provider_clicked` | `provider` (`google`, `apple`), `source` (`welcome`, `restore`, `recovery_code`) | Google's or Apple's button, before its sign in starts | `:core:presentation` (`SignInAnalytics`), from `:feature:welcome`, `:feature:restore`, `:feature:recovery_code` |
-| `native_sign_in_failed` | `source` | The platform's own sign in sheet failed, which ends the funnel the tap began, so this result counts | `:core:presentation` (`SignInAnalytics`), from the same three |
-| `native_sign_in_cancelled` | `source` | The platform's own sign in sheet was closed | `:core:presentation` (`SignInAnalytics`), from the same three |
+| `sign_in_provider_clicked` | `provider` (`google`, `apple`), `source` (`welcome`, `restore`, `recovery_code`, `profile`) | Google's or Apple's button, before its sign in starts | `:core:presentation` (`SignInAnalytics`), from `:feature:welcome`, `:feature:restore`, `:feature:recovery_code`, `:feature:profile` |
+| `native_sign_in_failed` | `source` (`welcome`, `restore`, `recovery_code`, `profile`) | The platform's own sign in sheet failed, which ends the funnel the tap began, so this result counts | `:core:presentation` (`SignInAnalytics`), from the same four |
+| `native_sign_in_cancelled` | `source` (`welcome`, `restore`, `recovery_code`, `profile`) | The platform's own sign in sheet was closed | `:core:presentation` (`SignInAnalytics`), from the same four |
 | `welcome_use_without_account_clicked` | none | Welcome's "Use without an account" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Welcome's "I've used it on another device" | `:feature:welcome` |
-| `avatar_color_selected` | `color`, `source` (`profile_setup`) | An avatar color picked | `:feature:profile_setup` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail` |
-| `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Adjust photo"'s Rotate | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
-| `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`), `axis` (`horizontal`, `vertical`) | "Adjust photo"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
-| `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Adjust photo"'s Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
-| `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`) | "Adjust photo" closed without Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group` and `:feature:edit_group` |
+| `avatar_color_selected` | `color`, `source` (`profile_setup`, `edit_profile`) | An avatar color picked | `:feature:profile_setup`, `:feature:edit_profile` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`, `edit_profile`, `profile_photo`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:edit_profile` |
+| `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Rotate | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
+| `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`), `axis` (`horizontal`, `vertical`) | "Adjust photo"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
+| `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
+| `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo" closed without Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `profile_setup_continue_clicked` | none | Your profile's Continue | `:feature:profile_setup` |
 | `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`, `contact_merge`) | "Try again" after a failure, and Restore's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:contacts` |
 | `restore_code_submitted` | none | Restore's "Recover" or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
@@ -150,7 +150,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_confirm_toggled` | `is_checked` | Delete account's confirmation checkbox, a change the screen takes (not offline nor while deleting) | `:feature:delete_account` |
 | `delete_account_clicked` | none | Delete account's "Delete account" | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Delete account's Cancel, its back arrow, or a native dismiss | `:feature:delete_account` |
-| `data_export_clicked` | `source` (`delete_account`) | "Export my data" | `:feature:delete_account` |
+| `data_export_clicked` | `source` (`delete_account`, `profile`) | "Export my data" | `:feature:delete_account`, `:feature:profile` |
 | `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
@@ -187,7 +187,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_with_link_open_clicked` | none | "Open invite" or the keyboard's Go, for a link typed; also a Go the screen refuses (a blank field) | `:feature:join` |
 | `group_color_clicked` | `source` (`create_group`) | The group's avatar tapped, stepping its color | `:feature:create_group` |
 | `group_shape_and_color_clicked` | `source` (`create_group`) | Android's "Change the group's shape and color" | `:feature:create_group` |
-| `photo_removed` | `source` (`create_group`) | "Remove photo" | `:feature:create_group` |
+| `photo_removed` | `source` (`create_group`, `edit_profile`, `profile_photo`) | "Remove photo" | `:feature:create_group`, `:feature:edit_profile` |
 | `group_type_selected` | `type`, `source` (`create_group`, `edit_group`) | A group type picked | `:feature:create_group`, `:feature:edit_group` |
 | `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A currency picked, one Edit group takes (not once the group has a bill) | `:feature:create_group`, `:feature:edit_group` |
 | `create_group_add_member_clicked` | none | New group's "Add" (or the keyboard's Done) | `:feature:create_group` |
@@ -201,7 +201,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `search_opened` | `source` (`home`, `groups`, `global_balances`, `activity`, `contacts`) | Search opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
-| `sync_retry_clicked` | `source` (`home`, `groups`) | The sync chip's "try again" | `:feature:groups` |
+| `sync_retry_clicked` | `source` (`home`, `groups`, `profile`) | The sync chip's "try again" | `:feature:groups`, `:feature:profile` |
 | `pull_to_refresh` | `source` (`home`, `groups`, `activity`) | Pulled down on Android and iOS | `:feature:groups`, `:feature:activity` |
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "To get back" or "Owed to you" | `:feature:groups` |
@@ -360,7 +360,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_category_clicked` | none | The icon beside "Description", which opens Category once the categories are read | `:feature:split_bill` |
 | `bill_category_main_toggled` | `is_expanded` | A main category shown or hidden in "All categories" | `:feature:split_bill` |
 | `bill_category_picked` | none | A category picked for the bill (a suggestion, a subcategory, "Only Food", a result, Other), one still there | `:feature:split_bill` |
-| `category_map_clicked` | `source` (`split_bill`) | The "Category map" card | `:feature:split_bill` |
+| `category_map_clicked` | `source` (`split_bill`, `profile`) | The "Category map" card | `:feature:split_bill`, `:feature:profile` |
 | `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
@@ -423,3 +423,38 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_invite_guest_clicked` | none | "Invite Diego" on a guest | `:feature:contacts` |
 | `contact_merge_clicked` | none | "Merge with an account" on a guest | `:feature:contacts` |
 | `contact_merge_cancel_clicked` | none | "Cancel" on "Waiting for Diego to accept" | `:feature:contacts` |
+| `profile_edit_clicked` | none | Profile's card, which opens "Edit profile" | `:feature:profile` |
+| `profile_photo_clicked` | `source` (`profile`, `edit_profile`) | The avatar, which opens the photo big | `:feature:profile`, `:feature:edit_profile` |
+| `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
+| `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
+| `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
+| `privacy_policy_clicked` | none | "Privacy policy" | `:feature:profile` |
+| `terms_clicked` | none | "Terms of use" | `:feature:profile` |
+| `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
+| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Erase the profile from this browser?" | `:feature:profile` |
+| `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
+| `profile_dialog_cancelled` | `dialog` (`visibility_info`, `sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`, `appearance`, `dynamic_colors_info`) | A dialog or sheet of Profile closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
+| `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
+| `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |
+| `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
+| `profile_account_clicked` | none | The Google or Apple row, when "Disconnect your account?" opens | `:feature:profile` |
+| `profile_unlink_confirmed` | none | "Disconnect", while it can disconnect | `:feature:profile` |
+| `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out or unlinks | `:feature:profile` |
+| `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
+| `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
+| `profile_dynamic_colors_info_clicked` | none | The ⓘ of "Dynamic colors", over Appearance | `:feature:profile` |
+| `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
+| `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |
+| `sign_out_clicked` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | "Sign out" or "Erase profile and sign out", with the dialog it opens | `:feature:profile` |
+| `sign_out_confirmed` | none | "Sign out" on "Sign out?", when the sign out starts | `:feature:profile` |
+| `sign_out_when_synced_clicked` | none | "Sign out once synced" | `:feature:profile` |
+| `sign_out_now_clicked` | none | "Sign out now and lose the changes", when the sign out starts | `:feature:profile` |
+| `erase_code_copy_clicked` | none | Copy of the recovery code on "Erase the profile from this browser?" | `:feature:profile` |
+| `erase_connect_instead_clicked` | none | "Connect Google or Apple instead" there, while it can connect | `:feature:profile` |
+| `profile_erase_confirmed` | none | "Erase and sign out", when the erase starts | `:feature:profile` |
+| `account_photo_selected` | `source` (`edit_profile`, `profile_photo`) | "Use Google account photo" or Apple's, while the account has one | `:feature:edit_profile` |
+| `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
+| `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
+| `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
+| `notification_toggled` | `type`, `is_enabled` | A toggle of Notifications, while the toggles take a change | `:feature:notification_settings` |
+| `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |

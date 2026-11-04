@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.profile.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
@@ -15,13 +14,13 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
@@ -31,6 +30,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
@@ -52,14 +52,11 @@ import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
-import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
-import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import com.quare.blitzsplit.feature.profile.presentation.model.UpdateCheckResult
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -105,7 +102,11 @@ class ProfileViewModel(
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
+    // Why: the screen these events come from, as their source param says.
+    private val sourceParams: Map<String, Any> = mapOf("source" to "profile")
+
     val uiState: StateFlow<ProfileUiState>
         field = MutableStateFlow(
             ProfileUiState(
@@ -142,6 +143,9 @@ class ProfileViewModel(
             ),
         )
 
+    // Why: Perfil's dialogs and sheets, which open only while nothing signs out or unlinks.
+    private val dialogs = ProfileDialogs(uiState, trackEvent)
+
     val uiAction: SharedFlow<ProfileUiAction>
         field = MutableSharedFlow<ProfileUiAction>()
 
@@ -156,7 +160,7 @@ class ProfileViewModel(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
             observeThemePreference().onEach { theme -> uiState.update { it.copy(theme = theme) } },
-            observeSyncSummary(
+            uiState.observeSyncSummary(
                 syncState = observeSyncState(),
                 hasPendingProfile = observePendingProfileChanges(),
                 hasPendingKeys = observePendingPaymentKeyChanges(),
@@ -199,45 +203,87 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ProfileUiEvent) {
+    override fun handleEvent(event: ProfileUiEvent) {
         when (event) {
             ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
+
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
+
             ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
-            ProfileUiEvent.OnVisibilityInfoClicked -> showDialog(ProfileDialog.VISIBILITY_INFO)
-            ProfileUiEvent.OnDialogDismissed -> closeDialog()
+
+            ProfileUiEvent.OnVisibilityInfoClicked -> dialogs.openVisibilityInfo()
+
+            ProfileUiEvent.OnDialogDismissed -> dialogs.close()
+
             ProfileUiEvent.OnConnectClicked -> expandConnect()
+
             is ProfileUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
+
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
+
             ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
+
             ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
+
             is ProfileUiEvent.OnAddPaymentKeyClicked -> addPaymentKey(event.method)
+
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
+
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
-            ProfileUiEvent.OnAccountClicked -> openUnlink()
+
+            ProfileUiEvent.OnAccountClicked -> dialogs.openUnlink()
+
             ProfileUiEvent.OnUnlinkConfirmed -> unlink()
+
             ProfileUiEvent.OnExportClicked -> export()
+
             ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
+
             ProfileUiEvent.OnRetrySyncClicked -> retry()
+
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
-            ProfileUiEvent.OnAppearanceClicked -> openAppearance()
-            ProfileUiEvent.OnDynamicColorsInfoClicked -> openDynamicColorsInfo()
+
+            ProfileUiEvent.OnAppearanceClicked -> dialogs.openAppearance()
+
+            ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
+
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
+
             is ProfileUiEvent.OnBitcoinInSatsToggled -> toggleBitcoinInSats(event.isOn)
+
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
+
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
+
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
+
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
+
             ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
-            ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()
-            ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) clearSession()
+
+            ProfileUiEvent.OnSignOutClicked -> dialogs.openSignOut()
+
+            ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT && clearSession()) {
+                trackEvent("sign_out_confirmed", emptyMap())
+            }
+
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
+
             ProfileUiEvent.OnSignOutNowClicked -> signOutNow()
+
             ProfileUiEvent.OnCancelScheduledSignOutClicked -> cancelScheduledSignOut()
+
             is ProfileUiEvent.OnCodeSavedChanged -> confirmCodeSaved(event.isChecked)
+
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
+
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
-            ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE) eraseProfile()
+
+            ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE &&
+                startErasing()
+            ) {
+                trackEvent("profile_erase_confirmed", emptyMap())
+            }
         }
     }
 
@@ -247,6 +293,7 @@ class ProfileViewModel(
      */
     private fun checkForUpdates() {
         if (!uiState.value.showsCheckForUpdates || uiState.value.isCheckingForUpdates) return
+        trackEvent("check_for_updates_clicked", emptyMap())
         uiState.update { it.copy(isCheckingForUpdates = true) }
         viewModelScope.launch {
             val availability = checkForUpdate()
@@ -271,32 +318,6 @@ class ProfileViewModel(
         }
     }
 
-    private fun observeSyncSummary(
-        syncState: Flow<SyncState>,
-        hasPendingProfile: Flow<Boolean>,
-        hasPendingKeys: Flow<Boolean>,
-        hasPendingPreferences: Flow<Boolean>,
-        isOnline: Flow<Boolean>,
-    ): Flow<Unit> = combine(
-        syncState,
-        hasPendingProfile,
-        hasPendingKeys,
-        hasPendingPreferences,
-        isOnline,
-    ) { state, pendingProfile, pendingKeys, pendingPreferences, online ->
-        uiState.update {
-            it.copy(
-                isOnline = online,
-                syncStatus = syncStatusOf(state),
-                pendingChanges = listOfNotNull(
-                    PendingChange.PROFILE.takeIf { pendingProfile },
-                    PendingChange.PAYMENT_KEYS.takeIf { pendingKeys },
-                    PendingChange.NOTIFICATION_PREFERENCES.takeIf { pendingPreferences },
-                ),
-            )
-        }
-    }
-
     private fun updateAccount(account: AccountSnapshot) {
         recoveryCodePrompt = account.recoveryCodePrompt
         val connected = account.status as? AccountStatus.Connected
@@ -315,31 +336,17 @@ class ProfileViewModel(
     }
 
     // Why: SYNCED draws nothing; PENDING waits for the connection, or for the next sync, which is imminent online.
-    private fun syncStatusOf(syncState: SyncState): ProfileSyncStatus? = when (syncState) {
-        SyncState.SYNCED -> null
-        SyncState.PENDING -> ProfileSyncStatus.WAITING
-        SyncState.SYNCING -> ProfileSyncStatus.SYNCING
-        SyncState.FAILED -> ProfileSyncStatus.FAILED
-    }
-
-    /*
-     * Why: without Google or Apple the profile only comes back with the recovery code, so erasing asks for it to be
-     * kept. With an account, changes that haven't gone up would be lost, so the sign out waits for them.
-     */
-    private fun signOutDialogOf(state: ProfileUiState): ProfileDialog = when {
-        !state.hasAccount -> ProfileDialog.ERASE_PROFILE
-        state.pendingChangeCount > 0 -> ProfileDialog.SIGN_OUT_PENDING
-        else -> ProfileDialog.SIGN_OUT
-    }
-
     private fun addPaymentKey(method: PaymentMethod) {
-        if (uiState.value.canAddPaymentKey) openPaymentKey(method, keyId = null)
+        if (!uiState.value.canAddPaymentKey) return
+        trackEvent("payment_key_add_clicked", mapOf("method" to method))
+        openPaymentKey(method, keyId = null)
     }
 
     private fun openSavedPaymentKey(keyId: String) {
         val key = uiState.value.paymentKeys
             .valueOrNull()
             ?.find { it.id == keyId } ?: return
+        trackEvent("payment_key_clicked", mapOf("method" to key.type.method))
         openPaymentKey(key.type.method, keyId)
     }
 
@@ -376,24 +383,14 @@ class ProfileViewModel(
     }
 
     private fun retry() {
-        if (uiState.value.canRetrySync) retrySync()
+        if (!uiState.value.canRetrySync) return
+        trackEvent("sync_retry_clicked", sourceParams)
+        retrySync()
     }
 
     private fun selectTheme(theme: ThemePreference) {
+        if (theme != uiState.value.theme) trackEvent("theme_selected", mapOf("theme" to theme))
         viewModelScope.launch { updateThemePreference(theme) }
-    }
-
-    // Why: the theme picked shows only once it was read, never the default guessed.
-    private fun openAppearance() {
-        if (uiState.value.isLoaded) showDialog(ProfileDialog.APPEARANCE)
-    }
-
-    // Why: only where the switch it explains shows, and over Aparência, where its button is.
-    private fun openDynamicColorsInfo() {
-        val state = uiState.value
-        if (state.showsDynamicColors && state.dialog == ProfileDialog.APPEARANCE) {
-            showDialog(ProfileDialog.DYNAMIC_COLORS_INFO)
-        }
     }
 
     private fun toggleBitcoinInSats(isOn: Boolean) {
@@ -403,6 +400,7 @@ class ProfileViewModel(
     // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.
     private fun toggleDynamicColors(isOn: Boolean) {
         if (!uiState.value.showsDynamicColors) return
+        trackEvent("dynamic_colors_toggled", mapOf("is_on" to isOn))
         viewModelScope.launch { updateDynamicColors(isOn) }
     }
 
@@ -415,15 +413,20 @@ class ProfileViewModel(
     }
 
     private fun copyCode() {
-        uiState.value.formattedRecoveryCode?.let { code -> emit(ProfileUiAction.CopyToClipboard(code)) }
+        val code = uiState.value.formattedRecoveryCode ?: return
+        trackEvent("erase_code_copy_clicked", emptyMap())
+        emit(ProfileUiAction.CopyToClipboard(code))
     }
 
     private fun expandConnect() {
-        if (uiState.value.canConnect) providerConnector.expand()
+        if (!uiState.value.canConnect) return
+        trackEvent("profile_connect_clicked", emptyMap())
+        providerConnector.expand()
     }
 
     private fun connectInstead() {
         if (!uiState.value.canConnect) return
+        trackEvent("erase_connect_instead_clicked", emptyMap())
         uiState.update {
             it.copy(
                 dialog = null,
@@ -435,49 +438,13 @@ class ProfileViewModel(
         providerConnector.expand()
     }
 
-    private fun showSignOutDialog() {
-        val state = uiState.value
-        if (!state.canSignOut) return
-        showDialog(signOutDialogOf(state))
-    }
-
-    // Why: a sign out or unlink under way keeps its dialog, which shows how it ends.
-    private fun showDialog(dialog: ProfileDialog) {
-        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
-        uiState.update {
-            it.copy(
-                dialog = dialog,
-                hasConfirmedCodeSaved = false,
-                hasSignOutFailed = false,
-                hasUnlinkFailed = false,
-            )
-        }
-    }
-
     // Why: the dynamic colors' explanation opens over Aparência, so closing it leaves Aparência open.
-    private fun closeDialog() {
-        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
-        uiState.update {
-            it.copy(
-                dialog = if (it.dialog == ProfileDialog.DYNAMIC_COLORS_INFO) ProfileDialog.APPEARANCE else null,
-                hasConfirmedCodeSaved = false,
-                hasSignOutFailed = false,
-                hasUnlinkFailed = false,
-            )
-        }
-    }
-
-    // Why: a sign out on its way would end the account the unlink keeps, so the row waits for it.
-    private fun openUnlink() {
-        val state = uiState.value
-        if (state.hasAccount && !state.isSignOutScheduled) showDialog(ProfileDialog.UNLINK_ACCOUNT)
-    }
-
     // Why: an unlink or sign out under way, or one scheduled, changes the account the deletion would name.
     private fun openDeleteAccount() {
         val state = uiState.value
         val isBusy = state.isUnlinking || state.isSigningOut || state.isSignOutScheduled
         if (state.showsDeleteAccount && !isBusy) {
+            trackEvent("profile_delete_account_clicked", emptyMap())
             navigator.navigate(Route.DeleteAccount)
         }
     }
@@ -489,6 +456,7 @@ class ProfileViewModel(
     private fun unlink() {
         val state = uiState.value
         if (state.dialog != ProfileDialog.UNLINK_ACCOUNT || !state.canUnlink) return
+        trackEvent("profile_unlink_confirmed", emptyMap())
         uiState.update {
             it.copy(
                 isUnlinking = true,
@@ -516,6 +484,7 @@ class ProfileViewModel(
 
     private fun scheduleSignOut() {
         if (uiState.value.dialog != ProfileDialog.SIGN_OUT_PENDING) return
+        trackEvent("sign_out_when_synced_clicked", emptyMap())
         signOutWhenSynced()
         uiState.update {
             it.copy(
@@ -526,17 +495,17 @@ class ProfileViewModel(
     }
 
     private fun signOutNow() {
-        if (uiState.value.dialog == ProfileDialog.SIGN_OUT_PENDING) clearSession()
+        if (uiState.value.dialog == ProfileDialog.SIGN_OUT_PENDING && clearSession()) {
+            trackEvent("sign_out_now_clicked", emptyMap())
+        }
     }
 
-    private fun eraseProfile() {
-        if (!uiState.value.canErase) return
-        clearSession()
-    }
+    private fun startErasing(): Boolean = uiState.value.canErase && clearSession()
 
     // Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here.
-    private fun clearSession() {
-        if (uiState.value.isSigningOut) return
+    // Why: says whether it started, which the sign out's and the erase's Analytics count.
+    private fun clearSession(): Boolean {
+        if (uiState.value.isSigningOut) return false
         uiState.update {
             it.copy(
                 isSigningOut = true,
@@ -553,6 +522,7 @@ class ProfileViewModel(
                 }
             }
         }
+        return true
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

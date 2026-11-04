@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -9,6 +8,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
@@ -36,7 +37,8 @@ class EditProfileViewModel(
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
     observeAccountPhoto: ObserveAccountPhoto,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<EditProfileUiEvent>(trackEvent) {
     val uiState: StateFlow<EditProfileUiState>
         field = MutableStateFlow(
             EditProfileUiState(
@@ -93,20 +95,35 @@ class EditProfileViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: EditProfileUiEvent) {
-        // Why: the form takes edits only once it holds the saved profile, which would otherwise replace them.
-        if (!uiState.value.isLoaded && event != EditProfileUiEvent.OnBackClicked) return
+    // Why: the form takes edits only once it holds the saved profile, which would otherwise replace them.
+    override fun isAccepted(event: EditProfileUiEvent): Boolean =
+        uiState.value.isLoaded || event == EditProfileUiEvent.OnBackClicked
+
+    override fun handleEvent(event: EditProfileUiEvent) {
         when (event) {
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
+
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
+
             is EditProfileUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+
             is EditProfileUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
+
             EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
+
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
+
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
+
             EditProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
-            EditProfileUiEvent.OnSaveClicked -> save()
+
+            EditProfileUiEvent.OnSaveClicked -> {
+                trackEvent("edit_profile_save_clicked", emptyMap())
+                save()
+            }
+
             EditProfileUiEvent.OnDiscardClicked -> discard()
+
             EditProfileUiEvent.OnBackClicked -> navigator.navigateBack()
         }
     }
@@ -132,6 +149,7 @@ class EditProfileViewModel(
 
     private fun discard() {
         val profile = saved ?: return
+        trackEvent("edit_profile_discard_clicked", emptyMap())
         photoPicker.cancel()
         uiState.update {
             it.withProfile(profile).copy(
@@ -145,6 +163,7 @@ class EditProfileViewModel(
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
         if (uiState.value.isSaving) return
+        trackEvent("account_photo_selected", mapOf("source" to "edit_profile"))
         photoPicker.cancel()
         edit {
             it.copy(
@@ -157,6 +176,7 @@ class EditProfileViewModel(
 
     private fun removePhoto() {
         if (uiState.value.isSaving) return
+        trackEvent("photo_removed", mapOf("source" to "edit_profile"))
         photoPicker.cancel()
         edit {
             it.copy(
@@ -207,6 +227,7 @@ class EditProfileViewModel(
                 photo = state.photo,
             )
             saveProfile(profile)
+            trackEvent("profile_saved", mapOf("has_photo" to (profile.photo != null)))
             saved = profile
             // Why: what was typed while saving stays, compared with what was just saved.
             edit { it.copy(isSaving = false) }

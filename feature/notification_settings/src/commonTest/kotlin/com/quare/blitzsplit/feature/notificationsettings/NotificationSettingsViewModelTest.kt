@@ -32,6 +32,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class NotificationSettingsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var preferences: FakeNotificationPreferencesRepository
     private lateinit var navigator: BackStackNavigator
@@ -391,6 +392,7 @@ class NotificationSettingsViewModelTest {
             if (!insideProfile) it.navigate(Route.NotificationSettings)
         }
         viewModel = NotificationSettingsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             updateNotificationPreference = UpdateNotificationPreferenceUseCase(preferences),
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),

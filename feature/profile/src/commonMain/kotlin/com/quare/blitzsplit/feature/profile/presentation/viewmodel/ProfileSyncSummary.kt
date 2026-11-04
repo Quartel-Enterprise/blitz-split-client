@@ -1,0 +1,44 @@
+package com.quare.blitzsplit.feature.profile.presentation.viewmodel
+
+import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
+import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
+import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
+
+// Why: "Conta e sincronização"'s status and what still waits to go up, as each source answers.
+internal fun MutableStateFlow<ProfileUiState>.observeSyncSummary(
+    syncState: Flow<SyncState>,
+    hasPendingProfile: Flow<Boolean>,
+    hasPendingKeys: Flow<Boolean>,
+    hasPendingPreferences: Flow<Boolean>,
+    isOnline: Flow<Boolean>,
+): Flow<Unit> = combine(
+    syncState,
+    hasPendingProfile,
+    hasPendingKeys,
+    hasPendingPreferences,
+    isOnline,
+) { state, pendingProfile, pendingKeys, pendingPreferences, online ->
+    update {
+        it.copy(
+            isOnline = online,
+            syncStatus = syncStatusOf(state),
+            pendingChanges = listOfNotNull(
+                PendingChange.PROFILE.takeIf { pendingProfile },
+                PendingChange.PAYMENT_KEYS.takeIf { pendingKeys },
+                PendingChange.NOTIFICATION_PREFERENCES.takeIf { pendingPreferences },
+            ),
+        )
+    }
+}
+
+private fun syncStatusOf(syncState: SyncState): ProfileSyncStatus? = when (syncState) {
+    SyncState.SYNCED -> null
+    SyncState.PENDING -> ProfileSyncStatus.WAITING
+    SyncState.SYNCING -> ProfileSyncStatus.SYNCING
+    SyncState.FAILED -> ProfileSyncStatus.FAILED
+}

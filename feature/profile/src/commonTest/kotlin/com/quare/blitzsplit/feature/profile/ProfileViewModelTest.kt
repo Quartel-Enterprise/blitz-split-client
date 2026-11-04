@@ -89,6 +89,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProfileViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -4528,6 +4529,7 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
