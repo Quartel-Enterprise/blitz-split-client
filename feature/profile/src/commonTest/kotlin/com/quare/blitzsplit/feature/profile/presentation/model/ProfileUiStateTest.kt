@@ -538,6 +538,8 @@ class ProfileUiStateTest {
         paymentKeys = emptyList<PaymentKeyItem>().toLoaded(),
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,
+        showsDynamicColors = true,
+        usesDynamicColors = false,
         activeNotificationCount = 3.toLoaded(),
         dialog = null,
         hasConfirmedCodeSaved = hasConfirmedCodeSaved,

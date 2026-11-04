@@ -62,14 +62,6 @@ internal fun PaymentKeysSkeleton() {
     }
 }
 
-// Why: the theme's three segments until the stored one was read, never the default picked first.
-@Composable
-internal fun ThemePickerSkeleton(modifier: Modifier = Modifier) {
-    ShimmerBox(modifier = modifier) {
-        ShimmerLine(height = 40.dp)
-    }
-}
-
 // Why: a short value of a row ("3 ativas") while it is read.
 @Composable
 internal fun ProfileValueSkeleton() {

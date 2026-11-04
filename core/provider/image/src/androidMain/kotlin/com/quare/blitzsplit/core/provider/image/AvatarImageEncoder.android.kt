@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
@@ -12,24 +13,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
+import kotlin.math.hypot
 
 internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AndroidAvatarImageEncoder()
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = AndroidBillImageEncoder()
 
 internal class AndroidAvatarImageEncoder : AvatarImageEncoder {
-    override suspend fun invoke(source: ByteArray): ByteArray = withContext(Dispatchers.Default) {
-        // Why: decoding a 12 MP photo whole only to shrink it to 512 would waste ~48 MB of memory.
-        val decoded = decode(source) { width, height -> sampleSizeFor(minOf(width, height), AVATAR_SIZE_PX) }
-        val output = decoded.createOnWhite(decoded.getCenteredSquare(), AVATAR_SIZE_PX, AVATAR_SIZE_PX)
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+    ): ByteArray = withContext(Dispatchers.Default) {
+        // Why: decoded whole, since the transform is in the photo's own pixels and the editor's is at most 1600 px.
+        var photo = decode(source) { _, _ -> 1 }
+        val matrix = transform.toMatrix()
+        /*
+         * Why: bilinear filtering only blends neighbors, so shrinking 1600 px to 512 in one pass aliases hair and
+         * text. Halved first until the last pass shrinks by half at most, as Apple's and the web's smoothing do.
+         */
+        while (matrix.findScale() < HALF && photo.width > 1 && photo.height > 1) {
+            val halved = Bitmap.createScaledBitmap(photo, photo.width / 2, photo.height / 2, true)
+            matrix.preScale(photo.width.toFloat() / halved.width, photo.height.toFloat() / halved.height)
+            photo.recycle()
+            photo = halved
+        }
+        val output = Bitmap.createBitmap(AVATAR_SIZE_PX, AVATAR_SIZE_PX, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        canvas.drawColor(Color.WHITE)
+        canvas.drawBitmap(photo, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+        photo.recycle()
         output.toJpeg(AVATAR_JPEG_QUALITY).also { output.recycle() }
     }
 
-    private fun Bitmap.getCenteredSquare(): Rect {
-        val side = minOf(width, height)
-        val left = (width - side) / 2
-        val top = (height - side) / 2
-        return Rect(left, top, left + side, top + side)
+    // Why: how much the matrix scales a length, the same whatever quarter turn or mirror it holds.
+    private fun Matrix.findScale(): Float {
+        val values = FloatArray(MATRIX_VALUES).also(::getValues)
+        return hypot(values[Matrix.MSCALE_X], values[Matrix.MSKEW_Y])
+    }
+
+    private companion object {
+        const val HALF = 0.5f
+        const val MATRIX_VALUES = 9
+    }
+
+    private fun CropTransform.toMatrix(): Matrix = Matrix().apply {
+        setValues(
+            floatArrayOf(
+                scaleX.toFloat(),
+                skewX.toFloat(),
+                translateX.toFloat(),
+                skewY.toFloat(),
+                scaleY.toFloat(),
+                translateY.toFloat(),
+                0f,
+                0f,
+                1f,
+            ),
+        )
     }
 }
 

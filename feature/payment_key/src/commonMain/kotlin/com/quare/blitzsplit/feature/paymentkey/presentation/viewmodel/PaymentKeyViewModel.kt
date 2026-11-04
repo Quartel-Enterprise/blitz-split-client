@@ -61,6 +61,9 @@ class PaymentKeyViewModel(
     // Why: the user's other keys, so the same key can't be saved twice, and whose default this one would replace.
     private var otherKeys: List<PaymentKey> = emptyList()
     private var validValue: String? = null
+
+    // Why: each type keeps what was typed in it, so picking another type never carries a phone into CPF or email.
+    private val drafts = mutableMapOf<PaymentKeyType, Draft>()
     private var isErrorRevealed = false
 
     // Why: these aren't a key half typed but the wrong thing altogether, so they show right away.
@@ -118,6 +121,8 @@ class PaymentKeyViewModel(
         val ofMethod = otherKeys.filter { it.type.method == route.method }
         val state = uiState.value
         if (!state.isLoaded && edited != null) {
+            // Why: the saved key replaces whatever a type picked before it loaded held, so no draft outlives it.
+            drafts.clear()
             isErrorRevealed = true
             uiState.update {
                 it.copy(
@@ -150,8 +155,11 @@ class PaymentKeyViewModel(
 
     private fun selectType(type: PaymentKeyType) {
         if (type.method != route.method || type == uiState.value.type) return
-        isErrorRevealed = false
-        val input = formatPaymentKeyInput(type, uiState.value.input)
+        drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed)
+        val draft = drafts[type]
+        val input = formatPaymentKeyInput(type, draft?.input.orEmpty())
+        // Why: a type's own draft comes back as it was left, its error shown again only if it was showing then.
+        isErrorRevealed = input.text.isNotBlank() && (draft?.isErrorRevealed == true || input.isComplete)
         uiState.update {
             it.copy(
                 type = type,
@@ -159,7 +167,6 @@ class PaymentKeyViewModel(
                 hasSwitchedNetwork = false,
             )
         }
-        if (input.isComplete) isErrorRevealed = true
         validate()
     }
 
@@ -184,7 +191,11 @@ class PaymentKeyViewModel(
         val type = detected ?: state.type
         val input =
             formatPaymentKeyInput(type, toInputAfterErase(state.input, raw, type, isSwitched = detected != null))
-        if (detected != null) isErrorRevealed = false
+        // Why: what was typed moved to the type detected, while a paste replaced the field, so what it held stays.
+        if (detected != null) {
+            if (isPaste) drafts[state.type] = Draft(state.input, isErrorRevealed) else drafts.remove(state.type)
+            isErrorRevealed = false
+        }
         if (isPaste || input.isComplete) isErrorRevealed = true
         if (input.text.isBlank()) isErrorRevealed = false
         uiState.update {
@@ -298,4 +309,9 @@ class PaymentKeyViewModel(
     private fun leave() {
         if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
     }
+
+    private data class Draft(
+        val input: String,
+        val isErrorRevealed: Boolean,
+    )
 }

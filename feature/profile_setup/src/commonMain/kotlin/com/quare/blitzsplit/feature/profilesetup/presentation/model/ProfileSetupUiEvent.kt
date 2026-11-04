@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.profilesetup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface ProfileSetupUiEvent : UiEvent {
@@ -18,6 +19,11 @@ sealed interface ProfileSetupUiEvent : UiEvent {
      */
     class OnPhotoPicked(
         val source: ByteArray,
+    ) : ProfileSetupUiEvent
+
+    // Why: what was done in "Ajustar foto", the editor a picked photo opens in.
+    data class OnPhotoCrop(
+        val event: PhotoCropEvent,
     ) : ProfileSetupUiEvent
 
     // Why: the picker returned an item the UI couldn't read, such as a cloud-only photo while offline.

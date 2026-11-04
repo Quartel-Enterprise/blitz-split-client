@@ -23,6 +23,15 @@ class JsCreateGroupState(
     val name: String,
     val initials: String,
     val color: String,
+    // Why: drawn in place of the color and the initials, null for none.
+    val photoUrl: String?,
+    val hasPhoto: Boolean,
+    val isPreparingPhoto: Boolean,
+    val showsPhotoError: Boolean,
+    // Why: the avatar steps its color only while no photo covers it.
+    val canChangeColor: Boolean,
+    // Why: "Ajustar foto" while a picked photo is being framed, null while closed.
+    val photoCrop: JsPhotoCropState?,
     // Why: the GroupType's code ("trip"); types lists them in the order the UIs draw them.
     val type: String,
     val types: Array<String>,
@@ -44,12 +53,21 @@ class CreateGroupPresenter {
     private val holder = ViewModelHolder(CreateGroupViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel
 
+    val crop: PhotoCropPresenter =
+        PhotoCropPresenter { event -> viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(event)) }
+
     fun observeState(onChange: (JsCreateGroupState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsCreateGroupState(
                 name = state.name,
                 initials = state.initials,
                 color = state.color.code,
+                photoUrl = state.photoUrl,
+                hasPhoto = state.hasPhoto,
+                isPreparingPhoto = state.isPreparingPhoto,
+                showsPhotoError = state.showsPhotoError,
+                canChangeColor = state.canChangeColor,
+                photoCrop = state.photoCrop?.toJs(),
                 type = state.type.code,
                 types = state.types.toCodes(),
                 currency = state.currency.code,
@@ -93,6 +111,19 @@ class CreateGroupPresenter {
 
     fun changeColor() {
         viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+    }
+
+    // Why: a Kotlin ByteArray is an Int8Array in JS, so the file's bytes cross without a copy.
+    fun photoPicked(source: ByteArray) {
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(source))
+    }
+
+    fun photoUnreadable() {
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoUnreadable)
+    }
+
+    fun removePhoto() {
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
     }
 
     fun selectType(code: String) {

@@ -117,7 +117,9 @@ struct GoogleButton: View {
                 if isLoading {
                     ProgressView().controlSize(.small)
                 } else {
-                    Text(verbatim: "G").fontWeight(.heavy)
+                    Image(decorative: "GoogleLogo")
+                        .resizable()
+                        .frame(width: 18, height: 18)
                 }
                 Text(title)
             }

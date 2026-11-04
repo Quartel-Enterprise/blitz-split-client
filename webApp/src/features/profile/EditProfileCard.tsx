@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -126,8 +127,8 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
               onChange={(event) => setName(event.target.value)}
             />
             <div className="flex justify-between gap-2 text-xs">
-              <span id="edit-profile-name-help" role={nameError ? 'alert' : undefined} className={nameError ? 'text-destructive' : 'text-muted-foreground'}>
-                {t(nameError ?? 'editProfile_nameHint', { min: state.nameMinLength, max: state.nameMaxLength })}
+              <span id="edit-profile-name-help" role="alert" className="text-destructive">
+                {nameError && t(nameError, { min: state.nameMinLength, max: state.nameMaxLength })}
               </span>
               <span className="text-muted-foreground tabular-nums">
                 {state.nameLength}/{state.nameMaxLength}
@@ -156,6 +157,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
           )}
         </CardFooter>
       </form>
+      {state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="circle" />}
     </Card>
   )
 }

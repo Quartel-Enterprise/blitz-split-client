@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
 
@@ -23,6 +24,8 @@ data class EditGroupUiState(
     val showsPhotoError: Boolean,
     // Why: "Ícone do grupo", open on Android and iOS; null while closed.
     val iconEditor: GroupIconEditor?,
+    // Why: "Ajustar foto" while a picked photo is being framed, drawn over the form in the group's rounded square.
+    val photoCrop: PhotoCropEditor?,
     val type: GroupType,
     val currency: GroupCurrency,
     // Why: "Não muda depois da primeira despesa", once the group has a bill.

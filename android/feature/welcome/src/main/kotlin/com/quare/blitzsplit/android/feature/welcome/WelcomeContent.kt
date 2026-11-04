@@ -39,8 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
-import com.quare.blitzsplit.android.designsystem.component.CurrencyBadgeIcon
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
+import com.quare.blitzsplit.android.designsystem.component.LogoBadgeIcon
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.component.PanelCornerShapesImage
 import com.quare.blitzsplit.android.designsystem.component.ShapeClusterHero
@@ -324,7 +324,7 @@ private fun WelcomePitchPanel(
                     alignment = Alignment.CenterVertically,
                 ),
             ) {
-                CurrencyBadgeIcon()
+                LogoBadgeIcon()
                 Text(
                     text = stringResource(R.string.welcome_title),
                     style = if (isCompact) {

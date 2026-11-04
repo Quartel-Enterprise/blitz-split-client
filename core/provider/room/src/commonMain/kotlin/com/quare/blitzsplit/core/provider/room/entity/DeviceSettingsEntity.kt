@@ -25,4 +25,7 @@ data class DeviceSettingsEntity(
     // Why: "Dia", "Semana", "Mês" or "Ano" in a group's statistics; null until picked on this device.
     @ColumnInfo(defaultValue = "NULL")
     val statsGrain: String?,
+    // Why: Material You (Android 12 and later), the scheme drawn from the wallpaper instead of the brand's; off until turned on.
+    @ColumnInfo(defaultValue = "0")
+    val usesDynamicColors: Boolean,
 )

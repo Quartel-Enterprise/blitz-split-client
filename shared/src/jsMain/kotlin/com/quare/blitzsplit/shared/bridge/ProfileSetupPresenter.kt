@@ -18,6 +18,8 @@ class JsProfileSetupState(
     val photoUrl: String?,
     val isPreparingPhoto: Boolean,
     val showsPhotoError: Boolean,
+    // Why: "Ajustar foto" while a picked photo is being framed, null while closed.
+    val photoCrop: JsPhotoCropState?,
     // Why: null while the name is valid; otherwise the NameError's name.
     val nameError: String?,
     val nameMinLength: Int,
@@ -30,6 +32,9 @@ class ProfileSetupPresenter {
     private val holder = ViewModelHolder(ProfileSetupViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel
 
+    val crop: PhotoCropPresenter =
+        PhotoCropPresenter { event -> viewModel.onEvent(ProfileSetupUiEvent.OnPhotoCrop(event)) }
+
     fun observeState(onChange: (JsProfileSetupState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsProfileSetupState(
@@ -40,6 +45,7 @@ class ProfileSetupPresenter {
                 photoUrl = state.photoUrl,
                 isPreparingPhoto = state.isPreparingPhoto,
                 showsPhotoError = state.showsPhotoError,
+                photoCrop = state.photoCrop?.toJs(),
                 nameError = state.nameError?.name,
                 nameMinLength = state.nameMinLength,
                 nameMaxLength = state.nameMaxLength,

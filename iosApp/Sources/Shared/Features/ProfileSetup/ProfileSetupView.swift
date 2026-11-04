@@ -38,6 +38,7 @@ struct ProfileSetupView: View {
         }
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
+        .photoCrop(model.state.photoCrop, frame: .circle) { model.send(ProfileSetupUiEventOnPhotoCrop(event: $0)) }
     }
 
     @ViewBuilder

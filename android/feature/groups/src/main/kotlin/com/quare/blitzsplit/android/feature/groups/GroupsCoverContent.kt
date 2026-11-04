@@ -38,9 +38,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.quare.blitzsplit.android.designsystem.component.rememberCurrencySymbol
-import com.quare.blitzsplit.android.designsystem.component.toCurrencyFontSize
+import com.quare.blitzsplit.android.designsystem.component.logoIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -107,14 +105,13 @@ internal fun GroupsCoverContent(
     }
 }
 
-// Why: the brand badge (the region's currency symbol), the app's name and, offline, "Offline".
+// Why: the brand badge (the app's logo), the app's name and, offline, "Offline".
 @Composable
 private fun CoverBrandRow(isOffline: Boolean) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val symbol = rememberCurrencySymbol()
         Surface(
             modifier = Modifier.size(22.dp),
             shape = CircleShape,
@@ -122,11 +119,10 @@ private fun CoverBrandRow(isOffline: Boolean) {
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Text(
-                    text = symbol,
-                    fontSize = toCurrencyFontSize(symbol, 9.sp),
-                    fontWeight = FontWeight.ExtraBold,
-                    maxLines = 1,
+                Icon(
+                    imageVector = logoIcon(),
+                    contentDescription = null,
+                    modifier = Modifier.size(13.dp),
                 )
             }
         }
