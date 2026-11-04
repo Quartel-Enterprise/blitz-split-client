@@ -17,6 +17,8 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.SettlingCalculator
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.UtcOffset
+import kotlinx.datetime.asTimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -523,7 +525,8 @@ class SettlingCalculatorTest {
                 brunoOpenDebt,
             ),
             payments = listOf(payment(ANA, PIERRE, 100, "2026-10-11T01:00:00Z")),
-            timeZone = TimeZone.of("America/Sao_Paulo"),
+            // Why: a fixed offset, since the JS target has no time zone database for "America/Sao_Paulo".
+            timeZone = UtcOffset(hours = -3).asTimeZone(),
         )
 
         // When
