@@ -24,7 +24,10 @@ sealed interface CreateGroupUiEvent : TrackedUiEvent {
                 mapOf("source" to SOURCE),
             )
 
-            // Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for it.
+            /*
+             * Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for
+             * it.
+             */
             is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
 
             is OnPhotoCrop -> event.toEventAnalytics(SOURCE)

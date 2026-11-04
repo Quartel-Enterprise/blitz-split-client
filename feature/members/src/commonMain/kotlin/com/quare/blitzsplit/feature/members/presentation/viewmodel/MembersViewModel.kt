@@ -406,13 +406,13 @@ class MembersViewModel(
         if (member.canBeReleased) uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = member) }
     }
 
-    // Why: a release on its way can't be called back, so its confirmation waits for the answer.
     private fun dismissRemove() {
         if (uiState.value.memberToRemove == null) return
         trackEvent("member_remove_cancelled", emptyMap())
         uiState.update { it.copy(memberToRemove = null) }
     }
 
+    // Why: a release on its way can't be called back, so its confirmation waits for the answer.
     private fun dismissRelease() {
         val state = uiState.value
         if (state.memberToRelease == null || state.isReleasing) return

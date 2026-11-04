@@ -9,7 +9,10 @@ private const val SOURCE = "invite"
 sealed interface InviteUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            // Why: a close, which each platform also does its own way (a swipe, back): where it went is its screen view.
+            /*
+             * Why: a close, which each platform also does its own way (a swipe, back): where it went is its screen
+             * view.
+             */
             OnCloseClicked -> EventAnalytics.NotTracked
 
             OnCopyClicked -> EventAnalytics.Automatic("invite_link_copy_clicked", mapOf("source" to SOURCE))
