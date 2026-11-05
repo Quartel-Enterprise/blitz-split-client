@@ -43,4 +43,7 @@ data class DeviceSettingsEntity(
      */
     @ColumnInfo(defaultValue = "NULL")
     val lastNotificationPromptAt: Long?,
+    // Why: the ✕ of Home's "Blitz Split in the app" banner in a phone's browser (14.3), for good on this device.
+    @ColumnInfo(defaultValue = "0")
+    val isAppBannerDismissed: Boolean,
 )

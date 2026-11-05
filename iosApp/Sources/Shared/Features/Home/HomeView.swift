@@ -8,6 +8,8 @@ final class HomeModel {
     private(set) var changeErrorCount = 0
     /// "Notifications on", once the system allows them after not allowing them.
     private(set) var notificationsOnCount = 0
+    /// "We saw you on your phone.", once a sync found the account on a phone app while the Mac's invite showed (14.1c).
+    private(set) var usedOnPhoneCount = 0
     let deletedGroup = DeletedGroupToast()
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createHomeViewModel()
@@ -29,6 +31,7 @@ final class HomeModel {
             switch action {
             case is HomeUiActionShowChangeError: self?.changeErrorCount += 1
             case is HomeUiActionShowNotificationsOn: self?.notificationsOnCount += 1
+            case is HomeUiActionShowUsedOnPhone: self?.usedOnPhoneCount += 1
             case is HomeUiActionRequestNotificationPermission:
                 Task {
                     await PushNotifications.requestPermission()
@@ -366,6 +369,17 @@ struct HomeView: View {
         if let prompt = state.notificationPrompt {
             HomeNotificationCard(prompt: prompt, send: model.send)
         }
+        #if os(macOS)
+        // "Get the app" (page 14): only the Mac and the web invite, after the first bill, one card at a time
+        if state.showsAppInviteCard, let invite = state.appInvite {
+            HomeAppInviteCard(
+                invite: invite,
+                needsAccount: state.appInviteNeedsAccount,
+                accountProvider: state.accountProvider,
+                send: model.send,
+            )
+        }
+        #endif
     }
 
     @ViewBuilder

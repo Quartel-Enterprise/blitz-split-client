@@ -9,4 +9,5 @@ internal data class HomeData(
     val rows: List<GroupRow>,
     val latestExpenses: List<LatestExpense>,
     val pendingChangeCount: Int,
+    val hasBills: Boolean,
 )

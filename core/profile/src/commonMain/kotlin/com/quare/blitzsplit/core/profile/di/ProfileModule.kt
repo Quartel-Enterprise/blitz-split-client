@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.profile.di
 
+import com.quare.blitzsplit.core.profile.data.datasource.AppInviteLocalDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.AppInviteRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.MemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesRemoteDataSource
@@ -9,10 +11,12 @@ import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PushDeviceRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.RoomAppInviteLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomMemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomNotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomProfileLocalDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.SupabaseAppInviteRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseNotificationPreferencesRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabasePaymentKeyRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfilePhotoRemoteDataSource
@@ -26,19 +30,26 @@ import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
 import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapper
 import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapperImpl
+import com.quare.blitzsplit.core.profile.data.repository.AppInviteRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.NotificationPreferencesRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.PaymentKeyRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.ProfileRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.PushDeviceRepositoryImpl
+import com.quare.blitzsplit.core.profile.domain.model.AppStores
+import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
+import com.quare.blitzsplit.core.profile.domain.model.currentClientPlatform
+import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.DetectPaymentKeyType
+import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKeyInput
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -55,9 +66,11 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.DeletePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.DetectPaymentKeyTypeUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.DismissAppInviteUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyInputUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.LoadCropPhotoUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveAppInviteUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
@@ -72,6 +85,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.SetPushDeviceUseCas
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayNameUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.generated.StoreConfig
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -114,4 +128,16 @@ val profileModule = module {
     singleOf(::PushDeviceMapperImpl).bind<PushDeviceMapper>()
     singleOf(::PushDeviceRepositoryImpl).bind<PushDeviceRepository>()
     factoryOf(::SetPushDeviceUseCase).bind<SetPushDevice>()
+    single<ClientPlatform> { currentClientPlatform }
+    single {
+        AppStores(
+            googlePlay = StoreConfig.GOOGLE_PLAY,
+            appStoreId = StoreConfig.APP_STORE_ID.ifBlank { null },
+        )
+    }
+    singleOf(::RoomAppInviteLocalDataSource).bind<AppInviteLocalDataSource>()
+    singleOf(::SupabaseAppInviteRemoteDataSource).bind<AppInviteRemoteDataSource>()
+    singleOf(::AppInviteRepositoryImpl).bind<AppInviteRepository>()
+    factoryOf(::ObserveAppInviteUseCase).bind<ObserveAppInvite>()
+    factoryOf(::DismissAppInviteUseCase).bind<DismissAppInvite>()
 }

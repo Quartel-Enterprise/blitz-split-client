@@ -4,6 +4,8 @@ import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDat
 import com.quare.blitzsplit.core.settings.data.datasource.RoomDeviceSettingsLocalDataSource
 import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsRepositoryImpl
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
@@ -18,6 +20,8 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationP
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.DismissAppBannerUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveAppBannerDismissedUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveBitcoinInSatsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
@@ -54,4 +58,6 @@ val settingsModule = module {
     factoryOf(::UpdateLastUpdatePromptAtUseCase).bind<UpdateLastUpdatePromptAt>()
     factoryOf(::ObserveLastNotificationPromptAtUseCase).bind<ObserveLastNotificationPromptAt>()
     factoryOf(::UpdateLastNotificationPromptAtUseCase).bind<UpdateLastNotificationPromptAt>()
+    factoryOf(::ObserveAppBannerDismissedUseCase).bind<ObserveAppBannerDismissed>()
+    factoryOf(::DismissAppBannerUseCase).bind<DismissAppBanner>()
 }

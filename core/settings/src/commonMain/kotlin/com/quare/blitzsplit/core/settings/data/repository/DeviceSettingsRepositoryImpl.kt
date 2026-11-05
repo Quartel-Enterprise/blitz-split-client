@@ -102,4 +102,13 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun updateLastNotificationPromptAt(epochMillis: Long) {
         local.update { entity -> entity.copy(lastNotificationPromptAt = epochMillis) }
     }
+
+    override fun observeAppBannerDismissed(): Flow<Boolean> = local
+        .observe()
+        .map { entity -> entity?.isAppBannerDismissed == true }
+        .distinctUntilChanged()
+
+    override suspend fun dismissAppBanner() {
+        local.update { entity -> entity.copy(isAppBannerDismissed = true) }
+    }
 }

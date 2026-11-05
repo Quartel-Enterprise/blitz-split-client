@@ -20,6 +20,7 @@ class RoomDeviceSettingsLocalDataSource(
         showsBitcoinInSats = false,
         lastUpdatePromptAt = null,
         lastNotificationPromptAt = null,
+        isAppBannerDismissed = false,
     )
 
     override fun observe(): Flow<DeviceSettingsEntity?> = dao.observe()

@@ -77,6 +77,8 @@ enum AppRoute: Hashable, Identifiable {
     /// "Update available" over wherever the app is; holds the Kotlin route itself, which its ViewModel reads the
     /// App Store's version and page from.
     case inAppUpdate(RouteInAppUpdate)
+    /// "Bora Rachar on iPhone" (14.2), the Mac's only: a sheet over the window, or over Settings from its iPhone row.
+    case appDownload(RouteAppDownload)
 
     init(_ route: any Route) {
         switch route {
@@ -117,6 +119,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteCategoryMap: self = .categoryMap
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         case let inAppUpdate as RouteInAppUpdate: self = .inAppUpdate(inAppUpdate)
+        case let appDownload as RouteAppDownload: self = .appDownload(appDownload)
         default: self = .welcome
         }
     }
@@ -172,7 +175,7 @@ enum AppRoute: Hashable, Identifiable {
     private var isSheetEverywhere: Bool {
         switch self {
         case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
-             .contactInvite, .shareBill, .inAppUpdate: true
+             .contactInvite, .shareBill, .inAppUpdate, .appDownload: true
         default: false
         }
     }
@@ -215,6 +218,8 @@ enum AppRoute: Hashable, Identifiable {
         case .paymentKey, .profilePhoto, .deleteAccount: true
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
+        // Settings' iPhone row opens it there; Home's card over the main window
+        case let .appDownload(route): route.source == .profile
         default: false
         }
         #else

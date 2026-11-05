@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.analytics.screen
 
+import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
@@ -19,6 +20,7 @@ internal val everyRouteKind: List<Route> = listOf(
     Route.CreateGroup,
     Route.EditProfile,
     Route.ProfilePhoto,
+    Route.AppDownload(AppDownloadSource.HOME),
     Route.InAppUpdate(
         versionName = "2.1.0",
         storeUrl = "https://apps.apple.com/app/id1",

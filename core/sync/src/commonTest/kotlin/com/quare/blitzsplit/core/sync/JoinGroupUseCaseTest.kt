@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakeAppInviteRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
@@ -521,6 +522,7 @@ class JoinGroupUseCaseTest {
                 accountRepository = account,
                 profileRepository = profile,
                 paymentKeyRepository = FakePaymentKeyRepository(),
+                appInviteRepository = FakeAppInviteRepository(),
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = groups,
                 groupPinRepository = FakeGroupPinRepository(),

@@ -14,10 +14,8 @@ plugins {
     alias(libs.plugins.kover)
 }
 
-// version.properties is the single source of truth for the app version: Gradle exposes it as the
-// versionName/versionCode project properties and iosApp/project.yml reads the same file.
-val appVersion: Map<String, String> = providers
-    .fileContents(layout.projectDirectory.file("version.properties"))
+fun readProperties(name: String): Map<String, String> = providers
+    .fileContents(layout.projectDirectory.file(name))
     .asText
     .get()
     .lineSequence()
@@ -27,8 +25,13 @@ val appVersion: Map<String, String> = providers
         key.trim() to value.trim()
     }
 
+// version.properties is the single source of truth for the app version: Gradle exposes it as the
+// versionName/versionCode project properties and iosApp/project.yml reads the same file. stores.properties says
+// which stores list the phone app (googlePlay, appStoreId), for "Get the app"; the web's Vite reads it too.
+val sharedProperties: Map<String, String> = readProperties("version.properties") + readProperties("stores.properties")
+
 allprojects {
-    appVersion.forEach { (key, value) -> extra[key] = value }
+    sharedProperties.forEach { (key, value) -> extra[key] = value }
 }
 
 moduleGraphAssert {

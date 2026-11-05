@@ -42,6 +42,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )
@@ -74,6 +75,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )
@@ -100,6 +102,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )
@@ -133,6 +136,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )
@@ -160,6 +164,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )
@@ -193,6 +198,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 showsBitcoinInSats = false,
                 lastUpdatePromptAt = null,
                 lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
             ),
             dataSource.observe().first(),
         )

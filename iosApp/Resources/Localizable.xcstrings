@@ -491,6 +491,26 @@
         }
       }
     },
+    "Add bills right away, wherever you are" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lance na hora, onde estiver"
+          }
+        }
+      }
+    },
+    "Add bills right away, wherever you are, even offline. And get payment notices." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lance na hora, onde estiver, mesmo sem internet. E receba avisos de pagamento."
+          }
+        }
+      }
+    },
     "Add someone without the app" : {
       "comment" : "Invite: opens the group's Members with Add person, for someone who joins by name",
       "localizations" : {
@@ -498,6 +518,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adicionar quem não tem o app"
+          }
+        }
+      }
+    },
+    "Add the bill while you're still at the table, even offline. It syncs once you're back online." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lance a conta ainda na mesa, mesmo sem internet. Sincroniza quando a internet voltar."
           }
         }
       }
@@ -675,6 +705,16 @@
         }
       }
     },
+    "Blitz Split on iPhone" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bora Rachar no iPhone"
+          }
+        }
+      }
+    },
     "Bringing your groups" : {
       "comment" : "Groups: the card in the overall balance's place during a new device's first download",
       "localizations" : {
@@ -768,6 +808,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Círculo"
+          }
+        }
+      }
+    },
+    "Code to download it on the App Store." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código para baixar na App Store."
           }
         }
       }
@@ -944,6 +994,16 @@
         }
       }
     },
+    "Don't show again" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não mostrar mais"
+          }
+        }
+      }
+    },
     "Download" : {
       "localizations" : {
         "pt-BR" : {
@@ -972,6 +1032,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editando comentário"
+          }
+        }
+      }
+    },
+    "Enlarge the QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ampliar o código QR"
           }
         }
       }
@@ -1071,6 +1141,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Comentei em “%1$@”: “%2$@” %3$@"
+          }
+        }
+      }
+    },
+    "I downloaded it" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já baixei"
           }
         }
       }
@@ -1515,6 +1595,16 @@
         }
       }
     },
+    "Know when someone records a payment or asks you to pay." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saiba quando alguém registra um pagamento ou te cobra."
+          }
+        }
+      }
+    },
     "Later" : {
       "comment" : "Pay with a key (4.5): closes without marking",
       "localizations" : {
@@ -1596,6 +1686,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curtidas"
+          }
+        }
+      }
+    },
+    "Link copied" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link copiado"
           }
         }
       }
@@ -1853,6 +1953,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Forma de pagamento"
+          }
+        }
+      }
+    },
+    "Payment notices" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avisos de pagamento"
           }
         }
       }
@@ -2246,6 +2356,16 @@
         }
       }
     },
+    "Point your iPhone's camera at the code. It opens the App Store." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aponte a câmera do iPhone para o código. Ele abre a App Store."
+          }
+        }
+      }
+    },
     "Profile photo" : {
       "comment" : "The profile photo viewer: the photo",
       "localizations" : {
@@ -2278,6 +2398,26 @@
         }
       }
     },
+    "QR code that opens Blitz Split on the App Store" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código QR que abre o Bora Rachar na App Store"
+          }
+        }
+      }
+    },
+    "Right away, wherever you are" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na hora, onde estiver"
+          }
+        }
+      }
+    },
     "Rotate" : {
       "comment" : "Photo editor: turns the photo 90 degrees clockwise",
       "localizations" : {
@@ -2296,6 +2436,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ver despesas"
+          }
+        }
+      }
+    },
+    "Show code…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar código…"
+          }
+        }
+      }
+    },
+    "Sign in on iPhone with the same Apple account and your groups will be there." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre com a mesma conta Apple no iPhone e seus grupos estarão lá."
+          }
+        }
+      }
+    },
+    "Sign in on iPhone with the same Google account and your groups will be there." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre com a mesma conta Google no iPhone e seus grupos estarão lá."
+          }
+        }
+      }
+    },
+    "Sign in to the app with the same Apple account and your groups will be there." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre no app com a mesma conta Apple e seus grupos estarão lá."
+          }
+        }
+      }
+    },
+    "Sign in to the app with the same Google account and your groups will be there." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre no app com a mesma conta Google e seus grupos estarão lá."
+          }
+        }
+      }
+    },
+    "Take Blitz Split on iPhone" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leve o Bora Rachar no iPhone"
+          }
+        }
+      }
+    },
+    "Take your groups to iPhone" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leve seus grupos para o iPhone"
           }
         }
       }
@@ -2355,6 +2565,16 @@
         }
       }
     },
+    "We saw you on your phone. Your groups are already there, and the invite to download the app won't show again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vimos você no celular. Seus grupos já estão lá, e o convite para baixar o app não aparece mais."
+          }
+        }
+      }
+    },
     "When someone asks you to pay" : {
       "localizations" : {
         "pt-BR" : {
@@ -2371,6 +2591,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem entra ou sai dos seus grupos e o que muda neles"
+          }
+        }
+      }
+    },
+    "Without an account, the app on iPhone starts empty. Connect an Apple or Google account in Settings to take your groups." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conta, o app no iPhone começa vazio. Conecte uma conta Apple ou Google em Ajustes para levar seus grupos."
+          }
+        }
+      }
+    },
+    "You already use the app on iPhone." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já usa o app no iPhone."
+          }
+        }
+      }
+    },
+    "You already use the app on your phone." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já usa o app no celular."
           }
         }
       }
@@ -5835,6 +6085,16 @@
         }
       }
     },
+    "You've used the app on your phone since %@. This code always stays in Settings, for when you change iPhones." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já usa o app no celular desde %@. Este código fica sempre em Ajustes, para quando trocar de iPhone."
+          }
+        }
+      }
+    },
     "Your contacts are empty. The invite link works without them." : {
       "comment" : "Invite from contacts: the agenda was read and holds nobody",
       "localizations" : {
@@ -5842,6 +6102,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sua agenda está vazia. O link de convite funciona sem ela."
+          }
+        }
+      }
+    },
+    "Your groups are only on this Mac. Connect an Apple or Google account to see them on iPhone; without an account, the app on iPhone starts empty." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus grupos estão só neste Mac. Conecte uma conta Apple ou Google para vê-los no iPhone; sem conta, o app no iPhone começa vazio."
           }
         }
       }

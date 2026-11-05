@@ -33,4 +33,8 @@ interface DeviceSettingsRepository {
     fun observeLastNotificationPromptAt(): Flow<Long?>
 
     suspend fun updateLastNotificationPromptAt(epochMillis: Long)
+
+    fun observeAppBannerDismissed(): Flow<Boolean>
+
+    suspend fun dismissAppBanner()
 }

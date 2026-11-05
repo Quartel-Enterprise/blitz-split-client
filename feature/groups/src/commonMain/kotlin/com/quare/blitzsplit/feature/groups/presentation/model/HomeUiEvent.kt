@@ -60,6 +60,17 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
 
+            // Why: only while the card shows, which the ViewModel knows.
+            OnAppInviteDismissed -> EventAnalytics.Manual("app_invite_dismissed")
+
+            OnAppInviteDownloadedClicked -> EventAnalytics.Manual("app_invite_downloaded_clicked")
+
+            OnAppInviteCodeClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to SOURCE))
+
+            OnAppInviteConnectClicked -> EventAnalytics.Automatic("app_invite_connect_clicked")
+
+            OnAppBannerDismissed -> EventAnalytics.Automatic("app_banner_dismissed")
+
             // Why: only while the card shows, with which one it was.
             OnNotificationPromptTurnOnClicked -> EventAnalytics.Manual("notification_prompt_turn_on_clicked")
 
@@ -179,6 +190,18 @@ sealed interface HomeUiEvent : UiEvent {
     data object OnNotificationPromptTurnOnClicked : HomeUiEvent
 
     data object OnNotificationPromptDismissed : HomeUiEvent
+
+    // Why: the invite's card (14.1): ✕ ("Don't show again"), "I downloaded it", its QR code and "Connect account".
+    data object OnAppInviteDismissed : HomeUiEvent
+
+    data object OnAppInviteDownloadedClicked : HomeUiEvent
+
+    data object OnAppInviteCodeClicked : HomeUiEvent
+
+    data object OnAppInviteConnectClicked : HomeUiEvent
+
+    // Why: the ✕ of the phone browser's banner (14.3).
+    data object OnAppBannerDismissed : HomeUiEvent
 
     // Why: "Desfazer" on the notice of a payment just recorded from Início.
     data object OnUndoPaymentClicked : HomeUiEvent

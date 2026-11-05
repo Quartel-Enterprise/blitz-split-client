@@ -6,6 +6,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
+import com.quare.blitzsplit.core.provider.room.dao.AppInviteDao
 import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
@@ -26,6 +27,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.AppInviteEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
@@ -51,6 +53,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         DeviceSettingsEntity::class,
         PaymentKeyEntity::class,
         NotificationPreferencesEntity::class,
+        AppInviteEntity::class,
         GroupEntity::class,
         GroupMemberEntity::class,
         ExpenseEntity::class,
@@ -69,7 +72,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         BillAttachmentEntity::class,
         BillCommentLikeEntity::class,
     ],
-    version = 37,
+    version = 38,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -217,6 +220,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 36,
             to = 37,
         ),
+        AutoMigration(
+            from = 37,
+            to = 38,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -230,6 +237,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun paymentKeyDao(): PaymentKeyDao
 
     abstract fun notificationPreferencesDao(): NotificationPreferencesDao
+
+    abstract fun appInviteDao(): AppInviteDao
 
     abstract fun groupDao(): GroupDao
 

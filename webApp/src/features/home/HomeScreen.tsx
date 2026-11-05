@@ -14,6 +14,7 @@ import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DownloadProgressBar } from '@/features/groups/FirstDownload'
 import { SyncStatus } from '@/features/groups/GroupsPage'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
+import { AppBanner, AppInviteCard, toastUsedOnPhone } from '@/features/app-download/AppDownload'
 import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/features/home/HomeSections'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
@@ -41,6 +42,10 @@ export function HomeScreen() {
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
     (action) => {
       if (action === 'notifications-on') toast(t('home_notificationsOn'))
+      // Why: only where the card was drawn; a phone's browser never shows it (14.3).
+      else if (action === 'used-on-phone') {
+        if (window.matchMedia('(min-width: 768px)').matches) toastUsedOnPhone()
+      }
       else if (action === 'request-notification-permission') {
         void requestNotificationPermission().then((permission) => presenter?.notificationPermissionChecked(permission))
       } else toastGroupAction(action)
@@ -64,6 +69,8 @@ export function HomeScreen() {
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
+        {/* Why: a phone's browser gets the banner (14.3), never the card nor a QR code. */}
+        {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onDismiss={() => presenter.dismissAppBanner()} />}
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
           {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
           <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only md:mr-auto">{t('home_title')}</h1>
@@ -99,6 +106,14 @@ export function HomeScreen() {
           <>
             {state.showsRecoveryCodeCard && <RecoveryCodeCard presenter={presenter} />}
             {state.notificationPrompt && <NotificationCard presenter={presenter} isBlocked={state.notificationPrompt === 'BLOCKED'} />}
+            {state.showsAppInviteCard && state.appInvite && (
+              <AppInviteCard
+                presenter={presenter}
+                invite={state.appInvite}
+                needsAccount={state.appInviteNeedsAccount}
+                accountProvider={state.accountProvider}
+              />
+            )}
             <HomeSummaryCards presenter={presenter} state={state} />
             <PeopleCard presenter={presenter} state={state} />
             <div className="flex flex-col gap-3.5 md:gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-5">

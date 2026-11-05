@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.navigation
 
+import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
@@ -55,6 +56,14 @@ sealed interface Route {
         val versionName: String?,
         val storeUrl: String,
         val source: UpdatePromptSource,
+    ) : Route
+
+    /*
+     * Why: "Get the app"'s code (14.2), on the web (a dialog) and the Mac (a sheet) only: the QR code that opens the
+     * stores, from Home's card and Profile's row (Settings on the Mac), with "I downloaded it".
+     */
+    data class AppDownload(
+        val source: AppDownloadSource,
     ) : Route
 
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.

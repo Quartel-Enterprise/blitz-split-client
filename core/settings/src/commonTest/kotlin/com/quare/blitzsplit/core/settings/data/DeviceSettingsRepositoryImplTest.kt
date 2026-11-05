@@ -645,6 +645,45 @@ class DeviceSettingsRepositoryImplTest {
         assertEquals(1_700_000_000_000L, repository.observeLastNotificationPromptAt().first())
     }
 
+    @Test
+    fun `GIVEN no row WHEN the app banner is read THEN it is not dismissed`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val isDismissed = repository.observeAppBannerDismissed().first()
+
+        // Then
+        assertEquals(false, isDismissed)
+    }
+
+    @Test
+    fun `GIVEN other settings WHEN the app banner is dismissed THEN only it changes`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                lastNotificationPromptAt = 1_600_000_000_000L,
+            ),
+        )
+
+        // When
+        repository.dismissAppBanner()
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    lastNotificationPromptAt = 1_600_000_000_000L,
+                    isAppBannerDismissed = true,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(true, repository.observeAppBannerDismissed().first())
+    }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -655,6 +694,7 @@ class DeviceSettingsRepositoryImplTest {
         showsBitcoinInSats: Boolean = false,
         lastUpdatePromptAt: Long? = null,
         lastNotificationPromptAt: Long? = null,
+        isAppBannerDismissed: Boolean = false,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -666,6 +706,7 @@ class DeviceSettingsRepositoryImplTest {
         showsBitcoinInSats = showsBitcoinInSats,
         lastUpdatePromptAt = lastUpdatePromptAt,
         lastNotificationPromptAt = lastNotificationPromptAt,
+        isAppBannerDismissed = isAppBannerDismissed,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -723,6 +764,7 @@ private class FakeDeviceSettingsLocalDataSource(
             showsBitcoinInSats = false,
             lastUpdatePromptAt = null,
             lastNotificationPromptAt = null,
+            isAppBannerDismissed = false,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

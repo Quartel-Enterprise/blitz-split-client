@@ -74,6 +74,8 @@ internal fun toRouteName(route: Route): String = when (route) {
     // Why: never pushed on the web, which always serves the latest version; named only so the mapping stays whole.
     is Route.InAppUpdate -> "in-app-update"
 
+    is Route.AppDownload -> "app-download"
+
     Route.DeleteAccount -> "delete-account"
 
     Route.NotificationSettings -> "notification-settings"

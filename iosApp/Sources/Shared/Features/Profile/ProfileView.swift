@@ -164,6 +164,11 @@ struct ProfileView: View {
                 OfflineSection(model: model)
                 IdentitySection(model: model)
                     .id(ProfileSettingsPane.profile)
+                // "Get the app" (14.4): always right under the profile, as the way to download later
+                if let invite = model.state.appInvite {
+                    AppInviteSection(model: model, invite: invite)
+                        .id(ProfileSettingsPane.iphone)
+                }
                 // The Mac's settings list the keys right under the profile, as the canvas draws them
                 PaymentKeysSection(model: model)
                     .id(ProfileSettingsPane.keys)
@@ -276,6 +281,63 @@ private struct OfflineSection: View {
         }
     }
 }
+
+#if os(macOS)
+/// Settings › iPhone (14.4): highlighted with ✕ while the invite stands, plain for good after "I downloaded it" or ✕
+/// (14.4b), and "You already use the app on iPhone" once a sync found the account there (14.4c). "Show code…" opens
+/// the code (14.2) as a sheet on this window.
+private struct AppInviteSection: View {
+    let model: ProfileModel
+    let invite: ProfileAppInvite
+
+    private var isActive: Bool { invite.status == .active }
+
+    var body: some View {
+        Section("iPhone") {
+            HStack(spacing: 12) {
+                Image("Logo")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(7)
+                    .frame(width: 36, height: 36)
+                    .foregroundStyle(isActive ? .white : .secondary)
+                    .background(isActive ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.quaternary), in: .rect(cornerRadius: 9))
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(isActive ? "Take Blitz Split on iPhone" : "Blitz Split on iPhone")
+                        .fontWeight(isActive ? .semibold : .regular)
+                    detail
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+                if isActive {
+                    Button("Show code…") { model.send(ProfileUiEventOnAppInviteClicked.shared) }
+                        .buttonStyle(.borderedProminent)
+                        .prominentLabel()
+                    Button("Don't show again", systemImage: "xmark") {
+                        model.send(ProfileUiEventOnAppInviteDismissed.shared)
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.borderless)
+                    .help("Don't show again")
+                } else {
+                    Button("Show code…") { model.send(ProfileUiEventOnAppInviteClicked.shared) }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var detail: some View {
+        switch invite.status {
+        case .active: Text("Add bills right away, wherever you are, even offline. And get payment notices.")
+        case .inUse: Text(invite.usesIphone ? "You already use the app on iPhone." : "You already use the app on your phone.")
+        default: Text("Code to download it on the App Store.")
+        }
+    }
+}
+#endif
 
 /// Appearance, bitcoin in satoshis, and on iPhone and iPad the row that opens the notification settings (the Mac shows
 /// them inline).

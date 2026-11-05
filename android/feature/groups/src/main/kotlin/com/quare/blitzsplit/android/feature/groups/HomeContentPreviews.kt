@@ -305,6 +305,9 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     canAskQuietly = false,
     hasAskedQuietly = false,
     isNotificationPromptSnoozed = false,
+    appInvite = null,
+    hasBills = true,
+    isAppBannerDismissed = false,
 )
 
 private fun buildPreviewPerson(

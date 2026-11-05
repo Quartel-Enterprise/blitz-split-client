@@ -197,7 +197,17 @@ function InviteBody({ presenter, state }: { presenter: InvitePresenter; state: J
 }
 
 /** Black on white in both themes, as scanners read it best, with the quiet zone around the modules. */
-export function QrCode({ size, modules, className = 'size-56' }: { size: number; modules: boolean[]; className?: string }) {
+export function QrCode({
+  size,
+  modules,
+  className = 'size-56',
+  label = t('invite_qrDescription'),
+}: {
+  size: number
+  modules: boolean[]
+  className?: string
+  label?: string
+}) {
   const cells = size + qrQuietZone * 2
   let path = ''
   modules.forEach((isDark, index) => {
@@ -206,7 +216,7 @@ export function QrCode({ size, modules, className = 'size-56' }: { size: number;
   return (
     <svg
       role="img"
-      aria-label={t('invite_qrDescription')}
+      aria-label={label}
       viewBox={`0 0 ${cells} ${cells}`}
       shapeRendering="crispEdges"
       className={cn('rounded-xl bg-white', className)}

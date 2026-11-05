@@ -18,4 +18,7 @@ sealed interface HomeUiAction {
 
     // Why: "Notifications on", once the system allows them after not allowing them, from its prompt or its settings.
     data object ShowNotificationsOn : HomeUiAction
+
+    // Why: "We saw you on your phone." (14.1c), once: the account signed in on a phone app while the card showed.
+    data object ShowUsedOnPhone : HomeUiAction
 }

@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakeAppInviteRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
@@ -80,6 +81,7 @@ class SignOutWhenSyncedUseCaseTest {
                 accountRepository = account,
                 profileRepository = profile,
                 paymentKeyRepository = paymentKeys,
+                appInviteRepository = FakeAppInviteRepository(),
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = FakeGroupRepository(),
                 groupPinRepository = FakeGroupPinRepository(),

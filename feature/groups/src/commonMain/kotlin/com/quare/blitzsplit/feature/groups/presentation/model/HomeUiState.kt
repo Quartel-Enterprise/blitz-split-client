@@ -61,6 +61,12 @@ data class HomeUiState(
     val hasAskedQuietly: Boolean,
     // Why: the card was answered less than three weeks ago; true until the device's settings are read, so it never flashes.
     val isNotificationPromptSnoozed: Boolean,
+    // Why: "Get the app" (page 14), only on the web and the Mac once a store lists the app; null everywhere else.
+    val appInvite: HomeAppInvite?,
+    // Why: some group holds a bill: the invite waits for the first one, never on the first use.
+    val hasBills: Boolean,
+    // Why: the ✕ of the phone browser's banner (14.3), kept on this device.
+    val isAppBannerDismissed: Boolean,
 ) {
     val isFirstDownload: Boolean
         get() = firstDownload != null
@@ -138,4 +144,25 @@ data class HomeUiState(
                 NotificationPermission.GRANTED, null -> null
             }
         }
+
+    // Why: the card without Google or Apple says the phone app starts empty and offers "Connect account".
+    val appInviteNeedsAccount: Boolean
+        get() = accountProvider == null
+
+    // Why: a phone's browser shows the banner (14.3) instead of the card, until its ✕ on this device.
+    val showsAppBanner: Boolean
+        get() = appInvite != null && showsHome && !isAppBannerDismissed
+
+    /*
+     * Why: "Take Blitz Split on your phone" (14.1), after the first bill and one card at a time: the recovery code's
+     * card or sheet and the notification card come first, and the invite waits for them.
+     */
+    val showsAppInviteCard: Boolean
+        get() = appInvite?.isActive == true &&
+            showsHome &&
+            !isFirstDownload &&
+            hasBills &&
+            !showsRecoveryCodeCard &&
+            !showsRecoveryCodePrompt &&
+            notificationPrompt == null
 }

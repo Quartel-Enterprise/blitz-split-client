@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
@@ -26,12 +27,18 @@ import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.model.AppInvite
+import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
+import com.quare.blitzsplit.core.profile.domain.model.PhoneUse
+import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificationPreferenceChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
@@ -61,6 +68,8 @@ import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
+import com.quare.blitzsplit.feature.profile.presentation.model.ProfileAppInvite
+import com.quare.blitzsplit.feature.profile.presentation.model.ProfileAppInviteStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
@@ -72,6 +81,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -123,6 +133,9 @@ class ProfileViewModelTest {
     private var updateCheckHangs = false
     private lateinit var updateCheckRelease: CompletableDeferred<Unit>
     private val shownUpdatePrompts = mutableListOf<Pair<UpdateAvailability.Pending, UpdatePromptSource>>()
+    private lateinit var appInvite: MutableStateFlow<AppInvite?>
+    private var appInviteDismissals = 0
+    private var appInviteDismissGate: CompletableDeferred<Unit>? = null
 
     @BeforeTest
     fun setUp() {
@@ -6308,6 +6321,375 @@ class ProfileViewModelTest {
             assertTrue(trackedEvents.isEmpty())
         }
 
+    @Test
+    fun `GIVEN a platform that never invites to the app WHEN the profile opens THEN shows no app on your phone row`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.appInvite)
+        }
+
+    @Test
+    fun `GIVEN an invite still standing WHEN the profile opens THEN shows the app on your phone row highlighted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                ProfileAppInvite(
+                    status = ProfileAppInviteStatus.ACTIVE,
+                    link = AppInvite.WEB_LINK,
+                    usesIphone = false,
+                ),
+                state.appInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN an invite dismissed before WHEN the profile opens THEN keeps the row plain to download later`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(isDismissed = true))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                ProfileAppInvite(
+                    status = ProfileAppInviteStatus.DISMISSED,
+                    link = AppInvite.WEB_LINK,
+                    usesIphone = false,
+                ),
+                state.appInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN the account on the iPhone app WHEN the profile opens THEN the row says it is in use on the iPhone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(phoneUse = onIphone))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                ProfileAppInvite(
+                    status = ProfileAppInviteStatus.IN_USE,
+                    link = AppInvite.WEB_LINK,
+                    usesIphone = true,
+                ),
+                state.appInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN the account on the Android app WHEN the profile opens THEN the row says the app is in use on a phone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(phoneUse = onAndroid))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                ProfileAppInvite(
+                    status = ProfileAppInviteStatus.IN_USE,
+                    link = AppInvite.WEB_LINK,
+                    usesIphone = false,
+                ),
+                state.appInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN a dismissed invite and the account on a phone WHEN the profile opens THEN the phone use wins`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = webInvite.copy(
+                    isDismissed = true,
+                    phoneUse = onAndroid,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(ProfileAppInviteStatus.IN_USE, state.appInvite?.status)
+        }
+
+    @Test
+    fun `GIVEN the invite WHEN a sync finds the account on a phone THEN the row says the app is in use`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            appInvite.value = webInvite.copy(phoneUse = onIphone)
+
+            // Then
+            assertEquals(
+                ProfileAppInvite(
+                    status = ProfileAppInviteStatus.IN_USE,
+                    link = AppInvite.WEB_LINK,
+                    usesIphone = true,
+                ),
+                viewModel.uiState.value.appInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN the invite WHEN a sync brings a dismissal from elsewhere THEN the row turns plain`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            appInvite.value = webInvite.copy(isDismissed = true)
+
+            // Then
+            assertEquals(
+                ProfileAppInviteStatus.DISMISSED,
+                viewModel.uiState.value.appInvite
+                    ?.status,
+            )
+        }
+
+    @Test
+    fun `GIVEN an invite still standing WHEN tapping See code THEN opens the app code from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.AppDownload(AppDownloadSource.PROFILE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the app code open over the profile WHEN See code comes again THEN opens no second code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.AppDownload(AppDownloadSource.PROFILE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the highlighted row WHEN tapping its cross twice before it goes THEN ends and counts it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+            appInviteDismissGate = CompletableDeferred()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+            appInviteDismissGate?.complete(Unit)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(1, trackedEvents.count { it.first == "app_invite_dismissed" })
+        }
+
+    @Test
+    fun `GIVEN a dismissed invite WHEN tapping See code THEN still opens the app code from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(isDismissed = true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.AppDownload(AppDownloadSource.PROFILE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the account already on a phone WHEN tapping See code THEN still opens the app code from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(phoneUse = onAndroid))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.AppDownload(AppDownloadSource.PROFILE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN no invite on this platform WHEN tapping See code THEN stays on the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(invite = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN an invite WHEN tapping See code THEN sends the app invite code clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+
+            // Then
+            assertEquals(
+                listOf("app_invite_code_clicked" to mapOf<String, Any>("source" to "profile")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the highlighted row WHEN closing it THEN dismisses the invite once and the row turns plain`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(
+                ProfileAppInviteStatus.DISMISSED,
+                viewModel.uiState.value.appInvite
+                    ?.status,
+            )
+        }
+
+    @Test
+    fun `GIVEN the highlighted row WHEN closing it THEN sends the app invite dismissed from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(listOf("app_invite_dismissed" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a dismissed invite WHEN closing the row THEN neither dismisses again nor sends anything`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(isDismissed = true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the account already on a phone WHEN closing the row THEN neither dismisses nor sends anything`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite.copy(phoneUse = onAndroid))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(
+                ProfileAppInviteStatus.IN_USE,
+                viewModel.uiState.value.appInvite
+                    ?.status,
+            )
+        }
+
+    @Test
+    fun `GIVEN no invite on this platform WHEN closing the row THEN neither dismisses nor sends anything`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = null)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the row just closed WHEN closing it again THEN dismisses the invite only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(listOf("app_invite_dismissed" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    // Why: the web's invite while both stores list the app.
+    private val webInvite = AppInvite(
+        link = AppInvite.WEB_LINK,
+        stores = StoreListing.BOTH,
+        isDismissed = false,
+        phoneUse = null,
+    )
+
+    private val onAndroid = PhoneUse(
+        platforms = setOf(ClientPlatform.ANDROID),
+        sinceMillis = 1_760_270_400_000L,
+    )
+
+    private val onIphone = PhoneUse(
+        platforms = setOf(ClientPlatform.IOS),
+        sinceMillis = 1_760_270_400_000L,
+    )
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val cpfKey = paymentKey("cpf", PaymentKeyType.CPF, "12345678909", isDefault = true)
@@ -6400,7 +6782,10 @@ class ProfileViewModelTest {
         updateAvailability: UpdateAvailability = UpdateAvailability.NotAvailable,
         updateCheckHangs: Boolean = false,
         themeWriteHangs: Boolean = false,
+        invite: AppInvite? = null,
     ) {
+        appInvite = MutableStateFlow(invite)
+        appInviteDismissals = 0
         syncRetries = 0
         updateChecks = 0
         shownUpdatePrompts.clear()
@@ -6437,6 +6822,14 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
+            // Why: like the repository, a dismissal ends the invite the flow emits.
+            dismissAppInvite = DismissAppInvite {
+                appInviteDismissals++
+                appInviteDismissGate?.await()
+                appInvite.update { it?.copy(isDismissed = true) }
+                Result.success(Unit)
+            },
+            observeAppInvite = ObserveAppInvite { appInvite },
             trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             providerConnector = ProviderConnectorImpl(

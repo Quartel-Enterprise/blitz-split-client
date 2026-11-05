@@ -45,6 +45,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferenc
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.profile.testing.FakeAppInviteRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
@@ -82,6 +83,7 @@ class SyncCoordinatorTest {
     private lateinit var profile: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
+    private lateinit var appInvite: FakeAppInviteRepository
     private lateinit var groups: FakeGroupRepository
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -2826,6 +2828,52 @@ class SyncCoordinatorTest {
             )
             assertFalse(notificationPreferences.hasPendingChanges.value)
         }
+
+    @Test
+    fun `GIVEN a local profile WHEN syncing THEN syncs the app invite under the synced user id`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), appInvite.syncedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the app invite fails to sync WHEN syncing THEN the sync still succeeds with the preferences`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+            appInvite.syncError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a dismissal of the invite not sent WHEN syncing THEN the sync state stays synced`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        appInvite.hasPendingChanges.value = true
+        appInvite.syncError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
 
     @Test
     fun `GIVEN no profile and pending preferences WHEN syncing THEN neither pulls nor pushes the preferences`() =
@@ -7109,6 +7157,7 @@ class SyncCoordinatorTest {
             FakeProfileRepository(initialProfile = storedProfile).also { it.hasPendingChanges.value = pendingChanges }
         paymentKeys =
             FakePaymentKeyRepository(initialKeys = storedKeys).also { it.hasPendingChanges.value = pendingKeys }
+        appInvite = FakeAppInviteRepository()
         notificationPreferences = FakeNotificationPreferencesRepository(initialPreferences = storedPreferences).also {
             it.hasPendingChanges.value = pendingPreferences
         }
@@ -7148,6 +7197,7 @@ class SyncCoordinatorTest {
                 },
                 calls = calls,
             ),
+            appInviteRepository = appInvite,
             notificationPreferencesRepository = RecordingNotificationPreferencesRepository(
                 delegate = if (preferenceQueuedDuringFirstPush) {
                     PreferenceDuringFirstPushNotificationPreferencesRepository(notificationPreferences)

@@ -16,6 +16,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Delete account open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
+    store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
     `ProfilePhotoViewModel`), the initial on its color too when there is no photo: 200 pt/dp/px (260 once both sides
     have 600, so a phone lying down keeps 200, scrolling where it still doesn't fit) over the dimmed, blurred

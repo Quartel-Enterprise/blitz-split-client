@@ -553,5 +553,6 @@ class ProfileUiStateTest {
         hasSignOutFailed = false,
         isUnlinking = isUnlinking,
         hasUnlinkFailed = false,
+        appInvite = null,
     )
 }
