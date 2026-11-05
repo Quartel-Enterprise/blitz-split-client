@@ -63,7 +63,7 @@ export function barLabel(bar: JsStatsBar, grain: string, isSparse: boolean): str
 }
 
 /** What a bar names in a sentence: "28 de out.", "26 de out. – 1 de nov.", "julho" or "2025". */
-function barName(bar: JsStatsBar, grain: string): string {
+export function barName(bar: JsStatsBar, grain: string): string {
   if (grain === 'day') return formatShortDate(bar.startMillis)
   if (grain === 'week') return dayMonth.formatRange(bar.startMillis, bar.endMillis)
   if (grain === 'month') return longMonth.format(bar.startMillis)
@@ -75,6 +75,24 @@ const peakLabels: Record<string, MessageKey> = { day: 'stats_peakDay', week: 'st
 /** "Dia mais caro: 28 de out.,", before the amount. */
 export function peakLabel(bar: JsStatsBar, grain: string): string {
   return t(peakLabels[grain] ?? 'stats_peakDay', { when: barName(bar, grain) })
+}
+
+const averageLabels: Record<string, MessageKey> = {
+  day: 'stats_averageDay',
+  week: 'stats_averageWeek',
+  month: 'stats_averageMonth',
+  year: 'stats_averageYear',
+}
+
+/** "Média por dia:", before the amount of the chart's dashed average line. */
+export function averageLabel(grain: string): string {
+  return t(averageLabels[grain] ?? 'stats_averageDay')
+}
+
+/** A picked bar's bills under its amount: "Nenhuma despesa", "1 despesa" or "3 despesas". */
+export function calloutCount(count: number): string {
+  if (count === 0) return t('stats_calloutNone')
+  return t(count === 1 ? 'stats_expensesOne' : 'stats_expensesOther', { count })
 }
 
 const ariaLabels: Record<string, MessageKey> = { day: 'stats_ariaDay', week: 'stats_ariaWeek', month: 'stats_ariaMonth', year: 'stats_ariaYear' }

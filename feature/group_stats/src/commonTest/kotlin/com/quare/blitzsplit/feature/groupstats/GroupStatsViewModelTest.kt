@@ -1461,6 +1461,186 @@ class GroupStatsViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a trip with bills on some days WHEN the statistics open THEN each day counts its bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = busyTripBills)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(1, 0, 1, 0, 2), state.bars.map { it.expenseCount })
+            assertEquals(state.expenseCount, state.bars.sumOf { it.expenseCount })
+        }
+
+    @Test
+    fun `GIVEN a trip with bills on some days WHEN the statistics open THEN the lines step up to cover the top day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = busyTripBills)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(0L, 25_000L, 50_000L, 75_000L), state.chartTicksMinor)
+            assertEquals(75_000L, state.chartTopMinor)
+        }
+
+    @Test
+    fun `GIVEN a trip with bills on some days WHEN the statistics open THEN the average counts the empty days too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = busyTripBills)
+
+            // When
+            val average = viewModel.uiState.value.chartAverageMinor
+
+            // Then
+            assertEquals(21_000L, average)
+        }
+
+    @Test
+    fun `GIVEN a trip WHEN picking a single day THEN its one bar has the lines and no average`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = busyTripBills)
+
+            // When
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-10-28T10:00:00Z"),
+                    endMillis = millisOf("2026-10-28T20:00:00Z"),
+                ),
+            )
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf(70_000L), state.bars.map { it.amountMinor })
+            assertEquals(listOf(2), state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 25_000L, 50_000L, 75_000L), state.chartTicksMinor)
+            assertNull(state.chartAverageMinor)
+        }
+
+    @Test
+    fun `GIVEN every bill on one day WHEN picking this month THEN the other days count none and lower the average`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense("boat", 60_000, millisOf("2026-10-28T15:00:00Z")),
+                    expense("lunch", 10_000, millisOf("2026-10-28T12:00:00Z")),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(List(29) { day -> if (day == 27) 2 else 0 }, state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 25_000L, 50_000L, 75_000L), state.chartTicksMinor)
+            assertEquals(2_414L, state.chartAverageMinor)
+        }
+
+    @Test
+    fun `GIVEN a bill of millions WHEN the statistics open THEN the lines climb by R 500 thousand`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense("car", 123_456_789, millisOf("2026-10-24T12:00:00Z")),
+                    expense("fuel", 1_000_000, millisOf("2026-10-28T12:00:00Z")),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(1, 0, 0, 0, 1), state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 50_000_000L, 100_000_000L, 150_000_000L), state.chartTicksMinor)
+            assertEquals(24_891_358L, state.chartAverageMinor)
+        }
+
+    @Test
+    fun `GIVEN by day WHEN picking Semana THEN each week sums the bills of its days with its lines and average`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = busyTripBills)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(StatsGrain.WEEK))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf(30_000L, 75_000L), state.bars.map { it.amountMinor })
+            assertEquals(listOf(1, 3), state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 25_000L, 50_000L, 75_000L), state.chartTicksMinor)
+            assertEquals(52_500L, state.chartAverageMinor)
+        }
+
+    @Test
+    fun `GIVEN a home over two years WHEN the statistics open by month THEN each month counts its bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                group = home,
+                stored = homeBills + expense("market", 5_000, millisOf("2026-03-20T12:00:00Z")),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(StatsGrain.MONTH, state.grain)
+            assertEquals(listOf(1) + List(11) { 0 } + listOf(2), state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 10_000L, 20_000L, 30_000L), state.chartTicksMinor)
+            assertEquals(2_692L, state.chartAverageMinor)
+        }
+
+    @Test
+    fun `GIVEN a trip WHEN picking last month without bills THEN the chart has no lines and no average`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.LAST_MONTH))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.bars.all { it.expenseCount == 0 })
+            assertTrue(state.chartTicksMinor.isEmpty())
+            assertNull(state.chartAverageMinor)
+            assertEquals(1L, state.chartTopMinor)
+        }
+
+    @Test
+    fun `GIVEN the statistics WHEN a sync brings a bill THEN the counts lines and average follow it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            expenses.expenses.value = tripBills + expense("lunch", 10_000, millisOf("2026-10-28T12:00:00Z"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf(1, 0, 0, 0, 2), state.bars.map { it.expenseCount })
+            assertEquals(listOf(0L, 25_000L, 50_000L, 75_000L), state.chartTicksMinor)
+            assertEquals(20_000L, state.chartAverageMinor)
+        }
+
+    // Why: the trip's dinner and boat, a R$ 100 lunch on the boat day and a R$ 50 taxi still in the queue on the 26th.
+    private val busyTripBills: List<Expense>
+        get() = tripBills + listOf(
+            expense("lunch", 10_000, millisOf("2026-10-28T12:00:00Z")),
+            expense("taxi", 5_000, millisOf("2026-10-26T10:00:00Z"), isPending = true),
+        )
+
     private val route = Route.GroupStats(GROUP_ID)
 
     // Why: the back stack the statistics open on, over the group's Despesas over Grupos.

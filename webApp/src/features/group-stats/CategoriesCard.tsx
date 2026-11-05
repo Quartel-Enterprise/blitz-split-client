@@ -1,7 +1,10 @@
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import type { JsGroupStatsState, JsStatsCategory } from 'blitzsplit-shared'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
 import { CategoryBadge, categoryName } from '@/lib/categories'
+import { cn } from '@/lib/utils'
+import { useReplay } from './useReplay'
 
 const radius = 52
 const stroke = 18
@@ -10,12 +13,27 @@ const gap = 2
 
 /**
  * "Por categoria" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
- * legend with the percentages, then each main category with its bar and its subcategories.
+ * legend with the percentages, then each main category with its bar and its subcategories. A slice picked by the mouse
+ * over it, a tap, or its legend line pops out, the others fade, and the center names it with its share; the ring
+ * sweeps in again when the period changes.
  */
 export function CategoriesCard({ state, money, className }: { state: JsGroupStatsState; money: (minor: number) => string; className: string }) {
   const rows = state.categories
+  const ringKey = `${state.periodStartMillis}-${state.periodEndMillis}-${rows.map((row) => `${row.category.id}:${row.percent}`).join(',')}`
+  const [selected, setSelected] = useState<number | null>(null)
+  const isSwept = useReplay(ringKey)
+  // Why: what pressed last, since a click keeps what hovering picked while a tap of a finger picks or lets go.
+  const lastPointer = useRef('mouse')
+
+  useEffect(() => setSelected(null), [ringKey])
+
   if (rows.length === 0) return null
-  const top = rows[0]
+  const top = (selected !== null ? rows[selected] : undefined) ?? rows[0]
+  const notePointer = (event: PointerEvent) => {
+    lastPointer.current = event.pointerType
+  }
+  const toggle = (index: number) =>
+    setSelected((current) => (current === index && lastPointer.current !== 'mouse' ? null : index))
   const description = t('groupStats_categoryPie', { parts: rows.map((row) => `${categoryName(row.category)} ${row.percent}%`).join(', ') })
   return (
     <section aria-labelledby="statsCategories" className={className}>
@@ -24,8 +42,22 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
       </h2>
       <div className="flex items-center gap-5">
         <div role="img" aria-label={description} className="relative size-[132px] shrink-0">
-          <svg viewBox="0 0 132 132" className="size-full -rotate-90">
-            {slicesOf(rows).map(({ row, offset, length }) => (
+          <svg
+            viewBox="0 0 132 132"
+            className="size-full -rotate-90"
+            onPointerLeave={(event) => {
+              if (event.pointerType === 'mouse') setSelected(null)
+            }}
+            onPointerMove={(event) => {
+              // Why: the mouse in the hole lets go, as on Android and Apple; a slice under it is the event's target.
+              if (event.pointerType === 'mouse' && event.target === event.currentTarget) setSelected(null)
+            }}
+            onClick={(event) => {
+              // Why: a tap in the hole lets go, as on Android and Apple.
+              if (event.target === event.currentTarget) setSelected(null)
+            }}
+          >
+            {slicesOf(rows).map(({ row, offset, length }, index) => (
               <circle
                 key={row.category.id}
                 cx="66"
@@ -33,24 +65,53 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
                 r={radius}
                 fill="none"
                 strokeWidth={stroke}
-                className="avatar-stroke"
+                className={cn(
+                  'avatar-stroke origin-center cursor-pointer transition-[stroke-dasharray,stroke-dashoffset,scale,opacity] duration-300 ease-out [transform-box:view-box] motion-reduce:transition-none',
+                  selected === index && 'scale-[1.07]',
+                  selected !== null && selected !== index && 'opacity-40',
+                )}
                 style={avatarStyle(row.category.color)}
-                strokeDasharray={`${length} ${circumference - length}`}
-                strokeDashoffset={-offset}
+                strokeDasharray={isSwept ? `${length} ${circumference - length}` : `0 ${circumference}`}
+                strokeDashoffset={isSwept ? -offset : 0}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'mouse') setSelected(index)
+                }}
+                onPointerDown={notePointer}
+                onClick={() => toggle(index)}
               />
             ))}
           </svg>
-          <span aria-hidden className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <span aria-hidden className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
             <span className="text-lg font-bold tabular-nums">{top.percent}%</span>
             <span className="w-full truncate text-[11px] text-muted-foreground">{categoryName(top.category)}</span>
           </span>
         </div>
-        <ul aria-hidden className="flex min-w-0 flex-col gap-2 text-[13px]">
-          {rows.map((row) => (
-            <li key={row.category.id} className="flex items-center gap-2">
-              <span style={avatarStyle(row.category.color)} className="avatar size-3 shrink-0 rounded-[4px]" />
-              <span className="truncate">{categoryName(row.category)}</span>
-              <span className="text-muted-foreground tabular-nums">{row.percent}%</span>
+        <ul className="flex min-w-0 flex-col gap-0.5 text-[13px]">
+          {rows.map((row, index) => (
+            <li key={row.category.id} className="flex min-w-0">
+              <button
+                type="button"
+                aria-pressed={selected === index}
+                onPointerDown={notePointer}
+                onKeyDown={() => {
+                  lastPointer.current = 'keyboard'
+                }}
+                onClick={() => toggle(index)}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'mouse') setSelected(index)
+                }}
+                onPointerLeave={(event) => {
+                  if (event.pointerType === 'mouse') setSelected(null)
+                }}
+                className={cn(
+                  'flex min-w-0 items-center gap-2 rounded-md px-1 py-0.5 text-left outline-none transition-opacity focus-visible:ring-[3px] focus-visible:ring-ring',
+                  selected !== null && selected !== index && 'opacity-40',
+                )}
+              >
+                <span style={avatarStyle(row.category.color)} className="avatar size-3 shrink-0 rounded-[4px]" />
+                <span className="truncate">{categoryName(row.category)}</span>
+                <span className="text-muted-foreground tabular-nums">{row.percent}%</span>
+              </button>
             </li>
           ))}
         </ul>

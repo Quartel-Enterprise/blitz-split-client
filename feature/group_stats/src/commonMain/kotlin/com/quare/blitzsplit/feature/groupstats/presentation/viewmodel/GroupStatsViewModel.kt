@@ -100,6 +100,8 @@ class GroupStatsViewModel(
                 grain = StatsGrain.DAY,
                 grains = emptyList(),
                 bars = emptyList(),
+                chartTicksMinor = emptyList(),
+                chartAverageMinor = null,
                 grainNotes = emptyList(),
                 biggestExpense = null,
                 settling = null,
@@ -279,6 +281,7 @@ class GroupStatsViewModel(
         val span = calculator.findSpanOrNull(period, customSpan) ?: calculator.allSpan
         val spending = calculator.createSpending(span)
         val grain = calculator.findGrain(chart.grain, span)
+        val bars = calculator.createBars(spending, span, grain)
         val me = group.members.firstOrNull { it.isMe }
         val myShare = me?.let { spending.consumedByMember[it.id] ?: 0L }
         val memberCount = group.members.size
@@ -323,7 +326,9 @@ class GroupStatsViewModel(
             chartType = chart.chartType,
             grain = grain,
             grains = calculator.createGrainOptions(span),
-            bars = calculator.createBars(spending, span, grain),
+            bars = bars,
+            chartTicksMinor = StatsChartAxis.createTicks(bars),
+            chartAverageMinor = StatsChartAxis.createAverageOrNull(bars),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
             settling = findSettling(SettlingInputs(group, expenses, settlements, span, today, timeZone)),

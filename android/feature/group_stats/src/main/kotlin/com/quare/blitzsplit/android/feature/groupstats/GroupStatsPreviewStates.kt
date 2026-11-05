@@ -92,12 +92,15 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
                 startMillis = PREVIEW_START + previewDay * index,
                 endMillis = PREVIEW_START + previewDay * index,
                 amountMinor = amount,
+                expenseCount = if (amount > 0) 2 else 0,
                 isToday = index == previewDays.lastIndex,
                 isPeak = index == 4,
                 showsLabel = true,
                 showsDot = true,
             )
         },
+        chartTicksMinor = listOf(0L, 50_000L, 100_000L, 150_000L),
+        chartAverageMinor = previewDays.sum() / previewDays.size,
         grainNotes = listOf(StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD),
         biggestExpense = StatsBiggestExpense(
             expenseId = "boat",

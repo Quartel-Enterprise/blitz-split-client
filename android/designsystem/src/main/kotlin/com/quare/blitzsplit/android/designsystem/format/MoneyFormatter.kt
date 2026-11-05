@@ -1,5 +1,9 @@
 package com.quare.blitzsplit.android.designsystem.format
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -59,6 +63,30 @@ class MoneyFormatter(
         return formats.getOrPut(digits) { createCurrencyFormat(digits) }.format(amountMinor.toDecimal())
     }
 
+    // Why: lazily, since only a chart's value lines write short amounts.
+    private val compactFormat by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !currency.isCrypto) {
+            NumberFormatter
+                .withLocale(locale)
+                .notation(Notation.compactShort())
+                .unit(
+                    android.icu.util.Currency
+                        .getInstance(currency.code),
+                ).precision(Precision.maxSignificantDigits(COMPACT_DIGITS))
+        } else {
+            null
+        }
+    }
+
+    /*
+     * Why: "R$ 1,5 mil" or "R$1.5K", the short amount of a chart's value line. Bitcoin, ether and Android before 11,
+     * which has no short currency format, write the whole amount.
+     */
+    fun toCompactText(amountMinor: Long): String {
+        val format = compactFormat ?: return toText(amountMinor)
+        return format.format(amountMinor.toDecimal()).toString()
+    }
+
     // Why: "120,50" with no symbol, where the currency is already on the same line ("você recebe 120 e deve 218,50").
     fun toAmountText(amountMinor: Long): String {
         val digits = currency.getDisplayFractionDigits(amountMinor, showsSats)
@@ -97,6 +125,7 @@ class MoneyFormatter(
         const val PLUS_SIGN = "+"
         const val BITCOIN_SYMBOL = "₿"
         const val ETHER_SYMBOL = "Ξ"
+        const val COMPACT_DIGITS = 2
     }
 }
 

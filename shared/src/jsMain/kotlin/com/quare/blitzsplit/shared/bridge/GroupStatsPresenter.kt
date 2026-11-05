@@ -68,6 +68,7 @@ class JsStatsBar(
     val startMillis: Double,
     val endMillis: Double,
     val amountMinor: Double,
+    val expenseCount: Int,
     val isToday: Boolean,
     val isPeak: Boolean,
     val showsLabel: Boolean,
@@ -132,6 +133,11 @@ class JsGroupStatsState(
     val grain: String,
     val grains: Array<JsStatsGrain>,
     val bars: Array<JsStatsBar>,
+    // Why: the chart's value lines from 0 up, the last its top; empty while nothing was spent.
+    val chartTicksMinor: Array<Double>,
+    // Why: the dashed average line; null with one bar or nothing spent.
+    val chartAverageMinor: Double?,
+    val chartTopMinor: Double,
     val hasSparseLabels: Boolean,
     val grainNotes: Array<String>,
     val biggestExpense: JsStatsBiggestExpense?,
@@ -265,6 +271,9 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     grain = state.grain.code,
     grains = state.grains.map { JsStatsGrain(it.grain.code, it.isEnabled) }.toTypedArray(),
     bars = state.bars.map(::toJsStatsBar).toTypedArray(),
+    chartTicksMinor = state.chartTicksMinor.map { it.toDouble() }.toTypedArray(),
+    chartAverageMinor = state.chartAverageMinor?.toDouble(),
+    chartTopMinor = state.chartTopMinor.toDouble(),
     hasSparseLabels = state.hasSparseLabels,
     grainNotes = state.grainNotes.map { it.name }.toTypedArray(),
     biggestExpense = state.biggestExpense?.let { expense ->
@@ -336,6 +345,7 @@ private fun toJsStatsBar(bar: StatsBar): JsStatsBar = JsStatsBar(
     startMillis = bar.startMillis.toDouble(),
     endMillis = bar.endMillis.toDouble(),
     amountMinor = bar.amountMinor.toDouble(),
+    expenseCount = bar.expenseCount,
     isToday = bar.isToday,
     isPeak = bar.isPeak,
     showsLabel = bar.showsLabel,

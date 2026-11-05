@@ -38,6 +38,11 @@
     <string name="group_stats_peak_week">Most expensive week: %s,</string>
     <string name="group_stats_peak_month">Most expensive month: %s,</string>
     <string name="group_stats_peak_year">Most expensive year: %s,</string>
+    <string name="group_stats_average_day">Average per day:</string>
+    <string name="group_stats_average_week">Average per week:</string>
+    <string name="group_stats_average_month">Average per month:</string>
+    <string name="group_stats_average_year">Average per year:</string>
+    <string name="group_stats_callout_none">No expenses</string>
     <string name="group_stats_today">today</string>
     <string name="group_stats_aria_day">Spending by day: %s</string>
     <string name="group_stats_aria_week">Spending by week: %s</string>

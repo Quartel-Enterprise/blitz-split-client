@@ -142,6 +142,7 @@ internal class StatsCalculator(
         val buckets = span.splitBy(grain)
         // Why: each bill's day once, into the bucket holding it (the buckets follow each other in order).
         val amountsByBucket = LongArray(buckets.size)
+        val countsByBucket = IntArray(buckets.size)
         spending.expenses.forEach { expense ->
             val date = SpentDay.dateOf(expense.spentAt, timeZone)
             val index = buckets.binarySearch { bucket ->
@@ -151,7 +152,10 @@ internal class StatsCalculator(
                     else -> 0
                 }
             }
-            if (index >= 0) amountsByBucket[index] += expense.amountMinor
+            if (index >= 0) {
+                amountsByBucket[index] += expense.amountMinor
+                countsByBucket[index]++
+            }
         }
         val amounts = amountsByBucket.toList()
         val peak = amounts.indexOf(amounts.maxOrNull()?.takeIf { it > 0 })
@@ -161,6 +165,7 @@ internal class StatsCalculator(
                 startMillis = SpentDay.startOf(bucket.start, timeZone),
                 endMillis = SpentDay.startOf(bucket.end, timeZone),
                 amountMinor = amounts[index],
+                expenseCount = countsByBucket[index],
                 isToday = grain == StatsGrain.DAY && bucket.start == today,
                 isPeak = index == peak,
                 showsLabel = index % labelStep == 0,

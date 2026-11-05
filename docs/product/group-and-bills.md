@@ -91,10 +91,25 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     (`StatsChartPreferences` in `device_settings`): Day only up to 3 months, the others once the period touches two of
     them, Year once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
     doesn't fit opens on Day (up to 3 months) or Month, the disabled ones say why under the chart (`StatsGrainNote`).
+    The chart reads against up to three dashed value lines at round steps from 0 ("R$ 500", "R$ 1 mil", "R$ 1,5 mil",
+    `GroupStatsUiState.chartTicksMinor`), their short amounts on the end side, the top one being the scale's top, and
+    a dashed "Average per day" (week, month, year) line: the mean of every bar, the empty ones too
+    (`chartAverageMinor`), named with its amount under the chart, after the most expensive one. A bar or point picked
+    shows a callout over it with its period, amount and bills ("Oct 28", "R$ 1,458", "3 expenses", or "No
+    expenses"), the other bars fading and the line drawing a rule and a bigger point: the mouse or trackpad over it
+    (the web, the Mac, Android and iPad with a pointer; a click keeps what hovering picked), a tap that keeps it until
+    a second tap (or a tap on another one), a sideways drag running along the bars (a mostly vertical one scrolls the
+    page and picks nothing), and the arrow keys on the web, the Mac and Android (Home, End and Escape too, but on the
+    Mac). Each new bar picked by touch ticks the haptics; VoiceOver plays the series as an Audio Graph, and the web
+    reads the picked bar aloud. The bars grow from the base, and the line draws in from the start side, when the
+    grain, the period or the chart type changes.
     Then the most expensive one, and "Biggest expense", which opens its Bill. A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
     category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
     to 100), a bill without a category counted in Other and one of a deleted category in its parent or Other.
+    A slice picked by the mouse over it (a click keeps it), a tap (a second tap, or one in the hole, lets go) or its
+    legend line, which makes even a 2% slice easy to reach, pops out while the others fade, and the ring's middle
+    names it with its share instead of the largest category. The ring sweeps in when the period changes.
     While a new device's first download still brings bills down it counts what came, as "Total spent so far"
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "By

@@ -96,6 +96,23 @@ enum GroupStatsCopy {
         return String(localized: "Most expensive day: \(name),")
     }
 
+    /// "Average per day:", before the amount of the chart's dashed average line.
+    static func average(grain: StatsGrain) -> String {
+        if grain == .week { return String(localized: "Average per week:") }
+        if grain == .month { return String(localized: "Average per month:") }
+        if grain == .year { return String(localized: "Average per year:") }
+        return String(localized: "Average per day:")
+    }
+
+    /// "R$ 1,5 mil" or "R$1.5K": the short amount of a value line of the chart. Bitcoin and ether, which have no
+    /// short currency format, write the whole amount.
+    static func compactAmount(_ minor: Int64, currency: GroupCurrency) -> String {
+        if currency.isCrypto { return currency.format(minor) }
+        var major = Decimal(minor)
+        for _ in 0..<Int(currency.fractionDigits) { major /= 10 }
+        return major.formatted(.currency(code: currency.code).notation(.compactName).precision(.significantDigits(1...2)))
+    }
+
     /// The chart's whole text for VoiceOver: "Spending by day: Oct 24 $561.00; Oct 25 nothing; …".
     static func chartDescription(_ state: GroupStatsUiState) -> String {
         let nothing = String(localized: "nothing")
