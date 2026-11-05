@@ -38,7 +38,16 @@ export function t(key: MessageKey, params?: Record<string, string | number>): st
 }
 
 // Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.
-const irregularSecondPerson: Record<string, string> = { deshizo: 'deshiciste', cambió: 'cambiaste' }
+const irregularSecondPerson: Record<string, string> = {
+  deshizo: 'deshiciste',
+  cambió: 'cambiaste',
+  // Why: an -iar verb ends its preterite in "-ió" but takes "-aste", unlike the -er and -ir verbs.
+  envió: 'enviaste',
+  inició: 'iniciaste',
+  copió: 'copiaste',
+  vació: 'vaciaste',
+  anunció: 'anunciaste',
+}
 
 /**
  * An activity verb ("dividió", "se unió a", "cambió la división de") said to the user, who is "Tú" in Spanish:

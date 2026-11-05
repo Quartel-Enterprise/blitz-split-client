@@ -62,6 +62,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "%1$@ agregó a %2$@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%1$@ añadió a %2$@"
           }
         },
@@ -772,6 +778,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agrega gastos al instante, estés donde estés"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añade gastos al instante, estés donde estés"
           }
         },
@@ -786,6 +798,12 @@
     "Add bills right away, wherever you are, even offline. And get payment notices." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega gastos al instante, estés donde estés, incluso sin conexión. Y recibe avisos de pago."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añade gastos al instante, estés donde estés, incluso sin conexión. Y recibe avisos de pago."
@@ -805,6 +823,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar a alguien sin la app"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir a alguien sin la app"
           }
         },
@@ -819,6 +843,12 @@
     "Add the bill while you're still at the table, even offline. It syncs once you're back online." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega el gasto mientras sigues en la mesa, incluso sin conexión. Se sincroniza cuando vuelvas a tener internet."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añade el gasto mientras sigues en la mesa, incluso sin conexión. Se sincroniza cuando vuelvas a tener internet."
@@ -5146,7 +5176,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ envió una solicitud de pago a %2$@"
+            "value" : "%1$@ cobró a %2$@"
           }
         },
         "pt-BR" : {
@@ -6228,6 +6258,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar término"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir término"
           }
         },
@@ -6243,6 +6279,12 @@
       "comment" : "Default split",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar excepción"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir excepción"
@@ -6279,6 +6321,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar término"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir término"
           }
         },
@@ -6296,6 +6344,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar término en %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir término en %@"
           }
         },
@@ -6311,6 +6365,12 @@
       "comment" : "Category map search",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar “%@”"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir “%@”"
@@ -11312,6 +11372,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar %@ a un grupo"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir %@ a un grupo"
           }
         },
@@ -11327,6 +11393,12 @@
       "comment" : "A contact's profile: adds them to one of your groups",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar a un grupo"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir a un grupo"
@@ -13012,6 +13084,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "%@ todavía no se ha unido. Puedes volver a agregar a esa persona después."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%@ todavía no se ha unido. Puedes volver a añadir a esa persona después."
           }
         },
@@ -13792,6 +13870,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir"
           }
         },
@@ -13806,6 +13890,12 @@
     "Add a Pix or Bitcoin key" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar una clave Pix o Bitcoin"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir una clave Pix o Bitcoin"
@@ -13825,6 +13915,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar por nombre"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir por nombre"
           }
         },
@@ -13840,6 +13936,12 @@
       "comment" : "Adds someone to the group, on the members screen",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar persona"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir persona"
@@ -13858,6 +13960,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar foto"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir foto"
           }
         },
@@ -13873,6 +13981,12 @@
       "comment" : "Message of a group without bills",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega el primer gasto o invita a quien va a dividir contigo. Las personas sin la app también cuentan."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añade el primer gasto o invita a quien va a dividir contigo. Las personas sin la app también cuentan."
@@ -16174,6 +16288,12 @@
             "value" : "Todo lo que se añada para ti aparece aquí."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo lo que se añada para ti aparece aquí."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18269,6 +18389,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Nadie necesita la app ahora. Ya puedes agregar gastos para todos y enviar el enlace después."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Nadie necesita la app ahora. Ya puedes añadir gastos para todos y enviar el enlace después."
           }
         },
@@ -18895,6 +19021,12 @@
     "Pick your name. You'll see the expenses already added for that person." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige tu nombre. Verás los gastos que ya se agregeron para esa persona."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Elige tu nombre. Verás los gastos que ya se añadieron para esa persona."
@@ -20124,6 +20256,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomar foto"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer foto"
           }
         },
         "pt-BR" : {
@@ -21471,6 +21609,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Entras como miembro nuevo. Los gastos agregados antes no te incluyen."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Entras como miembro nuevo. Los gastos añadidos antes no te incluyen."
           }
         },
@@ -22457,6 +22601,12 @@
     "Balances show up once the first expense is added." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los saldos aparecen cuando se añada el primer gasto."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los saldos aparecen cuando se añada el primer gasto."
@@ -24410,6 +24560,12 @@
             "value" : "Nadie te debe y tú no le debes a nadie. Cuando alguien añada un gasto, el saldo aparece aquí."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadie te debe y tú no le debes a nadie. Cuando alguien añada un gasto, el saldo aparece aquí."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25776,6 +25932,12 @@
             "value" : "Las estadísticas aparecen cuando se añada el primer gasto."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las estadísticas aparecen cuando se añada el primer gasto."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26108,6 +26270,12 @@
       "comment" : "Default split: what it changes",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vale para los gastos nuevos. En cada gasto se puede cambiar al momento. Los gastos ya agregados no cambian."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vale para los gastos nuevos. En cada gasto se puede cambiar al momento. Los gastos ya añadidos no cambian."
@@ -26870,6 +27038,12 @@
       "comment" : "Split, for a group with a default split: under the modes",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo predeterminado está en Editar grupo › División predeterminada. Los gastos ya agregados no cambian."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lo predeterminado está en Editar grupo › División predeterminada. Los gastos ya añadidos no cambian."
@@ -27944,6 +28118,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Agregar un artículo de %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Añadir un artículo de %@"
           }
         },
@@ -28220,6 +28400,12 @@
       "comment" : "Adds an item to the bill",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar artículo"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir artículo"
@@ -28675,6 +28861,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "%1$@ agregó “%2$@” contigo"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%1$@ añadió “%2$@” contigo"
           }
         },
@@ -28963,6 +29155,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "%1$@ te agregó al grupo"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%1$@ te añadió al grupo"
           }
         },
@@ -29020,6 +29218,30 @@
           }
         },
         "es" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Quien abra este enlace entra directo como %1$@, sin elegir de la lista, y ya ve su parte de %2$@ en los %3$lld gastos agregados hasta ahora. Funciona una sola vez."
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Quien abra este enlace entra directo como %1$@, sin elegir de la lista, y ya ve su parte de %2$@ en el gasto agregado hasta ahora. Funciona una sola vez."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Quien abra este enlace entra directo como %1$@, sin elegir de la lista, y ya ve su parte de %2$@ en los %3$lld gastos agregados hasta ahora. Funciona una sola vez."
+                }
+              }
+            }
+          }
+        },
+        "es-ES" : {
           "variations" : {
             "plural" : {
               "many" : {
@@ -31946,6 +32168,12 @@
             "value" : "Recibe una notificación cuando alguien añada un gasto contigo o marque un pago a tu favor."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recibe una notificación cuando alguien añada un gasto contigo o marque un pago a tu favor."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31977,6 +32205,12 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Actívalas en Ajustes para saber cuándo alguien agrega un gasto contigo."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Actívalas en Ajustes para saber cuándo alguien añade un gasto contigo."
           }
         },
@@ -31992,6 +32226,12 @@
       "comment" : "Home's notification card once refused, on the Mac",
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actívalas en Ajustes del Sistema para saber cuándo alguien agrega un gasto contigo."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actívalas en Ajustes del Sistema para saber cuándo alguien añade un gasto contigo."

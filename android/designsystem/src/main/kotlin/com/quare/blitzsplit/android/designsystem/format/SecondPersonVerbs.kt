@@ -6,7 +6,15 @@ import androidx.compose.ui.platform.LocalLocale
 private const val SPANISH = "es"
 private const val SINGULAR_SUFFIX_IO = "ió"
 private const val SINGULAR_SUFFIX_O = "ó"
-private val irregularSecondPerson = mapOf("deshizo" to "deshiciste", "cambió" to "cambiaste")
+private val irregularSecondPerson = mapOf(
+    "deshizo" to "deshiciste",
+    "cambió" to "cambiaste",
+    "envió" to "enviaste",
+    "inició" to "iniciaste",
+    "copió" to "copiaste",
+    "vació" to "vaciaste",
+    "anunció" to "anunciaste",
+)
 
 /*
  * Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.

@@ -386,7 +386,7 @@ internal fun deletedNoticeTextOf(
         stringResource(noticeRes),
         isMe = true,
         actorPlaceholder = "%2\$s",
-    ).format(subject, byName, date)
+    ).format(LocalLocale.current.platformLocale, subject, byName, date)
 }
 
 // Why: "Hoje", "Ontem", or "Sexta, 30 de outubro" over each day.

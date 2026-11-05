@@ -4,15 +4,19 @@ import SwiftUI
 /// device's user the verb after the "Tú" is conjugated to the second person. Other languages are left as they are.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
-/// changed before the names, bold or not, go in. The same rules as the web's and Android's `verbForYou`.
+/// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
 enum SecondPerson {
     /// Stand-ins for the actor and the object while the sentence is localized: private-use characters no copy has.
     static let actor = "\u{E000}"
     static let object = "\u{E001}"
 
-    private static let irregular = ["deshizo": "deshiciste", "cambió": "cambiaste"]
+    private static let irregular = [
+        "deshizo": "deshiciste", "cambió": "cambiaste",
+        // Why: an -iar verb ends its preterite in "-ió" but takes "-aste", unlike the -er and -ir verbs.
+        "envió": "enviaste", "inició": "iniciaste", "copió": "copiaste", "vació": "vaciaste", "anunció": "anunciaste",
+    ]
 
-    private static var isSpanish: Bool {
+    static var isSpanish: Bool {
         Bundle.main.preferredLocalizations.first?.hasPrefix("es") == true
     }
 

@@ -2,4 +2,6 @@
 <resources>
     <string name="activity_kind_member_added">%1$s añadió a %2$s</string>
     <string name="activity_notification_settings">Ajustes de notificaciones</string>
+    <string name="activity_field_amount">Importe</string>
+    <string name="activity_split_amount">Importes</string>
 </resources>

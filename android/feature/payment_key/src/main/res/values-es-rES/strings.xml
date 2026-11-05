@@ -5,5 +5,5 @@
     <string name="payment_key_error_invalid_phone">Número de móvil incompleto: usa el código de área y 9 dígitos, empezando con 9.</string>
     <string name="payment_key_error_invalid_lightning">Esto no es una Lightning Address (nombre@cartera) ni una LNURL.</string>
     <string name="payment_key_accepted_lightning_address_sample">nombre@cartera.app</string>
-    <string name="payment_key_footer_bitcoin">Al saldar cuentas, mostramos el monto en sats al tipo de cambio actual. Es solo una estimación: quien paga la confirma en su cartera.</string>
+    <string name="payment_key_footer_bitcoin">Al saldar cuentas, mostramos el importe en sats al tipo de cambio actual. Es solo una estimación: quien paga la confirma en su cartera.</string>
 </resources>

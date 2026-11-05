@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="register_payment_pay_note_bitcoin">Paga en tu cartera y vuelve para marcarlo como pagado.</string>
+    <string name="register_payment_over_debt">%s. Usa hasta ese importe.</string>
+    <string name="register_payment_amount">Importe pagado</string>
+    <string name="register_payment_pay_otherwise">Pagué otro importe o de otra forma</string>
 </resources>
