@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchFromPage
 import com.quare.blitzsplit.core.navigation.personProfileRouteOf
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -170,6 +171,10 @@ class GroupStatsViewModel(
             GroupStatsUiEvent.OnBackClicked -> leave()
 
             is GroupStatsUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
+
+            GroupStatsUiEvent.OnRailSearchClicked -> if (isOnTop() && navigator.openSearchFromPage()) {
+                trackEvent("search_opened", mapOf("source" to "group_stats"))
+            }
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
 

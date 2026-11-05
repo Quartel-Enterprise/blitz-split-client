@@ -256,6 +256,22 @@ class RequestUpdatePromptIfNeededUseCaseTest {
     }
 
     @Test
+    fun `GIVEN Atividade on top WHEN opening the app THEN offers the newer version over it`() = runTest {
+        // Given
+        prepareScenario(
+            lastPromptAgo = null,
+            availability = newVersion,
+            top = Route.Activity(personKey = null),
+        )
+
+        // When
+        useCase()
+
+        // Then
+        assertEquals(listOf(newVersion to UpdatePromptSource.STARTUP), shownPrompts)
+    }
+
+    @Test
     fun `GIVEN a form on top WHEN opening the app THEN offers nothing over it`() = runTest {
         // Given
         prepareScenario(

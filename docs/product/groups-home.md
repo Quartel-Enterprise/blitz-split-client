@@ -68,7 +68,10 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     window looks for it, both opening a command dialog, as ⌘K or Ctrl+K does; the web's pages outside the tabs (a
     group's, Statistics, Profile, Activity, a contact's profile) keep the same item, so the bars never change, which
     goes back to the tab the page sits in and opens the search over it, as iOS's search tab leaves a pushed screen
-    (`HomeSidebarUiEvent.OnSearchClicked`, no ⌘K there, which could close a dialog over the page); and the Mac's toolbar field on
+    (`HomeSidebarUiEvent.OnSearchClicked`, no ⌘K there, which could close a dialog over the page), and Android's rail
+    beside a group's screens drawn alone ends with it too (`Navigator.openSearchFromPage`); over Groups that is
+    Groups' own search, which takes the route's place (the first result beside the list), and it closes once Groups
+    leaves the back stack, so iOS's search tab never stays in front of Activity opened from a notice; and the Mac's toolbar field on
     Groups, whose results take the groups' place once something is typed, and a magnifier (⌘K's dialog's twin, a
     sheet) on the other tabs, as macOS puts search in the toolbar. Over Home, Balances and Contacts it is a route
     of its own over the tab (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with

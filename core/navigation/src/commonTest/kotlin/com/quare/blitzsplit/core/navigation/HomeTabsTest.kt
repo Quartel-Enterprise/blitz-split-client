@@ -384,6 +384,53 @@ class HomeTabsTest {
     }
 
     @Test
+    fun `GIVEN a group over the groups WHEN searching from it THEN the search opens over the groups`() {
+        // Given
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+        )
+
+        // When
+        val isOpen = navigator.openSearchFromPage()
+
+        // Then
+        assertTrue(isOpen)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a profile over Saldos WHEN searching from it THEN the search opens over that Saldos`() {
+        // Given
+        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+        prepareScenario(Route.Home, balances, Route.ContactProfile(PERSON_KEY))
+
+        // When
+        navigator.openSearchFromPage()
+
+        // Then
+        assertEquals(listOf(Route.Home, balances, Route.Search), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN no Inicio in the back stack WHEN searching from a page THEN nothing opens`() {
+        // Given
+        prepareScenario(Route.Welcome)
+
+        // When
+        val isOpen = navigator.openSearchFromPage()
+
+        // Then
+        assertFalse(isOpen)
+        assertEquals(listOf<Route>(Route.Welcome), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN a group Inicio opened WHEN its rail opens Inicio THEN goes back to Inicio`() {
         // Given
         prepareScenario(

@@ -111,6 +111,7 @@ fun GroupStatsContent(
     WithGroupNavigationRail(
         selected = state.homeTab,
         onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnRailTabClicked(tab)) },
+        onSearchClick = { onEvent(GroupStatsUiEvent.OnRailSearchClicked) },
         modifier = modifier,
     ) { showsRail ->
         GroupStatsScaffold(

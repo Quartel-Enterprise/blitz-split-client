@@ -16,7 +16,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -654,6 +653,37 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
+    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN it is not offered and nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                groupsRead = false,
+                stack = listOf(Route.Home, Route.Profile),
+            )
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.canSearch)
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a group on the device WHEN the last group leaves the device THEN Buscar is no longer offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertFalse(viewModel.uiState.value.canSearch)
+        }
+
+    @Test
     fun `GIVEN a group opened from Grupos WHEN tapping Buscar THEN goes back to Grupos and opens the search over it`() =
         runTest(testDispatcher) {
             // Given
@@ -903,7 +933,6 @@ class HomeSidebarViewModelTest {
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
             observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
-            observeHasGroups = ObserveHasGroupsUseCase(groups),
         )
     }
 }

@@ -664,6 +664,35 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the statistics over the groups WHEN its rail opens Buscar THEN the search opens over the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isOverHome = true)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnRailSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "group_stats")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill over the statistics WHEN a late Buscar arrives THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isOverHome = true)
+        navigator.navigate(Route.BillDetail("trip", "dinner", focusCommentId = null))
+        val stack = navigator.backStack.value
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnRailSearchClicked)
+
+        // Then
+        assertEquals(stack, navigator.backStack.value)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the statistics over the groups WHEN drawn THEN the rail selects Grupos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1666,13 +1695,16 @@ class GroupStatsViewModelTest {
         isDownloadReadAtStart: Boolean = true,
         payments: List<Settlement> = emptyList(),
         arePaymentsReadAtStart: Boolean = true,
+        // Why: the statistics of a group a row of Grupos opened, with Início under them, as the app has it.
+        isOverHome: Boolean = false,
     ) {
         firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
         settlements = FakeSettlementRepository(initialSettlements = payments)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = if (isOverHome) Route.Home else Route.Groups).also {
+            if (isOverHome) it.navigate(Route.Groups)
             it.navigate(
                 Route.GroupDetail(
                     GROUP_ID,

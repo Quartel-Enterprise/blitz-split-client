@@ -28,6 +28,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
              */
             is OnRailTabClicked -> EventAnalytics.NotTracked
 
+            // Why: only a search that opens, never a late tap over what the group opened.
+            OnRailSearchClicked -> EventAnalytics.Manual("search_opened")
+
             OnEditGroupClicked -> EventAnalytics.Automatic("edit_group_clicked")
 
             // Why: a toggle, sent with where it ended up.
@@ -109,6 +112,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
     data class OnRailTabClicked(
         val tab: HomeTab,
     ) : GroupDetailUiEvent
+
+    // Why: the rail's last item, "Buscar", as on the home's rail: the search over the tab the group was opened from.
+    data object OnRailSearchClicked : GroupDetailUiEvent
 
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : GroupDetailUiEvent

@@ -184,7 +184,9 @@ Saldos); a face tapped in Saldos opens the same profile over Saldos. Atividade o
 "Buscar" is the same search on every tab. Grupos keeps it as its own state (`GroupsUiState.search`), since its
 results preview beside the list; over Início, Saldos and Contatos it is a route of its own,
 `Route.Search`, pushed by `Navigator.openSearchOver(HomeTab)` only while that tab is on top, so a late tap never
-stacks it over something the tab opened. `SearchViewModel` closes it with `navigateBack` and opens a result in its
+stacks it over something the tab opened. From a screen outside the tabs (the web's pages, Android's rail beside a
+group) `Navigator.openSearchFromPage()` goes back to the tab under it first; a `Route.Search` pushed right over Grupos
+is taken by `GroupsViewModel` for its own search, which also closes once Grupos leaves the back stack. `SearchViewModel` closes it with `navigateBack` and opens a result in its
 place (`replaceAbove`), so back from the group or the bill returns to the tab, never to the search.
 
 A group's tabs (Despesas, Saldos, Membros) are state too: the group is one route, `Route.GroupDetail(groupId,

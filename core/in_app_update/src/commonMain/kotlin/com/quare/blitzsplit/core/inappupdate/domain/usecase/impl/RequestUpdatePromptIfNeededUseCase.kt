@@ -60,7 +60,8 @@ class RequestUpdatePromptIfNeededUseCase(
         return elapsed < Duration.ZERO || elapsed >= cooldown
     }
 
-    private fun Route.isRestingScreen(): Boolean = isHomeTab() || this is Route.GroupDetail
+    // Why: Atividade too, no tab since its bell, where a push notification's cold start lands.
+    private fun Route.isRestingScreen(): Boolean = isHomeTab() || this is Route.GroupDetail || this is Route.Activity
 
     private val UpdateAvailability.Pending.cooldown: Duration
         get() = when (this) {

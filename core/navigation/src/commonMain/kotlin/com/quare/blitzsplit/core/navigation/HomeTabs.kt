@@ -74,6 +74,20 @@ fun Navigator.openSearchOver(tab: HomeTab): Boolean {
     return true
 }
 
+/*
+ * Why: "Buscar" from a screen outside the tabs (the web's pages, Android's rail beside a group), the navigation's item
+ * there too: back to the tab the screen on top sits in, then the search over it, as iOS's search tab leaves a pushed
+ * screen. Over Grupos, Grupos takes the route for its own search. Says whether it opened, which Analytics counts.
+ */
+fun Navigator.openSearchFromPage(): Boolean {
+    val stack = backStack.value
+    val top = stack.lastOrNull() ?: return false
+    if (Route.Home !in stack) return false
+    val tab = stack.findHomeTabUnder(top)
+    openHomeTab(tab)
+    return openSearchOver(tab)
+}
+
 // Why: one of the home's tabs (Início, Grupos, Saldos, Contatos), as opposed to what they opened.
 fun Route.isHomeTab(): Boolean = homeTabOrNull() != null
 

@@ -22,7 +22,6 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
@@ -301,6 +300,16 @@ class GroupsViewModel(
             .distinctUntilChanged()
             .onEach { groupId -> uiState.update { it.copy(selectedGroupId = groupId) } }
             .launchIn(viewModelScope)
+        GroupsSearchStack(navigator).watch(
+            scope = viewModelScope,
+            canSearch = uiState.map { it.canSearch }.distinctUntilChanged(),
+            isOpen = { uiState.value.search.isOpen },
+            close = ::closeSearch,
+            open = {
+                uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
+                search { it }
+            },
+        )
     }
 
     override fun handleEvent(event: GroupsUiEvent) {
@@ -413,20 +422,8 @@ class GroupsViewModel(
 
             is SearchUiEvent.OnBillClicked -> openBill(event.groupId, event.expenseId)
 
-            /*
-             * Why: the bar around the search in Grupos' place, whose Grupos leaves the search for the groups; only while
-             * the search shows, so a late tap never closes what the groups opened since.
-             */
-            is SearchUiEvent.OnHomeTabClicked -> if (uiState.value.search.isOpen) {
-                handleEvent(
-                    when (event.tab) {
-                        HomeTab.HOME -> GroupsUiEvent.OnHomeTabClicked
-                        HomeTab.GROUPS -> GroupsUiEvent.OnSearchTabLeft
-                        HomeTab.BALANCES -> GroupsUiEvent.OnBalancesTabClicked
-                        HomeTab.CONTACTS -> GroupsUiEvent.OnContactsTabClicked
-                    },
-                )
-            }
+            // Why: only while the search shows, so a late tap never closes what the groups opened since.
+            is SearchUiEvent.OnHomeTabClicked -> if (uiState.value.search.isOpen) handleEvent(event.tab.toGroupsEvent())
         }
     }
 

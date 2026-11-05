@@ -1229,6 +1229,35 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Buscar THEN the search opens over the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnRailSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "group_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill over the group WHEN a late Buscar arrives THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
+        val stack = navigator.backStack.value
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnRailSearchClicked)
+
+        // Then
+        assertEquals(stack, navigator.backStack.value)
+        assertTrue(trackedEvents.none { (name, _) -> name == "search_opened" })
+    }
+
+    @Test
     fun `GIVEN a bill over the group WHEN its rail is tapped THEN nothing changes`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

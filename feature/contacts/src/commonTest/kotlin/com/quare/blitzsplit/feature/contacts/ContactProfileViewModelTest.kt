@@ -143,6 +143,29 @@ class ContactProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile opened again from her history WHEN Ver tudo is tapped THEN goes back to that history`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
+            navigator.navigate(Route.ContactProfile(CARLA_KEY))
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Contacts,
+                    Route.ContactProfile(CARLA_KEY),
+                    Route.Activity(personKey = CARLA_KEY),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN Carla owes you WHEN Cobrar is tapped THEN opens the message of Saldos for her`() =
         runTest(testDispatcher) {
             // Given

@@ -33,6 +33,8 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openActivity
+import com.quare.blitzsplit.core.navigation.openSearchFromPage
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
@@ -753,6 +755,176 @@ class GroupsSearchTest {
 
             // Then
             assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the groups over Inicio WHEN the search route is pushed THEN they open their own search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+
+            // When
+            navigator.navigate(Route.Search)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+        }
+
+    @Test
+    fun `GIVEN the groups over Inicio WHEN the search route is pushed over them THEN tracks nothing from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+
+            // When
+            navigator.navigate(Route.Search)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN the search route is pushed over the groups THEN the route stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                storedExpenses = emptyList(),
+                backStack = listOf(Route.Home, Route.Groups),
+            )
+
+            // When
+            navigator.navigate(Route.Search)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.search.isOpen)
+        }
+
+    @Test
+    fun `GIVEN the search route over the groups and no group WHEN a sync brings one THEN the groups take it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                storedExpenses = emptyList(),
+                backStack = listOf(Route.Home, Route.Groups),
+            )
+            navigator.navigate(Route.Search)
+
+            // When
+            groups.groups.value = listOf(ape)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a group opened from the groups WHEN the search route is pushed over the group THEN it stays`() =
+        runTest(testDispatcher) {
+            // Given
+            val group = Route.GroupDetail(
+                "churrasco",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            )
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups, group))
+
+            // When
+            navigator.navigate(Route.Search)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, group, Route.Search), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.search.isOpen)
+        }
+
+    @Test
+    fun `GIVEN Contatos over Inicio WHEN the search route is pushed over it THEN it stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(backStack = listOf(Route.Home, Route.Contacts))
+
+        // When
+        navigator.navigate(Route.Search)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+        assertFalse(viewModel.uiState.value.search.isOpen)
+    }
+
+    @Test
+    fun `GIVEN a group opened from the groups WHEN searching from that page THEN the groups open their own search`() =
+        runTest(testDispatcher) {
+            // Given
+            val group = Route.GroupDetail(
+                "churrasco",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            )
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups, group))
+
+            // When
+            navigator.openSearchFromPage()
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN Atividade takes the groups place THEN the search closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            navigator.openActivity()
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.search.isOpen)
+            assertEquals("", viewModel.uiState.value.search.query)
+        }
+
+    @Test
+    fun `GIVEN the search closed by Atividade WHEN the groups come back THEN the search stays closed and empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+            navigator.replaceAbove(1, Route.Activity(personKey = null))
+
+            // When
+            navigator.replaceAbove(1, Route.Groups)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertTrue(viewModel.uiState.value.search.results.isEmpty)
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN a result opens a group over them THEN the search stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnGroupClicked("churrasco")))
+
+            // Then
+            assertEquals(3, navigator.backStack.value.size)
+            assertTrue(viewModel.uiState.value.search.isOpen)
+            assertEquals("chur", viewModel.uiState.value.search.query)
         }
 
     private val churrasco = group(

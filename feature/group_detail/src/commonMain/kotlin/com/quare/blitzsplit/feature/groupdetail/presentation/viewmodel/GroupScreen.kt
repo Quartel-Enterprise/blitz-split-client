@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchFromPage
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -187,6 +188,9 @@ internal class GroupScreen(
     fun openHomeTab(tab: HomeTab) {
         if (isOnTop()) useCases.navigator.openHomeTab(tab)
     }
+
+    // Why: the search over the tab the group sits in, as the rail's "Buscar"; says whether it opened.
+    fun openSearch(): Boolean = isOnTop() && useCases.navigator.openSearchFromPage()
 
     // Why: Atividade over Início, closing the group as a tab of the rail does.
     fun openActivity() {

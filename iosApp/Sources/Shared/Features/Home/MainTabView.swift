@@ -146,7 +146,8 @@ struct MainTabView: View {
     }
 
     private var selectedTab: MainTab {
-        if showsSearchTab { return .search }
+        // The search lives over Groups: once something replaced Groups (Activity from a notice), that wins
+        if showsSearchTab, path.first == .groups { return .search }
         switch path.first {
         case .groups: return .groups
         case .globalBalances: return .balances

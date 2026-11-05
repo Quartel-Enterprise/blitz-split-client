@@ -195,6 +195,10 @@ class GroupDetailViewModel(
 
             is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
+            GroupDetailUiEvent.OnRailSearchClicked -> if (screen.openSearch()) {
+                trackEvent("search_opened", mapOf("source" to "group_detail"))
+            }
+
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
             GroupDetailUiEvent.OnPinToggled -> screen.togglePin()?.let { isPinned ->
