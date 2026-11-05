@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
@@ -697,7 +698,7 @@ class CryptoBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
             // Then
-            assertFalse(viewModel.uiState.value.showsReceiptCamera)
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
         }
 
     @Test
@@ -711,7 +712,7 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
             assertFalse(state.showsScanReceipt)
         }
 
@@ -729,7 +730,7 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -746,7 +747,7 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(state.showsScanReceipt)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -765,7 +766,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(BTC_ID, state.groupId)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
             assertFalse(state.showsScanReceipt)
         }
 
@@ -785,7 +786,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1205,8 +1206,8 @@ class CryptoBillViewModelTest {
             // Then
             assertTrue(state.isLoaded)
             assertNull(state.groupSelection)
-            assertFalse(state.isReceiptCameraRequested)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1224,7 +1225,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1244,7 +1245,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1261,8 +1262,8 @@ class CryptoBillViewModelTest {
 
             // Then
             assertEquals(BTC_ID, assertNotNull(state.groupSelection).groupId)
-            assertTrue(state.isReceiptCameraRequested)
-            assertFalse(state.showsReceiptCamera)
+            assertTrue(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1282,8 +1283,8 @@ class CryptoBillViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(BTC_ID, state.groupId)
             assertNull(state.groupSelection)
-            assertFalse(state.isReceiptCameraRequested)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1304,7 +1305,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1325,7 +1326,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1344,7 +1345,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1362,8 +1363,8 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertTrue(state.isReceiptCameraRequested)
-            assertFalse(state.showsReceiptCamera)
+            assertTrue(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1384,7 +1385,7 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1405,11 +1406,11 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(pending.isPickedGroupLoading)
-            assertFalse(pending.showsReceiptCamera)
+            assertFalse(pending.showsReceiptSourceChoice)
             val loaded = viewModel.uiState.value
             assertEquals(BTC_ID, loaded.groupId)
-            assertFalse(loaded.isReceiptCameraRequested)
-            assertFalse(loaded.showsReceiptCamera)
+            assertFalse(loaded.isReceiptSourceRequested)
+            assertFalse(loaded.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1432,7 +1433,86 @@ class CryptoBillViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(TRIP_ID, state.groupId)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a new bitcoin bill WHEN a source is picked THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+            assertTrue(trackedEvents.none { it.first == "receipt_source_picked" })
+        }
+
+    @Test
+    fun `GIVEN the camera picked WHEN a sync turns the group to bitcoin THEN the camera is dropped`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip),
+                route = newRoute(TRIP_ID),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.BTC))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.currency.isCrypto)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN the gallery dropped by a bitcoin sync WHEN the group is back in reais THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip),
+                route = newRoute(TRIP_ID),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.BTC))
+
+            // When
+            groups.groups.value = listOf(trip)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertNull(state.shownReceiptSource)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN the choice open on a real group WHEN a sync turns the group to bitcoin THEN the request is dropped`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip),
+                route = newRoute(TRIP_ID),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.BTC))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     // Why: the field emptied, then the amount put in whole, as pasting it does.

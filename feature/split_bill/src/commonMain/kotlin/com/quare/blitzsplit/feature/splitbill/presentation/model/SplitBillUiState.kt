@@ -104,8 +104,13 @@ data class SplitBillUiState(
     val receipt: BillReceipt?,
     // Why: the receipt's category, which the bill takes while the description's words choose none and none is picked.
     val receiptCategoryId: String?,
-    // Why: the camera (Android, iOS) or the file picker (the Mac, the web), asked for until a photo comes or it closes.
-    val isReceiptCameraRequested: Boolean,
+    /*
+     * Why: "Ler cupom fiscal" asks where the photo comes from first (beta feedback, part 2, item 7): "Tirar foto" or the
+     * gallery (Photos and a file on the Mac), asked for until one is picked or it closes.
+     */
+    val isReceiptSourceRequested: Boolean,
+    // Why: the camera, the gallery or the file picker picked on that choice, open until a photo comes or it closes.
+    val receiptSource: ReceiptPhotoSource?,
     // Why: someone else saved the bill while it was being edited here.
     val conflict: BillConflict?,
     // Why: a payment made after the bill whose pair's balance the change being typed moves (7.4b), said before saving.
@@ -208,13 +213,20 @@ data class SplitBillUiState(
         get() = !isEditing && isLoaded && isOnline && !isSaving && !isReadingReceipt && !currency.isCrypto
 
     /*
-     * Why: the camera or the file picker, once "Rachar em qual grupo?" was answered, so the photo is read in its currency.
-     * The groups arrive apart from the bill's group, so it waits for them too: the question may be about to open. Início's
-     * "Ler cupom fiscal" on a group in a cryptocurrency opens the bill alone.
+     * Why: "Tirar foto" or the gallery's choice, once "Rachar em qual grupo?" was answered, so the photo is read in its
+     * currency. The groups arrive apart from the bill's group, so it waits for them too: the question may be about to
+     * open. Início's "Ler cupom fiscal" on a group in a cryptocurrency opens the bill alone.
      */
-    val showsReceiptCamera: Boolean
-        get() = isReceiptCameraRequested && isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving &&
-            !currency.isCrypto && !isPickedGroupLoading
+    val showsReceiptSourceChoice: Boolean
+        get() = isReceiptSourceRequested && canOpenReceiptSource
+
+    // Why: the camera, the gallery or the file picker picked on the choice, under the same conditions as the choice.
+    val shownReceiptSource: ReceiptPhotoSource?
+        get() = receiptSource?.takeIf { canOpenReceiptSource }
+
+    private val canOpenReceiptSource: Boolean
+        get() = isLoaded && groups.isNotEmpty() && groupSelection == null && !isSaving && !currency.isCrypto &&
+            !isPickedGroupLoading
 
     // Why: until the group picked is read, the currency is still the last group's, which says nothing about its receipt.
     val isPickedGroupLoading: Boolean

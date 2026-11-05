@@ -18314,6 +18314,17 @@
         }
       }
     },
+    "Scan Receipt" : {
+      "comment" : "Split a bill on the Mac: the title of the choice between Photos and a file for the receipt's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler Cupom Fiscal"
+          }
+        }
+      }
+    },
     "Scan Receipt…" : {
       "comment" : "Split a bill on the Mac: picks a receipt's photo",
       "localizations" : {

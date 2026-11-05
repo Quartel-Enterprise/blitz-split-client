@@ -10,15 +10,90 @@ extension SplitBillModel {
         send(SplitBillUiEventOnReceiptPhotoPicked(photo: BlitzSplitApple.shared.toByteArray(data: data ?? Data())))
     }
 
-    /// The camera (a file panel on the Mac) while "Ler cupom fiscal" asks for it, once the form's sheet has settled
-    /// (Início's shortcut opens it with the bill); closing it without a photo says so.
-    func receiptCameraShown(isSettled: Bool) -> Binding<Bool> {
+    /// "Scan receipt" asks where the photo comes from (beta feedback, part 2, item 7), once the form's sheet has
+    /// settled (Início's shortcut opens it with the bill). Closing it without a pick says so, a beat later: a button
+    /// of the dialog may close it before its own action has picked.
+    func receiptSourceChoiceShown(isSettled: Bool) -> Binding<Bool> {
         Binding(
-            get: { isSettled && self.state.showsReceiptCamera },
+            get: { isSettled && self.state.showsReceiptSourceChoice },
             set: { shown in
-                if !shown, self.current.showsReceiptCamera { self.send(SplitBillUiEventOnReceiptCameraDismissed.shared) }
+                guard !shown else { return }
+                DispatchQueue.main.async {
+                    if self.current.showsReceiptSourceChoice { self.send(SplitBillUiEventOnReceiptPickerDismissed.shared) }
+                }
             },
         )
+    }
+
+    /// The camera, Photos or the Mac's file panel, once picked on that choice; closing it without a photo says so.
+    func receiptSourceShown(_ source: ReceiptPhotoSource, isSettled: Bool) -> Binding<Bool> {
+        Binding(
+            get: { isSettled && self.state.shownReceiptSource == source },
+            set: { shown in
+                if !shown, self.current.shownReceiptSource == source {
+                    self.send(SplitBillUiEventOnReceiptPickerDismissed.shared)
+                }
+            },
+        )
+    }
+
+    func pickReceiptSource(_ source: ReceiptPhotoSource) {
+        send(SplitBillUiEventOnReceiptSourcePicked(source: source))
+    }
+}
+
+extension View {
+    /// "Scan receipt"'s choice: "Take photo" (where there is a camera) or "Choose from Photos", and on the Mac "Choose
+    /// File…" too, as a bill's "Add" offers them. On iPhone and iPad it points at "Scan receipt" while that button is
+    /// on screen (`ReceiptSection`), else at the form.
+    func receiptSourceDialog(model: SplitBillModel, isPresented: Binding<Bool>) -> some View {
+        confirmationDialog(receiptSourceTitle, isPresented: isPresented, titleVisibility: .visible) {
+            #if os(iOS)
+            Button("Take photo") { model.pickReceiptSource(.camera) }
+            #else
+            Button("Choose File…") { model.pickReceiptSource(.files) }
+            #endif
+            Button("Choose from Photos") { model.pickReceiptSource(.photos) }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Fills in the amount, date and description from the photo.")
+        }
+    }
+
+    /// The form's side of the choice: the dialog while no "Scan receipt" button holds it, Photos once picked, and
+    /// straight to Photos where there is no camera to choose, the Mac's file panel being its own.
+    func receiptSourceChoice(model: SplitBillModel, isSettled: Bool) -> some View {
+        receiptSourceDialog(
+            model: model,
+            isPresented: model.receiptSourceChoiceShown(
+                isSettled: isSettled && ReceiptSource.hasChoice && model.receiptChoiceAnchors == 0,
+            ),
+        )
+        .onChange(of: isSettled && model.state.showsReceiptSourceChoice, initial: true) { _, shows in
+            if shows, !ReceiptSource.hasChoice { model.send(SplitBillUiEventOnReceiptChoiceSkipped(source: .photos)) }
+        }
+        .photoLibraryPicker(isPresented: model.receiptSourceShown(.photos, isSettled: isSettled)) { data in
+            model.receiptPicked(data)
+        }
+    }
+
+    private var receiptSourceTitle: Text {
+        #if os(macOS)
+        Text("Scan Receipt")
+        #else
+        Text("Scan receipt")
+        #endif
+    }
+}
+
+enum ReceiptSource {
+    /// A device without a camera (or one restricted) has nothing to choose: Photos opens at once.
+    static var hasChoice: Bool {
+        #if os(iOS)
+        CameraPicker.isAvailable
+        #else
+        true
+        #endif
     }
 }
 
@@ -153,6 +228,7 @@ struct ReceiptThumbnail: View {
 /// which the bill attaches once saved, with × to take it off.
 struct ReceiptSection: View {
     let model: SplitBillModel
+    let isSettled: Bool
     var showsScanButton = true
 
     private var state: SplitBillUiState {
@@ -201,6 +277,13 @@ struct ReceiptSection: View {
                     Label("Scan receipt", systemImage: "doc.viewfinder")
                 }
                 .disabled(!state.canScanReceipt)
+                // Why: the choice points at the button that asked for it, while the button is on screen.
+                .receiptSourceDialog(
+                    model: model,
+                    isPresented: model.receiptSourceChoiceShown(isSettled: isSettled && ReceiptSource.hasChoice),
+                )
+                .onAppear { model.receiptChoiceAnchors += 1 }
+                .onDisappear { model.receiptChoiceAnchors -= 1 }
             } footer: {
                 if state.isOnline {
                     Text("Fills in the amount, date and description from the photo.")

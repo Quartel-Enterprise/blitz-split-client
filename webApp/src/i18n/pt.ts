@@ -1755,6 +1755,8 @@ export const pt: Record<MessageKey, string> = {
   splitBill_receiptItemsOther: '{count} itens',
   splitBill_receiptFailedTitle: 'Não deu para ler o cupom',
   splitBill_receiptFailedBody: 'Tente de novo com mais luz e o cupom inteiro na foto, ou preencha à mão.',
+  splitBill_receiptTakePhoto: 'Tirar foto',
+  splitBill_receiptChoosePhoto: 'Escolher foto',
   splitBill_receiptRetake: 'Enviar outra foto',
   splitBill_receiptRetry: 'Tentar de novo',
   splitBill_receiptUnavailableTitle: 'O leitor de cupom não respondeu',

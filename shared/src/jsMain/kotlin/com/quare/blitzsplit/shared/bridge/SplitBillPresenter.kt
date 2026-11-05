@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -186,8 +187,10 @@ class JsSplitBillState(
     val canScanReceipt: Boolean,
     // Why: "Ler cupom fiscal" needs the internet; its help says so offline.
     val isOnline: Boolean,
-    // Why: the file picker to open, from Início's "Ler cupom fiscal", once "Rachar em qual grupo?" was answered.
-    val showsReceiptCamera: Boolean,
+    // Why: "Tirar foto" or "Escolher arquivo", asked once "Rachar em qual grupo?" was answered (beta feedback, part 2, 7).
+    val showsReceiptSourceChoice: Boolean,
+    // Why: the picker picked on that choice, to open: "camera" or "files"; null for none.
+    val receiptSource: String?,
     // Why: why the receipt read nothing (7.1g): "unreadable", "reader_unavailable", "limit_reached" or "offline".
     val receiptError: String?,
     val offersReceiptRetake: Boolean,
@@ -302,7 +305,8 @@ class SplitBillPresenter(
                 showsScanReceipt = state.showsScanReceipt,
                 canScanReceipt = state.canScanReceipt,
                 isOnline = state.isOnline,
-                showsReceiptCamera = state.showsReceiptCamera,
+                showsReceiptSourceChoice = state.showsReceiptSourceChoice,
+                receiptSource = state.shownReceiptSource?.name?.lowercase(),
                 receiptError = state.receiptError?.name?.lowercase(),
                 offersReceiptRetake = state.offersReceiptRetake,
                 offersReceiptRetry = state.offersReceiptRetry,
@@ -332,9 +336,29 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(photo))
     }
 
-    // Why: the file picker closed without a file.
-    fun dismissReceiptCamera() {
-        viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed)
+    // Why: "Ler cupom fiscal" and "Tirar outra foto", which ask where the photo comes from.
+    fun scanReceipt() {
+        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+    }
+
+    // Why: "Tirar foto" on that choice, the browser's camera.
+    fun takeReceiptPhoto() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+    }
+
+    // Why: "Escolher foto" on that choice.
+    fun chooseReceiptFile() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.FILES))
+    }
+
+    // Why: "Ler cupom fiscal" where the browser lists no camera, which opens the file chooser without asking.
+    fun skipReceiptChoice() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+    }
+
+    // Why: the choice closed, or the picker it opened was handed over to the page's own camera or file input.
+    fun dismissReceiptPicker() {
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
     }
 
     // Why: "Tentar de novo", the same photo sent again.

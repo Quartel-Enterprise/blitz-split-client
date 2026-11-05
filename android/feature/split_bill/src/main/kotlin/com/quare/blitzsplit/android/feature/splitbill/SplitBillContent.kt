@@ -40,7 +40,10 @@ fun SplitBillContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
-    // Why: the tabletop's halves leave "Ler cupom fiscal" out of the form; Início's shortcut still opens the camera.
+    /*
+     * Why: the tabletop's halves leave "Ler cupom fiscal" out of the form; Início's shortcut still asks where the
+     * photo comes from.
+     */
     val usesTabletopHalves = rememberUsesTabletopHalves(isDialog)
     ColumnsFormLayout(
         chrome = FormChrome(

@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.mapper.toReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -75,7 +76,16 @@ internal class ReceiptScanning(
                         mapOf("source" to SPLIT_BILL_SOURCE),
                     )
                 }
-                uiState.update { if (it.canScanReceipt) it.copy(isReceiptCameraRequested = true) else it }
+                uiState.update {
+                    if (it.canScanReceipt) {
+                        it.copy(
+                            isReceiptSourceRequested = true,
+                            receiptSource = null,
+                        )
+                    } else {
+                        it
+                    }
+                }
             }
 
             is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo) {
@@ -88,9 +98,37 @@ internal class ReceiptScanning(
                 }
             }
 
-            SplitBillUiEvent.OnReceiptCameraDismissed -> uiState.update { it.copy(isReceiptCameraRequested = false) }
+            is SplitBillUiEvent.OnReceiptSourcePicked -> {
+                if (uiState.value.showsReceiptSourceChoice) {
+                    trackEvent("receipt_source_picked", mapOf("source" to event.source))
+                }
+                open(event.source)
+            }
+
+            is SplitBillUiEvent.OnReceiptChoiceSkipped -> open(event.source)
+
+            SplitBillUiEvent.OnReceiptPickerDismissed -> uiState.update {
+                it.copy(
+                    isReceiptSourceRequested = false,
+                    receiptSource = null,
+                )
+            }
 
             SplitBillUiEvent.OnReceiptRemoved -> remove()
+        }
+    }
+
+    // Why: only from the choice still open, so a late tap never opens a picker the form no longer asks for.
+    private fun open(source: ReceiptPhotoSource) {
+        uiState.update {
+            if (it.showsReceiptSourceChoice) {
+                it.copy(
+                    isReceiptSourceRequested = false,
+                    receiptSource = source,
+                )
+            } else {
+                it
+            }
         }
     }
 
@@ -123,7 +161,8 @@ internal class ReceiptScanning(
         unansweredSource = null
         uiState.update {
             it.withEditorsClosed().copy(
-                isReceiptCameraRequested = false,
+                isReceiptSourceRequested = false,
+                receiptSource = null,
                 receipt = BillReceipt(
                     status = ReceiptStatus.READING,
                     itemCount = 0,

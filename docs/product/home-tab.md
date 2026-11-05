@@ -11,8 +11,9 @@ The home tab, its shortcuts and pinned groups.
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
     one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which opens Split a bill as
-    "Split a bill" does (asking the group first) and its camera at once (7.1e, `Route.SplitBill.scansReceipt`;
-    offline disabled with "Needs internet"),
+    "Split a bill" does (asking the group first) and asks at once where the receipt's photo comes from, "Take photo"
+    or the gallery, as the form's "Scan receipt" does (7.1e, `Route.SplitBill.scansReceipt`; offline disabled with
+    "Needs internet"),
     "Record payment", which asks "Who paid whom?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Record payment in its place), and
     "New group". "Your groups": up to three open groups, the pinned first, then the latest activity, as Groups draws
