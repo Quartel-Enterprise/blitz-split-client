@@ -57,6 +57,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     without the camera; the reader refuses them too.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
+  - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", Members'
+    "Add person") is a toolbar item, the bar's tinted glass item on iPhone and iPad (the bottom toolbar inside a group
+    on an iPhone upright) and the window toolbar's primary button on the Mac. Android keeps its FABs.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.

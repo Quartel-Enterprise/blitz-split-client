@@ -159,8 +159,8 @@ extension ToolbarContent {
 
 extension View {
     /// Keeps `isVertical` on whether this screen's toolbar is the vertical glass bar an iPhone Duo draws on its
-    /// camera's edge (iOS 27.1's `toolbarVerticalEdge`), where a screen moves the main button it floats under the
-    /// thumb into the bar; false anywhere else.
+    /// camera's edge (iOS 27.1's `toolbarVerticalEdge`), which takes a screen's main button as its icon alone, out of
+    /// the bottom toolbar inside a group; false anywhere else.
     func readingVerticalBar(_ isVertical: Binding<Bool>) -> some View {
         modifier(VerticalBarReading(isVertical: isVertical))
     }

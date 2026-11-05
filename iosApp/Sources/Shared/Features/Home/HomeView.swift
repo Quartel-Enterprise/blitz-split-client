@@ -61,11 +61,6 @@ struct HomeView: View {
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" under the profile.
     @State private var hasVerticalBar = false
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-    #endif
-
     private var state: HomeUiState {
         model.state
     }
@@ -117,22 +112,11 @@ struct HomeView: View {
                 profileButton
             }
             .prefersVerticalBar()
-            if state.showsSplitBillButton, !usesBottomButton {
+            // The bar's tinted glass item at every size: iOS has no FAB floating over the tab bar
+            if state.showsSplitBillButton {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
                 ToolbarItem(placement: .primaryAction) { splitBillButton }
                     .prefersVerticalBar()
-            }
-        }
-        // The upright iPhone: "Split a bill" floats over the tab bar, under the thumb, as the canvas draws it
-        .safeAreaInset(edge: .bottom) {
-            if state.showsSplitBillButton, usesBottomButton {
-                HStack {
-                    Spacer()
-                    splitBillButton
-                        .controlSize(.large)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
             }
         }
         #else
@@ -217,12 +201,6 @@ struct HomeView: View {
             return nil
         }
         return division.frame
-    }
-
-    /// The upright iPhone keeps "Split a bill" under the thumb; lying down and with an iPad's room it is the bar's
-    /// tinted glass item.
-    private var usesBottomButton: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
     }
     #endif
 
