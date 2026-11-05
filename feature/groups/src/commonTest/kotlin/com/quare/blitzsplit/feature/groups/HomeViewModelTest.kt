@@ -4645,6 +4645,70 @@ class HomeViewModelTest {
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
 
     // Why: Apple can deliver quietly with no prompt while never asked; Android and the web cannot.
+    @Test
+    fun `GIVEN Turn on refused WHEN notifications are allowed later elsewhere THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN the quiet answer in WHEN a read started before it says never asked THEN keeps the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.PROVISIONAL))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(NotificationPrompt.QUIET, viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(shown(NotificationPrompt.QUIET)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN another screen over Home WHEN the card comes up THEN counts it only once Home is back on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.Profile)
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            val shownBehind = tracked("notification_prompt_shown")
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertTrue(shownBehind.isEmpty())
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN the card counted as shown WHEN Home comes back on top with it THEN does not count it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            navigator.navigate(Route.Profile)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
     private fun appleReports(permission: NotificationPermission): HomeUiEvent =
         HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = true)
 

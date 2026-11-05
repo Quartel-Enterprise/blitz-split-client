@@ -55,7 +55,7 @@ class NotificationSettingsViewModel(
     val stateWatcher: FlowWatcher<NotificationSettingsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<NotificationSettingsUiAction> = FlowWatcher(uiAction)
 
-    // Why: the app asked the system, and the next check of the permission says how it answered.
+    // Why: the app asked the system, and its answer (OnPermissionAnswered) hasn't come back yet.
     private var awaitsPermissionAnswer = false
 
     init {
@@ -69,7 +69,13 @@ class NotificationSettingsViewModel(
         when (event) {
             NotificationSettingsUiEvent.OnBackClicked -> leave()
 
-            is NotificationSettingsUiEvent.OnPermissionChecked -> checkPermission(event.permission)
+            is NotificationSettingsUiEvent.OnPermissionChecked -> uiState.update {
+                it.copy(
+                    permission = event.permission,
+                )
+            }
+
+            is NotificationSettingsUiEvent.OnPermissionAnswered -> answerPermission(event.permission)
 
             is NotificationSettingsUiEvent.OnSystemBlockedTypesChecked -> uiState.update {
                 it.copy(systemBlockedTypes = event.types)
@@ -140,7 +146,7 @@ class NotificationSettingsViewModel(
         emit(NotificationSettingsUiAction.RequestPermission)
     }
 
-    private fun checkPermission(permission: NotificationPermission) {
+    private fun answerPermission(permission: NotificationPermission) {
         uiState.update { it.copy(permission = permission) }
         if (awaitsPermissionAnswer) {
             awaitsPermissionAnswer = false

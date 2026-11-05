@@ -37,7 +37,9 @@ final class NotificationSettingsModel {
         case is NotificationSettingsUiActionRequestPermission:
             Task {
                 await PushNotifications.requestPermission()
-                checkPermission()
+                // Its own event, so a read already under way isn't taken for the prompt's answer
+                let permission = await PushNotifications.readPermission()
+                send(NotificationSettingsUiEventOnPermissionAnswered(permission: permission))
             }
         case is NotificationSettingsUiActionOpenSystemSettings:
             PushNotifications.openSettings()

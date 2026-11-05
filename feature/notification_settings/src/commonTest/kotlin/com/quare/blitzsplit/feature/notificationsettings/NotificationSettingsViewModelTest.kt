@@ -1586,7 +1586,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
             // When
             viewModel.onEvent(answer)
@@ -1601,7 +1601,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
 
             // When
             viewModel.onEvent(answer)
@@ -1616,7 +1616,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.NOT_DETERMINED)
 
             // When
             viewModel.onEvent(answer)
@@ -1631,7 +1631,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
             viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
             // When
             viewModel.onEvent(answer)
@@ -1646,7 +1646,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
             viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
 
             // When
             viewModel.onEvent(answer)
@@ -1661,7 +1661,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
             viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.REFUSED_ONCE)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.REFUSED_ONCE)
 
             // When
             viewModel.onEvent(answer)
@@ -1676,7 +1676,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.PROVISIONAL)
             viewModel.onEvent(NotificationSettingsUiEvent.OnQuietTurnOnClicked)
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
             // When
             viewModel.onEvent(answer)
@@ -1691,7 +1691,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.PROVISIONAL)
             viewModel.onEvent(NotificationSettingsUiEvent.OnQuietTurnOnClicked)
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.PROVISIONAL)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.PROVISIONAL)
 
             // When
             viewModel.onEvent(answer)
@@ -1706,10 +1706,26 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.PROVISIONAL)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
             // When
             viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on while never asked WHEN a read under way lands first THEN sends no answer yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val staleRead = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED)
+
+            // When
+            viewModel.onEvent(staleRead)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED))
 
             // Then
             assertEquals(listOf(answered(isGranted = true)), answeredEvents())
@@ -1721,7 +1737,7 @@ class NotificationSettingsViewModelTest {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED))
             val checkedAgain = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
 
             // When
@@ -1738,7 +1754,7 @@ class NotificationSettingsViewModelTest {
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
             viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
 
             // When
             viewModel.onEvent(answer)
@@ -1796,9 +1812,9 @@ class NotificationSettingsViewModelTest {
         // Given
         prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
         viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED))
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.NOT_DETERMINED))
         viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-        val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+        val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
         // When
         viewModel.onEvent(answer)

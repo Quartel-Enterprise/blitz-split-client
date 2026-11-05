@@ -10,10 +10,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.NotificationPrompt
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -38,32 +38,42 @@ internal class HomeNotificationPrompts(
     // Why: how long "Turn on" or "Not now" keeps the notification card away (Pierre's call, issue 208).
     private val cooldown = 21.days
 
-    // Why: the card's "Turn on" asked the system or opened its settings, and no allowed answer came back yet.
-    private var awaitsAllowed = false
-
     // Why: the card the last "Turn on" came from, until the next check of the permission says how the system answered.
     private var pendingRequest: NotificationPrompt? = null
 
-    // Why: the quiet request is out (asked, and no read since), so a "never asked" read started before it is stale.
-    private val awaitsQuietAnswer: Boolean
-        get() = uiState.value.let { it.hasAskedQuietly && it.notificationPermission == null }
+    /*
+     * Why: the quiet request is out, or Apple answered it: Apple never goes back to "never asked", so such a read was
+     * started before the request, whenever it lands. Only an answer that changed nothing lets it through again.
+     */
+    private var ignoresNeverAsked = false
+
+    // Why: the card counted as shown, until it goes away, so a return to Home doesn't count it again.
+    private var shownPrompt: NotificationPrompt? = null
 
     fun watch(
         observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
         minuteTicks: MinuteTicks,
+        isHomeOnTop: Flow<Boolean>,
     ) {
         // Why: each minute too, so a card snoozed three weeks ago comes back without leaving Início.
         combine(observeLastNotificationPromptAt(), minuteTicks()) { lastPromptAt, _ -> lastPromptAt }
             .onEach { lastPromptAt ->
                 uiState.update { it.copy(isNotificationPromptSnoozed = isSnoozed(lastPromptAt)) }
             }.launchIn(scope)
-        // Why: once per showing of the card, whatever brought it (a group, the permission read, three weeks gone).
-        uiState
-            .map { it.notificationPrompt }
+        /*
+         * Why: once per showing of the card, whatever brought it (a group, the permission read, three weeks gone), and
+         * only once Home is on top to draw it, never behind another tab or screen.
+         */
+        combine(uiState.map { it.notificationPrompt }, isHomeOnTop, ::Pair)
             .distinctUntilChanged()
-            .filterNotNull()
-            .onEach { prompt -> trackEvent("notification_prompt_shown", mapOf("prompt" to prompt)) }
-            .launchIn(scope)
+            .onEach { (prompt, isOnTop) ->
+                if (prompt == null) {
+                    shownPrompt = null
+                } else if (isOnTop && prompt != shownPrompt) {
+                    shownPrompt = prompt
+                    trackEvent("notification_prompt_shown", mapOf("prompt" to prompt))
+                }
+            }.launchIn(scope)
         uiState
             .map { it.shouldAskQuietly }
             .distinctUntilChanged()
@@ -76,19 +86,19 @@ internal class HomeNotificationPrompts(
         permission: NotificationPermission,
         canAskQuietly: Boolean,
     ) {
-        if (awaitsQuietAnswer && permission == NotificationPermission.NOT_DETERMINED) return
+        if (ignoresNeverAsked && permission == NotificationPermission.NOT_DETERMINED) return
         check(permission, canAskQuietly)
     }
 
     // Why: Apple's read right after its quiet request: "never asked" here means the request changed nothing.
     fun onQuietAnswered(permission: NotificationPermission) {
+        ignoresNeverAsked = permission != NotificationPermission.NOT_DETERMINED
         check(permission, canAskQuietly = true)
     }
 
     fun turnOn() {
         answer { prompt ->
             trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
-            awaitsAllowed = true
             pendingRequest = prompt
             emit(
                 when (prompt) {
@@ -121,25 +131,23 @@ internal class HomeNotificationPrompts(
             )
         }
         // Why: the first check after "Turn on" is the system's answer: its prompt, or back from its settings.
-        pendingRequest?.let { prompt ->
-            pendingRequest = null
-            trackEvent(
-                "notification_permission_answered",
-                mapOf(
-                    "source" to "home",
-                    "prompt" to prompt,
-                    "is_granted" to (permission == NotificationPermission.GRANTED),
-                ),
-            )
-        }
-        if (awaitsAllowed && permission == NotificationPermission.GRANTED) {
-            awaitsAllowed = false
-            emit(HomeUiAction.ShowNotificationsOn)
-        }
+        val prompt = pendingRequest ?: return
+        pendingRequest = null
+        val isGranted = permission == NotificationPermission.GRANTED
+        trackEvent(
+            "notification_permission_answered",
+            mapOf(
+                "source" to "home",
+                "prompt" to prompt,
+                "is_granted" to isGranted,
+            ),
+        )
+        if (isGranted) emit(HomeUiAction.ShowNotificationsOn)
     }
 
     // Why: the permission is unknown until Apple answers the request, so neither card shows meanwhile.
     private fun askQuietly() {
+        ignoresNeverAsked = true
         uiState.update {
             it.copy(
                 hasAskedQuietly = true,

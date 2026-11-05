@@ -65,8 +65,13 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnNotificationPromptDismissed -> EventAnalytics.Manual("notification_prompt_dismissed")
 
-            // Why: what the system says after the quiet request the shared code made: nobody tapped.
-            is OnQuietNotificationsAnswered -> EventAnalytics.NotTracked
+            /*
+             * Why: what the system says after the quiet request, which nobody tapped, but which may bring up the card
+             * (counted as shown) or answer a "Turn on" still waiting.
+             */
+            is OnQuietNotificationsAnswered -> EventAnalytics.Manual(
+                setOf("notification_permission_answered", "notification_prompt_shown"),
+            )
 
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked

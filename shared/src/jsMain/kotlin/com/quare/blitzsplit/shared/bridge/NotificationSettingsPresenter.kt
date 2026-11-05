@@ -90,6 +90,12 @@ class NotificationSettingsPresenter {
         viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission))
     }
 
+    // Why: the same, read right after the browser's prompt the app asked for, which answers it.
+    fun permissionAnswered(permissionName: String) {
+        val permission = NotificationPermission.entries.firstOrNull { it.name == permissionName } ?: return
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(permission))
+    }
+
     // Why: the NotificationType's and the NotificationChannel's names ("PUSH" or "IN_APP").
     fun toggle(
         typeName: String,

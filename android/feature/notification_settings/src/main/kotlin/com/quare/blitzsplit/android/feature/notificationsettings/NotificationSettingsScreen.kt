@@ -19,7 +19,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val permissionAccess = rememberNotificationPermissionAccess { permission ->
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission))
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(permission))
     }
     val context = LocalContext.current
     // Why: on every return too, since the person may have changed it, or silenced a channel, in the system settings.

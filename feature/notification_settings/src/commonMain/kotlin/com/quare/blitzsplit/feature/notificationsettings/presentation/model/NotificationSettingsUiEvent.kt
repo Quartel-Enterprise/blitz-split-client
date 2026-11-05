@@ -9,13 +9,14 @@ import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 sealed interface NotificationSettingsUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            // Why: a back, or what the system says of each row's channel: nobody tapped to act.
+            // Why: a back, or what the system says of the permission or of each row's channel: nobody tapped to act.
             OnBackClicked,
+            is OnPermissionChecked,
             is OnSystemBlockedTypesChecked,
             -> EventAnalytics.NotTracked
 
-            // Why: what the system says, which nobody tapped, but the first check after the app asked is its answer.
-            is OnPermissionChecked -> EventAnalytics.Manual("notification_permission_answered")
+            // Why: what the system says, which nobody tapped, but it ends the funnel the app's request began.
+            is OnPermissionAnswered -> EventAnalytics.Manual("notification_permission_answered")
 
             // Why: only while its channel's toggles take a change (the preferences read, the push's permission not refused).
             is OnToggled -> EventAnalytics.Manual("notification_toggled")
@@ -36,6 +37,14 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
 
     // Why: read on appear and on return to the app, since the person may change it in the system settings.
     data class OnPermissionChecked(
+        val permission: NotificationPermission,
+    ) : NotificationSettingsUiEvent
+
+    /*
+     * Why: the permission read right after the system's prompt the app asked for (RequestPermission), apart from the
+     * reads on appear and return, so one already under way when the request went out is never taken for its answer.
+     */
+    data class OnPermissionAnswered(
         val permission: NotificationPermission,
     ) : NotificationSettingsUiEvent
 

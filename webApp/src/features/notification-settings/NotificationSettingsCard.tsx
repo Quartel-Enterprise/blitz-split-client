@@ -38,7 +38,7 @@ function useNotificationSettings() {
     (p, onAction: (action: JsNotificationSettingsAction) => void) => p.observeActions(onAction),
     (action) => {
       if (action.type !== 'request-permission') return
-      void requestNotificationPermission().then((permission) => presenter?.permissionChecked(permission))
+      void requestNotificationPermission().then((permission) => presenter?.permissionAnswered(permission))
     },
   )
   // Why: read again whenever the tab comes back, since the person may allow or block it in the site settings.

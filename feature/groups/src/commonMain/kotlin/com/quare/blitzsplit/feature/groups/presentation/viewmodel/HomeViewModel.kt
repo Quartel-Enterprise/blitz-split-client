@@ -231,7 +231,11 @@ class HomeViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        notificationPrompts.watch(observeLastNotificationPromptAt, minuteTicks)
+        notificationPrompts.watch(
+            observeLastNotificationPromptAt = observeLastNotificationPromptAt,
+            minuteTicks = minuteTicks,
+            isHomeOnTop = navigator.backStack.map { it.lastOrNull() == Route.Home },
+        )
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)

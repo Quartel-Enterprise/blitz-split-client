@@ -115,7 +115,8 @@ The feed, unread state, real time and push notifications.
     permission when Home appears, on each return to the app and after its prompt; one turning allowed after the card's
     "Turn on" (the prompt, or back from the settings) shows "Notifications on" (`HomeUiAction.ShowNotificationsOn`),
     while one allowed from Notifications confirms there, its Push toggles coming back. Analytics counts the card
-    coming up once per showing, whatever brought it (`notification_prompt_shown`, decided by `HomeViewModel`), and the
+    coming up once per showing, whatever brought it, once Home is on top to draw it (`notification_prompt_shown`,
+    decided by `HomeViewModel`), and the
     system's answer after the app asked, from Home or from Notifications (`notification_permission_answered`, with
     `is_granted`).
     Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
