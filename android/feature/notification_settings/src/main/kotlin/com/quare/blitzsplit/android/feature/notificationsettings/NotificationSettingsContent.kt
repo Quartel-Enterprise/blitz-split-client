@@ -4,11 +4,13 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Button
@@ -31,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -293,6 +297,12 @@ private fun NotificationRow(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (state.isBlockedBySystem(type)) {
+                    BlockedBySystemLine(
+                        title = title,
+                        onOpenSettings = { onEvent(NotificationSettingsUiEvent.OnChannelSettingsClicked(type)) },
+                    )
+                }
             }
             state.channels.forEach { channel ->
                 Box(
@@ -313,12 +323,49 @@ private fun NotificationRow(
                             channel = channel,
                             title = title,
                             isChecked = state.isEnabled(type, channel),
-                            isEnabled = state.areTogglesEnabled(channel),
+                            isEnabled = state.isToggleEnabled(type, channel),
                             onEvent = onEvent,
                         )
                     }
                 }
             }
+        }
+    }
+}
+
+// Why: the row's channel silenced in Android's settings, which its Push can't override: only that channel's settings can.
+@Composable
+private fun BlockedBySystemLine(
+    title: String,
+    onOpenSettings: () -> Unit,
+) {
+    val openDescription = stringResource(R.string.notification_settings_open_channel_settings_description, title)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Block,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = stringResource(R.string.notification_settings_blocked_in_android),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
+        TextButton(
+            onClick = onOpenSettings,
+            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier
+                .heightIn(min = 32.dp)
+                .semantics { contentDescription = openDescription },
+        ) {
+            Text(
+                text = stringResource(R.string.notification_settings_open_settings),
+                style = MaterialTheme.typography.labelMedium,
+            )
         }
     }
 }
@@ -411,6 +458,7 @@ private fun NotificationSettingsPreview() {
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.GRANTED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )
@@ -425,6 +473,22 @@ private fun NotificationSettingsLoadingPreview() {
             state = NotificationSettingsUiState(
                 preferences = Loadable.Loading,
                 permission = null,
+                systemBlockedTypes = emptySet(),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NotificationSettingsBlockedChannelPreview() {
+    BlitzSplitTheme {
+        NotificationSettingsContent(
+            state = NotificationSettingsUiState(
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                permission = NotificationPermission.GRANTED,
+                systemBlockedTypes = setOf(NotificationType.COMMENTS),
             ),
             onEvent = {},
         )
@@ -439,6 +503,7 @@ private fun NotificationSettingsDeniedPreview() {
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.DENIED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )

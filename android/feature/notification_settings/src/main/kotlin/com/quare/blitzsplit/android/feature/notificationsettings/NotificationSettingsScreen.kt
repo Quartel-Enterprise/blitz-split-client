@@ -4,8 +4,11 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.platform.findSilencedNotificationChannels
+import com.quare.blitzsplit.android.platform.openNotificationChannelSettings
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
@@ -16,20 +19,30 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val permissionAccess = rememberNotificationPermissionAccess { permission ->
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission))
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(permission))
     }
-    // Why: on every return too, since the person may have changed it in the system settings.
-    LifecycleResumeEffect(viewModel, permissionAccess) {
+    val context = LocalContext.current
+    // Why: on every return too, since the person may have changed it, or silenced a channel, in the system settings.
+    LifecycleResumeEffect(viewModel, permissionAccess, context) {
         viewModel.onEvent(
             NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read()),
         )
+        viewModel.onEvent(
+            NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(
+                PushChannel.typesOf(context.findSilencedNotificationChannels(PushChannel.ids)),
+            ),
+        )
         onPauseOrDispose {}
     }
-    LaunchedEffect(viewModel, permissionAccess) {
+    LaunchedEffect(viewModel, permissionAccess, context) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 NotificationSettingsUiAction.RequestPermission -> permissionAccess.request()
+
                 NotificationSettingsUiAction.OpenSystemSettings -> permissionAccess.openSettings()
+
+                is NotificationSettingsUiAction.OpenChannelSettings ->
+                    context.openNotificationChannelSettings(PushChannel.of(action.type).id)
             }
         }
     }

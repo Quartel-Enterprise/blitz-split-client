@@ -17,6 +17,8 @@ data class NotificationSettingsUiState(
     val preferences: Loadable<NotificationPreferences>,
     // Why: null until the UI reads the system's: unknown, never taken as allowed nor as denied.
     val permission: NotificationPermission?,
+    // Why: Android: the rows whose channel the system silenced; iOS and the web have no switch per row.
+    val systemBlockedTypes: Set<NotificationType>,
 ) {
     // Why: the rows, in the order every UI lists them, each with a Push and, but the weekly reminder, an In app toggle.
     val types: List<NotificationType>
@@ -44,6 +46,17 @@ data class NotificationSettingsUiState(
     val canAskAgain: Boolean
         get() = permission == NotificationPermission.REFUSED_ONCE
 
+    // Why: Apple delivers quietly to Notification Center: a notice whose "Turn on" brings its full prompt.
+    val showsQuietNotice: Boolean
+        get() = permission == NotificationPermission.PROVISIONAL
+
+    /*
+     * Why: "Blocked in Android" on a row whose channel the system silenced, while the app's notifications are allowed;
+     * with them all denied, the notice above already says so.
+     */
+    fun isBlockedBySystem(type: NotificationType): Boolean =
+        isPermissionKnown && !showsPermissionDenied && type in systemBlockedTypes
+
     /*
      * Why: a tap before the choices came down would mark the defaults to go up over the server's, and one before
      * the permission is known couldn't tell whether to ask the system.
@@ -60,17 +73,23 @@ data class NotificationSettingsUiState(
         NotificationChannel.IN_APP -> areInAppTogglesEnabled
     }
 
+    // Why: a row whose channel the system silenced takes no Push change, which would deliver nothing.
+    fun isToggleEnabled(
+        type: NotificationType,
+        channel: NotificationChannel,
+    ): Boolean = areTogglesEnabled(channel) && !(channel == NotificationChannel.PUSH && isBlockedBySystem(type))
+
     // Why: the weekly reminder never shows in Activity, so its In app cell stays empty.
     fun hasToggle(
         type: NotificationType,
         channel: NotificationChannel,
     ): Boolean = channel == NotificationChannel.PUSH || type.hasInApp
 
-    // Why: with the system denying them, every push toggle shows off while the choices stay saved for later.
+    // Why: with the system denying them, all or the row's channel, a push toggle shows off while the choice stays saved.
     fun isEnabled(
         type: NotificationType,
         channel: NotificationChannel,
-    ): Boolean = areTogglesEnabled(channel) &&
+    ): Boolean = isToggleEnabled(type, channel) &&
         hasToggle(type, channel) &&
         preferences.valueOrNull()?.isEnabled(type, channel) == true
 }

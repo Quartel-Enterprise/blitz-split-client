@@ -189,9 +189,13 @@ class HomePresenter {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 HomeUiAction.ShowChangeError -> "change-error"
+
                 HomeUiAction.ShowNotificationsOn -> "notifications-on"
+
                 HomeUiAction.RequestNotificationPermission -> "request-notification-permission"
-                HomeUiAction.OpenNotificationSettings -> null
+
+                // Why: Apple's quiet delivery: a browser has none, and never reports it can ask quietly.
+                HomeUiAction.OpenNotificationSettings, HomeUiAction.RequestQuietNotifications -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -293,7 +297,7 @@ class HomePresenter {
     // Why: the NotificationPermission's name, read from the browser's Notification.permission.
     fun notificationPermissionChecked(permissionName: String) {
         val permission = NotificationPermission.entries.firstOrNull { it.name == permissionName } ?: return
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permission))
+        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = false))
     }
 
     // Why: the notification card: "Turn on" and "Not now".

@@ -59,7 +59,15 @@ The feed, unread state, real time and push notifications.
     asks for it, an In app one never does. On Android after a first refusal (`NotificationPermission.REFUSED_ONCE`),
     which Android still lets the app ask once more, the same notice says so and its button is "Turn on", which asks
     again (`NotificationSettingsUiEvent.OnAskAgainClicked`, `notification_ask_again_clicked`); only a
-    refusal for good shows "Open settings". The Profile row reads "5 active", the rows whose Push is on. Before this,
+    refusal for good shows "Open settings". While Apple delivers quietly (`NotificationPermission.PROVISIONAL`, below)
+    the Push toggles work as allowed, and a notice says "Blitz Split notifications arrive quietly in Notification
+    Center, without a sound or banner." with "Turn on", which brings Apple's full prompt
+    (`OnQuietTurnOnClicked`, `notification_quiet_turn_on_clicked`), as does a Push turned on meanwhile. On Android a
+    row whose channel the person silenced in the system's settings (`PushChannel`, read on appear and on each return,
+    `OnSystemBlockedTypesChecked`) shows its Push off and disabled, its choice kept, with "Blocked in Android" in the
+    error color under its detail and "Open settings", which opens that channel's settings
+    (`OnChannelSettingsClicked`, `notification_channel_settings_clicked`); iOS and the web have no switch per row, so
+    none is ever blocked there. The app's notifications all off show the notice instead, never a line per row. The Profile row reads "5 active", the rows whose Push is on. Before this,
     comments rode on "New expense in my groups", payment requests and Simplify debts on "Settle-up reminders", and the
     bell had no control at all; the server copied each new Push toggle from the one it used to ride on. Each platform
     draws it its way: Android a full screen (both entries) with two Material icon toggle buttons per row (a phone,
@@ -97,12 +105,20 @@ The feed, unread state, real time and push notifications.
     settings on Android, iOS and macOS; the web, which can't open its settings, says "Notifications are blocked in this
     browser" and where to allow them, with only "Not now". Either answer hides the card for three weeks on this device
     (`lastNotificationPromptAt` of the device settings; `notification_prompt_turn_on_clicked`,
-    `notification_prompt_dismissed`, with `prompt`), and it never comes back once allowed. Each platform reads the
+    `notification_prompt_dismissed`, with `prompt`), and it never comes back once allowed. iOS, iPadOS and macOS
+    (Pierre's call) ask for no soft ask: once there is a group they deliver quietly to Notification Center with no
+    prompt (Apple's provisional authorization, `HomeUiAction.RequestQuietNotifications`, once per Home, the card hidden
+    meanwhile), and the card right away says "Notifications arrive quietly", "They go to Notification Center without a
+    sound or banner. Turn them on to see bills as they come in." (`QUIET`), whose "Turn on" brings Apple's full prompt
+    for banners and sounds, under the same three weeks. A quiet request that changed nothing falls back to the soft
+    ask. Android and the web have no quiet delivery and behave as above. Each platform reads the
     permission when Home appears, on each return to the app and after its prompt; one turning allowed after the card's
     "Turn on" (the prompt, or back from the settings) shows "Notifications on" (`HomeUiAction.ShowNotificationsOn`),
-    while one allowed from Notifications confirms there, its Push toggles coming back.
-    iOS's provisional authorization, Android's channels silenced one by one in its settings and the prompt's own
-    analytics (shown, its result) are not built.
+    while one allowed from Notifications confirms there, its Push toggles coming back. Analytics counts the card
+    coming up once per showing, whatever brought it, once Home is on top to draw it (`notification_prompt_shown`,
+    decided by `HomeViewModel`), and the
+    system's answer after the app asked, from Home or from Notifications (`notification_permission_answered`, with
+    `is_granted`).
     Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
     Firebase service account on the server, the web's VAPID keys on both (`docs/push-notifications.md`). Muting a
     group isn't built yet, though the footer of Notifications mentions it.

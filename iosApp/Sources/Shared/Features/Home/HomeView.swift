@@ -34,6 +34,13 @@ final class HomeModel {
                     await PushNotifications.requestPermission()
                     self?.checkNotificationPermission()
                 }
+            case is HomeUiActionRequestQuietNotifications:
+                Task {
+                    await PushNotifications.requestQuietPermission()
+                    // Its own event, so a read started before the request isn't taken for its answer
+                    let permission = await PushNotifications.readPermission()
+                    self?.send(HomeUiEventOnQuietNotificationsAnswered(permission: permission))
+                }
             case is HomeUiActionOpenNotificationSettings: PushNotifications.openSettings()
             default: break
             }
@@ -48,7 +55,8 @@ final class HomeModel {
     func checkNotificationPermission() {
         Task {
             let permission = await PushNotifications.readPermission()
-            send(HomeUiEventOnNotificationPermissionChecked(permission: permission))
+            // Apple can always deliver quietly first, with no prompt
+            send(HomeUiEventOnNotificationPermissionChecked(permission: permission, canAskQuietly: true))
         }
     }
 

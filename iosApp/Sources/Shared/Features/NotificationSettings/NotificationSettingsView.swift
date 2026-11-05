@@ -37,7 +37,9 @@ final class NotificationSettingsModel {
         case is NotificationSettingsUiActionRequestPermission:
             Task {
                 await PushNotifications.requestPermission()
-                checkPermission()
+                // Its own event, so a read already under way isn't taken for the prompt's answer
+                let permission = await PushNotifications.readPermission()
+                send(NotificationSettingsUiEventOnPermissionAnswered(permission: permission))
             }
         case is NotificationSettingsUiActionOpenSystemSettings:
             PushNotifications.openSettings()
@@ -90,6 +92,12 @@ struct NotificationSettingsSections: View {
                 Section {
                     PermissionDeniedNotice {
                         model.send(NotificationSettingsUiEventOnOpenSettingsClicked.shared)
+                    }
+                }
+            } else if state.showsQuietNotice {
+                Section {
+                    QuietDeliveryNotice {
+                        model.send(NotificationSettingsUiEventOnQuietTurnOnClicked.shared)
                     }
                 }
             }
@@ -183,7 +191,7 @@ private struct NotificationRow: View {
             // takes only its own taps, and draws the circle
             .buttonStyle(.bordered)
             .buttonBorderShape(.circle)
-            .disabled(!state.areTogglesEnabled(channel: channel))
+            .disabled(!state.isToggleEnabled(type: type, channel: channel))
             .accessibilityLabel(Text("\(Text(type.title)), \(Text(channel.title))"))
         }
     }
@@ -202,30 +210,29 @@ private struct LoadingShimmer: ViewModifier {
     }
 }
 
-private struct PermissionDeniedNotice: View {
-    let openSettings: () -> Void
+/// The system's permission over the rows: its icon and why, and the one button that changes it.
+private struct PermissionNotice: View {
+    let systemImage: String
+    let tint: Color
+    let message: Text
+    let buttonLabel: Text
+    let action: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "bell.slash")
-                    .foregroundStyle(Palette.negative)
+                Image(systemName: systemImage)
+                    .foregroundStyle(tint)
                     .frame(width: 30, height: 30)
-                    .background(Palette.negative.opacity(0.12), in: .rect(cornerRadius: 8))
-                #if os(macOS)
-                Text("Blitz Split notifications are turned off in System Settings. The bell keeps working.")
-                #else
-                Text("Blitz Split notifications are turned off in the \(DeviceName.current) Settings. The bell keeps working.")
-                #endif
+                    .background(tint.opacity(0.12), in: .rect(cornerRadius: 8))
+                message
             }
             .accessibilityElement(children: .combine)
-            Button(action: openSettings) {
-                #if os(macOS)
-                Text("Open System Settings")
-                #else
-                Text("Open Settings")
+            Button(action: action) {
+                buttonLabel
+                    #if os(iOS)
                     .frame(maxWidth: .infinity)
-                #endif
+                    #endif
             }
             .buttonStyle(.glassProminent)
             .prominentLabel()
@@ -234,6 +241,46 @@ private struct PermissionDeniedNotice: View {
             #endif
         }
         .padding(.vertical, 4)
+    }
+}
+
+private struct PermissionDeniedNotice: View {
+    let openSettings: () -> Void
+
+    var body: some View {
+        #if os(macOS)
+        PermissionNotice(
+            systemImage: "bell.slash",
+            tint: Palette.negative,
+            message: Text("Blitz Split notifications are turned off in System Settings. The bell keeps working."),
+            buttonLabel: Text("Open System Settings"),
+            action: openSettings
+        )
+        #else
+        PermissionNotice(
+            systemImage: "bell.slash",
+            tint: Palette.negative,
+            message: Text("Blitz Split notifications are turned off in the \(DeviceName.current) Settings. The bell keeps working."),
+            buttonLabel: Text("Open Settings"),
+            action: openSettings
+        )
+        #endif
+    }
+}
+
+/// Delivered quietly to Notification Center (provisional): "Turn on" brings the system's full prompt, for banners and
+/// sounds.
+private struct QuietDeliveryNotice: View {
+    let turnOn: () -> Void
+
+    var body: some View {
+        PermissionNotice(
+            systemImage: "bell",
+            tint: Palette.accent,
+            message: Text("Blitz Split notifications arrive quietly in Notification Center, without a sound or banner."),
+            buttonLabel: Text("Turn on"),
+            action: turnOn
+        )
     }
 }
 

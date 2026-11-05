@@ -12,4 +12,10 @@ enum class NotificationPermission {
 
     // Why: Android only: refused once, and the system still asks once more before only its settings can allow them.
     REFUSED_ONCE,
+
+    /*
+     * Why: Apple only: delivered quietly to Notification Center, granted with no prompt (provisional), while Apple's
+     * full prompt can still ask for banners and sounds.
+     */
+    PROVISIONAL,
 }

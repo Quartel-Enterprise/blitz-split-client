@@ -3,10 +3,8 @@ package com.quare.blitzsplit.android.platform
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,11 +42,7 @@ class NotificationPermissionAccess internal constructor(
     }
 
     fun openSettings() {
-        activity.startActivity(
-            Intent(
-                Settings.ACTION_APP_NOTIFICATION_SETTINGS,
-            ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName),
-        )
+        activity.openAppNotificationSettings()
     }
 }
 

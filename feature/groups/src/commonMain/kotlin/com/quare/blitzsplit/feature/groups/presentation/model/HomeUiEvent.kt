@@ -65,11 +65,25 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnNotificationPromptDismissed -> EventAnalytics.Manual("notification_prompt_dismissed")
 
+            /*
+             * Why: what the system says after the quiet request, which nobody tapped, but which may bring up the card
+             * (counted as shown) or answer a "Turn on" still waiting.
+             */
+            is OnQuietNotificationsAnswered -> EventAnalytics.Manual(
+                setOf("notification_permission_answered", "notification_prompt_shown"),
+            )
+
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked
 
-            // Why: what the system says about the permission: nobody tapped to act.
-            is OnNotificationPermissionChecked -> EventAnalytics.NotTracked
+            /*
+             * Why: what the system says, which nobody tapped, but it ends the funnel the card's "Turn on" began, so the
+             * first check after it sends the answer. The card it lets come up (it waits for a known permission) sends
+             * that it shows, from the state, once per showing whatever brought it.
+             */
+            is OnNotificationPermissionChecked -> EventAnalytics.Manual(
+                setOf("notification_permission_answered", "notification_prompt_shown"),
+            )
 
             /*
              * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
@@ -151,6 +165,13 @@ sealed interface HomeUiEvent : UiEvent {
 
     // Why: read on appear, on each return to the app and after the system's prompt, since the settings may change it.
     data class OnNotificationPermissionChecked(
+        val permission: NotificationPermission,
+        // Why: Apple only: it can deliver quietly (provisional) with no prompt while never answered.
+        val canAskQuietly: Boolean,
+    ) : HomeUiEvent
+
+    // Why: Apple, the permission read right after its quiet request, which tells it from a read started before it.
+    data class OnQuietNotificationsAnswered(
         val permission: NotificationPermission,
     ) : HomeUiEvent
 
