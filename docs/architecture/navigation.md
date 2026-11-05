@@ -128,7 +128,7 @@ it pops it the same way.
 #### The Mac's Ajustes: two windows, one back stack
 
 The Mac's profile is Ajustes, the app's `Settings` window, which draws the same back stack as the main window: a
-`Route.Profile` the shared code pushes, from whichever tab (Início's or Grupos' avatar, Atividade's, "Proteja seu
+`Route.Profile` the shared code pushes, from whichever tab (Início's or Grupos' avatar, Saldos', Contatos', "Proteja seu
 acesso"), is popped at once and opens Ajustes instead, and what Ajustes opens
 (`AppRoute.opensInSettings`: a key, deleting the account) is pushed on top as usual. Each window reads only its own
 entries, so a sheet open in one never changes the other's:
@@ -165,10 +165,11 @@ fills (features never see each other), SwiftUI with `.sheet(isPresented:)` in `M
 `RecoveryCodeDialog`. Closing it without "Já guardei" sends `OnRemindLaterClicked`, so it comes back on the next
 launch.
 
-The home has five tabs: Início, Grupos, Saldos, Contatos and Atividade. Início (`Route.Home`) is the root of the
-back stack and where the app opens; every other tab is one route right above it, and the tabs take each other's place
-there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`,
-`[Home, Activity(personKey)]`. `Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in
+The home has four tabs: Início, Grupos, Saldos and Contatos. Início (`Route.Home`) is the root of the back stack and
+where the app opens; every other tab is one route right above it, and the tabs take each other's place there, as a tab
+bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`. Atividade is no
+tab: Início's bell pushes it over Início (`[Home, Activity(null)]`), a contact's history over the profile, and from
+deeper (a group's "Ver na Atividade", a push notification) `Navigator.openActivity()` closes what is above Início first. `Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in
 the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
 welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
 `OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
@@ -178,10 +179,10 @@ screen's `OnRailTabClicked(HomeTab)` (`HomeTab` in `:core:model`, which Android'
 otherwise opens its first route through `openHomeTab(Route)`. The rail selects the tab the screen sits in, the nearest
 one under it (`List<Route>.findHomeTabUnder`: Início for a group Início opened, Grupos for a row of Grupos). Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
-Saldos); a face tapped in Saldos opens the same profile over Saldos. Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
+Saldos); a face tapped in Saldos opens the same profile over Saldos. Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's bell and "Ver tudo".
 
 "Buscar" is the same search on every tab. Grupos keeps it as its own state (`GroupsUiState.search`), since its
-results preview beside the list; over Início, Saldos, Contatos and Atividade it is a route of its own,
+results preview beside the list; over Início, Saldos and Contatos it is a route of its own,
 `Route.Search`, pushed by `Navigator.openSearchOver(HomeTab)` only while that tab is on top, so a late tap never
 stacks it over something the tab opened. `SearchViewModel` closes it with `navigateBack` and opens a result in its
 place (`replaceAbove`), so back from the group or the bill returns to the tab, never to the search.

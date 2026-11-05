@@ -55,13 +55,14 @@ class JsRoute internal constructor(
     val toMemberId: String? = (route as? Route.RegisterPayment)?.toMemberId
 
     /*
-     * Why: the person of "settle-up" (with its currency, which together key its dialog), of "contact-profile" and of a
-     * guest's "contact-invite"; null for every other route.
+     * Why: the person of "settle-up" (with its currency, which together key its dialog), of "contact-profile", of a
+     * guest's "contact-invite" and of a contact's "activity", which keys its page; null for every other route.
      */
     val personKey: String? = when (route) {
         is Route.SettleUp -> route.personKey
         is Route.ContactProfile -> route.personKey
         is Route.ContactInvite -> route.personKey
+        is Route.Activity -> route.personKey
         else -> null
     }
 

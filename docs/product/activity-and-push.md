@@ -2,19 +2,23 @@
 
 The feed, unread state, real time and push notifications.
 
-  - "Activity" (page 12, `Route.Activity` right above Home like Balances, `ActivityViewModel`) is every group's feed and
-    the notification center: who split, edited or deleted a bill, recorded or undid a payment, created, edited or
+  - "Activity" (page 12, `Route.Activity`, `ActivityViewModel`) is every group's feed and the notification center. It
+    is no tab (Pierre's call: the room it left in the tab bar is iOS's search tab): a bell in Home's bar, beside the
+    profile, opens it over Home on every platform (`HomeUiEvent.OnActivityClicked`, `activity_bell_clicked`), as do
+    Home's "See all" over "Latest expenses" and a push notification; back returns to Home. It has a back button and
+    neither the tabs, the profile nor the search of its own (on the web, the home's frame around it, the tab it sits
+    over selected and its Search going back to that tab, and on the phone its own bar with back). It lists who split, edited or deleted a bill, recorded or undid a payment, created, edited or
     deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
     payment requests sent from Balances, by day (Today, Yesterday, the date), the most recent first. The server writes the events
     (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
     gone. Unread is someone else's event never opened and after the last "Mark all as read": a blue dot and bold
-    names, counted on the tab's badge in the primary color (`activityUnreadCount`), whatever the filters. Your own
-    events are born read, opening the tab marks nothing, tapping an item marks only it. A tap opens what it is about
+    names, counted on the bell's badge in the primary color (`activityUnreadCount`, Home's only), whatever the
+    filters. Your own events are born read, opening Activity marks nothing, tapping an item marks only it. A tap opens what it is about
     (the bill's screen (Bill) over its Expenses, the group, its Members, its Balances for a payment request); a deleted bill or group
     keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
     "and 2 more changes" and "See changes". "Filter activity": one group or all, and the types (Bills, Payments and
     settle-ups, Comments, People and groups, Payment requests), as removable chips with "Clear"; a contact's history opens it
-    on that person (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
+    on that person over the profile (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
     not up yet on top of Today as "Waiting to send", and says older ones load when the internet is back; a device that
     never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
     web's desktop and the Mac's inspector show the item picked beside the list ("What changed", "More in" the bill's
@@ -42,7 +46,7 @@ The feed, unread state, real time and push notifications.
     "Settle-up reminders") name the new pair's amount, which the server writes out (Pierre's call). The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`
     insert), and each device words them in its language from a kind and the names (Android's channels are the four
     toggles, Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana split “Dinner”
-    with you". A tap opens what the item's tap in Activity opens, over Activity (after a sync when its group isn't
+    with you". A tap opens what the item's tap in Activity opens, over Activity over Home (`PushLink.homeTab` null, after a sync when its group isn't
     on the device yet) and marks it read; a reminder opens the group's Balances over Groups, or Balances. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
     it while none is, a sign out made offline once back online. Android and Apple ask for the permission the first time Home shows, the web on the toggles.

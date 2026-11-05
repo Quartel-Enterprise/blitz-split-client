@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
@@ -611,7 +610,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
     }
 
     @Test
-    fun `GIVEN the notice shown WHEN tapping Ver na Atividade THEN it goes away and the Atividade tab opens`() =
+    fun `GIVEN the notice shown WHEN tapping Ver na Atividade THEN it goes away and Atividade opens over Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(simplifyDebtsConflictBy = ANA_USER_ID))
@@ -809,7 +808,6 @@ class GroupDetailSimplifyDebtsViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
-                observeActivityUnreadCount = ObserveActivityUnreadCount { MutableStateFlow(0) },
             ),
         )
     }

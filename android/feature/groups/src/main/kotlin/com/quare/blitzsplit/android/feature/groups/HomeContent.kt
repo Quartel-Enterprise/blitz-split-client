@@ -42,8 +42,8 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ActivityBellButton
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -65,7 +65,6 @@ private fun eventOf(tab: HomeTab): HomeUiEvent? = when (tab) {
     HomeTab.GROUPS -> HomeUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> HomeUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> HomeUiEvent.OnContactsTabClicked
-    HomeTab.ACTIVITY -> HomeUiEvent.OnActivityTabClicked
 }
 
 /*
@@ -98,7 +97,7 @@ fun HomeContent(
                 SplitBillNavigationRail(
                     selected = HomeTab.HOME,
                     onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-                    activityBadgeCount = state.activityUnreadCount,
+                    onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
                     onSplitBillClick = {
                         onEvent(
                             HomeUiEvent.OnSplitBillClicked,
@@ -135,7 +134,7 @@ fun HomeContent(
                         HomeNavigationBar(
                             selected = HomeTab.HOME,
                             onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-                            activityBadgeCount = state.activityUnreadCount,
+                            onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
                         )
                     }
                 },
@@ -373,14 +372,29 @@ private fun HomeColumnHeader(
                 onEvent = onEvent,
             )
         }
-        if (state.canSearch) SearchActionButton(onClick = { onEvent(HomeUiEvent.OnSearchClicked) })
-        ProfileAvatarButton(
-            initial = state.avatarInitial,
-            color = state.avatarColor,
-            photoUrl = state.photoUrl,
-            onClick = { onEvent(HomeUiEvent.OnProfileClicked) },
+        HomeBarActionsComponent(
+            state = state,
+            onEvent = onEvent,
         )
     }
+}
+
+// Why: the bell and the profile, in the top bar and in the header of the wide layouts alike; the search is in the nav.
+@Composable
+private fun HomeBarActionsComponent(
+    state: HomeUiState,
+    onEvent: (HomeUiEvent) -> Unit,
+) {
+    ActivityBellButton(
+        unreadCount = state.activityUnreadCount,
+        onClick = { onEvent(HomeUiEvent.OnActivityClicked) },
+    )
+    ProfileAvatarButton(
+        initial = state.avatarInitial,
+        color = state.avatarColor,
+        photoUrl = state.photoUrl,
+        onClick = { onEvent(HomeUiEvent.OnProfileClicked) },
+    )
 }
 
 // Why: each column scrolls on its own; a pull on either feeds the pull to refresh around them.
@@ -413,13 +427,9 @@ private fun HomeTopBar(
     TopAppBar(
         title = {},
         actions = {
-            // Why: only once there is a group to look in, as on Grupos.
-            if (state.canSearch) SearchActionButton(onClick = { onEvent(HomeUiEvent.OnSearchClicked) })
-            ProfileAvatarButton(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                photoUrl = state.photoUrl,
-                onClick = { onEvent(HomeUiEvent.OnProfileClicked) },
+            HomeBarActionsComponent(
+                state = state,
+                onEvent = onEvent,
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(

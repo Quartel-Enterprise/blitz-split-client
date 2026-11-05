@@ -122,16 +122,25 @@ class ContactProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the history WHEN Ver tudo is tapped THEN opens Atividade on that person`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(personKey = CARLA_KEY)
+    fun `GIVEN the history WHEN Ver tudo is tapped THEN opens Atividade on that person over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
 
-        // When
-        viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
 
-        // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = CARLA_KEY)), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Contacts,
+                    Route.ContactProfile(CARLA_KEY),
+                    Route.Activity(personKey = CARLA_KEY),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN Carla owes you WHEN Cobrar is tapped THEN opens the message of Saldos for her`() =

@@ -62,8 +62,8 @@ final class ActivityModel {
     }
 }
 
-/// The home's Activity tab: what happened in every group, by day, the most recent on top, with the changes this device
-/// hasn't sent yet above Today. On an iPhone, an iPad upright and a narrow Mac window, one column, where an edited
+/// Activity, which Home's bell pushes over it: what happened in every group, by day, the most recent on top, with the
+/// changes this device hasn't sent yet above Today. On an iPhone, an iPad upright and a narrow Mac window, one column, where an edited
 /// bill shows its changes inside its row. On an iPhone lying down the unread count and the filters move to a column
 /// beside the feed. On an iPad lying down, an iPhone Duo open (the feed and the item on each side of its fold) and a
 /// wide Mac window (the inspector) the item tapped shows beside the list, with what changed and the other events of
@@ -122,26 +122,8 @@ struct ActivityView: View {
         }
         .navigationTitle("Activity")
         #if os(iOS)
-        // Why: the selected Activity tab already names the screen, so the bar shows no title, as on Groups; VoiceOver
-        // still reads it as the header.
+        // Why: pushed over Home by its bell, the bar names it beside the back button.
         .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Color.clear
-                    .frame(width: 1, height: 1)
-                    .accessibilityElement()
-                    .accessibilityLabel(Text("Activity"))
-                    .accessibilityAddTraits(.isHeader)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
-                model?.send(ActivityUiEventOnSearchClicked.shared)
-            }
-            ToolbarItem(placement: .primaryAction) {
-                profileButton
-            }
-            .prefersVerticalBar()
-        }
         .sheet(isPresented: model?.isFilterOpen ?? .constant(false)) {
             if let model {
                 ActivityFilterSheet(model: model)
@@ -153,12 +135,6 @@ struct ActivityView: View {
         .toolbar {
             if let model, model.state.showsTools {
                 ActivityMacToolbar(model: model, showsTitles: showsDetail)
-            }
-            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
-                model?.send(ActivityUiEventOnSearchClicked.shared)
-            }
-            ToolbarItem(placement: .primaryAction) {
-                profileButton
             }
         }
         .focusedSceneValue(\.activityModel, model)
@@ -206,16 +182,6 @@ struct ActivityView: View {
     private var centeringMargin: CGFloat? {
         let margin = (layout.size.width - ScreenLayout.singleColumnMaxWidth) / 2
         return margin > 0 ? margin : nil
-    }
-
-    private var profileButton: some View {
-        ProfileToolbarButton(
-            initial: model?.state.avatarInitial ?? "",
-            color: model?.state.avatarColor ?? .blue,
-            photoUrl: model?.state.photoUrl,
-        ) {
-            model?.send(ActivityUiEventOnProfileClicked.shared)
-        }
     }
 }
 

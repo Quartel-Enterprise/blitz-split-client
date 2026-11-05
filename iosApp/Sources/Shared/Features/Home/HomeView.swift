@@ -112,9 +112,11 @@ struct HomeView: View {
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             HiddenTabTitle(title: HomeCopy.tabTitle)
-            SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
-            ToolbarItem(placement: .primaryAction) { profileButton }
-                .prefersVerticalBar()
+            ToolbarItemGroup(placement: .primaryAction) {
+                bellButton
+                profileButton
+            }
+            .prefersVerticalBar()
             if state.showsSplitBillButton, !usesBottomButton {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
                 ToolbarItem(placement: .primaryAction) { splitBillButton }
@@ -367,6 +369,12 @@ struct HomeView: View {
 
     // MARK: - Bars
 
+    private var bellButton: some View {
+        ActivityBellButton(unreadCount: Int(state.activityUnreadCount)) {
+            model.send(HomeUiEventOnActivityClicked.shared)
+        }
+    }
+
     private var profileButton: some View {
         ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
             model.send(HomeUiEventOnProfileClicked.shared)
@@ -411,6 +419,7 @@ struct HomeView: View {
             }
         }
         SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
+        ToolbarItem(placement: .primaryAction) { bellButton }
         ToolbarItem(placement: .primaryAction) { profileButton }
         if state.showsSplitBillButton {
             ToolbarItem(placement: .primaryAction) {

@@ -81,7 +81,6 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     homeTab = HomeTab.GROUPS,
     joinedAs = null,
     isAccountUnprotected = false,
-    activityUnreadCount = 0,
     simplification = null,
     simplifyConflict = null,
 )

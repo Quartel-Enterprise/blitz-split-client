@@ -52,7 +52,6 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
             OnHomeTabClicked,
             OnGroupsTabClicked,
             OnContactsTabClicked,
-            OnActivityTabClicked,
             -> EventAnalytics.NotTracked
 
             OnProfileClicked -> EventAnalytics.Automatic(
@@ -145,8 +144,6 @@ sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
     data object OnGroupsTabClicked : GlobalBalancesUiEvent
 
     data object OnContactsTabClicked : GlobalBalancesUiEvent
-
-    data object OnActivityTabClicked : GlobalBalancesUiEvent
 
     data object OnProfileClicked : GlobalBalancesUiEvent
 

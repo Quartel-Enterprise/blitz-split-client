@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -32,6 +31,4 @@ class GroupScreenUseCases(
     internal val deleteGroup: DeleteGroup,
     internal val observePinnedGroupIds: ObservePinnedGroupIds,
     internal val setGroupPinned: SetGroupPinned,
-    // Why: Atividade's unread badge on Android's rail beside the group.
-    internal val observeActivityUnreadCount: ObserveActivityUnreadCount,
 )

@@ -1,25 +1,24 @@
 import Shared
 import SwiftUI
 
-/// The tabs of the canvas, all built: Home first, then Groups, Balances, Contacts and Activity. Search, once there is a
-/// group, is a search tab with an iPad's room (`hasSearchTabRoom`) and opens in Groups' place from its magnifier on an
-/// iPhone; the Mac searches from Groups' toolbar instead.
+/// The tabs of the canvas: Home first, then Groups, Balances and Contacts. Search, once there is a group, is the search
+/// tab at the end of the bar, the room Activity left when it became Home's bell (Pierre's call); the Mac searches from
+/// Groups' toolbar instead.
 enum MainTab: Hashable {
     case home
     case groups
     case balances
     case contacts
-    case activity
     case search
 }
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable), on the Mac with the
 /// open groups under the tabs. Home is the root of the shared back stack and every other tab the entry right above it,
-/// so the first entry of `path` says which tab is in front: Groups, Balances, Contacts, Activity, or else Home, whose
-/// own stack is then the whole path.
+/// so the first entry of `path` says which tab is in front: Groups, Balances, Contacts, or else Home, whose own stack
+/// is then the whole path (Activity, which its bell pushes, included).
 struct MainTabView: View {
-    /// The shared back stack above Home: Groups, Balances, Contacts or Activity with what they opened, or what Home
-    /// opened (a group, the profile, an invite opened from its link).
+    /// The shared back stack above Home: Groups, Balances or Contacts with what they opened, or what Home opened (a
+    /// group, the profile, Activity, an invite opened from its link).
     @Binding var path: [AppRoute]
 
     @State private var home = HomeModel()
@@ -28,15 +27,8 @@ struct MainTabView: View {
     #if os(macOS)
     @State private var sidebar = HomeSidebarModel()
     #endif
-    #if os(iOS)
-    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
-    #endif
-
     init(path: Binding<[AppRoute]>) {
         _path = path
-        #if os(iOS)
-        Self.tintsBadges()
-        #endif
     }
 
     var body: some View {
@@ -55,16 +47,7 @@ struct MainTabView: View {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
                 // An iPad lying down draws the group beside the list
                 GroupsColumns(model: model, path: stackPath(isSearch: false), isInFront: isInFront(isSearch: false)) {
-                    #if os(iOS)
-                    // A compact tab bar has no search tab: the search takes the groups' place
-                    if showsSearchInGroups {
-                        GroupsSearchView(model: model)
-                    } else {
-                        GroupsView(model: model)
-                    }
-                    #else
                     GroupsView(model: model)
-                    #endif
                 }
                 #if os(macOS)
                 // What the View menu's Grid Size reads and changes, only while the groups are in front
@@ -98,24 +81,8 @@ struct MainTabView: View {
                     Color.clear
                 }
             }
-            // Activity sits right above Home as Balances does; the badge counts every unread item, in the accent
-            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) {
-                NavigationStack(path: tabStack(isShown: activityRoute != nil)) {
-                    if let route = activityRoute {
-                        ActivityView(route: route)
-                            .id(route)
-                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
-                    } else {
-                        Color.clear
-                    }
-                }
-                #if os(macOS)
-                .measuringNarrowWindow()
-                #endif
-            }
-            .badge(Int(home.state.activityUnreadCount))
             #if os(iOS)
-            // Nothing to look in before the first group; a compact tab bar opens it from Groups' magnifier instead
+            // Nothing to look in before the first group
             if hasSearchTab {
                 Tab(value: MainTab.search, role: .search) {
                     // An iPad lying down opens the first result beside the results
@@ -184,19 +151,17 @@ struct MainTabView: View {
         case .groups: return .groups
         case .globalBalances: return .balances
         case .contacts: return .contacts
-        case .activity: return .activity
         default: return .home
         }
     }
 
-    /// Home's tab events, which work over whatever Home or another tab pushed: Groups, Balances, Contacts and Activity
-    /// take its place right above Home. Search lives in Groups, so it opens Groups first; Home goes back to itself.
+    /// Home's tab events, which work over whatever Home or another tab pushed: Groups, Balances and Contacts take its
+    /// place right above Home. Search lives in Groups, so it opens Groups first; Home goes back to itself.
     private func selectFromHome(_ tab: MainTab) {
         switch tab {
         case .groups: home.send(HomeUiEventOnGroupsTabClicked.shared)
         case .balances: home.send(HomeUiEventOnBalancesTabClicked.shared)
         case .contacts: home.send(HomeUiEventOnContactsTabClicked.shared)
-        case .activity: home.send(HomeUiEventOnActivityTabClicked.shared)
         case .search:
             home.send(HomeUiEventOnGroupsTabClicked.shared)
             model.send(GroupsUiEventOnSearchOpened.shared)
@@ -210,10 +175,9 @@ struct MainTabView: View {
         case .home: model.send(GroupsUiEventOnHomeTabClicked.shared)
         case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
         case .contacts: model.send(GroupsUiEventOnContactsTabClicked.shared)
-        case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
         case .search: model.send(GroupsUiEventOnSearchOpened.shared)
         case .groups:
-            if showsSearchTab || showsSearchInGroups {
+            if showsSearchTab {
                 model.send(GroupsUiEventOnSearchTabLeft.shared)
             } else {
                 model.send(GroupsUiEventOnGroupsTabClicked.shared)
@@ -221,7 +185,7 @@ struct MainTabView: View {
         }
     }
 
-    /// What Home pushed over itself, while neither Groups nor Balances is above it.
+    /// What Home pushed over itself (Activity among them), while no other tab is above it.
     private var homePath: Binding<[AppRoute]> {
         Binding(
             get: { selectedTab == .home ? path : [] },
@@ -240,12 +204,6 @@ struct MainTabView: View {
     /// Balances right above Home, which its tab shows; nil while another tab is in front.
     private var balancesRoute: RouteGlobalBalances? {
         if case let .globalBalances(route) = path.first { return route }
-        return nil
-    }
-
-    /// Activity right above Home, which its tab shows; nil while another tab is in front.
-    private var activityRoute: RouteActivity? {
-        if case let .activity(route) = path.first { return route }
         return nil
     }
 
@@ -271,7 +229,7 @@ struct MainTabView: View {
         )
     }
 
-    /// The search tab is selected: only an iPad's room has one, the Mac searches in the groups' toolbar. Read
+    /// The search tab is selected; the Mac has none and searches in the groups' toolbar. Read
     /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
     private var showsSearchTab: Bool {
         #if os(iOS)
@@ -281,21 +239,10 @@ struct MainTabView: View {
         #endif
     }
 
-    /// The five tabs stay, and with no room for a sixth (`hasSearchTabRoom`) the search opens from Groups' magnifier
-    /// in the groups' place; an iPad's room keeps the tab.
+    /// Four tabs leave room for the search tab on an iPhone too, as Apple's tab bar sets it apart at its end.
     private var hasSearchTab: Bool {
         #if os(iOS)
-        hasSearchTabRoom && model.state.canSearch
-        #else
-        false
-        #endif
-    }
-
-    /// The search open in Groups' place, where the tab bar is compact. Read from the state, which the tab view
-    /// observes: nothing else redraws it as the search opens.
-    private var showsSearchInGroups: Bool {
-        #if os(iOS)
-        !hasSearchTabRoom && model.state.isSearching
+        model.state.canSearch
         #else
         false
         #endif
@@ -329,17 +276,8 @@ struct MainTabView: View {
     }
     #endif
 
-    #if os(iOS)
-    /// The tab bar's badges in the accent, never the system's red: Activity's unread count is news, not an error.
-    private static func tintsBadges() {
-        let appearance = UITabBarItem.appearance()
-        appearance.badgeColor = UIColor(named: "AccentColor")
-        appearance.setBadgeTextAttributes([.foregroundColor: UIColor(Palette.onAccent)], for: .normal)
-    }
-    #endif
-
-    /// What the tabs push over themselves: a group's expenses, balances, members or statistics, how simplifying debts
-    /// works, a bill, an invite
+    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics, how
+    /// simplifying debts works, a bill, an invite
     /// opened from its link, a group's invite with an iPad's room, the profile, its editor, its category map and, on
     /// iPhone, a key.
     /// Contacts also pushes a person's profile (which Balances pushes too), the agenda, and Balances opened from a
@@ -363,7 +301,9 @@ struct MainTabView: View {
         case let .contactProfile(route): ContactProfileView(route: route)
         case .contactsAgenda: AgendaView()
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
-        // Search over Home, Balances, Contacts or Activity; the Mac opens it as a sheet
+        // Home's bell, or a contact's "See all", pushes Activity
+        case let .activity(route): ActivityView(route: route).id(route)
+        // Search over Home, Balances or Contacts on the Mac, as a sheet; an iPhone and an iPad have the search tab
         case .search: SearchView()
         default:
             #if os(macOS)
@@ -375,14 +315,3 @@ struct MainTabView: View {
         }
     }
 }
-
-#if os(iOS)
-extension EnvironmentValues {
-    /// Only an iPad's room, both size classes regular, has a search tab. A compact tab bar holds five items and
-    /// puts the rest under "More", and a Plus or Max iPhone lying down, regular in width, still draws that bar, so
-    /// the width alone would flip the search between a tab and Groups' magnifier as it turns.
-    var hasSearchTabRoom: Bool {
-        horizontalSizeClass == .regular && verticalSizeClass == .regular
-    }
-}
-#endif

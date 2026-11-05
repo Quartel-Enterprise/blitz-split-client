@@ -26,8 +26,6 @@ import com.quare.blitzsplit.core.model.HomeTab
 fun WithGroupNavigationRail(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
-    // Why: Atividade's unread badge, as on every home tab.
-    activityBadgeCount: Int,
     modifier: Modifier = Modifier,
     content: @Composable (showsRail: Boolean) -> Unit,
 ) {
@@ -39,7 +37,6 @@ fun WithGroupNavigationRail(
             HomeNavigationRail(
                 selected = selected,
                 onTabClick = onTabClick,
-                activityBadgeCount = activityBadgeCount,
                 reselects = true,
             )
         }

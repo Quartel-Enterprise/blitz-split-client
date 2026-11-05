@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
@@ -90,7 +89,6 @@ import kotlin.time.Instant
 class GroupDetailBalancesViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val activityUnread = MutableStateFlow(0)
     private val teach = InMemoryCategoryTeachRepository()
     private val terms = FakeCategoryTermRepository()
     private lateinit var groups: FakeGroupRepository
@@ -1138,7 +1136,6 @@ class GroupDetailBalancesViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
-                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

@@ -1,11 +1,12 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 /*
  * Why: what "Buscar" (5.2) takes, the same wherever it opens: in Grupos' place (GroupsUiEvent.OnSearch) or over
- * Início, Saldos, Contatos and Atividade (Route.Search).
+ * Início, Saldos and Contatos (Route.Search).
  */
 sealed interface SearchUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
@@ -46,6 +47,9 @@ sealed interface SearchUiEvent : TrackedUiEvent {
 
         // Why: a close, which each platform also does its own way: where it went is its screen view.
         OnClosed -> EventAnalytics.NotTracked
+
+        // Why: a tab of the home's bar or rail, which Android draws around the search: where it went is its screen view.
+        is OnHomeTabClicked -> EventAnalytics.NotTracked
     }
 
     data class OnQueryChanged(
@@ -74,4 +78,12 @@ sealed interface SearchUiEvent : TrackedUiEvent {
 
     // Why: back or ✕ on Android, Esc or a click outside on the web, the field cancelled on Apple.
     data object OnClosed : SearchUiEvent
+
+    /*
+     * Why: a tab of the bar or rail Android draws around the search, Search selected as its last item (Pierre's call):
+     * the tab it was opened over goes back to it, any other takes its place, as the home's tabs do.
+     */
+    data class OnHomeTabClicked(
+        val tab: HomeTab,
+    ) : SearchUiEvent
 }

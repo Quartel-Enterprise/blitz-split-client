@@ -49,8 +49,6 @@ class JsContactsState(
     val showsOfflineNotice: Boolean,
     // Why: the person the desktop's pane beside the list shows, null for its placeholder.
     val selectedKey: String?,
-    // Why: the Atividade tab's badge.
-    val activityUnreadCount: Int,
 )
 
 class ContactsPresenter {
@@ -84,7 +82,6 @@ class ContactsPresenter {
                 showsSummary = state.showsSummary,
                 showsOfflineNotice = state.showsOfflineNotice,
                 selectedKey = state.selectedKey,
-                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -151,10 +148,6 @@ class ContactsPresenter {
 
     fun openBalances() {
         viewModel.onEvent(ContactsUiEvent.OnBalancesTabClicked)
-    }
-
-    fun openActivity() {
-        viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
     }
 
     fun openProfile() {

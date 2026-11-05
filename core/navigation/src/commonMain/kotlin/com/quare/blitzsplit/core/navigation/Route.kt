@@ -211,8 +211,9 @@ sealed interface Route {
     ) : Route
 
     /*
-     * Why: the home's "Atividade" tab (page 12), the feed and notification center of every group, over the groups like
-     * Saldos. personKey (PeopleBalances.keyOf) opens it on one person, from a contact's history, as a removable chip.
+     * Why: "Atividade" (page 12), the feed and notification center of every group, which Início's bell opens over it
+     * (no tab since iOS's search tab took its place in the bar, Pierre's call). personKey (PeopleBalances.keyOf) opens
+     * it on one person, over a contact's profile, from their history, as a removable chip.
      */
     data class Activity(
         val personKey: String?,

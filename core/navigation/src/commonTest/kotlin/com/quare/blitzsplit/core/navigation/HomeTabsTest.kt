@@ -336,7 +336,7 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a group over the groups WHEN its rail opens Atividade THEN Atividade takes the groups place`() {
+    fun `GIVEN a group over the groups WHEN opening Atividade THEN Atividade takes the groups place over Inicio`() {
         // Given
         prepareScenario(
             Route.Home,
@@ -349,10 +349,38 @@ class HomeTabsTest {
         )
 
         // When
-        navigator.openHomeTab(HomeTab.ACTIVITY)
+        navigator.openActivity()
 
         // Then
         assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a bill opened from Atividade WHEN opening Atividade THEN goes back to Atividade`() {
+        // Given
+        prepareScenario(
+            Route.Home,
+            Route.Activity(personKey = null),
+            Route.BillDetail("trip", "dinner", focusCommentId = null),
+        )
+
+        // When
+        navigator.openActivity()
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN no Inicio in the back stack WHEN opening Atividade THEN nothing changes`() {
+        // Given
+        prepareScenario(Route.Welcome)
+
+        // When
+        navigator.openActivity()
+
+        // Then
+        assertEquals(listOf<Route>(Route.Welcome), navigator.backStack.value)
     }
 
     @Test
@@ -433,13 +461,13 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a screen no longer in the back stack WHEN asking its home tab THEN is the top one`() {
         // Given
-        val stack = listOf(Route.Home, Route.Activity(personKey = null))
+        val stack = listOf(Route.Home, Route.Contacts)
 
         // When
         val tab = stack.findHomeTabUnder(Route.GroupStats("trip"))
 
         // Then
-        assertEquals(HomeTab.ACTIVITY, tab)
+        assertEquals(HomeTab.CONTACTS, tab)
     }
 
     @Test
@@ -516,7 +544,7 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a profile over Atividade WHEN asking whether it is right above a home tab THEN it is`() {
+    fun `GIVEN a profile over Atividade WHEN asking whether it is right above a home tab THEN it is not`() {
         // Given
         val route = Route.ContactProfile(PERSON_KEY)
         val stack = listOf(Route.Home, Route.Activity(personKey = null), route)
@@ -525,20 +553,7 @@ class HomeTabsTest {
         val isAboveTab = stack.isRightAboveHomeTab(route)
 
         // Then
-        assertTrue(isAboveTab)
-    }
-
-    @Test
-    fun `GIVEN a profile over Atividade on a person WHEN asking whether it is right above a home tab THEN it is`() {
-        // Given
-        val route = Route.ContactProfile(PERSON_KEY)
-        val stack = listOf(Route.Home, Route.Contacts, Route.Activity(personKey = PERSON_KEY), route)
-
-        // When
-        val isAboveTab = stack.isRightAboveHomeTab(route)
-
-        // Then
-        assertTrue(isAboveTab)
+        assertFalse(isAboveTab)
     }
 
     @Test

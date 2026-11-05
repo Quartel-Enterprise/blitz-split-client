@@ -1,12 +1,12 @@
-import { CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
+import { ArrowLeft, CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PersonButton } from '@/components/common'
-import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import type { HomeTab } from '@/components/HomeShell'
+import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
-import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -17,16 +17,9 @@ import { cn } from '@/lib/utils'
 import { ActiveFilters, ActivityFilterButton } from './ActivityFilter'
 import { actorName, changeRows, changesRegionLabel, deletionText, detailLine, headline, headlineText, openLabel } from './activityText'
 
-// Início, Grupos, Saldos and Contatos take Atividade's place above Início.
-const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>> = {
-  home: (p) => p.openHome(),
-  groups: (p) => p.openGroups(),
-  balances: (p) => p.openBalances(),
-  contacts: (p) => p.openContacts(),
-}
-
 /**
- * The home's Atividade tab (page 12): every group's events by day, the unread ones marked, in the home's frame. On
+ * Atividade (page 12), which Início's bell opens over it (no tab since Pierre's call): every group's events by day,
+ * the unread ones marked, in the home's frame, the tab it sits over selected; the phone has its own bar with back. On
  * the desktop (from 1024 px) the feed sits beside the item picked, as Saldos does; on a tablet and a phone a click
  * opens what the item is about, and a bill's edit shows its changes in the row. "Filtrar" is a Popover from the
  * tablet up and a Drawer on the phone.
@@ -34,7 +27,6 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>
 export function ActivityScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new ActivityPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsActivityState) => void) => p.observeState(onChange))
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
   // Why: the canvas' desktop (from 1024 px) splits the feed and the item picked; narrower, one column.
   const isWide = useMediaQuery('(min-width: 1024px)')
   const isPhone = !useMediaQuery('(min-width: 768px)')
@@ -45,17 +37,15 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
   if (!presenter || !state) return null
 
   return (
-    <HomeShell
-      selected="activity"
-      profile={loadedProfile(state)}
-      activityUnreadCount={state.unreadCount}
-      onTab={(tab) => tabEvents[tab]?.(presenter)}
-      onProfile={() => presenter.openProfile()}
-      onBrand={() => presenter.openBrand()}
-      search={search}
-    >
+    <PageShell selected={state.homeTab as HomeTab} phoneBars="nav">
+      <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur md:hidden">
+        <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
+          <ArrowLeft />
+        </Button>
+        <h1 className="text-lg font-semibold">{t('activity_title')}</h1>
+      </header>
       <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>
+        <h1 className="hidden text-2xl font-semibold tracking-tight md:block">{t('activity_title')}</h1>
         {!state.isLoaded && <Placeholders isDelayed />}
         {state.isLoaded && (
           <>
@@ -77,7 +67,7 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
           </>
         )}
       </main>
-    </HomeShell>
+    </PageShell>
   )
 }
 

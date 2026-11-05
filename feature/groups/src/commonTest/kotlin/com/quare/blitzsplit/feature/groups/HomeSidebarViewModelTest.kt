@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -17,6 +16,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -38,7 +39,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSidebarUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -62,7 +62,6 @@ class HomeSidebarViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
-    private lateinit var activityUnread: MutableStateFlow<Int>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: HomeSidebarViewModel
 
@@ -366,43 +365,6 @@ class HomeSidebarViewModelTest {
     }
 
     @Test
-    fun `GIVEN unread events WHEN the sidebar opens THEN shows their count`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(unreadCount = 3)
-
-        // When
-        val count = viewModel.uiState.value.activityUnreadCount
-
-        // Then
-        assertEquals(3, count)
-    }
-
-    @Test
-    fun `GIVEN unread events WHEN they are read THEN the count follows`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(unreadCount = 3)
-
-        // When
-        activityUnread.value = 0
-
-        // Then
-        assertEquals(0, viewModel.uiState.value.activityUnreadCount)
-    }
-
-    @Test
-    fun `GIVEN a group opened from Grupos WHEN tapping Atividade THEN opens it in the place of Grupos`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio"), Route.GroupStats("trio")))
-
-            // When
-            viewModel.onEvent(HomeSidebarUiEvent.OnTabClicked(HomeTab.ACTIVITY))
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-        }
-
-    @Test
     fun `GIVEN a group opened from Grupos WHEN tapping Grupos THEN goes back to it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio"), Route.GroupStats("trio")))
@@ -585,19 +547,6 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
-    fun `GIVEN the sidebar WHEN tapping Atividade THEN sends nothing since where it went is its screen view`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(HomeSidebarUiEvent.OnTabClicked(HomeTab.ACTIVITY))
-
-            // Then
-            assertEquals(emptyList(), trackedEvents)
-        }
-
-    @Test
     fun `GIVEN a group opened from Groups WHEN tapping the logo THEN goes back to Home`() = runTest(testDispatcher) {
         // Given
         prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio")))
@@ -635,12 +584,214 @@ class HomeSidebarViewModelTest {
             assertEquals(listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "sidebar")), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN no group on the device WHEN the sidebar opens THEN Buscar is not offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        val canSearch = viewModel.uiState.value.canSearch
+
+        // Then
+        assertFalse(canSearch)
+    }
+
+    @Test
+    fun `GIVEN a group on the device WHEN the sidebar opens THEN Buscar is offered`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        val canSearch = viewModel.uiState.value.canSearch
+
+        // Then
+        assertTrue(canSearch)
+    }
+
+    @Test
+    fun `GIVEN only a group where everyone settled WHEN the sidebar opens THEN Buscar is still offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("b1")),
+                storedSettlements = listOf(
+                    payment(
+                        "p1",
+                        from = "Ana",
+                        to = "Pierre",
+                        amountMinor = 3000L,
+                    ),
+                    payment(
+                        "p2",
+                        from = "Bruno",
+                        to = "Pierre",
+                        amountMinor = 3000L,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.openGroups.isEmpty())
+            assertTrue(state.canSearch)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN a sync brings the first one THEN Buscar is offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = emptyList())
+            val arrived = trio()
+
+            // When
+            groups.groups.value += arrived
+
+            // Then
+            assertTrue(viewModel.uiState.value.canSearch)
+        }
+
+    @Test
+    fun `GIVEN a group opened from Grupos WHEN tapping Buscar THEN goes back to Grupos and opens the search over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio")))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group opened from Grupos WHEN tapping Buscar THEN tracks search_opened from the sidebar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stack = listOf(Route.Home, Route.Groups, expensesOf("trio")))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "sidebar")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile over Inicio WHEN tapping Buscar THEN goes back to Inicio and opens the search over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stack = listOf(Route.Home, Route.Profile))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Atividade of a contact opened from Contatos WHEN tapping Buscar THEN opens the search over Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stack = listOf(
+                    Route.Home,
+                    Route.Contacts,
+                    Route.ContactProfile(anaKey),
+                    Route.Activity(personKey = anaKey),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a contact opened from a filtered Saldos WHEN tapping Buscar THEN opens the search over that Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+            prepareScenario(stack = listOf(Route.Home, balances, Route.ContactProfile(anaKey)))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, balances, Route.Search), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN a late tap on Buscar arrives THEN stays where it is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                stack = listOf(Route.Home, Route.Profile),
+            )
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN a late tap on Buscar arrives THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                stack = listOf(Route.Home, Route.Profile),
+            )
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a back stack without the home WHEN tapping Buscar THEN stays where it is and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stack = listOf(Route.Welcome, Route.Profile))
+
+            // When
+            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Buscar in the sidebar WHEN reading its analytics THEN the ViewModel sends search_opened`() {
+        // Given
+        val event = HomeSidebarUiEvent.OnSearchClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("search_opened"), analytics)
+    }
+
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
 
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, photo = null)
 
     private val everyone = listOf("Pierre", "Ana", "Bruno")
+
+    private val anaKey = "ana"
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
 
@@ -734,7 +885,6 @@ class HomeSidebarViewModelTest {
         groupsRead: Boolean = true,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
-        unreadCount: Int = 0,
         stack: List<Route> = listOf(Route.Home, Route.Groups, expensesOf("trio")),
     ) {
         account = FakeAccountRepository(initialStatus = status)
@@ -742,7 +892,6 @@ class HomeSidebarViewModelTest {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        activityUnread = MutableStateFlow(unreadCount)
         navigator = BackStackNavigator(startRoute = stack.first()).also { nav -> stack.drop(1).forEach(nav::navigate) }
         viewModel = HomeSidebarViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
@@ -754,7 +903,7 @@ class HomeSidebarViewModelTest {
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
             observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
-            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeHasGroups = ObserveHasGroupsUseCase(groups),
         )
     }
 }

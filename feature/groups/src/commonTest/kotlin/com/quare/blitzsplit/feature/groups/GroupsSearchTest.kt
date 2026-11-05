@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -23,11 +22,13 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -593,6 +594,167 @@ class GroupsSearchTest {
             assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN the search open in the groups WHEN tapping the Grupos tab around it THEN closes it over the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.GROUPS)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group opened from the search in the groups WHEN tapping Grupos THEN goes back to the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnGroupClicked("churrasco")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.GROUPS)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN tapping Inicio around it THEN closes it and goes to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.HOME)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN tapping Saldos around it THEN Saldos takes the groups place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN tapping the Contatos tab around it THEN Contatos takes its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.CONTACTS)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search open in the groups WHEN tapping a tab around it THEN tracks only the opening`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES)))
+
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group opened from a search closed since WHEN a late tap on Grupos arrives THEN keeps the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnGroupClicked("churrasco")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.GROUPS)))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search closed in the groups WHEN a late tap on Inicio around it arrives THEN stays on the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.HOME)))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search closed in the groups WHEN a late tap on Saldos around it arrives THEN stays on the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(backStack = listOf(Route.Home, Route.Groups))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES)))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
     private val churrasco = group(
         id = "churrasco",
         name = "Churrasco de sábado",
@@ -701,10 +863,13 @@ class GroupsSearchTest {
     private fun prepareScenario(
         storedGroups: List<Group> = listOf(churrasco, aniversario, ape),
         storedExpenses: List<Expense> = storedBills,
+        backStack: List<Route> = listOf(Route.Groups),
     ) {
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         groups = FakeGroupRepository(initialGroups = storedGroups)
-        navigator = BackStackNavigator(startRoute = Route.Groups)
+        navigator = BackStackNavigator(startRoute = backStack.first()).also { navigator ->
+            backStack.drop(1).forEach(navigator::navigate)
+        }
         val deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
@@ -732,7 +897,6 @@ class GroupsSearchTest {
             observePeopleBalances = { emptyFlow() },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
-            observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
         )
     }

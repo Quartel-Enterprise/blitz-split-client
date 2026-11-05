@@ -178,10 +178,9 @@ class ContactProfileViewModel(
                 navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
             }
 
-            // Why: "Ver tudo" is Atividade on this person, a home tab in Contatos' place.
-            ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (isShown()) {
+            // Why: "Ver tudo" is Atividade on this person, over the profile, whose back returns to it.
+            ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (navigate(Route.Activity(personKey = route.personKey))) {
                 trackEvent("contact_history_see_all_clicked", emptyMap())
-                navigator.openHomeTab(Route.Activity(personKey = route.personKey))
             }
 
             ContactProfileUiEvent.OnInviteGuestClicked -> findContactIf { it.isGuest }?.let { contact ->

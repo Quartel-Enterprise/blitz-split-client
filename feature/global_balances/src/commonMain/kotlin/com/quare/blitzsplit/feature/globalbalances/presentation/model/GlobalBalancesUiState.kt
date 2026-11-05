@@ -44,8 +44,6 @@ data class GlobalBalancesUiState(
      * inspector) shows beside the list, as last picked; null until someone is picked.
      */
     val pickedPersonId: String?,
-    // Why: the Atividade tab's badge, every unread event whatever its filters.
-    val activityUnreadCount: Int,
     // Why: "Buscar" only once there is a group to look in, as on Grupos.
     val canSearch: Boolean,
 ) {

@@ -302,7 +302,7 @@ class PushLinkTest {
     }
 
     @Test
-    fun `GIVEN a bill created WHEN asking its home tab THEN is Atividade`() {
+    fun `GIVEN a bill created WHEN asking its home tab THEN is none since it opens Atividade over Inicio`() {
         // Given
         val link = pushLink(kind = "bill_created")
 
@@ -310,11 +310,11 @@ class PushLinkTest {
         val tab = link.homeTab
 
         // Then
-        assertEquals(HomeTab.ACTIVITY, tab)
+        assertNull(tab)
     }
 
     @Test
-    fun `GIVEN a kind a newer server adds WHEN asking its home tab THEN is Atividade`() {
+    fun `GIVEN a kind a newer server adds WHEN asking its home tab THEN is none since it opens Atividade`() {
         // Given
         val link = pushLink(kind = "group_archived")
 
@@ -322,7 +322,7 @@ class PushLinkTest {
         val tab = link.homeTab
 
         // Then
-        assertEquals(HomeTab.ACTIVITY, tab)
+        assertNull(tab)
     }
 
     @Test

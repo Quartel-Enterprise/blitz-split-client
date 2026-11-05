@@ -70,10 +70,12 @@ export function PageShell({
       selected={selected}
       isProfileSelected={selected === undefined}
       profile={state && loadedProfile(state)}
-      activityUnreadCount={state?.activityUnreadCount ?? 0}
       onTab={(tab) => presenter?.openTab(tab)}
       onProfile={() => presenter?.openProfile()}
       onBrand={() => presenter?.openBrand()}
+      // Why: the same bars as the tabs', Search included, which goes back to the page's tab to search over it. No ⌘K
+      // here, so a shortcut never closes a dialog over the page.
+      search={state?.canSearch && presenter ? { shortcut: '', keyShortcuts: '', onOpen: () => presenter.openSearch() } : undefined}
       openGroups={groups && (state && presenter ? { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) } : 'loading')}
       phoneBars={phoneBars}
       isOutsideTabs

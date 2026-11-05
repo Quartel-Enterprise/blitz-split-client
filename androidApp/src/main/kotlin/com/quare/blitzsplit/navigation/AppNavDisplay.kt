@@ -332,7 +332,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
-            // Why: the home's Atividade tab, over the groups like Saldos.
+            // Why: Atividade, pushed over Início by its bell or over a contact's profile by their history.
             entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(metadata = formPresentationMetadata) { route ->

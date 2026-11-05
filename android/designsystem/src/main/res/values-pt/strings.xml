@@ -113,7 +113,7 @@
     <string name="designsystem_tab_groups">Grupos</string>
     <string name="designsystem_tab_balances">Saldos</string>
     <string name="designsystem_tab_contacts">Contatos</string>
-    <string name="designsystem_tab_activity">Atividade</string>
+    <string name="designsystem_activity">Atividade</string>
     <string name="designsystem_person_you_owe">você deve</string>
     <string name="designsystem_person_owes_you">te deve</string>
     <string name="designsystem_person_net">Líquido, já compensado</string>
@@ -201,7 +201,7 @@
     <string name="designsystem_category_icon_gym">Haltere</string>
     <string name="designsystem_category_icon_dots">Outros</string>
     <string name="designsystem_category_path">%1$s › %2$s</string>
-    <plurals name="designsystem_tab_unread">
+    <plurals name="designsystem_activity_unread">
         <item quantity="one">%d não lida</item>
         <item quantity="other">%d não lidas</item>
     </plurals>

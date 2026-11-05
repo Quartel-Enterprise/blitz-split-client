@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
@@ -106,7 +105,6 @@ import kotlin.time.Instant
 class GroupDetailViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -1217,21 +1215,6 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the group drawn alone WHEN its rail opens Atividade THEN Atividade takes the groups place`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.ACTIVITY)
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-            assertTrue(actions.isEmpty())
-        }
-
-    @Test
     fun `GIVEN the group drawn alone WHEN its rail opens Grupos THEN goes back to the groups`() =
         runTest(testDispatcher) {
             // Given
@@ -1285,19 +1268,6 @@ class GroupDetailViewModelTest {
         // Then
         assertEquals(HomeTab.HOME, state.homeTab)
     }
-
-    @Test
-    fun `GIVEN the group drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            activityUnread.value = 3
-
-            // Then
-            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
-        }
 
     @Test
     fun `GIVEN a bill on the list WHEN tapping it THEN opens the bill`() = runTest(testDispatcher) {
@@ -3321,7 +3291,6 @@ class GroupDetailViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
-                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

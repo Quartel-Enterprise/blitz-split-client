@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -83,6 +84,8 @@ class SearchViewModel(
             )
 
             SearchUiEvent.OnClosed -> if (isOnTop()) navigator.navigateBack()
+
+            is SearchUiEvent.OnHomeTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
         }
     }
 

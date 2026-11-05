@@ -18,16 +18,6 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
             OnBackClicked,
             -> EventAnalytics.NotTracked
 
-            /*
-             * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
-             * where it went is its screen view.
-             */
-            OnHomeTabClicked,
-            OnGroupsTabClicked,
-            OnBalancesTabClicked,
-            OnContactsTabClicked,
-            -> EventAnalytics.NotTracked
-
             OnEmptyActionClicked -> EventAnalytics.Automatic("activity_empty_action_clicked")
 
             /*
@@ -35,9 +25,6 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
              * to clear, Atividade on top), never a late tap, as the ViewModel checks before acting.
              */
             OnFilterClicked -> EventAnalytics.Manual("activity_filter_clicked")
-
-            // Why: the web's logo, which opens Home; the tabs it stands beside are not tracked, their screen view is.
-            OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to "activity"))
 
             is OnItemClicked -> EventAnalytics.Manual("activity_item_clicked")
 
@@ -67,10 +54,6 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
             -> EventAnalytics.Manual("activity_filter_chip_removed")
 
             OnRefresh -> EventAnalytics.Manual("pull_to_refresh")
-
-            OnProfileClicked -> EventAnalytics.Manual("profile_avatar_clicked")
-
-            OnSearchClicked -> EventAnalytics.Manual("search_opened")
         }
 
     /*
@@ -148,22 +131,6 @@ sealed interface ActivityUiEvent : TrackedUiEvent {
     data object OnEmptyActionClicked : ActivityUiEvent
 
     data object OnDeletedNoticeShown : ActivityUiEvent
-
-    data object OnProfileClicked : ActivityUiEvent
-
-    // Why: "Buscar" (5.2), the same search as Grupos', over Atividade: the magnifier, the web's ⌘K.
-    data object OnSearchClicked : ActivityUiEvent
-
-    data object OnHomeTabClicked : ActivityUiEvent
-
-    // Why: the web's logo, which opens Home as its tab does.
-    data object OnBrandClicked : ActivityUiEvent
-
-    data object OnGroupsTabClicked : ActivityUiEvent
-
-    data object OnBalancesTabClicked : ActivityUiEvent
-
-    data object OnContactsTabClicked : ActivityUiEvent
 
     data object OnBackClicked : ActivityUiEvent
 }

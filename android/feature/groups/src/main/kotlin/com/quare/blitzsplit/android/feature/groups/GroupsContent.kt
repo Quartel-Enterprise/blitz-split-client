@@ -119,8 +119,7 @@ fun GroupsContent(
         Row(modifier = Modifier.fillMaxSize()) {
             if (layout.usesNavigationRail) {
                 GroupsNavigationRail(
-                    activityBadgeCount = state.activityUnreadCount,
-                    showsSplitBill = state.showsSplitBillButton,
+                    state = state,
                     onEvent = onEvent,
                 )
             }
@@ -157,7 +156,7 @@ fun GroupsContent(
                 bottomBar = {
                     if (!layout.usesNavigationRail) {
                         GroupsNavigationBar(
-                            activityBadgeCount = state.activityUnreadCount,
+                            state = state,
                             onEvent = onEvent,
                         )
                     }

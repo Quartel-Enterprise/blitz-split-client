@@ -101,27 +101,12 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab, Groups' place on an iPhone, or pushed over Home, Balances, Contacts or Activity on an iPhone
-/// (`isPushed`): a large "Search" title, the field under it, and All / Groups / People / Expenses as segments. An
-/// iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results
+/// The search tab of an iPhone and an iPad: a large "Search" title, the field under it, and All / Groups / People /
+/// Expenses as segments. An iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results
 /// on the right.
 struct GroupsSearchView: View {
     let model: any SearchSource
-    /// Pushed over another tab (`Route.Search`), whose back button closes it.
-    var isPushed = false
     @State private var layout = ScreenLayout()
-    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
-    @FocusState private var isFieldFocused: Bool
-
-    /// In the groups' place, where the tab bar is compact and has no search tab: ✕ closes it, as Android's back does.
-    private var isInGroups: Bool {
-        !hasSearchTabRoom && !isPushed
-    }
-
-    /// Opened from a magnifier rather than a tab: the keyboard comes up at once.
-    private var focusesOnAppear: Bool {
-        isInGroups || isPushed
-    }
 
     /// Lying down short of an iPad's room: an iPhone lying down.
     private var usesSideColumn: Bool {
@@ -133,17 +118,9 @@ struct GroupsSearchView: View {
             if usesSideColumn {
                 HStack(alignment: .top, spacing: 28) {
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("Search")
-                                .font(.title.bold())
-                                .accessibilityAddTraits(.isHeader)
-                            Spacer()
-                            // The bar, and with it the back button, is hidden lying down
-                            if focusesOnAppear {
-                                closeButton
-                                    .buttonStyle(.glass)
-                            }
-                        }
+                        Text("Search")
+                            .font(.title.bold())
+                            .accessibilityAddTraits(.isHeader)
                         GroupsSearchField(model: model)
                         scopePicker
                     }
@@ -165,30 +142,12 @@ struct GroupsSearchView: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: Text("Groups, people and expenses"),
                 )
-                .searchFocused($isFieldFocused)
-                .toolbar {
-                    if isInGroups {
-                        ToolbarItem(placement: .topBarLeading) {
-                            closeButton
-                        }
-                    }
-                }
-                // Opened from the magnifier, the keyboard comes up as a search tab's does; coming back from a
-                // result keeps it down over what was found
-                .onAppear { if focusesOnAppear, model.currentSearch.query.isEmpty { isFieldFocused = true } }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Search")
         .measuringScreenLayout($layout)
-    }
-
-    private var closeButton: some View {
-        Button("Close", systemImage: "xmark") {
-            model.sendSearch(SearchUiEventOnClosed.shared)
-        }
-        .labelStyle(.iconOnly)
     }
 
     private var scopePicker: some View {

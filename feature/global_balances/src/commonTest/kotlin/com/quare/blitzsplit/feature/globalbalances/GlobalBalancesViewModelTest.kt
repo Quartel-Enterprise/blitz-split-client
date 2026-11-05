@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
-import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnreadCountUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.RecordChargesUseCase
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
@@ -1400,18 +1399,6 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping the Atividade tab THEN opens it in place of Saldos`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-    }
-
-    @Test
     fun `GIVEN Saldos WHEN tapping the Contatos tab THEN opens Contatos in its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1422,32 +1409,6 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
-
-    @Test
-    fun `GIVEN Saldos WHEN unread activity arrives THEN the Atividade tab counts it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        activity.events.value = listOf(activityEvent("event-1", seq = 1L), activityEvent("event-2", seq = 2L))
-
-        // Then
-        assertEquals(2, viewModel.uiState.value.activityUnreadCount)
-    }
-
-    @Test
-    fun `GIVEN unread activity WHEN it is all read THEN the Atividade tab count goes back to zero`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            activity.events.value = listOf(activityEvent("event-1", seq = 1L), activityEvent("event-2", seq = 2L))
-
-            // When
-            activity.readState.update { it.copy(readThroughSeq = 2L) }
-
-            // Then
-            assertEquals(0, viewModel.uiState.value.activityUnreadCount)
-        }
 
     @Test
     fun `GIVEN Saldos WHEN tapping the profile THEN opens it`() = runTest(testDispatcher) {
@@ -2344,18 +2305,6 @@ class GlobalBalancesViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
-    @Test
-    fun `GIVEN Saldos WHEN tapping the Atividade tab THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
     private fun idOfPerson(name: String): String = viewModel.uiState.value.people
         .valueOrNull()
         .orEmpty()
@@ -2628,7 +2577,6 @@ class GlobalBalancesViewModelTest {
             observePaymentKeys = ObservePaymentKeysUseCase(keys),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
-            observeActivityUnreadCount = ObserveActivityUnreadCountUseCase(activity, accountStatus),
             recordCharges = RecordChargesUseCase(activity, accountStatus) { 0L },
             // Why: Room not read yet is a flow that hasn't emitted.
             observeHasGroups = if (groupsRead) {

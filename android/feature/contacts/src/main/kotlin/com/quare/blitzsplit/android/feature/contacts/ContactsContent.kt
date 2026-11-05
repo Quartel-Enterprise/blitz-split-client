@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
-import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -52,7 +51,6 @@ private fun eventOf(tab: HomeTab): ContactsUiEvent? = when (tab) {
     HomeTab.GROUPS -> ContactsUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> ContactsUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> null
-    HomeTab.ACTIVITY -> ContactsUiEvent.OnActivityTabClicked
 }
 
 /*
@@ -80,7 +78,7 @@ fun ContactsContent(
                 HomeNavigationRail(
                     selected = HomeTab.CONTACTS,
                     onTabClick = onTabClick,
-                    activityBadgeCount = state.activityUnreadCount,
+                    onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
                 )
             }
             Scaffold(
@@ -98,7 +96,7 @@ fun ContactsContent(
                         HomeNavigationBar(
                             selected = HomeTab.CONTACTS,
                             onTabClick = onTabClick,
-                            activityBadgeCount = state.activityUnreadCount,
+                            onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
                         )
                     }
                 },
@@ -171,8 +169,6 @@ private fun ContactsTopBar(
     TopAppBar(
         title = { Text(title) },
         actions = {
-            // Why: the home's search, over Contatos, only once there is a group to look in.
-            if (state.canSearch) SearchActionButton(onClick = { onEvent(ContactsUiEvent.OnSearchClicked) })
             IconButton(
                 onClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
                 modifier = Modifier.semantics { contentDescription = profile },

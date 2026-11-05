@@ -18,8 +18,10 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
@@ -551,6 +553,150 @@ class SearchViewModelTest {
 
         // Then
         assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the search over Inicio WHEN tapping the Inicio tab THEN goes back to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Home)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.HOME))
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Saldos WHEN tapping the Saldos tab THEN goes back to that Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = balances)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES))
+
+            // Then
+            assertEquals(listOf(Route.Home, balances), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Voce deve WHEN tapping the Saldos tab THEN goes back to it keeping the filter`() =
+        runTest(testDispatcher) {
+            // Given
+            val youOwe = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+            prepareScenario(tab = youOwe)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES))
+
+            // Then
+            assertEquals(listOf(Route.Home, youOwe), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Inicio WHEN tapping the Contatos tab THEN Contatos opens right above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Home)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.CONTACTS))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Inicio WHEN tapping the Grupos tab THEN Grupos opens right above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Home)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.GROUPS))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Contatos WHEN tapping the Saldos tab THEN Saldos with everyone opens above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES))
+
+            // Then
+            assertEquals(listOf(Route.Home, balances), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over Contatos WHEN tapping the Inicio tab THEN closes both and goes back to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.HOME))
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group already opened from the search WHEN a late tab tap arrives THEN the group stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Home)
+            viewModel.onEvent(SearchUiEvent.OnGroupClicked("ape"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.CONTACTS))
+
+            // Then
+            assertEquals(listOf(Route.Home, expensesOf("ape")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search already closed WHEN a late tab tap arrives THEN the tab under it stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+            viewModel.onEvent(SearchUiEvent.OnClosed)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.BALANCES))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a tab of the bar THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(tab = Route.Contacts)
+
+        // When
+        viewModel.onEvent(SearchUiEvent.OnHomeTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a tap on each tab around the search WHEN reading its analytics THEN none is tracked from anywhere`() {
+        // Given
+        val events = HomeTab.entries.map { SearchUiEvent.OnHomeTabClicked(it) }
+
+        // When
+        val analytics = events.map { it.analytics } + events.map { it.toEventAnalytics(source = "groups") }
+
+        // Then
+        assertEquals(List(events.size * 2) { EventAnalytics.NotTracked }, analytics)
     }
 
     private val balances = Route.GlobalBalances(BalancesFilter.ALL, charge = null)

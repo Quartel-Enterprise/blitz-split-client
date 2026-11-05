@@ -2,16 +2,18 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -37,7 +39,7 @@ class HomeSidebarViewModel(
     observeAccount: ObserveAccount,
     observeGroups: ObserveGroups,
     observeGroupsMoney: ObserveGroupsMoney,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<HomeSidebarUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeSidebarUiState>
@@ -49,8 +51,8 @@ class HomeSidebarViewModel(
                 photoUrl = null,
                 accountProvider = null,
                 openGroups = emptyList(),
-                activityUnreadCount = 0,
                 isLoaded = false,
+                canSearch = false,
             ),
         )
 
@@ -81,8 +83,8 @@ class HomeSidebarViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
     }
 
@@ -92,7 +94,18 @@ class HomeSidebarViewModel(
             is HomeSidebarUiEvent.OnTabClicked -> navigator.openHomeTab(event.tab)
             HomeSidebarUiEvent.OnProfileClicked -> navigator.navigate(Route.Profile)
             HomeSidebarUiEvent.OnBrandClicked -> navigator.openHomeTab(Route.Home)
+            HomeSidebarUiEvent.OnSearchClicked -> openSearch()
         }
+    }
+
+    // Why: back to the tab the page on top sits in, then the search over it; nothing before the first group.
+    private fun openSearch() {
+        val stack = navigator.backStack.value
+        val top = stack.lastOrNull() ?: return
+        if (!uiState.value.canSearch || Route.Home !in stack) return
+        val tab = stack.findHomeTabUnder(top)
+        navigator.openHomeTab(tab)
+        if (navigator.openSearchOver(tab)) trackEvent("search_opened", mapOf("source" to "sidebar"))
     }
 
     /*

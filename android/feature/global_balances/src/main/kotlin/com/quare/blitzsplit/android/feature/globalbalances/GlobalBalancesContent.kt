@@ -40,7 +40,6 @@ import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
-import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -59,7 +58,6 @@ private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
     HomeTab.GROUPS -> GlobalBalancesUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> null
     HomeTab.CONTACTS -> GlobalBalancesUiEvent.OnContactsTabClicked
-    HomeTab.ACTIVITY -> GlobalBalancesUiEvent.OnActivityTabClicked
 }
 
 /*
@@ -86,7 +84,7 @@ fun GlobalBalancesContent(
                 HomeNavigationRail(
                     selected = HomeTab.BALANCES,
                     onTabClick = onTabClick,
-                    activityBadgeCount = state.activityUnreadCount,
+                    onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
                 )
             }
             Scaffold(
@@ -95,12 +93,6 @@ fun GlobalBalancesContent(
                     TopAppBar(
                         title = {},
                         actions = {
-                            // Why: only once there is a group to look in, as on Grupos.
-                            if (state.canSearch) {
-                                SearchActionButton(
-                                    onClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) },
-                                )
-                            }
                             ProfileAvatarButton(
                                 initial = state.avatarInitial,
                                 color = state.avatarColor,
@@ -117,7 +109,11 @@ fun GlobalBalancesContent(
                         HomeNavigationBar(
                             selected = HomeTab.BALANCES,
                             onTabClick = onTabClick,
-                            activityBadgeCount = state.activityUnreadCount,
+                            onSearchClick = {
+                                onEvent(
+                                    GlobalBalancesUiEvent.OnSearchClicked,
+                                )
+                            }.takeIf { state.canSearch },
                         )
                     }
                 },

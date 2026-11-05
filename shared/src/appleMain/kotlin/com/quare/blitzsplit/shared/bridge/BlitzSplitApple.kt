@@ -167,7 +167,7 @@ object BlitzSplitApple : KoinComponent {
     fun createGlobalBalancesViewModel(route: Route.GlobalBalances): ViewModelHolder<GlobalBalancesViewModel> =
         ViewModelHolder(GlobalBalancesViewModel::class) { get { parametersOf(route) } }
 
-    // Why: the home's Atividade tab, on one person when a contact's history opens it.
+    // Why: Atividade, which Início's bell opens, on one person when a contact's history opens it.
     fun createActivityViewModel(route: Route.Activity): ViewModelHolder<ActivityViewModel> =
         ViewModelHolder(ActivityViewModel::class) { get { parametersOf(route) } }
 

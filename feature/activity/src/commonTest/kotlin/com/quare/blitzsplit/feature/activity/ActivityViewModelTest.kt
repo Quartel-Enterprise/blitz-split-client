@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.activity
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
 import com.quare.blitzsplit.core.activity.domain.model.ActivityDebt
@@ -26,7 +25,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -36,13 +34,11 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.SyncState
-import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
-import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -247,22 +243,6 @@ class ActivityViewModelTest {
                     .last()
                     .after.hasFormerMember,
             )
-        }
-
-    @Test
-    fun `GIVEN a profile connected to Google WHEN Atividade opens THEN shows the name and the account`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertEquals("Pierre", state.displayName)
-            assertEquals("P", state.avatarInitial)
-            assertEquals(AvatarColor.BLUE, state.avatarColor)
-            assertEquals(AccountProvider.GOOGLE, state.accountProvider)
         }
 
     // endregion
@@ -2199,22 +2179,10 @@ class ActivityViewModelTest {
 
     // endregion
 
-    // region Tabs and bar
+    // region Bar
 
     @Test
-    fun `GIVEN Atividade WHEN tapping Grupos THEN Grupos takes its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN going back THEN goes back to Inicio`() = runTest(testDispatcher) {
+    fun `GIVEN Atividade opened from Inicio WHEN going back THEN goes back to Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -2226,279 +2194,87 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `GIVEN Atividade WHEN tapping Inicio THEN goes back to Inicio`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
-
-        // Then
-        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN the web logo is tapped THEN goes back to Inicio and sends brand_clicked`() =
+    fun `GIVEN Atividade opened from a contact history WHEN going back THEN goes back to the contact profile`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
+            prepareScenario(
+                personKey = ANA_KEY,
+                openedOver = listOf(Route.Home, Route.Contacts, Route.ContactProfile(ANA_KEY)),
+            )
 
             // When
-            viewModel.onEvent(ActivityUiEvent.OnBrandClicked)
-
-            // Then
-            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
-            assertEquals(listOf("brand_clicked" to mapOf<String, Any>("source" to "activity")), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Saldos THEN opens Saldos in its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnBalancesTabClicked)
-
-        // Then
-        assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Contatos THEN opens Contatos in its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Atividade on top WHEN tapping the profile THEN opens it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN a group opened over Atividade WHEN tapping the profile THEN opens nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        navigator.navigate(
-            Route.GroupDetail(
-                APE,
-                joinedAs = null,
-                tab = GroupTab.EXPENSES,
-            ),
-        )
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
-
-        // Then
-        assertEquals(
-            listOf(
-                Route.Home,
-                route,
-                Route.GroupDetail(
-                    APE,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            ),
-            navigator.backStack.value,
-        )
-    }
-
-    // endregion
-
-    // region Buscar
-
-    @Test
-    fun `GIVEN groups on the device WHEN Atividade opens THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertTrue(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN groups on the device and the feed not read yet WHEN Atividade opens THEN offers the search`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(groupsRead = false)
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertFalse(state.isLoaded)
-            assertTrue(state.canSearch)
-        }
-
-    @Test
-    fun `GIVEN no group on the device WHEN Atividade opens THEN hides the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = emptyList())
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertFalse(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN groups Atividade has no event for WHEN Atividade opens THEN offers the search`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedEvents = emptyList())
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertTrue(state.canSearch)
-            assertEquals(ActivityEmptyState.NOTHING_YET, state.emptyState)
-        }
-
-    @Test
-    fun `GIVEN no group on the device WHEN a sync brings the first group THEN offers the search`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroups = emptyList())
-            val firstGroup = defaultGroups.first()
-
-            // When
-            groupRepository.groups.value = listOf(firstGroup)
-
-            // Then
-            assertTrue(viewModel.uiState.value.canSearch)
-        }
-
-    @Test
-    fun `GIVEN Atividade on top WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN the history of a contact on top WHEN tapping Buscar THEN opens the search over it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(personKey = "user:ana")
-
-            // When
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            viewModel.onEvent(ActivityUiEvent.OnBackClicked)
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Activity(personKey = "user:ana"), Route.Search),
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile(ANA_KEY)),
                 navigator.backStack.value,
             )
         }
 
     @Test
-    fun `GIVEN a bill opened from an item WHEN tapping Buscar late THEN opens nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
-        val opened = navigator.backStack.value
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertEquals(opened, navigator.backStack.value)
-        assertEquals(Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null), navigator.backStack.value.last())
-    }
-
-    @Test
-    fun `GIVEN the search already open over Atividade WHEN tapping Buscar again THEN opens it once`() =
+    fun `GIVEN a group opened over Atividade WHEN a late back of Atividade arrives THEN keeps the group open`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            val group = Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)
+            navigator.navigate(group)
 
             // When
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            viewModel.onEvent(ActivityUiEvent.OnBackClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route, group), navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN no group on the device WHEN tapping Buscar THEN opens nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = emptyList())
+    fun `GIVEN Atividade opened from the bell of Inicio WHEN it opens THEN sits in the Inicio tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            // When
+            val state = viewModel.uiState.value
 
-        // Then
-        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN Filtrar open WHEN tapping Buscar THEN opens nothing and keeps Filtrar open`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
-        assertTrue(viewModel.uiState.value.isFilterOpen)
-    }
+            // Then
+            assertEquals(HomeTab.HOME, state.homeTab)
+        }
 
     @Test
-    fun `GIVEN Filtrar applied WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        applyFilter(FLORIPA)
+    fun `GIVEN a contact history opened over a profile from Contatos WHEN Atividade opens THEN sits in Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = ANA_KEY,
+                openedOver = listOf(Route.Home, Route.Contacts, Route.ContactProfile(ANA_KEY)),
+            )
 
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            // When
+            val state = viewModel.uiState.value
 
-        // Then
-        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(HomeTab.CONTACTS, state.homeTab)
+        }
 
     @Test
-    fun `GIVEN Filtrar dismissed WHEN tapping Buscar THEN opens the search over Atividade`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
-        viewModel.onEvent(ActivityUiEvent.OnFilterDismissed)
+    fun `GIVEN a contact history opened over a profile from Saldos WHEN Atividade opens THEN sits in Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = ANA_KEY,
+                openedOver = listOf(
+                    Route.Home,
+                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.ContactProfile(ANA_KEY),
+                ),
+            )
 
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
+            // When
+            val state = viewModel.uiState.value
 
-        // Then
-        assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(HomeTab.BALANCES, state.homeTab)
+        }
 
     // endregion
 
@@ -2513,10 +2289,6 @@ class ActivityViewModelTest {
             ActivityUiEvent.OnDeletedNoticeShown,
             ActivityUiEvent.OnFilterDismissed,
             ActivityUiEvent.OnBackClicked,
-            ActivityUiEvent.OnHomeTabClicked,
-            ActivityUiEvent.OnGroupsTabClicked,
-            ActivityUiEvent.OnBalancesTabClicked,
-            ActivityUiEvent.OnContactsTabClicked,
         )
 
         // When
@@ -2563,8 +2335,6 @@ class ActivityViewModelTest {
             ActivityUiEvent.OnTypeChipRemoved(ActivityType.BILLS) to "activity_filter_chip_removed",
             ActivityUiEvent.OnPersonChipRemoved to "activity_filter_chip_removed",
             ActivityUiEvent.OnRefresh to "pull_to_refresh",
-            ActivityUiEvent.OnProfileClicked to "profile_avatar_clicked",
-            ActivityUiEvent.OnSearchClicked to "search_opened",
         )
 
         // When
@@ -3439,105 +3209,6 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `GIVEN Atividade on top WHEN tapping the profile THEN sends the profile avatar clicked from Atividade`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
-
-            // Then
-            assertEquals(
-                listOf("profile_avatar_clicked" to mapOf<String, Any>("source" to "activity")),
-                trackedEvents,
-            )
-        }
-
-    @Test
-    fun `GIVEN a group opened over Atividade WHEN a late tap on the profile arrives THEN sends nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ActivityUiEvent.OnGroupClicked(PAYMENT_ANA))
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN Atividade on top WHEN tapping Buscar THEN sends the search opened from Atividade`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-            // Then
-            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "activity")), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN no group on the device WHEN tapping Buscar THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = emptyList())
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Filtrar open WHEN tapping Buscar THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN a bill opened from an item WHEN tapping Buscar late THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN the search already open over Atividade WHEN tapping Buscar again THEN sends nothing more`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
     fun `GIVEN Atividade WHEN the window shows the detail beside the list THEN sends nothing`() =
         runTest(testDispatcher) {
             // Given
@@ -3583,54 +3254,6 @@ class ActivityViewModelTest {
 
         // When
         viewModel.onEvent(ActivityUiEvent.OnBackClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Inicio THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Grupos THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Saldos THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnBalancesTabClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Atividade WHEN tapping Contatos THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
 
         // Then
         assertTrue(trackedEvents.isEmpty())
@@ -3972,6 +3595,8 @@ class ActivityViewModelTest {
         syncStateRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
         isOlderPageHeld: Boolean = false,
+        // Why: the back stack under Atividade, Início first: Início's bell, or a contact's profile from their history.
+        openedOver: List<Route> = listOf(Route.Home),
     ) {
         clockMillis = NOW
         syncGate = null
@@ -3993,7 +3618,10 @@ class ActivityViewModelTest {
         groupRepository = FakeGroupRepository(initialGroups = storedGroups)
         val account = FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE))
         route = Route.Activity(personKey)
-        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = openedOver.first()).also { stack ->
+            openedOver.drop(1).forEach(stack::navigate)
+            stack.navigate(route)
+        }
         viewModel = ActivityViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
@@ -4019,12 +3647,7 @@ class ActivityViewModelTest {
             } else {
                 ObserveGroups { MutableSharedFlow() }
             },
-            observeHasGroups = ObserveHasGroupsUseCase(groupRepository),
             observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository()),
-            observeProfile = ObserveProfileUseCase(
-                FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
-            ),
-            observeAccount = ObserveAccountUseCase(account),
             observeSyncState = if (syncStateRead) {
                 ObserveSyncState {
                     syncState
@@ -4069,5 +3692,6 @@ class ActivityViewModelTest {
         const val GONE_BILL = "gone-bill"
         const val PRAIA_BILL = "praia-bill"
         const val SIMPLIFY_APE = "simplify-ape"
+        const val ANA_KEY = "user:ana"
     }
 }

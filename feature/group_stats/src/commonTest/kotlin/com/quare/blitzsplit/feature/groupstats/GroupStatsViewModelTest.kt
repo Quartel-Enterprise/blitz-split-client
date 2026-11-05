@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupstats
 
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -61,7 +60,6 @@ import kotlin.time.Instant
 class GroupStatsViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val activityUnread = MutableStateFlow(0)
     private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -676,20 +674,6 @@ class GroupStatsViewModelTest {
         // Then
         assertEquals(HomeTab.GROUPS, state.homeTab)
     }
-
-    @Test
-    fun `GIVEN unread activity counted WHEN another period redraws the statistics THEN the rail keeps counting it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            activityUnread.value = 3
-
-            // When
-            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
-
-            // Then
-            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
-        }
 
     @Test
     fun `GIVEN no first download WHEN the statistics open THEN say Total gasto`() = runTest(testDispatcher) {
@@ -1719,7 +1703,6 @@ class GroupStatsViewModelTest {
             },
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
-            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             observeFirstDownload = ObserveFirstDownload { if (isDownloadReadAtStart) firstDownload else emptyFlow() },
         )
     }

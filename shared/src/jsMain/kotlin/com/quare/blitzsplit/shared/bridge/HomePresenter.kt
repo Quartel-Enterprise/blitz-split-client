@@ -125,7 +125,7 @@ class JsHomeState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
-    // Why: the Atividade tab's badge.
+    // Why: the count on the bell, every unread event of Atividade.
     val activityUnreadCount: Int,
     // Why: "Buscar…" and ⌘K only once there is a group to look in.
     val canSearch: Boolean,
@@ -304,8 +304,9 @@ class HomePresenter {
         viewModel.onEvent(HomeUiEvent.OnContactsTabClicked)
     }
 
+    // Why: the bell, which opens Atividade over Início.
     fun openActivity() {
-        viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
+        viewModel.onEvent(HomeUiEvent.OnActivityClicked)
     }
 
     fun dispose() {

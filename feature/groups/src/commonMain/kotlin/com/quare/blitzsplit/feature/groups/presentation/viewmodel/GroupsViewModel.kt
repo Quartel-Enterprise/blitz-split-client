@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -23,6 +22,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
@@ -103,7 +103,6 @@ class GroupsViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GroupsUiEvent>(trackEvent) {
@@ -133,7 +132,6 @@ class GroupsViewModel(
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
                 latestBill = null,
-                activityUnreadCount = 0,
             ),
         )
 
@@ -274,9 +272,6 @@ class GroupsViewModel(
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
         layoutPicker.watch(observeGroupsLayout())
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people -> peopleBalances = people }
             .launchIn(viewModelScope)
@@ -397,8 +392,6 @@ class GroupsViewModel(
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GroupsUiEvent.OnContactsTabClicked -> openTab(Route.Contacts)
-
-            GroupsUiEvent.OnActivityTabClicked -> openTab(Route.Activity(personKey = null))
         }
     }
 
@@ -419,6 +412,21 @@ class GroupsViewModel(
             }
 
             is SearchUiEvent.OnBillClicked -> openBill(event.groupId, event.expenseId)
+
+            /*
+             * Why: the bar around the search in Grupos' place, whose Grupos leaves the search for the groups; only while
+             * the search shows, so a late tap never closes what the groups opened since.
+             */
+            is SearchUiEvent.OnHomeTabClicked -> if (uiState.value.search.isOpen) {
+                handleEvent(
+                    when (event.tab) {
+                        HomeTab.HOME -> GroupsUiEvent.OnHomeTabClicked
+                        HomeTab.GROUPS -> GroupsUiEvent.OnSearchTabLeft
+                        HomeTab.BALANCES -> GroupsUiEvent.OnBalancesTabClicked
+                        HomeTab.CONTACTS -> GroupsUiEvent.OnContactsTabClicked
+                    },
+                )
+            }
         }
     }
 

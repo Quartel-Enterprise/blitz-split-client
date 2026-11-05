@@ -11,7 +11,6 @@ sealed interface ContactsUiEvent : TrackedUiEvent {
              * platform routes through the screen in front: nobody tapped to act here, and where it went is its screen view.
              */
             is OnDetailPaneChanged,
-            OnActivityTabClicked,
             OnBalancesTabClicked,
             OnGroupsTabClicked,
             OnHomeTabClicked,
@@ -87,8 +86,6 @@ sealed interface ContactsUiEvent : TrackedUiEvent {
     data object OnGroupsTabClicked : ContactsUiEvent
 
     data object OnBalancesTabClicked : ContactsUiEvent
-
-    data object OnActivityTabClicked : ContactsUiEvent
 
     data object OnProfileClicked : ContactsUiEvent
 

@@ -16,8 +16,8 @@ data class HomeSidebarUiState(
     val accountProvider: AccountProvider?,
     // Why: "Em aberto", the groups Grupos lists open, in its order: the latest activity first.
     val openGroups: List<GroupRow>,
-    // Why: Atividade's unread badge.
-    val activityUnreadCount: Int,
     // Why: nothing is drawn until Room is read, so the sidebar never fills in under the page.
     val isLoaded: Boolean,
+    // Why: "Buscar" only once there is a group to look in, settled ones included, as on the tabs.
+    val canSearch: Boolean,
 )

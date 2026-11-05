@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
@@ -65,7 +64,6 @@ class GroupStatsViewModel(
     observeSettlements: ObserveSettlements,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
     observeCategoryTree: ObserveCategoryTree,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GroupStatsUiEvent>(trackEvent) {
@@ -106,7 +104,6 @@ class GroupStatsViewModel(
                 categories = emptyList(),
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
-                activityUnreadCount = 0,
             ),
         )
 
@@ -154,9 +151,6 @@ class GroupStatsViewModel(
             }.launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
-            .launchIn(viewModelScope)
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observeFirstDownload()
             .onEach { progress ->
@@ -330,7 +324,6 @@ class GroupStatsViewModel(
             categories = calculator.createCategories(spending),
             isLoaded = isDownloadRead,
             homeTab = uiState.value.homeTab,
-            activityUnreadCount = uiState.value.activityUnreadCount,
         )
     }
 

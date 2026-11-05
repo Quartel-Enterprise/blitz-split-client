@@ -79,7 +79,6 @@ private fun createPreviewState(
     isDetailPaneShown = false,
     pickedKey = null,
     isAgendaPicked = false,
-    activityUnreadCount = 3,
     canSearch = true,
 )
 

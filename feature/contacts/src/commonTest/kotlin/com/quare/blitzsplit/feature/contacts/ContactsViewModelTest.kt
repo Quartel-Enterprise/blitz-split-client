@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
@@ -65,7 +64,6 @@ class ContactsViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ContactsViewModel
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
-    private val activityUnread = MutableStateFlow(0)
     private val actions = mutableListOf<ContactsUiAction>()
 
     @BeforeTest
@@ -743,31 +741,6 @@ class ContactsViewModelTest {
         }
 
     @Test
-    fun `GIVEN Contatos WHEN the Atividade tab is tapped THEN opens Atividade in its place`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-        }
-
-    @Test
-    fun `GIVEN unread events WHEN Contatos shows THEN its Atividade tab counts them`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        activityUnread.value = 4
-
-        // Then
-        assertEquals(4, viewModel.uiState.value.activityUnreadCount)
-    }
-
-    @Test
     fun `GIVEN Contatos WHEN the avatar is tapped THEN opens the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -961,7 +934,6 @@ class ContactsViewModelTest {
             ContactsUiEvent.OnHomeTabClicked,
             ContactsUiEvent.OnGroupsTabClicked,
             ContactsUiEvent.OnBalancesTabClicked,
-            ContactsUiEvent.OnActivityTabClicked,
         )
 
         // When
@@ -1373,7 +1345,7 @@ class ContactsViewModelTest {
             val events = listOf(
                 ContactsUiEvent.OnDetailPaneChanged(isShown = true),
                 ContactsUiEvent.OnPaneBackClicked,
-                ContactsUiEvent.OnActivityTabClicked,
+                ContactsUiEvent.OnBalancesTabClicked,
             )
 
             // When
@@ -1435,7 +1407,6 @@ class ContactsViewModelTest {
             ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
-            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             observeHasGroups = if (areGroupsRead) {
                 ObserveHasGroupsUseCase(groups)
             } else {
