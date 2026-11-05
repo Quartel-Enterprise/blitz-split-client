@@ -1,13 +1,14 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
@@ -34,7 +35,8 @@ class NotificationSettingsViewModel(
     private val updateNotificationPreference: UpdateNotificationPreference,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observeFirstDownload: ObserveFirstDownload,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<NotificationSettingsUiEvent>(trackEvent) {
     val uiState: StateFlow<NotificationSettingsUiState>
         field = MutableStateFlow(
             NotificationSettingsUiState(
@@ -56,7 +58,7 @@ class NotificationSettingsViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onEvent(event: NotificationSettingsUiEvent) {
+    override fun handleEvent(event: NotificationSettingsUiEvent) {
         when (event) {
             NotificationSettingsUiEvent.OnBackClicked -> leave()
 
@@ -88,6 +90,7 @@ class NotificationSettingsViewModel(
     ) {
         val state = uiState.value
         if (!state.areTogglesEnabled) return
+        trackEvent("notification_toggled", mapOf("type" to type, "is_enabled" to isEnabled))
         viewModelScope.launch {
             updateNotificationPreference(
                 type = type,

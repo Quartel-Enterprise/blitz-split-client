@@ -38,6 +38,7 @@ val profileModule = module {
             observePendingNotificationPreferenceChanges = get(),
             observeFirstDownload = get(),
             connectivityObserver = get(),
+            trackEvent = get(),
         )
     }
 }

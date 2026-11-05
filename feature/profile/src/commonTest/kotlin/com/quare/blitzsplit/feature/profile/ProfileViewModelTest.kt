@@ -89,6 +89,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProfileViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
@@ -111,6 +112,8 @@ class ProfileViewModelTest {
     private var completedSignIns = 0
     private var signOutError: Throwable? = null
     private var signOutHangs = false
+    private var eventsWhenSignOutRan = emptyList<String>()
+    private var themeWriteHangs = false
     private var unlinkCalls = 0
     private var unlinkHangs = false
     private var exportError: Throwable? = null
@@ -4401,6 +4404,1870 @@ class ProfileViewModelTest {
             assertEquals(listOf<String?>(null), account.idTokenAuthorizationCodes)
         }
 
+    @Test
+    fun `GIVEN the profile WHEN tapping edit THEN sends the edit clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnEditClicked)
+
+        // Then
+        assertEquals(listOf("profile_edit_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping the avatar THEN sends the photo clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAvatarClicked)
+
+            // Then
+            assertEquals(listOf("profile_photo_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a saved recovery code WHEN tapping its row THEN sends the recovery code clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                prompt = RecoveryCodePrompt.SAVED,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnRecoveryCodeClicked)
+
+            // Then
+            assertEquals(listOf("profile_recovery_code_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN exporting THEN sends the export clicked from the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+        // Then
+        assertEquals(listOf("data_export_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an unreadable device copy WHEN exporting THEN still sends the export clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            exportError = IllegalStateException("unreadable")
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+            // Then
+            assertEquals(listOf("data_export_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN bitcoin shown in bitcoin WHEN turning satoshis on THEN sends the toggle on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(true))
+
+        // Then
+        assertEquals(listOf("bitcoin_in_sats_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN bitcoin shown in satoshis WHEN turning satoshis off THEN sends the toggle off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            storedBitcoinInSats.value = true
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(false))
+
+            // Then
+            assertEquals(listOf("bitcoin_in_sats_toggled" to mapOf<String, Any>("is_on" to false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping notifications THEN sends the notifications clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnNotificationsClicked)
+
+            // Then
+            assertEquals(listOf("profile_notifications_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping the category map THEN sends it clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCategoryMapClicked)
+
+            // Then
+            assertEquals(listOf("category_map_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping the privacy policy THEN sends the privacy policy clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals(listOf("privacy_policy_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping the terms THEN sends the terms clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
+
+        // Then
+        assertEquals(listOf("terms_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a scheduled sign out WHEN cancelling it THEN sends the scheduled sign out cancel clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutScheduled = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCancelScheduledSignOutClicked)
+
+            // Then
+            assertEquals(listOf("sign_out_scheduled_cancel_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog WHEN ticking the code kept THEN sends the box checked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+
+        // Then
+        assertEquals(listOf("erase_code_saved_toggled" to mapOf<String, Any>("is_checked" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the box ticked WHEN unticking it THEN sends the box unchecked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(false))
+
+        // Then
+        assertEquals(listOf("erase_code_saved_toggled" to mapOf<String, Any>("is_checked" to false)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Google in the browser WHEN choosing Google THEN sends the provider clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "sign_in_provider_clicked" to
+                        mapOf<String, Any>("provider" to AccountProvider.GOOGLE, "source" to "profile"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apple native WHEN choosing Apple THEN sends the provider clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                native = setOf(AccountProvider.APPLE),
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "sign_in_provider_clicked" to
+                        mapOf<String, Any>("provider" to AccountProvider.APPLE, "source" to "profile"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN choosing Google THEN sends nothing as the buttons take no tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Apple connecting WHEN the native sheet fails THEN sends the native sign in failed from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnNativeSignInFailed)
+
+            // Then
+            assertEquals(listOf("native_sign_in_failed" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Apple connecting WHEN the native sheet is cancelled THEN sends the native sign in cancelled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnNativeSignInCancelled)
+
+            // Then
+            assertEquals(listOf("native_sign_in_cancelled" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apple connecting WHEN its ID token arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            native = setOf(AccountProvider.APPLE),
+        )
+        viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null, null))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping who sees your profile THEN sends the visibility info clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // Then
+            assertEquals(listOf("profile_visibility_info_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping who sees your profile THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping who sees your profile THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the theme read WHEN tapping Appearance THEN sends the appearance clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertEquals(listOf("profile_appearance_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping Appearance THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping Appearance THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Appearance THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Appearance open with dynamic colors WHEN tapping their info THEN sends the info clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertEquals(listOf("profile_dynamic_colors_info_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Appearance open without dynamic colors WHEN their info arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = false)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN the dynamic colors info arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(supportsDynamicColors = true)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN the dynamic colors info arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Google WHEN tapping the account row THEN sends the account clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertEquals(listOf("profile_account_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Apple and no internet WHEN tapping the account row THEN still sends the account clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithApple,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // Then
+            assertEquals(listOf("profile_account_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN tapping the account row THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = anonymous)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled WHEN tapping the account row THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping the account row THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping the account row again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Apple and everything uploaded WHEN tapping sign out THEN sends it with the sign out dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithApple)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(
+                listOf("sign_out_clicked" to mapOf<String, Any>("dialog" to ProfileDialog.SIGN_OUT)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Google and changes not uploaded WHEN tapping sign out THEN sends it with the pending dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(
+                listOf("sign_out_clicked" to mapOf<String, Any>("dialog" to ProfileDialog.SIGN_OUT_PENDING)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a local only user WHEN tapping sign out THEN sends it with the erase dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(
+                listOf("sign_out_clicked" to mapOf<String, Any>("dialog" to ProfileDialog.ERASE_PROFILE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled WHEN tapping sign out THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an erase under way WHEN tapping sign out again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Google connecting in the browser WHEN tapping sign out THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping sign out THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping sign out THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            theme = null,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN dismissing it THEN sends nothing as it is no confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN back on Appearance from the dynamic colors info WHEN dismissing it THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the erase dialog WHEN dismissing it THEN sends the erase dialog cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertEquals(
+            listOf("profile_dialog_cancelled" to mapOf<String, Any>("dialog" to ProfileDialog.ERASE_PROFILE)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN dismissing it THEN sends the unlink dialog cancelled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertEquals(
+                listOf("profile_dialog_cancelled" to mapOf<String, Any>("dialog" to ProfileDialog.UNLINK_ACCOUNT)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN dismissing the dialog THEN sends nothing as it gave up on the failure`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a dismiss arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN dismissing the dialog THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN dismissing the dialog THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no account online WHEN tapping connect THEN sends the connect clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = anonymous)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
+
+        // Then
+        assertEquals(listOf("profile_connect_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN tapping connect THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            online = false,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping connect THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            theme = null,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an erase under way WHEN tapping connect THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the erase dialog online WHEN choosing to connect instead THEN sends the connect instead clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnConnectInsteadClicked)
+
+            // Then
+            assertEquals(listOf("erase_connect_instead_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog offline WHEN choosing to connect instead THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                online = false,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnConnectInsteadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an erase under way WHEN choosing to connect instead THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectInsteadClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the keys read WHEN adding a Pix key THEN sends the add clicked for Pix`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.PIX))
+
+        // Then
+        assertEquals(
+            listOf("payment_key_add_clicked" to mapOf<String, Any>("method" to PaymentMethod.PIX)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the keys read WHEN adding a Bitcoin key THEN sends the add clicked for Bitcoin`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.BITCOIN))
+
+            // Then
+            assertEquals(
+                listOf("payment_key_add_clicked" to mapOf<String, Any>("method" to PaymentMethod.BITCOIN)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the keys still loading WHEN adding a Pix key THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(firstDownload = pendingDownload)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.PIX))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a Pix key WHEN tapping it THEN sends the key clicked with only its method`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey, segwitKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("cpf"))
+
+        // Then
+        assertEquals(
+            listOf("payment_key_clicked" to mapOf<String, Any>("method" to PaymentMethod.PIX)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a Lightning key WHEN tapping it THEN sends the key clicked for Bitcoin`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey, lightningAddressKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("lightning"))
+
+        // Then
+        assertEquals(
+            listOf("payment_key_clicked" to mapOf<String, Any>("method" to PaymentMethod.BITCOIN)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the keys WHEN a tap on a key that does not exist arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(keys = listOf(cpfKey))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("missing"))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a stored key while the keys load WHEN tapping it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keys = listOf(cpfKey),
+            firstDownload = pendingDownload,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("cpf"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN confirming THEN sends the unlink confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(listOf("profile_unlink_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the unlink dialog offline WHEN confirming THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            online = false,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no dialog open WHEN an unlink confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN confirming again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Google WHEN tapping delete account THEN sends the delete account clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertEquals(listOf("profile_delete_account_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a local only user WHEN a delete account tap arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a scheduled sign out WHEN a delete account tap arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping delete account THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping delete account THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a failed sync WHEN tapping retry THEN sends the retry clicked from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnRetrySyncClicked)
+
+            // Then
+            assertEquals(listOf("sync_retry_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a sync running WHEN the retry arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.SYNCING)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnRetrySyncClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the system theme WHEN choosing the dark theme THEN sends the theme selected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(theme = ThemePreference.SYSTEM)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // Then
+            assertEquals(listOf("theme_selected" to mapOf<String, Any>("theme" to ThemePreference.DARK)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the dark theme WHEN choosing the dark theme again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = ThemePreference.DARK)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a device with dynamic colors WHEN turning them on THEN sends the toggle on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            dynamicColors = false,
+            supportsDynamicColors = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(true))
+
+        // Then
+        assertEquals(listOf("dynamic_colors_toggled" to mapOf<String, Any>("is_on" to true)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN dynamic colors on WHEN turning them off THEN sends the toggle off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            dynamicColors = true,
+            supportsDynamicColors = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(false))
+
+        // Then
+        assertEquals(listOf("dynamic_colors_toggled" to mapOf<String, Any>("is_on" to false)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a device without dynamic colors WHEN they are toggled on THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = false)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsToggled(true))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN updates from Google Play WHEN checking for updates THEN sends the check clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateMechanism = UpdateMechanism.GOOGLE_PLAY)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertEquals(listOf("check_for_updates_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a check for updates in progress WHEN tapping it again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(updateCheckHangs = true)
+        viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the web with no update mechanism WHEN checking for updates THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateMechanism = UpdateMechanism.NONE)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCheckForUpdatesClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN confirming THEN sends the sign out confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // Then
+        assertEquals(listOf("sign_out_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN confirming again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN confirming again THEN sends the sign out confirmed again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertEquals(listOf("sign_out_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a sign out confirmation arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN a sign out confirmation arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN signing out once synced THEN sends the when synced clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
+
+            // Then
+            assertEquals(listOf("sign_out_when_synced_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN a sign out once synced arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a sign out once synced arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            hasPendingProfile = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN signing out now THEN sends the sign out now clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(listOf("sign_out_now_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a sign out now under way WHEN signing out now again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            hasPendingProfile = true,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN a sign out now arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the erase dialog with a code WHEN copying the code THEN sends the copy clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyCodeClicked)
+
+            // Then
+            assertEquals(listOf("erase_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a local only user without a code WHEN copying the code THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCopyCodeClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the erase dialog with the code kept WHEN erasing THEN sends the erase confirmed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // Then
+            assertEquals(listOf("profile_erase_confirmed" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog without the code kept WHEN erasing THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no dialog open and the box ticked WHEN an erase arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an erase under way WHEN erasing again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Google connecting in the browser WHEN choosing Google again THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous)
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Google connecting in the browser WHEN choosing Apple THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous)
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an erase under way WHEN choosing Google THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+        viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the sign out dialog open WHEN tapping sign out again THEN sends the tap once and keeps the dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithApple)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(
+                listOf("sign_out_clicked" to mapOf<String, Any>("dialog" to ProfileDialog.SIGN_OUT)),
+                trackedEvents,
+            )
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN tapping it again THEN sends the tap once and keeps it open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // Then
+            assertEquals(listOf("profile_visibility_info_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN tapping sign out again THEN sends no second sign out tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN the dark theme not stored yet WHEN choosing the dark theme again THEN sends it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                theme = ThemePreference.SYSTEM,
+                themeWriteHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // Then
+            assertEquals(listOf("theme_selected" to mapOf<String, Any>("theme" to ThemePreference.DARK)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the dark theme not stored yet WHEN choosing the system theme THEN sends the system theme`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                theme = ThemePreference.SYSTEM,
+                themeWriteHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.DARK))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnThemeSelected(ThemePreference.SYSTEM))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "theme_selected" to mapOf<String, Any>("theme" to ThemePreference.DARK),
+                    "theme_selected" to mapOf<String, Any>("theme" to ThemePreference.SYSTEM),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN confirming THEN sends the sign out confirmed before signing out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertEquals(listOf("sign_out_confirmed"), eventsWhenSignOutRan)
+        }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN signing out now THEN sends its tap before signing out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertEquals(listOf("sign_out_now_clicked"), eventsWhenSignOutRan)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog with the code kept WHEN erasing THEN sends the erase confirmed before signing out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertEquals(listOf("profile_erase_confirmed"), eventsWhenSignOutRan)
+        }
+
+    @Test
+    fun `GIVEN a failed unlink WHEN dismissing the dialog THEN sends nothing as it gave up on the failure`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val cpfKey = paymentKey("cpf", PaymentKeyType.CPF, "12345678909", isDefault = true)
@@ -4492,6 +6359,7 @@ class ProfileViewModelTest {
         updateMechanism: UpdateMechanism = UpdateMechanism.GOOGLE_PLAY,
         updateAvailability: UpdateAvailability = UpdateAvailability.NotAvailable,
         updateCheckHangs: Boolean = false,
+        themeWriteHangs: Boolean = false,
     ) {
         syncRetries = 0
         updateChecks = 0
@@ -4505,6 +6373,7 @@ class ProfileViewModelTest {
         completedSignIns = 0
         this@ProfileViewModelTest.signOutError = signOutError
         this@ProfileViewModelTest.signOutHangs = signOutHangs
+        this@ProfileViewModelTest.themeWriteHangs = themeWriteHangs
         unlinkCalls = 0
         this@ProfileViewModelTest.unlinkHangs = unlinkHangs
         account = FakeAccountRepository(initialStatus = status).also {
@@ -4528,6 +6397,7 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
@@ -4542,11 +6412,15 @@ class ProfileViewModelTest {
                 observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             ),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
-            updateThemePreference = UpdateThemePreference { storedTheme.value = it },
+            updateThemePreference = UpdateThemePreference {
+                if (this@ProfileViewModelTest.themeWriteHangs) awaitCancellation()
+                storedTheme.value = it
+            },
             updateDynamicColors = UpdateDynamicColors { storedDynamicColors.value = it },
             retrySync = RetrySync { syncRetries++ },
             signOut = SignOut {
                 signOutCalls++
+                eventsWhenSignOutRan = trackedEvents.map { it.first }
                 if (this@ProfileViewModelTest.signOutHangs) awaitCancellation()
                 this@ProfileViewModelTest.signOutError?.let { Result.failure(it) } ?: Result.success(Unit)
             },
