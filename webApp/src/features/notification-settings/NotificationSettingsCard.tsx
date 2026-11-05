@@ -1,4 +1,4 @@
-import { BellOff } from 'lucide-react'
+import { Bell, BellOff, Smartphone } from 'lucide-react'
 import { useEffect } from 'react'
 import {
   NotificationSettingsPresenter,
@@ -6,18 +6,24 @@ import {
   type JsNotificationSettingsState,
 } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { t, type MessageKey } from '@/i18n'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { startWebPush } from '@/push/webPush'
 
 const labels: Record<string, { title: MessageKey; detail: MessageKey }> = {
-  NEW_EXPENSE: { title: 'notifications_newExpense', detail: 'notifications_newExpenseDetail' },
-  PAYMENT_MARKED: { title: 'notifications_paymentMarked', detail: 'notifications_paymentMarkedDetail' },
-  SETTLE_REMINDERS: { title: 'notifications_settleReminders', detail: 'notifications_settleRemindersDetail' },
-  INVITES: { title: 'notifications_invites', detail: 'notifications_invitesDetail' },
+  BILLS: { title: 'notifications_bills', detail: 'notifications_billsDetail' },
+  PAYMENTS: { title: 'notifications_payments', detail: 'notifications_paymentsDetail' },
+  COMMENTS: { title: 'notifications_comments', detail: 'notifications_commentsDetail' },
+  PEOPLE_AND_GROUPS: { title: 'notifications_peopleAndGroups', detail: 'notifications_peopleAndGroupsDetail' },
+  PAYMENT_REQUESTS: { title: 'notifications_paymentRequests', detail: 'notifications_paymentRequestsDetail' },
+  BALANCE_REMINDER: { title: 'notifications_balanceReminder', detail: 'notifications_balanceReminderDetail' },
 }
 
 /**
@@ -37,10 +43,10 @@ function readPermission(): string {
 }
 
 /**
- * "Notifications" inside the profile, as the canvas draws the web: the four toggles, saved with the account.
- * A browser can't open its own settings, so the blocked notice says where to allow them instead of a button.
+ * The presenter and its state, with the browser's permission read on open and whenever the tab comes back. Asking for
+ * it (a push turned on while never asked) also subscribes this browser once allowed.
  */
-export function NotificationSettingsCard({ className }: { className?: string }) {
+function useNotificationSettings() {
   const presenter = usePresenter(() => new NotificationSettingsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsNotificationSettingsState) => void) => p.observeState(onChange))
   useActions(
@@ -69,65 +75,134 @@ export function NotificationSettingsCard({ className }: { className?: string }) 
     window.addEventListener('focus', check)
     return () => window.removeEventListener('focus', check)
   }, [presenter])
-  if (!presenter || !state) return null
+  return { presenter, state }
+}
 
+/**
+ * "Notifications" inside the profile, as the canvas draws the web: a row per kind of Activity (and the weekly
+ * reminder), each with a Push and an In app switch, saved with the account.
+ */
+export function NotificationSettingsCard({ className }: { className?: string }) {
+  const { presenter, state } = useNotificationSettings()
+  if (!presenter || !state) return null
   return (
     <Card className={className}>
       <CardHeader>
         <CardTitle>{t('notifications_title')}</CardTitle>
         <CardDescription>{t('notifications_footer')}</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        {state.showsPermissionDenied && (
-          <div role="status" className="flex items-start gap-3 rounded-lg border bg-muted/50 p-3 text-sm">
-            <BellOff className="mt-0.5 size-4 shrink-0 text-destructive" />
-            <p>
-              <strong className="font-semibold">{t('notifications_deniedTitle')}</strong> {t('notifications_deniedBody')}
-            </p>
-          </div>
-        )}
-        {state.showsTogglesLoading ? (
-          <TogglesSkeleton count={Math.max(state.items.length, 4)} />
-        ) : (
-          <div className={cn('flex flex-col divide-y rounded-lg border', !state.areTogglesEnabled && 'opacity-50')}>
-            {state.items.map((item) => {
-              const label = labels[item.type]
-              const id = `notification-${item.type}`
-              return (
-                <label key={item.type} htmlFor={id} className="flex min-h-14 items-center gap-3 px-3 py-2">
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="text-sm font-medium">{t(label.title)}</span>
-                    <span className="text-xs text-muted-foreground">{t(label.detail)}</span>
-                  </span>
-                  <Switch
-                    id={id}
-                    checked={item.isEnabled}
-                    disabled={!state.areTogglesEnabled}
-                    onCheckedChange={(checked) => presenter.toggle(item.type, checked)}
-                  />
-                </label>
-              )
-            })}
-          </div>
-        )}
+      <CardContent>
+        <NotificationSettingsBody presenter={presenter} state={state} />
       </CardContent>
     </Card>
   )
 }
 
-/** The toggles while the choices or the browser's permission are still read: a title, its detail and a switch each. */
-function TogglesSkeleton({ count }: { count: number }) {
+/**
+ * The same settings from Activity's "Notification settings": a dialog over Activity from the tablet up, a drawer on
+ * the phone. Closing it any way goes back to Activity.
+ */
+export function NotificationSettingsDialog() {
+  const { presenter, state } = useNotificationSettings()
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  // Why: drawn once the presenter exists, so a close always has somewhere to go back from.
+  if (!presenter) return null
+  const onOpenChange = (open: boolean) => {
+    if (!open) presenter.back()
+  }
+  const body = state ? <NotificationSettingsBody presenter={presenter} state={state} /> : null
+  return isDesktop ? (
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[600px]">
+        <DialogHeader className="pr-8 text-left">
+          <DialogTitle>{t('notifications_title')}</DialogTitle>
+          <DialogDescription>{t('notifications_footer')}</DialogDescription>
+        </DialogHeader>
+        {body}
+      </DialogContent>
+    </Dialog>
+  ) : (
+    <Drawer open onOpenChange={onOpenChange}>
+      <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          <DrawerTitle>{t('notifications_title')}</DrawerTitle>
+          <DrawerDescription>{t('notifications_footer')}</DrawerDescription>
+        </DrawerHeader>
+        <div className="overflow-y-auto px-4">{body}</div>
+        <DrawerFooter>
+          <Button variant="outline" className="h-11" onClick={() => presenter.back()}>
+            {t('common_close')}
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+const channels = [
+  { name: 'PUSH', label: 'notifications_push', icon: Smartphone },
+  { name: 'IN_APP', label: 'notifications_inApp', icon: Bell },
+] as const
+
+/**
+ * The blocked notice, which only stops the pushes, then the rows with their two switches under "Push" and "In app".
+ * A browser can't open its own settings, so the notice says where to allow them instead of a button.
+ */
+function NotificationSettingsBody({ presenter, state }: { presenter: NotificationSettingsPresenter; state: JsNotificationSettingsState }) {
   return (
-    <LoadingRegion className="flex flex-col divide-y rounded-lg border">
-      {Array.from({ length: count }, (_, index) => (
-        <span key={index} className="flex min-h-14 items-center gap-3 px-3 py-2">
-          <span className="flex flex-1 flex-col gap-2">
-            <SkeletonLine className={index % 2 === 0 ? 'w-1/2' : 'w-2/5'} />
-            <SkeletonLine className="h-2.5 w-3/4" />
-          </span>
-          <Skeleton className="h-5 w-9 rounded-full" />
-        </span>
-      ))}
-    </LoadingRegion>
+    <div className="flex flex-col gap-3">
+      {state.showsPermissionDenied && (
+        <div role="status" className="flex items-start gap-3 rounded-lg border bg-muted/50 p-3 text-sm">
+          <BellOff className="mt-0.5 size-4 shrink-0 text-destructive" />
+          <p>
+            <strong className="font-semibold">{t('notifications_deniedTitle')}</strong> {t('notifications_deniedBody')}
+          </p>
+        </div>
+      )}
+      <div aria-busy={state.showsTogglesLoading} className="flex flex-col divide-y rounded-lg border">
+        <div className="flex items-end gap-3 px-3 pt-3 pb-2">
+          <span className="flex-1 text-xs font-medium text-muted-foreground">{t('notifications_section')}</span>
+          {channels.map(({ name, label, icon: Icon }) => (
+            <span key={name} className="flex w-12 flex-col items-center gap-1 text-xs font-medium text-muted-foreground">
+              <Icon aria-hidden className="size-4" />
+              {t(label)}
+            </span>
+          ))}
+        </div>
+        {state.items.map((item) => {
+          const label = labels[item.type]
+          if (!label) return null
+          const title = t(label.title)
+          return (
+            <div key={item.type} className="flex min-h-16 items-center gap-3 px-3 py-2.5">
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="text-sm font-medium">{title}</span>
+                <span className="text-xs text-muted-foreground">{t(label.detail)}</span>
+              </span>
+              {channels.map(({ name, label: channelLabel }) => {
+                const hasToggle = name === 'PUSH' || item.hasInApp
+                const isEnabled = name === 'PUSH' ? state.arePushTogglesEnabled : state.areInAppTogglesEnabled
+                return (
+                  <span key={name} className="flex w-12 justify-center">
+                    {!hasToggle ? null : state.showsTogglesLoading ? (
+                      <Skeleton aria-hidden className="h-5 w-9 rounded-full" />
+                    ) : (
+                      <Switch
+                        aria-label={t('notifications_toggleLabel', { title, channel: t(channelLabel) })}
+                        checked={name === 'PUSH' ? item.isPushEnabled : item.isInAppEnabled}
+                        disabled={!isEnabled}
+                        className={cn(!isEnabled && 'opacity-50')}
+                        onCheckedChange={(checked) => presenter.toggle(item.type, name, checked)}
+                      />
+                    )}
+                  </span>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
+      <p className="px-1 text-xs text-muted-foreground">{t('notifications_legend')}</p>
+    </div>
   )
 }

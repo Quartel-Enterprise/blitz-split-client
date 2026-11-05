@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.activity.domain.model
 
+import com.quare.blitzsplit.core.model.NotificationType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -138,5 +139,65 @@ class ActivityKindTest {
         // Then
         assertTrue(notAboutBill.isEmpty())
         assertFalse(kinds.any { it.type != ActivityType.BILLS })
+    }
+
+    @Test
+    fun `GIVEN every kind WHEN reading its Notifications row THEN each sits under its decided row`() {
+        // Given
+        val expected = mapOf(
+            ActivityKind.BILL_CREATED to NotificationType.BILLS,
+            ActivityKind.BILL_EDITED to NotificationType.BILLS,
+            ActivityKind.BILL_DELETED to NotificationType.BILLS,
+            ActivityKind.PAYMENT_RECORDED to NotificationType.PAYMENTS,
+            ActivityKind.PAYMENT_UNDONE to NotificationType.PAYMENTS,
+            ActivityKind.GROUP_CREATED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.GROUP_EDITED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.GROUP_DELETED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.INVITE_LINK_CHANGED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_ADDED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_JOINED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_LEFT to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_REMOVED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_RELEASED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.MEMBER_RENAMED to NotificationType.PEOPLE_AND_GROUPS,
+            ActivityKind.SIMPLIFY_DEBTS_CHANGED to NotificationType.PAYMENTS,
+            ActivityKind.CHARGE_SENT to NotificationType.PAYMENT_REQUESTS,
+            ActivityKind.COMMENT_ADDED to NotificationType.COMMENTS,
+            ActivityKind.ATTACHMENT_ADDED to NotificationType.BILLS,
+            ActivityKind.ATTACHMENT_REMOVED to NotificationType.BILLS,
+            ActivityKind.BILL_LINK_CHANGED to NotificationType.BILLS,
+        )
+
+        // When
+        val rows = ActivityKind.entries.associateWith { it.notificationType }
+
+        // Then
+        assertEquals(expected, rows)
+    }
+
+    @Test
+    fun `GIVEN Simplify debts changed WHEN reading its Notifications row THEN it is Payments`() {
+        // Given
+        val kind = ActivityKind.SIMPLIFY_DEBTS_CHANGED
+
+        // When
+        val row = kind.notificationType
+
+        // Then
+        assertEquals(NotificationType.PAYMENTS, row)
+        assertEquals(ActivityType.PEOPLE_AND_GROUPS, kind.type)
+    }
+
+    @Test
+    fun `GIVEN every kind WHEN reading its Notifications row THEN none is the balance reminder`() {
+        // Given
+        val kinds = ActivityKind.entries
+
+        // When
+        val rows = kinds.map { it.notificationType }.toSet()
+
+        // Then
+        assertFalse(NotificationType.BALANCE_REMINDER in rows)
+        assertTrue(rows.all { it.hasInApp })
     }
 }

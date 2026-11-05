@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.data.repository
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesLocalDataSource
@@ -41,22 +42,24 @@ class NotificationPreferencesRepositoryImpl(
      */
     override suspend fun updatePreference(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     ) {
-        writeLock.withLock { updateLocked(type, isEnabled) }
+        writeLock.withLock { updateLocked(type, channel, isEnabled) }
     }
 
     private suspend fun updateLocked(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     ) {
         val stored = local.get()
-        val current = mapper.toDomain(stored).enabledTypes
-        val enabledTypes = if (isEnabled) current + type else current - type
-        if (enabledTypes == current) return
+        val current = mapper.toDomain(stored)
+        val preferences = current.with(type, channel, isEnabled)
+        if (preferences == current) return
         local.upsert(
             mapper.toEntity(
-                preferences = NotificationPreferences(enabledTypes),
+                preferences = preferences,
                 /*
                  * Why: newer than the row it changes, even when this device's clock is behind the one that wrote
                  * it or two taps land in the same millisecond; otherwise the next pull or markSynced would undo it.

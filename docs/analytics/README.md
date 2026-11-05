@@ -398,6 +398,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `activity_open_target_clicked` | `kind` | "Open bill", "Open group"… of the detail or the open changes, with Activity on top | `:feature:activity` |
 | `activity_changes_toggled` | `is_expanded` | "See changes" or "Hide changes" | `:feature:activity` |
 | `activity_mark_all_read_clicked` | none | "Mark all as read", while something is unread | `:feature:activity` |
+| `activity_notification_settings_clicked` | none | The bar's "Notification settings", which opens Notifications, with Activity on top | `:feature:activity` |
 | `activity_filter_group_picked` | `is_all` | A group, or "All groups", another than the one picked, in the sheet | `:feature:activity` |
 | `activity_filter_type_toggled` | `type`, `is_included` | A type in or out, in the sheet | `:feature:activity` |
 | `activity_filter_applied` | `has_group`, `types` (how many), `has_person` | "Show 4 results" | `:feature:activity` |
@@ -458,5 +459,5 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
-| `notification_toggled` | `type`, `is_enabled` | A toggle of Notifications, while the toggles take a change | `:feature:notification_settings` |
+| `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |

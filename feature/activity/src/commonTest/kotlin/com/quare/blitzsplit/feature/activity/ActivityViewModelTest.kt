@@ -39,6 +39,8 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -1350,6 +1352,39 @@ class ActivityViewModelTest {
         // Then
         assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
     }
+
+    // endregion
+
+    // region Notification settings
+
+    @Test
+    fun `GIVEN Atividade on top WHEN tapping Notification settings THEN opens Notifications over it and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnNotificationSettingsClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, Route.NotificationSettings), navigator.backStack.value)
+            assertEquals(listOf("activity_notification_settings_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN another screen over Atividade WHEN tapping Notification settings THEN opens nothing nor tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnNotificationSettingsClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
 
     // endregion
 
@@ -3640,7 +3675,11 @@ class ActivityViewModelTest {
             },
             currentTimeMillis = CurrentTimeMillis { clockMillis },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },
-            observeActivityFeed = ObserveActivityFeedUseCase(activity, ObserveAccountStatusUseCase(account)),
+            observeActivityFeed = ObserveActivityFeedUseCase(
+                activity,
+                ObserveAccountStatusUseCase(account),
+                ObserveNotificationPreferencesUseCase(FakeNotificationPreferencesRepository()),
+            ),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) {
                 ObserveGroupsUseCase(groupRepository)

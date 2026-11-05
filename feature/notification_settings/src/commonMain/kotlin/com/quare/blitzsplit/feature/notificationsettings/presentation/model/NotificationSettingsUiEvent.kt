@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.model
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
@@ -12,7 +13,7 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
             is OnPermissionChecked,
             -> EventAnalytics.NotTracked
 
-            // Why: only while the toggles take a change (the preferences read, the permission not refused).
+            // Why: only while its channel's toggles take a change (the preferences read, the push's permission not refused).
             is OnToggled -> EventAnalytics.Manual("notification_toggled")
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("notification_system_settings_clicked")
@@ -27,6 +28,7 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
 
     data class OnToggled(
         val type: NotificationType,
+        val channel: NotificationChannel,
         val isEnabled: Boolean,
     ) : NotificationSettingsUiEvent
 

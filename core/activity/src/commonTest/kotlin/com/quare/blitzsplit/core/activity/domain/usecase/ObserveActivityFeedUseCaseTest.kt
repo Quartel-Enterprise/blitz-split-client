@@ -12,7 +12,13 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityFee
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -24,6 +30,7 @@ import kotlin.test.assertNull
 class ObserveActivityFeedUseCaseTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var activity: FakeActivityRepository
+    private lateinit var preferences: FakeNotificationPreferencesRepository
     private lateinit var useCase: ObserveActivityFeedUseCase
     private val feeds = mutableListOf<ActivityFeed>()
 
@@ -69,6 +76,7 @@ class ObserveActivityFeedUseCaseTest {
                 targets = targets,
                 myUserId = FakeAccountRepository.CONNECTED_USER_ID,
                 hasOlder = false,
+                inAppTypes = NotificationPreferences.DEFAULT.inApp,
             ),
             feed,
         )
@@ -135,6 +143,113 @@ class ObserveActivityFeedUseCaseTest {
         assertEquals(1, feeds.last().unreadCount)
     }
 
+    @Test
+    fun `GIVEN only Bills and Comments In app on WHEN observing THEN the feed carries those rows`() = runTest {
+        // Given
+        prepareScenario(
+            status = google,
+            inApp = setOf(NotificationType.BILLS, NotificationType.COMMENTS),
+        )
+
+        // When
+        val feed = useCase().first()
+
+        // Then
+        assertEquals(setOf(NotificationType.BILLS, NotificationType.COMMENTS), feed.inAppTypes)
+    }
+
+    @Test
+    fun `GIVEN the feed observed WHEN turning Bills In app off THEN gives a feed whose bills are read`() = runTest {
+        // Given
+        prepareScenario(status = google)
+        activity.events.value = listOf(
+            event(id = "bill"),
+            event(
+                id = "payment",
+                kind = ActivityKind.PAYMENT_RECORDED,
+            ),
+        )
+        collectFeeds()
+
+        // When
+        setInApp(NotificationType.BILLS, isEnabled = false)
+        runCurrent()
+
+        // Then
+        assertEquals(2, feeds.size)
+        assertEquals(NotificationPreferences.DEFAULT.inApp - NotificationType.BILLS, feeds.last().inAppTypes)
+        assertEquals(listOf(2, 1), feeds.map { it.unreadCount })
+        assertEquals(2, feeds.last().events.size)
+    }
+
+    @Test
+    fun `GIVEN Bills In app turned off WHEN turning it back on THEN gives a feed whose bills are unread again`() =
+        runTest {
+            // Given
+            prepareScenario(status = google)
+            activity.events.value = listOf(
+                event(id = "bill-1"),
+                event(id = "bill-2"),
+            )
+            collectFeeds()
+            setInApp(NotificationType.BILLS, isEnabled = false)
+            runCurrent()
+
+            // When
+            setInApp(NotificationType.BILLS, isEnabled = true)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(2, 0, 2), feeds.map { it.unreadCount })
+            assertEquals(NotificationPreferences.DEFAULT.inApp, feeds.last().inAppTypes)
+        }
+
+    @Test
+    fun `GIVEN the feed observed WHEN only a push toggle changes THEN gives no new feed`() = runTest {
+        // Given
+        prepareScenario(status = google)
+        collectFeeds()
+
+        // When
+        preferences.preferences.update {
+            it.with(NotificationType.BILLS, NotificationChannel.PUSH, isEnabled = false)
+        }
+        runCurrent()
+
+        // Then
+        assertEquals(1, feeds.size)
+    }
+
+    @Test
+    fun `GIVEN no account and Comments In app off WHEN observing THEN only the comments of others are read`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                inApp = NotificationPreferences.DEFAULT.inApp - NotificationType.COMMENTS,
+            )
+            activity.events.value = listOf(
+                event(id = "bill"),
+                event(
+                    id = "comment",
+                    kind = ActivityKind.COMMENT_ADDED,
+                ),
+            )
+
+            // When
+            val feed = useCase().first()
+
+            // Then
+            assertEquals(listOf("bill"), feed.events.filter(feed::isUnread).map { it.id })
+        }
+
+    private fun setInApp(
+        type: NotificationType,
+        isEnabled: Boolean,
+    ) {
+        preferences.preferences.update { it.with(type, NotificationChannel.IN_APP, isEnabled) }
+    }
+
     private fun TestScope.collectFeeds() {
         backgroundScope.launch { useCase().collect(feeds::add) }
         runCurrent()
@@ -145,11 +260,12 @@ class ObserveActivityFeedUseCaseTest {
     private fun event(
         id: String,
         actorUserId: String? = "ana-user",
+        kind: ActivityKind = ActivityKind.BILL_CREATED,
     ): ActivityEvent = ActivityEvent(
         id = id,
         seq = 5L,
         groupId = GROUP_ID,
-        kind = ActivityKind.BILL_CREATED,
+        kind = kind,
         actorUserId = actorUserId,
         actorMemberId = "ana",
         actorName = "Ana",
@@ -172,12 +288,22 @@ class ObserveActivityFeedUseCaseTest {
         memberNames = emptyMap(),
     )
 
-    private fun prepareScenario(status: AccountStatus) {
+    private fun prepareScenario(
+        status: AccountStatus,
+        inApp: Set<NotificationType> = NotificationPreferences.DEFAULT.inApp,
+    ) {
         account = FakeAccountRepository(initialStatus = status)
         activity = FakeActivityRepository()
+        preferences = FakeNotificationPreferencesRepository(
+            initialPreferences = NotificationPreferences(
+                push = NotificationPreferences.DEFAULT.push,
+                inApp = inApp,
+            ),
+        )
         useCase = ObserveActivityFeedUseCase(
             repository = activity,
             observeAccountStatus = ObserveAccountStatusUseCase(account),
+            observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
         )
     }
 

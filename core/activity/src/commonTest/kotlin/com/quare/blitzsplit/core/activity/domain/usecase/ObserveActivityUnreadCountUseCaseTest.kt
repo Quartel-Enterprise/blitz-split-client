@@ -8,6 +8,11 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnr
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,6 +24,7 @@ import kotlin.test.assertEquals
 
 class ObserveActivityUnreadCountUseCaseTest {
     private lateinit var activity: FakeActivityRepository
+    private lateinit var preferences: FakeNotificationPreferencesRepository
     private lateinit var useCase: ObserveActivityUnreadCountUseCase
     private val counts = mutableListOf<Int>()
 
@@ -158,6 +164,201 @@ class ObserveActivityUnreadCountUseCaseTest {
         assertEquals(listOf(2, 1), counts)
     }
 
+    @Test
+    fun `GIVEN unread bills and payments and Bills In app off WHEN counting THEN counts only the payments`() = runTest {
+        // Given
+        prepareScenario(
+            events = listOf(
+                event(
+                    id = "bill-created",
+                    seq = 1L,
+                    kind = ActivityKind.BILL_CREATED,
+                ),
+                event(
+                    id = "attachment",
+                    seq = 2L,
+                    kind = ActivityKind.ATTACHMENT_ADDED,
+                ),
+                event(
+                    id = "payment",
+                    seq = 3L,
+                    kind = ActivityKind.PAYMENT_RECORDED,
+                ),
+                event(
+                    id = "simplify",
+                    seq = 4L,
+                    kind = ActivityKind.SIMPLIFY_DEBTS_CHANGED,
+                ),
+            ),
+            inApp = NotificationPreferences.DEFAULT.inApp - NotificationType.BILLS,
+        )
+
+        // When
+        val count = useCase().first()
+
+        // Then
+        assertEquals(2, count)
+    }
+
+    @Test
+    fun `GIVEN unread events and every In app off WHEN counting THEN the badge is zero`() = runTest {
+        // Given
+        prepareScenario(
+            events = listOf(
+                event(
+                    id = "bill",
+                    seq = 1L,
+                    kind = ActivityKind.BILL_CREATED,
+                ),
+                event(
+                    id = "comment",
+                    seq = 2L,
+                    kind = ActivityKind.COMMENT_ADDED,
+                ),
+                event(
+                    id = "charge",
+                    seq = 3L,
+                    kind = ActivityKind.CHARGE_SENT,
+                ),
+            ),
+            inApp = emptySet(),
+        )
+
+        // When
+        val count = useCase().first()
+
+        // Then
+        assertEquals(0, count)
+    }
+
+    @Test
+    fun `GIVEN the badge observed WHEN turning Comments In app off THEN leaves the comments out`() = runTest {
+        // Given
+        prepareScenario(
+            events = listOf(
+                event(
+                    id = "bill",
+                    seq = 1L,
+                    kind = ActivityKind.BILL_CREATED,
+                ),
+                event(
+                    id = "comment-1",
+                    seq = 2L,
+                    kind = ActivityKind.COMMENT_ADDED,
+                ),
+                event(
+                    id = "comment-2",
+                    seq = 3L,
+                    kind = ActivityKind.COMMENT_ADDED,
+                ),
+            ),
+        )
+        collectCounts()
+
+        // When
+        setInApp(NotificationType.COMMENTS, isEnabled = false)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(3, 1), counts)
+    }
+
+    @Test
+    fun `GIVEN People and groups In app turned off WHEN turning it back on THEN its unread events count again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                events = listOf(
+                    event(
+                        id = "bill",
+                        seq = 1L,
+                        kind = ActivityKind.BILL_CREATED,
+                    ),
+                    event(
+                        id = "member",
+                        seq = 2L,
+                        kind = ActivityKind.MEMBER_JOINED,
+                    ),
+                    event(
+                        id = "group",
+                        seq = 3L,
+                        kind = ActivityKind.GROUP_EDITED,
+                    ),
+                ),
+            )
+            collectCounts()
+            setInApp(NotificationType.PEOPLE_AND_GROUPS, isEnabled = false)
+            runCurrent()
+
+            // When
+            setInApp(NotificationType.PEOPLE_AND_GROUPS, isEnabled = true)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(3, 1, 3), counts)
+        }
+
+    @Test
+    fun `GIVEN a charge not up yet and Payment requests In app on WHEN counting THEN it is left out`() = runTest {
+        // Given
+        prepareScenario(
+            events = listOf(
+                event(
+                    id = "charge-up",
+                    seq = 1L,
+                    kind = ActivityKind.CHARGE_SENT,
+                ),
+                event(
+                    id = "charge-not-up",
+                    seq = null,
+                    kind = ActivityKind.CHARGE_SENT,
+                ),
+            ),
+            inApp = setOf(NotificationType.PAYMENT_REQUESTS),
+        )
+
+        // When
+        val count = useCase().first()
+
+        // Then
+        assertEquals(1, count)
+    }
+
+    @Test
+    fun `GIVEN no account and events of others in rows on and off WHEN counting THEN counts only the rows on`() =
+        runTest {
+            // Given
+            prepareScenario(
+                events = listOf(
+                    event(
+                        id = "bill",
+                        seq = 1L,
+                        kind = ActivityKind.BILL_EDITED,
+                    ),
+                    event(
+                        id = "payment",
+                        seq = 2L,
+                        kind = ActivityKind.PAYMENT_UNDONE,
+                    ),
+                ),
+                status = AccountStatus.LocalOnly,
+                inApp = setOf(NotificationType.PAYMENTS),
+            )
+
+            // When
+            val count = useCase().first()
+
+            // Then
+            assertEquals(1, count)
+        }
+
+    private fun setInApp(
+        type: NotificationType,
+        isEnabled: Boolean,
+    ) {
+        preferences.preferences.update { it.with(type, NotificationChannel.IN_APP, isEnabled) }
+    }
+
     private fun TestScope.collectCounts() {
         backgroundScope.launch { useCase().collect(counts::add) }
         runCurrent()
@@ -195,18 +396,25 @@ class ObserveActivityUnreadCountUseCaseTest {
         memberNames = emptyMap(),
     )
 
-    private fun prepareScenario(events: List<ActivityEvent>) {
+    private fun prepareScenario(
+        events: List<ActivityEvent>,
+        status: AccountStatus = AccountStatus.Connected(
+            FakeAccountRepository.CONNECTED_USER_ID,
+            AccountProvider.GOOGLE,
+        ),
+        inApp: Set<NotificationType> = NotificationPreferences.DEFAULT.inApp,
+    ) {
         activity = FakeActivityRepository(initialEvents = events)
+        preferences = FakeNotificationPreferencesRepository(
+            initialPreferences = NotificationPreferences(
+                push = NotificationPreferences.DEFAULT.push,
+                inApp = inApp,
+            ),
+        )
         useCase = ObserveActivityUnreadCountUseCase(
             repository = activity,
-            observeAccountStatus = ObserveAccountStatusUseCase(
-                FakeAccountRepository(
-                    initialStatus = AccountStatus.Connected(
-                        FakeAccountRepository.CONNECTED_USER_ID,
-                        AccountProvider.GOOGLE,
-                    ),
-                ),
-            ),
+            observeAccountStatus = ObserveAccountStatusUseCase(FakeAccountRepository(initialStatus = status)),
+            observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
         )
     }
 }
