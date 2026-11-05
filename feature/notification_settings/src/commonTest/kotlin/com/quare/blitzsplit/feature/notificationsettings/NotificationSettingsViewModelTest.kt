@@ -1128,12 +1128,701 @@ class NotificationSettingsViewModelTest {
             assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
         }
 
+    @Test
+    fun `GIVEN granted WHEN Android reports the bills channel silenced THEN shows its Push off and disabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val checked = NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(setOf(NotificationType.BILLS))
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(setOf(NotificationType.BILLS), state.systemBlockedTypes)
+            assertTrue(state.isBlockedBySystem(NotificationType.BILLS))
+            assertFalse(state.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+            assertFalse(state.isToggleEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+            assertTrue(state.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+            assertTrue(state.isToggleEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+            assertTrue(state.isEnabled(NotificationType.PAYMENTS, NotificationChannel.PUSH))
+            assertTrue(NotificationType.BILLS in preferences.preferences.value.push)
+            assertTrue(preferences.updates.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN Android reports a silenced channel THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val checked = NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(setOf(NotificationType.BILLS))
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bills and payments channels silenced WHEN Android reports only payments THEN unblocks bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BILLS, NotificationType.PAYMENTS))
+            val checked = NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(setOf(NotificationType.PAYMENTS))
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(setOf(NotificationType.PAYMENTS), state.systemBlockedTypes)
+            assertFalse(state.isBlockedBySystem(NotificationType.BILLS))
+            assertTrue(state.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+            assertTrue(state.isToggleEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+            assertFalse(state.isEnabled(NotificationType.PAYMENTS, NotificationChannel.PUSH))
+        }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN its Push is turned off THEN saves sends and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BILLS))
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN never asked and the invites channel silenced WHEN its Push is turned on THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.NOT_DETERMINED,
+                systemBlocked = setOf(NotificationType.PEOPLE_AND_GROUPS),
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN its In app is turned off THEN saves it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(systemBlocked = setOf(NotificationType.BILLS))
+        val toggled = NotificationSettingsUiEvent.OnToggled(
+            NotificationType.BILLS,
+            NotificationChannel.IN_APP,
+            isEnabled = false,
+        )
+
+        // When
+        viewModel.onEvent(toggled)
+
+        // Then
+        assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.IN_APP, false)), preferences.updates)
+        assertFalse(viewModel.uiState.value.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+        assertEquals(listOf("notification_toggled"), trackedEvents.map { (name, _) -> name })
+    }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN its open settings is tapped THEN opens that channel settings`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BILLS))
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf<NotificationSettingsUiAction>(
+                    NotificationSettingsUiAction.OpenChannelSettings(NotificationType.BILLS),
+                ),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN its open settings is tapped THEN sends the tap with its type`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BILLS))
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_channel_settings_clicked" to mapOf<String, Any>("type" to NotificationType.BILLS),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the weekly reminder channel silenced WHEN its open settings is tapped THEN opens its channel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BALANCE_REMINDER))
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BALANCE_REMINDER)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf<NotificationSettingsUiAction>(
+                    NotificationSettingsUiAction.OpenChannelSettings(NotificationType.BALANCE_REMINDER),
+                ),
+                actions,
+            )
+            assertFalse(
+                viewModel.uiState.value.isEnabled(NotificationType.BALANCE_REMINDER, NotificationChannel.PUSH),
+            )
+        }
+
+    @Test
+    fun `GIVEN no channel silenced WHEN a row open settings arrives THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN the payments row open settings arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(systemBlocked = setOf(NotificationType.BILLS))
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.PAYMENTS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN denied and the bills channel silenced WHEN its open settings arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.DENIED,
+                systemBlocked = setOf(NotificationType.BILLS),
+            )
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN refused once and the bills channel silenced WHEN its open settings arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.REFUSED_ONCE,
+                systemBlocked = setOf(NotificationType.BILLS),
+            )
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no permission read and the bills channel silenced WHEN its open settings arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = null,
+                systemBlocked = setOf(NotificationType.BILLS),
+            )
+            val tapped = NotificationSettingsUiEvent.OnChannelSettingsClicked(NotificationType.BILLS)
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN the screen opens THEN shows the quiet notice with the Push toggles enabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
+                permission = NotificationPermission.PROVISIONAL,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsQuietNotice)
+            assertFalse(state.showsPermissionDenied)
+            assertFalse(state.canAskAgain)
+            assertTrue(state.arePushTogglesEnabled)
+            assertEquals(
+                listOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
+                state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) },
+            )
+        }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN turn on is tapped THEN asks for the full prompt`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(permission = NotificationPermission.PROVISIONAL)
+        val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+        // When
+        viewModel.onEvent(tapped)
+
+        // Then
+        assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+        assertTrue(preferences.updates.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN turn on is tapped THEN sends the tap once with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(listOf("notification_quiet_turn_on_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN a late quiet turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission denied WHEN a late quiet turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN a quiet turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN a quiet turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN a quiet turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+            val tapped = NotificationSettingsUiEvent.OnQuietTurnOnClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN a notice is turned on THEN saves it and asks for the full prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+            val toggled = pushOn(NotificationType.PEOPLE_AND_GROUPS)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH, true)),
+                preferences.updates,
+            )
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+            assertEquals(listOf("notification_toggled"), trackedEvents.map { (name, _) -> name })
+        }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN a notice is turned off THEN saves it and asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(permission = NotificationPermission.PROVISIONAL)
+        val toggled = NotificationSettingsUiEvent.OnToggled(
+            NotificationType.BILLS,
+            NotificationChannel.PUSH,
+            isEnabled = false,
+        )
+
+        // When
+        viewModel.onEvent(toggled)
+
+        // Then
+        assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.PUSH, false)), preferences.updates)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN an In app notice is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.PROVISIONAL,
+                savedInApp = emptySet(),
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.COMMENTS,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.COMMENTS, NotificationChannel.IN_APP, true)),
+                preferences.updates,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on while never asked WHEN the system answers granted THEN sends the answer granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on while never asked WHEN the system answers denied THEN sends not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on while never asked WHEN the dialog is dismissed THEN sends the answer not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN turn on tapped after a first refusal WHEN the system answers granted THEN sends the answer granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN turn on tapped after a first refusal WHEN the system answers denied THEN sends not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN turn on tapped after a first refusal WHEN it is refused once again THEN sends the answer not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnAskAgainClicked)
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.REFUSED_ONCE)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN quiet turn on tapped WHEN Apple answers granted THEN sends the answer granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnQuietTurnOnClicked)
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN quiet turn on tapped WHEN Apple keeps delivering quietly THEN sends the answer not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnQuietTurnOnClicked)
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.PROVISIONAL)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on during quiet delivery WHEN Apple answers granted THEN sends the answer granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN the answer already sent WHEN the permission is checked again THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED))
+            val checkedAgain = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(checkedAgain)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = true)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN two notices turned on before the answer WHEN the system answers THEN sends the answer once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertEquals(listOf(answered(isGranted = false)), answeredEvents())
+        }
+
+    @Test
+    fun `GIVEN open settings tapped while denied WHEN the permission comes back granted THEN sends no answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnOpenSettingsClicked)
+            val checked = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            assertTrue(answeredEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a notice turned on while granted WHEN the permission is checked THEN sends no answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            val checked = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            assertTrue(answeredEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the screen opening WHEN the first permission check arrives THEN sends no answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+            val checked = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a first ask answered WHEN a second ask is answered THEN sends both answers`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+        viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED))
+        viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+        val answer = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+        // When
+        viewModel.onEvent(answer)
+
+        // Then
+        assertEquals(listOf(answered(isGranted = false), answered(isGranted = true)), answeredEvents())
+    }
+
+    private fun pushOn(type: NotificationType): NotificationSettingsUiEvent.OnToggled =
+        NotificationSettingsUiEvent.OnToggled(type, NotificationChannel.PUSH, isEnabled = true)
+
+    private fun answered(isGranted: Boolean): Pair<String, Map<String, Any>> =
+        "notification_permission_answered" to mapOf("source" to "notification_settings", "is_granted" to isGranted)
+
+    private fun answeredEvents(): List<Pair<String, Map<String, Any>>> =
+        trackedEvents.filter { (name, _) -> name == "notification_permission_answered" }
+
     private fun TestScope.prepareScenario(
         saved: Set<NotificationType> = NotificationPreferences.DEFAULT.push,
         savedInApp: Set<NotificationType> = NotificationPreferences.DEFAULT.inApp,
         permission: NotificationPermission? = NotificationPermission.GRANTED,
         insideProfile: Boolean = false,
         firstDownload: FirstDownloadProgress? = null,
+        systemBlocked: Set<NotificationType> = emptySet(),
     ) {
         this@NotificationSettingsViewModelTest.firstDownload = MutableStateFlow(firstDownload)
         preferences =
@@ -1159,6 +1848,10 @@ class NotificationSettingsViewModelTest {
             observeFirstDownload = ObserveFirstDownload { this@NotificationSettingsViewModelTest.firstDownload },
         )
         permission?.let { viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(it)) }
+        // Why: only Android reports its silenced channels; iOS and the web never send it.
+        if (systemBlocked.isNotEmpty()) {
+            viewModel.onEvent(NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(systemBlocked))
+        }
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 }

@@ -464,6 +464,232 @@ class NotificationSettingsUiStateTest {
         assertFalse(canAskAgain)
     }
 
+    @Test
+    fun `GIVEN the permission granted and the bills channel silenced WHEN checking the bills row THEN is blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.BILLS)
+
+        // Then
+        assertTrue(blocked)
+    }
+
+    @Test
+    fun `GIVEN quiet delivery and the bills channel silenced WHEN checking the bills row THEN is blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.PROVISIONAL,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.BILLS)
+
+        // Then
+        assertTrue(blocked)
+    }
+
+    @Test
+    fun `GIVEN the permission denied and the bills channel silenced WHEN checking the bills row THEN is not blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.DENIED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.BILLS)
+
+        // Then
+        assertFalse(blocked)
+    }
+
+    @Test
+    fun `GIVEN the permission refused once and the bills channel silenced WHEN checking it THEN is not blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.REFUSED_ONCE,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.BILLS)
+
+        // Then
+        assertFalse(blocked)
+    }
+
+    @Test
+    fun `GIVEN the permission not read yet and the bills channel silenced WHEN checking it THEN is not blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = null,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.BILLS)
+
+        // Then
+        assertFalse(blocked)
+    }
+
+    @Test
+    fun `GIVEN the permission granted and the bills channel silenced WHEN checking another row THEN is not blocked`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val blocked = state.isBlockedBySystem(NotificationType.PAYMENTS)
+
+        // Then
+        assertFalse(blocked)
+    }
+
+    @Test
+    fun `GIVEN the bills channel silenced and its push on WHEN drawing its Push THEN shows it off and disabled`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = pushOf(billsAndComments).toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val enabled = state.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH)
+
+        // Then
+        assertFalse(enabled)
+        assertFalse(state.isToggleEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+        assertEquals(billsAndComments, state.preferences.valueOrNull()?.push)
+    }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN drawing its In app THEN keeps it enabled with the saved choice`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = inAppOf(billsAndComments).toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val enabled = state.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP)
+
+        // Then
+        assertTrue(enabled)
+        assertTrue(state.isToggleEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+    }
+
+    @Test
+    fun `GIVEN the bills channel silenced WHEN drawing the other Push toggles THEN shows the saved choices`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = pushOf(billsAndComments).toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BILLS),
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
+
+        // Then
+        assertEquals(listOf(NotificationType.COMMENTS), enabled)
+        assertTrue(
+            (state.types - NotificationType.BILLS).all { state.isToggleEnabled(it, NotificationChannel.PUSH) },
+        )
+        assertTrue(state.arePushTogglesEnabled)
+    }
+
+    @Test
+    fun `GIVEN the weekly reminder channel silenced WHEN drawing its Push THEN shows it off and disabled`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = setOf(NotificationType.BALANCE_REMINDER),
+        )
+
+        // When
+        val enabled = state.isEnabled(NotificationType.BALANCE_REMINDER, NotificationChannel.PUSH)
+
+        // Then
+        assertFalse(enabled)
+        assertTrue(state.isBlockedBySystem(NotificationType.BALANCE_REMINDER))
+        assertFalse(state.isToggleEnabled(NotificationType.BALANCE_REMINDER, NotificationChannel.PUSH))
+    }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN drawing the toggles THEN enables Push with the saved choices`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            permission = NotificationPermission.PROVISIONAL,
+            systemBlockedTypes = emptySet(),
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
+
+        // Then
+        assertEquals(listOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS), enabled)
+        assertTrue(state.arePushTogglesEnabled)
+        assertTrue(state.types.all { state.isToggleEnabled(it, NotificationChannel.PUSH) })
+        assertFalse(state.showsPermissionDenied)
+        assertFalse(state.canAskAgain)
+        assertFalse(state.showsTogglesLoading)
+    }
+
+    @Test
+    fun `GIVEN quiet delivery WHEN drawing the notice THEN shows the quiet notice`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.PROVISIONAL,
+            systemBlockedTypes = emptySet(),
+        )
+
+        // When
+        val showsQuietNotice = state.showsQuietNotice
+
+        // Then
+        assertTrue(showsQuietNotice)
+    }
+
+    @Test
+    fun `GIVEN any other permission or none read WHEN drawing the notice THEN shows no quiet notice`() {
+        // Given
+        val permissions: List<NotificationPermission?> =
+            listOf(null) + (NotificationPermission.entries - NotificationPermission.PROVISIONAL)
+
+        // When
+        val showingQuietNotice = permissions.filter { permission ->
+            NotificationSettingsUiState(
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                permission = permission,
+                systemBlockedTypes = emptySet(),
+            ).showsQuietNotice
+        }
+
+        // Then
+        assertEquals(5, permissions.size)
+        assertTrue(showingQuietNotice.isEmpty())
+    }
+
     private val newExpenseAndInvites = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS)
 
     private val billsAndComments = setOf(NotificationType.BILLS, NotificationType.COMMENTS)
