@@ -360,6 +360,8 @@ private struct PhoneSplitBill: View {
             ReceiptCameraView(
                 onPhoto: { data in model.receiptPicked(data) },
                 onDismiss: { model.send(SplitBillUiEventOnReceiptPickerDismissed.shared) },
+                onTorchToggled: { isOn in model.send(SplitBillUiEventOnReceiptTorchClicked(isOn: isOn)) },
+                onSettingsOpened: { model.send(SplitBillUiEventOnReceiptCameraSettingsClicked.shared) },
             )
         }
         .sheet(isPresented: payerShown) {

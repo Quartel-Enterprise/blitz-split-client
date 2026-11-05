@@ -56,6 +56,7 @@ import com.quare.blitzsplit.android.platform.ReceiptCameraDisplay
 import com.quare.blitzsplit.android.platform.rememberCameraPermissionAccess
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.android.platform.rememberReceiptCamera
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 
 private val shutterSize = 76.dp
 private val sideButtonSize = 48.dp
@@ -75,6 +76,7 @@ private enum class CameraView { PICTURE, ASKING, DENIED, DENIED_FOR_GOOD, UNAVAI
 internal fun ReceiptCameraDialog(
     onPhoto: (ByteArray) -> Unit,
     onDismiss: () -> Unit,
+    onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -86,6 +88,7 @@ internal fun ReceiptCameraDialog(
         ReceiptCameraContent(
             onPhoto = onPhoto,
             onDismiss = onDismiss,
+            onEvent = onEvent,
         )
     }
 }
@@ -94,6 +97,7 @@ internal fun ReceiptCameraDialog(
 private fun ReceiptCameraContent(
     onPhoto: (ByteArray) -> Unit,
     onDismiss: () -> Unit,
+    onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -127,6 +131,10 @@ private fun ReceiptCameraContent(
         }
         onPauseOrDispose {}
     }
+    val toggleTorch = {
+        isTorchOn = !isTorchOn
+        onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isTorchOn))
+    }
     val takePhoto = {
         if (!isTaking) {
             isTaking = true
@@ -152,8 +160,14 @@ private fun ReceiptCameraContent(
                 ViewfinderBox(
                     view = view,
                     modifier = modifier,
-                    onAllow = permission::request,
-                    onOpenSettings = permission::openSettings,
+                    onAllow = {
+                        onEvent(SplitBillUiEvent.OnReceiptCameraAllowClicked)
+                        permission.request()
+                    },
+                    onOpenSettings = {
+                        onEvent(SplitBillUiEvent.OnReceiptCameraSettingsClicked)
+                        permission.openSettings()
+                    },
                 ) { pictureModifier ->
                     ReceiptCameraDisplay(
                         camera = camera,
@@ -176,7 +190,7 @@ private fun ReceiptCameraContent(
             if (isLandscape) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        CameraHeader(hasTorch, isTorchOn, { isTorchOn = !isTorchOn }, onDismiss)
+                        CameraHeader(hasTorch, isTorchOn, toggleTorch, onDismiss)
                         viewfinder(Modifier.weight(1f).fillMaxWidth())
                         HintText(Modifier.padding(vertical = 12.dp))
                     }
@@ -184,7 +198,7 @@ private fun ReceiptCameraContent(
                 }
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    CameraHeader(hasTorch, isTorchOn, { isTorchOn = !isTorchOn }, onDismiss)
+                    CameraHeader(hasTorch, isTorchOn, toggleTorch, onDismiss)
                     viewfinder(Modifier.weight(1f).fillMaxWidth())
                     HintText(Modifier.padding(top = 16.dp))
                     controls(Modifier.fillMaxWidth().height(controlsSize))

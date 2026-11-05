@@ -41,6 +41,8 @@ sealed interface GroupsUiEvent : UiEvent {
 
             OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
 
+            OnOverallBalanceClicked -> EventAnalytics.Automatic("balances_overall_clicked", mapOf("source" to SOURCE))
+
             OnToReceiveClicked -> EventAnalytics.Automatic("balances_to_receive_clicked", mapOf("source" to SOURCE))
 
             OnToPayClicked -> EventAnalytics.Automatic("balances_to_pay_clicked", mapOf("source" to SOURCE))
@@ -117,6 +119,9 @@ sealed interface GroupsUiEvent : UiEvent {
 
     // Why: "Rachar conta", the FAB on Android, + on iOS, the main button on the web and the Mac.
     data object OnSplitBillClicked : GroupsUiEvent
+
+    // Why: the "Saldo geral" card of the web and the Mac, a button of the page rather than the Saldos tab beside it.
+    data object OnOverallBalanceClicked : GroupsUiEvent
 
     // Why: the "A receber" and "A pagar" buttons of "Saldo geral".
     data object OnToReceiveClicked : GroupsUiEvent

@@ -6486,6 +6486,22 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN an invite still standing WHEN opening the app link in a phone browser THEN only tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+            val stack = navigator.backStack.value
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAppLinkClicked)
+
+            // Then
+            assertEquals(listOf("app_link_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
+            assertEquals(stack, navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the app code open over the profile WHEN See code comes again THEN opens no second code`() =
         runTest(testDispatcher) {
             // Given

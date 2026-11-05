@@ -1231,6 +1231,137 @@ class BillDetailAttachmentsTest {
     }
 
     @Test
+    fun `GIVEN the viewer on Foto 2 WHEN tapping Download THEN sends the download clicked from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(receipt, photoA, photoB))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_B))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_download_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the viewer swiped to Foto 1 WHEN tapping Download THEN sends the download clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(receipt, photoA))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(RECEIPT))
+            viewModel.onEvent(BillDetailUiEvent.OnViewerPageChanged(PHOTO_A))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_download_clicked" to mapOf<String, Any>("source" to "bill_detail")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the viewer on Foto 2 WHEN tapping Download THEN nothing changes and no action is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(receipt, photoA, photoB))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_B))
+            actions.clear()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(PHOTO_B, viewModel.uiState.value.viewedAttachmentId)
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the bill open and the viewer never opened WHEN tapping Download THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(receipt, photoA))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the viewer dismissed WHEN a late Download tap arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedAttachments = listOf(photoA))
+        viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_A))
+        viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer closed by removing its photo WHEN a late Download tap arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(photoA))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_A))
+            viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(PHOTO_A))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the viewer on Foto 2 removed by another device WHEN tapping Download THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(photoA, photoB))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(PHOTO_B))
+            attachments.attachments.value = listOf(photoA)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a tap on an attachment that is not there WHEN tapping Download THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = listOf(photoA))
+            viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked("gone"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a photo WHEN removing it THEN sends the attachment removed`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedAttachments = listOf(receipt, photoA))

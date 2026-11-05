@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
@@ -216,6 +217,12 @@ class RegisterPaymentPresenter(
     fun pickKeyMethod(name: String) {
         val method = PaymentMethod.entries.firstOrNull { it.name == name } ?: return
         viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(method))
+    }
+
+    // Why: a copy of "Pagar Ana" (KEY, PIX_CODE, OTHER_KEY), which the page writes to the clipboard itself.
+    fun trackCopy(target: String) {
+        val copied = PayCopyTarget.entries.firstOrNull { it.name == target } ?: return
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(copied))
     }
 
     // Why: "Marcar como pago", once paid in the bank or the wallet.

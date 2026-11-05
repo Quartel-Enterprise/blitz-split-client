@@ -89,7 +89,8 @@ class PaymentKeyViewModel(
 
             is PaymentKeyUiEvent.OnInputChanged -> changeInput(event.input, isPaste = false)
 
-            is PaymentKeyUiEvent.OnPasted -> changeInput(event.text, isPaste = true)
+            // Why: an empty clipboard, or one the browser won't read, still counts the tap but keeps the field.
+            is PaymentKeyUiEvent.OnPasted -> if (event.text.isNotEmpty()) changeInput(event.text, isPaste = true)
 
             PaymentKeyUiEvent.OnInputFocusLost -> revealError()
 

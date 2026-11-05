@@ -402,6 +402,23 @@ class PaymentKeyViewModelTest {
     }
 
     @Test
+    fun `GIVEN a CPF typed WHEN pasting an empty clipboard THEN keeps the field and tracks the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            val state = viewModel.uiState.value
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(""))
+
+            // Then
+            assertEquals(state, viewModel.uiState.value)
+            assertEquals(listOf("payment_key_paste_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Lightning WHEN typing a bc1 address THEN switches to on-chain and says the network changed`() =
         runTest(testDispatcher) {
             // Given

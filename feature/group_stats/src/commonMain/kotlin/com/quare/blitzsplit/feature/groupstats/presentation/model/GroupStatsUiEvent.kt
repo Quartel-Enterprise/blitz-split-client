@@ -26,6 +26,8 @@ sealed interface GroupStatsUiEvent : UiEvent {
 
             is OnPeriodPicked -> EventAnalytics.Automatic("stats_period_selected", mapOf("period" to period))
 
+            OnPickDatesClicked -> EventAnalytics.Automatic("stats_pick_dates_clicked")
+
             is OnCustomPeriodPicked -> EventAnalytics.Automatic("stats_custom_period_selected")
 
             // Why: only another option, never the one showing, as Apple's Picker reports only a change.
@@ -62,6 +64,12 @@ sealed interface GroupStatsUiEvent : UiEvent {
     data class OnPeriodPicked(
         val period: StatsPeriod,
     ) : GroupStatsUiEvent
+
+    /*
+     * Why: "Escolher datas…" of the period menu, which each platform answers by opening its own date picker: the tap
+     * counts apart from the days picked, since the picker may close without any.
+     */
+    data object OnPickDatesClicked : GroupStatsUiEvent
 
     // Why: the days picked in "Escolher datas…", any instant of each, in the device's time zone.
     data class OnCustomPeriodPicked(

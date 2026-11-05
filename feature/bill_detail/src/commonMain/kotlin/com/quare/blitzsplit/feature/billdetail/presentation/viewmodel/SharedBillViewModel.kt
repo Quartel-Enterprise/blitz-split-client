@@ -196,6 +196,11 @@ class SharedBillViewModel(
 
             SharedBillUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
 
+            // Why: only with a photo on screen, never one another device removed while it was shown.
+            SharedBillUiEvent.OnDownloadClicked -> if (uiState.value.viewedAttachment != null) {
+                trackEvent("bill_attachment_download_clicked", sourceParams)
+            }
+
             is SharedBillUiEvent.OnCommentEditClicked -> startEditing(event.commentId)
 
             SharedBillUiEvent.OnCommentEditCancelled -> if (uiState.value.isEditingComment) {

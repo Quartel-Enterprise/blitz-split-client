@@ -45,7 +45,7 @@ sealed interface PaymentKeyUiEvent : UiEvent {
         val input: String,
     ) : PaymentKeyUiEvent
 
-    // Why: "Colar" replaces the field with what each platform read from its clipboard.
+    // Why: "Colar" replaces the field with what each platform read from its clipboard, empty when there was nothing.
     data class OnPasted(
         val text: String,
     ) : PaymentKeyUiEvent

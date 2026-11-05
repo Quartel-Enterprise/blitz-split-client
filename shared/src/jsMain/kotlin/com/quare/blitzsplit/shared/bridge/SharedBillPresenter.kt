@@ -241,6 +241,11 @@ class SharedBillPresenter(
         viewModel.onEvent(SharedBillUiEvent.OnViewerDismissed)
     }
 
+    // Why: the viewer's "Baixar", which the page downloads itself.
+    fun trackDownload() {
+        viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }

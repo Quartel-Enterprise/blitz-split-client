@@ -298,6 +298,7 @@ private struct ShareBillButtons: View {
                     Label("Send link", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
+                .onShareTap { model.send(ShareBillUiEventOnSendClicked.shared) }
                 .buttonStyle(.borderedProminent)
                 .prominentLabel()
             } else {

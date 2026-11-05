@@ -528,6 +528,7 @@ private struct PhonePersonalInvite: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity, minHeight: 36)
                     }
+                    .onShareTap { send(MembersUiEventOnPersonalLinkShareClicked.shared) }
                     .buttonStyle(.glassProminent)
                     .prominentLabel()
                     .buttonBorderShape(.capsule)
@@ -595,6 +596,7 @@ private struct MacPersonalInvite: View {
                 ShareLink(item: invite.link, message: personalShareMessage(groupName: groupName, memberName: member.name)) {
                     Text("Share…")
                 }
+                .onShareTap { send(MembersUiEventOnPersonalLinkShareClicked.shared) }
                 Button {
                     send(MembersUiEventOnPersonalLinkCopyClicked.shared)
                 } label: {

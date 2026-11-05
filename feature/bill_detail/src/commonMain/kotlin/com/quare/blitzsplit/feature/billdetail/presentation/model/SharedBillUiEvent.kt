@@ -37,6 +37,9 @@ sealed interface SharedBillUiEvent : UiEvent {
 
             is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
 
+            // Why: only a download from the viewer still open.
+            OnDownloadClicked -> EventAnalytics.Manual("bill_attachment_download_clicked")
+
             /*
              * Why: nobody tapped these to act: a value typed letter by letter (what was typed shows in the comment
              * sent), a swipe through the viewer, a close (the page's back or logo, the viewer or "Curtidas" closed), or
@@ -115,4 +118,10 @@ sealed interface SharedBillUiEvent : UiEvent {
     ) : SharedBillUiEvent
 
     data object OnViewerDismissed : SharedBillUiEvent
+
+    /*
+     * Why: the viewer's "Baixar", which each platform does itself (Android's gallery, Apple's share sheet or save
+     * panel, the browser's download), so the shared code only counts it.
+     */
+    data object OnDownloadClicked : SharedBillUiEvent
 }

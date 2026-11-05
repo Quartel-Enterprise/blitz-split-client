@@ -808,6 +808,7 @@ private struct MergeGuestSheet: View {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
+                .onShareTap { model.send(ContactProfileUiEventOnMergeShareClicked.shared) }
                 .buttonStyle(.borderedProminent)
                 .prominentLabel()
             }

@@ -17,7 +17,7 @@ import { PendingDot, pendingSurfaceClass } from '@/components/common'
  * What "Anexos" and the viewer read and send: Conta's, or a bill's link page's, which adds and removes nothing (no
  * photoPicked nor removeAttachment, no photoLimit nor showsAddPhoto).
  */
-export type AttachmentsPresenter = Pick<BillDetailPresenter, 'openAttachment' | 'showAttachment' | 'closeViewer'> &
+export type AttachmentsPresenter = Pick<BillDetailPresenter, 'openAttachment' | 'showAttachment' | 'closeViewer' | 'trackDownload'> &
   Partial<Pick<BillDetailPresenter, 'photoPicked' | 'photoUnreadable' | 'removeAttachment'>>
 export type AttachmentsState = Pick<JsBillDetailState, 'attachments' | 'photoCount' | 'viewedAttachmentIndex' | 'isOnline'> &
   Partial<Pick<JsBillDetailState, 'photoLimit' | 'showsAddPhoto' | 'canAddPhoto' | 'isAddingPhoto'>>
@@ -273,7 +273,16 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
               <DialogTitle className="mr-auto truncate pl-2 text-base font-medium">
                 {attachment.photoNumber != null ? t('billDetail_viewerPhotoTitle', { number: attachment.photoNumber, count: state.photoCount ?? pages }) : t('billDetail_receipt')}
               </DialogTitle>
-              <Button variant="ghost" size="sm" className={lightButton} disabled={!attachment.localImage && !attachment.imageUrl} onClick={() => download(attachment)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={lightButton}
+                disabled={!attachment.localImage && !attachment.imageUrl}
+                onClick={() => {
+                  presenter.trackDownload()
+                  void download(attachment)
+                }}
+              >
                 <Download />
                 <span className="max-sm:sr-only">{t('billDetail_download')}</span>
               </Button>

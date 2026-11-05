@@ -36,6 +36,8 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
 
             OnPayOtherwiseClicked -> EventAnalytics.Automatic("payment_pay_otherwise_clicked")
 
+            is OnCopyClicked -> EventAnalytics.Automatic("payment_key_copy_clicked", mapOf("target" to target))
+
             is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 
             // Why: a close, which each platform also does its own way: where it went is its screen view.
@@ -77,6 +79,14 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
 
     // Why: "Paguei outro valor ou de outro jeito" of "Pagar Ana", which opens the form in its place.
     data object OnPayOtherwiseClicked : RegisterPaymentUiEvent
+
+    /*
+     * Why: a copy of "Pagar Ana", which each platform writes to its clipboard itself (Android marks it sensitive, a CPF
+     * being a document), so the shared code only counts it.
+     */
+    data class OnCopyClicked(
+        val target: PayCopyTarget,
+    ) : RegisterPaymentUiEvent
 
     // Why: who paid or who received, whose face opens their profile over the form (beta feedback 18), as Conta's do.
     data class OnPersonClicked(

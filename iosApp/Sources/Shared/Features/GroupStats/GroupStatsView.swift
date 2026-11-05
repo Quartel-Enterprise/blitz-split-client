@@ -60,7 +60,7 @@ struct GroupStatsView: View {
                 StatsScroll(
                     model: model,
                     usesTwoColumns: layout.usesTwoColumns || showsGroupBesideList,
-                    pickDates: { isPickingDates = true },
+                    pickDates: { openDatesPicker(model) },
                 )
             } else {
                 // The bills not read yet: the totals, the ring and the people shimmer in place
@@ -81,7 +81,7 @@ struct GroupStatsView: View {
         .toolbar {
             if let model, model.state.showsPeriodPicker {
                 ToolbarItem(placement: .primaryAction) {
-                    StatsPeriodMenu(model: model, pickDates: { isPickingDates = true })
+                    StatsPeriodMenu(model: model, pickDates: { openDatesPicker(model) })
                 }
             }
         }
@@ -98,6 +98,12 @@ struct GroupStatsView: View {
         .onAppear {
             if model == nil { model = GroupStatsModel(route: route) }
         }
+    }
+
+    /// "Pick dates…": the tap goes to the shared code, the picker is this view's own sheet.
+    private func openDatesPicker(_ model: GroupStatsModel) {
+        model.send(GroupStatsUiEventOnPickDatesClicked.shared)
+        isPickingDates = true
     }
 
     #if os(macOS)

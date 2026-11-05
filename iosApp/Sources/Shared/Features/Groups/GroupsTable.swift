@@ -204,7 +204,7 @@ private struct GroupsSummaryCards: View {
                 color: Palette.balance(summary.totals.first { $0.netMinor != 0 }?.netMinor ?? 0),
                 isEnabled: true,
             ) {
-                send(GroupsUiEventOnBalancesTabClicked.shared)
+                send(GroupsUiEventOnOverallBalanceClicked.shared)
             }
             SummaryCard(
                 label: "To get back",
