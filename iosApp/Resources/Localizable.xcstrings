@@ -9286,6 +9286,24 @@
         }
       }
     },
+    "Delete… (a bill)" : {
+      "comment" : "Asks to delete a bill or a payment: the Mac menu item of a line of the group's Expenses",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar…"
+          }
+        }
+      }
+    },
     "Delete account" : {
       "localizations" : {
         "pt-BR" : {

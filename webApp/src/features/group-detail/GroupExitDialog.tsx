@@ -22,6 +22,7 @@ export function toastGroupAction(action: string) {
   if (action === 'delete-error') toast(t('groupExit_deleteError'))
   if (action === 'change-error') toast(t('groupDetail_changeError'))
   if (action === 'teach-error') toast(t('groupDetail_teachError'))
+  if (action === 'bill-delete-error') toast(t('billDetail_deleteError'))
 }
 
 /** What the dialogs of "Sair do grupo" and "Apagar grupo" ask of the ViewModel; the home never shows "Grupo apagado". */

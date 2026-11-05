@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +20,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -121,6 +127,8 @@ private fun ExpenseEntryRow(
         title = expense.description,
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
+        menuItems = expenseMenuItemsOf(expense.id),
+        onEvent = onEvent,
         modifier = modifier,
         meta = {
             ExpenseMetaLine(
@@ -145,30 +153,44 @@ private fun ExpenseEntryRow(
     }
 }
 
-// Why: a bill and a payment share the line: the icon, what it was, the meta under it and the amounts at the end.
+/*
+ * Why: a bill and a payment share the line: the icon, what it was, the meta under it, the amounts and its ⋮ at the end,
+ * which a long press on the line opens too.
+ */
 @Composable
 internal fun EntryFrameRow(
     icon: ImageVector,
     title: String,
     shape: Shape,
     onClick: () -> Unit,
+    menuItems: List<EntryMenuItem>,
+    onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier,
     meta: @Composable () -> Unit,
     // Why: a bill's category badge in place of the icon (6.1); a payment keeps its icon.
     leading: (@Composable () -> Unit)? = null,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
+    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     Surface(
-        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 12.dp,
-            ),
+            modifier = Modifier
+                .combinedClickable(
+                    // Why: the role Surface's onClick gave the line before its ⋮ moved the click here.
+                    role = Role.Button,
+                    onClick = onClick,
+                    onLongClick = { isMenuOpen = true },
+                    onLongClickLabel = stringResource(R.string.group_detail_entry_options, title),
+                ).padding(
+                    start = 16.dp,
+                    end = 4.dp,
+                    top = 12.dp,
+                    bottom = 12.dp,
+                ),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -190,6 +212,13 @@ internal fun EntryFrameRow(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 content = trailing,
+            )
+            EntryMenu(
+                title = title,
+                items = menuItems,
+                isOpen = isMenuOpen,
+                onOpenChange = { isMenuOpen = it },
+                onEvent = onEvent,
             )
         }
     }

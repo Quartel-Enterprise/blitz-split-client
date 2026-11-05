@@ -9,6 +9,14 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the
     group never stacks over itself.
+  - Each line of Expenses ends in a ⋮ (⋯ on iOS and macOS) with its options, so they don't need the bill opened
+    first; a long press (Android, iPhone, iPad) or a right click (the Mac, the web) on the line opens the same menu.
+    A bill's are Bill's own top bar, named as short (Pierre's call): "Edit" (Edit bill over the group), "Share" (Share
+    bill) and "Delete", which asks Bill's "Delete this bill?" in the same words (`GroupDetailUiState.billToDelete`)
+    and stays on the group, the bill leaving the list; a payment's is "Delete", the same "Delete this payment?" a tap
+    on it asks. The Mac's items end in "…", and the Mac's table shows the menu only for one line picked. Home's "Latest expenses" and
+    Activity have no ⋮: their lines open the bill, whose options are a tap away (Pierre's beta feedback asked for
+    the group's list, where the bills are managed).
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
     with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the

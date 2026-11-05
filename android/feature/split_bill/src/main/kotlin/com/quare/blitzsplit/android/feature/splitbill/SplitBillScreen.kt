@@ -55,7 +55,7 @@ fun SplitBillScreen(
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             SplitBillUiAction.ShowSaveError -> R.string.split_bill_save_error
-            SplitBillUiAction.ShowDeleteError -> R.string.split_bill_delete_error
+            SplitBillUiAction.ShowDeleteError -> DesignR.string.designsystem_delete_bill_error
             SplitBillUiAction.ShowCategorySaveError -> DesignR.string.designsystem_category_save_error
             SplitBillUiAction.ShowCategoryDeleteError -> DesignR.string.designsystem_category_delete_error
         }

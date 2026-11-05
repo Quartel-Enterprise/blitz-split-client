@@ -38,21 +38,31 @@ fun Navigator.openGroup(
  * Why: what a group's screen (from, any of its tabs) opens: over it while on top, and in the place of the group's own
  * bill right above it, which the Mac draws beside the group (its inspector), so the group still takes clicks there.
  * The profile goes over that bill instead, since the Mac opens it in Ajustes and leaves the bill where it was. Under
- * anything else nothing opens: a native back may have closed the group.
+ * anything else nothing opens: a native back may have closed the group. Says whether it opened, for what counts a
+ * tap only when it did.
  */
 fun Navigator.openFromGroupScreen(
     from: Route,
     groupId: String,
     next: Route,
-) {
+): Boolean {
     val stack = backStack.value
     val top = stack.lastOrNull()
     val isUnderItsBill = top is Route.BillDetail &&
         top.groupId == groupId &&
         stack.getOrNull(stack.lastIndex - 1) == from
-    when {
-        top == from || (isUnderItsBill && next == Route.Profile) -> navigate(next)
-        isUnderItsBill -> replaceTop(next)
+    return when {
+        top == from || (isUnderItsBill && next == Route.Profile) -> {
+            navigate(next)
+            true
+        }
+
+        isUnderItsBill -> {
+            replaceTop(next)
+            true
+        }
+
+        else -> false
     }
 }
 

@@ -21,7 +21,6 @@
     <string name="bill_detail_not_joined">Ainda não entrou</string>
     <string name="bill_detail_not_in">Não participa</string>
     <string name="bill_detail_no_share">—</string>
-    <string name="bill_detail_delete_error">Não deu para apagar a conta. Tente de novo.</string>
     <string name="bill_detail_offline">Sem internet. Comentários e fotos ficam na fila e saem ao reconectar.</string>
     <string name="bill_detail_comments">Comentários</string>
     <string name="bill_detail_no_comments">Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta.</string>

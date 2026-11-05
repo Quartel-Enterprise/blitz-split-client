@@ -118,7 +118,6 @@
     <string name="split_bill_conflict_last_wins">The last saved edit wins: if you save now, your edit replaces that change.</string>
     <string name="split_bill_conflict_just_now">just now</string>
     <string name="split_bill_delete">Delete bill</string>
-    <string name="split_bill_delete_error">Couldn\'t delete the bill. Try again.</string>
     <string name="split_bill_several_payers">Several people</string>
     <string name="split_bill_several_payers_hint">Each one says how much they paid</string>
     <string name="split_bill_several_payers_title">Several people paid</string>
