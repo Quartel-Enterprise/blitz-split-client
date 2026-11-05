@@ -1,6 +1,7 @@
 import { Copy, Info, Share } from 'lucide-react'
-import type { GlobalBalancesPresenter, JsChargeDraft, JsGlobalBalancesState } from 'blitzsplit-shared'
+import { ChargePresenter, type JsChargeDraft, type JsChargeState, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -18,10 +19,21 @@ const messageId = 'charge-message'
 const pixId = 'charge-pix'
 
 /**
- * "Cobrar": a message for whoever owes you, which moves no money and sends nothing by itself. A 480 px dialog on
+ * "Cobrar": a message for whoever owes you, which moves no money and sends nothing by itself. Its own route, drawn
+ * over the page that opened it (Saldos, a contact's profile), which stays mounted under it. A 480 px dialog on
  * desktop and tablet, a drawer on the phone. Enviar uses the browser's share sheet where there is one, else copies.
  */
-export function ChargeDialog({ presenter, state, charge }: { presenter: GlobalBalancesPresenter; state: JsGlobalBalancesState; charge: JsChargeDraft }) {
+export function ChargeDialog({ route }: { route: JsRoute }) {
+  const presenter = usePresenter(() => new ChargePresenter(route))
+  const state = useWatch(presenter, (p, onChange: (state: JsChargeState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onShare: (message: string) => void) => p.observeShare(onShare), shareChargeMessage)
+  useActions(presenter, (p, onCopy: (message: string) => void) => p.observeCopy(onCopy), copyChargeMessage)
+  // Why: the person's message waits for Room, read in a moment.
+  if (!presenter || !state?.charge) return null
+  return <ChargeContent presenter={presenter} state={state} charge={state.charge} />
+}
+
+function ChargeContent({ presenter, state, charge }: { presenter: ChargePresenter; state: JsChargeState; charge: JsChargeDraft }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const shown = chargeMessageOf(charge, state.pixKeyValue)
   // Why: the ViewModel keeps what was typed, so the field reads it back in the same keystroke.
@@ -35,7 +47,7 @@ export function ChargeDialog({ presenter, state, charge }: { presenter: GlobalBa
     <ResponsiveDialog
       isDesktop={isDesktop}
       onOpenChange={(open) => {
-        if (!open) presenter.closeCharge()
+        if (!open) presenter.close()
       }}
       className="gap-4 sm:max-w-[480px]"
       pane={{
@@ -88,7 +100,7 @@ export function ChargeDialog({ presenter, state, charge }: { presenter: GlobalBa
 }
 
 /** "Copiar mensagem", or Enviar where the browser has no share sheet. */
-export function copyChargeMessage(message: string) {
+function copyChargeMessage(message: string) {
   navigator.clipboard
     .writeText(message)
     .then(() => toast(t('globalBalances_copied')))
@@ -96,7 +108,7 @@ export function copyChargeMessage(message: string) {
 }
 
 /** Enviar: the browser's share sheet where there is one (phones, Safari), otherwise the message goes to the clipboard. */
-export function shareChargeMessage(message: string) {
+function shareChargeMessage(message: string) {
   if (typeof navigator.share === 'function') {
     navigator.share({ text: message }).catch(() => {})
     return

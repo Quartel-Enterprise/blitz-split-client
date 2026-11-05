@@ -27,6 +27,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     is Route.GlobalBalances -> "global-balances"
 
+    is Route.Charge -> "charge"
+
     is Route.Activity -> "activity"
 
     is Route.SettleUp -> "settle-up"

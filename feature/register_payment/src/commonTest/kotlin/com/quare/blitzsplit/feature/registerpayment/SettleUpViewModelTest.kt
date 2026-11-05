@@ -156,7 +156,7 @@ class SettleUpViewModelTest {
             assertEquals(listOf(9_840L, 9_800L, 3_250L), recorded.map { it.amountMinor })
             assertTrue(recorded.all { it.method == SettlementMethod.CASH })
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
             assertEquals(
@@ -177,7 +177,7 @@ class SettleUpViewModelTest {
             prepareScenario(recordGate = gate)
             viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
             navigator.popTo(1)
-            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
 
             // When
             gate.complete(Unit)
@@ -228,7 +228,7 @@ class SettleUpViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
             navigator.backStack.value,
         )
     }
@@ -346,7 +346,7 @@ class SettleUpViewModelTest {
             assertTrue(recorded.all { it.method == SettlementMethod.PIX })
             assertTrue(recorded.all { it.paidAt == LATER })
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
             assertEquals(
@@ -424,7 +424,7 @@ class SettleUpViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.GlobalBalances(BalancesFilter.ALL),
                     route,
                     Route.ContactProfile(route.personKey),
                 ),
@@ -449,7 +449,7 @@ class SettleUpViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.GlobalBalances(BalancesFilter.ALL),
                     route,
                     Route.ContactProfile("name:carla"),
                 ),
@@ -471,7 +471,7 @@ class SettleUpViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.GlobalBalances(BalancesFilter.ALL),
                     route,
                     Route.Profile,
                 ),
@@ -699,7 +699,7 @@ class SettleUpViewModelTest {
         settlements = FakeSettlementRepository().also { it.recordGate = recordGate }
         recordedPayments = InMemoryRecordedPaymentRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+            it.navigate(Route.GlobalBalances(BalancesFilter.ALL))
             it.navigate(route)
         }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)

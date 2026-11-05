@@ -59,14 +59,14 @@ class HomeTabsTest {
                 tab = GroupTab.EXPENSES,
             ),
         )
-        val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+        val tab = Route.GlobalBalances(BalancesFilter.ALL)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
             navigator.backStack.value,
         )
     }
@@ -74,15 +74,15 @@ class HomeTabsTest {
     @Test
     fun `GIVEN Saldos with everyone WHEN opening Saldos filtered by Voce deve THEN the filtered one takes its place`() {
         // Given
-        prepareScenario(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null))
-        val tab = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+        prepareScenario(Route.Home, Route.GlobalBalances(BalancesFilter.ALL))
+        val tab = Route.GlobalBalances(BalancesFilter.YOU_OWE)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
             navigator.backStack.value,
         )
     }
@@ -92,17 +92,17 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+            Route.GlobalBalances(BalancesFilter.ALL),
             Route.SettleUp("user:carla", GroupCurrency.BRL),
         )
-        val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+        val tab = Route.GlobalBalances(BalancesFilter.ALL)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
             navigator.backStack.value,
         )
     }
@@ -190,7 +190,7 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+            Route.GlobalBalances(BalancesFilter.ALL),
             Route.SettleUp("user:carla", GroupCurrency.BRL),
         )
 
@@ -297,7 +297,7 @@ class HomeTabsTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
             navigator.backStack.value,
         )
     }
@@ -305,7 +305,7 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over Saldos filtered WHEN its rail opens Saldos THEN goes back to that Saldos`() {
         // Given
-        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE)
         prepareScenario(
             Route.Home,
             balances,
@@ -407,7 +407,7 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a profile over Saldos WHEN searching from it THEN the search opens over that Saldos`() {
         // Given
-        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE)
         prepareScenario(Route.Home, balances, Route.ContactProfile(PERSON_KEY))
 
         // When
@@ -573,13 +573,13 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a profile over Saldos filtered with a charge WHEN asking if it is right above a home tab THEN it is`() {
+    fun `GIVEN a profile over Saldos filtered WHEN asking if it is right above a home tab THEN it is`() {
         // Given
         val route = Route.ContactProfile(PERSON_KEY)
         val stack =
             listOf(
                 Route.Home,
-                Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = BalancesCharge(PERSON_KEY, GroupCurrency.BRL)),
+                Route.GlobalBalances(BalancesFilter.OWES_YOU),
                 route,
             )
 

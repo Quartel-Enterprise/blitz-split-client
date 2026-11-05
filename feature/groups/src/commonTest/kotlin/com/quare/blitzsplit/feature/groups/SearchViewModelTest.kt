@@ -585,7 +585,7 @@ class SearchViewModelTest {
     fun `GIVEN the search over Voce deve WHEN tapping the Saldos tab THEN goes back to it keeping the filter`() =
         runTest(testDispatcher) {
             // Given
-            val youOwe = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+            val youOwe = Route.GlobalBalances(BalancesFilter.YOU_OWE)
             prepareScenario(tab = youOwe)
 
             // When
@@ -699,7 +699,7 @@ class SearchViewModelTest {
         assertEquals(List(events.size * 2) { EventAnalytics.NotTracked }, analytics)
     }
 
-    private val balances = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+    private val balances = Route.GlobalBalances(BalancesFilter.ALL)
 
     private val activity = Route.Activity(personKey = null)
 

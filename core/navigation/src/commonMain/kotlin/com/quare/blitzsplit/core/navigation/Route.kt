@@ -178,8 +178,16 @@ sealed interface Route {
      */
     data class GlobalBalances(
         val filter: BalancesFilter,
-        // Why: Contatos' "Cobrar" opens the message right away; closing it goes back. Null from the home's tabs and cards.
-        val charge: BalancesCharge?,
+    ) : Route
+
+    /*
+     * Why: "Cobrar" (8.2), a message for someone who owes you, opened over whichever screen asked for it (Saldos, a
+     * contact's profile) as a dialog or sheet, so closing it goes back there. personKey is PersonBalance.key, in the
+     * currency the screen showed.
+     */
+    data class Charge(
+        val personKey: String,
+        val currency: GroupCurrency,
     ) : Route
 
     /*

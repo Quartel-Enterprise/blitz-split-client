@@ -12,7 +12,6 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -118,12 +117,13 @@ class ContactProfileViewModel(
         when (event) {
             ContactProfileUiEvent.OnBackClicked -> if (isOwnRouteOnTop()) navigator.navigateBack()
 
+            // Why: Cobrar over the profile, in the currency it shows; closing it comes back here.
             ContactProfileUiEvent.OnChargeClicked -> findContactIf { uiState.value.canCharge }?.let { contact ->
-                val balances = Route.GlobalBalances(
-                    BalancesFilter.OWES_YOU,
-                    charge = BalancesCharge(contact.key, contact.net.currency),
+                val charge = Route.Charge(
+                    personKey = contact.key,
+                    currency = contact.net.currency,
                 )
-                if (navigate(balances)) trackEvent("charge_clicked", sourceParams)
+                if (navigate(charge)) trackEvent("charge_clicked", sourceParams)
             }
 
             ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let { contact ->
@@ -175,7 +175,7 @@ class ContactProfileViewModel(
 
             ContactProfileUiEvent.OnViewBalancesClicked -> if (isShown()) {
                 trackEvent("contact_view_balances_clicked", emptyMap())
-                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL))
             }
 
             /*
