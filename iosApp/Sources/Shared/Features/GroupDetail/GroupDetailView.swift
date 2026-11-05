@@ -297,6 +297,10 @@ private func expenseMeta(_ row: ExpenseRow) -> String {
     billMeta(spentAt: row.spentAt, isPending: row.isPending, payers: row.payers.map { (name: $0.name, isMe: $0.isMe) })
 }
 
+private func payerText(_ row: ExpenseRow) -> String? {
+    ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
+}
+
 /// A bill's meta on a list of bills by day (the group's Expenses, a category's from the statistics).
 func billMeta(spentAt: Int64, isPending: Bool, payers: [(name: String?, isMe: Bool)]) -> String {
     let time = ExpenseFormat.time(spentAt)
