@@ -170,9 +170,12 @@ struct ContactsView: View {
         .background(Palette.groupedBackground)
         .navigationTitle("Contacts")
         #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
+        .tabTitleDisplayMode()
         #endif
         .toolbar {
+            #if os(iOS)
+            TabTitle(title: String(localized: "Contacts"))
+            #endif
             #if os(macOS)
             ToolbarItem(placement: .primaryAction) {
                 Button("Invite with a link or QR code", systemImage: "qrcode") {

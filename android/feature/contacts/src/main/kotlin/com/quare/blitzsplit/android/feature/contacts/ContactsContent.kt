@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
@@ -169,7 +169,7 @@ private fun ContactsTopBar(
 ) {
     val profile = stringResource(R.string.contacts_profile)
     TopAppBar(
-        title = { Text(title) },
+        title = { HomeTabTitle(title) },
         actions = {
             // Why: the home's search, over Contatos, only once there is a group to look in.
             if (state.canSearch) SearchActionButton(onClick = { onEvent(ContactsUiEvent.OnSearchClicked) })

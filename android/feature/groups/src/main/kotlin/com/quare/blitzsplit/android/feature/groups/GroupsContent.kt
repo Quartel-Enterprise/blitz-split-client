@@ -63,6 +63,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -76,11 +77,12 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 
 /*
- * Why: the home. No visible title, since the selected Groups tab already names it: the top bar only holds the QR
- * reader and the profile, and takes a color once the list scrolls under it, while "Rachar conta" shrinks to its icon.
- * A phone lying down splits in two (5.1): the actions, the sync status and "Saldo geral" stay still in a 320 dp column
- * on the left and the list scrolls on the right; Buscar puts its field and scopes there and the results beside them
- * (5.2). A Flip's cover screen only draws the home's cover (GroupsCoverContent).
+ * Why: the home. Its title only on a wide screen (HomeTabTitle), since a phone's selected Groups tab already names
+ * it: the top bar holds the QR reader and the profile, and takes a color once the list scrolls under it, while
+ * "Rachar conta" shrinks to its icon. A phone lying down splits in two (5.1): the actions, the sync status and
+ * "Saldo geral" stay still in a 320 dp column on the left and the list scrolls on the right; Buscar puts its field
+ * and scopes there and the results beside them (5.2). A Flip's cover screen only draws the home's cover
+ * (GroupsCoverContent).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,7 +249,7 @@ private fun GroupsTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
-        title = {},
+        title = { HomeTabTitle(stringResource(R.string.groups_title)) },
         actions = {
             GroupsTopActionsComponent(
                 state = state,

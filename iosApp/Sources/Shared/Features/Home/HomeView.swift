@@ -109,9 +109,9 @@ struct HomeView: View {
         )
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
+        .tabTitleDisplayMode()
         .toolbar {
-            HiddenTabTitle(title: HomeCopy.tabTitle)
+            TabTitle(title: HomeCopy.tabTitle)
             SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
             ToolbarItem(placement: .primaryAction) { profileButton }
                 .prefersVerticalBar()

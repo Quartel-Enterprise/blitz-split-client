@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
@@ -63,7 +64,7 @@ private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
 }
 
 /*
- * Why: no visible title, since the selected Saldos tab already names it, and no "Rachar conta": the actions are on
+ * Why: titled only on a wide screen (HomeTabTitle), and no "Rachar conta": the actions are on
  * each person. Upright, one column with "Por grupo" opening in the row; a phone lying down puts the filter on the left
  * and the people on the right, as the app's other screens split. A tablet lying down and an unfolded book list the
  * people beside the one picked, whose groups and actions fill the pane on the right.
@@ -93,7 +94,7 @@ fun GlobalBalancesContent(
                 modifier = Modifier.weight(1f),
                 topBar = {
                     TopAppBar(
-                        title = {},
+                        title = { HomeTabTitle(title) },
                         actions = {
                             // Why: only once there is a group to look in, as on Grupos.
                             if (state.canSearch) {

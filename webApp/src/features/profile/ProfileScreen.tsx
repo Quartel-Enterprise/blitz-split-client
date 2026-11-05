@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, providerLabel, segmentClass } from '@/components/common'
+import { pageContentClass } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,7 +63,7 @@ export function ProfileScreen() {
           <h1 className="mr-auto text-lg font-semibold">{t('profile_title')}</h1>
           {visibility}
         </header>
-        <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4 sm:p-8">
+        <main className={cn(pageContentClass, 'gap-4')}>
           {/* Why: the sidebar's selected footer already says where this is; the heading says what it is for. */}
           <div className="hidden items-start gap-3 md:flex">
             <div className="mr-auto flex flex-col gap-1">

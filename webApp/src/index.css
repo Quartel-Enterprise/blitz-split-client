@@ -180,3 +180,24 @@
     animation: none;
   }
 }
+
+/*
+ * A page coming in (a tab, a group, Statistics, the profile, the welcome's steps): a short fade and rise of what is
+ * under the frame, which stays put. Dialogs and sheets keep their own; reduced motion shows the page at once.
+ */
+.page-enter {
+  animation: page-enter 180ms ease-out;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
