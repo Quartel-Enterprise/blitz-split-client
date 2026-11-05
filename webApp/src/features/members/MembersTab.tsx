@@ -68,7 +68,7 @@ export function MembersTab({ presenter, state }: { presenter: MembersPresenter; 
             <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
           </div>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex flex-wrap justify-end gap-2">
           <Button variant="outline" onClick={() => presenter.add()}>
             <UserPlus />
             {t('members_add')}

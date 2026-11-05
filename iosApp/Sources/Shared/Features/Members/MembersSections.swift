@@ -46,8 +46,9 @@ final class MembersModel {
 
 /// "Members", the group's tab under its header: the group's link with "Add person" beside it, and who is in it and
 /// who joined. A tap on a person opens their options: rename, a personal invite, which joins straight in as someone
-/// nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing allows. The group's creator may also
-/// release the name of someone who joined, online only. Each person shows their balance. Nothing until Room is read.
+/// nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing allows. The
+/// group's creator may also release the name of someone who joined, online only. Each person shows their balance.
+/// Nothing until Room is read.
 struct MembersSections: View {
     let model: MembersModel
     /// The group's screen in the shared back stack, whose Share anchors the Mac's invite popover on this tab.

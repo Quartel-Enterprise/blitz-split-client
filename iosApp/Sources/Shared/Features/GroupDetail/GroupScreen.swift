@@ -39,9 +39,9 @@ struct GroupScreenActions {
 extension View {
     /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and "Split a bill", the
     /// main button on every tab (the bottom toolbar's prominent glass item on iPhone, iOS has no FAB; the window
-    /// toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the
-    /// screen is loaded, which keeps the buttons out of the bars rather than drawing them disabled. Offline, the menu's Leave and Delete need the internet; the
-    /// dialogs they open come with the bars.
+    /// toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the screen is loaded,
+    /// which keeps the buttons out of the bars rather than drawing them disabled. Offline, the menu's Leave and Delete
+    /// need the internet; the dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
         host: AppRoute,

@@ -22,7 +22,8 @@ import org.koin.core.parameter.parametersOf
 /*
  * Why: "Membros", the group's tab drawn under its header: the screen asks for it whatever tab is picked, so the members
  * are already read when the tab is tapped, and hands the group its rows, drawn only while it is picked. "Adicionar
- * pessoa" sits beside the link, since the group's "Rachar conta" floats over every tab. Its dialogs and sheet open over the group.
+ * pessoa" sits beside the link, since the group's "Rachar conta" floats over every tab. Its dialogs and sheet open
+ * over the group.
  */
 @Composable
 fun rememberMembersTab(
