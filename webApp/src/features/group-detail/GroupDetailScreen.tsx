@@ -1,38 +1,32 @@
-import { ChevronRight, CircleCheck, EllipsisVertical, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2 } from 'lucide-react'
+import { ChevronRight, CircleCheck, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2 } from 'lucide-react'
 import {
   GroupDetailPresenter,
-  type JsExpenseDay,
   type JsExpenseRow,
   type JsGroupDetailState,
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useContext, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
-import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
+import { nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { BalancesTab } from '@/features/balances/BalancesTab'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { t } from '@/i18n'
-import { formatDayLabel, formatTime } from '@/lib/dates'
-import { formatMoney, formatSignedMoney } from '@/lib/money'
-import { payerNamesText } from '@/lib/payers'
-import { CategoryBadge } from '@/lib/categories'
-import { cn } from '@/lib/utils'
+import { formatTime } from '@/lib/dates'
+import { formatMoney } from '@/lib/money'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage, GroupPageSkeleton } from './GroupPage'
 import { pickedTabOf, rememberPickedTab } from './pickedTabs'
 import { DayRow, DayRowGroup, DayRowsTable, ExpenseLine } from './ExpenseRows'
-import { PendingDot, pendingSurfaceClass } from '@/components/common'
 
 /**
  * The group's page (header, balance card, tabs), drawn once over the tab picked, which only swaps what is under the

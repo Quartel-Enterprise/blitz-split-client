@@ -16,6 +16,10 @@ import { cn } from '@/lib/utils'
 const rowColumns =
   'grid grid-cols-[minmax(0,1fr)_auto_44px] md:grid-cols-[minmax(0,1fr)_120px_150px_52px] lg:grid-cols-[minmax(0,1fr)_160px_180px_52px]'
 
+// Why: a list without a ⋮ keeps its column from the tablet up, under the headers, but the phone gives it to the meta.
+const rowColumnsWithoutMenu =
+  'grid grid-cols-[minmax(0,1fr)_auto_8px] md:grid-cols-[minmax(0,1fr)_120px_150px_52px] lg:grid-cols-[minmax(0,1fr)_160px_180px_52px]'
+
 /** The line whose ⋮ is open, one for the whole table, so opening a line's menu (or right clicking it) closes any other. */
 const OpenRowMenuContext = createContext<{ openId: string | null; setOpenId: (id: string | null) => void }>({
   openId: null,
@@ -119,7 +123,7 @@ export function DayRow({
         }
       }}
       className={cn(
-        rowColumns,
+        hasMenu ? rowColumns : rowColumnsWithoutMenu,
         'min-h-[60px] cursor-pointer items-center border-b outline-none last:border-b-0 hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset md:min-h-14',
       )}
     >
