@@ -24,6 +24,19 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     BarcodeDetector. An invite no longer valid offers "Scan another QR code", which goes back to the reader; that reader
     ignores the QR of the invite that just failed, which may still be in front of the camera, so only another QR or
     a pasted link opens.
+  - The reader never opens the camera on its own (beta feedback 2, item 8): opening it asks for nothing. In the
+    camera's place, on its dark background, it shows the QR icon, "Scan the invite's QR code", "The camera only opens
+    when you tap the button." and "Open camera"; only that tap asks for the camera (the system's prompt, or the
+    browser's) and starts it, and "Have the link?" works the whole time without it. The choice is never remembered:
+    every time the reader opens it starts at "Open camera" again, even with the camera already allowed (one tap, and
+    the camera never turns on unasked). Refused, the camera's place says "No access to the camera" with "Open
+    settings" ("Open Settings" on iOS, "Open System Settings" on the Mac, "Try again" on the web, which has no
+    settings page to open). A device with no camera (a Mac mini, a computer without a webcam, as the system or the
+    browser lists them) never offers "Open camera" and says "This device has no camera. Paste the link below." ("This
+    Mac has no camera" on the Mac); a browser that can't read QR codes (Safari, Firefox) keeps its own line, with no
+    button either. The prompt takes the camera's place wherever the layout puts it, so foldables, the iPhone Duo and
+    the Mac's sheet need nothing of their own. The ViewModel holds the stage (`CameraStage`: prompt, no camera,
+    viewfinder, denied, failed), and the platforms only ask when it says so (`RequestCameraAccess`).
   - Android's "Take photo" asks for the camera first. Once it is refused for good, a snackbar "Allow the camera in
     Settings" offers "Settings", which opens the app's settings page.
   - The web's "Take photo" (beta feedback 2): wherever the web takes a photo from a file (Your profile, Edit profile,

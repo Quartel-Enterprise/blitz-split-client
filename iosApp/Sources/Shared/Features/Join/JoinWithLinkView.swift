@@ -23,8 +23,12 @@ final class JoinWithLinkModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
-        watches.add(viewModel.actionWatcher.observe { action in
-            if action is JoinWithLinkUiActionOpenCameraSettings { CameraSettings.open() }
+        watches.add(viewModel.actionWatcher.observe { [weak self] action in
+            if action is JoinWithLinkUiActionRequestCameraAccess {
+                Task { await self?.checkCameraAccess() }
+            } else if action is JoinWithLinkUiActionOpenCameraSettings {
+                CameraSettings.open()
+            }
         })
     }
 
@@ -37,7 +41,12 @@ final class JoinWithLinkModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// The camera is only asked for once the reader opens, and read again on coming back from Settings.
+    /// A Mac mini or a Mac Studio may have no camera at all: then "Open camera" never shows, only the link.
+    func checkHasCamera() {
+        send(JoinWithLinkUiEventOnCameraChecked(hasCamera: AVCaptureDevice.default(for: .video) != nil))
+    }
+
+    /// Asked only after "Open camera", and read again on coming back from Settings once it was.
     func checkCameraAccess() async {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -89,9 +98,10 @@ private struct JoinWithLinkContent: View {
 
     var body: some View {
         layout
-            .task { await model.checkCameraAccess() }
+            .task { model.checkHasCamera() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { await model.checkCameraAccess() } }
+                // Why: before "Open camera" nothing is asked, not even on coming back to the app.
+                if phase == .active, model.state.isCameraRequested { Task { await model.checkCameraAccess() } }
             }
     }
 
@@ -185,12 +195,12 @@ private struct JoinWithLinkContent: View {
         VStack(spacing: 8) {
             topBar(state)
             Group {
-                if state.cameraAccess == .denied {
-                    cameraDenied
-                } else if state.isCameraUnavailable {
-                    cameraUnavailable
-                } else {
-                    viewfinder(state)
+                switch state.cameraStage {
+                case .prompt: cameraPrompt
+                case .noCamera: noCamera
+                case .denied: cameraDenied
+                case .failed: cameraUnavailable
+                default: viewfinder(state)
                 }
             }
             // Why: with the keyboard up on a small iPhone the camera area gets short; only this part is cut, so the
@@ -271,6 +281,50 @@ private struct JoinWithLinkContent: View {
                     .multilineTextAlignment(.center)
             }
         }
+    }
+
+    /// In the camera's place until "Open camera", the only tap that asks for the camera and opens it.
+    private var cameraPrompt: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "qrcode.viewfinder")
+                .font(.system(size: 52))
+            Text("Scan the invite's QR code")
+                .font(.title2.bold())
+                .padding(.top, 8)
+            Text("The camera only opens when you tap the button.")
+            Button("Open camera", systemImage: "camera") {
+                model.send(JoinWithLinkUiEventOnOpenCameraClicked.shared)
+            }
+            .font(.headline)
+            .buttonStyle(.glassProminent)
+            .prominentLabel()
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .tint(Palette.accent)
+            .padding(.top, 10)
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 420)
+        .padding(.horizontal, 20)
+    }
+
+    private var noCamera: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "video.slash")
+                .font(.system(size: 52))
+            #if os(iOS)
+            Text("This device has no camera. Paste the link below.")
+                .padding(.top, 8)
+            #else
+            Text("This Mac has no camera. Paste the link below.")
+                .padding(.top, 8)
+            #endif
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 420)
+        .padding(.horizontal, 20)
     }
 
     private var cameraDenied: some View {

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.join
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
+import com.quare.blitzsplit.feature.join.presentation.model.CameraStage
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiState
@@ -43,7 +44,7 @@ class JoinWithLinkViewModelTest {
     }
 
     @Test
-    fun `GIVEN the reader WHEN it opens THEN shows an empty field with no error asking for the camera`() =
+    fun `GIVEN the reader WHEN it opens THEN shows an empty field with no error and the camera not asked for`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -57,7 +58,8 @@ class JoinWithLinkViewModelTest {
                     link = "",
                     isLinkInvalid = false,
                     isQrInvalid = false,
-                    cameraAccess = CameraAccess.ASKING,
+                    cameraAccess = CameraAccess.NOT_REQUESTED,
+                    hasCamera = true,
                     isCameraUnavailable = false,
                     hasTorch = false,
                     isTorchOn = false,
@@ -72,6 +74,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
 
             // When
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
@@ -85,6 +88,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
 
             // When
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
@@ -98,6 +102,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -114,6 +119,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the camera open with a torch WHEN tapping the torch THEN the torch goes on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
@@ -128,6 +134,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the torch on WHEN tapping the torch THEN the torch goes off`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -156,6 +163,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the camera denied WHEN tapping the torch THEN the torch stays off`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
 
         // When
@@ -170,6 +178,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
 
             // When
@@ -593,6 +602,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -611,6 +621,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
 
@@ -627,6 +638,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -643,6 +655,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the torch on WHEN the camera reopens with a torch THEN the torch stays on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -659,6 +672,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
@@ -673,6 +687,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the camera allowed WHEN it opens with a torch THEN shows the torch`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
 
         // When
@@ -687,6 +702,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the camera allowed WHEN it opens without a torch THEN hides the torch`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
 
         // When
@@ -717,6 +733,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
             // When
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
 
             // Then
@@ -728,6 +745,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
 
@@ -743,6 +761,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
@@ -774,6 +793,7 @@ class JoinWithLinkViewModelTest {
             // Given
             prepareScenario()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
 
             // When
@@ -999,6 +1019,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
 
             // When
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
@@ -1011,6 +1032,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN the camera allowed WHEN the camera opens THEN sends no analytics event`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
 
         // When
@@ -1037,6 +1059,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
 
             // When
@@ -1053,6 +1076,7 @@ class JoinWithLinkViewModelTest {
     fun `GIVEN a camera with a flashlight WHEN tapping the torch THEN sends it toggled on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
+        requestCamera()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
@@ -1068,6 +1092,7 @@ class JoinWithLinkViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
+            requestCamera()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
 
@@ -1193,6 +1218,300 @@ class JoinWithLinkViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the reader WHEN it opens THEN shows the prompt to open the camera without asking for it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(CameraStage.PROMPT, state.cameraStage)
+            assertFalse(state.isCameraRequested)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN tapping open camera THEN asks for the camera`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+        // Then
+        assertEquals(listOf<JoinWithLinkUiAction>(JoinWithLinkUiAction.RequestCameraAccess), actions)
+        assertEquals(CameraAccess.ASKING, viewModel.uiState.value.cameraAccess)
+    }
+
+    @Test
+    fun `GIVEN the reader WHEN tapping open camera THEN the camera starts behind the viewfinder`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertEquals(CameraStage.VIEWFINDER, viewModel.uiState.value.cameraStage)
+            assertTrue(viewModel.uiState.value.isCameraRequested)
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN tapping open camera THEN sends the open camera event with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertEquals(listOf("join_with_link_open_camera_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the reader still asking for the camera WHEN tapping open camera again THEN asks no second time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(CameraAccess.ASKING, viewModel.uiState.value.cameraAccess)
+        }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN tapping open camera again THEN asks no second time and keeps the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(CameraAccess.GRANTED, viewModel.uiState.value.cameraAccess)
+        }
+
+    @Test
+    fun `GIVEN the camera denied WHEN tapping open camera again THEN asks no second time and stays denied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(CameraStage.DENIED, viewModel.uiState.value.cameraStage)
+        }
+
+    @Test
+    fun `GIVEN a device with no camera WHEN tapping open camera THEN nothing is asked and the state stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = false))
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(before, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN the platform finds no camera THEN shows only the link without the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = false))
+
+            // Then
+            assertEquals(CameraStage.NO_CAMERA, viewModel.uiState.value.cameraStage)
+            assertFalse(viewModel.uiState.value.isCameraRequested)
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN the platform finds a camera THEN keeps the prompt to open it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = true))
+
+            // Then
+            assertEquals(CameraStage.PROMPT, viewModel.uiState.value.cameraStage)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN the platform finds no camera THEN shows only the link and stops the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = false))
+
+            // Then
+            assertEquals(CameraStage.NO_CAMERA, viewModel.uiState.value.cameraStage)
+            assertFalse(viewModel.uiState.value.isCameraRequested)
+        }
+
+    @Test
+    fun `GIVEN the reader WHEN the platform checks the camera THEN sends no analytics event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = false))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN open camera not tapped WHEN the platform says the camera is allowed THEN keeps the prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // Then
+            assertEquals(CameraAccess.NOT_REQUESTED, viewModel.uiState.value.cameraAccess)
+            assertEquals(CameraStage.PROMPT, viewModel.uiState.value.cameraStage)
+            assertFalse(viewModel.uiState.value.isCameraRequested)
+        }
+
+    @Test
+    fun `GIVEN open camera not tapped WHEN the platform says the camera is refused THEN keeps the prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // Then
+            assertEquals(CameraAccess.NOT_REQUESTED, viewModel.uiState.value.cameraAccess)
+            assertEquals(CameraStage.PROMPT, viewModel.uiState.value.cameraStage)
+        }
+
+    @Test
+    fun `GIVEN an answer that came before open camera WHEN tapping open camera THEN still asks for the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertEquals(listOf<JoinWithLinkUiAction>(JoinWithLinkUiAction.RequestCameraAccess), actions)
+            assertEquals(CameraAccess.ASKING, viewModel.uiState.value.cameraAccess)
+        }
+
+    @Test
+    fun `GIVEN the reader asking for the camera WHEN the camera is allowed THEN shows the viewfinder`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+            // Then
+            assertEquals(CameraStage.VIEWFINDER, viewModel.uiState.value.cameraStage)
+            assertTrue(viewModel.uiState.value.isCameraRequested)
+        }
+
+    @Test
+    fun `GIVEN the reader asking for the camera WHEN the camera is refused THEN explains the camera is denied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // Then
+            assertEquals(CameraStage.DENIED, viewModel.uiState.value.cameraStage)
+        }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN the camera cannot open THEN says the camera failed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        requestCamera()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
+
+        // Then
+        assertEquals(CameraStage.FAILED, viewModel.uiState.value.cameraStage)
+    }
+
+    @Test
+    fun `GIVEN the camera allowed in a previous reader WHEN a new reader opens THEN shows the prompt again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(CameraAccess.NOT_REQUESTED, state.cameraAccess)
+            assertEquals(CameraStage.PROMPT, state.cameraStage)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the camera never opened WHEN pasting an invite THEN the invite takes the place of the reader`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnPasted("https://blitzsplit.com/g/$CODE"))
+
+            // Then
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
     // Why: the reader "Escanear outro QR" reopens after the group link of CODE failed.
     private val groupSkippingReader = Route.JoinWithLink(
         skippedCode = CODE,
@@ -1223,6 +1542,13 @@ class JoinWithLinkViewModelTest {
         memberCode = MEMBER_CODE,
         inviterCode = INVITER_CODE,
     )
+
+    // Why: "Open camera" tapped, with its analytics event and action left out of what the test checks.
+    private fun requestCamera() {
+        viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+        trackedEvents.clear()
+        actions.clear()
+    }
 
     private fun TestScope.prepareScenario(
         under: List<Route> = listOf(Route.Home),

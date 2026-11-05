@@ -182,6 +182,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_pick_not_in_list_clicked` | none | "I'm not on the list" | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
 | `camera_settings_clicked` | `source` (`join_with_link`) | "Open settings" with the camera denied | `:feature:join` |
+| `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it | `:feature:join` |
 | `join_with_link_torch_toggled` | `is_on` | The reader's flashlight, with where it ended up | `:feature:join` |
 | `join_with_link_paste_clicked` | none | The reader's Paste, also with an empty clipboard or one the browser won't read | `:feature:join` |
 | `join_with_link_clear_clicked` | none | The link field cleared | `:feature:join` |

@@ -33,7 +33,8 @@ class JoinWithLinkViewModel(
                 link = "",
                 isLinkInvalid = false,
                 isQrInvalid = false,
-                cameraAccess = CameraAccess.ASKING,
+                cameraAccess = CameraAccess.NOT_REQUESTED,
+                hasCamera = true,
                 isCameraUnavailable = false,
                 hasTorch = false,
                 isTorchOn = false,
@@ -51,12 +52,11 @@ class JoinWithLinkViewModel(
 
     override fun handleEvent(event: JoinWithLinkUiEvent) {
         when (event) {
-            is JoinWithLinkUiEvent.OnCameraAccessChanged -> uiState.update {
-                it.copy(
-                    cameraAccess = if (event.isGranted) CameraAccess.GRANTED else CameraAccess.DENIED,
-                    isTorchOn = it.isTorchOn && event.isGranted,
-                )
-            }
+            is JoinWithLinkUiEvent.OnCameraChecked -> uiState.update { it.copy(hasCamera = event.hasCamera) }
+
+            JoinWithLinkUiEvent.OnOpenCameraClicked -> openCamera()
+
+            is JoinWithLinkUiEvent.OnCameraAccessChanged -> changeCameraAccess(event.isGranted)
 
             is JoinWithLinkUiEvent.OnCameraOpened -> uiState.update {
                 it.copy(
@@ -147,6 +147,25 @@ class JoinWithLinkViewModel(
             it.copy(
                 link = text.trim(),
                 isLinkInvalid = true,
+            )
+        }
+    }
+
+    // Why: asked every time the reader opens, never remembered: the tap is cheap and the camera never opens unasked.
+    private fun openCamera() {
+        val state = uiState.value
+        if (!state.hasCamera || state.cameraAccess != CameraAccess.NOT_REQUESTED) return
+        uiState.update { it.copy(cameraAccess = CameraAccess.ASKING) }
+        viewModelScope.launch { uiAction.emit(JoinWithLinkUiAction.RequestCameraAccess) }
+    }
+
+    // Why: an answer before "Open camera" (the app coming back to the front) leaves the prompt as it is.
+    private fun changeCameraAccess(isGranted: Boolean) {
+        uiState.update {
+            if (it.cameraAccess == CameraAccess.NOT_REQUESTED) return@update it
+            it.copy(
+                cameraAccess = if (isGranted) CameraAccess.GRANTED else CameraAccess.DENIED,
+                isTorchOn = it.isTorchOn && isGranted,
             )
         }
     }

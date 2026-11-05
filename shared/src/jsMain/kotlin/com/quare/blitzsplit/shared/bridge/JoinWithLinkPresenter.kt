@@ -16,8 +16,10 @@ class JsJoinWithLinkState(
     val link: String,
     val isLinkInvalid: Boolean,
     val isQrInvalid: Boolean,
-    // Why: the CameraAccess's name in lower case, "asking", "granted" or "denied".
-    val cameraAccess: String,
+    // Why: the CameraStage's name in lower case: "prompt", "no_camera", "viewfinder", "denied" or "failed".
+    val cameraStage: String,
+    // Why: "Open camera" was tapped: only then the browser is asked for the camera.
+    val isCameraRequested: Boolean,
     val isCameraUnavailable: Boolean,
     val showsTorch: Boolean,
     val isTorchOn: Boolean,
@@ -40,7 +42,8 @@ class JoinWithLinkPresenter(
                 link = state.link,
                 isLinkInvalid = state.isLinkInvalid,
                 isQrInvalid = state.isQrInvalid,
-                cameraAccess = state.cameraAccess.name.lowercase(),
+                cameraStage = state.cameraStage.name.lowercase(),
+                isCameraRequested = state.isCameraRequested,
                 isCameraUnavailable = state.isCameraUnavailable,
                 showsTorch = state.showsTorch,
                 isTorchOn = state.isTorchOn,
@@ -52,15 +55,27 @@ class JoinWithLinkPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "open-camera-settings". A browser has no settings page to open, so the web asks for the camera again.
+    /*
+     * Why: "request-camera-access" or "open-camera-settings". The browser asks for the camera as it opens, so the web
+     * starts it from isCameraRequested; with no settings page to open, the web asks for the camera again.
+     */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
+                JoinWithLinkUiAction.RequestCameraAccess -> "request-camera-access"
                 JoinWithLinkUiAction.OpenCameraSettings -> "open-camera-settings"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
+    }
+
+    fun checkCamera(hasCamera: Boolean) {
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera))
+    }
+
+    fun requestCamera() {
+        viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
     }
 
     fun changeCameraAccess(isGranted: Boolean) {

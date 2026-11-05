@@ -249,6 +249,7 @@ private fun createPreviewState(
     isLinkInvalid = isLinkInvalid,
     isQrInvalid = isQrInvalid,
     cameraAccess = cameraAccess,
+    hasCamera = true,
     isCameraUnavailable = false,
     hasTorch = true,
     isTorchOn = false,
@@ -274,6 +275,19 @@ private fun JoinWithLinkContentPreview() {
     JoinWithLinkPreviewContent(
         createPreviewState(
             CameraAccess.GRANTED,
+            link = "",
+            isLinkInvalid = false,
+            isQrInvalid = false,
+        ),
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun JoinWithLinkPromptPreview() {
+    JoinWithLinkPreviewContent(
+        createPreviewState(
+            CameraAccess.NOT_REQUESTED,
             link = "",
             isLinkInvalid = false,
             isQrInvalid = false,

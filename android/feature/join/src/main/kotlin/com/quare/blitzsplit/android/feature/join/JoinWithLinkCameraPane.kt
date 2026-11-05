@@ -28,6 +28,10 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.NoPhotography
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +50,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -55,6 +60,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
+import com.quare.blitzsplit.feature.join.presentation.model.CameraStage
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiState
 
@@ -107,20 +113,30 @@ internal fun CameraPane(
                         modifier = Modifier.verticalScroll(rememberScrollState()),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (state.cameraAccess == CameraAccess.DENIED) {
-                            CameraProblemMessage(
+                        when (state.cameraStage) {
+                            CameraStage.PROMPT -> CameraPromptMessage(
+                                onOpenCamera = { onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked) },
+                            )
+
+                            CameraStage.NO_CAMERA -> CameraProblemMessage(
+                                title = null,
+                                message = stringResource(R.string.join_scan_no_camera),
+                                onOpenSettings = null,
+                            )
+
+                            CameraStage.DENIED -> CameraProblemMessage(
                                 title = stringResource(R.string.join_scan_denied_title),
                                 message = stringResource(R.string.join_scan_denied_message),
                                 onOpenSettings = { onEvent(JoinWithLinkUiEvent.OnOpenSettingsClicked) },
                             )
-                        } else if (state.isCameraUnavailable) {
-                            CameraProblemMessage(
+
+                            CameraStage.FAILED -> CameraProblemMessage(
                                 title = null,
                                 message = stringResource(R.string.join_scan_camera_failed),
                                 onOpenSettings = null,
                             )
-                        } else {
-                            ViewfinderOverlay(
+
+                            CameraStage.VIEWFINDER -> ViewfinderOverlay(
                                 state = state,
                                 size = viewfinderSize,
                             )
@@ -251,6 +267,62 @@ private fun InvalidQrBanner() {
     }
 }
 
+// Why: in the camera's place until "Open camera", the only tap that asks for the camera and opens it.
+@Composable
+private fun CameraPromptMessage(onOpenCamera: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .widthIn(max = 420.dp)
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        CameraMessageIcon(Icons.Outlined.QrCodeScanner)
+        Text(
+            text = stringResource(R.string.join_scan_prompt_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = onCamera,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = stringResource(R.string.join_scan_prompt_message),
+            style = MaterialTheme.typography.bodyLarge,
+            color = onCamera,
+            textAlign = TextAlign.Center,
+        )
+        Button(
+            onClick = onOpenCamera,
+            modifier = Modifier.heightIn(min = 48.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.PhotoCamera,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            Text(stringResource(R.string.join_scan_open_camera))
+        }
+    }
+}
+
+@Composable
+private fun CameraMessageIcon(icon: ImageVector) {
+    Box(
+        modifier = Modifier
+            .size(96.dp)
+            .background(onCamera.copy(alpha = 0.12f), RoundedCornerShape(32.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(44.dp),
+            tint = onCamera,
+        )
+    }
+}
+
 @Composable
 private fun CameraProblemMessage(
     title: String?,
@@ -264,19 +336,7 @@ private fun CameraProblemMessage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .background(onCamera.copy(alpha = 0.12f), RoundedCornerShape(32.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.NoPhotography,
-                contentDescription = null,
-                modifier = Modifier.size(44.dp),
-                tint = onCamera,
-            )
-        }
+        CameraMessageIcon(Icons.Outlined.NoPhotography)
         if (title != null) {
             Text(
                 text = title,

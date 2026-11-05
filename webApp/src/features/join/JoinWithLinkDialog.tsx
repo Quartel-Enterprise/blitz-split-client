@@ -1,4 +1,4 @@
-import { CameraOff, ClipboardPaste, Flashlight, FlashlightOff, TriangleAlert, X } from 'lucide-react'
+import { Camera, CameraOff, ClipboardPaste, Flashlight, FlashlightOff, ScanQrCode, TriangleAlert, X } from 'lucide-react'
 import { JoinWithLinkPresenter, type JsJoinWithLinkState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -8,6 +8,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
+import { useCameras } from '@/hooks/useCameraStream'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useQrCamera } from '@/hooks/useQrCamera'
 import { t } from '@/i18n'
@@ -20,9 +21,10 @@ const errorId = 'join-with-link-error'
 const linkPlaceholder = 'blitzsplit.com/g/…'
 
 /**
- * "Entrar com link ou QR": the camera reads an invite's QR through the browser's BarcodeDetector, and the
- * link can be pasted or typed under it. A dialog on desktop and tablet, a drawer on the phone. Closing it any
- * way (Esc, the overlay, the close button) is the ViewModel's back.
+ * "Join with an invite": the camera reads an invite's QR through the browser's BarcodeDetector, and the link can be
+ * pasted or typed under it. The camera only starts after "Open camera", so opening the dialog never asks the browser
+ * for it. A dialog on desktop and tablet, a drawer on the phone. Closing it any way (Esc, the overlay, the close
+ * button) is the ViewModel's back.
  */
 export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new JoinWithLinkPresenter(route))
@@ -30,7 +32,19 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   // Why: a browser has no settings page to open, so "Try again" asks for the camera once more.
   const [attempt, setAttempt] = useState(0)
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () => setAttempt((count) => count + 1))
+  useActions(
+    presenter,
+    (p, onAction: (action: string) => void) => p.observeActions(onAction),
+    (action) => {
+      if (action === 'open-camera-settings') setAttempt((count) => count + 1)
+    },
+  )
+  // Why: a computer without a webcam never offers "Open camera", only the link.
+  const cameras = useCameras()
+  const hasCamera = cameras === null ? null : cameras.length > 0
+  useEffect(() => {
+    if (presenter && hasCamera !== null) presenter.checkCamera(hasCamera)
+  }, [presenter, hasCamera])
   if (!presenter || !state) return null
 
   const onOpenChange = (open: boolean) => {
@@ -66,11 +80,14 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   )
 }
 
+// Why: Safari and Firefox have no BarcodeDetector, so they can't read a QR: they never offer "Open camera".
+const canReadQr = Boolean(window.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
+
 function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState; isDesktop: boolean }) {
   const video = useRef<HTMLVideoElement>(null)
-  const isUnsupported = useInviteCamera(video, presenter, state)
-  const isDenied = state.cameraAccess === 'denied'
-  const problem = isUnsupported ? 'unsupported' : isDenied ? 'denied' : state.isCameraUnavailable ? 'failed' : null
+  useInviteCamera(video, presenter, state)
+  const stage = state.cameraStage
+  const problem = !canReadQr ? 'unsupported' : stage === 'no_camera' ? 'no_camera' : stage === 'denied' ? 'denied' : stage === 'failed' ? 'failed' : null
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
@@ -81,7 +98,13 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
           <CameraOff aria-hidden className="size-8 text-white/70" />
           {problem === 'denied' && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
           <p className="text-sm text-white/80">
-            {problem === 'unsupported' ? t('join_linkUnsupported') : problem === 'failed' ? t('join_linkCameraFailed') : t('join_linkDeniedMessage')}
+            {problem === 'unsupported'
+              ? t('join_linkUnsupported')
+              : problem === 'no_camera'
+                ? t('join_linkNoCamera')
+                : problem === 'failed'
+                  ? t('join_linkCameraFailed')
+                  : t('join_linkDeniedMessage')}
           </p>
           {problem === 'denied' && (
             <Button variant="secondary" onClick={() => presenter.openSettings()}>
@@ -89,6 +112,8 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
             </Button>
           )}
         </div>
+      ) : stage === 'prompt' ? (
+        <CameraPrompt onOpen={() => presenter.requestCamera()} />
       ) : (
         <>
           {/* Darker toward the edges, so the corners and the hint read over any picture */}
@@ -124,6 +149,24 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
   )
 }
 
+// Why: in the camera's place until "Open camera", which is the only thing that asks the browser for it.
+function CameraPrompt({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+      <div className="flex size-16 items-center justify-center rounded-2xl bg-white/10">
+        <ScanQrCode aria-hidden className="size-8" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <p className="font-semibold">{t('join_linkPromptTitle')}</p>
+        <p className="text-sm text-white/80">{t('join_linkPromptMessage')}</p>
+      </div>
+      <Button type="button" onClick={onOpen} className="mt-1">
+        <Camera /> {t('join_linkOpenCamera')}
+      </Button>
+    </div>
+  )
+}
+
 // The four rounded corners of the viewfinder, not a whole frame; the error color while a wrong QR is in front of it.
 function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
   const corner = 'M 2 30 V 16 A 14 14 0 0 1 16 2 H 30'
@@ -145,13 +188,12 @@ function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
 }
 
 /**
- * The camera's answer goes to the ViewModel: allowed or refused, opened with or without a flashlight, or failed.
- * Only a browser without BarcodeDetector (Safari, Firefox), which can't read at all, stays here, for its own words.
- * The flashlight is a constraint of the camera's track in Chrome on Android.
+ * Starts once "Open camera" was tapped, and the camera's answer goes to the ViewModel: allowed or refused, opened with
+ * or without a flashlight, or failed. The flashlight is a constraint of the camera's track in Chrome on Android.
  */
 function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: JoinWithLinkPresenter, state: JsJoinWithLinkState) {
   const { problem, track, hasTorch } = useQrCamera(video, {
-    isEnabled: true,
+    isEnabled: state.isCameraRequested,
     readsContinuously: true,
     onScanned: (content) => presenter.scan(content),
     onStarted: () => presenter.changeCameraAccess(true),
@@ -164,8 +206,6 @@ function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: J
   useEffect(() => {
     if (track) presenter.openCamera(hasTorch)
   }, [track, hasTorch, presenter])
-
-  return problem === 'unsupported'
 }
 
 function PastePanel({ presenter, state }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState }) {
