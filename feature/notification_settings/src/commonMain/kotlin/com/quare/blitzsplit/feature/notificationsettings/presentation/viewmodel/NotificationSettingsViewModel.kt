@@ -76,7 +76,7 @@ class NotificationSettingsViewModel(
             NotificationSettingsUiEvent.OnOpenSettingsClicked -> emit(NotificationSettingsUiAction.OpenSystemSettings)
 
             NotificationSettingsUiEvent.OnAskAgainClicked -> if (uiState.value.canAskAgain) {
-                trackEvent("notification_permission_ask_again_clicked", emptyMap())
+                trackEvent("notification_ask_again_clicked", emptyMap())
                 emit(NotificationSettingsUiAction.RequestPermission)
             }
         }

@@ -20,7 +20,7 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
             OnOpenSettingsClicked -> EventAnalytics.Automatic("notification_system_settings_clicked")
 
             // Why: only while Android can still ask (refused once).
-            OnAskAgainClicked -> EventAnalytics.Manual("notification_permission_ask_again_clicked")
+            OnAskAgainClicked -> EventAnalytics.Manual("notification_ask_again_clicked")
         }
 
     data object OnBackClicked : NotificationSettingsUiEvent

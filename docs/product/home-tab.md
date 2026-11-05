@@ -32,7 +32,8 @@ The home tab, its shortcuts and pinned groups.
     "so far · the rest is on its way"; offline the skeletons stay with "No internet. Your groups show up once you're back
     online." (Mac: the window's subtitle); the sync chip as Groups'; an account with
     neither Google nor Apple shows "Save your recovery code" once the code was snoozed ("Remind me later"), ✕
-    hiding it until the next launch. A Flip's cover screen shows only Overall balance, the latest bill and "Open the phone to see everything".
+    hiding it until the next launch; otherwise, once there is a group, the notification card while the system doesn't
+    allow them ("Know when a bill comes in", in [activity-and-push.md](activity-and-push.md)). A Flip's cover screen shows only Overall balance, the latest bill and "Open the phone to see everything".
   - "Pin to Home" (the group's ⋮/⋯ menu on Expenses and Balances, "Unpin from Home" once pinned) is each
     user's own, synced with their account and never shown to other members (`group_pins`, `GroupPinRepository`), works
     offline, and only orders Home's "Your groups" (Groups keeps its order). A settled group stays out of Home

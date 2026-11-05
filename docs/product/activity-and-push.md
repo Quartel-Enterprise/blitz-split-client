@@ -56,7 +56,10 @@ The feed, unread state, real time and push notifications.
     The choices sync with the account (`notification_preferences`), the OS permission stays per device. With the
     permission denied the notice shows with "Open settings" and every Push toggle shows off and disabled, while the
     In app toggles stay in reach ("The bell keeps working."); a Push turned on while the permission was never asked
-    asks for it, an In app one never does. The Profile row reads "5 active", the rows whose Push is on. Before this,
+    asks for it, an In app one never does. On Android after a first refusal (`NotificationPermission.REFUSED_ONCE`),
+    which Android still lets the app ask once more, the same notice says so and its button is "Turn on", which asks
+    again (`NotificationSettingsUiEvent.OnAskAgainClicked`, `notification_ask_again_clicked`); only a
+    refusal for good shows "Open settings". The Profile row reads "5 active", the rows whose Push is on. Before this,
     comments rode on "New expense in my groups", payment requests and Simplify debts on "Settle-up reminders", and the
     bell had no control at all; the server copied each new Push toggle from the one it used to ride on. Each platform
     draws it its way: Android a full screen (both entries) with two Material icon toggle buttons per row (a phone,
@@ -81,7 +84,24 @@ The feed, unread state, real time and push notifications.
     with you". A tap opens what the item's tap in Activity opens, over Activity over Home (`PushLink.homeTab` null, after a sync when its group isn't
     on the device yet) and marks it read; a reminder opens the group's Balances over Groups, or Balances. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
-    it while none is, a sign out made offline once back online. Android and Apple ask for the permission the first time Home shows, the web on the toggles.
+    it while none is, a sign out made offline once back online. Android and Apple register their token at every launch
+    whatever the permission; the web subscribes as soon as the browser allows it, from its prompt, the site settings or
+    on load (`watchNotificationPermission`).
+  - Asking for the permission (Pierre's call, issue 208; per device, never synced): no platform asks on its own. Home
+    shows a card under the shortcuts once there is a group to be notified about (created or joined), never on the first
+    use, during a first download nor beside the recovery code's card (`HomeUiState.notificationPrompt`). Never asked
+    (`SOFT_ASK`): "Know when a bill comes in", "Get notified when someone adds a bill with you or marks a payment to
+    you.", with "Not now" and "Turn on", which alone brings the system's prompt, so "Not now" never spends it. Android
+    refused once (`ASK_AGAIN`, its rationale flag): the same card says Android lets you allow them once more, and "Turn
+    on" asks again. Refused for good (`BLOCKED`): "Notifications are off", where "Turn on" opens the app's notification
+    settings on Android, iOS and macOS; the web, which can't open its settings, says "Notifications are blocked in this
+    browser" and where to allow them, with only "Not now". Either answer hides the card for three weeks on this device
+    (`lastNotificationPromptAt` of the device settings; `notification_prompt_turn_on_clicked`,
+    `notification_prompt_dismissed`, with `prompt`), and it never comes back once allowed. Each platform reads the
+    permission when Home appears, on each return to the app and after its prompt; one turning allowed after Home saw it
+    not allowed (the prompt, or back from the settings) shows "Notifications on" (`HomeUiAction.ShowNotificationsOn`).
+    iOS's provisional authorization, Android's channels silenced one by one in its settings and the prompt's own
+    analytics (shown, its result) are not built.
     Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the
     Firebase service account on the server, the web's VAPID keys on both (`docs/push-notifications.md`). Muting a
     group isn't built yet, though the footer of Notifications mentions it.

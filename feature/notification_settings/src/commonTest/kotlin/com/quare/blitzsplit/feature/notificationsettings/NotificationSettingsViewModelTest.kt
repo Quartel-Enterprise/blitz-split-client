@@ -992,13 +992,13 @@ class NotificationSettingsViewModelTest {
 
             // Then
             assertEquals(
-                listOf("notification_permission_ask_again_clicked" to emptyMap<String, Any>()),
+                listOf("notification_ask_again_clicked" to emptyMap<String, Any>()),
                 trackedEvents,
             )
         }
 
     @Test
-    fun `GIVEN turn on WHEN reading its analytics THEN is sent by hand as notification_permission_ask_again_clicked`() {
+    fun `GIVEN turn on WHEN reading its analytics THEN is sent by hand as notification_ask_again_clicked`() {
         // Given
         val event = NotificationSettingsUiEvent.OnAskAgainClicked
 
@@ -1006,7 +1006,7 @@ class NotificationSettingsViewModelTest {
         val analytics = event.analytics
 
         // Then
-        assertEquals(EventAnalytics.Manual("notification_permission_ask_again_clicked"), analytics)
+        assertEquals(EventAnalytics.Manual("notification_ask_again_clicked"), analytics)
     }
 
     @Test
