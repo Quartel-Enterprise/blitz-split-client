@@ -22,10 +22,11 @@ web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the J
 lint, the release APK and the other Apple scheme are left to these workflows, and `merge-when-green` waits for them:
 on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open.
 
-The `apple` jobs run on `macos-26`, which GitHub gives a public repository for free. Its tests and its app build are
+The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
+SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and its app build are
 two jobs side by side, each compiling the Kotlin/Native code on its own, since two runners finish sooner than one.
-The Gradle action fits them to the runner: it selects the image's newest Xcode, since the app uses the newest SDK's
-APIs and the image's default lags behind, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
+The Gradle action fits them to the runner: it selects the image's newest Xcode, as the Mac the app is developed on
+runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
 `main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the two jobs
 don't store the same entries twice.
 

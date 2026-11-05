@@ -66,9 +66,9 @@ runs:
           echo 'org.gradle.workers.max=2'
         } >> ~/.gradle/gradle.properties
 
-    # The image's default Xcode lags behind the newest it has installed, and the Apple app uses the
-    # newest SDK's APIs (an iOS 27.1 API under @available, which the 26 SDK can't name). The Mac it's
-    # developed on runs the newest release too.
+    # The image's default Xcode can lag behind the newest it has installed (27.1 against 27.2 on
+    # xcode-27), and the Apple app uses the newest SDK's APIs under @available, as the Mac it is
+    # developed on builds it with the newest release.
     - name: Select the newest Xcode
       if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
       shell: bash

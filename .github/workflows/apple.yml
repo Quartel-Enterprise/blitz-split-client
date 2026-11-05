@@ -86,7 +86,9 @@ jobs:
   apple-tests:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
-    runs-on: macos-26
+    # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
+    # Xcode 26 only.
+    runs-on: xcode-27
     # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
     timeout-minutes: 60
     steps:
@@ -119,7 +121,9 @@ jobs:
   apple-app:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
-    runs-on: macos-26
+    # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
+    # Xcode 26 only.
+    runs-on: xcode-27
     # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
     timeout-minutes: 60
     steps:
