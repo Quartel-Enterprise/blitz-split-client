@@ -90,6 +90,11 @@ class AppDownloadPresenter(
         viewModel.onEvent(AppDownloadUiEvent.OnDownloadedClicked)
     }
 
+    // Why: the link under the code, which the browser opens.
+    fun trackLink() {
+        viewModel.onEvent(AppDownloadUiEvent.OnLinkClicked)
+    }
+
     fun copyLink() {
         viewModel.onEvent(AppDownloadUiEvent.OnCopyLinkClicked)
     }

@@ -424,6 +424,9 @@ class HomeViewModel(
 
             HomeUiEvent.OnNotificationPromptDismissed -> notificationPrompts.dismiss()
 
+            // Why: the browser opens the link; the tap is only tracked.
+            HomeUiEvent.OnAppInviteLinkClicked, HomeUiEvent.OnAppBannerOpenClicked -> Unit
+
             HomeUiEvent.OnAppBannerDismissed -> if (uiState.value.showsAppBanner) {
                 viewModelScope.launch { dismissAppBanner() }
             }

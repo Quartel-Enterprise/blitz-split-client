@@ -71,6 +71,10 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnAppBannerDismissed -> EventAnalytics.Automatic("app_banner_dismissed")
 
+            OnAppInviteLinkClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to SOURCE))
+
+            OnAppBannerOpenClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to "home_banner"))
+
             // Why: only while the card shows, with which one it was.
             OnNotificationPromptTurnOnClicked -> EventAnalytics.Manual("notification_prompt_turn_on_clicked")
 
@@ -202,6 +206,12 @@ sealed interface HomeUiEvent : UiEvent {
 
     // Why: the ✕ of the phone browser's banner (14.3).
     data object OnAppBannerDismissed : HomeUiEvent
+
+    // Why: the app's link beside the card's QR code (web), which the browser opens itself; the shared code only counts it.
+    data object OnAppInviteLinkClicked : HomeUiEvent
+
+    // Why: "Open in the app" of the phone browser's banner, the app's link the browser opens itself.
+    data object OnAppBannerOpenClicked : HomeUiEvent
 
     // Why: "Desfazer" on the notice of a payment just recorded from Início.
     data object OnUndoPaymentClicked : HomeUiEvent

@@ -227,6 +227,9 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnAppInviteClicked -> appInviteRow.openCode()
 
+            // Why: the browser opens the link; the tap is only tracked.
+            ProfileUiEvent.OnAppLinkClicked -> Unit
+
             ProfileUiEvent.OnAppInviteDismissed -> appInviteRow.dismiss()
 
             ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)

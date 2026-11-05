@@ -56,6 +56,7 @@ internal fun ReceiptSourceComponent(
         ReceiptPhotoSource.CAMERA -> ReceiptCameraDialog(
             onPhoto = { photo -> onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(photo)) },
             onDismiss = { onEvent(SplitBillUiEvent.OnReceiptPickerDismissed) },
+            onEvent = onEvent,
         )
 
         // Why: the system picker has no "closed" to report, so the request ends as it opens; its photo comes later.

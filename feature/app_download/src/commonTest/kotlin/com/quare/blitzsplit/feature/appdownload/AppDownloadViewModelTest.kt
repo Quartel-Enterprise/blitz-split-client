@@ -511,6 +511,22 @@ class AppDownloadViewModelTest {
     }
 
     @Test
+    fun `GIVEN the web invite WHEN opening the link THEN tracks it and leaves the code open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+            val stack = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(AppDownloadUiEvent.OnLinkClicked)
+
+            // Then
+            assertEquals(listOf("app_link_clicked" to mapOf<String, Any>("source" to "app_download")), trackedEvents)
+            assertEquals(stack, navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a platform that never invites WHEN the code opens THEN closes it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(invite = null)

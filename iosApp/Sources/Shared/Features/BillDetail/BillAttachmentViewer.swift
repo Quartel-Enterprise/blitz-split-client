@@ -86,6 +86,7 @@ struct BillAttachmentViewer: View {
         if let file = AttachmentFile(attachment, fileName: BillCopy.attachmentFileName(attachment)) {
             #if os(macOS)
             Button {
+                model.send(BillDetailUiEventOnDownloadClicked.shared)
                 exportsFile = true
             } label: {
                 label
@@ -101,6 +102,7 @@ struct BillAttachmentViewer: View {
             ShareLink(item: file, preview: SharePreview(BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0))) {
                 label
             }
+            .onShareTap { model.send(BillDetailUiEventOnDownloadClicked.shared) }
             #endif
         } else {
             // Offline and never loaded here: nothing to save yet

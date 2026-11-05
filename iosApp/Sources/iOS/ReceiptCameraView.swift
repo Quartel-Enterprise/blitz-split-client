@@ -8,6 +8,9 @@ import UIKit
 struct ReceiptCameraView: View {
     let onPhoto: (Data) -> Void
     let onDismiss: () -> Void
+    /// The flash's tap, with where it ended up, and "Open Settings": the shared code counts them.
+    let onTorchToggled: (Bool) -> Void
+    let onSettingsOpened: () -> Void
 
     @State private var capture = ReceiptCapture()
     @State private var access = CameraAccess.asking
@@ -68,7 +71,10 @@ struct ReceiptCameraView: View {
                 CameraCircleButton(
                     systemImage: isTorchOn ? "bolt.slash.fill" : "bolt.fill",
                     label: isTorchOn ? "Turn off the flash" : "Turn on the flash",
-                ) { isTorchOn.toggle() }
+                ) {
+                    isTorchOn.toggle()
+                    onTorchToggled(isTorchOn)
+                }
             } else {
                 Color.clear.frame(width: 44, height: 44)
             }
@@ -93,6 +99,7 @@ struct ReceiptCameraView: View {
             case .denied:
                 CameraMessage(text: "Allow the camera to scan the receipt, or choose a photo of it from Photos.") {
                     Button("Open Settings") {
+                        onSettingsOpened()
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                     }
                     .buttonStyle(.glass)

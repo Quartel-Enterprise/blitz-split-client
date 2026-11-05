@@ -49,6 +49,12 @@ extension RegisterPaymentModel {
         send(RegisterPaymentUiEventOnMarkAsPaidClicked.shared)
     }
 
+    /// A copy of "Pay Ana": the pasteboard is the app's, the shared code only counts which copy it was.
+    func copy(_ text: String, _ target: PayCopyTarget) {
+        send(RegisterPaymentUiEventOnCopyClicked(target: target))
+        Pasteboard.copy(text)
+    }
+
     /// A part of the debt, cash or a past day go through the form, which takes this screen's place.
     func payOtherwise() {
         send(RegisterPaymentUiEventOnPayOtherwiseClicked.shared)
@@ -86,7 +92,7 @@ private struct KeyMethodPicker: View {
 private struct DefaultKeyCard: View {
     let state: RegisterPaymentUiState
     let key: ReceiverKey
-    let onCopy: (String) -> Void
+    let onCopy: (String, PayCopyTarget) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -105,7 +111,7 @@ private struct DefaultKeyCard: View {
                 .font(.title3.bold())
                 .textSelection(.enabled)
             Button {
-                onCopy(key.value)
+                onCopy(key.value, .key)
             } label: {
                 Label("Copy key", systemImage: "doc.on.doc")
                     .frame(maxWidth: .infinity, minHeight: 32)
@@ -123,7 +129,7 @@ private struct PixCodeCard: View {
     let state: RegisterPaymentUiState
     let code: String
     let qrSize: CGFloat
-    let onCopy: (String) -> Void
+    let onCopy: (String, PayCopyTarget) -> Void
 
     var body: some View {
         HStack(spacing: 14) {
@@ -139,7 +145,7 @@ private struct PixCodeCard: View {
                 Text("It already comes with \(state.currency.format(state.debtMinor)).")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                Button("Copy code") { onCopy(code) }
+                Button("Copy code") { onCopy(code, .pixCode) }
                     .buttonStyle(.bordered)
                     .padding(.top, 2)
             }
@@ -153,7 +159,7 @@ private struct PixCodeCard: View {
 /// "Ana's other keys", each with its own copy button.
 private struct OtherKeysList: View {
     let state: RegisterPaymentUiState
-    let onCopy: (String) -> Void
+    let onCopy: (String, PayCopyTarget) -> Void
 
     var body: some View {
         if !state.otherKeys.isEmpty {
@@ -175,7 +181,7 @@ private struct OtherKeysList: View {
                             }
                             Spacer()
                             Button {
-                                onCopy(key.value)
+                                onCopy(key.value, .otherKey)
                             } label: {
                                 Label("Copy", systemImage: "doc.on.doc")
                                     .labelStyle(.iconOnly)
@@ -309,8 +315,8 @@ struct PhonePayWithKey: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func copy(_ text: String) {
-        Pasteboard.copy(text)
+    private func copy(_ text: String, _ target: PayCopyTarget) {
+        model.copy(text, target)
         copyCount += 1
     }
 }
@@ -375,8 +381,8 @@ struct MacPayWithKey: View {
         .glassToast("Copied", trigger: copyCount)
     }
 
-    private func copy(_ text: String) {
-        Pasteboard.copy(text)
+    private func copy(_ text: String, _ target: PayCopyTarget) {
+        model.copy(text, target)
         copyCount += 1
     }
 }

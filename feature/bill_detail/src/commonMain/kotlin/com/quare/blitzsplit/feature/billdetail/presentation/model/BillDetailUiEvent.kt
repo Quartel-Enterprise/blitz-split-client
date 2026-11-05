@@ -45,6 +45,9 @@ sealed interface BillDetailUiEvent : UiEvent {
 
             is OnAttachmentClicked -> EventAnalytics.Manual("bill_attachment_clicked")
 
+            // Why: only a download from the viewer still open.
+            OnDownloadClicked -> EventAnalytics.Manual("bill_attachment_download_clicked")
+
             is OnPersonClicked -> EventAnalytics.Manual("person_clicked")
 
             OnEditClicked -> EventAnalytics.Manual("bill_edit_clicked")
@@ -167,6 +170,12 @@ sealed interface BillDetailUiEvent : UiEvent {
     ) : BillDetailUiEvent
 
     data object OnViewerDismissed : BillDetailUiEvent
+
+    /*
+     * Why: the viewer's "Baixar", which each platform does itself (Android's gallery, Apple's share sheet or save
+     * panel, the browser's download), so the shared code only counts it.
+     */
+    data object OnDownloadClicked : BillDetailUiEvent
 
     // Why: "Remover foto" in the viewer, offline too and with no question, as the boards draw it.
     data class OnRemoveAttachmentClicked(

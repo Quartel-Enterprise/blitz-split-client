@@ -224,6 +224,11 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
     }
 
+    // Why: the "Saldo geral" card, a button of the page rather than the Saldos tab.
+    fun openOverallBalance() {
+        viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+    }
+
     fun openContacts() {
         viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
     }

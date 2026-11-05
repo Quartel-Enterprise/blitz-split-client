@@ -5101,6 +5101,91 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN the invite card WHEN tapping the app link by its QR code THEN counts only app_link_clicked from Home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            val trackedBefore = trackedEvents.toList()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteLinkClicked)
+
+            // Then
+            assertEquals(
+                trackedBefore + ("app_link_clicked" to mapOf<String, Any>("source" to "home")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping the app link by its QR code THEN keeps the card and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            val stateBefore = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteLinkClicked)
+
+            // Then
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertTrue(viewModel.uiState.value.showsAppInviteCard)
+            assertEquals(0, appInviteDismissals)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the browser banner WHEN tapping Open in the app THEN counts only app_link_clicked from the banner`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+            val trackedBefore = trackedEvents.toList()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppBannerOpenClicked)
+
+            // Then
+            assertEquals(
+                trackedBefore + ("app_link_clicked" to mapOf<String, Any>("source" to "home_banner")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the phone browser banner WHEN tapping Open in the app THEN keeps the banner and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+            val stateBefore = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppBannerOpenClicked)
+
+            // Then
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertTrue(viewModel.uiState.value.showsAppBanner)
+            assertFalse(appBannerDismissed.value)
+            assertEquals(0, appInviteDismissals)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the invite card gone WHEN a late tap on the cross comes THEN neither ends nor counts it again`() =
         runTest(testDispatcher) {
             // Given

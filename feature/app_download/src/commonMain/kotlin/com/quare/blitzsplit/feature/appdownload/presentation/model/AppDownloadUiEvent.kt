@@ -14,6 +14,14 @@ sealed interface AppDownloadUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Manual("app_invite_downloaded_clicked")
     }
 
+    // Why: the link under the code (web), which the browser opens itself; the shared code only counts it.
+    data object OnLinkClicked : AppDownloadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Automatic(
+            "app_link_clicked",
+            mapOf("source" to "app_download"),
+        )
+    }
+
     // Why: the copy button beside the link.
     data object OnCopyLinkClicked : AppDownloadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Automatic("app_download_link_copied")

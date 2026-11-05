@@ -329,6 +329,11 @@ class BillDetailViewModel(
 
             BillDetailUiEvent.OnViewerDismissed -> uiState.update { it.copy(viewedAttachmentId = null) }
 
+            // Why: only with a photo on screen, never one another device removed while it was shown.
+            BillDetailUiEvent.OnDownloadClicked -> if (uiState.value.viewedAttachment != null) {
+                trackEvent("bill_attachment_download_clicked", sourceParams)
+            }
+
             is BillDetailUiEvent.OnRemoveAttachmentClicked -> removeAttachment(event.id)
         }
     }

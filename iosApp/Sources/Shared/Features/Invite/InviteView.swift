@@ -302,6 +302,7 @@ private struct InviteButtons: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, minHeight: 36)
                 }
+                .onShareTap { model.send(InviteUiEventOnShareClicked.shared) }
                 .buttonStyle(.glassProminent)
                 .prominentLabel()
                 .buttonBorderShape(.capsule)
@@ -395,6 +396,7 @@ private struct InvitePopoverContent: View {
                     Label("Share…", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
+                .onShareTap { model.send(InviteUiEventOnShareClicked.shared) }
                 .buttonStyle(.glassProminent)
                 .prominentLabel()
                 .buttonBorderShape(.capsule)

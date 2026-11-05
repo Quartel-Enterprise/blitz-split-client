@@ -1901,6 +1901,109 @@ class SharedBillViewModelTest {
     }
 
     @Test
+    fun `GIVEN the viewer on the second photo WHEN tapping Download THEN sends it from the shared page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-2"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_download_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the viewer paged to the first photo WHEN tapping Download THEN sends the download clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("receipt"))
+            viewModel.onEvent(SharedBillUiEvent.OnViewerPageChanged("photo-1"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf("bill_attachment_download_clicked" to mapOf<String, Any>("source" to "shared_bill")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the viewer on a photo WHEN tapping Download THEN nothing changes and no action is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-2"))
+            actions.clear()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals("photo-2", viewModel.uiState.value.viewedAttachmentId)
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the page open and the viewer never opened WHEN tapping Download THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the viewer dismissed WHEN a late Download tap arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-1"))
+        viewModel.onEvent(SharedBillUiEvent.OnViewerDismissed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the viewer closed as its photo was removed WHEN a late Download tap arrives THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SharedBillUiEvent.OnAttachmentClicked("photo-2"))
+            links.sharedBills.value = mapOf(CODE to openBill(attachments = attachments.take(2)))
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnDownloadClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a comment typed WHEN sending it THEN sends the comment send clicked from the shared page`() =
         runTest(testDispatcher) {
             // Given

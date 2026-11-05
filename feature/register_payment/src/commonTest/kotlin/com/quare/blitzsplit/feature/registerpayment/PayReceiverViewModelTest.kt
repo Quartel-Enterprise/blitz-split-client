@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymen
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
@@ -765,6 +766,24 @@ class PayReceiverViewModelTest {
         // Then
         assertEquals(listOf("payment_pay_otherwise_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
+
+    @Test
+    fun `GIVEN the keys shown WHEN copying the Pix code THEN tracks what was copied and changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val state = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.PIX_CODE))
+
+            // Then
+            assertEquals(
+                listOf("payment_copy_clicked" to mapOf<String, Any>("target" to PayCopyTarget.PIX_CODE)),
+                trackedEvents,
+            )
+            assertEquals(state, viewModel.uiState.value)
+        }
 
     @Test
     fun `GIVEN Pix shown WHEN tapping Marcar como pago THEN tracks the tap and the whole debt paid by Pix`() =

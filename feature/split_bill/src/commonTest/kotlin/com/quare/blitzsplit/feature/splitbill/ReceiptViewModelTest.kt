@@ -48,6 +48,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
@@ -56,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -93,6 +95,7 @@ class ReceiptViewModelTest {
     private val readHints = mutableListOf<ReceiptCategoryHints>()
     private val pendingReads = mutableListOf<CompletableDeferred<ReceiptScan>>()
     private val attachments = mutableListOf<RecordedAttachment>()
+    private val actions = mutableListOf<SplitBillUiAction>()
 
     @BeforeTest
     fun setUp() {
@@ -345,6 +348,86 @@ class ReceiptViewModelTest {
             assertEquals(ReceiptPhotoSource.CAMERA, state.receiptSource)
             assertEquals(ReceiptPhotoSource.CAMERA, state.shownReceiptSource)
             assertTrue(readSources.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN turning the flashlight on THEN the camera stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isOn = true))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(ReceiptPhotoSource.CAMERA, viewModel.uiState.value.shownReceiptSource)
+            assertTrue(actions.isEmpty())
+            assertTrue(readSources.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN tapping Allow camera THEN the camera stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraAllowClicked)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(ReceiptPhotoSource.CAMERA, viewModel.uiState.value.shownReceiptSource)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN tapping Open settings THEN the camera stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraSettingsClicked)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(ReceiptPhotoSource.CAMERA, viewModel.uiState.value.shownReceiptSource)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN turning the flashlight on THEN the receipt is still being read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isOn = true))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(
+                ReceiptStatus.READING,
+                viewModel.uiState.value.receipt
+                    ?.status,
+            )
+            assertTrue(actions.isEmpty())
         }
 
     @Test
@@ -2517,6 +2600,136 @@ class ReceiptViewModelTest {
             // Then
             assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
             assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN turning the flashlight on THEN sends the torch toggled on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isOn = true))
+
+            // Then
+            assertEquals(
+                listOf("receipt_camera_torch_toggled" to mapOf<String, Any>("is_on" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN turning the flashlight off THEN sends the torch toggled off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isOn = false))
+
+            // Then
+            assertEquals(
+                listOf("receipt_camera_torch_toggled" to mapOf<String, Any>("is_on" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN tapping Allow camera THEN sends the allow clicked from the receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraAllowClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_allow_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN tapping Open settings THEN sends the settings clicked from the receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraSettingsClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_settings_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN turning the flashlight on THEN still sends the torch toggled on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isOn = true))
+
+            // Then
+            assertEquals(
+                listOf("receipt_camera_torch_toggled" to mapOf<String, Any>("is_on" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Allow camera THEN still sends the camera allow clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraAllowClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_allow_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Open settings THEN still sends the camera settings clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraSettingsClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_settings_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
         }
 
     @Test

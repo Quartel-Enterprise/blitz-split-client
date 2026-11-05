@@ -93,6 +93,7 @@ export function ProfileScreen() {
                   status={state.appInviteStatus}
                   link={state.appInviteLink}
                   onOpenCode={() => presenter.openAppCode()}
+                  onOpenLink={() => presenter.trackAppLink()}
                   onDismiss={() => presenter.dismissAppInvite()}
                   className="order-1"
                 />

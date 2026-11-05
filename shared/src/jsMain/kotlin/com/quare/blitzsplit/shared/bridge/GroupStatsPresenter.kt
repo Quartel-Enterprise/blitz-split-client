@@ -195,6 +195,11 @@ class GroupStatsPresenter(
         viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(period))
     }
 
+    // Why: "Escolher datas…", whose picker the page opens itself.
+    fun trackPickDates() {
+        viewModel.onEvent(GroupStatsUiEvent.OnPickDatesClicked)
+    }
+
     // Why: any instant of the first and the last day picked, in the browser's time zone.
     fun pickDates(
         startMillis: Double,

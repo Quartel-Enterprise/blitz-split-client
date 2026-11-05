@@ -434,6 +434,11 @@ class BillDetailPresenter(
         viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed)
     }
 
+    // Why: the viewer's "Baixar", which the page downloads itself.
+    fun trackDownload() {
+        viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+    }
+
     fun removeAttachment(id: String) {
         viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(id))
     }

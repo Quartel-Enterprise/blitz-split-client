@@ -61,7 +61,8 @@ fun PaymentKeyScreen(
         field = field,
         isDialog = isDialog,
         onFieldChange = onFieldChange,
-        onPasteClick = { clipboard.readText()?.let { viewModel.onEvent(PaymentKeyUiEvent.OnPasted(it)) } },
+        // Why: an empty clipboard pastes nothing, and the tap still counts.
+        onPasteClick = { viewModel.onEvent(PaymentKeyUiEvent.OnPasted(clipboard.readText().orEmpty())) },
         onEvent = viewModel::onEvent,
     )
     if (state.isDeleteConfirmationShown) {

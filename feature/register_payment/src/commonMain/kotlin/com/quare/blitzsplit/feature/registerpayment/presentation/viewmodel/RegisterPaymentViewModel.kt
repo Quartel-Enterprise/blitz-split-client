@@ -218,6 +218,9 @@ class RegisterPaymentViewModel(
 
             is RegisterPaymentUiEvent.OnPersonClicked -> openPerson(event.personId)
 
+            // Why: the platform copies; the tap is only tracked.
+            is RegisterPaymentUiEvent.OnCopyClicked -> Unit
+
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
 

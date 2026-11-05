@@ -70,7 +70,7 @@ export function HomeScreen() {
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
         {/* Why: a phone's browser gets the banner (14.3), never the card nor a QR code. */}
-        {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onDismiss={() => presenter.dismissAppBanner()} />}
+        {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onOpen={() => presenter.trackAppBannerOpen()} onDismiss={() => presenter.dismissAppBanner()} />}
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
           {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
           <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only md:mr-auto">{t('home_title')}</h1>
