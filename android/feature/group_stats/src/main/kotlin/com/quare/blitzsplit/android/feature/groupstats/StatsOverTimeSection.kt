@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.groupstats
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +17,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,6 +54,7 @@ import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import kotlinx.coroutines.launch
 
 private const val DISABLED_ALPHA = 0.38f
 private val cardShape = RoundedCornerShape(20.dp)
@@ -150,43 +159,56 @@ internal fun StatsOverTimeSection(
     }
 }
 
-// Why: the dashed average line's key, a short dash in its color before "Average per day: R$ 405".
+/*
+ * Why: the dashed average line's key, a short dash in its color before "Average per day: R$ 405". Pointing at it
+ * (long press on a touch screen) or tapping it says what the dashed line is.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatsAverageLegendRow(
     label: String,
     amount: String,
 ) {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = { PlainTooltip { Text(stringResource(R.string.group_stats_average_hint)) } },
+        state = tooltipState,
     ) {
-        Canvas(
-            modifier = Modifier
-                .padding(end = 2.dp)
-                .size(
-                    width = 16.dp,
-                    height = 2.dp,
-                ),
+        Row(
+            modifier = Modifier.clickable(role = Role.Button) { scope.launch { tooltipState.show() } },
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            drawLine(
-                color = color,
-                start = Offset(0f, size.height / 2),
-                end = Offset(size.width, size.height / 2),
-                strokeWidth = size.height,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx())),
+            Canvas(
+                modifier = Modifier
+                    .padding(end = 2.dp)
+                    .size(
+                        width = 16.dp,
+                        height = 2.dp,
+                    ),
+            ) {
+                drawLine(
+                    color = color,
+                    start = Offset(0f, size.height / 2),
+                    end = Offset(size.width, size.height / 2),
+                    strokeWidth = size.height,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx())),
+                )
+            }
+            Text(
+                label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = amount,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
             )
         }
-        Text(
-            label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = amount,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-        )
     }
 }
 
