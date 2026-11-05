@@ -145,19 +145,13 @@ struct GroupsView: View {
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: String(localized: "Groups"))
-            ToolbarItemGroup(placement: .primaryAction) {
+            TabTrailingItems(
+                showsSplitBill: state.showsSplitBillButton,
+                showsSplitBillTitle: false,
+                onSplitBill: { model.send(GroupsUiEventOnSplitBillClicked.shared) },
+            ) {
                 joinButton
                 profileButton
-            }
-            .prefersVerticalBar()
-            if state.showsSplitBillButton {
-                ToolbarSpacer(.fixed, placement: .primaryAction)
-                ToolbarItem(placement: .primaryAction) {
-                    SplitBillButton(showsTitle: false) {
-                        model.send(GroupsUiEventOnSplitBillClicked.shared)
-                    }
-                }
-                .prefersVerticalBar()
             }
         }
         #else

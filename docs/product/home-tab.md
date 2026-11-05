@@ -19,7 +19,9 @@ The home tab, its shortcuts and pinned groups.
     them; "See all" opens Groups. "Latest expenses": the five latest bills you paid or take part in, by day, with
     your share and its category's badge exactly as the group's Expenses rows draw it (Pierre's call, the category as
     it reads now, `HomeBill.category`); a bill opens its Bill over its group, and "See all" opens Activity over Home, as the bell in Home's bar does.
-    "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac). "Search" is the home's (5.2), over
+    "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
+    the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
+    Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over
     Home. States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
     once the account's copy is whole; a new device's first download (an account restored on a device with no profile,
     or a sign in that switched to another user, until a sync settled, also across relaunches, `FirstDownload`,

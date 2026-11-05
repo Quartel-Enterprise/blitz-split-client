@@ -112,27 +112,13 @@ struct HomeView: View {
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
-            ToolbarItemGroup(placement: .primaryAction) {
+            TabTrailingItems(
+                showsSplitBill: state.showsSplitBillButton,
+                showsSplitBillTitle: !hasVerticalBar && !isUprightIPhone,
+                onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
+            ) {
                 bellButton
                 profileButton
-            }
-            .prefersVerticalBar()
-            if state.showsSplitBillButton, !usesBottomButton {
-                ToolbarSpacer(.fixed, placement: .primaryAction)
-                ToolbarItem(placement: .primaryAction) { splitBillButton }
-                    .prefersVerticalBar()
-            }
-        }
-        // The upright iPhone: "Split a bill" floats over the tab bar, under the thumb, as the canvas draws it
-        .safeAreaInset(edge: .bottom) {
-            if state.showsSplitBillButton, usesBottomButton {
-                HStack {
-                    Spacer()
-                    splitBillButton
-                        .controlSize(.large)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
             }
         }
         #else
@@ -219,10 +205,10 @@ struct HomeView: View {
         return division.frame
     }
 
-    /// The upright iPhone keeps "Split a bill" under the thumb; lying down and with an iPad's room it is the bar's
-    /// tinted glass item.
-    private var usesBottomButton: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
+    /// An iPhone upright, whose bar has the room for "Split a bill"'s icon alone beside the bell and the profile, as
+    /// Groups draws it.
+    private var isUprightIPhone: Bool {
+        horizontalSizeClass == .compact && verticalSizeClass == .regular
     }
     #endif
 
@@ -381,13 +367,13 @@ struct HomeView: View {
         }
     }
 
+    #if os(macOS)
     private var splitBillButton: some View {
-        SplitBillButton(showsTitle: !hasVerticalBar) {
+        SplitBillButton {
             model.send(HomeUiEventOnSplitBillClicked.shared)
         }
     }
 
-    #if os(macOS)
     /// "Try again" while the server doesn't answer, the shortcuts grouped in glass, the profile, and "Split a bill"
     /// as the prominent item, ⌘N.
     @ToolbarContentBuilder
