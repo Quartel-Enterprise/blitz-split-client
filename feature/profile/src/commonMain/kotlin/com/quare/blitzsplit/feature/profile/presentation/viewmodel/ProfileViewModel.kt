@@ -199,8 +199,11 @@ class ProfileViewModel(
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
         observeAppInvite()
-            .onEach { invite -> uiState.update { it.copy(appInvite = invite?.let(::toProfileAppInvite)) } }
-            .launchIn(viewModelScope)
+            .onEach { invite ->
+                val row = invite?.let(::toProfileAppInvite)
+                uiState.update { it.copy(appInvite = row) }
+                appInviteRow.onInviteChanged(row)
+            }.launchIn(viewModelScope)
         providerConnector.connection
             .onEach { connection ->
                 uiState.update {

@@ -13,6 +13,8 @@ import com.quare.blitzsplit.core.provider.room.entity.AppInviteEntity
 import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -61,8 +63,12 @@ class AppInviteRepositoryImpl(
             remote.recordPlatformSeen(platform.code)
             recordedUserId = userId
         }
-        val remoteDismissal = remote.fetchDismissal(userId)
-        val platformsSeen = remote.fetchPlatformsSeen(userId)
+        // Why: two independent reads, side by side, so a sync waits for one round trip rather than two.
+        val (remoteDismissal, platformsSeen) = coroutineScope {
+            val dismissal = async { remote.fetchDismissal(userId) }
+            val platforms = async { remote.fetchPlatformsSeen(userId) }
+            dismissal.await() to platforms.await()
+        }
         val pendingDismissedAt = writeLock.withLock {
             local.deleteOtherUsers(userId)
             local.claimUnowned(userId)

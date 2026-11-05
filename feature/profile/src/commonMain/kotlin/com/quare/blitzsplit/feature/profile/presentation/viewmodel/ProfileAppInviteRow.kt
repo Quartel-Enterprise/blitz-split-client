@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.profile.presentation.model.ProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileAppInviteStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import kotlinx.coroutines.CoroutineScope
@@ -33,12 +34,11 @@ internal class ProfileAppInviteRow(
         if (uiState.value.appInvite?.status != ProfileAppInviteStatus.ACTIVE || isDismissing) return
         isDismissing = true
         trackEvent("app_invite_dismissed", mapOf("source" to "profile"))
-        scope.launch {
-            try {
-                dismissAppInvite()
-            } finally {
-                isDismissing = false
-            }
-        }
+        scope.launch { dismissAppInvite() }
+    }
+
+    // Why: the guard holds until Room says the row is no longer highlighted, not only until the write ends.
+    fun onInviteChanged(invite: ProfileAppInvite?) {
+        if (invite?.status != ProfileAppInviteStatus.ACTIVE) isDismissing = false
     }
 }

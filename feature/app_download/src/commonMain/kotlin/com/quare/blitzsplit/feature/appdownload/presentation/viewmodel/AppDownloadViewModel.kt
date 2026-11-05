@@ -68,11 +68,14 @@ class AppDownloadViewModel(
                     close()
                     return@onEach
                 }
+                // Why: encoded before the update, whose block may run again, and only this collector writes the code.
+                val current = uiState.value
+                val qrCode = current.qrCode.takeIf { invite.link == current.link } ?: encodeQrCode(invite.link)
                 uiState.update { state ->
                     state.copy(
                         isLoaded = true,
                         link = invite.link,
-                        qrCode = state.qrCode.takeIf { invite.link == state.link } ?: encodeQrCode(invite.link),
+                        qrCode = qrCode,
                         stores = invite.stores,
                         phoneUseSinceMillis = invite.phoneUse?.sinceMillis,
                         accountProvider = (account.status as? AccountStatus.Connected)?.provider,

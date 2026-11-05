@@ -557,32 +557,26 @@ class HomeViewModel(
      */
     private fun showAppInvite(invite: AppInvite?) {
         val previous = uiState.value
-        uiState.update { state ->
-            state.copy(
-                appInvite = invite?.let { offer ->
-                    val keptQrCode = state.appInvite?.takeIf { it.link == offer.link }?.qrCode
-                    HomeAppInvite(
-                        link = offer.link,
-                        qrCode = keptQrCode ?: encodeQrCode(offer.link),
-                        stores = offer.stores,
-                        isActive = offer.isActive,
-                    )
-                },
+        // Why: encoded before the update, whose block may run again, and only this collector writes the invite.
+        val appInvite = invite?.let { offer ->
+            val keptQrCode = previous.appInvite?.takeIf { it.link == offer.link }?.qrCode
+            HomeAppInvite(
+                link = offer.link,
+                qrCode = keptQrCode ?: encodeQrCode(offer.link),
+                stores = offer.stores,
+                isActive = offer.isActive,
             )
         }
+        // Why: the guard holds until Room says the card went, not only until the write ends.
+        if (appInvite?.isActive != true) isDismissingAppInvite = false
+        uiState.update { it.copy(appInvite = appInvite) }
         if (previous.showsAppInviteCard && invite?.phoneUse != null) emit(HomeUiAction.ShowUsedOnPhone)
     }
 
     // Why: ✕ and "I downloaded it" end the invite for good, here and in Profile, also for the account's other devices.
     private fun dismissAppInviteCard() {
         isDismissingAppInvite = true
-        viewModelScope.launch {
-            try {
-                dismissAppInvite()
-            } finally {
-                isDismissingAppInvite = false
-            }
-        }
+        viewModelScope.launch { dismissAppInvite() }
     }
 
     // Why: once per showing, also for a second click before Room says the card went.
