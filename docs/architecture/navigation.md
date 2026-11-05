@@ -183,7 +183,12 @@ deeper (a group's "Ver na Atividade", a push notification) `Navigator.openActivi
 the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
 welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
 `OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
-returns to Início. Android's rail beside a group or its Estatísticas drawn alone sends the
+returns to Início. Apple's `TabView` keeps every tab it has shown, ViewModel included, while another tab replaces it
+right above Início: Grupos and Início own theirs in `MainTabView`, and Contatos and Saldos stay mounted (Saldos as the
+last route it showed, a new ViewModel for a route with another filter). Android and the web drop a tab's ViewModel
+with its route. So a shared ViewModel never assumes it starts again when its route comes back onto the stack: one
+that must reset something on that return watches `navigator.backStack` for its route coming back
+(`GlobalBalancesViewModel` takes the route's filter again), the rule every platform then shares. Android's rail beside a group or its Estatísticas drawn alone sends the
 screen's `OnRailTabClicked(HomeTab)` (`HomeTab` in `:core:model`, which Android's bar and rail draw too):
 `Navigator.openHomeTab(HomeTab)` goes back to that tab while it is in the stack (Saldos with whatever filter), and
 otherwise opens its first route through `openHomeTab(Route)`. The rail selects the tab the screen sits in, the nearest
