@@ -58,7 +58,6 @@ private fun GroupsOfflinePreview() {
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
                 latestBill = null,
-                activityUnreadCount = 3,
             ),
             onEvent = {},
         )
@@ -214,7 +213,6 @@ private fun buildPreviewState(
         search = search,
         selectedGroupId = null,
         latestBill = null,
-        activityUnreadCount = 3,
     )
 }
 

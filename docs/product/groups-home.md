@@ -23,7 +23,7 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     same, since its board has none, and the Mac says "Syncing… 3 of 7 groups" in the window's subtitle over the
     groups that came. A phone lying down (Android and
     iPhone) splits in two: the sync status and "Overall balance" (its buttons side by side under the amount) stay still on
-    the left, 320 dp / 300 pt (Android's QR, Search and profile at its top, iOS's stay in the bar), and the list
+    the left, 320 dp / 300 pt (Android's QR and profile at its top, iOS's stay in the bar), and the list
     scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
     480 dp, the same test as Home's cover) Groups with a group only draws "Overall balance" ("to get back in 4 groups"), "Latest activity" (the bill
     saved last on the device, "Ana added Airport Uber, R$ 87,60, in Florianopolis Trip", `GroupsUiState.latestBill`)
@@ -56,17 +56,28 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
   - The home's "Search" (5.2) looks in the groups, people (the members, never this device's user, once per group they
     are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
     (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
-    found. It is the same search on all five tabs (Home, Groups, Balances, Contacts, Activity, Pierre's call), and
-    only shows once there is a group: Android's magnifier in each tab's top bar, whose search bar takes the bar's
-    place on Groups (back closes it), iOS's search tab with an iPad's room (both size classes regular, in its
-    sidebar, opening over Groups), and on an iPhone, lying down too, a magnifier in each tab's bar (five tabs leave
-    no room for a sixth), which opens it in place with ✕ on Groups, "Search… ⌘K" in the web's sidebar (the phone's
-    magnifier) on each tab, opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field on Groups,
-    whose results take the groups' place once something is typed, and a magnifier (⌘K's dialog's twin, a sheet) on
-    the other tabs. Over Home, Balances, Contacts and Activity it is a route of its own over the tab
-    (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with Groups' search bar,
-    pushed on an iPhone, a sheet on the Mac and the web's dialog; closing goes back to the tab, and a result opens in
-    its place, over the tab. "All", "Groups", "People" and "Expenses" pick the sections, on the web
+    found. It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
+    since its bell, has none), and only shows once there is a group. It is an item of the navigation (Pierre's call),
+    placed where each platform looks for it: iOS's search tab at the end of the tab bar on an iPhone, lying down
+    too, and an iPad (in its sidebar), opening over Groups (the room Activity left, as Apple sets the search apart
+    at the end of the bar); Android's last item of the bottom bar, after Contacts, under the thumb as on iOS, and
+    the last of the rail too, so a phone turning or a foldable opening never moves it (selected while the search is
+    in front: its search bar takes the top bar's place on Groups, where Groups leaves it for the groups and back
+    closes it); the web phone's last item of the bottom navigation, and from the tablet up the first of the
+    sidebar, atop the tabs, the tablet rail's item and the desktop's "Search… ⌘K" field, where a keyboard-first
+    window looks for it, both opening a command dialog, as ⌘K or Ctrl+K does; the web's pages outside the tabs (a
+    group's, Statistics, Profile, Activity, a contact's profile) keep the same item, so the bars never change, which
+    goes back to the tab the page sits in and opens the search over it, as iOS's search tab leaves a pushed screen
+    (`HomeSidebarUiEvent.OnSearchClicked`, no ⌘K there, which could close a dialog over the page), and Android's rail
+    beside a group's screens drawn alone ends with it too (`Navigator.openSearchFromPage`); over Groups that is
+    Groups' own search, which takes the route's place (the first result beside the list), and it closes once Groups
+    leaves the back stack, so iOS's search tab never stays in front of Activity opened from a notice; and the Mac's toolbar field on
+    Groups, whose results take the groups' place once something is typed, and a magnifier (⌘K's dialog's twin, a
+    sheet) on the other tabs, as macOS puts search in the toolbar. Over Home, Balances and Contacts it is a route
+    of its own over the tab (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with
+    Groups' search bar and the bar or rail around it, Search selected, whose tabs close it (its own tab back to it,
+    `SearchUiEvent.OnHomeTabClicked`), a sheet on the Mac and the web's dialog; closing goes back to the tab, and a
+    result opens in its place, over the tab. "All", "Groups", "People" and "Expenses" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Settled up · expense “Churros”", as the design draws it), and "Expenses"
     lists it too. A group opens the group, a person the Members of the group they were found in, a bill its Bill over the group. Results are always a list, even with the grid; nothing typed says where it

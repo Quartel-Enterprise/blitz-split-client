@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -258,7 +259,7 @@ class AppViewModel(
     }
 
     /*
-     * Why: a push notification's tap opens its tab, then, after a sync, what it is about: a notification comes right
+     * Why: a push notification's tap opens its tab or Atividade, then, after a sync, what it is about: a notification comes right
      * after the change it tells of, which this device may not have yet (a new bill, a group the person was just
      * added to). Offline the sync fails at once and what the device has opens. The sync runs on its own and waits a
      * few seconds at most, so a long one never holds the tab nor the links that come after. Nothing opens over the
@@ -269,7 +270,7 @@ class AppViewModel(
     private fun openPushLink(link: PushLink) {
         link.eventId?.let { eventId -> viewModelScope.launch { markActivityRead(eventId) } }
         if (Route.Home !in navigator.backStack.value) return
-        navigator.openHomeTab(link.homeTab)
+        link.homeTab?.let(navigator::openHomeTab) ?: navigator.openActivity()
         val groupId = link.groupId ?: return
         val tabTop = navigator.backStack.value
         viewModelScope.launch {

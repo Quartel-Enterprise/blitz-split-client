@@ -130,8 +130,6 @@ class JsGroupsState(
     val canSearch: Boolean,
     val isSearching: Boolean,
     val search: JsGroupsSearch,
-    // Why: the Atividade tab's badge, every unread event whatever its filters.
-    val activityUnreadCount: Int,
 )
 
 class GroupsPresenter {
@@ -176,7 +174,6 @@ class GroupsPresenter {
                 canSearch = state.canSearch,
                 isSearching = state.isSearching,
                 search = toJsGroupsSearch(state.search),
-                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -229,10 +226,6 @@ class GroupsPresenter {
 
     fun openContacts() {
         viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
-    }
-
-    fun openActivity() {
-        viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
     }
 
     fun retrySync() {

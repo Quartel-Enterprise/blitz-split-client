@@ -19,8 +19,9 @@ class JsHomeSidebarState(
     val accountProvider: String?,
     // Why: "Em aberto", in Grupos' order.
     val openGroups: Array<JsGroupRow>,
-    val activityUnreadCount: Int,
     val isLoaded: Boolean,
+    // Why: "Buscar" on the pages too, once there is a group to look in.
+    val canSearch: Boolean,
 )
 
 // Why: the home's sidebar around the group's pages, Estatísticas and Perfil, which keep it while they change.
@@ -37,8 +38,8 @@ class HomeSidebarPresenter {
                 photoUrl = state.photoUrl,
                 accountProvider = state.accountProvider?.code,
                 openGroups = state.openGroups.map(::toJsGroupRow).toTypedArray(),
-                activityUnreadCount = state.activityUnreadCount,
                 isLoaded = state.isLoaded,
+                canSearch = state.canSearch,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -64,12 +65,17 @@ class HomeSidebarPresenter {
         viewModel.onEvent(HomeSidebarUiEvent.OnBrandClicked)
     }
 
+    // Why: the search item of a page's bars, which opens the search over the tab the page sits in.
+    fun openSearch() {
+        viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }
 }
 
-// Why: the home tab a page sits in, as the web names it ("home", "groups", "balances", "contacts", "activity").
+// Why: the home tab a page sits in, as the web names it ("home", "groups", "balances", "contacts").
 internal fun toJsHomeTab(tab: HomeTab): String = tab.name.lowercase()
 
 private fun homeTabOfOrNull(name: String): HomeTab? = HomeTab.entries.firstOrNull { toJsHomeTab(it) == name }

@@ -1,4 +1,4 @@
-import { ChevronRight, House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
+import { Bell, ChevronRight, House, Search, UserRound, Users, Wallet } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
@@ -10,15 +10,14 @@ import { formatSignedPlainMoney } from '@/lib/money'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-/** The home's five tabs, in the canvas' order, all built: Início, Grupos, Saldos, Contatos and Atividade. */
-export type HomeTab = 'home' | 'groups' | 'balances' | 'contacts' | 'activity'
+/** The home's four tabs, in the canvas' order: Início, Grupos, Saldos and Contatos. Atividade is Início's bell. */
+export type HomeTab = 'home' | 'groups' | 'balances' | 'contacts'
 
 const tabs: { tab: HomeTab; label: MessageKey; icon: ReactNode }[] = [
   { tab: 'home', label: 'home_tab', icon: <House className="size-4" /> },
   { tab: 'groups', label: 'groups_tabGroups', icon: <Users className="size-4" /> },
   { tab: 'balances', label: 'groups_tabBalances', icon: <Wallet className="size-4" /> },
   { tab: 'contacts', label: 'groups_tabContacts', icon: <UserRound className="size-4" /> },
-  { tab: 'activity', label: 'groups_tabActivity', icon: <ReceiptText className="size-4" /> },
 ]
 
 /** The tab's name, which a page outside the tabs puts first in its breadcrumb ("Início › Viagem Floripa"). */
@@ -95,6 +94,31 @@ export function loadedProfile(profile: HomeProfile): HomeProfile | null {
   return profile.avatarInitial ? profile : null
 }
 
+/**
+ * Início's bell, which opens Atividade over it (no tab since Pierre's call), its unread count in the primary color
+ * (never the destructive red). The count is hidden from screen readers, so the button's name says it.
+ */
+export function ActivityBell({ unreadCount, onOpen, className }: { unreadCount: number; onOpen: () => void; className?: string }) {
+  return (
+    <button
+      aria-label={unreadCount > 0 ? t('activity_bellUnread', { count: unreadCount }) : t('activity_title')}
+      title={t('activity_title')}
+      onClick={onOpen}
+      className={cn(
+        'relative flex size-10 shrink-0 items-center justify-center rounded-md outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring md:size-9',
+        className,
+      )}
+    >
+      <Bell aria-hidden className="size-[18px]" />
+      {unreadCount > 0 && (
+        <span aria-hidden className="absolute top-1 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </span>
+      )}
+    </button>
+  )
+}
+
 /** "Em aberto" under the desktop's tabs, around the group's pages: the open groups, the page's group selected. */
 export interface ShellOpenGroups {
   groups: JsGroupRow[]
@@ -103,7 +127,7 @@ export interface ShellOpenGroups {
 }
 
 /**
- * The home's frame around Início, Grupos, Saldos, Contatos and Atividade, and around the pages they open (the group's
+ * The home's frame around Início, Grupos, Saldos and Contatos, and around the pages they open (Atividade, the group's
  * pages, Estatísticas, Perfil): desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and the phone a
  * top bar with a bottom navigation, as the canvas draws them. The selected tab names the page; outside the tabs it
  * says where the page was opened from, and its click goes back there.
@@ -116,7 +140,7 @@ export function HomeShell({
   onProfile,
   onBrand,
   search,
-  activityUnreadCount = 0,
+  bell,
   openGroups,
   phoneBars = 'home',
   isOutsideTabs = phoneBars !== 'home',
@@ -132,10 +156,11 @@ export function HomeShell({
   onProfile: () => void
   /** The logo: opens Home, the tracked way where the screen has a presenter that counts it. */
   onBrand?: () => void
-  // Why: "Buscar" on the five tabs, once there is a group to look in; a group's pages (PageShell) have none.
+  // Why: "Buscar" on the four tabs and the pages outside them, once there is a group to look in; a page's has no
+  // shortcut (an empty one), as ⌘K there could close a dialog over it.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
-  // Why: Atividade's badge, in the primary color (never the destructive red), on every width.
-  activityUnreadCount?: number
+  // Why: Início's bell in the phone's top bar; from the tablet up Início draws it in its title row.
+  bell?: { unreadCount: number; onOpen: () => void }
   // Why: 'loading' while the sidebar is still read, a shimmer in the open groups' place.
   openGroups?: ShellOpenGroups | 'loading'
   // Why: the home's tabs have the brand's bar and the bottom navigation; Perfil its own bar over the navigation, and
@@ -155,9 +180,6 @@ export function HomeShell({
   const openBrand = onBrand ?? (() => select('home'))
   const entersAnimated = useEntersAnimated()
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
-  const unreadOf = (tab: HomeTab) => (tab === 'activity' ? activityUnreadCount : 0)
-  // Why: "Atividade, 3 não lidas": the badge is hidden from screen readers, so the tab's name says it.
-  const unreadLabel = (tab: HomeTab) => (unreadOf(tab) > 0 ? t('activity_tabUnread', { count: unreadOf(tab) }) : undefined)
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
@@ -169,16 +191,19 @@ export function HomeShell({
           <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
           <BrandMark className="hidden h-10 px-1.5 lg:flex" />
         </button>
+        {/* Why: the rail's first item and the desktop's field atop the tabs, where a keyboard-first window looks for
+            search (⌘K); the phone puts it last in its bottom navigation instead, as the apps do (Pierre's call). */}
         {search && (
           <button
             aria-label={t('groups_search')}
-            aria-keyshortcuts={search.keyShortcuts}
+            aria-keyshortcuts={search.keyShortcuts || undefined}
             onClick={search.onOpen}
-            className="mt-3 flex h-9 items-center justify-center gap-2 rounded-md border bg-card text-sm text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start lg:px-2.5"
+            className="mt-3 flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2 lg:border lg:bg-card lg:px-2.5 lg:py-0 lg:text-sm lg:font-normal"
           >
             <Search aria-hidden className="size-4 shrink-0" />
+            <span aria-hidden className="lg:hidden">{t('groups_search')}</span>
             <span className="hidden flex-1 text-left lg:inline">{t('groups_searchButton')}</span>
-            <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{search.shortcut}</kbd>
+            {search.shortcut && <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{search.shortcut}</kbd>}
           </button>
         )}
         <nav aria-label={t('groups_mainNavigation')} className="mt-3 flex flex-col gap-0.5">
@@ -186,25 +211,15 @@ export function HomeShell({
             <button
               key={tab}
               aria-current={current(tab)}
-              aria-label={unreadLabel(tab)}
               onClick={() => select(tab)}
               className={cn(
                 'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium transition-colors outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
                 tab === selected ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground',
               )}
             >
-              {/* Why: the rail has no room for the count, so it shows a dot on the icon. */}
-              <span className="relative">
-                {icon}
-                {unreadOf(tab) > 0 && <span aria-hidden className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary lg:hidden" />}
-              </span>
+              {icon}
               {/* Why: the label names the page wherever the page shows no title of its own (a phone). */}
               <span>{t(label)}</span>
-              {unreadOf(tab) > 0 && (
-                <span aria-hidden className="ml-auto hidden h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums lg:flex">
-                  {unreadOf(tab)}
-                </span>
-              )}
             </button>
           ))}
         </nav>
@@ -252,15 +267,7 @@ export function HomeShell({
             >
               <BrandMark />
             </button>
-            {search && (
-              <button
-                aria-label={t('groups_search')}
-                onClick={search.onOpen}
-                className="flex size-10 items-center justify-center rounded-md outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
-              >
-                <Search aria-hidden className="size-[18px]" />
-              </button>
-            )}
+            {bell && <ActivityBell unreadCount={bell.unreadCount} onOpen={bell.onOpen} />}
             <button aria-label={t('groups_profile')} onClick={onProfile} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
               {profile ? (
                 <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-9 text-sm" />
@@ -275,26 +282,25 @@ export function HomeShell({
         <div className={cn('flex min-w-0 flex-1 flex-col', entersAnimated && 'page-enter')}>{children}</div>
 
         {phoneBars !== 'none' && (
-          <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-5 border-t bg-card md:hidden">
+          <nav aria-label={t('groups_mainNavigation')} className={cn('sticky bottom-0 grid h-16 border-t bg-card md:hidden', search ? 'grid-cols-5' : 'grid-cols-4')}>
             {tabs.map(({ tab, label, icon }) => (
               <button
                 key={tab}
                 aria-current={current(tab)}
-                aria-label={unreadLabel(tab)}
                 onClick={() => select(tab)}
                 className={cn('flex flex-col items-center justify-center gap-1 text-[11px] font-medium', tab === selected ? 'text-foreground' : 'text-muted-foreground')}
               >
-                <span className="relative">
-                  {icon}
-                  {unreadOf(tab) > 0 && (
-                    <span aria-hidden className="absolute -top-1.5 left-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
-                      {unreadOf(tab)}
-                    </span>
-                  )}
-                </span>
+                {icon}
                 {t(label)}
               </button>
             ))}
+            {/* Why: last, under the thumb and where iOS keeps its search tab; it opens the search over this tab. */}
+            {search && (
+              <button onClick={search.onOpen} className="flex flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Search aria-hidden className="size-4" />
+                {t('groups_search')}
+              </button>
+            )}
           </nav>
         )}
       </div>

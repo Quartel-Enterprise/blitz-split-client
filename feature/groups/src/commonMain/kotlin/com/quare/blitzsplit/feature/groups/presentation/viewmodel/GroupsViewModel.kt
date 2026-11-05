@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -103,7 +102,6 @@ class GroupsViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GroupsUiEvent>(trackEvent) {
@@ -133,7 +131,6 @@ class GroupsViewModel(
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
                 latestBill = null,
-                activityUnreadCount = 0,
             ),
         )
 
@@ -274,9 +271,6 @@ class GroupsViewModel(
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
         layoutPicker.watch(observeGroupsLayout())
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people -> peopleBalances = people }
             .launchIn(viewModelScope)
@@ -306,6 +300,16 @@ class GroupsViewModel(
             .distinctUntilChanged()
             .onEach { groupId -> uiState.update { it.copy(selectedGroupId = groupId) } }
             .launchIn(viewModelScope)
+        GroupsSearchStack(navigator).watch(
+            scope = viewModelScope,
+            canSearch = uiState.map { it.canSearch }.distinctUntilChanged(),
+            isOpen = { uiState.value.search.isOpen },
+            close = ::closeSearch,
+            open = {
+                uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
+                search { it }
+            },
+        )
     }
 
     override fun handleEvent(event: GroupsUiEvent) {
@@ -397,8 +401,6 @@ class GroupsViewModel(
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GroupsUiEvent.OnContactsTabClicked -> openTab(Route.Contacts)
-
-            GroupsUiEvent.OnActivityTabClicked -> openTab(Route.Activity(personKey = null))
         }
     }
 
@@ -419,6 +421,9 @@ class GroupsViewModel(
             }
 
             is SearchUiEvent.OnBillClicked -> openBill(event.groupId, event.expenseId)
+
+            // Why: only while the search shows, so a late tap never closes what the groups opened since.
+            is SearchUiEvent.OnHomeTabClicked -> if (uiState.value.search.isOpen) handleEvent(event.tab.toGroupsEvent())
         }
     }
 

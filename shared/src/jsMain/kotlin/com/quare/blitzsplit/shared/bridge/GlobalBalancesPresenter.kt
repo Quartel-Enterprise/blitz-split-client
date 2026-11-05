@@ -127,8 +127,6 @@ class JsGlobalBalancesState(
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
     val isWaitingForInternet: Boolean,
     val recordedPayment: JsPaymentNotice?,
-    // Why: the Atividade tab's badge, every unread event whatever its filters.
-    val activityUnreadCount: Int,
     // Why: "Buscar…" and ⌘K only once there is a group to look in.
     val canSearch: Boolean,
 )
@@ -174,7 +172,6 @@ class GlobalBalancesPresenter(
                 isLoaded = state.isLoaded,
                 isWaitingForInternet = state.isWaitingForInternet,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
-                activityUnreadCount = state.activityUnreadCount,
                 canSearch = state.canSearch,
             )
         }
@@ -282,10 +279,6 @@ class GlobalBalancesPresenter(
 
     fun openContacts() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
-    }
-
-    fun openActivity() {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
     }
 
     fun openProfile() {

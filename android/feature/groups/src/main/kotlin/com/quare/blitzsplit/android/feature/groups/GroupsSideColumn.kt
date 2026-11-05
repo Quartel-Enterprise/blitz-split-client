@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -44,8 +43,6 @@ internal fun GroupsTopActionsComponent(
             contentDescription = stringResource(R.string.groups_join_with_link),
         )
     }
-    // Why: only once there is a group to look in.
-    if (state.canSearch) SearchActionButton(onClick = { onEvent(GroupsUiEvent.OnSearchOpened) })
     ProfileAvatarButton(
         initial = state.avatarInitial,
         color = state.avatarColor,

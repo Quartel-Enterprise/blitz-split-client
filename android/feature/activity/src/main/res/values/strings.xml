@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="activity_title">Activity</string>
-    <string name="activity_profile">Profile</string>
+    <string name="activity_back">Back</string>
     <string name="activity_you">You</string>
     <string name="activity_former_member">Former member</string>
     <string name="activity_today">Today</string>

@@ -70,8 +70,8 @@ fun GroupDetailContent(
         snackbarHostState = snackbarHostState,
         onAction = onAction,
         homeTab = state.homeTab,
-        activityBadgeCount = state.activityUnreadCount,
         onHomeTabClick = { tab -> onEvent(GroupDetailUiEvent.OnRailTabClicked(tab)) },
+        onSearchClick = { onEvent(GroupDetailUiEvent.OnRailSearchClicked) },
         body = when (state.tab) {
             GroupTab.EXPENSES -> expensesTabOf(state, money, onAction, onEvent)
             GroupTab.BALANCES -> balancesTabOf(state, money, onAction, onEvent)

@@ -157,18 +157,10 @@ class JsActivityFilter(
 )
 
 class JsActivityState(
-    val displayName: String,
-    val avatarInitial: String,
-    val avatarColor: String,
-    val photoUrl: String?,
-    // Why: "google" or "apple", null while there is no account.
-    val accountProvider: String?,
     val days: Array<JsActivityDay>,
-    // Why: "3 novas" and the tab's badge, whatever the filter.
+    // Why: "3 novas", whatever the filter.
     val unreadCount: Int,
     val canMarkAllRead: Boolean,
-    // Why: "Buscar…" and ⌘K only once there is a group to look in.
-    val canSearch: Boolean,
     val filter: JsActivityFilter,
     val isFilterActive: Boolean,
     // Why: "Filtrar" open with what is being picked; null while closed.
@@ -203,6 +195,8 @@ class JsActivityState(
     val isRefreshing: Boolean,
     // Why: the item tapped whose bill or group is gone, a toast; null once shown.
     val deletedNotice: JsActivityDeletion?,
+    // Why: the tab the sidebar selects around Atividade ("home", "groups", "balances" or "contacts"), the one under it.
+    val homeTab: String,
 )
 
 class ActivityPresenter(
@@ -219,11 +213,6 @@ class ActivityPresenter(
             val dayOf = state.days.flatMap { day -> day.items.map { it.id to day } }.toMap()
             val toItem = { item: ActivityItem -> toJsActivityItem(item, dayOf[item.id], state.expandedItemId) }
             JsActivityState(
-                displayName = state.displayName,
-                avatarInitial = state.avatarInitial,
-                avatarColor = state.avatarColor.code,
-                photoUrl = state.photoUrl,
-                accountProvider = state.accountProvider?.code,
                 days = state.days
                     .map { day ->
                         JsActivityDay(
@@ -234,7 +223,6 @@ class ActivityPresenter(
                     }.toTypedArray(),
                 unreadCount = state.unreadCount,
                 canMarkAllRead = state.canMarkAllRead,
-                canSearch = state.canSearch,
                 filter = toJsActivityFilter(state.filter),
                 isFilterActive = state.filter.isActive,
                 filterDraft = state.filterDraft?.let(::toJsActivityFilter),
@@ -268,6 +256,7 @@ class ActivityPresenter(
                 hasMore = state.hasMore,
                 isRefreshing = state.isRefreshing,
                 deletedNotice = state.deletedNotice?.let(::toJsActivityDeletion),
+                homeTab = toJsHomeTab(state.homeTab),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -363,34 +352,9 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnDeletedNoticeShown)
     }
 
-    fun openProfile() {
-        viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
-    }
-
-    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K: the home's search over this tab.
-    fun openSearch() {
-        viewModel.onEvent(ActivityUiEvent.OnSearchClicked)
-    }
-
-    fun openHome() {
-        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
-    }
-
-    // Why: the logo, which opens Home.
-    fun openBrand() {
-        viewModel.onEvent(ActivityUiEvent.OnBrandClicked)
-    }
-
-    fun openGroups() {
-        viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
-    }
-
-    fun openBalances() {
-        viewModel.onEvent(ActivityUiEvent.OnBalancesTabClicked)
-    }
-
-    fun openContacts() {
-        viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
+    // Why: the phone's back, to Início or the contact's profile that opened Atividade.
+    fun back() {
+        viewModel.onEvent(ActivityUiEvent.OnBackClicked)
     }
 
     fun dispose() {

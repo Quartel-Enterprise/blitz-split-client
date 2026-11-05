@@ -70,10 +70,12 @@ export function PageShell({
       selected={selected}
       isProfileSelected={selected === undefined}
       profile={state && loadedProfile(state)}
-      activityUnreadCount={state?.activityUnreadCount ?? 0}
       onTab={(tab) => presenter?.openTab(tab)}
       onProfile={() => presenter?.openProfile()}
       onBrand={() => presenter?.openBrand()}
+      // Why: the same bars as the tabs', Search included, which goes back to the page's tab to search over it. No ⌘K
+      // here, so a shortcut never closes a dialog over the page.
+      search={pageSearchOf(state, presenter)}
       openGroups={groups && (state && presenter ? { groups: state.openGroups, selectedId: groups.selectedId, onOpen: (id) => presenter.openGroup(id) } : 'loading')}
       phoneBars={phoneBars}
       isOutsideTabs
@@ -82,4 +84,14 @@ export function PageShell({
       {children}
     </HomeShell>
   )
+}
+
+/**
+ * A page's Search, with no shortcut. While the sidebar is still read it holds its place (a click does nothing yet), so
+ * the phone's bottom navigation never lays out four items and then five; once read it shows only with a group.
+ */
+function pageSearchOf(state: JsHomeSidebarState | null, presenter: HomeSidebarPresenter | undefined) {
+  if (!state) return { shortcut: '', keyShortcuts: '', onOpen: () => {} }
+  if (!state.canSearch || !presenter) return undefined
+  return { shortcut: '', keyShortcuts: '', onOpen: () => presenter.openSearch() }
 }

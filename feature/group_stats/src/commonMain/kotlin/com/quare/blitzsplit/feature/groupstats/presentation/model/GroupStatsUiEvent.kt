@@ -21,6 +21,9 @@ sealed interface GroupStatsUiEvent : UiEvent {
              */
             is OnRailTabClicked -> EventAnalytics.NotTracked
 
+            // Why: only a search that opens, never a late tap over what the statistics opened.
+            OnRailSearchClicked -> EventAnalytics.Manual("search_opened")
+
             is OnPeriodPicked -> EventAnalytics.Automatic("stats_period_selected", mapOf("period" to period))
 
             is OnCustomPeriodPicked -> EventAnalytics.Automatic("stats_custom_period_selected")
@@ -48,6 +51,9 @@ sealed interface GroupStatsUiEvent : UiEvent {
     data class OnRailTabClicked(
         val tab: HomeTab,
     ) : GroupStatsUiEvent
+
+    // Why: the rail's last item, "Buscar", as on the home's rail: the search over the tab the group was opened from.
+    data object OnRailSearchClicked : GroupStatsUiEvent
 
     // Why: an entry of the period menu; "Escolher datas…" opens each platform's date picker instead.
     data class OnPeriodPicked(

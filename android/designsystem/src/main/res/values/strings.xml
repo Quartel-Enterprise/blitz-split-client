@@ -111,7 +111,7 @@
     <string name="designsystem_tab_groups">Groups</string>
     <string name="designsystem_tab_balances">Balances</string>
     <string name="designsystem_tab_contacts">Contacts</string>
-    <string name="designsystem_tab_activity">Activity</string>
+    <string name="designsystem_activity">Activity</string>
     <string name="designsystem_person_you_owe">you owe</string>
     <string name="designsystem_person_owes_you">owes you</string>
     <string name="designsystem_person_net">Net, already offset</string>
@@ -199,7 +199,7 @@
     <string name="designsystem_category_icon_gym">Dumbbell</string>
     <string name="designsystem_category_icon_dots">Other</string>
     <string name="designsystem_category_path">%1$s › %2$s</string>
-    <plurals name="designsystem_tab_unread">
+    <plurals name="designsystem_activity_unread">
         <item quantity="one">%d unread</item>
         <item quantity="other">%d unread</item>
     </plurals>

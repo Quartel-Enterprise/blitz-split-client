@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -533,7 +532,6 @@ class GroupsLayoutTest {
                 savedLayouts += layout
                 if (storesAtOnce) storedLayout.value = layout
             },
-            observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
         )
     }

@@ -178,10 +178,15 @@ class ContactProfileViewModel(
                 navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
             }
 
-            // Why: "Ver tudo" is Atividade on this person, a home tab in Contatos' place.
+            /*
+             * Why: "Ver tudo" is Atividade on this person, over the profile, whose back returns to it; the same one
+             * already under it (the profile opened from its item) is gone back to, so the stack never keeps growing.
+             */
             ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (isShown()) {
                 trackEvent("contact_history_see_all_clicked", emptyMap())
-                navigator.openHomeTab(Route.Activity(personKey = route.personKey))
+                val history = Route.Activity(personKey = route.personKey)
+                val index = navigator.backStack.value.lastIndexOf(history)
+                if (index >= 0) navigator.popTo(index + 1) else navigator.navigate(history)
             }
 
             ContactProfileUiEvent.OnInviteGuestClicked -> findContactIf { it.isGuest }?.let { contact ->

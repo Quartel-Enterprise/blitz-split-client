@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.groups
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -12,64 +13,79 @@ import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 
-private fun eventOf(tab: HomeTab): GroupsUiEvent? = when (tab) {
+/*
+ * Why: the search open in Grupos' place selects Search, the bar's last item, and Grupos then leaves it for the groups;
+ * otherwise Grupos is selected and Search opens it.
+ */
+private fun eventOf(
+    tab: HomeTab,
+    isSearching: Boolean,
+): GroupsUiEvent? = when (tab) {
     HomeTab.HOME -> GroupsUiEvent.OnHomeTabClicked
-    HomeTab.GROUPS -> null
+    HomeTab.GROUPS -> GroupsUiEvent.OnSearchTabLeft.takeIf { isSearching }
     HomeTab.BALANCES -> GroupsUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> GroupsUiEvent.OnContactsTabClicked
-    HomeTab.ACTIVITY -> GroupsUiEvent.OnActivityTabClicked
 }
 
 @Composable
 internal fun GroupsNavigationBar(
-    activityBadgeCount: Int,
+    state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
 ) {
     HomeNavigationBar(
-        selected = HomeTab.GROUPS,
-        onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-        activityBadgeCount = activityBadgeCount,
+        selected = HomeTab.GROUPS.takeUnless { state.isSearching },
+        onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
+        onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
     )
 }
 
 @Composable
 internal fun GroupsNavigationRail(
-    activityBadgeCount: Int,
-    showsSplitBill: Boolean,
+    state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
 ) {
     SplitBillNavigationRail(
-        selected = HomeTab.GROUPS,
-        onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-        activityBadgeCount = activityBadgeCount,
-        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { showsSplitBill },
+        selected = HomeTab.GROUPS.takeUnless { state.isSearching },
+        onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
+        onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
+        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton },
     )
 }
 
 // Why: Grupos and Início put "Rachar conta" at the top of the rail; Início's first use has none (null).
 @Composable
 internal fun SplitBillNavigationRail(
-    selected: HomeTab,
+    selected: HomeTab?,
     onTabClick: (HomeTab) -> Unit,
-    activityBadgeCount: Int,
+    onSearchClick: (() -> Unit)?,
     onSplitBillClick: (() -> Unit)?,
 ) {
     HomeNavigationRail(
         selected = selected,
         onTabClick = onTabClick,
-        activityBadgeCount = activityBadgeCount,
-        header = {
-            if (onSplitBillClick != null) {
+        onSearchClick = onSearchClick,
+        header = { isShort ->
+            if (onSplitBillClick == null) return@HomeNavigationRail
+            val icon: @Composable () -> Unit = {
+                Icon(
+                    imageVector = splitBillIcon(),
+                    contentDescription = stringResource(R.string.groups_split_bill),
+                )
+            }
+            // Why: a phone lying down has the height of the four tabs and Search only beside a small one.
+            if (isShort) {
+                SmallFloatingActionButton(
+                    onClick = onSplitBillClick,
+                    content = icon,
+                )
+            } else {
                 FloatingActionButton(
                     onClick = onSplitBillClick,
                     modifier = Modifier.padding(top = 16.dp),
-                ) {
-                    Icon(
-                        imageVector = splitBillIcon(),
-                        contentDescription = stringResource(R.string.groups_split_bill),
-                    )
-                }
+                    content = icon,
+                )
             }
         },
     )

@@ -6,7 +6,8 @@ import com.quare.blitzsplit.core.model.HomeTab
 /*
  * Why: what a push notification opens, the link the server sends beside each message,
  * https://blitzsplit.com/n?k=<kind>&e=<event>&g=<group>&t=<target>. Atividade's open what the item's tap there opens,
- * over Atividade, the notification center; the settle-up reminders over Grupos, or Saldos for several groups.
+ * over Atividade, the notification center, itself over Início; the settle-up reminders over Grupos, or Saldos for
+ * several groups.
  */
 data class PushLink(
     val kind: String,
@@ -14,14 +15,15 @@ data class PushLink(
     val groupId: String?,
     val targetId: String?,
 ) {
-    val homeTab: HomeTab
+    // Why: the settle-up reminders' tab; null for Atividade's kinds, which open Atividade over Início instead.
+    val homeTab: HomeTab?
         get() = when (kind) {
             SETTLE_REMINDER -> HomeTab.GROUPS
             SETTLE_REMINDERS -> HomeTab.BALANCES
-            else -> HomeTab.ACTIVITY
+            else -> null
         }
 
-    // Why: what opens over the tab, in order; nothing without a group, whose kind the tab already shows.
+    // Why: what opens over the tab or Atividade, in order; nothing without a group, whose kind they already show.
     val routesAbove: List<Route>
         get() {
             val groupId = groupId ?: return emptyList()

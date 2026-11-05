@@ -433,7 +433,6 @@ class GroupDetailUiStateTest {
         homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
-        activityUnreadCount = 0,
         simplification = null,
         simplifyConflict = null,
     )

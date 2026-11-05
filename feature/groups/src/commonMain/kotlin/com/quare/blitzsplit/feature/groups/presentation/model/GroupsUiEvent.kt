@@ -33,7 +33,6 @@ sealed interface GroupsUiEvent : UiEvent {
             OnBalancesTabClicked,
             OnGroupsTabClicked,
             OnContactsTabClicked,
-            OnActivityTabClicked,
             -> EventAnalytics.NotTracked
 
             OnRetrySyncClicked -> EventAnalytics.Automatic("sync_retry_clicked", mapOf("source" to SOURCE))
@@ -111,8 +110,6 @@ sealed interface GroupsUiEvent : UiEvent {
 
     data object OnContactsTabClicked : GroupsUiEvent
 
-    data object OnActivityTabClicked : GroupsUiEvent
-
     data object OnRetrySyncClicked : GroupsUiEvent
 
     // Why: pulled down on Android and iOS.
@@ -179,7 +176,10 @@ sealed interface GroupsUiEvent : UiEvent {
     // Why: Android's magnifier, iOS's search tab, the web's "Buscar…" or ⌘K, the Mac's toolbar field.
     data object OnSearchOpened : GroupsUiEvent
 
-    // Why: iOS's search tab shows what its results opened, so leaving it for Groups also goes back to the groups.
+    /*
+     * Why: the search tab (iOS) or item (Android) shows what its results opened, so leaving it for Groups goes back to
+     * the groups.
+     */
     data object OnSearchTabLeft : GroupsUiEvent
 
     // Why: what is typed, picked or found in the search open in Grupos' place, as over the other tabs (Route.Search).

@@ -3,10 +3,14 @@ package com.quare.blitzsplit.android.feature.groups
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,17 +22,21 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
+import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.SearchViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /*
- * Why: "Buscar" (5.2) over Início, Saldos, Contatos or Atividade (Route.Search), drawn as Grupos draws its own: the
- * search bar in the top bar's place and the results under it; a phone lying down puts the field and the scopes in a
- * 320 dp column on the left and the results on the right. Back closes it, back to the tab.
+ * Why: "Buscar" (5.2) over Início, Saldos or Contatos (Route.Search), drawn as Grupos draws its own: the search bar in
+ * the top bar's place and the results under it, the home's bar or rail around them with Search, their last item,
+ * selected; a phone lying down puts the field and the scopes in a 320 dp column on the left and the results on the
+ * right. Back closes it, back to the tab, as its tab does; any other tab takes its place.
  */
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
@@ -47,57 +55,99 @@ internal fun SearchContent(
     modifier: Modifier = Modifier,
 ) {
     val title = stringResource(R.string.groups_search)
+    val onTabClick: (HomeTab) -> Unit = { tab -> onEvent(SearchUiEvent.OnHomeTabClicked(tab)) }
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         val usesSideColumn = layout == DeviceLayout.PhoneLandscape
-        Scaffold(
-            topBar = {
-                if (!usesSideColumn) {
-                    GroupsSearchBar(
-                        search = search,
-                        onEvent = onEvent,
-                        layout = layout,
-                    )
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-        ) { padding ->
-            val contentModifier = Modifier
-                .padding(padding)
-                .consumeWindowInsets(padding)
-            if (usesSideColumn) {
-                Row(
-                    modifier = contentModifier
-                        .fillMaxSize()
-                        .padding(
-                            start = 24.dp,
-                            end = 24.dp,
-                            top = 12.dp,
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                ) {
-                    GroupsSearchHeader(
-                        search = search,
-                        onEvent = onEvent,
-                        modifier = Modifier
-                            .width(sideColumnWidth)
-                            .fillMaxHeight(),
-                    )
-                    GroupsSearchPane(
-                        search = search,
-                        onEvent = onEvent,
-                        layout = layout,
-                        modifier = Modifier.weight(1f),
-                        horizontalPadding = 0.dp,
-                    )
-                }
-            } else {
+        Row(modifier = Modifier.fillMaxSize()) {
+            if (layout.usesNavigationRail) {
+                HomeNavigationRail(
+                    selected = null,
+                    onTabClick = onTabClick,
+                )
+            }
+            SearchScaffold(
+                search = search,
+                onEvent = onEvent,
+                layout = layout,
+                usesSideColumn = usesSideColumn,
+                onTabClick = onTabClick,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchScaffold(
+    search: GroupsSearch,
+    onEvent: (SearchUiEvent) -> Unit,
+    layout: DeviceLayout,
+    usesSideColumn: Boolean,
+    onTabClick: (HomeTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            if (!usesSideColumn) {
+                GroupsSearchBar(
+                    search = search,
+                    onEvent = onEvent,
+                    layout = layout,
+                )
+            }
+        },
+        bottomBar = {
+            if (!layout.usesNavigationRail) {
+                HomeNavigationBar(
+                    selected = null,
+                    onTabClick = onTabClick,
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = if (layout.usesNavigationRail) {
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
+        } else {
+            WindowInsets.safeDrawing
+        },
+    ) { padding ->
+        val contentModifier = Modifier
+            .padding(padding)
+            .consumeWindowInsets(padding)
+        if (usesSideColumn) {
+            Row(
+                modifier = contentModifier
+                    .fillMaxSize()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 12.dp,
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                GroupsSearchHeader(
+                    search = search,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .width(sideColumnWidth)
+                        .fillMaxHeight(),
+                )
                 GroupsSearchPane(
                     search = search,
                     onEvent = onEvent,
                     layout = layout,
-                    modifier = contentModifier,
+                    modifier = Modifier.weight(1f),
+                    horizontalPadding = 0.dp,
                 )
             }
+        } else {
+            GroupsSearchPane(
+                search = search,
+                onEvent = onEvent,
+                layout = layout,
+                modifier = contentModifier,
+            )
         }
     }
 }

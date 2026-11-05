@@ -3,7 +3,6 @@ package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.activity.domain.usecase.RecordCharges
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
@@ -73,7 +72,6 @@ class GlobalBalancesViewModel(
     observePaymentKeys: ObservePaymentKeys,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
@@ -94,7 +92,6 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 recordedPayment = null,
                 pickedPersonId = null,
-                activityUnreadCount = 0,
                 canSearch = false,
             ),
         )
@@ -158,9 +155,6 @@ class GlobalBalancesViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
         observeHasGroups()
             .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
@@ -249,9 +243,6 @@ class GlobalBalancesViewModel(
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GlobalBalancesUiEvent.OnContactsTabClicked -> if (isOnTop()) navigator.openHomeTab(Route.Contacts)
-
-            GlobalBalancesUiEvent.OnActivityTabClicked ->
-                if (isOnTop()) navigator.openHomeTab(Route.Activity(personKey = null))
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 

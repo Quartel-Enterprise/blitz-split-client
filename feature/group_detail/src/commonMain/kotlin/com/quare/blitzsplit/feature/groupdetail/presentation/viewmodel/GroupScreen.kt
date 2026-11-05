@@ -15,8 +15,10 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openSearchFromPage
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -185,6 +187,14 @@ internal class GroupScreen(
     // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.
     fun openHomeTab(tab: HomeTab) {
         if (isOnTop()) useCases.navigator.openHomeTab(tab)
+    }
+
+    // Why: the search over the tab the group sits in, as the rail's "Buscar"; says whether it opened.
+    fun openSearch(): Boolean = isOnTop() && useCases.navigator.openSearchFromPage()
+
+    // Why: Atividade over Início, closing the group as a tab of the rail does.
+    fun openActivity() {
+        if (isOnTop()) useCases.navigator.openActivity()
     }
 
     fun openSplitBill() {

@@ -195,9 +195,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Open in the App Store" on "Update available" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
-| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
-| `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`, `activity`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:activity` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`, `activity`, `contacts`) | Search opened: its magnifier, search tab, field or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
+| `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
+| `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`, `profile`) | The sync chip's "try again" | `:feature:groups`, `:feature:profile` |
@@ -224,6 +224,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
 | `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `home_see_all_bills_clicked` | none | "See all" over "Latest expenses" | `:feature:groups` |
+| `activity_bell_clicked` | none | The bell in Home's bar, which opens Activity over Home | `:feature:groups` |
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
 | `recovery_code_card_dismissed` | none | That card's ✕ | `:feature:groups` |

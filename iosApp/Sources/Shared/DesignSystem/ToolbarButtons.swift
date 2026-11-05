@@ -197,31 +197,50 @@ private struct VerticalEdgeReading: ViewModifier {
 }
 #endif
 
-/// The magnifier of Home, Balances, Contacts and Activity, which opens "Search" (5.2) over the tab, once there is a
-/// group to look in: pushed on an iPhone, a sheet on the Mac. An iPad's room has the search tab instead, which already
-/// reaches the search from every tab.
+/// Home's bell, which opens Activity over Home now that Activity left the tabs (Pierre's call), the room the search tab
+/// takes on an iPhone. Its count is drawn by hand in the accent, as the old tab's badge was tinted: the system's toolbar
+/// badge is red, and Activity's unread count is news, not an error. VoiceOver reads the count with the name.
+struct ActivityBellButton: View {
+    let unreadCount: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "bell")
+                .overlay(alignment: .topTrailing) {
+                    if unreadCount > 0 {
+                        Text(verbatim: unreadCount > 99 ? "99+" : "\(unreadCount)")
+                            .font(.caption2.weight(.semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(Palette.onAccent)
+                            .padding(.horizontal, 4)
+                            .frame(minWidth: 16, minHeight: 16)
+                            .background(Palette.accent, in: .capsule)
+                            .fixedSize()
+                            .offset(x: 8, y: -6)
+                    }
+                }
+        }
+        .accessibilityLabel(Text("Activity"))
+        .accessibilityValue(unreadCount > 0 ? Text("\(unreadCount) new") : Text(verbatim: ""))
+        .help(Text("Activity"))
+    }
+}
+
+#if os(macOS)
+/// The Mac's magnifier of Home, Balances and Contacts, which opens "Search" (5.2) as a sheet over the tab, once there
+/// is a group to look in. An iPhone and an iPad have the search tab instead, which reaches the search from every tab.
 struct SearchToolbarItem: ToolbarContent {
     let canSearch: Bool
     let action: () -> Void
-    #if os(iOS)
-    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
-    #endif
-
-    private var isShown: Bool {
-        #if os(iOS)
-        canSearch && !hasSearchTabRoom
-        #else
-        canSearch
-        #endif
-    }
 
     var body: some ToolbarContent {
-        if isShown {
+        if canSearch {
             ToolbarItem(placement: .primaryAction) {
                 Button("Search", systemImage: "magnifyingglass", action: action)
                     .help(Text("Search"))
             }
-            .prefersVerticalBar()
         }
     }
 }
+#endif

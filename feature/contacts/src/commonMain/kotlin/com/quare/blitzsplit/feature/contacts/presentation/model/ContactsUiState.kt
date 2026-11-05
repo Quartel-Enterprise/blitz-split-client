@@ -36,8 +36,6 @@ data class ContactsUiState(
     // Why: what the pane beside the list shows: a person, the agenda, or nothing yet (it says what will show there).
     val pickedKey: String?,
     val isAgendaPicked: Boolean,
-    // Why: the Atividade tab's badge, someone else's events not read yet.
-    val activityUnreadCount: Int,
     // Why: "Buscar" (5.2), the same search as Grupos', only once there is a group to look in.
     val canSearch: Boolean,
 ) {

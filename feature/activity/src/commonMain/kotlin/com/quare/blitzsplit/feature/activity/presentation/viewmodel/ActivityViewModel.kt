@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.activity.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.activity.domain.model.ActivityFeed
 import com.quare.blitzsplit.core.activity.domain.model.ActivityReadState
 import com.quare.blitzsplit.core.activity.domain.model.ActivityTargets
@@ -13,23 +12,16 @@ import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
-import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openPersonProfile
-import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -67,10 +59,7 @@ class ActivityViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeActivityFeed: ObserveActivityFeed,
     observeGroups: ObserveGroups,
-    observeHasGroups: ObserveHasGroups,
     observeMapCategories: ObserveMapCategories,
-    observeProfile: ObserveProfile,
-    observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
@@ -83,11 +72,6 @@ class ActivityViewModel(
     val uiState: StateFlow<ActivityUiState>
         field = MutableStateFlow(
             ActivityUiState(
-                displayName = "",
-                avatarInitial = "",
-                avatarColor = AvatarColor.default,
-                photoUrl = null,
-                accountProvider = null,
                 days = emptyList(),
                 unreadCount = 0,
                 filter = ActivityFilter.none.copy(personKey = route.personKey),
@@ -110,7 +94,7 @@ class ActivityViewModel(
                 isRefreshing = false,
                 hasMore = false,
                 deletedNotice = null,
-                canSearch = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
             ),
         )
 
@@ -146,18 +130,6 @@ class ActivityViewModel(
     private var feedVersion = 0
 
     init {
-        combine(observeProfile(), observeAccount()) { profile, account ->
-            val badge = UserBadge.of(profile, account.status)
-            uiState.update {
-                it.copy(
-                    displayName = badge.displayName,
-                    avatarInitial = badge.avatarInitial,
-                    avatarColor = badge.avatarColor,
-                    photoUrl = badge.photoUrl,
-                    accountProvider = badge.accountProvider,
-                )
-            }
-        }.launchIn(viewModelScope)
         combine(observeActivityFeed(), observeGroups(), observeMapCategories(), ::Triple)
             .onEach { (newFeed, newGroups, categories) ->
                 feed = newFeed
@@ -167,10 +139,6 @@ class ActivityViewModel(
                 feedVersion++
                 show()
             }.launchIn(viewModelScope)
-        // Why: on its own, so the search doesn't wait for the feed and its categories.
-        observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
-            .launchIn(viewModelScope)
         combine(
             observeSyncState(),
             connectivityObserver.observe(),
@@ -303,26 +271,8 @@ class ActivityViewModel(
 
             ActivityUiEvent.OnDeletedNoticeShown -> uiState.update { it.copy(deletedNotice = null) }
 
-            ActivityUiEvent.OnProfileClicked -> if (isOnTop()) {
-                trackEvent("profile_avatar_clicked", sourceParams)
-                navigator.navigate(Route.Profile)
-            }
-
-            // Why: never over "Filtrar atividade", which is no route, so ⌘K on the web can't stack the search over it.
-            ActivityUiEvent.OnSearchClicked -> if (uiState.value.canSearch && !uiState.value.isFilterOpen) {
-                if (navigator.openSearchOver(HomeTab.ACTIVITY)) trackEvent("search_opened", sourceParams)
-            }
-
-            ActivityUiEvent.OnHomeTabClicked, ActivityUiEvent.OnBrandClicked -> navigator.openHomeTab(Route.Home)
-
-            ActivityUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
-
-            ActivityUiEvent.OnBalancesTabClicked -> openBalancesTab()
-
-            ActivityUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
-
-            // Why: Atividade is a tab right above Início, so back goes to Início, as from the other tabs.
-            ActivityUiEvent.OnBackClicked -> navigator.openHomeTab(Route.Home)
+            // Why: back returns to what opened Atividade: Início's bell, a contact's history.
+            ActivityUiEvent.OnBackClicked -> if (isOnTop()) navigator.navigateBack()
         }
     }
 
@@ -508,10 +458,6 @@ class ActivityViewModel(
             uiState.update { it.copy(isRefreshing = false) }
             loadOlderIfAwaited()
         }
-    }
-
-    private fun openBalancesTab() {
-        navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
     }
 
     private fun itemOrNull(itemId: String): ActivityItem? = entries.firstOrNull { it.item.id == itemId }?.item

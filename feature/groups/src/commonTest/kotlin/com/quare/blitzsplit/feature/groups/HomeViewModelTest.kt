@@ -53,6 +53,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.FirstDownload
@@ -416,21 +417,48 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group opened from Inicio WHEN tapping Atividade THEN Atividade takes its place above Inicio`() =
+    fun `GIVEN Inicio on top WHEN tapping the bell THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping the bell twice quickly THEN opens Atividade once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+        viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group opened from Inicio WHEN a late tap on the bell arrives THEN keeps the group`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
+            val stack = navigator.backStack.value
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
+            viewModel.onEvent(HomeUiEvent.OnActivityClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(stack, navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN unread events WHEN Inicio shows THEN its Atividade tab counts them`() = runTest(testDispatcher) {
+    fun `GIVEN unread events WHEN Inicio shows THEN its bell counts them`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -2692,6 +2720,59 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN Inicio WHEN tapping the bell THEN tracks activity_bell_clicked with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+
+            // Then
+            assertEquals(listOf("activity_bell_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping the bell twice quickly THEN tracks activity_bell_clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+            viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+
+            // Then
+            assertEquals(listOf("activity_bell_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a group opened from Inicio WHEN a late tap on the bell arrives THEN tracks no bell tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnActivityClicked)
+
+            // Then
+            assertEquals(listOf("group_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the bell of Inicio WHEN reading its analytics THEN the ViewModel sends activity_bell_clicked`() {
+        // Given
+        val event = HomeUiEvent.OnActivityClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("activity_bell_clicked"), analytics)
+    }
+
+    @Test
     fun `GIVEN the recovery code card WHEN tapping Ver codigo THEN tracks the card show tap with no params`() =
         runTest(testDispatcher) {
             // Given
@@ -2766,7 +2847,6 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnGroupsTabClicked)
             viewModel.onEvent(HomeUiEvent.OnBalancesTabClicked)
             viewModel.onEvent(HomeUiEvent.OnContactsTabClicked)
-            viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
 
             // Then
             assertEquals(emptyList(), trackedEvents)

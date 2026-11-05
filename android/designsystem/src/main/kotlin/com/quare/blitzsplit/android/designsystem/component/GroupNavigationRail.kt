@@ -26,8 +26,8 @@ import com.quare.blitzsplit.core.model.HomeTab
 fun WithGroupNavigationRail(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
-    // Why: Atividade's unread badge, as on every home tab.
-    activityBadgeCount: Int,
+    // Why: "Buscar", the rail's last item as beside the home's tabs, which opens the search over the tab underneath.
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (showsRail: Boolean) -> Unit,
 ) {
@@ -39,7 +39,7 @@ fun WithGroupNavigationRail(
             HomeNavigationRail(
                 selected = selected,
                 onTabClick = onTabClick,
-                activityBadgeCount = activityBadgeCount,
+                onSearchClick = onSearchClick,
                 reselects = true,
             )
         }

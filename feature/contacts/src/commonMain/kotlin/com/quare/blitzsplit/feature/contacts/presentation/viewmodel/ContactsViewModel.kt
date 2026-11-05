@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.contacts.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -56,7 +55,6 @@ class ContactsViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
@@ -81,7 +79,6 @@ class ContactsViewModel(
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
-                activityUnreadCount = 0,
                 canSearch = false,
             ),
         )
@@ -110,9 +107,6 @@ class ContactsViewModel(
                 val provider = (account.status as? AccountStatus.Connected)?.provider
                 uiState.update { state -> state.copy(accountProvider = provider) }
             }.launchIn(viewModelScope)
-        observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
         val firstDownload = observeFirstDownload()
         combine(observeContactBook(), firstDownload) { book, download ->
             val (hidden, shown) = book.contacts.partition { it.isHidden }
@@ -202,10 +196,6 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnBalancesTabClicked -> if (isTabShown()) {
                 navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
-            }
-
-            ContactsUiEvent.OnActivityTabClicked -> if (isTabShown()) {
-                navigator.openHomeTab(Route.Activity(personKey = null))
             }
 
             ContactsUiEvent.OnProfileClicked -> if (isTabShown()) {

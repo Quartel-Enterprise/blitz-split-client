@@ -1,11 +1,14 @@
 # The home and the shells
 
-The home's five tabs and the web's and the Mac's shell.
+The home's four tabs and the web's and the Mac's shell.
 
-  - The home shows the five tabs of the design (Home, Groups, Balances, Contacts, Activity), every one with
-    Activity's unread badge. Home (`Route.Home`) is the root and where the app opens; every other tab is one route
+  - The home shows four tabs (Home, Groups, Balances, Contacts); Activity left them for a bell in Home's bar with its
+    unread count (Pierre's call, see [activity-and-push.md](activity-and-push.md)), which leaves iOS's search tab room
+    at the end of the bar on an iPhone too. Search is an item of the navigation on iOS, Android and the web (where
+    each puts it, in [groups-home.md](groups-home.md)). Home (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
-    lying down and a tabletop, and stays, without "Split a bill", beside a group's Expenses, Balances, Members and
+    lying down and a tabletop, where it also draws "Split a bill" as the small button so the tabs and Search fit its
+    height, and its items scroll should they still not (Search, the last, is never cut off); it stays, without "Split a bill", beside a group's Expenses, Balances, Members and
     Statistics drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
     Statistics over a whole book; never on a tabletop, nor beside the home's list, which has its own), the
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back

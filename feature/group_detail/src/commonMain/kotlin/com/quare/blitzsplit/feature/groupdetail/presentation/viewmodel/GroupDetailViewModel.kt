@@ -20,7 +20,6 @@ import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
@@ -88,7 +87,6 @@ class GroupDetailViewModel(
                     .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
-                activityUnreadCount = 0,
                 simplification = null,
                 simplifyConflict = null,
             ),
@@ -167,10 +165,6 @@ class GroupDetailViewModel(
         useCases.navigator.backStack
             .onEach { shownGroup?.let(::showConflict) }
             .launchIn(viewModelScope)
-        useCases
-            .observeActivityUnreadCount()
-            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
-            .launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()
                 .onEach { account ->
@@ -200,6 +194,10 @@ class GroupDetailViewModel(
             is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)
 
             is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
+
+            GroupDetailUiEvent.OnRailSearchClicked -> if (screen.openSearch()) {
+                trackEvent("search_opened", mapOf("source" to "group_detail"))
+            }
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
@@ -268,10 +266,10 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
 
-            // Why: Atividade's tab lists both changes, as Android's rail beside the group opens it.
+            // Why: Atividade lists both changes.
             GroupDetailUiEvent.OnSimplifyConflictActivityClicked -> {
                 uiState.update { it.copy(simplifyConflict = null) }
-                screen.openHomeTab(HomeTab.ACTIVITY)
+                screen.openActivity()
             }
         }
     }

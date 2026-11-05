@@ -15,7 +15,7 @@ import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityView
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-// Why: the home's Atividade tab, the feed of every group and what is new in it.
+// Why: Atividade, over Início or a contact's profile: the feed of every group and what is new in it.
 @Composable
 fun ActivityScreen(
     route: Route.Activity,

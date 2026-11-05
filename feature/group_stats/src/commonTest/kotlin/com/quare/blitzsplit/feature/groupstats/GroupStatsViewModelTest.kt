@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.groupstats
 
-import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -61,7 +60,6 @@ import kotlin.time.Instant
 class GroupStatsViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val activityUnread = MutableStateFlow(0)
     private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -666,6 +664,35 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the statistics over the groups WHEN its rail opens Buscar THEN the search opens over the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isOverHome = true)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnRailSearchClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "group_stats")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill over the statistics WHEN a late Buscar arrives THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isOverHome = true)
+        navigator.navigate(Route.BillDetail("trip", "dinner", focusCommentId = null))
+        val stack = navigator.backStack.value
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnRailSearchClicked)
+
+        // Then
+        assertEquals(stack, navigator.backStack.value)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the statistics over the groups WHEN drawn THEN the rail selects Grupos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -676,20 +703,6 @@ class GroupStatsViewModelTest {
         // Then
         assertEquals(HomeTab.GROUPS, state.homeTab)
     }
-
-    @Test
-    fun `GIVEN unread activity counted WHEN another period redraws the statistics THEN the rail keeps counting it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            activityUnread.value = 3
-
-            // When
-            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
-
-            // Then
-            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
-        }
 
     @Test
     fun `GIVEN no first download WHEN the statistics open THEN say Total gasto`() = runTest(testDispatcher) {
@@ -1862,13 +1875,16 @@ class GroupStatsViewModelTest {
         isDownloadReadAtStart: Boolean = true,
         payments: List<Settlement> = emptyList(),
         arePaymentsReadAtStart: Boolean = true,
+        // Why: the statistics of a group a row of Grupos opened, with Início under them, as the app has it.
+        isOverHome: Boolean = false,
     ) {
         firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
         settlements = FakeSettlementRepository(initialSettlements = payments)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = if (isOverHome) Route.Home else Route.Groups).also {
+            if (isOverHome) it.navigate(Route.Groups)
             it.navigate(
                 Route.GroupDetail(
                     GROUP_ID,
@@ -1899,7 +1915,6 @@ class GroupStatsViewModelTest {
             },
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
-            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             observeFirstDownload = ObserveFirstDownload { if (isDownloadReadAtStart) firstDownload else emptyFlow() },
         )
     }

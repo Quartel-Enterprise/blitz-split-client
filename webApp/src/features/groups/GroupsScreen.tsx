@@ -39,12 +39,11 @@ export function useDeletedGroupNotice(presenter: { deletedGroupNoticeShown(): vo
   }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
 }
 
-// Início, Saldos, Contatos and Atividade take Grupos' place above Início.
+// Início, Saldos and Contatos take Grupos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: GroupsPresenter) => void>> = {
   home: (p) => p.openHome(),
   balances: (p) => p.openBalances(),
   contacts: (p) => p.openContacts(),
-  activity: (p) => p.openActivity(),
 }
 
 /**
@@ -70,7 +69,6 @@ export function GroupsScreen() {
 
   return (
     <HomeShell
-      activityUnreadCount={state.activityUnreadCount}
       selected="groups"
       profile={loadedProfile(state)}
       onTab={(tab) => tabEvents[tab]?.(presenter)}

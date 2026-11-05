@@ -19,11 +19,10 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
-import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.openHomeTab
+import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
@@ -340,13 +339,13 @@ class EditGroupViewModel(
     }
 
     /*
-     * Why: Atividade's tab lists both changes, on top of its Hoje; the form, its group and whatever else is above the
-     * home close as any tab opening does, so no platform draws a tab's screen inside a sheet.
+     * Why: Atividade lists both changes, on top of its Hoje; the form, its group and whatever else is above Início
+     * close first, so no platform draws Atividade inside a sheet.
      */
     private fun openActivity() {
         uiState.update { it.copy(simplifyConflict = null) }
         if (navigator.backStack.value.lastOrNull() != route) return
-        navigator.openHomeTab(HomeTab.ACTIVITY)
+        navigator.openActivity()
     }
 
     private fun openIconEditor() {

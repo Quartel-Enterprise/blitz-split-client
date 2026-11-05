@@ -48,6 +48,9 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnSeeAllBillsClicked -> EventAnalytics.Automatic("home_see_all_bills_clicked")
 
+            // Why: only a tap that opens Atividade, never a late one over what Início opened.
+            OnActivityClicked -> EventAnalytics.Manual("activity_bell_clicked")
+
             OnShowRecoveryCodeClicked -> EventAnalytics.Automatic("recovery_code_card_show_clicked")
 
             OnConnectAccountClicked -> EventAnalytics.Automatic("recovery_code_card_connect_clicked")
@@ -66,7 +69,6 @@ sealed interface HomeUiEvent : UiEvent {
             OnGroupsTabClicked,
             OnBalancesTabClicked,
             OnContactsTabClicked,
-            OnActivityTabClicked,
             -> EventAnalytics.NotTracked
         }
 
@@ -125,8 +127,11 @@ sealed interface HomeUiEvent : UiEvent {
         val expenseId: String,
     ) : HomeUiEvent
 
-    // Why: "Ver tudo" over "Últimas despesas", the Atividade tab.
+    // Why: "Ver tudo" over "Últimas despesas", which opens Atividade over Início, as the bell does.
     data object OnSeeAllBillsClicked : HomeUiEvent
+
+    // Why: the bell in Início's bar, with Atividade's unread count, which opens Atividade over Início.
+    data object OnActivityClicked : HomeUiEvent
 
     // Why: the card "Guarde seu código de recuperação": "Ver código", "Conectar conta" and ✕.
     data object OnShowRecoveryCodeClicked : HomeUiEvent
@@ -147,6 +152,4 @@ sealed interface HomeUiEvent : UiEvent {
     data object OnBalancesTabClicked : HomeUiEvent
 
     data object OnContactsTabClicked : HomeUiEvent
-
-    data object OnActivityTabClicked : HomeUiEvent
 }

@@ -127,7 +127,6 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
         categories = createPreviewCategories(),
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
-        activityUnreadCount = 0,
     )
 }
 

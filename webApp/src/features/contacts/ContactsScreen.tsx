@@ -17,12 +17,11 @@ import { cn } from '@/lib/utils'
 import { ContactProfileSkeleton, ContactProfileView, useContactProfile } from './ContactProfile'
 import { netWord, rowMeta } from './contactWords'
 
-// Início, Grupos, Saldos and Atividade take Contatos' place above Início.
+// Início, Grupos and Saldos take Contatos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>> = {
   home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
   balances: (p) => p.openBalances(),
-  activity: (p) => p.openActivity(),
 }
 
 /**
@@ -51,7 +50,6 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
     <HomeShell
       selected="contacts"
       profile={loadedProfile(state)}
-      activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
       onBrand={() => presenter.openBrand()}

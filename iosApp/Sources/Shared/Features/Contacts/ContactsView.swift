@@ -182,8 +182,8 @@ struct ContactsView: View {
                     model.send(ContactsUiEventOnInviteWithLinkClicked.shared)
                 }
             }
-            #endif
             SearchToolbarItem(canSearch: state.canSearch) { model.send(ContactsUiEventOnSearchClicked.shared) }
+            #endif
             ToolbarItem(placement: .primaryAction) {
                 ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
                     model.send(ContactsUiEventOnProfileClicked.shared)

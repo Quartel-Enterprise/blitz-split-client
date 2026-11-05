@@ -22,6 +22,9 @@ sealed interface HomeSidebarUiEvent : UiEvent {
 
             // Why: the web's logo, which opens Home; the tabs it stands beside are not tracked, their screen view is.
             OnBrandClicked -> EventAnalytics.Automatic("brand_clicked", mapOf("source" to SOURCE))
+
+            // Why: only a search that opens, as from the tabs.
+            OnSearchClicked -> EventAnalytics.Manual("search_opened")
         }
 
     // Why: a group of "Em aberto", opened as its row on Grupos opens it.
@@ -38,4 +41,11 @@ sealed interface HomeSidebarUiEvent : UiEvent {
 
     // Why: the web's logo, which opens Home as its tab does.
     data object OnBrandClicked : HomeSidebarUiEvent
+
+    /*
+     * Why: "Buscar", the navigation's item on the pages outside the tabs too (Pierre's call), so the web's bars keep
+     * the same items: it goes back to the tab the page sits in and opens the search over it, as iOS's search tab does
+     * from a pushed screen.
+     */
+    data object OnSearchClicked : HomeSidebarUiEvent
 }

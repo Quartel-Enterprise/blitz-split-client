@@ -1,20 +1,12 @@
 package com.quare.blitzsplit.feature.activity.presentation.model
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
-import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.HomeTab
 
 data class ActivityUiState(
-    val displayName: String,
-    val avatarInitial: String,
-    val avatarColor: AvatarColor,
-    // Why: a photo picked offline is a data URI until its upload.
-    val photoUrl: String?,
-    // Why: the web's sidebar names the account under the profile; null without Google or Apple.
-    val accountProvider: AccountProvider?,
     // Why: the days shown, already filtered and paged, queued changes on top of Hoje.
     val days: List<ActivityDay>,
-    // Why: the tab's badge and "3 novas": every unread event, whatever the filter.
+    // Why: "3 novas": every unread event, whatever the filter.
     val unreadCount: Int,
     val filter: ActivityFilter,
     // Why: "Filtrar" open, with what is being picked; null while closed.
@@ -57,8 +49,11 @@ data class ActivityUiState(
     val hasMore: Boolean,
     // Why: the item tapped whose bill or group is gone: a snackbar on Android, an alert on iOS, a toast on the web.
     val deletedNotice: ActivityDeletion?,
-    // Why: "Buscar" only once there is a group to look in, as on Grupos, before the feed is read too.
-    val canSearch: Boolean,
+    /*
+     * Why: the home tab Atividade sits over, the nearest under it (Início for its bell; for a contact's history, the tab
+     * under the profile: Contatos, Saldos or Grupos), which the web's sidebar selects.
+     */
+    val homeTab: HomeTab,
 ) {
     val items: List<ActivityItem>
         get() = days.flatMap { it.items }

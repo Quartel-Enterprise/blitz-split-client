@@ -101,7 +101,7 @@ function BillLinkNoticeDialog({ notice, onDismiss }: { notice: string; onDismiss
 }
 
 // Why: the pages that draw inside the home's frame (`PageShell`), which read the sidebar.
-const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'contact-profile', 'profile', 'edit-profile'])
+const SHELL_PAGES = new Set(['activity', 'group-detail', 'group-stats', 'contact-profile', 'profile', 'edit-profile'])
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
@@ -126,7 +126,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   // Why: Contatos' "Convidar com link ou QR" (and a guest's "Convidar Diego") opens over Contatos or the profile.
   const isContactInvite = top.name === 'contact-invite'
   const isJoinWithLink = top.name === 'join-with-link'
-  // Why: "Buscar" (⌘K) over Início, Saldos, Contatos or Atividade, which stay mounted under it.
+  // Why: "Buscar" (⌘K) over Início, Saldos or Contatos, which stay mounted under it.
   const isSearch = top.name === 'search'
   const isSplitBill = top.name === 'split-bill'
   // Why: "Compartilhar conta" opens over Conta, which stays open under it.
@@ -221,8 +221,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
+    // Why: a push notification replaces a contact's Atividade with everyone's, which is a new page.
     case 'activity':
-      return route ? <ActivityScreen route={route} /> : null
+      return route ? <ActivityScreen key={route.personKey ?? ''} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
     // one opened from Saldos draws the same page.
     case 'contacts':

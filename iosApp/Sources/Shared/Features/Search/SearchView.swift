@@ -32,9 +32,9 @@ final class SearchModel: SearchSource {
     }
 }
 
-/// "Search" (5.2) over Home, Balances, Contacts or Activity (`Route.Search`): the same search as Groups' own. An
-/// iPhone pushes it in the tab's stack, under its back button; the Mac opens it as a sheet with the field, the
-/// segments and the results, Esc or Cancel closing it. What it finds opens in its place.
+/// "Search" (5.2) over Home, Balances or Contacts (`Route.Search`): the same search as Groups' own. The Mac opens it
+/// as a sheet with the field, the segments and the results, Esc or Cancel closing it; an iPhone and an iPad search in
+/// their search tab, so a stack restored with it on top draws the tab's screen. What it finds opens in its place.
 struct SearchView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: SearchModel?
@@ -43,7 +43,7 @@ struct SearchView: View {
         Group {
             if let model {
                 #if os(iOS)
-                GroupsSearchView(model: model, isPushed: true)
+                GroupsSearchView(model: model)
                 #else
                 MacSearchSheet(model: model)
                 #endif

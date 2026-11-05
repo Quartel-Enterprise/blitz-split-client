@@ -38,7 +38,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     explains it. It syncs with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's
     `updatedAt`, so an edit of the name never undoes it nor it the name; when someone's later change beats this
     device's, the group's screen or Edit group, whichever is on top first, says "Ana turned it off after you. The last change counts: Simplify debts is off." once,
-    with "See in Activity" (the Activity tab, 13.1e). Everything that reads the group's pairs follows it: Balances
+    with "See in Activity" (Activity over Home, closing the group, 13.1e). Everything that reads the group's pairs follows it: Balances
     (the card "Simplified debts" with How it works over the pairs, the icon on a pair no bill made, 13.4),
     "Your balance in this group", Settle up, Got paid, Already paid, Members' balances, Groups' rows, Home's faces and "Who
     paid whom?", the global Balances and Contacts ("Simplified debts" on the group's line of "By group", and

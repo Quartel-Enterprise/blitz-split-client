@@ -150,7 +150,6 @@ private fun createPreviewState(
     isOnline = isOnline,
     recordedPayment = null,
     pickedPersonId = null,
-    activityUnreadCount = 3,
     canSearch = true,
 )
 

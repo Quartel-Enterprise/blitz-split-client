@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -560,11 +561,6 @@ class ActivityUiStateTest {
         hasDownloaded: Boolean = true,
         isLoaded: Boolean = true,
     ): ActivityUiState = ActivityUiState(
-        displayName = "Pierre",
-        avatarInitial = "P",
-        avatarColor = AvatarColor.BLUE,
-        photoUrl = null,
-        accountProvider = null,
         days = days,
         unreadCount = unreadCount,
         filter = filter,
@@ -587,6 +583,6 @@ class ActivityUiStateTest {
         isRefreshing = false,
         hasMore = false,
         deletedNotice = null,
-        canSearch = true,
+        homeTab = HomeTab.HOME,
     )
 }

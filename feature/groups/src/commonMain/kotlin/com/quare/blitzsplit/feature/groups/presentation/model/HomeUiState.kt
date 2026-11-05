@@ -50,7 +50,7 @@ data class HomeUiState(
     val deletedGroupNotice: DeletedGroupNotice?,
     // Why: a pull to refresh waits for the sync it asked for.
     val isRefreshing: Boolean,
-    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    // Why: the count on Início's bell, every unread event of Atividade whatever its filters.
     val activityUnreadCount: Int,
 ) {
     val isFirstDownload: Boolean

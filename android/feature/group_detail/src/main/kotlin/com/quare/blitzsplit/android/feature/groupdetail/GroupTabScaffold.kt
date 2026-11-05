@@ -73,8 +73,8 @@ internal fun GroupTabScaffold(
     onAction: (GroupAction) -> Unit,
     // Why: the home's rail beside the group drawn alone (WithGroupNavigationRail), on the tab it was opened from.
     homeTab: HomeTab,
-    activityBadgeCount: Int,
     onHomeTabClick: (HomeTab) -> Unit,
+    onSearchClick: () -> Unit,
     // Why: the picked tab's rows and button; only these change when another tab is picked.
     body: GroupTabBody,
     modifier: Modifier = Modifier,
@@ -82,7 +82,7 @@ internal fun GroupTabScaffold(
     WithGroupNavigationRail(
         selected = homeTab,
         onTabClick = onHomeTabClick,
-        activityBadgeCount = activityBadgeCount,
+        onSearchClick = onSearchClick,
         modifier = modifier,
     ) { showsRail ->
         GroupTabScaffoldContent(

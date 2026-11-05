@@ -3,7 +3,7 @@ import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { SplitBillIcon } from '@/components/common'
-import { HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
+import { ActivityBell, HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { ListCardSkeleton, SummaryCardsSkeleton } from '@/components/PageSkeletons'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
@@ -18,12 +18,11 @@ import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
 
-// Grupos, Saldos, Contatos and Atividade take their place right above Início.
+// Grupos, Saldos and Contatos take their place right above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = {
   groups: (p) => p.openGroups(),
   balances: (p) => p.openBalances(),
   contacts: (p) => p.openContacts(),
-  activity: (p) => p.openActivity(),
 }
 
 /**
@@ -53,7 +52,7 @@ export function HomeScreen() {
       onProfile={() => presenter.openProfile()}
       onBrand={() => presenter.openBrand()}
       search={search}
-      activityUnreadCount={state.activityUnreadCount}
+      bell={{ unreadCount: state.activityUnreadCount, onOpen: () => presenter.openActivity() }}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
@@ -70,6 +69,8 @@ export function HomeScreen() {
               )}
             </div>
           )}
+          {/* Why: the phone's top bar holds the bell; from the tablet up it ends Início's title row. */}
+          <ActivityBell unreadCount={state.activityUnreadCount} onOpen={() => presenter.openActivity()} className="hidden md:flex" />
         </div>
         {state.showsHome && <Shortcuts presenter={presenter} state={state} variant="tiles" />}
 
