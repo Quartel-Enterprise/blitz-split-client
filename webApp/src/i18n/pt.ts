@@ -1169,7 +1169,7 @@ export const pt: Record<MessageKey, string> = {
   stats_averageWeek: 'Média por semana:',
   stats_averageMonth: 'Média por mês:',
   stats_averageYear: 'Média por ano:',
-  stats_averageHint: 'A linha pontilhada no gráfico é a média: o total gasto dividido por todos os períodos mostrados, inclusive os vazios.',
+  stats_averageHint: 'A linha tracejada no gráfico é a média: o total gasto dividido por todos os períodos mostrados, inclusive os vazios.',
   stats_calloutNone: 'Nenhuma despesa',
   stats_chartKeys: 'As setas leem cada barra.',
   stats_ariaNothing: 'nada',

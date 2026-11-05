@@ -1,6 +1,6 @@
 import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, LineChart, ReceiptText } from 'lucide-react'
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, PersonButton, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
@@ -504,37 +504,38 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
 
 /** The dashed line's legend: hovering or tapping it explains what the line is. */
 function AverageLegend({ label, amount }: { label: string; amount: string }) {
-  const [isOpen, setOpen] = useState(false)
   // Why: a click pins the hint, so the pointer leaving the row doesn't close what it opened.
-  const [isPinned, setPinned] = useState(false)
+  const [mode, setMode] = useState<'closed' | 'hovered' | 'pinned'>('closed')
+  const hintId = useId()
   return (
-    <Popover
-      open={isOpen}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) setPinned(false)
-      }}
-    >
+    <Popover open={mode !== 'closed'} onOpenChange={(next) => setMode(next ? 'pinned' : 'closed')}>
       <PopoverTrigger asChild>
         <button
           type="button"
+          // Why: the focus stays on the row, so a screen reader hears the hint as its description.
+          aria-describedby={hintId}
           // Why: the hover already opened it, so a click keeps it open instead of toggling it shut.
           onClick={(event) => {
             event.preventDefault()
-            setOpen(true)
-            setPinned(true)
+            setMode('pinned')
           }}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => {
-            if (!isPinned) setOpen(false)
-          }}
-          className="flex w-fit items-center gap-1 rounded-sm text-[13px] text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          onMouseEnter={() => setMode((current) => (current === 'closed' ? 'hovered' : current))}
+          onMouseLeave={() => setMode((current) => (current === 'hovered' ? 'closed' : current))}
+          className="flex w-fit cursor-pointer items-center gap-1 rounded-sm text-[13px] text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
           {label} <strong className="font-semibold text-foreground tabular-nums">{amount}</strong>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 p-3 text-xs leading-normal" onOpenAutoFocus={(event) => event.preventDefault()}>
+      <span id={hintId} hidden>
+        {t('stats_averageHint')}
+      </span>
+      <PopoverContent
+        align="start"
+        aria-label={label}
+        className="w-64 p-3 text-xs leading-normal"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         {t('stats_averageHint')}
       </PopoverContent>
     </Popover>
