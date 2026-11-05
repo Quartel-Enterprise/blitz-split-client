@@ -20,6 +20,7 @@ import { ChargeDialog } from '@/features/global-balances/ChargeDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { forgetClosedPickedTabs } from '@/features/group-detail/pickedTabs'
+import { CategoryExpensesScreen } from '@/features/group-stats/CategoryExpensesScreen'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { SearchRouteDialog } from '@/features/groups/SearchDialog'
@@ -115,6 +116,7 @@ const FRAME_PAGES = new Set([
   'activity',
   'group-detail',
   'group-stats',
+  'category-expenses',
   'contact-profile',
   'profile',
   'edit-profile',
@@ -250,6 +252,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <GroupDetailScreen key={`${route.groupId}/${route.groupTab}`} route={route} /> : null
     case 'group-stats':
       return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
+    case 'category-expenses':
+      return route ? <CategoryExpensesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
     // Why: a push notification replaces a contact's Atividade with everyone's, which is a new page.

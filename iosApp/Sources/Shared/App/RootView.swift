@@ -153,6 +153,7 @@ struct RootView: View {
         case let .defaultSplit(route): DefaultSplitView(route: route)
         case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
+        case let .categoryExpenses(route): CategoryExpensesView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
         case let .joinWithLink(route): JoinWithLinkView(route: route)

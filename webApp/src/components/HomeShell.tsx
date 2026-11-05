@@ -57,6 +57,22 @@ export function HomeTabCrumb({ tab, onOpen }: { tab: HomeTab; onOpen: (tab: Home
   )
 }
 
+/** A page of the breadcrumb a page goes back to (its group, the statistics), with the chevron after it. */
+export function CrumbButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={onClick}
+        className="truncate rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+      >
+        {children}
+      </button>
+      <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+    </>
+  )
+}
+
 /**
  * Which page the back stack shows (App's StackLayers), so a page fades in once as it opens: a screen that swaps its
  * skeleton for its page keeps its key, and never fades in again.

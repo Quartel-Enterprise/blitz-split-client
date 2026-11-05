@@ -95,6 +95,21 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    /*
+     * Why: "Expenses by category", from a category of the statistics' "By category" (its slice, legend line or row):
+     * the group's bills of that main category, whose chips switch or add others. The first instant of the first and
+     * last days of the period the statistics showed, both null for the whole history (which then follows new bills).
+     * Back goes to the statistics.
+     */
+    data class CategoryExpenses(
+        val groupId: String,
+        val categoryId: String,
+        val periodStartMillis: Long?,
+        val periodEndMillis: Long?,
+        // Why: the period was "This month" or "Last month", which the statistics name as a month ("October 2026").
+        val isMonthPeriod: Boolean,
+    ) : Route
+
     // Why: "Editar grupo", from the group's ⋮ menu: a sheet over the group on iOS and macOS, a dialog on the web.
     data class EditGroup(
         val groupId: String,

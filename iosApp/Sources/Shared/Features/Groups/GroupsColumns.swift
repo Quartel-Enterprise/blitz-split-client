@@ -26,14 +26,18 @@ struct GroupsColumns<ListContent: View>: View {
     @State private var division: FoldDivision?
 
     /// The column beside the list: lying down with an iPad's room (`showsListDetail`), with only the group's tabs
-    /// and its Statistics above the groups (sheets aside, which the path leaves out).
+    /// and its Statistics (and a category's bills) above the groups (sheets aside, which the path leaves out).
     private var showsDetail: Bool {
         layout.showsListDetail && path.allSatisfy(isInColumn) && !showsEmptyHomeAlone
     }
 
-    /// The group's tabs, and the Statistics they open, except across an iPhone Duo's fold, which splits them on it.
+    /// The group's tabs, and the Statistics they open (with a category's bills from there), except across an iPhone
+    /// Duo's fold, which splits them on it.
     private func isInColumn(_ route: AppRoute) -> Bool {
-        if case .groupStats = route { return division?.isVertical != true }
+        switch route {
+        case .groupStats, .categoryExpenses: return division?.isVertical != true
+        default: break
+        }
         return route.isGroupScreen
     }
 

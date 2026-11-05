@@ -1,43 +1,28 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.BillAmountsColumn
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
-import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
-import com.quare.blitzsplit.android.designsystem.component.amountColorOf
+import com.quare.blitzsplit.android.designsystem.component.ENTRY_META_SEPARATOR
+import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
+import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
+import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
+import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -48,7 +33,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 
-internal const val META_SEPARATOR = " · "
+internal const val META_SEPARATOR = ENTRY_META_SEPARATOR
 
 // Why: each day under "Hoje", "Ontem" or its date, its bills and payments read as one card.
 internal fun LazyListScope.expenseDayItems(
@@ -59,21 +44,12 @@ internal fun LazyListScope.expenseDayItems(
 ) {
     days.forEach { day ->
         item(key = "day-${day.dayStartMillis}") {
-            Text(
+            EntryDayHeading(
                 text = when (day.relativeDay) {
                     RelativeDay.TODAY -> stringResource(R.string.group_detail_today)
                     RelativeDay.YESTERDAY -> stringResource(R.string.group_detail_yesterday)
                     RelativeDay.OTHER -> dates.toWeekdayDateText(day.dayStartMillis)
                 },
-                modifier = Modifier
-                    .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                        top = 20.dp,
-                        bottom = 8.dp,
-                    ).semantics { heading() },
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         itemsIndexed(
@@ -137,26 +113,15 @@ private fun ExpenseEntryRow(
             )
         },
     ) {
-        Text(
-            text = money.toText(expense.totalMinor),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
+        BillAmountsColumn(
+            totalMinor = expense.totalMinor,
+            myBalanceMinor = expense.myBalanceMinor,
+            money = money,
         )
-        expense.myBalanceMinor?.let { balance ->
-            Text(
-                text = money.toSignedText(balance),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = amountColorOf(balance),
-            )
-        }
     }
 }
 
-/*
- * Why: a bill and a payment share the line: the icon, what it was, the meta under it, the amounts and its ⋮ at the end,
- * which a long press on the line opens too.
- */
+// Why: a bill and a payment share the line, ending in its ⋮, which a long press on the line opens too.
 @Composable
 internal fun EntryFrameRow(
     icon: ImageVector,
@@ -172,47 +137,16 @@ internal fun EntryFrameRow(
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
-    Surface(
-        modifier = modifier.fillMaxWidth(),
+    EntryLineSurface(
+        title = title,
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Row(
-            modifier = Modifier
-                .combinedClickable(
-                    // Why: the role Surface's onClick gave the line before its ⋮ moved the click here.
-                    role = Role.Button,
-                    onClick = onClick,
-                    onLongClick = { isMenuOpen = true },
-                    onLongClickLabel = stringResource(R.string.group_detail_entry_options, title),
-                ).padding(
-                    start = 16.dp,
-                    end = 4.dp,
-                    top = 12.dp,
-                    bottom = 12.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (leading != null) leading() else EntryIconTile(icon)
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                meta()
-            }
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-                content = trailing,
-            )
+        onClick = onClick,
+        modifier = modifier,
+        leading = leading ?: { EntryIconTile(icon) },
+        meta = meta,
+        onLongClick = { isMenuOpen = true },
+        onLongClickLabel = stringResource(R.string.group_detail_entry_options, title),
+        end = {
             EntryMenu(
                 title = title,
                 items = menuItems,
@@ -220,8 +154,9 @@ internal fun EntryFrameRow(
                 onOpenChange = { isMenuOpen = it },
                 onEvent = onEvent,
             )
-        }
-    }
+        },
+        trailing = trailing,
+    )
 }
 
 // Why: "17:40 · na fila · Você pagou", with the home's pending dot while the bill waits for the server.
@@ -242,44 +177,4 @@ private fun ExpenseMetaLine(
             ),
         ),
     )
-}
-
-// Why: a bill's or a payment's icon, in the same tile.
-@Composable
-private fun EntryIconTile(icon: ImageVector) {
-    Box(
-        modifier = Modifier
-            .size(44.dp)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(14.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-        )
-    }
-}
-
-// Why: the meta line of a bill or a payment, with the home's pending dot while it waits for the server.
-@Composable
-internal fun EntryMetaLine(
-    isPending: Boolean,
-    parts: List<String>,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (isPending) {
-            PendingIndicator()
-        }
-        Text(
-            text = parts.joinToString(META_SEPARATOR),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
 }
