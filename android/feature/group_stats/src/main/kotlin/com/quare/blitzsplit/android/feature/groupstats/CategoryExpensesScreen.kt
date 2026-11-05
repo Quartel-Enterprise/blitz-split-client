@@ -57,7 +57,6 @@ import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
@@ -111,11 +110,10 @@ fun CategoryExpensesContent(
         onTabClick = { tab -> onEvent(CategoryExpensesUiEvent.OnRailTabClicked(tab)) },
         onSearchClick = { onEvent(CategoryExpensesUiEvent.OnRailSearchClicked) },
         modifier = modifier,
-    ) { showsRail ->
+    ) {
         CategoryExpensesScaffold(
             state = state,
             onEvent = onEvent,
-            showsRail = showsRail,
         )
     }
 }
@@ -125,7 +123,6 @@ fun CategoryExpensesContent(
 private fun CategoryExpensesScaffold(
     state: CategoryExpensesUiState,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
-    showsRail: Boolean,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
@@ -135,7 +132,7 @@ private fun CategoryExpensesScaffold(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             MediumFlexibleTopAppBar(
                 title = { Text(stringResource(R.string.category_expenses_title)) },
