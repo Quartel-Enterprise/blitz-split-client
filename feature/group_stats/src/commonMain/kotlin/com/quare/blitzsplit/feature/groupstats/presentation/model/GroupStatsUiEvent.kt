@@ -75,7 +75,7 @@ sealed interface GroupStatsUiEvent : UiEvent {
         val grain: StatsGrain,
     ) : GroupStatsUiEvent
 
-    // Why: a person of "Por pessoa", which opens their profile.
+    // Why: a person of "Por pessoa" or "Acertos", which opens their profile.
     data class OnPersonClicked(
         val memberId: String,
     ) : GroupStatsUiEvent

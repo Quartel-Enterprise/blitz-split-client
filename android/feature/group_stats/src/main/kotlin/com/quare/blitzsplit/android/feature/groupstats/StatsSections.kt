@@ -425,17 +425,15 @@ internal fun StatsSettlingSection(
                 R.string.group_stats_settles_fastest to settling.fastest,
                 R.string.group_stats_settles_slowest to settling.slowest,
             ).forEachIndexed { index, (label, settler) ->
+                val shape = groupedRowShapeOf(index, 2)
                 StatsSettlerRow(
                     label = stringResource(label),
                     settler = settler,
                     money = money,
-                    onOpen = { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
                     modifier = Modifier
-                        .clip(groupedRowShapeOf(index, 2))
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainerLowest,
-                            groupedRowShapeOf(index, 2),
-                        ),
+                        .clip(shape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                        .opensProfile { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
                 )
             }
         }
@@ -457,7 +455,6 @@ private fun StatsSettlerRow(
     label: String,
     settler: StatsSettler,
     money: MoneyFormatter,
-    onOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val name = if (settler.isMe) stringResource(R.string.group_stats_you, settler.name) else settler.name
@@ -474,7 +471,7 @@ private fun StatsSettlerRow(
         avatarColor = settler.avatarColor,
         photoUrl = settler.photoUrl,
         description = listOfNotNull(label, name, days, open).joinToString(", "),
-        modifier = modifier.opensProfile(onOpen),
+        modifier = modifier,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
