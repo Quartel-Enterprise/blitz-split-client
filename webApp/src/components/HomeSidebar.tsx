@@ -85,15 +85,17 @@ export function HomeFrame({ children }: { children: ReactNode }) {
 
 /**
  * A page's chrome as it was drawn once the page left, its clicks through the sidebar's presenter, which opens a tab,
- * Perfil, Home and a group from any page; Search and the bell wait for the next page's own.
+ * Perfil, Home, Search and a group from any page; the bell waits for the next page's own.
  */
 function sidebarChrome(chrome: HomeShellChrome, presenter: HomeSidebarPresenter | undefined): HomeShellChrome {
   return {
     ...chrome,
+    // Why: the tab still drawn selected is no longer the page on top, so its click must go through too.
+    isOutsideTabs: true,
     onTab: (tab) => presenter?.openTab(tab),
     onProfile: () => presenter?.openProfile(),
     onBrand: () => presenter?.openBrand(),
-    search: chrome.search && { ...chrome.search, onOpen: nothing },
+    search: chrome.search && { ...chrome.search, onOpen: () => presenter?.openSearch() },
     bell: chrome.bell && { ...chrome.bell, onOpen: nothing },
     openGroups:
       chrome.openGroups && chrome.openGroups !== 'loading' ? { ...chrome.openGroups, onOpen: (id) => presenter?.openGroup(id) } : chrome.openGroups,
