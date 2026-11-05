@@ -35,11 +35,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
-import com.quare.blitzsplit.android.designsystem.component.HomeBarsKind
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -81,7 +81,7 @@ fun GlobalBalancesContent(
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         HomeBarsScaffold(
             bars = HomeBars(
-                kind = if (layout.usesNavigationRail) HomeBarsKind.RAIL else HomeBarsKind.BOTTOM_BAR,
+                kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.BALANCES,
                 onTabClick = onTabClick,
                 onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) }.takeIf { state.canSearch },

@@ -18,7 +18,10 @@ The home's four tabs and the web's and the Mac's shell.
     the navigation (`HomeBarsLayout`), and each screen that has them (the tabs, Search, a group's screens and
     Statistics wherever the rail shows beside them) only leaves their place free and says what they show
     (`HomeBarsScaffold`): switching tabs, a rail click from a group and a group opened from a tab change only the content,
-    with Navigation 3's default fade, while the selected tab moves within the one bar. A screen without the bars (the
+    while the selected tab moves within the one bar. Between two tabs (Search included) the tab coming in fades in over
+    the one leaving in 180 ms (the web's `page-enter`), the one leaving fading out over it when the switch goes back down
+    the stack or follows the back gesture, so the content never shows half transparent (`createHomeTabTransitionSpec`);
+    a group and every other screen keep Navigation 3's default fade. A screen without the bars (the
     profile, a group on a phone upright) covers them as it comes in, and they go once no screen with them is left.
     Each layout keeps its bars: the bottom bar on a phone upright, the rail without labels on a phone lying down and a
     tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group

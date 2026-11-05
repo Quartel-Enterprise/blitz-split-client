@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -19,17 +22,21 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.core.model.HomeTab
+
+// Why: M3's NavigationBar height and NavigationRail width, which a screen leaves free until the bar is first measured.
+private val estimatedBarExtent = 80.dp
 
 /*
  * Why: what the home's one bar or rail shows while a screen is in front: the tab selected (null for Search), where each
@@ -47,34 +54,53 @@ class HomeBars(
     val railHeader: @Composable (isShort: Boolean) -> Unit = {},
 )
 
+// Why: one HomeBarsScaffold's bars, under the back stack entry it draws in.
+private class HomeBarsRegistration(
+    val owner: Any,
+    val entryKey: Any,
+    val bars: HomeBars,
+)
+
 /*
  * Why: the bars are drawn once, around the navigation, so switching tabs swaps only the content and the selected tab
  * moves within the one bar. The screens in front each say what the bar shows (HomeBarsScaffold); the one highest on the
- * back stack wins, so a tab coming in takes the bar as the one leaving still fades out under it.
+ * back stack wins, so a tab coming in takes the bar as the one leaving still fades out under it. Each scaffold adds and
+ * removes only its own, so an entry drawn twice during a scene change never takes the bars of the copy that stays.
  */
 @Stable
 internal class HomeBarsHost {
     // Why: in the order the screens came in, so the latest one leads once none of them is on the back stack any more.
-    private val registered = mutableStateListOf<Pair<Any, HomeBars>>()
+    private val registered = mutableStateListOf<HomeBarsRegistration>()
 
-    // Why: the bar's measured height or the rail's width, insets included, which the screens leave free for it.
-    var extent: Dp by mutableStateOf(0.dp)
+    // Why: the bar's measured height and the rail's width, insets included, each kept apart so one never pads the other.
+    private val extents = mutableStateMapOf<HomeBarsKind, Dp>()
 
-    fun put(
-        key: Any,
-        bars: HomeBars,
+    fun extentOf(kind: HomeBarsKind): Dp? = extents[kind]
+
+    fun onMeasured(
+        kind: HomeBarsKind,
+        extent: Dp,
     ) {
-        val index = registered.indexOfFirst { (registeredKey, _) -> registeredKey == key }
-        if (index == -1) registered.add(key to bars) else registered[index] = key to bars
+        if (extents[kind] != extent) extents[kind] = extent
     }
 
-    fun remove(key: Any) {
-        registered.removeAll { (registeredKey, _) -> registeredKey == key }
+    fun put(
+        owner: Any,
+        entryKey: Any,
+        bars: HomeBars,
+    ) {
+        val registration = HomeBarsRegistration(owner, entryKey, bars)
+        val index = registered.indexOfFirst { it.owner === owner }
+        if (index == -1) registered.add(registration) else registered[index] = registration
+    }
+
+    fun remove(owner: Any) {
+        registered.removeAll { it.owner === owner }
     }
 
     fun barsOf(stackKeys: List<Any>): HomeBars? {
-        val keyOnTop = stackKeys.lastOrNull { key -> registered.any { (registeredKey, _) -> registeredKey == key } }
-        return registered.lastOrNull { (key, _) -> keyOnTop == null || key == keyOnTop }?.second
+        val keyOnTop = stackKeys.lastOrNull { key -> registered.any { it.entryKey == key } }
+        return registered.lastOrNull { keyOnTop == null || it.entryKey == keyOnTop }?.bars
     }
 }
 
@@ -99,10 +125,11 @@ fun HomeBarsLayout(
         if (bars != null) {
             val measureExtent = Modifier.layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
-                host.extent = when (bars.kind) {
+                val extent = when (bars.kind) {
                     HomeBarsKind.BOTTOM_BAR -> placeable.height
                     HomeBarsKind.RAIL -> placeable.width
-                }.toDp()
+                }
+                host.onMeasured(bars.kind, extent.toDp())
                 layout(placeable.width, placeable.height) { placeable.place(0, 0) }
             }
             when (bars.kind) {
@@ -145,17 +172,28 @@ fun HomeBarsScaffold(
 ) {
     val host = LocalHomeBarsHost.current
     val key = LocalHomeBarsEntryKey.current
-    if (bars != null && (host == null || key == null)) {
-        InlineHomeBarsScaffold(bars, modifier, content)
-        return
-    }
-    if (bars != null && host != null && key != null) {
-        DisposableEffect(host, key) { onDispose { host.remove(key) } }
-        SideEffect { host.put(key, bars) }
+    if (bars != null) {
+        if (host == null || key == null) {
+            InlineHomeBarsScaffold(bars, modifier, content)
+            return
+        }
+        val owner = remember { Any() }
+        DisposableEffect(host, owner) { onDispose { host.remove(owner) } }
+        SideEffect { host.put(owner, key, bars) }
     }
     val kind = bars?.kind
+    // Why: until the bar is first measured (the first frame after a cold start), M3's size and the system bar under it.
+    val systemBars = WindowInsets.systemBars.asPaddingValues()
+    val layoutDirection = LocalLayoutDirection.current
+    val estimate by rememberUpdatedState(
+        when (kind) {
+            HomeBarsKind.BOTTOM_BAR -> estimatedBarExtent + systemBars.calculateBottomPadding()
+            HomeBarsKind.RAIL -> estimatedBarExtent + systemBars.calculateStartPadding(layoutDirection)
+            null -> 0.dp
+        },
+    )
     val padding = remember(host, kind) {
-        if (host != null && kind != null) HomeBarsPadding(host, kind) else PaddingValues()
+        if (host != null && kind != null) HomeBarsPadding(host, kind) { estimate } else PaddingValues()
     }
     // Why: one call site whether the bars show or not, so a rail coming or going keeps the screen's state.
     Box(
@@ -171,16 +209,20 @@ fun HomeBarsScaffold(
 private class HomeBarsPadding(
     private val host: HomeBarsHost,
     private val kind: HomeBarsKind,
+    private val estimate: () -> Dp,
 ) : PaddingValues {
+    private val extent: Dp
+        get() = host.extentOf(kind) ?: estimate()
+
     override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp =
-        if (kind == HomeBarsKind.RAIL && layoutDirection == LayoutDirection.Ltr) host.extent else 0.dp
+        if (kind == HomeBarsKind.RAIL && layoutDirection == LayoutDirection.Ltr) extent else 0.dp
 
     override fun calculateTopPadding(): Dp = 0.dp
 
     override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp =
-        if (kind == HomeBarsKind.RAIL && layoutDirection == LayoutDirection.Rtl) host.extent else 0.dp
+        if (kind == HomeBarsKind.RAIL && layoutDirection == LayoutDirection.Rtl) extent else 0.dp
 
-    override fun calculateBottomPadding(): Dp = if (kind == HomeBarsKind.BOTTOM_BAR) host.extent else 0.dp
+    override fun calculateBottomPadding(): Dp = if (kind == HomeBarsKind.BOTTOM_BAR) extent else 0.dp
 }
 
 // Why: a preview draws the screen alone, so its bars come with it, as the canvas draws them.

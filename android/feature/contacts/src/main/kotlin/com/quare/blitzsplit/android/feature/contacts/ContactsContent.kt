@@ -34,9 +34,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
-import com.quare.blitzsplit.android.designsystem.component.HomeBarsKind
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -74,7 +74,7 @@ fun ContactsContent(
         val columnWidth = if (layout.isTablet) tabletColumnMaxWidth else columnMaxWidth
         HomeBarsScaffold(
             bars = HomeBars(
-                kind = if (layout.usesNavigationRail) HomeBarsKind.RAIL else HomeBarsKind.BOTTOM_BAR,
+                kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.CONTACTS,
                 onTabClick = onTabClick,
                 onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },

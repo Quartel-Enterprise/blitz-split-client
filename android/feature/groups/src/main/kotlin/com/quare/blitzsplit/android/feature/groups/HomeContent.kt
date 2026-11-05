@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ActivityBellButton
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
-import com.quare.blitzsplit.android.designsystem.component.HomeBarsKind
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -76,7 +76,7 @@ private fun homeBarsOf(
 ): HomeBars {
     val onSplitBillClick = { onEvent(HomeUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     return HomeBars(
-        kind = if (usesRail) HomeBarsKind.RAIL else HomeBarsKind.BOTTOM_BAR,
+        kind = homeBarsKindOf(usesRail),
         selected = HomeTab.HOME,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
         onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
-import com.quare.blitzsplit.android.designsystem.component.HomeBarsKind
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -37,7 +37,7 @@ internal fun groupsBarsOf(
 ): HomeBars {
     val onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     return HomeBars(
-        kind = if (usesRail) HomeBarsKind.RAIL else HomeBarsKind.BOTTOM_BAR,
+        kind = homeBarsKindOf(usesRail),
         selected = HomeTab.GROUPS.takeUnless { state.isSearching },
         onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
         onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
