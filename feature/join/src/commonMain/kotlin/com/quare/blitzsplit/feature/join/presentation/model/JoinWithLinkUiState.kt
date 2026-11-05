@@ -15,9 +15,9 @@ data class JoinWithLinkUiState(
     val hasTorch: Boolean,
     val isTorchOn: Boolean,
 ) {
-    // Why: the flashlight button, while the camera is open and has one.
+    // Why: the flashlight button, while the camera is open and has one; never once the device is left without a camera.
     val showsTorch: Boolean
-        get() = hasTorch && cameraAccess == CameraAccess.GRANTED && !isCameraUnavailable
+        get() = hasTorch && showsCameraPreview && !isCameraUnavailable
 
     // Why: the camera area: the prompt until "Open camera", then the viewfinder or why the camera isn't there.
     val cameraStage: CameraStage

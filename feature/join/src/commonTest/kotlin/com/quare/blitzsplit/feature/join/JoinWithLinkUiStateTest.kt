@@ -265,10 +265,27 @@ class JoinWithLinkUiStateTest {
         assertFalse(showsPreview)
     }
 
+    @Test
+    fun `GIVEN the camera allowed with a torch but no camera left WHEN checking the torch THEN it does not show`() {
+        // Given
+        val state = state(
+            cameraAccess = CameraAccess.GRANTED,
+            hasCamera = false,
+            hasTorch = true,
+        )
+
+        // When
+        val showsTorch = state.showsTorch
+
+        // Then
+        assertFalse(showsTorch)
+    }
+
     private fun state(
         cameraAccess: CameraAccess,
         hasCamera: Boolean = true,
         isCameraUnavailable: Boolean = false,
+        hasTorch: Boolean = false,
     ): JoinWithLinkUiState = JoinWithLinkUiState(
         link = "",
         isLinkInvalid = false,
@@ -276,7 +293,7 @@ class JoinWithLinkUiStateTest {
         cameraAccess = cameraAccess,
         hasCamera = hasCamera,
         isCameraUnavailable = isCameraUnavailable,
-        hasTorch = false,
+        hasTorch = hasTorch,
         isTorchOn = false,
     )
 }

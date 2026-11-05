@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+import Combine
 import Observation
 import Shared
 import SwiftUI
@@ -100,16 +101,19 @@ private struct JoinWithLinkContent: View {
         layout
             .task { model.checkHasCamera() }
             // Why: a webcam plugged in or out, or an iPhone nearby as a Mac's Continuity Camera, while the reader is open.
-            .onReceive(NotificationCenter.default.publisher(for: AVCaptureDevice.wasConnectedNotification)) { _ in
-                model.checkHasCamera()
-            }
-            .onReceive(NotificationCenter.default.publisher(for: AVCaptureDevice.wasDisconnectedNotification)) { _ in
-                model.checkHasCamera()
-            }
+            // AVFoundation may post these off the main thread, and the state they change is drawn on it.
+            .onReceive(cameraChanges) { _ in model.checkHasCamera() }
             .onChange(of: scenePhase) { _, phase in
                 // Why: before "Open camera" nothing is asked, not even on coming back to the app.
                 if phase == .active, model.state.isCameraRequested { Task { await model.checkCameraAccess() } }
             }
+    }
+
+    private var cameraChanges: some Publisher<Notification, Never> {
+        let center = NotificationCenter.default
+        return center.publisher(for: AVCaptureDevice.wasConnectedNotification)
+            .merge(with: center.publisher(for: AVCaptureDevice.wasDisconnectedNotification))
+            .receive(on: DispatchQueue.main)
     }
 
     @ViewBuilder
