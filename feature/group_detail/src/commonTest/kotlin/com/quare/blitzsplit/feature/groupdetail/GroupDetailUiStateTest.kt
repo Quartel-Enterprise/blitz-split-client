@@ -161,9 +161,33 @@ class GroupDetailUiStateTest {
     }
 
     @Test
-    fun `GIVEN Membros picked WHEN reading the split button THEN it does not show`() {
+    fun `GIVEN Membros picked WHEN reading the split button THEN it shows as on the other tabs`() {
         // Given
         val state = state().copy(tab = GroupTab.MEMBERS)
+
+        // When
+        val showsSplitBillButton = state.showsSplitBillButton
+
+        // Then
+        assertTrue(showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN Membros picked in a group without bills WHEN reading the split button THEN it still shows`() {
+        // Given
+        val state = state(hasBills = false).copy(tab = GroupTab.MEMBERS)
+
+        // When
+        val showsSplitBillButton = state.showsSplitBillButton
+
+        // Then
+        assertTrue(showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN Membros picked before Room is read WHEN reading the split button THEN it does not show`() {
+        // Given
+        val state = state(isLoaded = false).copy(tab = GroupTab.MEMBERS)
 
         // When
         val showsSplitBillButton = state.showsSplitBillButton

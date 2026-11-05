@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.android.feature.members
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material3.FabPosition
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,25 +9,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
-import com.quare.blitzsplit.android.designsystem.component.GroupTabFloatingButton
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
-import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
-import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 /*
  * Why: "Membros", the group's tab drawn under its header: the screen asks for it whatever tab is picked, so the members
- * are already read when the tab is tapped, and draws the rows only while it is. A phone upright floats "Adicionar
- * pessoa" over the list; anywhere else the button closes the list. Its dialogs and sheet open over the group.
+ * are already read when the tab is tapped, and hands the group its rows, drawn only while it is picked. "Adicionar
+ * pessoa" sits beside the link, since the group's "Rachar conta" floats over every tab. Its dialogs and sheet open
+ * over the group.
  */
 @Composable
 fun rememberMembersTab(
@@ -37,7 +31,7 @@ fun rememberMembersTab(
     snackbarHostState: SnackbarHostState,
     // Why: its own key, since the group's ViewModel already takes the route's.
     viewModel: MembersViewModel = koinViewModel(key = "members:$route") { parametersOf(route) },
-): GroupTabBody {
+): LazyListScope.() -> Unit {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -66,29 +60,14 @@ fun rememberMembersTab(
     MembersOverlay(
         viewModel = viewModel,
     )
-    val usesFab = rememberDeviceLayout() == DeviceLayout.PhonePortrait
     val money = rememberMoneyFormatter(state.currency)
-    val addLabel = stringResource(R.string.members_add)
-    return GroupTabBody(
-        listContent = {
-            memberItems(
-                state = state,
-                money = money,
-                showsAddButton = !usesFab,
-                onEvent = viewModel::onEvent,
-            )
-        },
-        floatingButton = if (usesFab && state.isLoaded) {
-            GroupTabFloatingButton(
-                icon = Icons.Outlined.PersonAdd,
-                label = addLabel,
-                position = FabPosition.Start,
-                onClick = { viewModel.onEvent(MembersUiEvent.OnAddClicked) },
-            )
-        } else {
-            null
-        },
-    )
+    return {
+        memberItems(
+            state = state,
+            money = money,
+            onEvent = viewModel::onEvent,
+        )
+    }
 }
 
 @Composable

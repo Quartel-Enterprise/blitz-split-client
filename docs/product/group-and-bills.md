@@ -4,7 +4,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
 
   - A group tapped on the home opens "Group expenses" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Split a bill" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
-    web). Its tabs Expenses / Balances / Members are one screen (`Route.GroupDetail.tab` only says which it opens on):
+    web), the group's main button on every tab, Members included, in the same place. Its tabs Expenses / Balances / Members are one screen (`Route.GroupDetail.tab` only says which it opens on):
     the header, "Your balance in this group" and the tabs stay, only what is under them changes, with no transition nor
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the

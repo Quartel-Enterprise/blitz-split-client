@@ -2,10 +2,11 @@ package com.quare.blitzsplit.android.feature.members
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,9 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,13 +39,12 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 
 /*
- * Why: Membros under the group's header: the group's link, who is in it and, unless it floats over the list,
- * "Adicionar pessoa". The link and the people shimmer until Room is read, the header staying where it is.
+ * Why: Membros under the group's header: the group's link, with "Adicionar pessoa" beside it, and who is in it. The
+ * link and the people shimmer until Room is read, the header staying where it is.
  */
 internal fun LazyListScope.memberItems(
     state: MembersUiState,
     money: MoneyFormatter,
-    showsAddButton: Boolean,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
     if (!state.isLoaded) {
@@ -77,16 +78,12 @@ internal fun LazyListScope.memberItems(
             ),
         )
     }
-    if (showsAddButton) {
-        item(key = "members-add") {
-            AddButton(
-                onEvent = onEvent,
-                modifier = Modifier.padding(16.dp),
-            )
-        }
-    }
 }
 
+/*
+ * Why: the group's link with its two ways in, "Adicionar pessoa" (someone without the app, by name) beside
+ * "Compartilhar" (whoever has it joins through the link), under the link, where a phone has the room for them.
+ */
 @Composable
 private fun LinkCard(
     displayLink: String?,
@@ -98,56 +95,57 @@ private fun LinkCard(
         shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(
                 start = 16.dp,
-                end = 8.dp,
+                end = 12.dp,
                 top = 12.dp,
                 bottom = 12.dp,
             ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Link,
-                contentDescription = null,
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.members_link_title),
-                    style = MaterialTheme.typography.titleSmall,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Link,
+                    contentDescription = null,
                 )
-                Text(
-                    text = displayLink ?: stringResource(R.string.members_link_pending),
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.members_link_title),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = displayLink ?: stringResource(R.string.members_link_pending),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
-            Button(onClick = { onEvent(MembersUiEvent.OnShareClicked) }) {
-                Text(stringResource(R.string.members_share))
+            // Why: Compartilhar wraps under Adicionar pessoa when a narrow phone or a large font has no room for both.
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(onClick = { onEvent(MembersUiEvent.OnAddClicked) }) {
+                    Icon(
+                        imageVector = Icons.Outlined.PersonAdd,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(ButtonDefaults.IconSize),
+                    )
+                    Text(stringResource(R.string.members_add))
+                }
+                Button(onClick = { onEvent(MembersUiEvent.OnShareClicked) }) {
+                    Text(stringResource(R.string.members_share))
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun AddButton(
-    onEvent: (MembersUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FilledTonalButton(
-        onClick = { onEvent(MembersUiEvent.OnAddClicked) },
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp),
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.PersonAdd,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 8.dp),
-        )
-        Text(stringResource(R.string.members_add))
     }
 }
 
@@ -234,7 +232,6 @@ private fun MemberItemsPreview() {
             memberItems(
                 state = createPreviewState(),
                 money = money,
-                showsAddButton = true,
                 onEvent = {},
             )
         }
@@ -250,7 +247,6 @@ private fun MemberItemsLoadingPreview() {
             memberItems(
                 state = createPreviewState().copy(isLoaded = false),
                 money = money,
-                showsAddButton = true,
                 onEvent = {},
             )
         }
