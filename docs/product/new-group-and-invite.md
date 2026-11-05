@@ -27,4 +27,7 @@ Creating a group and inviting people.
     title and buttons below. "Change the link?" takes a book's right half and a tabletop's top half. iOS opens it as a
     sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
     down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
-    group's "Invite people" (or Members' Share), with "Change link…" under its share button.
+    group's "Invite people" (or Members' Share), with "Change link…" under its share button. Every Invite, the new
+    group's too, ends with "Add someone without the app": someone who won't install it goes in by name, as in "New
+    group", so it opens the group's Members with "Add person" already open (`RequestAddPerson`, which the group's
+    Members on top takes once).

@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -39,6 +40,7 @@ class InviteViewModel(
     private val encodeQrCode: EncodeQrCode,
     private val retrySync: RetrySync,
     private val changeInviteLink: ChangeInviteLink,
+    private val requestAddPerson: RequestAddPerson,
     observeGroup: ObserveGroup,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
@@ -109,6 +111,8 @@ class InviteViewModel(
                 groupId = route.groupId,
                 tab = GroupTab.MEMBERS,
             )
+
+            InviteUiEvent.OnAddPersonClicked -> addPerson()
 
             InviteUiEvent.OnGoToGroupClicked -> navigator.openGroup(
                 from = route,
@@ -200,6 +204,20 @@ class InviteViewModel(
             changeInviteLink(route.groupId).onFailure { uiAction.emit(InviteUiAction.ShowChangeLinkFailed) }
             uiState.update { it.copy(isChangingLink = false) }
         }
+    }
+
+    /*
+     * Why: someone without the app joins by name, as in "New group": the group's Members opens with "Add person". Only
+     * while Invite is still on top, as openGroup goes, so a late tap leaves no ask behind.
+     */
+    private fun addPerson() {
+        if (navigator.backStack.value.lastOrNull() != route) return
+        requestAddPerson(route.groupId)
+        navigator.openGroup(
+            from = route,
+            groupId = route.groupId,
+            tab = GroupTab.MEMBERS,
+        )
     }
 
     private fun send(action: InviteUiAction) {

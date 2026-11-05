@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.invite
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
+import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -696,6 +697,7 @@ class InviteChangeLinkViewModelTest {
             },
             retrySync = RetrySync { },
             changeInviteLink = ChangeInviteLink { groups.rotateInviteCode(it) },
+            requestAddPerson = RequestAddPerson { },
             observeGroup = ObserveGroupUseCase(groups),
             observeSyncState = ObserveSyncState { MutableStateFlow(SyncState.SYNCED) },
             connectivityObserver = NetworkConnectivityObserver { isOnline },

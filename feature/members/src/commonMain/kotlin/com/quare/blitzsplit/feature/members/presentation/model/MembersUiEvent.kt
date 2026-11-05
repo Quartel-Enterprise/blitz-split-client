@@ -13,6 +13,8 @@ sealed interface MembersUiEvent : UiEvent {
 
             OnAddClicked -> EventAnalytics.Automatic("member_add_clicked")
 
+            OnInviteInsteadClicked -> EventAnalytics.Automatic("member_editor_invite_clicked")
+
             is OnMemberClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 
             is OnRenameClicked -> EventAnalytics.Automatic("member_rename_clicked")
@@ -64,6 +66,9 @@ sealed interface MembersUiEvent : UiEvent {
     data object OnShareClicked : MembersUiEvent
 
     data object OnAddClicked : MembersUiEvent
+
+    // Why: "Has the app? Invite with the link" in "Add person", for someone who has the app: Invite, with the QR code.
+    data object OnInviteInsteadClicked : MembersUiEvent
 
     // Why: a member's row (their face or name), which opens their profile; the ⋮ keeps the member's menu.
     data class OnMemberClicked(

@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
@@ -69,6 +70,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -1109,6 +1111,7 @@ class GroupDetailBalancesViewModelTest {
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeAddPersonRequest = ObserveAddPersonRequest { flowOf(null) },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             teachUseCases = CategoryTeachUseCases(
                 observeOffer = ObserveCategoryTeachOfferUseCase(teach),

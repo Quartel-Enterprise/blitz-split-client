@@ -23,6 +23,8 @@ sealed interface InviteUiEvent : UiEvent {
 
             OnRetryClicked -> EventAnalytics.Automatic("retry_clicked", mapOf("source" to SOURCE))
 
+            OnAddPersonClicked -> EventAnalytics.Automatic("invite_add_person_clicked")
+
             OnGoToGroupClicked -> EventAnalytics.Automatic("invite_go_to_group_clicked")
 
             OnChangeLinkClicked -> EventAnalytics.Automatic("invite_link_change_clicked")
@@ -43,6 +45,9 @@ sealed interface InviteUiEvent : UiEvent {
 
     // Why: "Ver quem já entrou", the group's "Membros".
     data object OnSeeWhoJoinedClicked : InviteUiEvent
+
+    // Why: "Add someone without the app", the group's Members with "Add person" open.
+    data object OnAddPersonClicked : InviteUiEvent
 
     // Why: "Tentar de novo", while the link failed to come.
     data object OnRetryClicked : InviteUiEvent

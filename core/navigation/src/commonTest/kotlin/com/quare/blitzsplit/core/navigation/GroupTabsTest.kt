@@ -123,6 +123,34 @@ class GroupTabsTest {
     }
 
     @Test
+    fun `GIVEN Convidar over Despesas WHEN opening Membros THEN the group below is never on top in between`() {
+        // Given
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            ),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
+        val recording = StackRecordingNavigator(navigator)
+
+        // When
+        recording.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
+        )
+
+        // Then
+        assertEquals(
+            listOf(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))),
+            recording.stacks,
+        )
+    }
+
+    @Test
     fun `GIVEN Convidar over the group opened on Membros WHEN opening Membros THEN goes back to it`() {
         // Given
         prepareScenario(
@@ -239,6 +267,52 @@ class GroupTabsTest {
 
         // Then
         assertNull(groupId)
+    }
+
+    // Why: the back stack after each change, so a case sees whether a screen in between ever was on top.
+    private class StackRecordingNavigator(
+        private val navigator: Navigator,
+    ) : Navigator by navigator {
+        val stacks = mutableListOf<List<Route>>()
+
+        override fun navigate(route: Route) {
+            record { navigator.navigate(route) }
+        }
+
+        override fun navigateBack() {
+            record { navigator.navigateBack() }
+        }
+
+        override fun replaceTop(route: Route) {
+            record { navigator.replaceTop(route) }
+        }
+
+        override fun replaceAll(route: Route) {
+            record { navigator.replaceAll(route) }
+        }
+
+        override fun replaceAbove(
+            size: Int,
+            route: Route,
+        ) {
+            record { navigator.replaceAbove(size, route) }
+        }
+
+        override fun replaceAbove(
+            size: Int,
+            routes: List<Route>,
+        ) {
+            record { navigator.replaceAbove(size, routes) }
+        }
+
+        override fun popTo(size: Int) {
+            record { navigator.popTo(size) }
+        }
+
+        private fun record(change: () -> Unit) {
+            change()
+            stacks += navigator.backStack.value
+        }
     }
 
     private fun prepareScenario(vararg routes: Route) {

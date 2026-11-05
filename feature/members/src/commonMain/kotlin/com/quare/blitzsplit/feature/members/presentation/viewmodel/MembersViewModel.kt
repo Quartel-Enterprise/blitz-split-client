@@ -15,6 +15,8 @@ import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeAddPersonRequest
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
@@ -41,7 +43,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -58,6 +62,8 @@ class MembersViewModel(
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
     private val releaseMember: ReleaseMember,
+    private val consumeAddPersonRequest: ConsumeAddPersonRequest,
+    observeAddPersonRequest: ObserveAddPersonRequest,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
@@ -95,6 +101,9 @@ class MembersViewModel(
 
     private var expenses: List<Expense> = emptyList()
 
+    // Why: "Add person" is open from Invite's ask, which goes once it closes.
+    private var isEditorFromRequest = false
+
     // Why: the group's members as last read, whose account or name keys the profile a row opens.
     private var groupMembers: List<GroupMember> = emptyList()
 
@@ -114,16 +123,38 @@ class MembersViewModel(
             this.expenses = expenses
             if (group != null) show(group)
         }.launchIn(viewModelScope)
+        /*
+         * Why: Invite's "Add someone without the app". Only the group's screen on top opens it: another one of the same
+         * group may still be alive under it, on a tab it is leaving. The ask stays until the dialog closes, as a notice
+         * waits to be shown: a screen mounted twice (React's StrictMode) clears the first ViewModel right away.
+         */
+        combine(
+            observeAddPersonRequest(),
+            navigator.backStack,
+            // Why: an ask that came while another name editor was open opens once that one closes.
+            uiState.map { it.editor == null }.distinctUntilChanged(),
+        ) { groupId, backStack, _ ->
+            val isAsked = groupId == route.groupId && backStack.lastOrNull() == route
+            if (isAsked && !isEditorFromRequest && uiState.value.editor == null) {
+                isEditorFromRequest = true
+                openEditor(
+                    memberId = null,
+                    draft = "",
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: MembersUiEvent) {
         when (event) {
             // Why: over the group, or in the place of its bill the Mac draws beside it.
-            MembersUiEvent.OnShareClicked -> navigator.openFromGroupScreen(
-                from = route,
-                groupId = route.groupId,
-                next = Route.Invite(route.groupId, isNewGroup = false),
-            )
+            MembersUiEvent.OnShareClicked -> openInvite()
+
+            // Why: the dialog closes, and Invite opens in its place.
+            MembersUiEvent.OnInviteInsteadClicked -> {
+                closeEditor()
+                openInvite()
+            }
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,
@@ -160,8 +191,16 @@ class MembersViewModel(
 
             MembersUiEvent.OnSaveClicked -> save()
 
-            MembersUiEvent.OnEditorDismissed -> uiState.update { it.copy(editor = null) }
+            MembersUiEvent.OnEditorDismissed -> closeEditor()
         }
+    }
+
+    private fun openInvite() {
+        navigator.openFromGroupScreen(
+            from = route,
+            groupId = route.groupId,
+            next = Route.Invite(route.groupId, isNewGroup = false),
+        )
     }
 
     private fun show(group: Group) {
@@ -194,7 +233,7 @@ class MembersViewModel(
         // Why: the member being renamed may be gone, and a name the draft took may be free or taken by now.
         val editor = uiState.value.editor ?: return
         if (editor.memberId != null && uiState.value.members.none { it.id == editor.memberId }) {
-            uiState.update { it.copy(editor = null) }
+            closeEditor()
         } else {
             checkDraft()
         }
@@ -311,6 +350,21 @@ class MembersViewModel(
         checkDraft()
     }
 
+    // Why: the ask goes before the editor does, since an editor closing may open the next ask's right away.
+    private fun closeEditor() {
+        if (isEditorFromRequest) {
+            isEditorFromRequest = false
+            consumeAddPersonRequest(route.groupId)
+        }
+        uiState.update { it.copy(editor = null) }
+    }
+
+    // Why: leaving the group with the dialog open drops the ask too; a screen mounted again keeps it for the next one.
+    override fun onCleared() {
+        if (isEditorFromRequest && route !in navigator.backStack.value) consumeAddPersonRequest(route.groupId)
+        super.onCleared()
+    }
+
     private fun changeDraft(draft: String) {
         uiState.update { state ->
             state.copy(editor = state.editor?.copy(draft = GroupNameRules.toCapped(draft)))
@@ -363,7 +417,7 @@ class MembersViewModel(
         editor: MemberNameEditor,
         name: String,
     ) {
-        uiState.update { it.copy(editor = null) }
+        closeEditor()
         val memberId = editor.memberId
         val current = uiState.value.members.firstOrNull { it.id == memberId }
         if (memberId != null && current?.name == name) return
