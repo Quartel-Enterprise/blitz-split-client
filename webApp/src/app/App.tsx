@@ -1,6 +1,7 @@
 import { AppPresenter, type JsBillLinkNotice, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { PageKeyContext } from '@/components/HomeShell'
 import { HomeSidebarProvider } from '@/components/HomeSidebar'
 import { AppSkeleton } from '@/components/PageSkeletons'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
@@ -162,9 +163,13 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       : undefined
   const payment = isRegisterPayment ? top : paymentUnderPage
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
+  // Why: another tab or group in the same place of the stack is a new page, which fades in (HomeShell).
+  const pageKey = `${pageIndex}/${pageName}/${page?.groupId ?? ''}/${page?.groupTab ?? ''}`
   return (
     <>
-      <Screen name={pageName} route={page} />
+      <PageKeyContext.Provider value={pageKey}>
+        <Screen name={pageName} route={page} />
+      </PageKeyContext.Provider>
       {panelBill && (
         <BillDetailSheet key={`bill:${panelBill.groupId}/${panelBill.expenseId}`} route={panelBill} isCovered={panelBill !== top && !isShareBill} />
       )}

@@ -1,8 +1,8 @@
-import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, BarChart3, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
-import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
+import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -103,16 +103,9 @@ export function GroupPage({
           <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} />
         </header>
 
-        <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
+        <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
           <nav aria-label={t('groupDetail_breadcrumb')} className="-mb-1 hidden items-center gap-1.5 text-[13px] md:flex">
-            <button
-              type="button"
-              onClick={() => openHomeTab(homeTab)}
-              className="rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              {homeTabLabel(homeTab)}
-            </button>
-            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+            <HomeTabCrumb tab={homeTab} onOpen={openHomeTab} />
             <span aria-current="page" className="truncate">
               {header.groupName}
             </span>
@@ -216,7 +209,7 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
             <ArrowLeft />
           </Button>
         </header>
-        <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col p-4 md:px-8 md:py-7 lg:px-10 lg:py-8">
+        <main className={groupPageContentClass}>
           <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
             <SkeletonLine className="hidden w-40 md:block" />
             {children ?? <GroupHeaderSkeleton />}

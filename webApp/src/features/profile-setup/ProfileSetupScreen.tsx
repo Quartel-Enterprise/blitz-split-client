@@ -31,7 +31,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
       <form
-        className="flex w-full max-w-md flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm sm:p-8"
+        className="page-enter flex w-full max-w-md flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm sm:p-8"
         onSubmit={(event) => {
           event.preventDefault()
           presenter.continueClicked()

@@ -28,7 +28,7 @@ export function RestoreScreen() {
   const codeError = codeErrorKey ? t(codeErrorKey) : undefined
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
-      <div className="flex w-full max-w-4xl flex-col gap-4">
+      <div className="page-enter flex w-full max-w-4xl flex-col gap-4">
         <Button variant="ghost" size="sm" className="-ml-2 self-start" onClick={() => presenter.back()}>
           <ArrowLeft /> {t('common_back')}
         </Button>

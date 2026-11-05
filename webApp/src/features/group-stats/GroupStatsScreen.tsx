@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PersonButton, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
-import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
+import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -79,16 +79,9 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
           </span>
         </header>
 
-        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
+        <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
           <nav aria-label={t('groupDetail_breadcrumb')} className="-mb-1 hidden items-center gap-1.5 text-[13px] md:flex">
-            <button
-              type="button"
-              onClick={() => openHomeTab(homeTab)}
-              className="rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              {homeTabLabel(homeTab)}
-            </button>
-            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+            <HomeTabCrumb tab={homeTab} onOpen={openHomeTab} />
             <button
               type="button"
               onClick={() => presenter.back()}

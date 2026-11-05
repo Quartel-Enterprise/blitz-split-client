@@ -13,7 +13,7 @@ export function WelcomeScreen() {
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
-      <div className="grid w-full max-w-4xl overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
+      <div className="page-enter grid w-full max-w-4xl overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
         <aside className="relative overflow-hidden bg-brand-panel p-6 text-brand-panel-foreground sm:p-10">
           <div aria-hidden className="pointer-events-none absolute -top-9 -right-9 size-50 opacity-90">
             <div className="absolute top-12 left-5 size-28 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-white/15" />

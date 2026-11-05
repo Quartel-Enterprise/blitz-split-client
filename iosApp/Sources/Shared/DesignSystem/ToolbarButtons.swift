@@ -91,20 +91,40 @@ private struct ProminentBarButton: View {
 }
 
 #if os(iOS)
-/// The bar's title on iPhone and iPad, where the selected tab already names the screen: no visible title, but the
-/// header VoiceOver reads. The navigation title still names the screen in the back stack.
-struct HiddenTabTitle: ToolbarContent {
+/// A home tab's title (Home, Groups, Balances, Contacts, Activity) shows only in a wide window, an iPad's room, as on
+/// every platform (Pierre's call): there a large title under the floating tab bar names it, since iPadOS hides an
+/// inline one beside the tabs. On an iPhone, where the selected tab already names the screen, the bar shows no title
+/// but keeps the header VoiceOver reads. The navigation title still names the screen in the back stack.
+struct TabTitle: ToolbarContent {
     let title: String
+    @Environment(\.windowLayout) private var window
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .principal) {
-            Color.clear
-                .frame(width: 1, height: 1)
-                .accessibilityElement()
-                .accessibilityLabel(Text(verbatim: title))
-                .accessibilityAddTraits(.isHeader)
+        if !window.isLarge {
+            ToolbarItem(placement: .principal) {
+                Color.clear
+                    .frame(width: 1, height: 1)
+                    .accessibilityElement()
+                    .accessibilityLabel(Text(verbatim: title))
+                    .accessibilityAddTraits(.isHeader)
+            }
+            .sharedBackgroundVisibility(.hidden)
         }
-        .sharedBackgroundVisibility(.hidden)
+    }
+}
+
+extension View {
+    /// A home tab's title mode, with `TabTitle`: large in an iPad's room, inline (and hidden) on an iPhone.
+    func tabTitleDisplayMode() -> some View {
+        modifier(TabTitleDisplayMode())
+    }
+}
+
+private struct TabTitleDisplayMode: ViewModifier {
+    @Environment(\.windowLayout) private var window
+
+    func body(content: Content) -> some View {
+        content.toolbarTitleDisplayMode(window.isLarge ? .large : .inline)
     }
 }
 #endif

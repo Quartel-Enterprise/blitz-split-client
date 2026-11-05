@@ -1,6 +1,6 @@
-import { House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
+import { ChevronRight, House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
@@ -30,6 +30,50 @@ export function homeTabLabel(tab: HomeTab): string {
 const accountLabels: Record<AccountProvider, MessageKey> = {
   google: 'groups_googleAccount',
   apple: 'groups_appleAccount',
+}
+
+/**
+ * The content of every page in the home's frame: centered and capped at the same width on a wide window, so a tab, a
+ * group and the profile line up as the sidebar opens one after the other.
+ */
+export const pageContentClass = 'mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 sm:p-8 lg:px-10'
+
+/** A group's pages and Statistics: the same width, under their own bar on a phone. */
+export const groupPageContentClass = 'mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 md:px-8 md:py-7 lg:px-10 lg:py-8'
+
+/** The first crumb of a page outside the tabs, "Grupos ›": the tab it was opened from, which its click opens. */
+export function HomeTabCrumb({ tab, onOpen }: { tab: HomeTab; onOpen: (tab: HomeTab) => void }) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => onOpen(tab)}
+        className="rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+      >
+        {homeTabLabel(tab)}
+      </button>
+      <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+    </>
+  )
+}
+
+/**
+ * Which page the back stack shows (App's StackLayers), so a page fades in once as it opens: a screen that swaps its
+ * skeleton for its page mounts a new frame, which must not fade in again.
+ */
+export const PageKeyContext = createContext('')
+
+// Why: the last page that came in, read at a frame's mount; module state, since each page mounts its own frame.
+let enteredPageKey: string | null = null
+
+function useEntersAnimated(): boolean {
+  const pageKey = useContext(PageKeyContext)
+  // Why: decided once at mount, so a page that changes its key without remounting (Contatos' profile) never fades.
+  const [entersAnimated] = useState(() => pageKey !== enteredPageKey)
+  useEffect(() => {
+    enteredPageKey = pageKey
+  }, [pageKey])
+  return entersAnimated
 }
 
 /** Who is signed in, under the sidebar and in the phone's top bar. */
@@ -108,6 +152,7 @@ export function HomeShell({
   }
   // Why: a screen whose presenter can't count the logo yet opens Home as its tab does.
   const openBrand = onBrand ?? (() => select('home'))
+  const entersAnimated = useEntersAnimated()
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
   const unreadOf = (tab: HomeTab) => (tab === 'activity' ? activityUnreadCount : 0)
   // Why: "Atividade, 3 não lidas": the badge is hidden from screen readers, so the tab's name says it.
@@ -143,7 +188,7 @@ export function HomeShell({
               aria-label={unreadLabel(tab)}
               onClick={() => select(tab)}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
+                'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium transition-colors outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
                 tab === selected ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground',
               )}
             >
@@ -152,7 +197,7 @@ export function HomeShell({
                 {icon}
                 {unreadOf(tab) > 0 && <span aria-hidden className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary lg:hidden" />}
               </span>
-              {/* Why: the page has no visible title, so the selected tab's label names it at every width. */}
+              {/* Why: the label names the page wherever the page shows no title of its own (a phone). */}
               <span>{t(label)}</span>
               {unreadOf(tab) > 0 && (
                 <span aria-hidden className="ml-auto hidden h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums lg:flex">
@@ -224,7 +269,8 @@ export function HomeShell({
           </header>
         )}
 
-        {children}
+        {/* Why: a new page fades in under the frame, which stays put (each page mounts its own shell). */}
+        <div className={cn('flex min-w-0 flex-1 flex-col', entersAnimated && 'page-enter')}>{children}</div>
 
         {phoneBars !== 'none' && (
           <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-5 border-t bg-card md:hidden">

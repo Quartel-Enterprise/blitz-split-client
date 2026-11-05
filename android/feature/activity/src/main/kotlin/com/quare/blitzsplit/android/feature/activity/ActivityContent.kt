@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SearchActionButton
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -96,7 +96,7 @@ fun ActivityContent(
                 modifier = Modifier.weight(1f),
                 topBar = {
                     TopAppBar(
-                        title = { Text(title) },
+                        title = { HomeTabTitle(title) },
                         actions = {
                             // Why: only once there is a group to look in, as on Grupos.
                             if (state.canSearch) {
