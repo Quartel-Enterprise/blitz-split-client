@@ -373,7 +373,11 @@ private fun HomeColumnHeader(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            HomeTabTitle(stringResource(R.string.groups_home_title))
+            // Why: the sync chip keeps its whole width, the title ellipsizing in what is left.
+            HomeTabTitle(
+                title = stringResource(R.string.groups_home_title),
+                modifier = Modifier.weight(1f, fill = false),
+            )
             HomeSyncStatusIndicator(
                 state = state,
                 onEvent = onEvent,

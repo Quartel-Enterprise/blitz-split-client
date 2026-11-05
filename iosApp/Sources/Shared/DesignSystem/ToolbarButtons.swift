@@ -98,9 +98,10 @@ private struct ProminentBarButton: View {
 struct TabTitle: ToolbarContent {
     let title: String
     @Environment(\.windowLayout) private var window
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some ToolbarContent {
-        if !window.isLarge {
+        if !isWideWindow(window, sizeClass) {
             ToolbarItem(placement: .principal) {
                 Color.clear
                     .frame(width: 1, height: 1)
@@ -122,10 +123,17 @@ extension View {
 
 private struct TabTitleDisplayMode: ViewModifier {
     @Environment(\.windowLayout) private var window
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     func body(content: Content) -> some View {
-        content.toolbarTitleDisplayMode(window.isLarge ? .large : .inline)
+        content.toolbarTitleDisplayMode(isWideWindow(window, sizeClass) ? .large : .inline)
     }
+}
+
+/// An iPad's room, by the root's measure of the window; until that first measure lands (a size of zero), the size
+/// class stands in, so an iPad's tab never draws a first frame with the iPhone's title and then jumps.
+private func isWideWindow(_ window: ScreenLayout, _ sizeClass: UserInterfaceSizeClass?) -> Bool {
+    window.size == .zero ? sizeClass == .regular : window.isLarge
 }
 #endif
 
