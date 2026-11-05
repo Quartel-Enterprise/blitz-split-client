@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ShareBillUiEvent : TrackedUiEvent {
+sealed interface ShareBillUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: each counts only when the sheet takes it: a link there to copy or send, one that can change now.

@@ -14,7 +14,7 @@ runs:
   steps:
     # The Gradle daemon's toolchain (gradle/gradle-daemon-jvm.properties).
     - name: Set up JDK 25
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: '25'
         distribution: 'temurin'

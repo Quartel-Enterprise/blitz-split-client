@@ -144,6 +144,7 @@ struct MacSimplifyChanged: View {
                     model.send(RegisterPaymentUiEventOnPaidAnywayClicked.shared)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canPayAnyway)
             }

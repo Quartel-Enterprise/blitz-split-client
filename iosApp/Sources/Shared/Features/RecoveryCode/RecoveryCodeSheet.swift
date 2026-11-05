@@ -203,6 +203,7 @@ private struct RecoveryCodeContent: View {
             }
             .keyboardShortcut(.defaultAction)
             .buttonStyle(.glassProminent)
+            .prominentLabel()
         }
         #endif
     }

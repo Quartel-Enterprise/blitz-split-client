@@ -3,7 +3,7 @@ import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { SplitBillIcon } from '@/components/common'
-import { ActivityBell, HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { ActivityBell, HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { ListCardSkeleton, SummaryCardsSkeleton } from '@/components/PageSkeletons'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
@@ -55,7 +55,7 @@ export function HomeScreen() {
       bell={{ unreadCount: state.activityUnreadCount, onOpen: () => presenter.openActivity() }}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
-      <main className="flex flex-1 flex-col gap-3.5 p-4 md:gap-4 md:p-6 lg:gap-5 lg:px-8">
+      <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
           {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
           <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only md:mr-auto">{t('home_title')}</h1>

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.presentation.analytics
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -181,7 +182,7 @@ private sealed interface Entry {
     ) : Entry
 }
 
-private sealed interface TestUiEvent : TrackedUiEvent {
+private sealed interface TestUiEvent : UiEvent {
     data object OnSaveClicked : TestUiEvent {
         override val analytics = EventAnalytics.Automatic("bill_saved", mapOf("is_new" to true, "people" to 3))
     }

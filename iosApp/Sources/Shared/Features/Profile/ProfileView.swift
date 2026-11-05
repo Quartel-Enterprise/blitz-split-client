@@ -388,7 +388,7 @@ private struct IdentitySection: View {
                             if state.showsProfilePending {
                                 Text("Changed · waiting to upload")
                                     .font(.subheadline)
-                                    .foregroundStyle(Palette.negative)
+                                    .foregroundStyle(Palette.pending)
                             } else {
                                 Text("Name, photo and avatar color")
                                     .font(.subheadline)

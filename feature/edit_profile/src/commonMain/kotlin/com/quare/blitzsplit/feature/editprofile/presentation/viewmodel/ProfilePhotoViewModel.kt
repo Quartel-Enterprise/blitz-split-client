@@ -1,19 +1,22 @@
 package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.editprofile.presentation.model.PROFILE_PHOTO_SOURCE
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiState
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +42,8 @@ class ProfilePhotoViewModel(
     prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
     observeAccountPhoto: ObserveAccountPhoto,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ProfilePhotoUiEvent>(trackEvent) {
     val uiState: StateFlow<ProfilePhotoUiState>
         field = MutableStateFlow(
             ProfilePhotoUiState(
@@ -102,15 +106,35 @@ class ProfilePhotoViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: ProfilePhotoUiEvent) {
-        // Why: a shortcut saves over the saved profile, so nothing is saved before it was read.
-        if (!uiState.value.isLoaded && event != ProfilePhotoUiEvent.OnDismissed) return
+    // Why: a shortcut saves over the saved profile, so nothing is saved before it was read.
+    override fun isAccepted(event: ProfilePhotoUiEvent): Boolean = when {
+        event == ProfilePhotoUiEvent.OnDismissed -> true
+
+        !uiState.value.isLoaded -> false
+
+        // Why: the picker drops a pick and its Done while a photo saves, so neither counts then.
+        isSaving -> !event.isDroppedWhileSaving()
+
+        else -> true
+    }
+
+    private fun ProfilePhotoUiEvent.isDroppedWhileSaving(): Boolean = this is ProfilePhotoUiEvent.OnPhotoPicked ||
+        this == ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked)
+
+    override fun handleEvent(event: ProfilePhotoUiEvent) {
         when (event) {
             is ProfilePhotoUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+
             is ProfilePhotoUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
+
             ProfilePhotoUiEvent.OnPhotoUnreadable -> photoPicker.fail()
+
             ProfilePhotoUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
-            ProfilePhotoUiEvent.OnPhotoRemoved -> replacePhoto(null)
+
+            ProfilePhotoUiEvent.OnPhotoRemoved -> if (uiState.value.photo != null && replacePhoto(null)) {
+                trackEvent("photo_removed", mapOf("source" to PROFILE_PHOTO_SOURCE))
+            }
+
             ProfilePhotoUiEvent.OnDismissed -> navigator.navigateBack()
         }
     }
@@ -118,14 +142,20 @@ class ProfilePhotoViewModel(
     // Why: the account's picture is already a public URL, so nothing is prepared or uploaded.
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
-        replacePhoto(ProfilePhoto.Remote(url))
+        if (replacePhoto(ProfilePhoto.Remote(url))) {
+            trackEvent("account_photo_selected", mapOf("source" to PROFILE_PHOTO_SOURCE))
+        }
     }
 
-    // Why: whatever replaces the photo wins over a pick still being read or framed.
-    private fun replacePhoto(photo: ProfilePhoto?) {
-        if (isSaving) return
+    /*
+     * Why: whatever replaces the photo wins over a pick still being read or framed. It says whether it took the
+     * photo, which Analytics counts: one saving drops any other.
+     */
+    private fun replacePhoto(photo: ProfilePhoto?): Boolean {
+        if (isSaving) return false
         photoPicker.cancel()
         savePhoto(photo)
+        return true
     }
 
     private fun savePhoto(photo: ProfilePhoto?) {

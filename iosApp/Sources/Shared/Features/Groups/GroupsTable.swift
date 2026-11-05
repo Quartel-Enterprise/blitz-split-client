@@ -44,8 +44,8 @@ struct GroupsTable: View {
                             .font(.caption)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 1)
-                            .background(.orange.opacity(0.18), in: .rect(cornerRadius: 5))
-                            .foregroundStyle(.orange)
+                            .background(Palette.pendingContainer, in: .rect(cornerRadius: 5))
+                            .foregroundStyle(Palette.onPendingContainer)
                     }
                 }
             }

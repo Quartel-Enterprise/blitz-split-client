@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ActivityBellButton
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -68,7 +69,7 @@ private fun eventOf(tab: HomeTab): HomeUiEvent? = when (tab) {
 }
 
 /*
- * Why: "Início" (flow 10), the home's first tab. No visible title, since the selected tab already names it. A phone
+ * Why: "Início" (flow 10), the home's first tab, titled only on a wide screen (HomeTabTitle). A phone
  * scrolls one column under the top bar with the profile, "Rachar conta" floating; anything wider has the rail with
  * "Rachar conta" on top and lays the sections out as the canvas draws its size (HomeLayout). The first use only shows
  * the card of 1.3; a Flip's cover screen only the balance and the latest bill.
@@ -348,7 +349,7 @@ private fun HomeShortcutsSection(
     }
 }
 
-// Why: with no top bar beside the rail, the first column starts with the sync chip and the profile.
+// Why: with no top bar beside the rail, the first column starts with the title, the sync chip and the profile.
 @Composable
 private fun HomeColumnHeader(
     state: HomeUiState,
@@ -366,7 +367,16 @@ private fun HomeColumnHeader(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.weight(1f)) {
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Why: the sync chip keeps its whole width, the title ellipsizing in what is left.
+            HomeTabTitle(
+                title = stringResource(R.string.groups_home_title),
+                modifier = Modifier.weight(1f, fill = false),
+            )
             HomeSyncStatusIndicator(
                 state = state,
                 onEvent = onEvent,
@@ -425,7 +435,7 @@ private fun HomeTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
-        title = {},
+        title = { HomeTabTitle(stringResource(R.string.groups_home_title)) },
         actions = {
             HomeBarActionsComponent(
                 state = state,

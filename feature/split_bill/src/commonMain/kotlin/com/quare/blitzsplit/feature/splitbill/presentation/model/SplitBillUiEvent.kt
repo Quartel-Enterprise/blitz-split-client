@@ -3,10 +3,10 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface SplitBillUiEvent : TrackedUiEvent {
+sealed interface SplitBillUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: typed letter by letter; what was typed shows in the bill saved.

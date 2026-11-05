@@ -2,13 +2,13 @@ package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.PaymentMethod
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "register_payment"
 
-sealed interface RegisterPaymentUiEvent : TrackedUiEvent {
+sealed interface RegisterPaymentUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: typed letter by letter; what was typed shows in the payment recorded.

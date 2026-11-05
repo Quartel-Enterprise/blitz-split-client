@@ -138,11 +138,14 @@ struct GlobalBalancesView: View {
         .readingFoldDivision($division)
         .navigationTitle("Balances")
         #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
+        .tabTitleDisplayMode()
         #else
         .navigationSubtitle(model.map { GlobalBalancesCopy.macSubtitle($0.state) } ?? "")
         #endif
         .toolbar {
+            #if os(iOS)
+            TabTitle(title: String(localized: "Balances"))
+            #endif
             #if os(macOS)
             if let model {
                 ToolbarItem(placement: .principal) {
@@ -479,6 +482,7 @@ private struct PersonActions: View {
                 model.send(GlobalBalancesUiEventOnSettleClicked(personId: row.id))
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
             .buttonBorderShape(.capsule)
             .accessibilityLabel(Text("Settle up with \(name)"))
         }
@@ -906,6 +910,7 @@ private struct ChargeSheet: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
         }
         .controlSize(.large)
         .buttonBorderShape(.capsule)

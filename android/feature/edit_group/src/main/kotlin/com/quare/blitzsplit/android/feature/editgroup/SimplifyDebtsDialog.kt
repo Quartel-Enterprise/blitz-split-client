@@ -34,6 +34,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -138,7 +139,7 @@ private fun SimplifyDebtsDialogColumn(
                     ),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    PendingDotIndicator()
+                    PendingIndicator(modifier = Modifier.padding(top = 6.dp))
                     Text(
                         text = queuedTextOf(confirmation.queuedPayments, money),
                         style = MaterialTheme.typography.bodySmall,

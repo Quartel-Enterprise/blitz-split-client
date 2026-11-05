@@ -14,7 +14,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
-import { Avatar } from '@/components/common'
+import { Avatar, PendingDot } from '@/components/common'
 import { AmountInput, controlClass, WhenField } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
@@ -330,7 +330,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
 
       {state.showsOfflineNotice && (
         <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-orange-500" />
+          <PendingDot className="mt-1.5 size-2" />
           {t('splitBill_offline')}
         </p>
       )}
@@ -736,7 +736,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
   // Why: "Quanto Pierre pagou" reads better to a screen reader than "Quanto Você pagou".
   const name = row.person?.name ?? t('splitBill_formerMember')
   return (
-    <span className="flex h-8 w-28 shrink-0 items-center gap-1 rounded-md border bg-card px-2 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/30">
+    <span className="flex h-8 w-28 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/30">
       <span aria-hidden className="text-xs text-muted-foreground">
         {currencySymbol(currency)}
       </span>
@@ -747,7 +747,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
         placeholder={amountPlaceholder(fractionDigits, currency)}
         aria-label={t('splitBill_payerAmountLabel', { name })}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground/60"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
       />
     </span>
   )

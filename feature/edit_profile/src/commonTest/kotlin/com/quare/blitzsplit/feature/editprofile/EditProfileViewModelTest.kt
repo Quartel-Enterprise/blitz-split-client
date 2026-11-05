@@ -45,6 +45,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditProfileViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var account: FakeAccountRepository
@@ -1600,6 +1601,562 @@ class EditProfileViewModelTest {
             assertFalse(state.hasChanges)
         }
 
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN choosing a color THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN tapping Save THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertTrue(profiles.savedProfiles.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN picking a photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = null)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertNull(viewModel.uiState.value.photoCrop)
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN tapping the avatar THEN sends nothing and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                pushed = false,
+            )
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN discarding THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            pushed = false,
+        )
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN going back THEN returns to the profile and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedProfile = null)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the editor WHEN choosing a color THEN sends the color picked from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "avatar_color_selected" to mapOf<String, Any>(
+                        "color" to AvatarColor.PEACH,
+                        "source" to SOURCE,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the editor WHEN typing a name THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the editor WHEN a photo is picked THEN sends the photo picked from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+            // Then
+            assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the editor WHEN the picked photo is unreadable THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN tapping Girar THEN sends the turn from Editar perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+        // Then
+        assertEquals(listOf("photo_crop_turned" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN tapping Horizontal THEN sends the horizontal mirror from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorHorizontallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to SOURCE, "axis" to "horizontal")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN tapping Vertical THEN sends the vertical mirror from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorVerticallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to SOURCE, "axis" to "vertical")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN tapping Pronto THEN sends the crop confirmed from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_confirmed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN closing it THEN sends the crop dismissed from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertEquals(listOf("photo_crop_dismissed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto WHEN dragging the photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(
+            EditProfileUiEvent.OnPhotoCrop(
+                PhotoCropEvent.OnDragged(
+                    dx = 0.1f,
+                    dy = 0.1f,
+                ),
+            ),
+        )
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the editor inline WHEN tapping the avatar THEN sends the photo opened from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = false)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarClicked)
+
+            // Then
+            assertEquals(listOf("profile_photo_clicked" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a Google account with a picture WHEN choosing the account photo THEN sends it from Editar perfil`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = pierreWithUpload,
+                status = AccountStatus.Connected("u", AccountProvider.GOOGLE),
+                sessionUser = googleUser,
+            )
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAccountPhotoSelected)
+
+            // Then
+            assertEquals(listOf("account_photo_selected" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no account picture WHEN choosing the account photo THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = AccountStatus.Connected("u", AccountProvider.APPLE),
+            sessionUser = appleUser,
+        )
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnAccountPhotoSelected)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a save in progress WHEN choosing the account photo THEN sends only the Save tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = pierreWithUpload,
+                status = AccountStatus.Connected("u", AccountProvider.GOOGLE),
+                sessionUser = googleUser,
+                holdsSave = true,
+            )
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAccountPhotoSelected)
+
+            // Then
+            assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a saved photo WHEN removing it THEN sends the removal from Editar perfil`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertEquals(listOf("photo_removed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a save in progress WHEN removing the photo THEN sends only the Save tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsSave = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        heldSave.complete(Unit)
+    }
+
+    @Test
+    fun `GIVEN the editor inline with an edit WHEN discarding THEN sends the discard`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = false)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
+
+        // Then
+        assertEquals(listOf("edit_profile_discard_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a new name WHEN saving THEN sends the Save tap then the profile saved with a photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "edit_profile_save_clicked" to emptyMap(),
+                    "profile_saved" to mapOf<String, Any>("has_photo" to true),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the photo removed WHEN saving THEN sends the profile saved without a photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            listOf(
+                "edit_profile_save_clicked" to emptyMap(),
+                "profile_saved" to mapOf<String, Any>("has_photo" to false),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN no changes WHEN tapping Save THEN sends only the Save tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN an invalid name WHEN tapping Save THEN sends only the Save tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("P"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a slow save WHEN saving THEN sends the Save tap but not the profile saved yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a slow save WHEN it finishes THEN sends the profile saved once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsSave = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // When
+        heldSave.complete(Unit)
+
+        // Then
+        assertEquals(
+            listOf(
+                "edit_profile_save_clicked" to emptyMap(),
+                "edit_profile_save_clicked" to emptyMap(),
+                "profile_saved" to mapOf<String, Any>("has_photo" to true),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the editor pushed on a phone WHEN going back THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a save in progress WHEN a photo is picked THEN sends only the Save tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsSave = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+        // Then
+        assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertNull(viewModel.uiState.value.photoCrop)
+        heldSave.complete(Unit)
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open and a save in progress WHEN tapping Pronto THEN sends nothing and keeps it open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            val state = viewModel.uiState.value
+            assertContentEquals(photoSource, state.photoCrop?.photo?.jpeg)
+            assertFalse(state.isPreparingPhoto)
+            assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), state.photo)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open and a save in progress WHEN tapping Girar THEN still sends the turn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_turned" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a save in progress WHEN choosing a color THEN still sends it and takes the color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.LILAC))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "avatar_color_selected" to mapOf<String, Any>("color" to AvatarColor.LILAC, "source" to SOURCE),
+                ),
+                trackedEvents,
+            )
+            assertEquals(AvatarColor.LILAC, viewModel.uiState.value.avatarColor)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN no photo WHEN removing the photo THEN sends nothing and has no changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = pierreWithoutPhoto)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertNull(viewModel.uiState.value.photo)
+        assertFalse(viewModel.uiState.value.hasChanges)
+    }
+
     // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
     private fun pickAndConfirmPhoto(source: ByteArray) {
         viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(source))
@@ -1628,6 +2185,7 @@ class EditProfileViewModelTest {
         if (!holdsSession) heldSession.complete(Unit)
         sessionReads = 0
         viewModel = EditProfileViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             validateDisplayName = ValidateDisplayNameUseCase(),
             loadCropPhoto = LoadCropPhotoUseCase(
                 encodeImage = BillImageEncoder { source ->
@@ -1667,5 +2225,6 @@ class EditProfileViewModelTest {
         const val GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/pierre"
         const val OTHER_GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/ana"
         const val UPLOADED_PHOTO_URL = "https://supabase/storage/avatars/pierre.jpg"
+        const val SOURCE = "edit_profile"
     }
 }

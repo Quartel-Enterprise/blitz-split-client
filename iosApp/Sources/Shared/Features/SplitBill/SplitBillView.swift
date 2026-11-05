@@ -201,14 +201,11 @@ private struct AmountHelp: View {
     }
 }
 
-/// "No internet: the bill is saved on this device…", with the orange dot of what is still queued.
+/// "No internet: the bill is saved on this device…", with the amber dot of what is still queued.
 private struct OfflineBillNote: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Circle()
-                .fill(.orange)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             Text("No internet: the bill is saved on this device and counts in the balances now. It syncs when you reconnect.")
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -337,6 +334,7 @@ private struct PhoneSplitBill: View {
                     model.send(SplitBillUiEventOnSaveClicked.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(!state.canSave)
             }
         }
@@ -662,6 +660,7 @@ private struct GroupSheet: View {
                         model.send(SplitBillUiEventOnGroupDone.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                 }
             }
         }
@@ -753,6 +752,7 @@ private struct PayerSheet: View {
                         model.send(SplitBillUiEventOnPayerDone.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                 }
             }
         }
@@ -800,6 +800,7 @@ private struct SeveralPayersSheet: View {
                             model.send(SplitBillUiEventOnSeveralPayersDone.shared)
                         }
                         .buttonStyle(.glassProminent)
+                        .prominentLabel()
                         .disabled(!amounts.addsUp)
                     }
                 }
@@ -1147,6 +1148,7 @@ private struct MacBillForm: View {
                     model.send(SplitBillUiEventOnSaveClicked.shared)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canSave)
             }
@@ -1339,6 +1341,7 @@ private struct MacGroupPicker: View {
                     model.send(SplitBillUiEventOnGroupDone.shared)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
             }
             .controlSize(.large)
@@ -1389,6 +1392,7 @@ private struct MacSeveralPayers: View {
                         model.send(SplitBillUiEventOnSeveralPayersDone.shared)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .keyboardShortcut(.defaultAction)
                     .disabled(!amounts.addsUp)
                 }

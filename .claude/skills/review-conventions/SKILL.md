@@ -53,7 +53,7 @@ full:
 | Any Kotlin file | `docs/architecture/code-style.md` |
 | A new or moved module, a `build.gradle.kts`, `settings.gradle.kts`, `build-logic/`, a dependency between modules | `docs/architecture/module-structure.md`, `docs/architecture/stack.md` |
 | A `ViewModel`, `UiState`, `UiEvent`, `UiAction`, a `*Presenter` of `shared/src/jsMain`, `BlitzSplitApple`, a SwiftUI `*Model`, a React screen | `docs/architecture/state-management.md` |
-| A `UiEvent` case, `TrackedUiEvent`, `EventAnalytics`, `TrackEvent`, `docs/analytics` | `docs/analytics/README.md` |
+| A `UiEvent` case, `EventAnalytics`, `TrackedViewModel`, `TrackEvent`, `docs/analytics` | `docs/analytics/README.md` |
 | A use case, repository, data source, DTO, mapper | `docs/architecture/use-cases.md`, `docs/architecture/data-sources-and-sync.md` |
 | A Room entity or DAO, `:core:provider:*`, `SyncCoordinator`, a Supabase call | `docs/architecture/data-sources-and-sync.md` |
 | Koin modules, `single`/`factory`/`viewModel`, `AppModules.kt` | `docs/architecture/dependency-injection.md` |
@@ -92,9 +92,11 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
     copy, open the QR scanner), never for state a screen must still show after recreation.
   - `stateWatcher` and `actionWatcher` (`FlowWatcher`) next to them, for SwiftUI. A ViewModel
     without them can't be observed from Swift.
-  - One public `fun onEvent(event: XUiEvent)` with an exhaustive `when` whose arms call private
-    functions. `XUiEvent` is a sealed interface extending `core.presentation.UiEvent`, named after
-    what the person did (`OnProviderClicked`, `OnCodeChanged`), not what the code does next.
+  - It extends `TrackedViewModel<XUiEvent>(trackEvent)` and writes one exhaustive `when` in
+    `override fun handleEvent(event)`, whose arms call private functions; the UIs call the inherited
+    `onEvent`. `XUiEvent` is a sealed interface extending `core.presentation.UiEvent`, its cases each
+    declaring `analytics`, named after what the person did (`OnProviderClicked`, `OnCodeChanged`), not
+    what the code does next.
   - Flags every UI needs are computed properties of the `UiState` (`areAccountButtonsEnabled`,
     `showsOfflineNotice`, `canRestore`), so no UI recomputes them.
   - Errors reach the state as an enum of the feature (`WelcomeError`, `RestoreError`), mapped from

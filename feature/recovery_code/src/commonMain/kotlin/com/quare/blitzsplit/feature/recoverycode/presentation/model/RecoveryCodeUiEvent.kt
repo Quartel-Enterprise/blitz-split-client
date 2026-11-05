@@ -1,14 +1,14 @@
 package com.quare.blitzsplit.feature.recoverycode.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "recovery_code"
 
-sealed interface RecoveryCodeUiEvent : TrackedUiEvent {
+sealed interface RecoveryCodeUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copy_clicked")

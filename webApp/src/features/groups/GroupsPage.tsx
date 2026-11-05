@@ -2,7 +2,7 @@ import { ChevronRight, CloudOff, ListFilter, QrCode, RefreshCw, SquarePlus } fro
 import type { GroupsPresenter, JsBalanceTotal, JsDownloadProgress, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
-import { segmentClass, SplitBillIcon } from '@/components/common'
+import { pendingSurfaceClass, segmentClass, SplitBillIcon } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -44,31 +44,6 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
   const exitGroup = state.exitGroup
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="mr-auto flex flex-wrap items-center gap-2">
-          <SyncStatus state={state} presenter={presenter} />
-        </div>
-        <div className="flex w-full gap-2 md:w-auto">
-          <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.joinWithLink()}>
-            <QrCode /> {t('groups_joinWithLink')}
-          </Button>
-          <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.createGroup()}>
-            <SquarePlus /> {t('groups_newGroup')}
-          </Button>
-          {state.showsSplitBillButton && (
-            <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
-              <SplitBillIcon /> {t('groups_splitBill')}
-            </Button>
-          )}
-          <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
-            <SquarePlus />
-          </Button>
-          <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_joinWithLink')} onClick={() => presenter.joinWithLink()}>
-            <QrCode />
-          </Button>
-        </div>
-      </div>
-
       {state.firstDownload ? <GroupsFirstDownloadCard progress={state.firstDownload} /> : <SummaryCards presenter={presenter} state={state} />}
 
       <div className="flex flex-wrap items-center gap-3">
@@ -132,6 +107,34 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
 export type SyncState = Pick<JsGroupsState, 'syncBadge' | 'pendingChangeCount' | 'canRetrySync'>
 
 /**
+ * The page's actions, beside its title from the tablet up: "Entrar com link ou QR", "Novo grupo" and "Rachar conta";
+ * the phone keeps "Rachar conta" wide and the other two as icons.
+ */
+export function GroupsActions({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
+  return (
+    <div className="flex w-full gap-2 md:w-auto">
+      <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.joinWithLink()}>
+        <QrCode /> {t('groups_joinWithLink')}
+      </Button>
+      <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.createGroup()}>
+        <SquarePlus /> {t('groups_newGroup')}
+      </Button>
+      {state.showsSplitBillButton && (
+        <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
+          <SplitBillIcon /> {t('groups_splitBill')}
+        </Button>
+      )}
+      <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
+        <SquarePlus />
+      </Button>
+      <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_joinWithLink')} onClick={() => presenter.joinWithLink()}>
+        <QrCode />
+      </Button>
+    </div>
+  )
+}
+
+/**
  * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…
  * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
  * de novo".
@@ -163,7 +166,7 @@ export function SyncStatus({
       <span
         className={cn(
           'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
-          isOffline && state.pendingChangeCount > 0 ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300' : 'text-muted-foreground',
+          isOffline && state.pendingChangeCount > 0 ? pendingSurfaceClass : 'text-muted-foreground',
         )}
       >
         {isOffline ? <CloudOff className="size-3.5" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5" />}
@@ -285,7 +288,7 @@ function StatusTab({ isSelected, count, onSelect, children }: { isSelected: bool
 function GroupsFilter({ presenter, query }: { presenter: GroupsPresenter; query: string }) {
   const [draft, setDraft] = useDraft(query, (next) => presenter.filter(next))
   return (
-    <label className="ml-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring/50 md:flex">
+    <label className="ml-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border border-field-border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring/50 md:flex">
       <ListFilter aria-hidden className="size-3.5 shrink-0" />
       <input
         value={draft}

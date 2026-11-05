@@ -44,6 +44,7 @@ struct CategoryTeachBanner: View {
                     model.send(GroupDetailUiEventOnTeachClicked.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
             }
         }
         .padding(16)
@@ -107,6 +108,7 @@ struct CategoryTeachSheet: View {
                     model.send(GroupDetailUiEventOnTeachConfirmed.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(teach.selectedWord == nil || teach.isSaving)
             }
         }

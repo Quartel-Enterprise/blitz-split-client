@@ -3,15 +3,16 @@ import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { SummaryListPageSkeleton } from '@/components/PageSkeletons'
 import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
-import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
+import { GroupsActions, GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
 import { SearchDialog, useHomeSearch, type SearchActions } from '@/features/groups/SearchDialog'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
+import { cn } from '@/lib/utils'
 
 interface DeletedGroupNoticeState {
   deletedGroupId?: string | null
@@ -63,6 +64,8 @@ export function GroupsScreen() {
   const search = useHomeSearch(presenter, state?.canSearch ?? false)
   const searchActions = useMemo(() => (presenter ? searchActionsOf(presenter) : null), [presenter])
   if (!presenter || !state) return null
+  // Why: the first download draws the page before its first group, with what is still coming in gray.
+  const showsPage = state.groups.length > 0 || !!state.firstDownload
 
   return (
     <HomeShell
@@ -79,19 +82,21 @@ export function GroupsScreen() {
         </>
       }
     >
-      <main className="flex flex-1 flex-col gap-5 p-4 sm:p-8 lg:px-10">
-        {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
-        <h1 className="sr-only">{t('groups_title')}</h1>
-        {/* Why: the first download draws the page before its first group, with what is still coming in gray. */}
-        {state.groups.length > 0 || state.firstDownload ? (
+      <main className={cn(pageContentClass, 'gap-5')}>
+        <div className="flex flex-wrap items-center gap-3 md:min-h-9">
+          {/* Why: titled from the tablet up as the other tabs are; the phone's bottom bar already names the page. */}
+          <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only">{t('groups_title')}</h1>
+          <div className="mr-auto flex flex-wrap items-center gap-2">
+            <SyncStatus state={state} presenter={presenter} />
+          </div>
+          {showsPage && <GroupsActions presenter={presenter} state={state} />}
+        </div>
+        {showsPage ? (
           <GroupsPage presenter={presenter} state={state} />
         ) : !state.hasLoadedGroups ? (
           <SummaryListPageSkeleton leading="square" />
         ) : (
           <>
-            <div className="flex flex-wrap items-center gap-2">
-              <SyncStatus state={state} presenter={presenter} />
-            </div>
             {state.showsEmptyState && (
               <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
                 <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">

@@ -177,6 +177,7 @@ private struct DeleteAccountContent: View {
                     .frame(maxWidth: .infinity, minHeight: 36)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel(Palette.onNegative)
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
                 .tint(Palette.negative)
@@ -246,6 +247,7 @@ private struct DeleteAccountContent: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel(Palette.onNegative)
                 .tint(Palette.negative)
                 .disabled(!state.canDelete)
             }

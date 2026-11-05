@@ -167,7 +167,7 @@ struct BillAttachmentViewer: View {
                     .foregroundStyle(.secondary)
             }
             if attachment.isPending {
-                BillQueuedLine(text: "Queued · goes up once you're back online")
+                BillQueuedLine(text: "Queued · goes up once you're back online", dotColor: Palette.pendingOnDark)
             }
         }
         .foregroundStyle(.white)

@@ -2,7 +2,6 @@ package com.quare.blitzsplit.android.feature.billdetail
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
@@ -131,7 +131,7 @@ internal fun BillSectionTitle(
     }
 }
 
-// Why: the orange dot of what waits for the server, the bill's "Na fila" and a comment's alike.
+// Why: the amber dot of what waits for the server, the bill's "Na fila" and a comment's alike.
 @Composable
 internal fun PendingLine(
     text: String,
@@ -149,15 +149,6 @@ internal fun PendingLine(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-}
-
-@Composable
-internal fun PendingIndicator(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(8.dp)
-            .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-    )
 }
 
 /*

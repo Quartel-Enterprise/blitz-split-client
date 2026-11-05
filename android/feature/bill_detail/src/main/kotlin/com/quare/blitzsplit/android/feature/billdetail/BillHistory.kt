@@ -50,6 +50,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
@@ -212,7 +213,7 @@ private fun HistoryEntryRow(
     }
 }
 
-// Why: "Ana trocou a categoria · 9:12", the orange dot before the time while it waits to go up.
+// Why: "Ana trocou a categoria · 9:12", the amber dot before the time while it waits to go up.
 @Composable
 private fun EntryHeadlineRow(
     entry: BillHistoryEntry,

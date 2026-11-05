@@ -1,7 +1,7 @@
 import { ArrowRight, ImageMinus, ImagePlus, Link2, Pencil, Plus, Receipt, Tag } from 'lucide-react'
 import type { JsBillHistoryEntry, JsBillHistoryDay } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar, PendingDot, PersonButton } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { t } from '@/i18n'
@@ -87,7 +87,7 @@ function kindIcon(entry: JsBillHistoryEntry): ReactNode {
 }
 
 /**
- * "Ana trocou a categoria · 9:12", what changed under it, and the orange dot while it waits to go up. The actor's face
+ * "Ana trocou a categoria · 9:12", what changed under it, and the amber dot while it waits to go up. The actor's face
  * opens their profile while they are in the group, as on Android and Apple.
  */
 function HistoryLine({
@@ -134,7 +134,7 @@ function HistoryLine({
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
             {entry.isPending && (
               <>
-                <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />
+                <PendingDot />
                 <span className="sr-only">{t('billDetail_historyPending')}</span>
               </>
             )}

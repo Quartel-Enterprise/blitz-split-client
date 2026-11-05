@@ -17,16 +17,6 @@ struct SimplifyDebtsTile: View {
     }
 }
 
-/// The orange dot of what is saved here and not on the server yet.
-struct SimplifyPendingDot: View {
-    var body: some View {
-        Circle()
-            .fill(.orange)
-            .frame(width: 8, height: 8)
-            .accessibilityHidden(true)
-    }
-}
-
 // MARK: - The conflict (13.1e)
 
 /// "Ana turned it off after you. The last change counts: Simplify debts is off." with "See in Activity", in a glass
@@ -114,6 +104,7 @@ struct SimplifyDebtsConfirmationView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .disabled(isChanging)
             }
@@ -153,7 +144,7 @@ struct SimplifyDebtsConfirmationView: View {
                 .fixedSize(horizontal: false, vertical: true)
             if let queued = SimplifyDebtsCopy.queued(confirmation.queuedPayments, currency: currency) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    SimplifyPendingDot()
+                    PendingDot()
                     Text(verbatim: queued)
                         .fixedSize(horizontal: false, vertical: true)
                 }

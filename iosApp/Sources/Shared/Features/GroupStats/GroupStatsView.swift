@@ -291,7 +291,7 @@ private struct StatsTopLine: View {
     }
 }
 
-/// The period's total, its bills (the queue's with the orange dot) and the average, then this person's part.
+/// The period's total, its bills (the queue's with the amber dot) and the average, then this person's part.
 private struct StatsHeroCard: View {
     let state: GroupStatsUiState
 
@@ -305,7 +305,7 @@ private struct StatsHeroCard: View {
                 .monospacedDigit()
             HStack(spacing: 6) {
                 if state.pendingCount > 0 {
-                    Circle().fill(Color.orange).frame(width: 8, height: 8)
+                    PendingDot()
                 }
                 Text(verbatim: meta)
                     .font(.subheadline)
@@ -396,7 +396,7 @@ private struct StatsSummaryPanels: View {
             Text(verbatim: title).font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
             Text(verbatim: value).font(.title2.bold()).monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
             HStack(spacing: 5) {
-                if isPending { Circle().fill(Color.orange).frame(width: 7, height: 7) }
+                if isPending { PendingDot(size: 7) }
                 Text(verbatim: hint).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
         }
@@ -656,7 +656,7 @@ private struct StatsBiggestSection: View {
                                 .lineLimit(1)
                             HStack(spacing: 5) {
                                 if expense.isPending {
-                                    Circle().fill(Color.orange).frame(width: 7, height: 7)
+                                    PendingDot(size: 7)
                                 }
                                 Text(verbatim: GroupStatsCopy.biggestMeta(expense))
                                     .font(.footnote)
@@ -749,8 +749,10 @@ private struct StatsEmptyCard: View {
                 }
                 #if os(iOS)
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 #else
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 #endif
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)

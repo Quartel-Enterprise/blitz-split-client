@@ -114,6 +114,7 @@ struct DefaultSplitView: View {
                     model?.send(DefaultSplitUiEventOnSaveClicked.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(model?.state.canSave != true)
             }
         }

@@ -34,16 +34,15 @@ struct BillOfflineBanner: View {
     }
 }
 
-/// The orange dot of what is still queued, beside its words.
+/// The amber dot of what is still queued, beside its words. The attachment viewer, black in both appearances, passes
+/// `Palette.pendingOnDark`.
 struct BillQueuedLine: View {
     let text: LocalizedStringKey
+    var dotColor: Color = Palette.pending
 
     var body: some View {
         HStack(spacing: 6) {
-            Circle()
-                .fill(.orange)
-                .frame(width: 7, height: 7)
-                .accessibilityHidden(true)
+            PendingDot(size: 7, color: dotColor)
             Text(text)
         }
         .font(.caption)
@@ -369,10 +368,7 @@ struct BillHistoryEntryView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 4)
                     if entry.isPending {
-                        Circle()
-                            .fill(.orange)
-                            .frame(width: 7, height: 7)
-                            .accessibilityLabel(Text("Queued", comment: "A history line done offline and not up yet"))
+                        PendingDot(size: 7, label: Text("Queued", comment: "A history line done offline and not up yet"))
                     }
                     Text(verbatim: ExpenseFormat.time(entry.occurredAt))
                         .font(.footnote)
@@ -529,6 +525,7 @@ struct BillCommentComposer: View {
                     state.isEditingComment ? Text("Save") : Text("Send")
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.return, modifiers: .command)
                 .disabled(!state.canSendComment)
                 .help(state.isEditingComment ? Text("Save") : Text("Send comment"))

@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.contacts.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ContactProfileUiEvent : TrackedUiEvent {
+sealed interface ContactProfileUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back or a close, which each platform also does its own way: where it went is its screen view.

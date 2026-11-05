@@ -302,6 +302,7 @@ private struct InviteButtons: View {
                         .frame(maxWidth: .infinity, minHeight: 36)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
                 TintedButton(title: "See who joined") {
@@ -314,6 +315,7 @@ private struct InviteButtons: View {
                         .frame(maxWidth: .infinity, minHeight: 36)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
                 .disabled(true)
@@ -377,6 +379,7 @@ private struct InvitePopoverContent: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .buttonBorderShape(.capsule)
                 if state.showsChangeLink {
                     Button("Change link…") {

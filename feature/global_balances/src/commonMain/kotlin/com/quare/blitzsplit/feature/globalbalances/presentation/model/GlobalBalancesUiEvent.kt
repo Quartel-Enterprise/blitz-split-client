@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.globalbalances.presentation.model
 
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface GlobalBalancesUiEvent : TrackedUiEvent {
+sealed interface GlobalBalancesUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: only another filter, never the one already picked.

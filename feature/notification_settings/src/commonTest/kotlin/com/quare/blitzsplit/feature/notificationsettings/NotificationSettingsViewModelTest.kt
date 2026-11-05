@@ -32,6 +32,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class NotificationSettingsViewModelTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var preferences: FakeNotificationPreferencesRepository
     private lateinit var navigator: BackStackNavigator
@@ -372,6 +373,137 @@ class NotificationSettingsViewModelTest {
             assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
         }
 
+    @Test
+    fun `GIVEN the permission granted WHEN a notice is turned off THEN sends its type turned off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.PAYMENT_MARKED, isEnabled = false)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_toggled" to mapOf<String, Any>(
+                        "type" to NotificationType.PAYMENT_MARKED,
+                        "is_enabled" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN a notice is turned on THEN sends its type turned on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_toggled" to mapOf<String, Any>(
+                        "type" to NotificationType.INVITES,
+                        "is_enabled" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN a notice is toggled THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(permission = null)
+        val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+
+        // When
+        viewModel.onEvent(toggled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the permission denied WHEN a notice is toggled THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(permission = NotificationPermission.DENIED)
+        val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.NEW_EXPENSE, isEnabled = false)
+
+        // When
+        viewModel.onEvent(toggled)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN a notice is toggled THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(firstDownload = pendingDownload)
+            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission denied WHEN open settings is tapped twice THEN sends the tap each time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnOpenSettingsClicked)
+            val tapped = NotificationSettingsUiEvent.OnOpenSettingsClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_system_settings_clicked" to emptyMap<String, Any>(),
+                    "notification_system_settings_clicked" to emptyMap(),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN the system permission is reported THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+
+        // When
+        viewModel.onEvent(reported)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the screen pushed over the profile WHEN back is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val back = NotificationSettingsUiEvent.OnBackClicked
+
+        // When
+        viewModel.onEvent(back)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val pendingDownload = FirstDownloadProgress(
         arrivedGroupCount = 0,
         groupCount = null,
@@ -391,6 +523,7 @@ class NotificationSettingsViewModelTest {
             if (!insideProfile) it.navigate(Route.NotificationSettings)
         }
         viewModel = NotificationSettingsViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             updateNotificationPreference = UpdateNotificationPreferenceUseCase(preferences),
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),

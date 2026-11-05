@@ -30,6 +30,17 @@ The home's four tabs and the web's and the Mac's shell.
     the toolbar held below it, into the content (Groups' Open / Settled up, which a search's results hide at
     every width, a group's Expenses / Balances / Members), and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
     per tab by `measuringNarrowWindow()`).
+  - A home tab (Home, Groups, Balances, Contacts, Activity) shows its title only on a wide screen, on every platform
+    (Pierre's call): the web from the tablet up (768 px, atop the content), an Android tablet or unfolded foldable
+    (`HomeTabTitle`, 600 dp on the short side; a phone lying down stays untitled), an iPad's room (a large title under the
+    floating tab bar, which hides an inline one: `TabTitle`, `tabTitleDisplayMode()`, `ScreenLayout.isLarge`) and the
+    Mac's toolbar. On a phone the selected tab already names the screen, which keeps
+    its title for screen readers only.
+  - On the web every page in the home's frame (the five tabs, a group's pages, Statistics, Profile) centers its
+    content at the same width, 1152 px at most (`pageContentClass`; Balances, Contacts and Activity keep their one
+    column at 768 px under 1024 px). A new page (a tab, a group, Profile,
+    the welcome's steps) comes in with a short fade and rise (180 ms, `page-enter`) under the frame, which stays put;
+    a group's own tabs still change with no transition, and reduced motion shows the page at once.
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.

@@ -4,7 +4,7 @@ import { useId } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PersonButton } from '@/components/common'
-import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { PersonGroupsList } from '@/components/PersonGroupsList'
 import { Button } from '@/components/ui/button'
@@ -80,8 +80,8 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
       search={search}
       overlays={state.charge && <ChargeDialog presenter={presenter} state={state} charge={state.charge} />}
     >
-      <main className={cn('mx-auto flex w-full flex-1 flex-col gap-5 p-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('globalBalances_title')}</h1>
+      <main className={cn(pageContentClass, 'gap-5', !isWide && 'max-w-3xl')}>
+        <h1 className="sr-only text-2xl font-semibold tracking-tight md:not-sr-only">{t('globalBalances_title')}</h1>
         {state.showsOfflineNotice && (
           <span className="inline-flex items-center gap-1.5 self-start rounded-md border px-2 py-1 text-xs text-muted-foreground">
             <WifiOff aria-hidden className="size-3.5" />

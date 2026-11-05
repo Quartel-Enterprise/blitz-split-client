@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface PickPaymentUiEvent : TrackedUiEvent {
+sealed interface PickPaymentUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             is OnPairClicked -> EventAnalytics.Automatic("pick_payment_pair_selected")

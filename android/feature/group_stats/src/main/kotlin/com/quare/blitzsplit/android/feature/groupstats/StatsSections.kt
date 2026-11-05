@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -154,7 +155,7 @@ internal fun StatsPeriodChip(
     }
 }
 
-// Why: the period's total, how many bills (the queue's with the orange dot) and the average, then this person's part.
+// Why: the period's total, how many bills (the queue's with the amber dot) and the average, then this person's part.
 @Composable
 internal fun StatsSummaryHero(
     state: GroupStatsUiState,
@@ -204,11 +205,7 @@ internal fun StatsSummaryHero(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             if (state.pendingCount > 0) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-                )
+                PendingIndicator()
             }
             Text(
                 text = stringResource(R.string.group_stats_meta, count, money.toText(state.averagePerPersonMinor)),

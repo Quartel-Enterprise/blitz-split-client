@@ -357,6 +357,7 @@ private struct GuestCard: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .prominentLabel()
     }
 }
 
@@ -387,7 +388,7 @@ private struct PendingMergeCard: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "hourglass")
-                .foregroundStyle(.orange)
+                .foregroundStyle(Palette.pending)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Waiting for \(contact.name) to accept")
@@ -484,7 +485,7 @@ private struct NetCard: View {
         .controlSize(.large)
         .buttonBorderShape(.capsule)
         if isProminent {
-            button.buttonStyle(.borderedProminent)
+            button.buttonStyle(.borderedProminent).prominentLabel()
         } else {
             button.buttonStyle(.bordered)
         }
@@ -808,6 +809,7 @@ private struct MergeGuestSheet: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             }
             .buttonBorderShape(.capsule)
         } else if sheet.isRequesting {

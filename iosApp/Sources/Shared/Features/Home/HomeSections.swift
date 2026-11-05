@@ -337,6 +337,7 @@ struct HomeRecoveryCard: View {
                     Text("See code").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             }
             .font(.subheadline.weight(.medium))
             .lineLimit(1)
@@ -478,14 +479,14 @@ private struct HomeGroupRow: View {
     }
 }
 
-/// "today", or "queued · Groceries" with the orange dot, as Groups' row says it.
+/// "today", or "queued · Groceries" with the amber dot, as Groups' row says it.
 private struct GroupActivityLine: View {
     let row: GroupRow
 
     var body: some View {
         HStack(spacing: 5) {
             if row.isPending {
-                PendingIndicator()
+                PendingDot()
             }
             Text(verbatim: GroupsCopy.detail(row))
                 .lineLimit(1)
@@ -574,7 +575,7 @@ struct HomeBillsSection: View {
                         .lineLimit(1)
                     HStack(spacing: 5) {
                         if bill.isPending {
-                            PendingIndicator()
+                            PendingDot()
                         }
                         Text(verbatim: HomeCopy.meta(bill))
                             .lineLimit(1)

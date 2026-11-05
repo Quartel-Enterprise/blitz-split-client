@@ -4,7 +4,7 @@ import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
-import { HomeShell, homeTabLabel, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, homeTabLabel, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -57,8 +57,8 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
     >
       <main
         className={cn(
-          'mx-auto w-full flex-1 p-4 sm:px-8 sm:py-7 lg:px-10 lg:py-8',
-          isWide ? 'grid max-w-6xl grid-cols-[340px_minmax(0,1fr)] items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]' : 'flex max-w-3xl flex-col',
+          pageContentClass,
+          isWide ? 'grid grid-cols-[340px_minmax(0,1fr)] items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]' : 'max-w-3xl',
         )}
       >
         <ContactsList presenter={presenter} state={state} isWide={isWide} />
@@ -132,7 +132,7 @@ function ContactsList({ presenter, state, isWide }: { presenter: ContactsPresent
   return (
     <div className="flex min-w-0 flex-col gap-3 sm:gap-4">
       {/* Why: the phone's top bar already names the app, so only a screen reader gets the title there. */}
-      <h1 className="sr-only text-2xl font-semibold tracking-tight sm:not-sr-only">{t('contacts_title')}</h1>
+      <h1 className="sr-only text-2xl font-semibold tracking-tight md:not-sr-only">{t('contacts_title')}</h1>
       {state.showsOfflineNotice && (
         <span className="inline-flex items-center gap-1.5 self-start rounded-md border px-2 py-1 text-xs text-muted-foreground">
           <WifiOff aria-hidden className="size-3.5" />

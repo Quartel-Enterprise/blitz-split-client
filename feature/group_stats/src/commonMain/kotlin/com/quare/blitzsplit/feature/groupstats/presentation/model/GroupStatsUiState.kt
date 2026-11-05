@@ -31,7 +31,7 @@ data class GroupStatsUiState(
     // Why: the bills still coming wait for the internet, said over the skeletons instead of a bar that runs.
     val isWaitingForInternet: Boolean,
     val expenseCount: Int,
-    // Why: "7 despesas, 1 na fila", with the orange dot.
+    // Why: "7 despesas, 1 na fila", with the amber dot.
     val pendingCount: Int,
     // Why: everyone in the group, who hasn't joined yet included, as the average counts them.
     val memberCount: Int,

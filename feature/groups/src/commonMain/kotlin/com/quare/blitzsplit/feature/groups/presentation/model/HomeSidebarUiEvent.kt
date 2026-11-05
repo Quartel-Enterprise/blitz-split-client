@@ -1,13 +1,13 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.HomeTab
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "sidebar"
 
-sealed interface HomeSidebarUiEvent : TrackedUiEvent {
+sealed interface HomeSidebarUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             is OnGroupClicked -> EventAnalytics.Automatic("group_clicked", mapOf("source" to SOURCE))

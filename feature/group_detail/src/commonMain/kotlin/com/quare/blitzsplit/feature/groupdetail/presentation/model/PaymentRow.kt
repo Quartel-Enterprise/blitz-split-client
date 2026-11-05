@@ -16,6 +16,6 @@ data class PaymentRow(
     val toIsMe: Boolean,
     val amountMinor: Long,
     val method: SettlementMethod,
-    // Why: "na fila" and the orange dot: saved here and not on the server yet.
+    // Why: "na fila" and the amber dot: saved here and not on the server yet.
     val isPending: Boolean,
 ) : DayEntry

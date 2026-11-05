@@ -17,14 +17,26 @@
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
   --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  /* A step darker than zinc's #71717a, which read at 4.4:1 on muted. */
+  --muted-foreground: #6b6b74;
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
   --destructive: #8e4d31;
+  --destructive-foreground: #ffffff;
   /* Money coming to the device's user (a positive net, "a receber", "te deve"), apart from the primary of links and buttons. */
   --positive: #006c4c;
+  /* What is saved here and not on the server yet (the queue's dot, "Aguardando envio"): amber, apart from the
+     destructive orange of what is owed. */
+  --pending: #7c5800;
+  --pending-container: #ffdea8;
+  --pending-container-foreground: #271900;
+  /* The same amber on what stays dark in both themes (the attachment viewer), as --camera-error is. */
+  --pending-on-dark: #f9bc3e;
   --border: #e4e4e7;
   --input: #e4e4e7;
+  /* The edge of a text field, a select, a checkbox or a radio reads at 3:1 against the page (WCAG 1.4.11); dividers
+     and outline buttons, which their words already identify, keep the lighter --border and --input. */
+  --field-border: #8e8e96;
   --ring: rgba(38, 100, 137, 0.35);
   --sidebar: #fafafa;
   --sidebar-foreground: #09090b;
@@ -62,9 +74,14 @@
   --accent: #27272a;
   --accent-foreground: #fafafa;
   --destructive: #ffb599;
+  --destructive-foreground: #552108;
   --positive: #6edbaa;
+  --pending: #f9bc3e;
+  --pending-container: #5e4200;
+  --pending-container-foreground: #ffdea8;
   --border: #27272a;
   --input: #27272a;
+  --field-border: #63636c;
   --ring: rgba(149, 205, 247, 0.25);
   --sidebar: #0c0c0e;
   --sidebar-foreground: #fafafa;
@@ -100,9 +117,15 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-positive: var(--positive);
+  --color-pending: var(--pending);
+  --color-pending-container: var(--pending-container);
+  --color-pending-container-foreground: var(--pending-container-foreground);
+  --color-pending-on-dark: var(--pending-on-dark);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-field-border: var(--field-border);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -177,6 +200,27 @@
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after {
     display: none;
+    animation: none;
+  }
+}
+
+/*
+ * A page coming in (a tab, a group, Statistics, the profile, the welcome's steps): a short fade and rise of what is
+ * under the frame, which stays put. Dialogs and sheets keep their own; reduced motion shows the page at once.
+ */
+.page-enter {
+  animation: page-enter 180ms ease-out;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
     animation: none;
   }
 }

@@ -18,6 +18,6 @@ data class ExpenseRow(
     val myBalanceMinor: Long?,
     // Why: the row's icon (6.1), its category as it reads now, "Outros" for none.
     val category: Category,
-    // Why: "na fila" and the orange dot: saved here and not on the server yet.
+    // Why: "na fila" and the amber dot: saved here and not on the server yet.
     val isPending: Boolean,
 ) : DayEntry

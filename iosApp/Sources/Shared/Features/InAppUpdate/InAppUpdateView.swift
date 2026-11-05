@@ -104,6 +104,7 @@ private struct InAppUpdateContent: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .controlSize(.large)
                 .keyboardShortcut(.defaultAction)
                 Button("Not now") {

@@ -141,12 +141,10 @@ struct GroupsView: View {
             onShown: { model.send(GroupsUiEventOnRecordedPaymentNoticeShown.shared) },
         )
         .navigationTitle("Groups")
-        // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows no title. The
-        // title still names the screen in the back stack, and VoiceOver still reads it as the header.
         #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
+        .tabTitleDisplayMode()
         .toolbar {
-            HiddenTabTitle(title: String(localized: "Groups"))
+            TabTitle(title: String(localized: "Groups"))
             ToolbarItemGroup(placement: .primaryAction) {
                 joinButton
                 profileButton

@@ -217,6 +217,7 @@ struct PhotoCropView: View {
                     Text("Done").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
             }
             .controlSize(.large)

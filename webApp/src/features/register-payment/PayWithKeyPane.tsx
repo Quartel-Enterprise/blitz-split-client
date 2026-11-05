@@ -9,6 +9,7 @@ import { QrCode } from '@/features/invite/InviteDialog'
 import { ProfileFace } from '@/features/register-payment/PaymentFaces'
 import { t } from '@/i18n'
 import type { PaymentKeyType } from '@/lib/paymentKey'
+import { PendingDot } from '@/components/common'
 
 /**
  * "Pagar Ana" (4.5), what Registrar pagamento shows while this person pays someone with a key: the key to copy, the
@@ -140,7 +141,7 @@ function PayWithKeyBody({
       </p>
       {state.showsOfflineNotice && (
         <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-orange-500" />
+          <PendingDot className="mt-1.5 size-2" />
           {t('registerPayment_offline')}
         </p>
       )}

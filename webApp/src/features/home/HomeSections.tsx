@@ -1,7 +1,7 @@
 import { ChevronRight, Pin } from 'lucide-react'
 import type { HomePresenter, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type RefObject } from 'react'
-import { Avatar } from '@/components/common'
+import { Avatar, PendingDot } from '@/components/common'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
@@ -388,11 +388,6 @@ function ShareCell({ bill }: { bill: JsHomeBill }) {
   )
 }
 
-/** The orange dot of a bill or a group waiting for the server. */
-function PendingDot() {
-  return <span aria-hidden className="size-[7px] shrink-0 rounded-full bg-orange-500" />
-}
-
 /**
  * "Últimas despesas": the five latest bills you paid or take part in, from every group, the most recent first. A
  * table on the desktop (Despesa, Grupo, Quando, Total, Sua parte), a list below it with the group and the day in the
@@ -450,7 +445,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                             {bill.description}
                           </button>
                           <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-                            {bill.isPending && <PendingDot />}
+                            {bill.isPending && <PendingDot className="size-[7px]" />}
                             <span title={paidText(bill)} className="truncate">
                               {paidText(bill)}
                             </span>
@@ -484,7 +479,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="truncate font-medium">{bill.description}</span>
                     <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-                      {bill.isPending && <PendingDot />}
+                      {bill.isPending && <PendingDot className="size-[7px]" />}
                       <span className="truncate">{[bill.groupName, paidText(bill), day].join(' · ')}</span>
                     </span>
                   </span>
@@ -535,7 +530,7 @@ export function YourGroups({ presenter, state }: SectionProps) {
   )
 }
 
-/** A group's row: its shape, name with the pin, the meta with the orange dot, and your balance in it with its word. */
+/** A group's row: its shape, name with the pin, the meta with the amber dot, and your balance in it with its word. */
 function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => void }) {
   const row = group.row
   return (
@@ -550,7 +545,7 @@ function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => v
           {group.isPinned && <Pin role="img" aria-label={t('home_pinned')} className="size-[13px] shrink-0 text-muted-foreground" />}
         </span>
         <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-          {row.isPending && <PendingDot />}
+          {row.isPending && <PendingDot className="size-[7px]" />}
           <span className="truncate">{groupMetaText(group)}</span>
         </span>
       </span>

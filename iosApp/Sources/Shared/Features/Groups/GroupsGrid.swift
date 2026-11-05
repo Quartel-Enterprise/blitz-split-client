@@ -144,7 +144,7 @@ private struct GroupGridCard: View {
                 #endif
             }
             if group.isPending {
-                PendingIndicator()
+                PendingDot()
             }
             if size == .compact, group.isPending {
                 Text("queued")

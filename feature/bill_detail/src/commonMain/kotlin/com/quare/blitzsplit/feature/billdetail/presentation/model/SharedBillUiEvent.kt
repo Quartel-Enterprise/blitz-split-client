@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface SharedBillUiEvent : TrackedUiEvent {
+sealed interface SharedBillUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: the comments' taps, as Conta's send them, each once the page takes it.

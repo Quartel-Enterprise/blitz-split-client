@@ -71,6 +71,7 @@ struct CreateGroupView: View {
                     model?.send(CreateGroupUiEventOnCreateClicked.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(model?.state.canCreate != true)
             }
         }

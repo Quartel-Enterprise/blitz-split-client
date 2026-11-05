@@ -14,6 +14,15 @@ enum Palette {
     /// What comes back to the device's user: a positive net, "owes you", "to get back".
     static let positive = Color(light: 0x006C4C, dark: 0x6EDBAA)
     static let negative = Color(light: 0x8E4D31, dark: 0xFFB599)
+    /// The label of a button filled with the negative color ("Delete account"): white reads at 1.7:1 on the dark one.
+    static let onNegative = Color(light: 0xFFFFFF, dark: 0x552108)
+    /// What is saved here and not on the server yet (the queue's dot, "Waiting to send"): an amber that reads as text
+    /// (5:1 or more), apart from the negative's orange, which the system's orange matched in dark mode.
+    static let pending = Color(light: 0x7C5800, dark: 0xF9BC3E)
+    /// The same amber on what stays dark in both appearances (a badge over a photo), as `cameraError` is.
+    static let pendingOnDark = Color(light: 0xF9BC3E, dark: 0xF9BC3E)
+    static let pendingContainer = Color(light: 0xFFDEA8, dark: 0x5E4200)
+    static let onPendingContainer = Color(light: 0x271900, dark: 0xFFDEA8)
     /// The viewfinder's corners on a QR that isn't an invite: the camera stays dark, so it is the dark error in both.
     static let cameraError = Color(light: 0xFFB599, dark: 0xFFB599)
     /// The tile of a Pix key, and of a Bitcoin key, in the profile's list.
@@ -46,6 +55,30 @@ enum Palette {
     // The grouped cards of a Mac window: a quiet fill that reads on both appearances
     static let card = Color(nsColor: .quaternarySystemFill)
     #endif
+}
+
+/// The label of a filled (prominent) button in the color that reads on its tint. The system draws it white, which
+/// reads on the light accent (6.4:1) but not on the dark one (#95CDF7, 1.7:1). Resolved where the label is drawn, so
+/// a disabled button keeps the system's muted label whatever the order of `.disabled` and this modifier. On the Mac,
+/// a window that isn't key draws the button's bezel gray, so its label goes back to the system's.
+struct OnTintLabelStyle: ShapeStyle {
+    let color: Color
+
+    func resolve(in environment: EnvironmentValues) -> Color.Resolved {
+        if !environment.isEnabled { return Color.secondary.resolve(in: environment) }
+        #if os(macOS)
+        if !environment.appearsActive { return Color.primary.resolve(in: environment) }
+        #endif
+        return color.resolve(in: environment)
+    }
+}
+
+extension View {
+    /// Goes on every `.borderedProminent` and `.glassProminent` button: `Palette.onNegative` for one tinted with
+    /// `Palette.negative`, `Palette.onAccent` otherwise.
+    func prominentLabel(_ color: Color = Palette.onAccent) -> some View {
+        foregroundStyle(OnTintLabelStyle(color: color))
+    }
 }
 
 /// The five avatar colors, with the same values on every platform (see the canvas rules).
