@@ -2264,7 +2264,7 @@ class ActivityViewModelTest {
                 personKey = ANA_KEY,
                 openedOver = listOf(
                     Route.Home,
-                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.GlobalBalances(BalancesFilter.ALL),
                     Route.ContactProfile(ANA_KEY),
                 ),
             )

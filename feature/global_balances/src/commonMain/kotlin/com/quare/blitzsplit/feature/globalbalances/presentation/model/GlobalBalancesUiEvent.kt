@@ -29,20 +29,6 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
 
             is OnChargeClicked -> EventAnalytics.Automatic("charge_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
 
-            // Why: a toggle, sent only while the switch takes it, since it locks once the message was edited.
-            is OnChargePixKeyToggled -> EventAnalytics.Manual("charge_pix_key_toggled")
-
-            // Why: typed letter by letter; whether it was edited shows when the message goes.
-            is OnChargeMessageChanged -> EventAnalytics.NotTracked
-
-            // Why: only while Cobrar is open, never a late tap once it closed.
-            is OnChargeShareClicked -> EventAnalytics.Manual("charge_share_clicked")
-
-            is OnChargeCopyClicked -> EventAnalytics.Manual("charge_copy_clicked")
-
-            // Why: a close, which each platform also does its own way: where it went is its screen view.
-            OnChargeDismissed -> EventAnalytics.NotTracked
-
             OnEmptyActionClicked -> EventAnalytics.Automatic("balances_empty_action_clicked")
 
             /*
@@ -112,29 +98,6 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
     data class OnChargeClicked(
         val personId: String,
     ) : GlobalBalancesUiEvent
-
-    // Why: "Incluir minha chave Pix".
-    data class OnChargePixKeyToggled(
-        val isIncluded: Boolean,
-    ) : GlobalBalancesUiEvent
-
-    // Why: the message as typed; the UIs send it once something was typed.
-    data class OnChargeMessageChanged(
-        val message: String,
-    ) : GlobalBalancesUiEvent
-
-    // Why: "Enviar", with the message as the UI shows it, written in its own words.
-    data class OnChargeShareClicked(
-        val message: String,
-    ) : GlobalBalancesUiEvent
-
-    // Why: "Copiar mensagem".
-    data class OnChargeCopyClicked(
-        val message: String,
-    ) : GlobalBalancesUiEvent
-
-    // Why: ✕, a swipe down or a click outside.
-    data object OnChargeDismissed : GlobalBalancesUiEvent
 
     // Why: the empty state's button: "Ver quem te deve", "Ver quem você deve" or "Ver grupos".
     data object OnEmptyActionClicked : GlobalBalancesUiEvent

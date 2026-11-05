@@ -580,7 +580,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -595,7 +595,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
             navigator.backStack.value,
         )
     }
@@ -622,7 +622,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU)),
             navigator.backStack.value,
         )
     }
@@ -687,7 +687,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
             navigator.backStack.value,
         )
     }
@@ -704,7 +704,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -735,7 +735,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }

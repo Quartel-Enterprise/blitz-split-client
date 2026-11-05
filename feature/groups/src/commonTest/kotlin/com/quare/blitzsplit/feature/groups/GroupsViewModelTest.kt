@@ -225,7 +225,7 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -248,7 +248,7 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -257,7 +257,7 @@ class GroupsViewModelTest {
     fun `GIVEN Saldos open WHEN tapping the Grupos tab THEN goes back to the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnGroupsTabClicked)
@@ -270,14 +270,14 @@ class GroupsViewModelTest {
     fun `GIVEN Saldos already open WHEN tapping its tab again THEN stays as it is`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null))
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE))
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            listOf(Route.Home, Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
             navigator.backStack.value,
         )
     }
@@ -343,7 +343,7 @@ class GroupsViewModelTest {
             // Then
             assertFalse(viewModel.uiState.value.search.isOpen)
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -2177,7 +2177,7 @@ class GroupsViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null),
+                    Route.GlobalBalances(BalancesFilter.YOU_OWE),
                     Route.SettleUp(
                         personKey = "name:ana",
                         currency = GroupCurrency.BRL,
@@ -2213,7 +2213,7 @@ class GroupsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
             navigator.backStack.value,
         )
     }
@@ -2238,7 +2238,7 @@ class GroupsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU)),
             navigator.backStack.value,
         )
     }

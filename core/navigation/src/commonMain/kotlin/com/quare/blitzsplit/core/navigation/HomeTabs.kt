@@ -95,7 +95,7 @@ private val HomeTab.route: Route
     get() = when (this) {
         HomeTab.HOME -> Route.Home
         HomeTab.GROUPS -> Route.Groups
-        HomeTab.BALANCES -> Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+        HomeTab.BALANCES -> Route.GlobalBalances(BalancesFilter.ALL)
         HomeTab.CONTACTS -> Route.Contacts
     }
 

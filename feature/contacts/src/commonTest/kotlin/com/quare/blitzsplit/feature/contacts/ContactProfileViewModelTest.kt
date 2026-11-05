@@ -22,7 +22,6 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
-import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
@@ -166,7 +165,7 @@ class ContactProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN Carla owes you WHEN Cobrar is tapped THEN opens the message of Saldos for her`() =
+    fun `GIVEN Carla owes you WHEN Cobrar is tapped THEN opens her message over the profile`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(personKey = CARLA_KEY)
@@ -176,7 +175,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = BalancesCharge(CARLA_KEY, GroupCurrency.BRL)),
+                Route.Charge(CARLA_KEY, GroupCurrency.BRL),
                 navigator.backStack.value.last(),
             )
             assertEquals(4, navigator.backStack.value.size)
@@ -354,7 +353,7 @@ class ContactProfileViewModelTest {
             // Given
             prepareScenario(
                 personKey = CARLA_KEY,
-                openedFrom = Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                openedFrom = Route.GlobalBalances(BalancesFilter.ALL),
             )
 
             // When
@@ -364,7 +363,7 @@ class ContactProfileViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.GlobalBalances(BalancesFilter.ALL, charge = null),
+                    Route.GlobalBalances(BalancesFilter.ALL),
                     Route.ContactProfile(CARLA_KEY),
                     floripaExpenses,
                 ),
@@ -377,7 +376,7 @@ class ContactProfileViewModelTest {
         // Given
         prepareScenario(
             personKey = CARLA_KEY,
-            openedFrom = Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null),
+            openedFrom = Route.GlobalBalances(BalancesFilter.OWES_YOU),
         )
 
         // When
@@ -545,10 +544,7 @@ class ContactProfileViewModelTest {
                 listOf(
                     Route.Home,
                     Route.Contacts,
-                    Route.GlobalBalances(
-                        BalancesFilter.OWES_YOU,
-                        charge = BalancesCharge(CARLA_KEY, GroupCurrency.BRL),
-                    ),
+                    Route.Charge(CARLA_KEY, GroupCurrency.BRL),
                 ),
                 navigator.backStack.value,
             )
@@ -580,7 +576,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }

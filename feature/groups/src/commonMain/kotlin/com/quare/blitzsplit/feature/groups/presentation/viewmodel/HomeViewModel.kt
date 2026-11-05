@@ -399,7 +399,7 @@ class HomeViewModel(
     }
 
     private fun openBalancesTab(filter: BalancesFilter) {
-        navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
+        navigator.openHomeTab(Route.GlobalBalances(filter))
     }
 
     // Why: "Você deve" with a single person to pay goes straight to settling up with them (4.5), over Você deve.

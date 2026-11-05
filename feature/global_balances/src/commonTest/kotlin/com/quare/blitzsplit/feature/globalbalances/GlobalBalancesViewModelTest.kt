@@ -1,22 +1,13 @@
 package com.quare.blitzsplit.feature.globalbalances
 
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
-import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
-import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
-import com.quare.blitzsplit.core.activity.domain.usecase.impl.RecordChargesUseCase
-import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
@@ -25,7 +16,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUs
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
@@ -35,23 +25,15 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
-import com.quare.blitzsplit.core.model.GroupType
-import com.quare.blitzsplit.core.model.PaymentKey
-import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
-import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
-import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
-import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.CurrencyAmount
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
@@ -60,7 +42,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -86,11 +67,9 @@ class GlobalBalancesViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
-    private lateinit var keys: FakePaymentKeyRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GlobalBalancesViewModel
-    private lateinit var activity: FakeActivityRepository
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private val actions = mutableListOf<GlobalBalancesUiAction>()
 
@@ -870,49 +849,141 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN someone who owes you WHEN tapping Cobrar THEN builds the message from the debt and your Pix key`() =
+    fun `GIVEN someone who owes you WHEN tapping Cobrar THEN opens their message over Saldos in the currency shown`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val carla = viewModel.uiState.value.people
-                .valueOrNull()
-                .orEmpty()
-                .single { it.name == "Carla" }
+            val carlaId = idOfPerson("Carla")
 
             // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaId))
 
             // Then
-            val charge = viewModel.uiState.value.charge
-            assertEquals("Carla", charge?.name)
-            assertEquals(3_290L, charge?.amountMinor)
-            assertEquals(listOf("Viagem Floripa", "Apê 302", "Churrasco de sábado"), charge?.groupNames)
-            assertEquals(true, charge?.includesPixKey)
-            assertEquals(true, charge?.canTogglePixKey)
-            assertEquals(pixKey, viewModel.uiState.value.pixKey)
+            assertEquals(
+                listOf(Route.Home, route, Route.Charge("user:carla", GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
-    fun `GIVEN a group with its debts simplified WHEN tapping Cobrar THEN says whom they pay you instead of`() =
+    fun `GIVEN someone you owe WHEN Cobrar arrives for them THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val brunoId = idOfPerson("Bruno")
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(brunoId))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Cobrar already open WHEN a late Cobrar arrives THEN stacks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carlaId = idOfPerson("Carla")
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaId))
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(idOfPerson("Ana")))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, route, Route.Charge("user:carla", GroupCurrency.BRL)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN Carla owes you in two currencies WHEN tapping Cobrar on her dollar row THEN opens it in dollars`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                storedGroups = listOf(simplifiedTrip(simplifies = true)),
-                bills = simplifiedTripBills,
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
             )
-            val diego = viewModel.uiState.value.people
+            val carlaInDollars = viewModel.uiState.value.people
                 .valueOrNull()
                 .orEmpty()
-                .single { it.name == "Diego" }
+                .single { it.name == "Carla" && it.currency == GroupCurrency.USD }
 
             // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(diego.id))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaInDollars.id))
 
             // Then
-            val charge = viewModel.uiState.value.charge
-            assertEquals(6_400L, charge?.amountMinor)
-            assertEquals(listOf(ChargeReroute("Viagem", listOf("Bruno"))), charge?.reroutes)
-            assertEquals(listOf(true), diego.groups.map { it.isSimplified })
+            assertEquals(
+                listOf(Route.Home, route, Route.Charge("user:carla", GroupCurrency.USD)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a guest who owes you WHEN tapping Cobrar THEN opens their message by their name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val diegoId = idOfPerson("Diego")
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(diegoId))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.Charge("name:diego", GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone not listed WHEN a stale Cobrar arrives THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val goneId = "gone"
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(goneId))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a sync settled Carla WHEN a late Cobrar for her arrives THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carlaId = idOfPerson("Carla")
+        expenses.expenses.update { bills -> bills.filterNot { it.id in setOf("e3", "e4", "e5") } }
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaId))
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN settling up open over Saldos WHEN a late Cobrar arrives THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carlaId = idOfPerson("Carla")
+            navigator.navigate(Route.SettleUp("user:carla", GroupCurrency.BRL))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carlaId))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.SettleUp("user:carla", GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -932,458 +1003,6 @@ class GlobalBalancesViewModelTest {
             // Then
             assertEquals(listOf("Bruno"), people.map { it.name })
             assertEquals(listOf(false), people.single().groups.map { it.isSimplified })
-        }
-
-    @Test
-    fun `GIVEN a guest WHEN tapping Cobrar THEN the message carries their bills`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val diego = viewModel.uiState.value.people
-            .valueOrNull()
-            .orEmpty()
-            .single { it.name == "Diego" }
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(diego.id))
-
-        // Then
-        val charge = viewModel.uiState.value.charge
-        assertEquals(true, charge?.isGuest)
-        assertEquals(listOf("Carne"), charge?.guestBills)
-    }
-
-    @Test
-    fun `GIVEN no Pix key WHEN tapping Cobrar THEN leaves the key out`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedKeys = emptyList())
-        val carla = viewModel.uiState.value.people
-            .valueOrNull()
-            .orEmpty()
-            .single { it.name == "Carla" }
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
-
-        // Then
-        assertEquals(
-            false,
-            viewModel.uiState.value.charge
-                ?.includesPixKey,
-        )
-        assertNull(viewModel.uiState.value.pixKey)
-    }
-
-    @Test
-    fun `GIVEN Cobrar opened before the Pix key loaded WHEN the key arrives THEN includes it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedKeys = emptyList())
-            openChargeForCarla()
-
-            // When
-            keys.keys.value = listOf(pixKey)
-
-            // Then
-            assertEquals(pixKey, viewModel.uiState.value.pixKey)
-            assertEquals(
-                true,
-                viewModel.uiState.value.charge
-                    ?.includesPixKey,
-            )
-        }
-
-    @Test
-    fun `GIVEN the Pix key switched off WHEN the profile keys change THEN stays off`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-        // When
-        keys.keys.value = listOf(pixKey.copy(value = "pierre@novo.com"))
-
-        // Then
-        assertEquals(
-            false,
-            viewModel.uiState.value.charge
-                ?.includesPixKey,
-        )
-    }
-
-    @Test
-    fun `GIVEN the message edited without a Pix key WHEN the key arrives THEN the locked switch stays off`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedKeys = emptyList())
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-
-            // When
-            keys.keys.value = listOf(pixKey)
-
-            // Then
-            assertEquals(
-                false,
-                viewModel.uiState.value.charge
-                    ?.includesPixKey,
-            )
-        }
-
-    @Test
-    fun `GIVEN someone you owe WHEN Cobrar arrives for them THEN nothing opens`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val bruno = viewModel.uiState.value.people
-            .valueOrNull()
-            .orEmpty()
-            .single { it.name == "Bruno" }
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(bruno.id))
-
-        // Then
-        assertNull(viewModel.uiState.value.charge)
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN switching the Pix key off THEN leaves it out`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-        // Then
-        assertEquals(
-            false,
-            viewModel.uiState.value.charge
-                ?.includesPixKey,
-        )
-    }
-
-    @Test
-    fun `GIVEN the message edited WHEN switching the Pix key THEN keeps the text as typed`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-        // Then
-        val charge = viewModel.uiState.value.charge
-        assertEquals("Carla, me paga!", charge?.editedMessage)
-        assertEquals(true, charge?.includesPixKey)
-        assertEquals(false, charge?.canTogglePixKey)
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN tapping Enviar THEN opens the share sheet with the message`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(listOf<GlobalBalancesUiAction>(GlobalBalancesUiAction.ShareMessage("Oi, Carla!")), actions)
-        }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN tapping Copiar mensagem THEN copies the message`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-        // Then
-        assertEquals(listOf<GlobalBalancesUiAction>(GlobalBalancesUiAction.CopyMessage("Oi, Carla!")), actions)
-    }
-
-    @Test
-    fun `GIVEN Cobrar closed WHEN a late Enviar arrives THEN shares nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-        // Then
-        assertTrue(actions.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Cobrar from the profile of Carla WHEN Saldos opens THEN her message opens in the currency shown`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = defaultGroups + group(
-                    "usa",
-                    "Viagem EUA",
-                    me("me-usa"),
-                    joined("carla-usa", "Carla", "carla"),
-                    currency = GroupCurrency.USD,
-                ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
-                filter = BalancesFilter.OWES_YOU,
-                charge = BalancesCharge("user:carla", GroupCurrency.USD),
-            )
-
-            // When
-            val charge = viewModel.uiState.value.charge
-
-            // Then
-            assertEquals("Carla", charge?.name)
-            assertEquals(5_000L, charge?.amountMinor)
-            assertEquals(listOf("Viagem EUA"), charge?.groupNames)
-        }
-
-    @Test
-    fun `GIVEN Cobrar from a profile WHEN the person owes you nothing there THEN goes back to the profile`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                filter = BalancesFilter.OWES_YOU,
-                charge = BalancesCharge("user:bruno", GroupCurrency.BRL),
-            )
-
-            // When
-            val stack = navigator.backStack.value
-
-            // Then
-            assertNull(viewModel.uiState.value.charge)
-            assertEquals(Route.ContactProfile("user:bruno"), stack.last())
-        }
-
-    @Test
-    fun `GIVEN the message Cobrar opened from a profile WHEN closing it THEN goes back to the profile`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                filter = BalancesFilter.OWES_YOU,
-                charge = BalancesCharge("user:carla", GroupCurrency.BRL),
-            )
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-
-            // Then
-            assertEquals(
-                listOf(Route.Home, Route.Contacts, Route.ContactProfile("user:carla")),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN closing it THEN it goes`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-
-        // Then
-        assertNull(viewModel.uiState.value.charge)
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN a sync settles the person THEN it closes`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-
-        // When
-        expenses.expenses.update { list ->
-            list.filterNot { it.shares.any { share -> share.memberId.startsWith("carla") } }
-        }
-
-        // Then
-        assertNull(viewModel.uiState.value.charge)
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN tapping Enviar THEN records a charge in each group where the person owes you`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
-        }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN tapping Copiar mensagem THEN records a charge in each group where they owe you`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
-        }
-
-    @Test
-    fun `GIVEN someone who owes you in a single group WHEN tapping Enviar THEN records one charge in that group`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val ana = viewModel.uiState.value.people
-                .valueOrNull()
-                .orEmpty()
-                .single { it.name == "Ana" }
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Ana!"))
-
-            // Then
-            assertEquals(listOf(ChargeSent(FLORIPA, ANA_FLORIPA, "Ana", 16_230L)), activity.recordedCharges)
-        }
-
-    @Test
-    fun `GIVEN the charge already sent WHEN tapping Copiar mensagem THEN records nothing more`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
-            assertEquals(1, activity.chargeSentAts.size)
-        }
-
-    @Test
-    fun `GIVEN the charge sent then its message edited WHEN tapping Enviar again THEN records nothing more`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Carla, me paga!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
-        }
-
-    @Test
-    fun `GIVEN the message edited before sending WHEN tapping Enviar THEN records the charge once`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Carla, me paga!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
-        }
-
-    @Test
-    fun `GIVEN a charge sent and closed WHEN Cobrar opens again for the same person and is sent THEN records again`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-            openChargeForCarla()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(carlaCharges + carlaCharges, activity.recordedCharges)
-            assertEquals(2, activity.chargeSentAts.size)
-        }
-
-    @Test
-    fun `GIVEN a charge sent to Carla WHEN Cobrar opens for Ana and is sent THEN records Ana too`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-            val ana = viewModel.uiState.value.people
-                .valueOrNull()
-                .orEmpty()
-                .single { it.name == "Ana" }
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Ana!"))
-
-            // Then
-            assertEquals(
-                carlaCharges + ChargeSent(FLORIPA, ANA_FLORIPA, "Ana", 16_230L),
-                activity.recordedCharges,
-            )
-        }
-
-    @Test
-    fun `GIVEN no Cobrar open WHEN Enviar arrives THEN records nothing in Atividade`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-        // Then
-        assertTrue(activity.recordedCharges.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Cobrar closed unsent WHEN a late Copiar mensagem arrives THEN records nothing in Atividade`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-            // Then
-            assertTrue(activity.recordedCharges.isEmpty())
-            assertTrue(actions.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN no internet WHEN tapping Enviar THEN still records the charge on the device`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(online = false)
-            openChargeForCarla()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(carlaCharges, activity.recordedCharges)
         }
 
     @Test
@@ -1583,21 +1202,25 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN Cobrar open WHEN the search is asked for THEN nothing stacks over it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val carla = viewModel.uiState.value.people
-            .valueOrNull()
-            .orEmpty()
-            .single { it.name == "Carla" }
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
+    fun `GIVEN Cobrar open over Saldos WHEN the search is asked for THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
 
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
 
-        // Then
-        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(
+                listOf(Route.Home, route, Route.Charge("user:carla", GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN the search already open WHEN a second search arrives THEN opens no second one`() =
@@ -1943,147 +1566,6 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN Cobrar open WHEN tapping Enviar THEN sends the share without the message`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-
-        // Then
-        assertEquals(listOf("charge_share_clicked" to emptyMap<String, Any>()), trackedEvents)
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN tapping Copiar mensagem THEN sends the copy without the message`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-            // Then
-            assertEquals(listOf("charge_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN Cobrar closed WHEN a late Enviar or Copiar arrives THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN switching the Pix key off THEN sends that it is left out`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-        // Then
-        assertEquals(
-            listOf("charge_pix_key_toggled" to mapOf<String, Any>("is_included" to false)),
-            trackedEvents,
-        )
-    }
-
-    @Test
-    fun `GIVEN the Pix key switched off WHEN switching it on again THEN sends one event per toggle`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            trackedEvents.clear()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = true))
-
-            // Then
-            assertEquals(
-                listOf(
-                    "charge_pix_key_toggled" to mapOf<String, Any>("is_included" to false),
-                    "charge_pix_key_toggled" to mapOf<String, Any>("is_included" to true),
-                ),
-                trackedEvents,
-            )
-        }
-
-    @Test
-    fun `GIVEN the message edited WHEN switching the Pix key THEN sends nothing since the switch is locked`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            openChargeForCarla()
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN Cobrar closed WHEN a late Pix key switch arrives THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val isIncluded = false
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded))
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN typing the message THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Cobrar open WHEN closing it THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
     fun `GIVEN you owe nothing WHEN tapping Ver quem te deve THEN sends the empty action clicked`() =
         runTest(testDispatcher) {
             // Given
@@ -2199,20 +1681,6 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN Cobrar open WHEN the search is asked for THEN sends no search opened`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        openChargeForCarla()
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
     fun `GIVEN no group at all WHEN the search is asked for THEN sends no search opened`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -2311,153 +1779,8 @@ class GlobalBalancesViewModelTest {
         .single { it.name == name }
         .id
 
-    private fun openChargeForCarla() {
-        val carla = viewModel.uiState.value.people
-            .valueOrNull()
-            .orEmpty()
-            .single { it.name == "Carla" }
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(carla.id))
-    }
-
-    private val pixKey = PaymentKey(
-        "key-1",
-        PaymentKeyType.EMAIL,
-        "pierre@email.com",
-        isDefault = true,
-        addedAt = 0L,
-    )
-
-    private val bitcoinKey =
-        PaymentKey(
-            "key-2",
-            PaymentKeyType.LIGHTNING,
-            "pierre@ln.com",
-            isDefault = true,
-            addedAt = 1L,
-        )
-
-    // Why: the canvas's people, a little simpler: Bruno you owe, Ana, Diego (a guest) and Carla (across three groups).
-    private val defaultBills = listOf(
-        owes(FLORIPA, ME_FLORIPA, BRUNO_FLORIPA, 12_600L, id = "e1"),
-        owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 16_230L, id = "e2"),
-        owes(FLORIPA, CARLA_FLORIPA, ME_FLORIPA, 9_840L, id = "e3"),
-        owes(APE, ME_APE, CARLA_APE, 9_800L, id = "e4"),
-        owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L, id = "e5"),
-        owes(
-            CHURRASCO,
-            DIEGO_CHURRASCO,
-            ME_CHURRASCO,
-            4_500L,
-            id = "e6",
-            description = "Carne",
-        ),
-    )
-
     // Why: you owe someone the group no longer has, whom Saldos calls "Ex-membro".
     private val exMemberBill = owes(FLORIPA, ME_FLORIPA, "gone-floripa", 2_000L, id = "e8")
-
-    private val defaultGroups = listOf(
-        group(
-            FLORIPA,
-            "Viagem Floripa",
-            me(ME_FLORIPA),
-            joined(ANA_FLORIPA, "Ana", "ana"),
-            joined(BRUNO_FLORIPA, "Bruno", "bruno"),
-            joined(CARLA_FLORIPA, "Carla", "carla"),
-        ),
-        group(APE, "Apê 302", me(ME_APE), joined(CARLA_APE, "Carla", "carla")),
-        group(
-            CHURRASCO,
-            "Churrasco de sábado",
-            me(ME_CHURRASCO),
-            joined(CARLA_CHURRASCO, "Carla", "carla"),
-            GroupMember(
-                DIEGO_CHURRASCO,
-                "Diego",
-                AvatarColor.GREEN,
-                isMe = false,
-                hasJoined = false,
-                userId = null,
-                inviteCode = null,
-                photoUrl = null,
-            ),
-        ),
-    )
-
-    private fun me(id: String): GroupMember = GroupMember(
-        id,
-        "Pierre",
-        AvatarColor.BLUE,
-        isMe = true,
-        hasJoined = true,
-        userId = "pierre",
-        inviteCode = null,
-        photoUrl = null,
-    )
-
-    private fun joined(
-        id: String,
-        name: String,
-        userId: String,
-    ): GroupMember = GroupMember(
-        id,
-        name,
-        AvatarColor.LILAC,
-        isMe = false,
-        hasJoined = true,
-        userId = userId,
-        inviteCode = null,
-        photoUrl = null,
-    )
-
-    private fun group(
-        id: String,
-        name: String,
-        vararg members: GroupMember,
-        currency: GroupCurrency = GroupCurrency.BRL,
-    ): Group = Group(
-        id = id,
-        name = name,
-        type = GroupType.OTHER,
-        color = AvatarColor.PEACH,
-        shape = GroupShape.SQUARE,
-        photo = null,
-        currency = currency,
-        members = members.toList(),
-        isPending = false,
-        inviteCode = null,
-        isCreatedByMe = true,
-        defaultSplit = null,
-        updatedAt = 0L,
-        simplifiesDebts = false,
-        isSimplifyDebtsPending = false,
-        simplifyDebtsChangedBy = null,
-        simplifyDebtsConflictBy = null,
-    )
-
-    // Why: a bill only one member paid, all of it on another, so the second owes the first that much.
-    private fun owes(
-        groupId: String,
-        fromMemberId: String,
-        toMemberId: String,
-        amountMinor: Long,
-        id: String = "bill-$groupId",
-        description: String = "Bill",
-    ): Expense = Expense(
-        id = id,
-        groupId = groupId,
-        description = description,
-        amountMinor = amountMinor,
-        splitMode = SplitMode.AMOUNT,
-        payers = listOf(ExpensePayer(toMemberId, amountMinor)),
-        shares = listOf(ExpenseShare(fromMemberId, amountMinor, amountMinor)),
-        items = null,
-        categoryId = null,
-        spentAt = 0L,
-        isPending = false,
-        updatedAt = 0L,
-        updatedByMemberId = null,
-    )
 
     private fun payment(
         id: String,
@@ -2474,67 +1797,14 @@ class GlobalBalancesViewModelTest {
         updatedAt = 0L,
     )
 
-    // Why: Carla owes you in Floripa and the Churrasco, while you owe her in the Apê.
-    private val carlaCharges = listOf(
-        ChargeSent(FLORIPA, CARLA_FLORIPA, "Carla", 9_840L),
-        ChargeSent(CHURRASCO, CARLA_CHURRASCO, "Carla", 3_250L),
-    )
-
-    // Why: something Ana did, which the server numbered seq.
-    private fun activityEvent(
-        id: String,
-        seq: Long,
-    ): ActivityEvent = ActivityEvent(
-        id = id,
-        seq = seq,
-        groupId = FLORIPA,
-        kind = ActivityKind.BILL_CREATED,
-        actorUserId = "ana",
-        actorMemberId = ANA_FLORIPA,
-        actorName = "Ana",
-        groupName = "Viagem Floripa",
-        targetId = "e2",
-        occurredAt = 0L,
-        subject = "Bill",
-        amountMinor = 16_230L,
-        code = null,
-        fromMemberId = null,
-        toMemberId = null,
-        changes = emptyList(),
-        sharesCount = null,
-        body = null,
-        isPending = false,
-        commentId = null,
-        isCommentDeleted = false,
-        debtsBefore = emptyList(),
-        debtsAfter = emptyList(),
-        memberNames = emptyMap(),
-    )
-
-    private val route = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
-
-    private val simplifiedTripBills = listOf(
-        owes(TRIP, DIEGO_TRIP, BRUNO_TRIP, 6_400L, id = "bill-diego"),
-        owes(TRIP, BRUNO_TRIP, ME_TRIP, 6_400L, id = "bill-bruno"),
-    )
-
-    // Why: Diego owes Bruno and Bruno owes you the same, which simplified is Diego paying you.
-    private fun simplifiedTrip(simplifies: Boolean): Group = group(
-        TRIP,
-        "Viagem",
-        me(ME_TRIP),
-        joined(BRUNO_TRIP, "Bruno", "bruno"),
-        joined(DIEGO_TRIP, "Diego", "diego"),
-    ).copy(simplifiesDebts = simplifies)
+    private val route = Route.GlobalBalances(BalancesFilter.ALL)
 
     private fun TestScope.prepareScenario(
         filter: BalancesFilter = BalancesFilter.ALL,
         storedGroups: List<Group> = defaultGroups,
         bills: List<Expense> = defaultBills,
         storedSettlements: List<Settlement> = emptyList(),
-        storedKeys: List<PaymentKey> = listOf(bitcoinKey, pixKey),
         online: Boolean = true,
-        charge: BalancesCharge? = null,
         groupsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
     ) {
@@ -2542,21 +1812,11 @@ class GlobalBalancesViewModelTest {
         expenses = FakeExpenseRepository(initialExpenses = bills)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         recordedPayments = InMemoryRecordedPaymentRepository()
-        keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
         firstDownload = MutableStateFlow(downloading)
-        val opened = Route.GlobalBalances(filter, charge = charge)
-        navigator = BackStackNavigator(startRoute = Route.Home).also { navigator ->
-            // Why: Contatos' "Cobrar" opens Saldos over the person's profile.
-            if (charge != null) {
-                navigator.navigate(Route.Contacts)
-                navigator.navigate(Route.ContactProfile(charge.personKey))
-            }
-            navigator.navigate(opened)
-        }
+        val opened = Route.GlobalBalances(filter)
+        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(opened) }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
-        activity = FakeActivityRepository()
-        val accountStatus = ObserveAccountStatus { flowOf(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)) }
         viewModel = GlobalBalancesViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             route = opened,
@@ -2574,10 +1834,8 @@ class GlobalBalancesViewModelTest {
             observeAccount = ObserveAccountUseCase(
                 FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)),
             ),
-            observePaymentKeys = ObservePaymentKeysUseCase(keys),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
-            recordCharges = RecordChargesUseCase(activity, accountStatus) { 0L },
             // Why: Room not read yet is a flow that hasn't emitted.
             observeHasGroups = if (groupsRead) {
                 ObserveHasGroupsUseCase(groups)
@@ -2586,24 +1844,5 @@ class GlobalBalancesViewModelTest {
             },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
-    }
-
-    private companion object {
-        const val TRIP = "trip"
-        const val ME_TRIP = "me-trip"
-        const val BRUNO_TRIP = "bruno-trip"
-        const val DIEGO_TRIP = "diego-trip"
-        const val FLORIPA = "floripa"
-        const val APE = "ape"
-        const val CHURRASCO = "churrasco"
-        const val ME_FLORIPA = "me-floripa"
-        const val ME_APE = "me-ape"
-        const val ME_CHURRASCO = "me-churrasco"
-        const val ANA_FLORIPA = "ana-floripa"
-        const val BRUNO_FLORIPA = "bruno-floripa"
-        const val CARLA_FLORIPA = "carla-floripa"
-        const val CARLA_APE = "carla-ape"
-        const val CARLA_CHURRASCO = "carla-churrasco"
-        const val DIEGO_CHURRASCO = "diego-churrasco"
     }
 }

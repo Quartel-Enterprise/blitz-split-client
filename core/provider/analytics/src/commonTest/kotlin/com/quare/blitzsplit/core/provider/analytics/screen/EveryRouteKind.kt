@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.UpdatePromptSource
-import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 
 // Why: one route of each kind, every id, code, name and key of it marked "secret", so a leak shows by its text.
@@ -67,12 +66,10 @@ internal val everyRouteKind: List<Route> = listOf(
         offersReceiverKeys = true,
     ),
     Route.PickPayment,
-    Route.GlobalBalances(
-        filter = BalancesFilter.OWES_YOU,
-        charge = BalancesCharge(
-            personKey = "secret-person",
-            currency = GroupCurrency.BRL,
-        ),
+    Route.GlobalBalances(filter = BalancesFilter.OWES_YOU),
+    Route.Charge(
+        personKey = "secret-person",
+        currency = GroupCurrency.BRL,
     ),
     Route.Contacts,
     Route.ContactProfile(personKey = "secret-person"),

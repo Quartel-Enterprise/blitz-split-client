@@ -28,6 +28,9 @@ enum AppRoute: Hashable, Identifiable {
     case activity(RouteActivity)
     /// Settling up with someone across groups; holds the Kotlin route itself, which its ViewModel reads the person from.
     case settleUp(RouteSettleUp)
+    /// Request, over Balances or a contact's profile; holds the Kotlin route itself, which its ViewModel reads the
+    /// person and the currency from.
+    case charge(RouteCharge)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case splitBill(RouteSplitBill)
     /// Holds the Kotlin route itself, which its ViewModel reads the group and the bill from.
@@ -87,6 +90,7 @@ enum AppRoute: Hashable, Identifiable {
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
         case let activity as RouteActivity: self = .activity(activity)
         case let settleUp as RouteSettleUp: self = .settleUp(settleUp)
+        case let charge as RouteCharge: self = .charge(charge)
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)
         case let shareBill as RouteShareBill: self = .shareBill(shareBill)
@@ -119,7 +123,7 @@ enum AppRoute: Hashable, Identifiable {
     /// a bill and Edit profile open as a form sheet and on the Mac a key as a sheet (on Ajustes' window,
     /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile, and shows a bill in the window's
     /// inspector), as the canvas draws them; an iPhone, lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
-    /// recording a payment (settling up across groups and Início's "Who paid whom?" included), Contacts' invite and
+    /// recording a payment (settling up across groups and Início's "Who paid whom?" included), Request, Contacts' invite and
     /// sharing a bill are sheets everywhere (sharing stacks over the bill's own sheet with an iPad's room, and over the
     /// Mac's inspector). The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
     /// on the Mac it is a sheet, or the popover of the group behind it (`AppModel.invitePopover`). The invite reader is
@@ -128,7 +132,7 @@ enum AppRoute: Hashable, Identifiable {
     /// on an iPhone.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
-        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .pickPayment,
+        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
              .contactInvite, .shareBill, .inAppUpdate:
             return true
         case .invite:
@@ -202,7 +206,7 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .shareBill, .editProfile, .editGroup, .registerPayment, .settleUp,
-             .pickPayment, .inAppUpdate: true
+             .charge, .pickPayment, .inAppUpdate: true
         default: false
         }
     }

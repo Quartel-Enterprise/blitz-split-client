@@ -144,6 +144,7 @@ struct RootView: View {
         case let .globalBalances(route): GlobalBalancesView(route: route)
         case let .activity(route): ActivityView(route: route)
         case let .settleUp(route): RegisterPaymentView(settleUp: route)
+        case let .charge(route): ChargeView(route: route)
         case .pickPayment: PickPaymentView()
         case let .splitBill(route): SplitBillView(route: route)
         case let .billDetail(route): BillDetailView(route: route)

@@ -42,6 +42,7 @@ import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDi
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.editprofile.ProfilePhotoScreen
+import com.quare.blitzsplit.android.feature.globalbalances.ChargeScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
@@ -332,6 +333,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
+            // Why: Cobrar over the screen that opened it (Saldos, a contact's profile), as short as Quem pagou quem.
+            entry<Route.Charge>(metadata = pickPaymentMetadata) { route ->
+                val isDialog = remember { usesPickPaymentDialog }
+                ChargeScreen(
+                    route = route,
+                    isDialog = isDialog,
+                )
+            }
             // Why: Atividade, pushed over Início by its bell or over a contact's profile by their history.
             entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.

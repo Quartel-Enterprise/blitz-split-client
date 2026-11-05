@@ -17,7 +17,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
-import { ChargeDialog, copyChargeMessage, shareChargeMessage } from './ChargeDialog'
 
 // Início, Grupos and Contatos take Saldos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: GlobalBalancesPresenter) => void>> = {
@@ -62,8 +61,6 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) =>
     toast(t(action === 'coming-soon' ? 'groups_comingSoon' : 'globalBalances_changeError')),
   )
-  useActions(presenter, (p, onShare: (message: string) => void) => p.observeShare(onShare), shareChargeMessage)
-  useActions(presenter, (p, onCopy: (message: string) => void) => p.observeCopy(onCopy), copyChargeMessage)
   // Why: Registrar pagamento, which Acertar or Recebi opened over Saldos, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   // Why: the canvas' desktop (from 1024 px) splits the people and the one picked; narrower, one column.
@@ -78,7 +75,6 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
       onProfile={() => presenter.openProfile()}
       onBrand={() => presenter.openBrand()}
       search={search}
-      overlays={state.charge && <ChargeDialog presenter={presenter} state={state} charge={state.charge} />}
     >
       <main className={cn(pageContentClass, 'gap-5', !isWide && 'max-w-3xl')}>
         <h1 className="sr-only text-2xl font-semibold tracking-tight md:not-sr-only">{t('globalBalances_title')}</h1>
