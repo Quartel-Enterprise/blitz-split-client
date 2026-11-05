@@ -46,7 +46,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](../architecture/responsive-layouts.md).
   - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
-    buttons, the avatar and "Split a bill" (only its +, the group's Add person too) over the tabs
+    buttons, the avatar and "Split a bill" (only its +) over the tabs
     (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.
     Open lying down, every two-column screen
     splits on the fold with nothing in its band (Groups' and Contacts' lists end at it, Balances, Statistics with

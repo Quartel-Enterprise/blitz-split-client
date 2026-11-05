@@ -37,9 +37,9 @@ struct GroupScreenActions {
 }
 
 extension View {
-    /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and the tab's main
-    /// button, "Split a bill" or Members' "Add person" (the bottom toolbar's prominent glass item on iPhone, iOS has no
-    /// FAB; the window toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the
+    /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and "Split a bill", the
+    /// main button on every tab (the bottom toolbar's prominent glass item on iPhone, iOS has no FAB; the window
+    /// toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the
     /// screen is loaded, which keeps the buttons out of the bars rather than drawing them disabled. Offline, the menu's Leave and Delete need the internet; the
     /// dialogs they open come with the bars.
     func groupScreenBars(
@@ -48,7 +48,6 @@ extension View {
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
-        addPerson: (() -> Void)?,
         showsInlineTitle: Bool,
         exit: GroupExitState?,
         actions: GroupScreenActions,
@@ -60,7 +59,6 @@ extension View {
                 header: header,
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
-                addPerson: addPerson,
                 showsInlineTitle: showsInlineTitle,
                 isOnline: exit?.isOnline ?? true,
                 actions: actions,
@@ -78,8 +76,6 @@ private struct GroupScreenBars: ViewModifier {
     let header: GroupHeader?
     let hasExpenses: Bool
     let showsSplitBill: Bool
-    /// Members' "Add person", nil on the other tabs.
-    let addPerson: (() -> Void)?
     let showsInlineTitle: Bool
     let isOnline: Bool
     let actions: GroupScreenActions
@@ -142,24 +138,22 @@ private struct GroupScreenBars: ViewModifier {
             ToolbarItem(placement: .primaryAction) { groupMenu }
         }
         if showsSplitBill {
-            mainButton { splitBillButton }
-        } else if let addPerson {
-            mainButton { AddPersonButton(showsTitle: !hasVerticalBar, action: addPerson) }
+            splitBillItem
         }
     }
 
     @ToolbarContentBuilder
-    private func mainButton(@ViewBuilder _ button: () -> some View) -> some ToolbarContent {
+    private var splitBillItem: some ToolbarContent {
         #if os(iOS)
         if usesBottomBar {
             ToolbarSpacer(.flexible, placement: .bottomBar)
-            ToolbarItem(placement: .bottomBar) { button() }
+            ToolbarItem(placement: .bottomBar) { splitBillButton }
         } else {
-            ToolbarItem(placement: .primaryAction) { button() }
+            ToolbarItem(placement: .primaryAction) { splitBillButton }
                 .prefersVerticalBar()
         }
         #else
-        ToolbarItem(placement: .primaryAction) { button() }
+        ToolbarItem(placement: .primaryAction) { splitBillButton }
         #endif
     }
 

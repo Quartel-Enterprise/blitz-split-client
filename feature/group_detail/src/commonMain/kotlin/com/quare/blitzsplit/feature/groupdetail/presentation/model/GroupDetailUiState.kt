@@ -89,14 +89,10 @@ data class GroupDetailUiState(
         get() = myDebts.isNotEmpty() || otherDebts.isNotEmpty()
 
     /*
-     * Why: the empty Despesas has its own "Rachar conta", and Membros has "Adicionar pessoa" instead. Over the
-     * skeletons too, so a bill can still be split offline while the account's copy waits for the internet.
+     * Why: "Rachar conta" stays the group's main button on every tab, so it never changes under the person (Membros
+     * keeps "Adicionar pessoa" beside its link); only the empty Despesas leaves it to its own. Over the skeletons
+     * too, so a bill can still be split offline while the account's copy waits for the internet.
      */
     val showsSplitBillButton: Boolean
-        get() = isLoaded &&
-            when (tab) {
-                GroupTab.EXPENSES -> days.isNotEmpty() || isLoadingBills
-                GroupTab.BALANCES -> true
-                GroupTab.MEMBERS -> false
-            }
+        get() = isLoaded && (tab != GroupTab.EXPENSES || days.isNotEmpty() || isLoadingBills)
 }

@@ -44,9 +44,9 @@ final class MembersModel {
     }
 }
 
-/// "Members", the group's tab under its header: the group's link and who is in it and who joined. A tap on a person
-/// opens their options: rename, a personal invite, which joins straight in as someone nobody joined as yet, and
-/// removal, which only someone who hasn't joined and owes or is owed nothing allows. The group's creator may also
+/// "Members", the group's tab under its header: the group's link with "Add person" beside it, and who is in it and
+/// who joined. A tap on a person opens their options: rename, a personal invite, which joins straight in as someone
+/// nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing allows. The group's creator may also
 /// release the name of someone who joined, online only. Each person shows their balance. Nothing until Room is read.
 struct MembersSections: View {
     let model: MembersModel
@@ -78,6 +78,11 @@ struct MembersSections: View {
                         .truncationMode(.middle)
                     }
                     Spacer()
+                    #if os(macOS)
+                    addPersonButton
+                        .buttonStyle(.glass)
+                        .buttonBorderShape(.capsule)
+                    #endif
                     Button("Share") {
                         model.send(MembersUiEventOnShareClicked.shared)
                     }
@@ -86,6 +91,10 @@ struct MembersSections: View {
                     .buttonBorderShape(.capsule)
                     .invitePopover(host: host)
                 }
+                #if os(iOS)
+                // A row of its own under the link, where a phone has no room beside Share
+                addPersonButton
+                #endif
             }
             Section("People") {
                 ForEach(state.members, id: \.id) { member in
@@ -102,6 +111,16 @@ struct MembersSections: View {
                 ShimmerList(count: 4)
                     .shimmering()
             }
+        }
+    }
+}
+
+private extension MembersSections {
+    /// "Add person", for someone without the app, beside the link whoever has it joins through; the group's main
+    /// button stays "Split a bill" on every tab.
+    var addPersonButton: some View {
+        Button("Add person", systemImage: "person.badge.plus") {
+            model.send(MembersUiEventOnAddClicked.shared)
         }
     }
 }

@@ -45,21 +45,6 @@ struct SplitBillButton: View {
     }
 }
 
-/// Members' "Add person", in the place the group's other tabs give "Split a bill".
-struct AddPersonButton: View {
-    var showsTitle = true
-    let action: () -> Void
-
-    var body: some View {
-        ProminentBarButton(
-            title: "Add person",
-            image: Image(systemName: "person.badge.plus"),
-            showsTitle: showsTitle,
-            action: action,
-        )
-    }
-}
-
 /// A toolbar's main button spelled out with its icon, or its icon alone in an iPhone Duo's vertical bar, which has
 /// no room for words.
 private struct ProminentBarButton: View {

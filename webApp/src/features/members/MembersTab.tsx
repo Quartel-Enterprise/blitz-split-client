@@ -1,4 +1,4 @@
-import { Check, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, Trash2 } from 'lucide-react'
+import { Check, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, Trash2, UserPlus } from 'lucide-react'
 import {
   MembersPresenter,
   type JsMemberBalance,
@@ -58,15 +58,25 @@ export function useMembers(route: JsRoute): { presenter: MembersPresenter | null
 export function MembersTab({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
   return (
     <>
-      <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
-        <Link2 className="size-5 shrink-0 text-muted-foreground" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
-          <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
+      {/* Why: "Adicionar pessoa" (someone without the app, by name) beside the link whoever has it joins through; the
+          group's main button stays "Rachar conta" on every tab. A phone puts both buttons under the link. */}
+      <section className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 pl-4">
+        <div className="flex min-w-0 flex-1 basis-56 items-center gap-3">
+          <Link2 className="size-5 shrink-0 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
+            <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
+          </div>
         </div>
-        <Button variant="secondary" onClick={() => presenter.share()}>
-          {t('members_share')}
-        </Button>
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" onClick={() => presenter.add()}>
+            <UserPlus />
+            {t('members_add')}
+          </Button>
+          <Button variant="secondary" onClick={() => presenter.share()}>
+            {t('members_share')}
+          </Button>
+        </div>
       </section>
       <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
         {state.members.map((member) => (
