@@ -23,7 +23,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
-import com.quare.blitzsplit.android.designsystem.component.rememberUsesGroupRail
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -198,17 +198,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
-    // Why: a group's screens drawn with the home's rail beside them switch to a tab as the tabs do.
-    val groupRailMetadata = if (rememberUsesGroupRail()) homeBarsMetadata else emptyMap()
-    val groupStatsMetadata =
-        (if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()) + groupRailMetadata
+    val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
     val currentIsHomeEmpty by rememberUpdatedState(isHomeEmpty)
     val groupsMetadata = remember(listDetail) {
         homeListPaneMetadataOf(
             listDetail = listDetail,
             isHomeEmpty = { currentIsHomeEmpty },
-        ) + homeBarsMetadata
+        ) + homeTabMetadata
     }
     // Why: stateless, so built once instead of on every recomposition of the navigation.
     val transitionSpec =
@@ -228,24 +225,20 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val predictivePopTransitionSpec = remember {
         createHomeTabPredictivePopTransitionSpec(defaultPredictivePopTransitionSpec<Route>())
     }
-    NavDisplay(
+    val entryDecorators = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
+        rememberViewModelStoreNavEntryDecorator(),
+        homeBarsEntryDecorator,
+    )
+    val entries = rememberAppNavEntries(
         backStack = backStack,
-        onBack = { appViewModel.navigator.navigateBack() },
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
-            rememberViewModelStoreNavEntryDecorator(),
-        ),
-        // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
-        sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
-        transitionSpec = transitionSpec,
-        popTransitionSpec = popTransitionSpec,
-        predictivePopTransitionSpec = predictivePopTransitionSpec,
+        decorators = entryDecorators,
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
-            entry<Route.Home>(metadata = homeBarsMetadata) {
+            entry<Route.Home>(metadata = homeTabMetadata) {
                 HomeScreen(
                     recoveryCodeSheet = { RecoveryCodeSheet() },
                     isPushConfigured = PushSetup.isConfigured,
@@ -259,7 +252,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
-            entry<Route.Search>(metadata = homeBarsMetadata) { SearchScreen() }
+            entry<Route.Search>(metadata = homeTabMetadata) { SearchScreen() }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
             // Why: the photo big over the profile, the whole window dimmed behind it (a book's end half, as any dialog).
@@ -292,7 +285,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: it takes the new group's place, full screen at every size (decision 1), laid out per size inside.
             entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
-            entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata + groupRailMetadata) { route ->
+            entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane {
                     GroupDetailScreen(
                         route = route,
@@ -375,7 +368,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 PickPaymentScreen(isDialog = isDialog)
             }
             // Why: the home's Saldos tab, over Início.
-            entry<Route.GlobalBalances>(metadata = homeBarsMetadata) { route -> GlobalBalancesScreen(route) }
+            entry<Route.GlobalBalances>(metadata = homeTabMetadata) { route -> GlobalBalancesScreen(route) }
             // Why: Cobrar over the screen that opened it (Saldos, a contact's profile), as short as Quem pagou quem.
             entry<Route.Charge>(metadata = pickPaymentMetadata) { route ->
                 val isDialog = remember { usesPickPaymentDialog }
@@ -395,7 +388,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             // Why: the home's Contatos tab, over the groups; a wide window draws the profile or the agenda beside it.
-            entry<Route.Contacts>(metadata = homeBarsMetadata) { ContactsScreen() }
+            entry<Route.Contacts>(metadata = homeTabMetadata) { ContactsScreen() }
             entry<Route.ContactProfile> { route -> ContactProfileScreen(route) }
             entry<Route.ContactsAgenda> { AgendaScreen() }
             // Why: a sheet on a phone, a dialog elsewhere, and the code above the hinge on a tabletop.
@@ -411,4 +404,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }
         },
     )
+    // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
+    HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
+        NavDisplay(
+            entries = entries,
+            // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
+            sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
+            transitionSpec = transitionSpec,
+            popTransitionSpec = popTransitionSpec,
+            predictivePopTransitionSpec = predictivePopTransitionSpec,
+            onBack = { appViewModel.navigator.navigateBack() },
+        )
+    }
 }

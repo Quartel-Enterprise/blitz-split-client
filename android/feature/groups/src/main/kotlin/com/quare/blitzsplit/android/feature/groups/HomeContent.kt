@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -43,8 +41,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ActivityBellButton
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
+import com.quare.blitzsplit.android.designsystem.component.HomeBars
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -68,6 +68,22 @@ private fun eventOf(tab: HomeTab): HomeUiEvent? = when (tab) {
     HomeTab.CONTACTS -> HomeUiEvent.OnContactsTabClicked
 }
 
+// Why: Início's bar or rail, the rail with "Rachar conta" on top.
+private fun homeBarsOf(
+    state: HomeUiState,
+    onEvent: (HomeUiEvent) -> Unit,
+    usesRail: Boolean,
+): HomeBars {
+    val onSplitBillClick = { onEvent(HomeUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
+    return HomeBars(
+        kind = homeBarsKindOf(usesRail),
+        selected = HomeTab.HOME,
+        onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+        onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+        railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
+    )
+}
+
 /*
  * Why: "Início" (flow 10), the home's first tab, titled only on a wide screen (HomeTabTitle). A phone
  * scrolls one column under the top bar with the profile, "Rachar conta" floating; anything wider has the rail with
@@ -87,28 +103,20 @@ fun HomeContent(
     val metrics = rememberHomeMetrics(homeLayout)
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
+    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         if (homeLayout == HomeLayout.COVER) {
-            HomeCoverPane(state = state)
+            Box(modifier = Modifier.fillMaxSize().semantics { paneTitle = title }) { HomeCoverPane(state = state) }
             return@AdaptiveScreen
         }
-        // Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset it takes.
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (homeLayout.usesRail) {
-                SplitBillNavigationRail(
-                    selected = HomeTab.HOME,
-                    onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-                    onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
-                    onSplitBillClick = {
-                        onEvent(
-                            HomeUiEvent.OnSplitBillClicked,
-                        )
-                    }.takeIf { state.showsSplitBillButton },
-                )
-            }
+        // Why: the home's one bar or rail, drawn around the navigation, beside or under the scaffold.
+        HomeBarsScaffold(
+            bars = homeBarsOf(state, onEvent, homeLayout.usesRail),
+            // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
+            modifier = Modifier.semantics { paneTitle = title },
+        ) {
             Scaffold(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     if (homeLayout.usesTopBar || state.showsFirstUse) {
@@ -130,21 +138,8 @@ fun HomeContent(
                         )
                     }
                 },
-                bottomBar = {
-                    if (!homeLayout.usesRail) {
-                        HomeNavigationBar(
-                            selected = HomeTab.HOME,
-                            onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-                            onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
-                        )
-                    }
-                },
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentWindowInsets = if (homeLayout.usesRail) {
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                } else {
-                    WindowInsets.safeDrawing
-                },
+                contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
                 PullToRefreshBox(
                     isRefreshing = state.isRefreshing,

@@ -16,28 +16,20 @@ import androidx.navigation3.scene.Scene
 // Why: the web's page-enter, so a tab's content comes in as fast on every platform.
 private const val HOME_TAB_FADE_MILLIS = 180
 
-private object HomeBarsKey : NavMetadataKey<Boolean>
+private object HomeTabKey : NavMetadataKey<Boolean>
+
+// Why: marks the home's tabs (Início, Grupos, Saldos, Contatos and Buscar), whose switches fade as fast as the web's.
+internal val homeTabMetadata: Map<String, Any> = metadata { put(HomeTabKey, true) }
+
+// Why: any of its entries, so Grupos with the group beside it (one list and detail scene) counts as a tab too.
+private val Scene<*>.isHomeTab: Boolean
+    get() = entries.any { entry -> entry.metadata[HomeTabKey] == true }
 
 /*
- * Why: marks the screens that draw the home's rail or bottom bar, which a switch between two of them keeps still: the
- * tabs (Início, Grupos, Saldos, Contatos and Buscar) always, and a group's screens and Estatísticas where the window draws
- * the rail beside them (rememberUsesGroupRail). A new screen drawing those bars needs it too.
- */
-internal val homeBarsMetadata: Map<String, Any> = metadata { put(HomeBarsKey, true) }
-
-/*
- * Why: any of its entries, so Groups with the group it opened (one list-detail scene, even where only the group shows)
- * counts as drawing the bars too.
- */
-private val Scene<*>.drawsHomeBars: Boolean
-    get() = entries.any { entry -> entry.metadata[HomeBarsKey] == true }
-
-/*
- * Why: each tab draws its own rail or bottom bar, the same in every tab, so crossfading the two whole screens dimmed the
- * bars with the content, for 700 ms. Between two tabs one screen stays opaque under the other while it fades, so the
- * bars hold still and only the content changes: going forward, the screen coming in fades in over the one leaving;
- * going back, which draws the tab coming back underneath, the one leaving fades out over it. Anything else keeps
- * Navigation 3's default.
+ * Why: the bar stays still under the tabs (HomeBarsLayout), and Navigation 3's default crossfades both contents for
+ * 700 ms, half transparent midway. Between two tabs one content stays opaque under the other while it fades: going
+ * forward the tab coming in fades in over the one leaving, and going back, which draws the tab coming back underneath,
+ * the one leaving fades out over it. Anything else keeps Navigation 3's default.
  */
 internal fun <T : Any> createHomeTabTransitionSpec(
     isPop: Boolean,
@@ -46,7 +38,7 @@ internal fun <T : Any> createHomeTabTransitionSpec(
     if (isBetweenHomeTabs()) createHomeTabFade(isPop) else default()
 }
 
-// Why: the back gesture between two tabs fades the tab leaving as it follows the finger, instead of shrinking its bars.
+// Why: the back gesture between two tabs fades the tab leaving as it follows the finger, as a tap back does.
 internal fun <T : Any> createHomeTabPredictivePopTransitionSpec(
     default: AnimatedContentTransitionScope<Scene<T>>.(Int) -> ContentTransform,
 ): AnimatedContentTransitionScope<Scene<T>>.(Int) -> ContentTransform = { swipeEdge ->
@@ -54,7 +46,7 @@ internal fun <T : Any> createHomeTabPredictivePopTransitionSpec(
 }
 
 private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.isBetweenHomeTabs(): Boolean =
-    initialState.drawsHomeBars && targetState.drawsHomeBars
+    initialState.isHomeTab && targetState.isHomeTab
 
 // Why: in the transition's scope, which is where Compose lets the screen leaving stay until the fade ends.
 private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.createHomeTabFade(isPop: Boolean): ContentTransform =

@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -63,6 +61,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
@@ -107,27 +106,26 @@ fun GroupsContent(
         )
         return
     }
-    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
+    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         /*
          * Why: with no group yet the empty home keeps its top bar and its one card; a first download, and the read of
          * the groups, draw the list from the start, so the first group arriving doesn't move the cards to the side.
          */
         val usesSideColumn = layout == DeviceLayout.PhoneLandscape &&
             (state.groups.isNotEmpty() || state.firstDownload != null || state.isReadingGroups)
-        /*
-         * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
-         * the rail already takes.
-         */
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) {
-                GroupsNavigationRail(
-                    state = state,
-                    onEvent = onEvent,
-                )
-            }
+        // Why: the home's one bar or rail, drawn around the navigation, beside or under the scaffold.
+        HomeBarsScaffold(
+            bars = groupsBarsOf(
+                state = state,
+                onEvent = onEvent,
+                usesRail = layout.usesNavigationRail,
+            ),
+            // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
+            modifier = Modifier.semantics { paneTitle = title },
+        ) {
             Scaffold(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     if (state.isSearching && !usesSideColumn) {
@@ -155,20 +153,8 @@ fun GroupsContent(
                         )
                     }
                 },
-                bottomBar = {
-                    if (!layout.usesNavigationRail) {
-                        GroupsNavigationBar(
-                            state = state,
-                            onEvent = onEvent,
-                        )
-                    }
-                },
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentWindowInsets = if (layout.usesNavigationRail) {
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                } else {
-                    WindowInsets.safeDrawing
-                },
+                contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
                 if (usesSideColumn) {
                     GroupsSideColumnLayout(

@@ -1,11 +1,5 @@
 package com.quare.blitzsplit.android.designsystem.component
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
@@ -19,8 +13,8 @@ import com.quare.blitzsplit.core.model.HomeTab
  * phone lying down, a tablet or a foldable upright, Estatísticas over a whole book) keep the home's rail
  * with the tab they were opened from selected, as the canvas draws them ("No Android o trilho fica"), without "Rachar
  * conta": the group has its own. That tab goes back to it, as the others open theirs. Beside the home's list the
- * list's rail is already there, and the tabletop draws none. content gets whether the rail shows, so its Scaffold
- * leaves out the start inset the rail already takes (toGroupRailInsets).
+ * list's rail is already there, and the tabletop draws none. The rail is the home's one (HomeBarsScaffold), so going
+ * between a tab and a group swaps only what is beside it.
  */
 @Composable
 fun WithGroupNavigationRail(
@@ -29,30 +23,27 @@ fun WithGroupNavigationRail(
     // Why: "Buscar", the rail's last item as beside the home's tabs, which opens the search over the tab underneath.
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (showsRail: Boolean) -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val showsRail = !LocalInDetailPane.current && rememberUsesGroupRail()
-    Row(modifier = modifier.fillMaxSize()) {
-        if (showsRail) {
-            HomeNavigationRail(
+    HomeBarsScaffold(
+        bars = if (showsRail) {
+            HomeBars(
+                kind = HomeBarsKind.RAIL,
                 selected = selected,
                 onTabClick = onTabClick,
                 onSearchClick = onSearchClick,
                 reselects = true,
             )
-        }
-        Box(modifier = Modifier.weight(1f)) { content(showsRail) }
-    }
+        } else {
+            null
+        },
+        modifier = modifier,
+        content = content,
+    )
 }
 
-// Why: beside the rail, the screen's own insets without the start the rail takes.
-fun WindowInsets.toGroupRailInsets(showsRail: Boolean): WindowInsets = if (showsRail) {
-    only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-} else {
-    this
-}
-
-// Why: the window draws the home's rail beside a group's screens drawn alone; the navigation fades between it and a tab.
+// Why: the window draws the home's rail beside a group's screens drawn alone, except on a tabletop.
 @Composable
-fun rememberUsesGroupRail(): Boolean =
+private fun rememberUsesGroupRail(): Boolean =
     rememberDeviceLayout().usesNavigationRail && rememberFoldLayout().formFactor != FormFactor.Tabletop

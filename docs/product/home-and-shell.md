@@ -14,19 +14,26 @@ The home's four tabs and the web's and the Mac's shell.
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
     to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
     `OnRailTabClicked`).
-  - Going from a tab to another never redraws the whole screen. On Android each tab (Search included) draws the same
-    rail or bottom bar, so the tab coming in fades in over the one leaving in 180 ms (the web's `page-enter`), the one
-    leaving fading out over it when the switch goes back down the stack or follows the back gesture, and the bars hold
-    still while only the content changes (`createHomeTabTransitionSpec`). A group's screens and Statistics count the same
-    wherever the rail is drawn beside them (`rememberUsesGroupRail`), so a rail click from them, and a group opened from
-    a tab there, fade the same way; every other screen keeps Navigation 3's default transitions. Apple keeps
-    one `TabView` (the iPad's and Mac's sidebar) above the tabs, and the web one frame (`HomeFrame`), so their bars
-    never redraw. Apple's tabs also keep their content once shown: back on Balances or Contacts, the screen is already
+  - Going from a tab to another never redraws the whole screen. Android draws the bottom bar or the rail once, around
+    the navigation (`HomeBarsLayout`), and each screen that has them (the tabs, Search, a group's screens and
+    Statistics wherever the rail shows beside them) only leaves their place free and says what they show
+    (`HomeBarsScaffold`): switching tabs, a rail click from a group and a group opened from a tab change only the content,
+    while the selected tab moves within the one bar. Between two tabs (Search included) the tab coming in fades in over
+    the one leaving in 180 ms (the web's `page-enter`), the one leaving fading out over it when the switch goes back down
+    the stack or follows the back gesture, so the content never shows half transparent (`createHomeTabTransitionSpec`);
+    a group and every other screen keep Navigation 3's default fade. A screen without the bars (the
+    profile, a group on a phone upright) covers them as it comes in, and they go once no screen with them is left.
+    Each layout keeps its bars: the bottom bar on a phone upright, the rail without labels on a phone lying down and a
+    tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group
+    in the pane by the list nor on a tabletop's group. Apple keeps one `TabView` (the iPad's and Mac's sidebar) above
+    the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
+  - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
     read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
-    (`MainTabView`). Balances still comes back on the filter it was opened with, "All" from its tab, as Android and
-    the web do, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with
-    another filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is
-    the route's. Android and the web open the tab afresh, its picks and opened rows included.
+    (`MainTabView`). Android keeps Groups and Contacts the same way (their list, its scroll, the person picked), and
+    opens Balances afresh. Balances still comes back on the filter it was opened with, "All" from its tab, on every
+    platform, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with another
+    filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is the
+    route's. The web opens each tab afresh, its picks and opened rows included.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot

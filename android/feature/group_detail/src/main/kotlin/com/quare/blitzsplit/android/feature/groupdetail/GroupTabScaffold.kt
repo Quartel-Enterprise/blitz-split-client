@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
-import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.core.model.GroupTab
@@ -82,12 +81,11 @@ internal fun GroupTabScaffold(
         onTabClick = onHomeTabClick,
         onSearchClick = onSearchClick,
         modifier = modifier,
-    ) { showsRail ->
+    ) {
         GroupTabScaffoldContent(
             frame = frame,
             snackbarHostState = snackbarHostState,
             onAction = onAction,
-            showsRail = showsRail,
             body = body,
         )
     }
@@ -99,7 +97,6 @@ private fun GroupTabScaffoldContent(
     frame: GroupTabFrame,
     snackbarHostState: SnackbarHostState,
     onAction: (GroupAction) -> Unit,
-    showsRail: Boolean,
     body: GroupTabBody,
 ) {
     val layout = rememberDeviceLayout()
@@ -109,7 +106,7 @@ private fun GroupTabScaffoldContent(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             if (frame.isLoaded) {
                 GroupTopBar(
