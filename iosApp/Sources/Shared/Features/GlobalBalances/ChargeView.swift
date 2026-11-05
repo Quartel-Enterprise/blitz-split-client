@@ -22,7 +22,8 @@ final class ChargeModel {
             case let copy as ChargeUiActionCopyMessage:
                 Pasteboard.copy(copy.message)
                 self?.copiedCount += 1
-            // Send is a ShareLink: a share sheet can't be opened from code
+            // Send goes through the ViewModel first, so a tap it refuses (once closed) shares nothing
+            case let share as ChargeUiActionShareMessage: SystemShare.share(share.message)
             default: break
             }
         })
@@ -226,7 +227,10 @@ private struct ChargeContent: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
-            ShareLink(item: message) {
+            // The ViewModel records the charge in Activity and hands the message back to share (SystemShare)
+            Button {
+                model.send(ChargeUiEventOnShareClicked(message: message))
+            } label: {
                 // A list row would drop the icon
                 Label("Send", systemImage: "square.and.arrow.up")
                     .labelStyle(.titleAndIcon)
@@ -234,10 +238,6 @@ private struct ChargeContent: View {
             }
             .buttonStyle(.borderedProminent)
             .prominentLabel()
-            // The share sheet opens by itself; the tap still goes to the ViewModel, which records the charge in Activity
-            .simultaneousGesture(TapGesture().onEnded {
-                model.send(ChargeUiEventOnShareClicked(message: message))
-            })
         }
         .controlSize(.large)
         .buttonBorderShape(.capsule)

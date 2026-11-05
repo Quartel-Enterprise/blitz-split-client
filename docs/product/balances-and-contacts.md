@@ -12,7 +12,7 @@ The global balances, a person's profile and Contacts.
     amount locked while more than one group is in it, then "Carla's payment recorded." on Balances, whose Undo
     undoes them all in one go (never on a later Balances, when the one it opened over closed while saving). "Request"
     (`Route.Charge`) opens over the screen it was tapped on, Balances or a contact's profile, and closing it (or a sync
-    settling the person) goes back there. It moves no money: each platform writes the message ("you owe me R$ 32,90 from the groups …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Include my Pix key" is on, which locks once the message is edited), "Send" opens the system share (a ShareLink on Apple,
+    settling the person) goes back there. It moves no money: each platform writes the message ("you owe me R$ 32,90 from the groups …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Include my Pix key" is on, which locks once the message is edited), "Send" opens the system share (the share sheet, or the Mac's sharing picker, on Apple,
     `navigator.share` or a copy on the web) and "Copy message" copies; a bottom sheet on an Android phone and a
     560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
     down) with that screen under the scrim, a

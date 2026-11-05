@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -61,8 +60,6 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.Charge
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-private val chargeWidth = 560.dp
 
 /*
  * Why: "Cobrar" moves no money and sends nothing by itself: a message to edit, Enviar for the system's share sheet and
@@ -125,7 +122,8 @@ internal fun ChargeContent(
     )
     if (isDialog) {
         Surface(
-            modifier = modifier.alertDialogPane(title).widthIn(max = chargeWidth),
+            // Why: alertDialogPane already keeps the dialog 280 to 560dp wide.
+            modifier = modifier.alertDialogPane(title),
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {

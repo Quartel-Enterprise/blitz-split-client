@@ -100,7 +100,7 @@ function ChargeContent({ presenter, state, charge }: { presenter: ChargePresente
 }
 
 /** "Copiar mensagem", or Enviar where the browser has no share sheet. */
-export function copyChargeMessage(message: string) {
+function copyChargeMessage(message: string) {
   navigator.clipboard
     .writeText(message)
     .then(() => toast(t('globalBalances_copied')))
@@ -108,7 +108,7 @@ export function copyChargeMessage(message: string) {
 }
 
 /** Enviar: the browser's share sheet where there is one (phones, Safari), otherwise the message goes to the clipboard. */
-export function shareChargeMessage(message: string) {
+function shareChargeMessage(message: string) {
   if (typeof navigator.share === 'function') {
     navigator.share({ text: message }).catch(() => {})
     return
