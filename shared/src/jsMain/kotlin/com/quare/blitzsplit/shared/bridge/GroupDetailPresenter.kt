@@ -95,6 +95,9 @@ class JsGroupDetailState(
     val days: Array<JsExpenseDay>,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
+    // Why: "Apagar esta conta?" for a bill deleted from its ⋮ on the list, open while not null; disabled while deleting.
+    val billToDelete: JsBillDeletion?,
+    val isDeletingBill: Boolean,
     // Why: Saldos' "Com você" and "Entre os outros", each hidden when empty.
     val myDebts: Array<JsDebtRow>,
     val otherDebts: Array<JsDebtRow>,
@@ -143,6 +146,8 @@ class GroupDetailPresenter(
                 tab = toJsGroupTab(state.tab),
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
+                billToDelete = state.billToDelete?.let(::toJsBillDeletion),
+                isDeletingBill = state.isDeletingBill,
                 myDebts = state.myDebts.map(::toJsDebtRow).toTypedArray(),
                 otherDebts = state.otherDebts.map(::toJsDebtRow).toTypedArray(),
                 hasBills = state.hasBills,
@@ -185,7 +190,7 @@ class GroupDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "leave-error", "delete-error" and "change-error", a toast in the page's words.
+    // Why: "leave-error", "delete-error", "change-error", "bill-delete-error" and "teach-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
@@ -193,6 +198,7 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
                 GroupDetailUiAction.ShowTeachError -> "teach-error"
+                GroupDetailUiAction.ShowBillDeleteError -> "bill-delete-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -262,6 +268,27 @@ class GroupDetailPresenter(
 
     fun openExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked(expenseId))
+    }
+
+    // Why: a bill's ⋮ on the list: "Editar", "Compartilhar" and "Apagar", as on Conta.
+    fun editExpense(expenseId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseEditClicked(expenseId))
+    }
+
+    fun shareExpense(expenseId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseShareClicked(expenseId))
+    }
+
+    fun deleteExpense(expenseId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteClicked(expenseId))
+    }
+
+    fun confirmExpenseDelete() {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteConfirmed)
+    }
+
+    fun dismissExpenseDelete() {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteDismissed)
     }
 
     fun billDeletedNoticeShown() {

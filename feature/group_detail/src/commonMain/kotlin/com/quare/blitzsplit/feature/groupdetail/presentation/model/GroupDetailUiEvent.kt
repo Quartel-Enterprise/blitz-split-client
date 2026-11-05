@@ -53,6 +53,18 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
 
+            is OnExpenseEditClicked -> EventAnalytics.Automatic("bill_edit_clicked", mapOf("source" to SOURCE))
+
+            is OnExpenseShareClicked -> EventAnalytics.Automatic("bill_share_clicked", mapOf("source" to SOURCE))
+
+            // Why: only when the question opens, not a second tap before it draws.
+            is OnExpenseDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
+
+            // Why: only an answer to a question still open and not deleting yet, as Conta counts it.
+            OnExpenseDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
+
+            OnExpenseDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
+
             // Why: a notice that went away, which nobody tapped.
             OnBillDeletedNoticeShown,
             OnRecordedPaymentNoticeShown,
@@ -153,6 +165,27 @@ sealed interface GroupDetailUiEvent : UiEvent {
         val expenseId: String,
     ) : GroupDetailUiEvent
 
+    // Why: "Editar" in a bill's ⋮ on the list, Conta's Editar without opening it first.
+    data class OnExpenseEditClicked(
+        val expenseId: String,
+    ) : GroupDetailUiEvent
+
+    // Why: "Compartilhar" in a bill's ⋮ on the list, which opens "Compartilhar conta".
+    data class OnExpenseShareClicked(
+        val expenseId: String,
+    ) : GroupDetailUiEvent
+
+    // Why: "Apagar" in a bill's ⋮ on the list, which asks "Apagar esta conta?" first, as Conta does.
+    data class OnExpenseDeleteClicked(
+        val expenseId: String,
+    ) : GroupDetailUiEvent
+
+    // Why: "Apagar" on "Apagar esta conta?".
+    data object OnExpenseDeleteConfirmed : GroupDetailUiEvent
+
+    // Why: "Cancelar" on "Apagar esta conta?", or the dialog closed some other way.
+    data object OnExpenseDeleteDismissed : GroupDetailUiEvent
+
     // Why: "Esta conta foi apagada" was shown, so it doesn't show again.
     data object OnBillDeletedNoticeShown : GroupDetailUiEvent
 
@@ -165,7 +198,7 @@ sealed interface GroupDetailUiEvent : UiEvent {
         val toMemberId: String,
     ) : GroupDetailUiEvent
 
-    // Why: a payment on the list, which asks "Apagar este acerto?".
+    // Why: a payment on the list, or "Apagar" in its ⋮, which asks "Apagar este acerto?".
     data class OnPaymentClicked(
         val paymentId: String,
     ) : GroupDetailUiEvent

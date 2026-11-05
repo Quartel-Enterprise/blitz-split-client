@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
@@ -17,6 +18,10 @@ data class GroupDetailUiState(
     val days: List<ExpenseDay>,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: PaymentRow?,
+    // Why: "Apagar esta conta?" for a bill deleted from its ⋮ on the list, open while not null, worded as Conta's.
+    val billToDelete: BillDeletion?,
+    // Why: "Apagar" was tapped and the delete is in flight: the question stays, its buttons disabled.
+    val isDeletingBill: Boolean,
     // Why: Saldos' "Com você", what this person owes first, then what they're owed, the largest first in each.
     val myDebts: List<DebtRow>,
     // Why: Saldos' "Entre os outros", the largest first.

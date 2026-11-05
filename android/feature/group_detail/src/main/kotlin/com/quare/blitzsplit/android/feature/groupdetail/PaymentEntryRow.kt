@@ -19,7 +19,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it asks "Apagar este acerto?".
+// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it, or its ⋮'s "Apagar", asks "Apagar este acerto?".
 @Composable
 internal fun PaymentEntryRow(
     payment: PaymentRow,
@@ -34,6 +34,8 @@ internal fun PaymentEntryRow(
         title = paymentTitleOf(payment),
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnPaymentClicked(payment.id)) },
+        menuItems = paymentMenuItemsOf(payment.id),
+        onEvent = onEvent,
         modifier = modifier,
         meta = {
             EntryMetaLine(

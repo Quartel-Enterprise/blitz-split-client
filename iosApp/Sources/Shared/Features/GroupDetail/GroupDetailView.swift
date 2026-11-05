@@ -10,6 +10,7 @@ final class GroupDetailModel {
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
     private(set) var teachErrorCount = 0
+    private(set) var billDeleteErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -29,6 +30,7 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
+            case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
             default: break
             }
         })
@@ -74,6 +76,11 @@ final class GroupDetailModel {
     /// "Delete this payment?" closed without "Delete" (Cancel, Esc, a tap outside on iPad).
     func dismissPaymentDeletion() {
         if current.paymentToDelete != nil { send(GroupDetailUiEventOnPaymentDeleteDismissed.shared) }
+    }
+
+    /// "Delete this bill?" closed without "Delete", from a bill's options on the list.
+    func dismissBillDeletion() {
+        if current.billToDelete != nil { send(GroupDetailUiEventOnExpenseDeleteDismissed.shared) }
     }
 
     func open(_ entry: any DayEntry) {
@@ -174,8 +181,17 @@ struct GroupDetailView: View {
         } message: {
             Text("The payment leaves the group and the debt is back in the balances.")
         }
+        // A bill's "Delete bill" on the list asks what Bill asks, in the same words
+        .billDeletionAlert(
+            model?.state.billToDelete,
+            currency: model?.state.header.currency,
+            isDeleting: model?.state.isDeletingBill == true,
+            onConfirm: { model?.send(GroupDetailUiEventOnExpenseDeleteConfirmed.shared) },
+            onDismiss: { model?.dismissBillDeletion() },
+        )
         .glassToast([
             GlassToastMessage(text: "This bill was deleted", trigger: model?.billDeletedCount ?? 0),
+            GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.billDeleteErrorCount ?? 0),
         ] + GroupExitCopy.errorToasts(
             leave: model?.leaveErrorCount ?? 0,
             delete: model?.deleteErrorCount ?? 0,
@@ -389,16 +405,23 @@ private struct PhoneExpenseSections: View {
         ForEach(state.days, id: \.dayStartMillis) { day in
             Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
                 ForEach(day.entries, id: \.id) { entry in
-                    Button {
-                        model.open(entry)
-                    } label: {
-                        if let payment = entry as? PaymentRow {
-                            PhonePaymentRow(row: payment, currency: state.header.currency)
-                        } else if let expense = entry as? ExpenseRow {
-                            PhoneExpenseRow(row: expense, currency: state.header.currency)
+                    // A tap opens the line; its "⋯" and a long press offer its options without opening it
+                    HStack(spacing: 4) {
+                        Button {
+                            model.open(entry)
+                        } label: {
+                            if let payment = entry as? PaymentRow {
+                                PhonePaymentRow(row: payment, currency: state.header.currency)
+                            } else if let expense = entry as? ExpenseRow {
+                                PhoneExpenseRow(row: expense, currency: state.header.currency)
+                            }
                         }
+                        .buttonStyle(.plain)
+                        DayEntryMenuButton(entry: entry, model: model)
                     }
-                    .buttonStyle(.plain)
+                    .contextMenu {
+                        DayEntryMenuItems(entry: entry, model: model)
+                    }
                 }
             }
         }
@@ -630,6 +653,11 @@ private struct MacGroupExpenses: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 100, ideal: 130)
+            // The line's "⋯", which a right click on it opens too
+            TableColumn(Text(verbatim: "")) { item in
+                DayEntryMenuButton(entry: item.entry, model: model)
+            }
+            .width(32)
         } rows: {
             ForEach(state.days, id: \.dayStartMillis) { day in
                 Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
@@ -639,8 +667,12 @@ private struct MacGroupExpenses: View {
                 }
             }
         }
-        .contextMenu(forSelectionType: String.self) { _ in
-            EmptyView()
+        .contextMenu(forSelectionType: String.self) { ids in
+            // One line's options; several picked at once have none in common
+            let entries = state.days.flatMap(\.entries)
+            if ids.count == 1, let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
+                DayEntryMenuItems(entry: entry, model: model)
+            }
         } primaryAction: { ids in
             let entries = state.days.flatMap(\.entries)
             if let id = ids.first, let entry = entries.first(where: { $0.id == id }) {

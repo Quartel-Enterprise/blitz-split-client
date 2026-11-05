@@ -1,4 +1,4 @@
-import { ChevronRight, CircleCheck, HandCoins, ReceiptText, ShieldCheck } from 'lucide-react'
+import { ChevronRight, CircleCheck, EllipsisVertical, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2 } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseDay,
@@ -7,16 +7,18 @@ import {
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
-import { useContext, useEffect, type ReactNode } from 'react'
+import { useContext, useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { BalancesTab } from '@/features/balances/BalancesTab'
+import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { t } from '@/i18n'
@@ -31,13 +33,15 @@ import { GroupPage, GroupPageSkeleton } from './GroupPage'
 import { pickedTabOf, rememberPickedTab } from './pickedTabs'
 import { PendingDot, pendingSurfaceClass } from '@/components/common'
 
-// Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
-const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
+// Why: the canvas's columns, the bill, its total, what it does to your balance and its ⋮; the phone folds the total into the meta.
+const rowColumns =
+  'grid grid-cols-[minmax(0,1fr)_auto_44px] md:grid-cols-[minmax(0,1fr)_120px_150px_52px] lg:grid-cols-[minmax(0,1fr)_160px_180px_52px]'
 
 /**
  * The group's page (header, balance card, tabs), drawn once over the tab picked, which only swaps what is under the
  * tabs: "Despesas do grupo" (the bills and the payments that settled its debts by day, newest first), Saldos or
- * Membros. A bill opens "Conta" over it; a payment asks "Apagar este acerto?". A bill someone else deleted while it was
+ * Membros. A bill opens "Conta" over it, and its ⋮ (or a right click) offers Conta's options without opening it; a
+ * payment asks "Apagar este acerto?", from its ⋮ too. A bill someone else deleted while it was
  * open, and a payment just recorded, say so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
@@ -103,6 +107,15 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
           confirmLabel={t('payment_deleteConfirm')}
           onConfirm={() => presenter.confirmPaymentDelete()}
           onDismiss={() => presenter.dismissPaymentDelete()}
+        />
+      )}
+      {state.billToDelete && (
+        <BillDeleteDialog
+          deletion={state.billToDelete}
+          isDeleting={state.isDeletingBill}
+          money={(minor) => formatMoney(minor, state.header.currency, state.header.fractionDigits)}
+          onConfirm={() => presenter.confirmExpenseDelete()}
+          onDismiss={() => presenter.dismissExpenseDelete()}
         />
       )}
       {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
@@ -180,6 +193,9 @@ function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; 
         <span role="columnheader" className="px-4 text-right">
           {t('groupDetail_columnBalance')}
         </span>
+        <span role="columnheader" className="sr-only">
+          {t('groupDetail_columnOptions')}
+        </span>
       </div>
       {state.days.map((day) => (
         <ExpenseDayRows key={day.dayStartMillis} presenter={presenter} day={day} state={state} />
@@ -205,9 +221,18 @@ function ExpenseDayRows({ presenter, day, state }: { presenter: GroupDetailPrese
   )
 }
 
+/** One option of a line's ⋮: Conta's own for a bill, "Apagar" for a payment. */
+interface DayRowOption {
+  icon: ReactNode
+  label: string
+  isDestructive?: boolean
+  onSelect: () => void
+}
+
 /**
  * A line of the day, a bill or a payment: its icon, title and meta (with "na fila" while it waits for the server), the
- * amount beside it from the tablet up (in the meta on the phone), and the last column.
+ * amount beside it from the tablet up (in the meta on the phone), the last column, and its ⋮, which a right click on
+ * the line opens too.
  */
 function DayRow({
   icon,
@@ -216,6 +241,7 @@ function DayRow({
   amount,
   isPending,
   trailing,
+  options,
   onOpen,
 }: {
   icon: ReactNode
@@ -224,13 +250,19 @@ function DayRow({
   amount: string
   isPending: boolean
   trailing: ReactNode
+  options: DayRowOption[]
   onOpen: () => void
 }) {
+  const [isMenuOpen, setMenuOpen] = useState(false)
   return (
     <div
       role="row"
       tabIndex={0}
       onClick={onOpen}
+      onContextMenu={(event) => {
+        event.preventDefault()
+        setMenuOpen(true)
+      }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
@@ -265,8 +297,26 @@ function DayRow({
       <span role="cell" className="hidden px-4 text-right tabular-nums md:block">
         {amount}
       </span>
-      <span role="cell" className="px-4 text-right">
+      <span role="cell" className="pl-4 text-right md:px-4">
         {trailing}
+      </span>
+      {/* Why: the ⋮ is its own control: its clicks and keys never reach the line, which opens the bill. */}
+      <span role="cell" className="flex justify-center pr-1" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+        <DropdownMenu open={isMenuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label={t('groupDetail_entryOptions', { name: title })}>
+              <EllipsisVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            {options.map((option) => (
+              <DropdownMenuItem key={option.label} variant={option.isDestructive ? 'destructive' : 'default'} onSelect={option.onSelect}>
+                {option.icon}
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </span>
     </div>
   )
@@ -297,6 +347,11 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
       amount={formatMoney(expense.totalMinor, currency, fractionDigits)}
       isPending={expense.isPending}
       onOpen={() => presenter.openExpense(expense.id)}
+      options={[
+        { icon: <Pencil />, label: t('groupDetail_entryEdit'), onSelect: () => presenter.editExpense(expense.id) },
+        { icon: <Share2 />, label: t('groupDetail_entryShare'), onSelect: () => presenter.shareExpense(expense.id) },
+        { icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.deleteExpense(expense.id) },
+      ]}
       trailing={
         balance != null && (
           <span className={cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(balance))}>{formatSignedMoney(balance, currency, fractionDigits)}</span>
@@ -306,7 +361,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
   )
 }
 
-/** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it asks to delete it. */
+/** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it, or its ⋮'s "Apagar", asks to delete it. */
 function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
   const title = payment.toIsMe
     ? t('payment_paidYou', { name: nameOrFormer(payment.fromName) })
@@ -321,6 +376,7 @@ function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailP
       amount={formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
       isPending={payment.isPending}
       onOpen={() => presenter.openPayment(payment.id)}
+      options={[{ icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.openPayment(payment.id) }]}
       trailing={
         <span className="inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-medium text-muted-foreground">{t('payment_tag')}</span>
       }

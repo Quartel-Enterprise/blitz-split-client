@@ -237,7 +237,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_deleted_back_clicked` | none | "Back to Groups" on "Group deleted", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
 | `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Settle up" on "Your balance in this group", on a person of Balances, or on a contact | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Settle up", "Got paid" or "Already paid" on a pair of Balances | `:feature:group_detail` |
-| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, which asks "Delete this payment?" | `:feature:group_detail` |
+| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, or its ⋮ "Delete", which asks "Delete this payment?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Delete this payment?" confirmed, while it was open | `:feature:group_detail` |
 | `payment_delete_cancelled` | none | "Delete this payment?" closed without confirming, while it was open | `:feature:group_detail` |
 | `category_teach_clicked` | none | "Teach" on "Teach the map?" | `:feature:group_detail` |
@@ -367,11 +367,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
-| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`) | "Delete bill", when its question opens | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_edit_clicked` | none | Bill's "Edit bill", while it can edit | `:feature:bill_detail` |
-| `bill_share_clicked` | none | Bill's Share, which opens "Share bill" | `:feature:bill_detail` |
+| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_edit_clicked` | `source` (`group_detail`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" on Expenses | `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_share_clicked` | `source` (`group_detail`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" on Expenses | `:feature:bill_detail`, `:feature:group_detail` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |
