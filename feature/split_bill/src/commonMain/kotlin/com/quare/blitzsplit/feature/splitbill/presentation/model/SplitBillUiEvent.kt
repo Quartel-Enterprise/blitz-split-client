@@ -188,7 +188,7 @@ sealed interface SplitBillUiEvent : UiEvent {
 
             OnCategoryDeleteDismissed -> EventAnalytics.Manual("category_delete_cancelled")
 
-            // Why: only while it can read one (online, not editing), as the camera opens only then.
+            // Why: only while it can read one (online, not editing), as the source choice opens only then.
             OnScanReceiptClicked -> EventAnalytics.Manual("scan_receipt_clicked")
 
             // Why: only a source picked on the choice still open, with which one.
@@ -197,7 +197,7 @@ sealed interface SplitBillUiEvent : UiEvent {
             // Why: no pick, only the device's lack of a camera; the tap was "Ler cupom fiscal", counted on its own.
             is OnReceiptChoiceSkipped -> EventAnalytics.NotTracked
 
-            // Why: a photo handed back, which stands for the tap that opened the camera, then how the read ended.
+            // Why: a photo handed back, which stands for the tap that opened its picker, then how the read ended.
             is OnReceiptPhotoPicked -> EventAnalytics.Manual(setOf("photo_picked", "receipt_read"))
 
             OnReceiptRetryClicked -> EventAnalytics.Manual(setOf("retry_clicked", "receipt_read"))

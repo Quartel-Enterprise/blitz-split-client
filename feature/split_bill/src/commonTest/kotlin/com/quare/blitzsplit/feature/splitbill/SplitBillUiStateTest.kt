@@ -694,7 +694,7 @@ class SplitBillUiStateTest {
     }
 
     @Test
-    fun `GIVEN the camera asked for in reais WHEN reading the camera THEN it opens`() {
+    fun `GIVEN the source asked for in reais WHEN reading the choice THEN it opens`() {
         // Given
         val state = state(
             isReceiptSourceRequested = true,
@@ -702,14 +702,14 @@ class SplitBillUiStateTest {
         )
 
         // When
-        val showsCamera = state.showsReceiptSourceChoice
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertTrue(showsCamera)
+        assertTrue(showsChoice)
     }
 
     @Test
-    fun `GIVEN the camera asked for in bitcoin WHEN reading the camera THEN it does not open`() {
+    fun `GIVEN the source asked for in bitcoin WHEN reading the choice THEN it does not open`() {
         // Given
         val state = state(
             isReceiptSourceRequested = true,
@@ -718,14 +718,14 @@ class SplitBillUiStateTest {
         )
 
         // When
-        val showsCamera = state.showsReceiptSourceChoice
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertFalse(showsCamera)
+        assertFalse(showsChoice)
     }
 
     @Test
-    fun `GIVEN the camera asked for in ether WHEN reading the camera THEN it does not open`() {
+    fun `GIVEN the source asked for in ether WHEN reading the choice THEN it does not open`() {
         // Given
         val state = state(
             isReceiptSourceRequested = true,
@@ -734,10 +734,10 @@ class SplitBillUiStateTest {
         )
 
         // When
-        val showsCamera = state.showsReceiptSourceChoice
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertFalse(showsCamera)
+        assertFalse(showsChoice)
     }
 
     @Test
