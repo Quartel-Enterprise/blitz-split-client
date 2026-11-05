@@ -286,7 +286,8 @@ private struct InviteText: View {
     }
 }
 
-/// "Compartilhar convite" and "Ver quem já entrou", or a disabled share and "Ir para o grupo" while the link waits.
+/// "Compartilhar convite" and "Ver quem já entrou", or a disabled share and "Ir para o grupo" while the link waits, then
+/// "Add someone without the app".
 private struct InviteButtons: View {
     let model: InviteModel
     /// An iPhone upright spaces them like the rest of its column.
@@ -323,7 +324,23 @@ private struct InviteButtons: View {
                     model.send(InviteUiEventOnGoToGroupClicked.shared)
                 }
             }
+            AddWithoutAppButton(model: model)
         }
+    }
+}
+
+/// Someone without the app goes in by name, as in "New group", from the group's Members.
+private struct AddWithoutAppButton: View {
+    let model: InviteModel
+
+    var body: some View {
+        Button {
+            model.send(InviteUiEventOnAddPersonClicked.shared)
+        } label: {
+            Label("Add someone without the app", systemImage: "person.badge.plus")
+                .frame(maxWidth: .infinity, minHeight: 36)
+        }
+        .buttonStyle(.borderless)
     }
 }
 
@@ -334,7 +351,7 @@ private func inviteShareMessage(groupName: String) -> Text {
 
 #if os(macOS)
 /// The Mac's popover over the group's "Invite people" (F2Mac): the code beside who picks, the link with Copy,
-/// "Share…" and, for the group's creator, "Change link…".
+/// "Share…", for the group's creator "Change link…", and "Add someone without the app".
 private struct InvitePopoverContent: View {
     let model: InviteModel
 
@@ -395,6 +412,11 @@ private struct InvitePopoverContent: View {
                 }
                 WhoPicksText(names: state.notJoinedNames, font: .caption)
             }
+            Button("Add someone without the app") {
+                model.send(InviteUiEventOnAddPersonClicked.shared)
+            }
+            .buttonStyle(.link)
+            .frame(maxWidth: .infinity)
         }
         .padding(16)
     }

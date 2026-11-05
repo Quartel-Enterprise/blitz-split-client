@@ -140,6 +140,11 @@ class MembersPresenter(
         viewModel.onEvent(MembersUiEvent.OnAddClicked)
     }
 
+    // Why: "Has the app? Invite with the link" in "Add person", which opens Invite in its place.
+    fun inviteInstead() {
+        viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+    }
+
     // Why: the member's row, which opens their profile (Perfil for this device's user).
     fun openMember(memberId: String) {
         viewModel.onEvent(MembersUiEvent.OnMemberClicked(memberId))

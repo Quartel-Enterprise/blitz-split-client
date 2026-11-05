@@ -380,6 +380,14 @@ private struct MemberNameSheet: View {
                             }
                         }
                     }
+                    // Someone who has the app joins through the link instead, and picks their own name.
+                    if editor.isAdding {
+                        Section {
+                            Button("Has the app? Invite with the link", systemImage: "link") {
+                                model.send(MembersUiEventOnInviteInsteadClicked.shared)
+                            }
+                        }
+                    }
                 }
                 .navigationTitle(editor.isAdding ? "Add person" : "Rename")
                 #if os(iOS)

@@ -4,7 +4,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
 
   - "Members" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Invite's "See who joined". A member's row opens their profile and the ⋮ (⋯ on iOS, macOS and the web, also a long press or right
     click on Apple) holds their menu. Any member may rename and add members ("Add person", where the other tabs
-    have "Split a bill"), but only a member who hasn't joined can be removed ("Remove from group" is disabled for someone
+    have "Split a bill"; "Has the app? Invite with the link" in it closes it and opens Invite, for someone who would
+    rather join and pick their own name), but only a member who hasn't joined can be removed ("Remove from group" is disabled for someone
     who joined),
     after confirming "Remove Carla from the group?" (`MembersUiState.memberToRemove`). "Personal invite for Carla" (the
     menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their

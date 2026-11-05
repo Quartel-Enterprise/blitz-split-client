@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotic
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
@@ -58,6 +59,7 @@ class GroupDetailViewModel(
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
+    observeAddPersonRequest: ObserveAddPersonRequest,
     observeCategoryTree: ObserveCategoryTree,
     teachUseCases: CategoryTeachUseCases,
     observeAccount: ObserveAccount,
@@ -132,6 +134,9 @@ class GroupDetailViewModel(
         showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
     )
 
+    // Why: Membros was picked for the ask waiting now, which picks it only once.
+    private var isAddPersonAskShown = false
+
     init {
         observeCategoryTree(route.groupId)
             .onEach { tree ->
@@ -165,6 +170,22 @@ class GroupDetailViewModel(
         useCases.navigator.backStack
             .onEach { shownGroup?.let(::showConflict) }
             .launchIn(viewModelScope)
+        /*
+         * Why: Invite's "Add someone without the app" lands on Membros, where "Add person" opens, even when the group
+         * it goes back to was opened on Membros and the person picked another tab since. Once per ask, so a tab picked
+         * while it waits stays picked.
+         */
+        combine(observeAddPersonRequest(), useCases.navigator.backStack, ::Pair)
+            .onEach { (groupId, _) ->
+                when {
+                    groupId != route.groupId -> isAddPersonAskShown = false
+
+                    !isAddPersonAskShown && screen.isOnTop() -> {
+                        isAddPersonAskShown = true
+                        selectTab(GroupTab.MEMBERS)
+                    }
+                }
+            }.launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()
                 .onEach { account ->

@@ -116,6 +116,11 @@ class InvitePresenter(
         viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
     }
 
+    // Why: "Add someone without the app", the group's Members with "Add person" open.
+    fun addPerson() {
+        viewModel.onEvent(InviteUiEvent.OnAddPersonClicked)
+    }
+
     fun goToGroup() {
         viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
     }

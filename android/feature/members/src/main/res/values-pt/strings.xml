@@ -30,6 +30,7 @@
     <string name="members_release_confirm">Liberar</string>
     <string name="members_release_error">Não deu para liberar o nome. Confira a internet e tente de novo.</string>
     <string name="members_add">Adicionar pessoa</string>
+    <string name="members_invite_instead">Tem o app? Convide pelo link</string>
     <string name="members_name_label">Nome</string>
     <string name="members_name_taken">%s já está no grupo. Use um apelido para diferenciar.</string>
     <string name="members_use_nickname">Usar “%s”</string>

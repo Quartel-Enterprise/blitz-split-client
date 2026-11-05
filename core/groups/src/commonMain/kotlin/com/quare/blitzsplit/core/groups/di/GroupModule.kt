@@ -16,20 +16,24 @@ import com.quare.blitzsplit.core.groups.data.mapper.InviteMapper
 import com.quare.blitzsplit.core.groups.data.mapper.InviteMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupPinRepositoryImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryAddPersonRequestRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.data.repository.InviteRepositoryImpl
+import com.quare.blitzsplit.core.groups.domain.repository.AddPersonRequestRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.GetSplitIncomes
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
@@ -38,18 +42,21 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
+import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.groups.domain.usecase.SetGroupPinned
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeAddPersonRequestUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveAddPersonRequestUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
@@ -58,6 +65,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupId
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.RequestAddPersonUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
@@ -86,6 +94,10 @@ val groupModule = module {
     factoryOf(::RenameMemberUseCase).bind<RenameMember>()
     factoryOf(::RemoveMemberUseCase).bind<RemoveMember>()
     factoryOf(::ReleaseMemberUseCase).bind<ReleaseMember>()
+    singleOf(::InMemoryAddPersonRequestRepository).bind<AddPersonRequestRepository>()
+    factoryOf(::RequestAddPersonUseCase).bind<RequestAddPerson>()
+    factoryOf(::ObserveAddPersonRequestUseCase).bind<ObserveAddPersonRequest>()
+    factoryOf(::ConsumeAddPersonRequestUseCase).bind<ConsumeAddPersonRequest>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
     factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
     factoryOf(::SaveSplitAsDefaultUseCase).bind<SaveSplitAsDefault>()

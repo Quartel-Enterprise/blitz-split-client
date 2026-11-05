@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members
 
+import androidx.lifecycle.ViewModelStore
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -11,11 +12,14 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUse
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryAddPersonRequestRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeAddPersonRequestUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveAddPersonRequestUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
@@ -61,6 +65,7 @@ class MembersViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private lateinit var addPersonRequests: InMemoryAddPersonRequestRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private val isRoomRead = MutableStateFlow(true)
@@ -3185,6 +3190,429 @@ class MembersViewModelTest {
         assertEquals(listOf("member_rename_clicked" to noParams), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN Invite asked to add a person to the group WHEN the screen opens on top THEN Add person is open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                MemberNameEditor(
+                    memberId = null,
+                    draft = "",
+                    takenName = null,
+                    nicknameSuggestions = emptyList(),
+                ),
+                state.editor,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN Invite asks to add a person to the group THEN Add person opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val groupId = "group-1"
+
+            // When
+            addPersonRequests.post(groupId)
+
+            // Then
+            assertEquals(
+                MemberNameEditor(
+                    memberId = null,
+                    draft = "",
+                    takenName = null,
+                    nicknameSuggestions = emptyList(),
+                ),
+                viewModel.uiState.value.editor,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN Invite asks to add a person to another group THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val groupId = "group-2"
+
+            // When
+            addPersonRequests.post(groupId)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals("group-2", addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN Invite over the screen WHEN Invite asks to add a person to the group THEN nothing opens yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
+
+            // When
+            addPersonRequests.post("group-1")
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+        }
+
+    @Test
+    fun `GIVEN an ask while Invite is over the screen WHEN Invite closes THEN Add person opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
+            addPersonRequests.post("group-1")
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                MemberNameEditor(
+                    memberId = null,
+                    draft = "",
+                    takenName = null,
+                    nicknameSuggestions = emptyList(),
+                ),
+                viewModel.uiState.value.editor,
+            )
+        }
+
+    @Test
+    fun `GIVEN another tab of the group on top WHEN Invite asks to add a person to the group THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.GroupDetail("group-1", joinedAs = null, GroupTab.EXPENSES))
+
+            // When
+            addPersonRequests.post("group-1")
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+        }
+
+    @Test
+    fun `GIVEN Add person opened from the ask WHEN nothing closes it THEN the ask is still there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+
+            // When
+            val ask = addPersonRequests.observeRequest().first()
+
+            // Then
+            assertEquals("group-1", ask)
+        }
+
+    @Test
+    fun `GIVEN Add person opened from the ask WHEN dismissing it THEN closes it and drops the ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertNull(addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN a free name typed in Add person opened from the ask WHEN saving THEN adds them and drops the ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Diego"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSaveClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(listOf("group-1" to "Diego"), groups.addedMembers.map { it.first to it.second.name })
+            assertNull(addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN nicknames offered in Add person opened from the ask WHEN tapping one THEN adds it and drops the ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(listOf("Ana P."), groups.addedMembers.map { it.second.name })
+            assertNull(addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN Add person opened from the ask WHEN tapping invite with the link THEN opens Invite and drops the ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(
+                listOf(Route.Groups, membersRoute, Route.Invite("group-1", isNewGroup = false)),
+                navigator.backStack.value,
+            )
+            assertNull(addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN Add person from the ask dismissed WHEN the screen comes back on top THEN Add person stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+            navigator.navigate(Route.Profile)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+        }
+
+    @Test
+    fun `GIVEN Add person from the ask dismissed WHEN Invite asks again THEN Add person opens again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+
+            // When
+            addPersonRequests.post("group-1")
+
+            // Then
+            assertEquals(
+                MemberNameEditor(
+                    memberId = null,
+                    draft = "",
+                    takenName = null,
+                    nicknameSuggestions = emptyList(),
+                ),
+                viewModel.uiState.value.editor,
+            )
+        }
+
+    @Test
+    fun `GIVEN the first of a screen mounted twice gone with Add person open WHEN the second opens THEN shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            clear(viewModel)
+            val second = membersViewModel()
+
+            // When
+            val state = second.uiState.value
+
+            // Then
+            assertEquals(
+                MemberNameEditor(
+                    memberId = null,
+                    draft = "",
+                    takenName = null,
+                    nicknameSuggestions = emptyList(),
+                ),
+                state.editor,
+            )
+            assertEquals("group-1", addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN Add person open from the ask and a screen over the group WHEN the screen goes THEN the ask stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            navigator.navigate(Route.Profile)
+
+            // When
+            clear(viewModel)
+
+            // Then
+            assertEquals("group-1", addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN Add person open from the ask and the group left WHEN the screen goes THEN the ask is dropped`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(askedGroupId = "group-1")
+            navigator.navigateBack()
+
+            // When
+            clear(viewModel)
+
+            // Then
+            assertNull(addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN the rename editor open WHEN Invite asks to add a person to the group THEN the rename stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-4"))
+
+            // When
+            addPersonRequests.post("group-1")
+
+            // Then
+            assertEquals(
+                "member-4",
+                viewModel.uiState.value.editor
+                    ?.memberId,
+            )
+            assertEquals(
+                "Carla",
+                viewModel.uiState.value.editor
+                    ?.draft,
+            )
+        }
+
+    @Test
+    fun `GIVEN an ask that came while renaming WHEN dismissing the rename THEN Add person opens from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-4"))
+            addPersonRequests.post("group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+
+            // Then
+            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+            assertEquals("group-1", addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN an ask that came while adding by tapping add WHEN saving THEN adds them and Add person opens from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Diego"))
+            addPersonRequests.post("group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf("Diego"), groups.addedMembers.map { it.second.name })
+            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+            assertEquals("group-1", addPersonRequests.observeRequest().first())
+        }
+
+    @Test
+    fun `GIVEN an ask before Room is read WHEN the screen opens THEN Add person waits for the members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                askedGroupId = "group-1",
+                isRoomReadAtStart = false,
+            )
+            val editorBeforeRead = viewModel.uiState.value.editor
+
+            // When
+            isRoomRead.value = true
+
+            // Then
+            assertNull(editorBeforeRead)
+            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+        }
+
+    @Test
+    fun `GIVEN an ask behind a tapped Add person WHEN tapping invite with the link THEN only Invite opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            addPersonRequests.post("group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(Route.Invite("group-1", isNewGroup = false), navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN Add person opened by tapping add WHEN tapping invite with the link THEN closes it and opens Invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(
+                listOf(Route.Groups, membersRoute, Route.Invite("group-1", isNewGroup = false)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Add person open and a bill beside it WHEN tapping invite with the link THEN Invite replaces the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            navigator.navigate(Route.BillDetail("group-1", "dinner", focusCommentId = null))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(
+                listOf(Route.Groups, membersRoute, Route.Invite("group-1", isNewGroup = false)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Add person open WHEN tapping invite with the link THEN sends the invite event with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "member_add_clicked" to noParams,
+                    "member_editor_invite_clicked" to noParams,
+                ),
+                trackedEvents,
+            )
+        }
+
     private val noParams = emptyMap<String, Any>()
 
     // Why: the params of the events that name the screen they come from.
@@ -3348,6 +3776,36 @@ class MembersViewModelTest {
         updatedAt = 0L,
     )
 
+    // Why: the group's screen on its Members tab, whose ViewModel this is.
+    private val membersRoute = Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)
+
+    // Why: what the platform does when the screen goes, which runs the ViewModel's onCleared.
+    private fun clear(viewModel: MembersViewModel) {
+        ViewModelStore().apply { put("members", viewModel) }.clear()
+    }
+
+    // Why: another ViewModel of the same screen over the same fakes, as a screen mounted twice builds.
+    private fun membersViewModel(): MembersViewModel {
+        val observeGroup = ObserveGroupUseCase(groups)
+        return MembersViewModel(
+            trackEvent = { name, params -> trackedEvents += name to params },
+            route = membersRoute,
+            navigator = navigator,
+            checkMemberName = CheckMemberNameUseCase(),
+            addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
+            renameMember = RenameMemberUseCase(groups) { 1_000L },
+            removeMember = RemoveMemberUseCase(groups) { 1_000L },
+            releaseMember = ReleaseMemberUseCase(groups),
+            consumeAddPersonRequest = ConsumeAddPersonRequestUseCase(addPersonRequests),
+            observeAddPersonRequest = ObserveAddPersonRequestUseCase(addPersonRequests),
+            observeGroup = ObserveGroup { groupId ->
+                isRoomRead.flatMapLatest { isRead -> if (isRead) observeGroup(groupId) else emptyFlow() }
+            },
+            observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = ObserveSettlementsUseCase(settlements),
+        )
+    }
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         isRoomReadAtStart: Boolean = true,
@@ -3356,6 +3814,8 @@ class MembersViewModelTest {
         storedSettlements: List<Settlement> = emptyList(),
         releaseError: Throwable? = null,
         waitsForServer: Boolean = false,
+        // Why: Invite's "Add someone without the app", asked for this group before the screen opens.
+        askedGroupId: String? = null,
     ) {
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
@@ -3368,23 +3828,11 @@ class MembersViewModelTest {
         navigator =
             BackStackNavigator(
                 startRoute = Route.Groups,
-            ).also { it.navigate(Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)) }
-        val observeGroup = ObserveGroupUseCase(groups)
-        viewModel = MembersViewModel(
-            trackEvent = { name, params -> trackedEvents += name to params },
-            route = Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
-            navigator = navigator,
-            checkMemberName = CheckMemberNameUseCase(),
-            addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
-            renameMember = RenameMemberUseCase(groups) { 1_000L },
-            removeMember = RemoveMemberUseCase(groups) { 1_000L },
-            releaseMember = ReleaseMemberUseCase(groups),
-            observeGroup = ObserveGroup { groupId ->
-                isRoomRead.flatMapLatest { isRead -> if (isRead) observeGroup(groupId) else emptyFlow() }
-            },
-            observeExpenses = ObserveExpensesUseCase(expenses),
-            observeSettlements = ObserveSettlementsUseCase(settlements),
-        )
+            ).also { it.navigate(membersRoute) }
+        addPersonRequests = InMemoryAddPersonRequestRepository().also { requests ->
+            askedGroupId?.let(requests::post)
+        }
+        viewModel = membersViewModel()
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 }

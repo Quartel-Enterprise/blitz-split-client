@@ -346,6 +346,12 @@ function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; 
                 </div>
               </>
             )}
+            {/* Why: someone who has the app joins through the link instead, and picks their own name. */}
+            {editor.isAdding && (
+              <Button type="button" variant="link" className="self-start px-0" onClick={() => presenter.inviteInstead()}>
+                {t('members_inviteInstead')}
+              </Button>
+            )}
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => presenter.dismissEditor()}>
