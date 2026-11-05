@@ -2064,6 +2064,99 @@ class EditProfileViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a save in progress WHEN a photo is picked THEN sends only the Save tap`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(holdsSave = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+
+        // Then
+        assertEquals(listOf("edit_profile_save_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertNull(viewModel.uiState.value.photoCrop)
+        heldSave.complete(Unit)
+    }
+
+    @Test
+    fun `GIVEN Ajustar foto open and a save in progress WHEN tapping Pronto THEN sends nothing and keeps it open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            val state = viewModel.uiState.value
+            assertContentEquals(photoSource, state.photoCrop?.photo?.jpeg)
+            assertFalse(state.isPreparingPhoto)
+            assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), state.photo)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open and a save in progress WHEN tapping Girar THEN still sends the turn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_turned" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a save in progress WHEN choosing a color THEN still sends it and takes the color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.LILAC))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "avatar_color_selected" to mapOf<String, Any>("color" to AvatarColor.LILAC, "source" to SOURCE),
+                ),
+                trackedEvents,
+            )
+            assertEquals(AvatarColor.LILAC, viewModel.uiState.value.avatarColor)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN no photo WHEN removing the photo THEN sends nothing and has no changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedProfile = pierreWithoutPhoto)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertNull(viewModel.uiState.value.photo)
+        assertFalse(viewModel.uiState.value.hasChanges)
+    }
+
     // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
     private fun pickAndConfirmPhoto(source: ByteArray) {
         viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(source))

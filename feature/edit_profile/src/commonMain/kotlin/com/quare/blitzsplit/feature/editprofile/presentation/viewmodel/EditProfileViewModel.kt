@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -97,8 +98,19 @@ class EditProfileViewModel(
     }
 
     // Why: the form takes edits only once it holds the saved profile, which would otherwise replace them.
-    override fun isAccepted(event: EditProfileUiEvent): Boolean =
-        uiState.value.isLoaded || event == EditProfileUiEvent.OnBackClicked
+    override fun isAccepted(event: EditProfileUiEvent): Boolean = when {
+        event == EditProfileUiEvent.OnBackClicked -> true
+
+        !uiState.value.isLoaded -> false
+
+        // Why: the picker drops a pick and its Done while Save sends the photo shown, so neither counts then.
+        uiState.value.isSaving -> !event.isDroppedWhileSaving()
+
+        else -> true
+    }
+
+    private fun EditProfileUiEvent.isDroppedWhileSaving(): Boolean = this is EditProfileUiEvent.OnPhotoPicked ||
+        this == EditProfileUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked)
 
     override fun handleEvent(event: EditProfileUiEvent) {
         when (event) {
@@ -175,8 +187,9 @@ class EditProfileViewModel(
         }
     }
 
+    // Why: with no photo there is nothing to remove.
     private fun removePhoto() {
-        if (uiState.value.isSaving) return
+        if (uiState.value.isSaving || uiState.value.photo == null) return
         trackEvent("photo_removed", mapOf("source" to EDIT_PROFILE_SOURCE))
         photoPicker.cancel()
         edit {

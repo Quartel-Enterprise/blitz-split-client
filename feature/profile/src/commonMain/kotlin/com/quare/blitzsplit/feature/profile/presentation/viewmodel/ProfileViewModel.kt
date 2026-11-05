@@ -144,6 +144,9 @@ class ProfileViewModel(
     // Why: Profile's dialogs and sheets, which open only while nothing signs out or unlinks.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
+    // Why: the theme a tap asked for, which the stored theme reaches only once written.
+    private var requestedTheme: ThemePreference? = null
+
     val uiAction: SharedFlow<ProfileUiAction>
         field = MutableSharedFlow<ProfileUiAction>()
 
@@ -261,8 +264,8 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnSignOutClicked -> dialogs.openSignOut()
 
-            ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT && clearSession()) {
-                trackEvent("sign_out_confirmed", emptyMap())
+            ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) {
+                clearSession { trackEvent("sign_out_confirmed", emptyMap()) }
             }
 
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
@@ -277,9 +280,10 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
 
-            ProfileUiEvent.OnEraseConfirmed -> {
-                val isErasing = uiState.value.dialog == ProfileDialog.ERASE_PROFILE && startErasing()
-                if (isErasing) trackEvent("profile_erase_confirmed", emptyMap())
+            ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE &&
+                uiState.value.canErase
+            ) {
+                clearSession { trackEvent("profile_erase_confirmed", emptyMap()) }
             }
         }
     }
@@ -384,8 +388,10 @@ class ProfileViewModel(
         retrySync()
     }
 
+    // Why: compared with the theme last asked for, as the stored one comes back only once written.
     private fun selectTheme(theme: ThemePreference) {
-        if (theme != uiState.value.theme) trackEvent("theme_selected", mapOf("theme" to theme))
+        if (theme != (requestedTheme ?: uiState.value.theme)) trackEvent("theme_selected", mapOf("theme" to theme))
+        requestedTheme = theme
         viewModelScope.launch { updateThemePreference(theme) }
     }
 
@@ -490,19 +496,18 @@ class ProfileViewModel(
     }
 
     private fun signOutNow() {
-        if (uiState.value.dialog == ProfileDialog.SIGN_OUT_PENDING && clearSession()) {
-            trackEvent("sign_out_now_clicked", emptyMap())
+        if (uiState.value.dialog == ProfileDialog.SIGN_OUT_PENDING) {
+            clearSession { trackEvent("sign_out_now_clicked", emptyMap()) }
         }
     }
 
-    private fun startErasing(): Boolean = uiState.value.canErase && clearSession()
-
     /*
-     * Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here. It says
-     * whether it started, which the sign out's and the erase's Analytics count.
+     * Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here. onStarted
+     * counts the tap once the sign out is taken, before it runs, so its event comes before the welcome's screen view.
      */
-    private fun clearSession(): Boolean {
-        if (uiState.value.isSigningOut) return false
+    private fun clearSession(onStarted: () -> Unit) {
+        if (uiState.value.isSigningOut) return
+        onStarted()
         uiState.update {
             it.copy(
                 isSigningOut = true,
@@ -519,11 +524,11 @@ class ProfileViewModel(
                 }
             }
         }
-        return true
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
+        trackEvent("sign_in_provider_clicked", mapOf("provider" to provider, "source" to PROFILE_SOURCE))
         // Why: sign out checks connectingProvider, so it is set at the tap, before the connector's copy lands.
         uiState.update {
             it.copy(

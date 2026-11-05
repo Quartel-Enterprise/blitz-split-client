@@ -1116,6 +1116,70 @@ class ProfilePhotoViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a save in progress WHEN a photo is picked THEN sends nothing and opens no editor`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoPicked(photoSource))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertNull(viewModel.uiState.value.photoCrop)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a save in progress WHEN Pronto arrives THEN sends nothing and prepares nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(0, avatarEncodings)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a save in progress WHEN closing Ajustar foto THEN still sends the crop dismissed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsSave = true)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertEquals(listOf("photo_crop_dismissed" to mapOf<String, Any>("source" to SOURCE)), trackedEvents)
+            heldSave.complete(Unit)
+        }
+
+    @Test
+    fun `GIVEN a profile without a photo WHEN removing the photo THEN sends nothing and saves nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedProfile = pierreWithoutPhoto)
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnPhotoRemoved)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(profiles.savedProfiles.isEmpty())
+        }
+
     private val googleStatus = AccountStatus.Connected("u", AccountProvider.GOOGLE)
     private val googleUser = SessionUser(
         userId = "u",

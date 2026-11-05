@@ -23,7 +23,8 @@ sealed interface ProfileUiEvent : TrackedUiEvent {
 
             OnAvatarClicked -> EventAnalytics.Automatic("profile_photo_clicked", mapOf("source" to PROFILE_SOURCE))
 
-            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, PROFILE_SOURCE)
+            // Why: only a tap the account buttons take (online, read, no sign in nor sign out running).
+            is OnProviderClicked -> EventAnalytics.Manual("sign_in_provider_clicked")
 
             OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(PROFILE_SOURCE)
 

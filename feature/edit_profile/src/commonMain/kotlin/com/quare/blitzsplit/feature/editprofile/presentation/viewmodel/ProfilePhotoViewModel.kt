@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -106,8 +107,19 @@ class ProfilePhotoViewModel(
     }
 
     // Why: a shortcut saves over the saved profile, so nothing is saved before it was read.
-    override fun isAccepted(event: ProfilePhotoUiEvent): Boolean =
-        uiState.value.isLoaded || event == ProfilePhotoUiEvent.OnDismissed
+    override fun isAccepted(event: ProfilePhotoUiEvent): Boolean = when {
+        event == ProfilePhotoUiEvent.OnDismissed -> true
+
+        !uiState.value.isLoaded -> false
+
+        // Why: the picker drops a pick and its Done while a photo saves, so neither counts then.
+        isSaving -> !event.isDroppedWhileSaving()
+
+        else -> true
+    }
+
+    private fun ProfilePhotoUiEvent.isDroppedWhileSaving(): Boolean = this is ProfilePhotoUiEvent.OnPhotoPicked ||
+        this == ProfilePhotoUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked)
 
     override fun handleEvent(event: ProfilePhotoUiEvent) {
         when (event) {
@@ -119,7 +131,7 @@ class ProfilePhotoViewModel(
 
             ProfilePhotoUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
 
-            ProfilePhotoUiEvent.OnPhotoRemoved -> if (replacePhoto(null)) {
+            ProfilePhotoUiEvent.OnPhotoRemoved -> if (uiState.value.photo != null && replacePhoto(null)) {
                 trackEvent("photo_removed", mapOf("source" to PROFILE_PHOTO_SOURCE))
             }
 

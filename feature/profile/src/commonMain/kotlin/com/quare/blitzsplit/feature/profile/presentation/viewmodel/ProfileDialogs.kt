@@ -65,7 +65,10 @@ internal class ProfileDialogs(
      */
     fun close() {
         if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
-        uiState.value.dialog?.takeIf { it in confirmations }?.let {
+        // Why: a close after a failure is giving up on it, not declining, so it isn't counted as cancelled.
+        val state = uiState.value
+        val isShowingFailure = state.hasSignOutFailed || state.hasUnlinkFailed
+        state.dialog?.takeIf { it in confirmations && !isShowingFailure }?.let {
             trackEvent("profile_dialog_cancelled", mapOf("dialog" to it))
         }
         uiState.update {
@@ -78,9 +81,12 @@ internal class ProfileDialogs(
         }
     }
 
-    // Why: says whether it opened, which Analytics counts.
+    // Why: says whether it opened a dialog not open yet, which Analytics counts.
     private fun show(dialog: ProfileDialog): Boolean {
-        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return false
+        val state = uiState.value
+        if (state.isSigningOut || state.isUnlinking) return false
+        // Why: a dialog already open shows again without its error, but its second tap opens nothing new to count.
+        val isNew = state.dialog != dialog
         uiState.update {
             it.copy(
                 dialog = dialog,
@@ -89,7 +95,7 @@ internal class ProfileDialogs(
                 hasUnlinkFailed = false,
             )
         }
-        return true
+        return isNew
     }
 
     /*
