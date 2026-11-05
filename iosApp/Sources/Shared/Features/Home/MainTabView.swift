@@ -59,7 +59,8 @@ struct MainTabView: View {
             }
             // The shared back stack holds Balances right above Home, where its tab shows. Once shown it stays, so
             // coming back to the tab finds it already read, on the filter its route names; only a route with another
-            // filter opens it afresh.
+            // filter opens it afresh. Its ViewModel then keeps reading the balances behind the other tabs for the
+            // rest of the home, the price of coming back without a shimmer, as Home's and Groups' do.
             Tab("Balances", systemImage: "dollarsign.circle", value: MainTab.balances) {
                 NavigationStack(path: balancesPath) {
                     if let route = shownBalancesRoute {

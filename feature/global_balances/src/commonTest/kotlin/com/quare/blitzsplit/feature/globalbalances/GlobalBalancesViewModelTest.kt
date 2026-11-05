@@ -452,6 +452,29 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN a row opened on Tudo WHEN Saldos opens again on Tudo after another tab THEN the row stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val carla = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carla.id))
+            navigator.replaceAbove(1, Route.Contacts)
+
+            // When
+            navigator.replaceAbove(1, Route.GlobalBalances(BalancesFilter.ALL))
+
+            // Then
+            val row = viewModel.uiState.value.people
+                .valueOrNull()
+                .orEmpty()
+                .single { it.name == "Carla" }
+            assertTrue(row.isExpanded)
+        }
+
+    @Test
     fun `GIVEN Voce deve picked WHEN a screen opened over Saldos closes THEN keeps Voce deve`() =
         runTest(testDispatcher) {
             // Given
