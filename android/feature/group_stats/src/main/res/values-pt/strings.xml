@@ -42,6 +42,7 @@
     <string name="group_stats_average_week">Média por semana:</string>
     <string name="group_stats_average_month">Média por mês:</string>
     <string name="group_stats_average_year">Média por ano:</string>
+    <string name="group_stats_average_hint">A linha tracejada mais escura do gráfico, como a desta legenda, é a média: o total gasto dividido por todos os períodos mostrados, inclusive os vazios.</string>
     <string name="group_stats_callout_none">Nenhuma despesa</string>
     <string name="group_stats_today">hoje</string>
     <string name="group_stats_aria_day">Gastos por dia: %s</string>

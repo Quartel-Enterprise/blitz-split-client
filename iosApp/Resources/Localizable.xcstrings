@@ -2094,6 +2094,17 @@
         }
       }
     },
+    "The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included." : {
+      "comment" : "The group statistics: the hint on the legend of the chart's dashed average line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A linha tracejada mais escura do gráfico, como a desta legenda, é a média: o total gasto dividido por todos os períodos mostrados, inclusive os vazios."
+          }
+        }
+      }
+    },
     "This comment is in a group you're not in. Ask whoever sent you the link for the invite." : {
       "comment" : "The message of You're not in this group, for a comment's link",
       "localizations" : {
