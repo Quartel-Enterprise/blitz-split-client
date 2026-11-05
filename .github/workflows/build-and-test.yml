@@ -2,6 +2,10 @@ name: build-and-test
 
 # The shared Kotlin's unit tests and coverage, the same tests on the JS target, the Android app and
 # its lint, and the web app. The Apple side runs in apple.yml, on a macOS runner.
+#
+# Every job has a timeout: a runner that hangs would otherwise hold the check for GitHub's default
+# of six hours, and merge-when-green would wait on it all that time. The timeouts are about three
+# times what each job takes on a pull request that recompiles everything.
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -52,6 +56,7 @@ jobs:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -85,15 +90,47 @@ jobs:
   # Every module's commonTest on the JS target, in a headless Chrome. The actuals of jsMain live in a
   # few modules with few tests of their own; the tests that exercise them are the other modules', so
   # every module's suite runs.
+  #
+  # Each module links its own test executable and runs it in its own Karma and Chrome, which is
+  # most of the job's time, so the modules are split across the shards of the matrix. Each shard
+  # compiles what its modules depend on again; that part runs in parallel and is the smaller one.
+  # Adding a shard is adding a number to the list: the split reads the count from the matrix.
   js-tests:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      # One shard's failure doesn't hide the other modules' results.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
+
+      # A module has tests on the JS target when it has commonTest or jsTest sources, so a new module
+      # joins a shard on its own. The modules are dealt round-robin from the sorted list, which puts
+      # some core and some feature modules on every shard.
+      - name: Pick this shard's modules
+        id: modules
+        env:
+          SHARD_INDEX: ${{ strategy.job-index }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+        run: |
+          modules=$(find . \( -path ./build-logic -o -path ./.claude -o -name build -o -name node_modules \) -prune \
+            -o -type d \( -path '*/src/commonTest' -o -path '*/src/jsTest' \) -print \
+            | sed -E 's#^\./##; s#/src/(commonTest|jsTest)$##' | sort -u)
+          tasks=$(awk -v shard="$SHARD_INDEX" -v total="$SHARD_TOTAL" \
+            '(NR - 1) % total == shard { gsub("/", ":"); printf ":%s:jsTest ", $0 }' <<< "$modules")
+          if [ -z "$tasks" ]; then
+            echo "::error::No module with tests falls on shard $((SHARD_INDEX + 1)) of $SHARD_TOTAL."
+            exit 1
+          fi
+          echo "$tasks" | tr ' ' '\n'
+          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
 
       - name: Setup Gradle
         uses: ./.github/actions/gradle
@@ -101,19 +138,26 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Run the tests on the JS target
-        run: ./gradlew jsTest --continue
+        env:
+          TASKS: ${{ steps.modules.outputs.tasks }}
+        run: |
+          read -ra tasks <<< "$TASKS"
+          ./gradlew "${tasks[@]}" --continue
 
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: js-test-reports
+          name: js-test-reports-${{ matrix.shard }}
           path: '**/build/reports/tests/**'
 
+  # The release build and the lint compile different variants (release and debug), so they share
+  # no compilation and run side by side: one job doing both ran them one after the other.
   android:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -128,9 +172,28 @@ jobs:
       # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
       # instead of on a device. Without the signing secrets it is signed with the debug key, which
       # is all a compile check needs.
+      - name: Assemble the Android release
+        run: ./gradlew :androidApp:assembleRelease
+
+  android-lint:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
       # lintDebug lints :androidApp and every :android:* module.
-      - name: Assemble the Android release and lint the Android UI
-        run: ./gradlew :androidApp:assembleRelease lintDebug --continue
+      - name: Lint the Android UI
+        run: ./gradlew lintDebug --continue
 
       - name: Upload lint reports
         if: failure()
@@ -143,6 +206,7 @@ jobs:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
