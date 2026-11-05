@@ -59,10 +59,11 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     found. It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
     since its bell, has none), and only shows once there is a group. It is an item of the navigation (Pierre's call),
     placed where each platform looks for it: iOS's search tab at the end of the tab bar on an iPhone, lying down
-    too, a round button apart from the tabs' capsule on every tab (Pierre's call; iOS 27 only sets it apart when
-    opening it activates the search, `tabViewSearchActivation(.searchTabSelection)`, so there the field takes the
-    keyboard as it opens and its ✕ goes back to the tab it was opened from, while lying down its own field waits
-    beside the results and another tab leaves it), and an iPad (in its sidebar), opening over Groups (the room
+    too, and in an iPad's narrow window, a round button apart from the tabs' capsule on every tab (Pierre's call;
+    iOS 27 only sets it apart when opening it activates the search, `tabViewSearchActivation(.searchTabSelection)`,
+    so there the field takes the keyboard as it opens and its ✕ goes back to the tab it was opened from, which iOS
+    remembers and which then gets that tab's own event, while lying down its own field waits beside the results and
+    another tab leaves it), and an iPad (in its sidebar), opening over Groups (the room
     Activity left, as Apple sets the search apart at the end of the bar); Android's last item of the bottom bar,
     after Contacts, under the thumb as on iOS, and
     the last of the rail too, so a phone turning or a foldable opening never moves it (selected while the search is
