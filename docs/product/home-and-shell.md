@@ -14,6 +14,14 @@ The home's four tabs and the web's and the Mac's shell.
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
     to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
     `OnRailTabClicked`).
+  - Going from a tab to another never redraws the whole screen. On Android each tab (Search included) draws the same
+    rail or bottom bar, so the tab coming in fades in over the one leaving in 180 ms (the web's `page-enter`), the one
+    leaving fading out over it when the switch goes back down the stack or follows the back gesture, and the bars hold
+    still while only the content changes (`createHomeTabTransitionSpec`). A group's screens and Statistics count the same
+    wherever the rail is drawn beside them (`rememberUsesGroupRail`), so a rail click from them, and a group opened from
+    a tab there, fade the same way; every other screen keeps Navigation 3's default transitions. Apple keeps
+    one `TabView` (the iPad's and Mac's sidebar) above the tabs, and the web one frame (`HomeFrame`), so their bars
+    never redraw.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot
@@ -40,7 +48,11 @@ The home's four tabs and the web's and the Mac's shell.
     content at the same width, 1152 px at most (`pageContentClass`; Balances, Contacts and Activity keep their one
     column at 768 px under 1024 px). A new page (a tab, a group, Profile,
     the welcome's steps) comes in with a short fade and rise (180 ms, `page-enter`) under the frame, which stays put;
-    a group's own tabs still change with no transition, and reduced motion shows the page at once.
+    a group's own tabs still change with no transition, and reduced motion shows the page at once. The frame (the
+    sidebar, the tablet's rail, the phone's top bar and bottom navigation) is mounted once for every page in it
+    (`HomeFrame`): going to another tab, a group, Activity or Profile swaps only the content, never redraws the frame,
+    and who is signed in and Search never blink while the new page reads its own state (they come from the sidebar's
+    `HomeSidebarViewModel` meanwhile).
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.join
 
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
@@ -35,22 +36,19 @@ fun JoinWithLinkScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = remember(context) { ClipboardReader(context) }
-    // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
-    var hasAsked by rememberSaveable { mutableStateOf(false) }
     val cameraPermission = rememberCameraPermissionAccess { isGranted ->
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted))
     }
-    // Why: asked once when the reader opens, and read again on coming back from the settings.
+    LaunchedEffect(context) {
+        val hasCamera = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera))
+    }
+    // Why: read again on coming back from the settings, once "Open camera" asked for it; the ViewModel ignores it before.
     LifecycleResumeEffect(cameraPermission) {
         when {
             cameraPermission.isGranted() -> viewModel.onEvent(
                 JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true),
             )
-
-            !hasAsked -> {
-                hasAsked = true
-                cameraPermission.request()
-            }
 
             viewModel.uiState.value.cameraAccess == CameraAccess.GRANTED ->
                 viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
@@ -60,6 +58,13 @@ fun JoinWithLinkScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
+                // Why: only "Open camera" asks; refused for good, Android answers at once and the reader explains.
+                JoinWithLinkUiAction.RequestCameraAccess -> if (cameraPermission.isGranted()) {
+                    viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+                } else {
+                    cameraPermission.request()
+                }
+
                 JoinWithLinkUiAction.OpenCameraSettings -> cameraPermission.openSettings()
             }
         }

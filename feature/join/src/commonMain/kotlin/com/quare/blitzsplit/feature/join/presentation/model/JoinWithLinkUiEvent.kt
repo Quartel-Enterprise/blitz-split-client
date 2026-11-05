@@ -10,7 +10,11 @@ sealed interface JoinWithLinkUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: the platform's camera answering, not a tap.
-            is OnCameraAccessChanged, is OnCameraOpened, OnCameraUnavailable -> EventAnalytics.NotTracked
+            is OnCameraAccessChanged, is OnCameraOpened, OnCameraUnavailable, is OnCameraChecked ->
+                EventAnalytics.NotTracked
+
+            // Why: only the tap that asks counts, never a second one while the camera is already asked for.
+            OnOpenCameraClicked -> EventAnalytics.Manual("join_with_link_open_camera_clicked")
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("camera_settings_clicked", mapOf("source" to SOURCE))
 
@@ -31,7 +35,15 @@ sealed interface JoinWithLinkUiEvent : UiEvent {
             OnCloseClicked -> EventAnalytics.NotTracked
         }
 
-    // Why: the platform's answer to the camera permission, asked when the reader opens and again on coming back.
+    // Why: whether the device has a camera at all, read by the platform when the reader opens.
+    data class OnCameraChecked(
+        val hasCamera: Boolean,
+    ) : JoinWithLinkUiEvent
+
+    // Why: "Open camera": only this tap asks for the camera and opens it, never the reader opening.
+    data object OnOpenCameraClicked : JoinWithLinkUiEvent
+
+    // Why: the platform's answer to the camera permission, asked after "Open camera" and again on coming back.
     data class OnCameraAccessChanged(
         val isGranted: Boolean,
     ) : JoinWithLinkUiEvent

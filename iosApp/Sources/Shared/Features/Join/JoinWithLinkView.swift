@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+import Combine
 import Observation
 import Shared
 import SwiftUI
@@ -23,8 +24,12 @@ final class JoinWithLinkModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
-        watches.add(viewModel.actionWatcher.observe { action in
-            if action is JoinWithLinkUiActionOpenCameraSettings { CameraSettings.open() }
+        watches.add(viewModel.actionWatcher.observe { [weak self] action in
+            if action is JoinWithLinkUiActionRequestCameraAccess {
+                Task { await self?.checkCameraAccess() }
+            } else if action is JoinWithLinkUiActionOpenCameraSettings {
+                CameraSettings.open()
+            }
         })
     }
 
@@ -37,7 +42,12 @@ final class JoinWithLinkModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// The camera is only asked for once the reader opens, and read again on coming back from Settings.
+    /// A Mac mini or a Mac Studio may have no camera at all: then "Open camera" never shows, only the link.
+    func checkHasCamera() {
+        send(JoinWithLinkUiEventOnCameraChecked(hasCamera: AVCaptureDevice.default(for: .video) != nil))
+    }
+
+    /// Asked only after "Open camera", and read again on coming back from Settings once it was.
     func checkCameraAccess() async {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -89,10 +99,24 @@ private struct JoinWithLinkContent: View {
 
     var body: some View {
         layout
-            .task { await model.checkCameraAccess() }
+            .task { model.checkHasCamera() }
+            // Why: a webcam plugged in or out, or an iPhone nearby as a Mac's Continuity Camera, while the reader is open.
+            // AVFoundation may post these off the main thread, and the state they change is drawn on it.
+            .onReceive(cameraChanges) { _ in model.checkHasCamera() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { await model.checkCameraAccess() } }
+                // Why: before "Open camera" nothing is asked, not even on coming back to the app; while the system's alert is
+                // still open, the "Open camera" request answers on its own.
+                if phase == .active, model.state.isCameraRequested, model.state.cameraAccess != .asking {
+                    Task { await model.checkCameraAccess() }
+                }
             }
+    }
+
+    private var cameraChanges: some Publisher<Notification, Never> {
+        let center = NotificationCenter.default
+        return center.publisher(for: AVCaptureDevice.wasConnectedNotification)
+            .merge(with: center.publisher(for: AVCaptureDevice.wasDisconnectedNotification))
+            .receive(on: DispatchQueue.main)
     }
 
     @ViewBuilder
@@ -167,7 +191,7 @@ private struct JoinWithLinkContent: View {
     private func cameraBackground(_ state: JoinWithLinkUiState) -> some View {
         ZStack {
             Color.black
-            if state.cameraAccess == .granted {
+            if state.showsCameraPreview {
                 InviteScannerView(
                     isTorchOn: state.isTorchOn,
                     onScanned: { model.send(JoinWithLinkUiEventOnQrScanned(content: $0)) },
@@ -185,12 +209,12 @@ private struct JoinWithLinkContent: View {
         VStack(spacing: 8) {
             topBar(state)
             Group {
-                if state.cameraAccess == .denied {
-                    cameraDenied
-                } else if state.isCameraUnavailable {
-                    cameraUnavailable
-                } else {
-                    viewfinder(state)
+                switch state.cameraStage {
+                case .prompt: cameraPrompt
+                case .noCamera: cameraMessage(noCameraMessage)
+                case .denied: cameraDenied
+                case .failed: cameraMessage("Couldn't open the camera. Paste the link below.")
+                default: viewfinder(state)
                 }
             }
             // Why: with the keyboard up on a small iPhone the camera area gets short; only this part is cut, so the
@@ -273,10 +297,36 @@ private struct JoinWithLinkContent: View {
         }
     }
 
+    /// In the camera's place until "Open camera", the only tap that asks for the camera and opens it.
+    private var cameraPrompt: some View {
+        cameraPlaceholder(systemImage: "qrcode.viewfinder") {
+            Text("Scan the invite's QR code")
+                .font(.title2.bold())
+                .padding(.top, 8)
+            Text("The camera only opens when you tap the button.")
+            Button("Open camera", systemImage: "camera") {
+                model.send(JoinWithLinkUiEventOnOpenCameraClicked.shared)
+            }
+            .font(.headline)
+            .buttonStyle(.glassProminent)
+            .prominentLabel()
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .tint(Palette.accent)
+            .padding(.top, 10)
+        }
+    }
+
+    private var noCameraMessage: LocalizedStringKey {
+        #if os(iOS)
+        "This device has no camera. Paste the link below."
+        #else
+        "This Mac has no camera. Paste the link below."
+        #endif
+    }
+
     private var cameraDenied: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 52))
+        cameraPlaceholder(systemImage: "video.slash") {
             Text("No access to the camera")
                 .font(.title2.bold())
                 .padding(.top, 8)
@@ -299,18 +349,22 @@ private struct JoinWithLinkContent: View {
             .controlSize(.large)
             .padding(.top, 10)
         }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 420)
-        .padding(.horizontal, 20)
     }
 
-    private var cameraUnavailable: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 52))
-            Text("Couldn't open the camera. Paste the link below.")
+    /// The camera's place with only a line to say why there is no camera to show.
+    private func cameraMessage(_ message: LocalizedStringKey) -> some View {
+        cameraPlaceholder(systemImage: "video.slash") {
+            Text(message)
                 .padding(.top, 8)
+        }
+    }
+
+    /// What the camera's place shows instead of the camera: a symbol over the words and what can be done.
+    private func cameraPlaceholder(systemImage: String, @ViewBuilder content: () -> some View) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.system(size: 52))
+            content()
         }
         .foregroundStyle(.white)
         .multilineTextAlignment(.center)

@@ -33,13 +33,15 @@ interface QrCameraOptions {
 // Why: reading continuously, the same QR in front of the camera is reported a few times a second, not on every frame.
 const continuousInterval = 250
 
+// Why: Safari and Firefox have no BarcodeDetector, so they can't read a QR from the camera.
+export const canReadQr = Boolean(window.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
+
 /**
  * Shows the back camera in `video` (`useCameraStream`) and reads QR codes from it through the browser's
  * BarcodeDetector, from the moment `isEnabled` turns on until it turns off or the component goes away.
  */
 export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabled, readsContinuously, onScanned, onStarted, isTorchOn }: QrCameraOptions) {
-  const isSupported = Boolean(window.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
-  const { problem, track, isPlaying, hasTorch } = useCameraStream(video, { isEnabled: isEnabled && isSupported, facingMode: 'environment', isTorchOn, onStarted })
+  const { problem, track, isPlaying, hasTorch } = useCameraStream(video, { isEnabled: isEnabled && canReadQr, facingMode: 'environment', isTorchOn, onStarted })
   // The latest callback, so a parent re-render never restarts the reading
   const scanned = useRef(onScanned)
   scanned.current = onScanned
@@ -79,6 +81,6 @@ export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabl
     }
   }, [isPlaying, readsContinuously, video])
 
-  const qrProblem: QrCameraProblem | null = isEnabled && !isSupported ? 'unsupported' : problem
+  const qrProblem: QrCameraProblem | null = isEnabled && !canReadQr ? 'unsupported' : problem
   return { problem: qrProblem, track, hasTorch }
 }
