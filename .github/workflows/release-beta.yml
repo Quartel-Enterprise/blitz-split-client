@@ -10,11 +10,15 @@ name: release-beta
 #        - Web: Cloudflare Pages, https://blitz-split-beta.pages.dev.
 #        - iOS and macOS: TestFlight, signed by Xcode with the App Store Connect API key. The two share the
 #          composite actions .github/actions/apple-build and apple-upload.
-#   3. `finalize` merges the versionCode this beta consumed back into main, then tags the commit and
-#      publishes a GitHub pre-release listing what each channel got. It runs when at least one
-#      platform published, since the Apple stores refuse a build number they already hold. It can be
-#      re-run: every step skips what an earlier attempt already did. Re-run it before starting another
-#      beta, or the next beta plans the same versionCode again.
+#   3. `finalize` tags the commit and publishes a GitHub pre-release listing what each channel got and the
+#      build number, then merges the versionCode this beta consumed back into main. The release goes first
+#      because it is what `plan` reads: the next beta takes its number and its versionCode from the releases,
+#      so it never repeats either, even when the merge-back fails. `finalize` runs when at least one platform
+#      published, since the Apple stores refuse a build number they already hold, and can be re-run: every
+#      step skips what an earlier attempt already did.
+#
+# One run at a time, and one more waiting: GitHub keeps a single pending run per concurrency group, so a third
+# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting.
 #
 # Repository secrets and variables: see docs/release-process.md#secrets.
 
@@ -63,6 +67,7 @@ jobs:
   plan:
     name: Plan the beta version
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.resolve.outputs.version }}
       display_version: ${{ steps.resolve.outputs.display_version }}
@@ -88,6 +93,8 @@ jobs:
         id: resolve
         env:
           VERSION_INPUT: ${{ inputs.version }}
+          # To read the build numbers the earlier betas recorded in their releases.
+          GH_TOKEN: ${{ github.token }}
         run: ./scripts/release/suggest-beta-version.sh "$VERSION_INPUT"
 
   # ---------------------------------------------------------------------------------------------
@@ -98,6 +105,7 @@ jobs:
     needs: plan
     if: ${{ inputs.android }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -114,13 +122,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON; do
-            if [ -z "${!name}" ]; then
-              echo "::error::The $name secret is empty. See docs/release-process.md#secrets."
-              exit 1
-            fi
-          done
+        run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON
 
       # Without the web client id the app builds, but the native Google sign in fails (docs/getting-started.md).
       - name: Check the Google web client id
@@ -137,6 +139,11 @@ jobs:
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # Dispatched on main, where the action would save the cache: a beta must not push out the entries the
+          # pull requests read.
+          cache-read-only: 'true'
 
       - name: Decode signing and Firebase config
         env:
@@ -190,7 +197,19 @@ jobs:
     name: Android, send to Firebase App Distribution
     needs: [plan, android-build]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check the secret
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: ./scripts/release/require-env.sh FIREBASE_SERVICE_ACCOUNT_JSON
+
       - name: Download the APK build artifact
         uses: actions/download-artifact@v8
         with:
@@ -224,6 +243,7 @@ jobs:
     needs: plan
     if: ${{ inputs.web }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -231,12 +251,21 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
+      - name: Check the secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: ./scripts/release/require-env.sh CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+
       # The web app shows the versionName of version.properties.
       - name: Bump version
         run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: 'true'
 
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -326,6 +355,7 @@ jobs:
     name: iOS, send to TestFlight
     needs: [plan, ios-build]
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -387,6 +417,7 @@ jobs:
     name: macOS, send to TestFlight
     needs: [plan, macos-build]
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -413,7 +444,7 @@ jobs:
   # Finalize
   # ---------------------------------------------------------------------------------------------
   finalize:
-    name: Merge-back, tag and GitHub pre-release
+    name: Tag, pre-release and merge-back
     needs: [plan, android-distribute, web, ios-upload, macos-upload]
     # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must
     # not hold the release back. One that published is enough, since the versionCode it used has to
@@ -423,6 +454,7 @@ jobs:
       needs.android-distribute.result == 'success' || needs.web.result == 'success' ||
       needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
@@ -433,28 +465,55 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      # Publishing the release is the last step: once it exists there is nothing left to do.
-      - name: Check whether the release is already published
-        id: published
+      # First, because the release is what `plan` reads: with it recorded, the next beta takes the next number and
+      # the next versionCode even when the merge-back below fails. Once it exists a re-run skips this step.
+      - name: Publish the GitHub pre-release
         env:
           GH_TOKEN: ${{ github.token }}
           DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+          SHA: ${{ needs.plan.outputs.sha }}
+          ANDROID: ${{ needs.android-distribute.result }}
+          WEB: ${{ needs.web.result }}
+          IOS: ${{ needs.ios-upload.result }}
+          MACOS: ${{ needs.macos-upload.result }}
         run: |
           if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
-            echo "::notice::$DISPLAY_VERSION is already published, nothing left to finalize."
-            echo "done=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$DISPLAY_VERSION is already published."
+            exit 0
           fi
+          cat > "$RUNNER_TEMP/channels.md" <<EOF
+          Build number: $VERSION_CODE
 
-      # Only the versionCode: versionName stays at the version the beta leads up to. Each part skips
-      # what an earlier attempt did, so a re-run after any failure finishes the job:
-      #   - main already holds this versionCode, or a higher one that someone bumped meanwhile: done,
-      #     and never lowered;
-      #   - the branch is already pushed: not committed and pushed again;
-      #   - the pull request is already open: not created again.
+          ## Channels
+
+          | Platform | Channel | Result |
+          | --- | --- | --- |
+          | Android | Firebase App Distribution, group \`beta\` | $ANDROID |
+          | Web | Cloudflare Pages, https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev | $WEB |
+          | iOS | TestFlight | $IOS |
+          | macOS | TestFlight | $MACOS |
+          EOF
+          gh release create "$DISPLAY_VERSION" \
+            --target "$SHA" \
+            --title "$DISPLAY_VERSION" \
+            --notes-file "$RUNNER_TEMP/channels.md" \
+            --generate-notes \
+            --prerelease
+
+      # Only the versionCode: versionName stays at the version the beta leads up to. A re-run finishes the job
+      # wherever the last one stopped:
+      #   - main already holds this versionCode, or a higher one that someone bumped meanwhile: done, and never
+      #     lowered;
+      #   - the branch is rebuilt from the current main and pushed over the old one, so a PR left open by a failed
+      #     run follows main instead of staying in conflict;
+      #   - the pull request is created only when none is open.
+      # The PR is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
+      # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
-        if: ${{ steps.published.outputs.done != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
           BRANCH: ${{ needs.plan.outputs.branch }}
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
@@ -466,15 +525,14 @@ jobs:
             exit 0
           fi
 
-          if ! git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git checkout -b "$BRANCH"
-            current_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
-            ./scripts/release/bump-version.sh "$current_version" "$VERSION_CODE"
-            git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
-            git push -u origin "$BRANCH"
-          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2> /dev/null || true
+          git checkout -B "$BRANCH"
+          current_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
+          ./scripts/release/bump-version.sh "$current_version" "$VERSION_CODE"
+          git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
+          git push --force-with-lease origin "$BRANCH"
 
           if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
             gh pr create \
@@ -489,35 +547,9 @@ jobs:
           # still read the PR as blocked. Retry instead of failing the release on a race that
           # resolves itself in seconds.
           for _ in 1 2 3 4 5; do
-            if gh pr merge "$BRANCH" --squash --delete-branch; then
+            if GH_TOKEN="${MERGE_TOKEN:-$GH_TOKEN}" gh pr merge "$BRANCH" --squash --delete-branch; then
               exit 0
             fi
             sleep 10
           done
           exit 1
-
-      - name: Publish the GitHub pre-release
-        if: ${{ steps.published.outputs.done != 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ANDROID: ${{ needs.android-distribute.result }}
-          WEB: ${{ needs.web.result }}
-          IOS: ${{ needs.ios-upload.result }}
-          MACOS: ${{ needs.macos-upload.result }}
-        run: |
-          cat > "$RUNNER_TEMP/channels.md" <<EOF
-          ## Channels
-
-          | Platform | Channel | Result |
-          | --- | --- | --- |
-          | Android | Firebase App Distribution, group \`beta\` | $ANDROID |
-          | Web | Cloudflare Pages, https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev | $WEB |
-          | iOS | TestFlight | $IOS |
-          | macOS | TestFlight | $MACOS |
-          EOF
-          gh release create "${{ needs.plan.outputs.display_version }}" \
-            --target "${{ needs.plan.outputs.sha }}" \
-            --title "${{ needs.plan.outputs.display_version }}" \
-            --notes-file "$RUNNER_TEMP/channels.md" \
-            --generate-notes \
-            --prerelease

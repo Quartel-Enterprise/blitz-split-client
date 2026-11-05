@@ -1,7 +1,8 @@
 name: 'Build an Apple app for TestFlight'
 description: >-
   Archives and exports one scheme of the Apple app, signed by Xcode with the App Store Connect API key. The iOS and
-  the macOS beta jobs of release-beta.yml differ only in these inputs.
+  the macOS beta jobs of release-beta.yml differ only in these inputs. The calling job checks out the repository
+  first, since the steps run its scripts.
 
 inputs:
   scheme:
@@ -48,13 +49,7 @@ runs:
         APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
-      run: |
-        for name in GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8; do
-          if [ -z "${!name}" ]; then
-            echo "::error::The $name secret is empty. See docs/release-process.md#secrets."
-            exit 1
-          fi
-        done
+      run: ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
 
     # Apple refuses a suffixed version string, so the Apple apps carry the plain X.Y.Z and tell the betas apart by
     # the build number.
@@ -85,13 +80,14 @@ runs:
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
       run: |
         echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/Resources/GoogleService-Info.plist
-        mkdir -p "$HOME/.appstoreconnect/private_keys"
-        key_path="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
-        printf '%s\n' "$APP_STORE_CONNECT_API_KEY_P8" > "$key_path"
-        echo "KEY_PATH=$key_path" >> "$GITHUB_ENV"
+        echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
 
     # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
     # profile itself, so there is no certificates repository to keep.
+    #
+    # No -clonedSourcePackagesDirPath: a Release build with the Firebase plist runs the Crashlytics dSYM script of
+    # project.yml, which looks for the Firebase checkout in ${BUILD_DIR%/Build/*}/SourcePackages, that is, under the
+    # derived data path. apple.yml moves the packages elsewhere because it has no plist, and the script skips itself.
     - name: Archive the app
       shell: bash
       env:
@@ -100,7 +96,7 @@ runs:
       run: >-
         xcodebuild archive -project iosApp/BoraRachar.xcodeproj -scheme "${{ inputs.scheme }}"
         -destination "${{ inputs.destination }}" -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
-        -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages
+        -derivedDataPath iosApp/build/DerivedData
         -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
         -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" -quiet
 
@@ -114,3 +110,9 @@ runs:
         -exportPath "${{ inputs.export-path }}" -exportOptionsPlist iosApp/ExportOptions.plist
         -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
         -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID"
+
+    # The signing key must not stay on the runner for the steps after this action, or for the next job on a reused one.
+    - name: Remove the App Store Connect key
+      if: always()
+      shell: bash
+      run: rm -f "${KEY_PATH:-}"

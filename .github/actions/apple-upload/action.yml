@@ -1,12 +1,14 @@
 name: 'Send an Apple build to TestFlight'
-description: 'Uploads an exported IPA or package to App Store Connect with the API key.'
+description: >-
+  Uploads an exported IPA or package to App Store Connect with the API key. The calling job checks out the
+  repository first, since the steps run its scripts.
 
 inputs:
   type:
     description: 'altool platform type: ios or macos'
     required: true
   file:
-    description: 'The IPA or package to upload (a glob is fine)'
+    description: 'The IPA or package to upload (a glob that matches exactly one file)'
     required: true
   key-id:
     description: 'The App Store Connect API key id'
@@ -27,16 +29,21 @@ runs:
         APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+        UPLOAD_TYPE: ${{ inputs.type }}
+        UPLOAD_FILE: ${{ inputs.file }}
       run: |
-        for name in APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8; do
-          if [ -z "${!name}" ]; then
-            echo "::error::The $name secret is empty. See docs/release-process.md#secrets."
-            exit 1
-          fi
-        done
-        key_path="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+        ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+
+        # altool takes one --file: an export with none, or two, is an error worth saying plainly.
+        shopt -s nullglob
+        # shellcheck disable=SC2206
+        files=( $UPLOAD_FILE )
+        if [ "${#files[@]}" -ne 1 ]; then
+          echo "::error::Expected exactly one file matching '$UPLOAD_FILE', found ${#files[@]}."
+          exit 1
+        fi
+
+        key_path="$(./scripts/release/write-asc-key.sh)"
         trap 'rm -f "$key_path"' EXIT
-        mkdir -p "$HOME/.appstoreconnect/private_keys"
-        printf '%s\n' "$APP_STORE_CONNECT_API_KEY_P8" > "$key_path"
-        xcrun altool --upload-app --type "${{ inputs.type }}" --file ${{ inputs.file }} \
+        xcrun altool --upload-app --type "$UPLOAD_TYPE" --file "${files[0]}" \
           --apiKey "$APP_STORE_CONNECT_API_KEY_ID" --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"

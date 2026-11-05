@@ -36,10 +36,13 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
 2. Each platform builds and publishes: `android-build` and `android-distribute`, `web`, `ios-build` and `ios-upload`,
    `macos-build` and `macos-upload`. Build and publish are separate jobs, so **Re-run failed jobs** sends a failed
    upload again without building a second time. The binaries are kept as build artifacts for one day.
-3. `finalize` squash-merges a pull request with the new `versionCode` into `main`, tags the commit the run built and
-   publishes the GitHub pre-release, whose notes list what each channel got. It runs when at least one platform
-   published, since the Apple stores refuse a build number they already hold, and a platform that failed does not hold
-   the release back.
+3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what each channel got
+   and the build number, then squash-merges a pull request with the new `versionCode` into `main`. It runs when at
+   least one platform published, since the Apple stores refuse a build number they already hold, and a platform that
+   failed does not hold the release back.
+
+One beta runs at a time and one more can wait: GitHub keeps a single pending run per concurrency group, so a third
+dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch while a run is already waiting.
 
 ## Versions
 
@@ -54,12 +57,14 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
 moves to the next version by hand, when the work for it starts. The beta number is one past the highest existing
 `X.Y.Z-beta_N` tag for that `X.Y.Z`, so a new `X.Y.Z` starts again at `beta_1`.
 
-The merge-back commit is why `versionCode` only grows: the next beta, and the store build after the betas, start above
-the code this one used. If the pull request cannot merge (the `Main rules` ruleset requires one, with threads
-resolved), `finalize` fails before tagging. **Re-run it before starting another beta**: each part of it skips what
-the earlier attempt did (the code already on `main`, the pushed branch, the open pull request), so a re-run finishes
-the job. Until the code reaches `main`, the next beta plans the same `versionCode` again, and App Store Connect refuses
-a build number it already holds. `finalize` never lowers a `versionCode` that someone raised on `main` meanwhile.
+The `versionCode` is one past the highest of two numbers: the one in `version.properties` and the `Build number: N` line
+that every beta release records in its notes. The release is published before the merge-back, so a beta never reuses a
+number even when the merge-back fails (the `Main rules` ruleset requires a pull request, with threads resolved).
+Re-running `finalize` finishes the job: it skips the release that exists, leaves a `versionCode` that `main` already
+holds (or a higher one someone raised meanwhile) alone, rebuilds the merge-back branch from the current `main` and
+pushes it over the old one, and opens the pull request only when none is open. The pull request is created with
+`GITHUB_TOKEN`, so no pull request workflow runs for a version bump, and merged with `MERGE_WHEN_GREEN_TOKEN`, so the
+push to `main` runs its workflows ([Merge when green](ci.md#merge-when-green)).
 
 ## Secrets
 
@@ -74,6 +79,8 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `GOOGLE_SERVICE_INFO_PLIST` | `iosApp/Resources/GoogleService-Info.plist`, `base64 -i` encoded |
 | `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key with the **Admin** role (Xcode needs it to create the cloud-managed distribution certificate) and the text of its `.p8`. The Issuer ID is on Users and Access › Integrations |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id |
+| `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
+| `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
 
 | Variable (public values) | What it is |
 | --- | --- |
