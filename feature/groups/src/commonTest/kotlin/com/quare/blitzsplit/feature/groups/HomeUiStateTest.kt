@@ -369,6 +369,186 @@ class HomeUiStateTest {
         assertNull(prompt)
     }
 
+    @Test
+    fun `GIVEN Apple never asked and not asked quietly yet WHEN Inicio draws THEN shows no notification card`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+            canAskQuietly = true,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
+    fun `GIVEN Apple still never asked after the quiet request WHEN Inicio draws THEN falls back to the soft ask`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+            canAskQuietly = true,
+            hasAskedQuietly = true,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertEquals(NotificationPrompt.SOFT_ASK, prompt)
+    }
+
+    @Test
+    fun `GIVEN Android or the web never asked WHEN Inicio draws THEN shows the soft ask with no quiet request`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+            canAskQuietly = false,
+        )
+
+        // When
+        val drawn = state.notificationPrompt to state.shouldAskQuietly
+
+        // Then
+        assertEquals(NotificationPrompt.SOFT_ASK to false, drawn)
+    }
+
+    @Test
+    fun `GIVEN a group and quiet delivery on Apple WHEN Inicio draws THEN shows the quiet card`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.PROVISIONAL,
+            canAskQuietly = true,
+            hasAskedQuietly = true,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertEquals(NotificationPrompt.QUIET, prompt)
+    }
+
+    @Test
+    fun `GIVEN quiet delivery and each reason the other cards hide WHEN Inicio draws THEN shows no quiet card`() {
+        // Given
+        val states = listOf(
+            state(groupCount = 0),
+            state(isLoaded = false),
+            state(isFirstDownload = true),
+            state(showsRecoveryCodeCard = true),
+            state(showsRecoveryCodePrompt = true),
+            state(isNotificationPromptSnoozed = true),
+        ).map {
+            it.copy(
+                notificationPermission = NotificationPermission.PROVISIONAL,
+                canAskQuietly = true,
+                hasAskedQuietly = true,
+            )
+        }
+
+        // When
+        val prompts = states.map { it.notificationPrompt }
+
+        // Then
+        assertEquals(List(states.size) { null }, prompts)
+    }
+
+    @Test
+    fun `GIVEN a group and Apple never asked WHEN Inicio draws THEN asks quietly`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+            canAskQuietly = true,
+        )
+
+        // When
+        val shouldAsk = state.shouldAskQuietly
+
+        // Then
+        assertTrue(shouldAsk)
+    }
+
+    @Test
+    fun `GIVEN Apple never asked and each thing that hides the card WHEN Inicio draws THEN still asks quietly`() {
+        // Given
+        val states = listOf(
+            state(isFirstDownload = true),
+            state(showsRecoveryCodeCard = true),
+            state(showsRecoveryCodePrompt = true),
+            state(isNotificationPromptSnoozed = true),
+        ).map {
+            it.copy(
+                notificationPermission = NotificationPermission.NOT_DETERMINED,
+                canAskQuietly = true,
+            )
+        }
+
+        // When
+        val asks = states.map { it.shouldAskQuietly }
+
+        // Then
+        assertEquals(List(states.size) { true }, asks)
+    }
+
+    @Test
+    fun `GIVEN Apple never asked with no group yet WHEN Inicio draws THEN does not ask quietly`() {
+        // Given
+        val states = listOf(state(groupCount = 0), state(isLoaded = false)).map {
+            it.copy(
+                notificationPermission = NotificationPermission.NOT_DETERMINED,
+                canAskQuietly = true,
+            )
+        }
+
+        // When
+        val asks = states.map { it.shouldAskQuietly }
+
+        // Then
+        assertEquals(listOf(false, false), asks)
+    }
+
+    @Test
+    fun `GIVEN Apple already asked quietly WHEN Inicio draws THEN does not ask quietly again`() {
+        // Given
+        val state = state(
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+            canAskQuietly = true,
+            hasAskedQuietly = true,
+        )
+
+        // When
+        val shouldAsk = state.shouldAskQuietly
+
+        // Then
+        assertFalse(shouldAsk)
+    }
+
+    @Test
+    fun `GIVEN a group on Apple and each permission but never asked WHEN Inicio draws THEN does not ask quietly`() {
+        // Given
+        val permissions = listOf(
+            NotificationPermission.PROVISIONAL,
+            NotificationPermission.GRANTED,
+            NotificationPermission.DENIED,
+            NotificationPermission.REFUSED_ONCE,
+            null,
+        )
+
+        // When
+        val asks = permissions.map {
+            state(
+                notificationPermission = it,
+                canAskQuietly = true,
+            ).shouldAskQuietly
+        }
+
+        // Then
+        assertEquals(List(permissions.size) { false }, asks)
+    }
+
     private fun person(
         key: String,
         netMinor: Long,
