@@ -331,6 +331,8 @@
     <string name="split_bill_receipt_limit_reached">Você já leu 30 cupons nas últimas 24 horas. Preencha à mão ou leia de novo amanhã.</string>
     <string name="split_bill_receipt_offline">Sem conexão. A foto não chegou ao leitor: tente de novo quando reconectar, ou preencha à mão.</string>
     <string name="split_bill_receipt_retry">Tentar de novo</string>
+    <string name="split_bill_receipt_source_camera">Tirar foto</string>
+    <string name="split_bill_receipt_source_gallery">Escolher da galeria</string>
     <string name="split_bill_receipt_camera_title">Ler cupom fiscal</string>
     <string name="split_bill_receipt_camera_close">Fechar</string>
     <string name="split_bill_receipt_camera_flash_on">Ligar o flash</string>

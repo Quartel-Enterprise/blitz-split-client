@@ -338,6 +338,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "When", opening its picker | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
+| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose File…" (Mac) or "Choose photo" (web); not sent where no camera leaves anything to choose | `:feature:split_bill` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
 | `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Equal, Amounts, %, Shares or Items, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Equal, with where they ended up | `:feature:split_bill` |

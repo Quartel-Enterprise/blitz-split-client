@@ -196,7 +196,7 @@ internal fun createPreviewBillState(
     categoryDeletion = null,
     receipt = receipt,
     receiptCategoryId = null,
-    isReceiptCameraRequested = false,
+    receiptRequest = null,
     conflict = conflict,
     settledPair = settledPair,
     deletion = null,

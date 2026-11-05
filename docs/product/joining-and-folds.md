@@ -41,7 +41,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
   - Android's "Take photo" asks for the camera first. Once it is refused for good, a snackbar "Allow the camera in
     Settings" offers "Settings", which opens the app's settings page.
   - The web's "Take photo" (beta feedback 2): wherever the web takes a photo from a file (Your profile, Edit profile,
-    New group, Edit group, Bill's Attachments, Scan receipt) it also offers the browser's camera, a desktop's
+    New group, Edit group, Bill's Attachments, Scan receipt's choice) it also offers the browser's camera, a desktop's
     webcam too, but only while the browser lists a camera (`useCameras`). One dialog (`CameraCaptureDialog`, a
     drawer on a phone) shows it live, the selfie camera mirrored and the photo never, with the shutter, "Retake"
     and "Use photo", "Switch camera" with more than one (front and back where the cameras say which they are, else

@@ -137,9 +137,16 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
   - "Scan receipt" (7.1e to 7.1g, `ReadReceipt`, the server's `read-receipt`): a new bill's form offers it under
     "Split" (never on "Edit bill", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
     leave it out there; Home's shortcut still opens it), online only ("Needs internet. Fill it in by hand or scan
-    the receipt once you're back online."). Android and iOS open their own camera, black, with the receipt's frame, the flash,
-    the gallery and the shutter; the Mac picks a file, and the web opens the browser's camera (a webcam too) with "Choose a file" in it, a file
-    chooser where the browser has no camera. The
+    the receipt once you're back online."). It asks first where the photo comes from (Pierre's call, beta feedback
+    part 2, item 7, `SplitBillUiState.showsReceiptSourceChoice`, `OnReceiptSourcePicked`, `OnReceiptChoiceSkipped` where there is no camera), as Home's shortcut and
+    "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo" and "Choose from gallery"
+    (the system Photo Picker, no storage permission), iOS and iPadOS an action sheet with "Take photo" and "Choose
+    from Photos" (PhotosPicker), the Mac one with "Choose File…" and "Choose from Photos", and the web a dialog (a
+    drawer on a phone) with "Take photo" and "Choose photo" (the browser's file chooser, the phone's gallery). Where
+    there is no camera to take it with (a device without one, a browser that lists none) it goes straight to the
+    gallery or the file chooser. "Take photo" opens Android's and iOS's own camera, black, with the receipt's frame,
+    the flash, the gallery (still there, to change one's mind) and the shutter, and on the web the browser's camera (a
+    webcam too) with "Choose a file" in it. Whichever it came from, the photo is read the same way. The
     photo goes up shrunk as a bill's photo is (`BillImageEncoder`) and the server reads it with Claude, whatever
     the receipt (an NFC-e, a restaurant's bill, a card slip, one from abroad), for each account up to 30 reads a day,
     a failed one included; the photo is never kept there. While it reads, "Receipt photo" says "Reading the receipt…",

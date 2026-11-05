@@ -1758,6 +1758,8 @@ export const en = {
   splitBill_receiptItemsOther: '{count} items',
   splitBill_receiptFailedTitle: "Couldn't read the receipt",
   splitBill_receiptFailedBody: 'Try again with more light and the whole receipt in the photo, or fill it in by hand.',
+  splitBill_receiptTakePhoto: 'Take photo',
+  splitBill_receiptChoosePhoto: 'Choose photo',
   splitBill_receiptRetake: 'Send another photo',
   splitBill_receiptRetry: 'Try again',
   splitBill_receiptUnavailableTitle: "The receipt reader didn't answer",

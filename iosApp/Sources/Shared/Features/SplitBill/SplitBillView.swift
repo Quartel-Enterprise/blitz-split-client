@@ -272,6 +272,8 @@ private struct PhoneSplitBill: View {
     @FocusState private var focusedField: Field?
     /// Whether this sheet has settled, so "Split in which group?" can present over it.
     @State private var isSettled = false
+    /// "Scan receipt" on screen, which the source choice then points at; else the form holds it.
+    @State private var isScanButtonShown = false
 
     private enum Field {
         case amount
@@ -290,7 +292,7 @@ private struct PhoneSplitBill: View {
                     Form { whatSections }
                     Form {
                         detailsSection
-                        ReceiptSection(model: model)
+                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
                         settledPairSection
                         deleteSection
                     }
@@ -302,8 +304,13 @@ private struct PhoneSplitBill: View {
                 } bottom: {
                     Form {
                         detailsSection
-                        // The board leaves "Ler cupom fiscal" out here; Início's shortcut still opens the camera
-                        ReceiptSection(model: model, showsScanButton: false)
+                        // The board leaves "Ler cupom fiscal" out here; Início's shortcut still asks where the photo comes from
+                        ReceiptSection(
+                            model: model,
+                            isSettled: isSettled,
+                            isScanButtonShown: $isScanButtonShown,
+                            showsScanButton: false,
+                        )
                         settledPairSection
                         deleteSection
                     }
@@ -311,7 +318,7 @@ private struct PhoneSplitBill: View {
                     Form {
                         whatSections
                         detailsSection
-                        ReceiptSection(model: model)
+                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
                         settledPairSection
                         deleteSection
                     }
@@ -348,10 +355,11 @@ private struct PhoneSplitBill: View {
             GroupSheet(model: model)
                 .foldSheetPlacement()
         }
-        .fullScreenCover(isPresented: model.receiptCameraShown(isSettled: isSettled)) {
+        .receiptSourceChoice(model: model, isSettled: isSettled, isAnchoredAtButton: isScanButtonShown)
+        .fullScreenCover(isPresented: model.receiptSourceShown(.camera, isSettled: isSettled)) {
             ReceiptCameraView(
                 onPhoto: { data in model.receiptPicked(data) },
-                onDismiss: { model.send(SplitBillUiEventOnReceiptCameraDismissed.shared) },
+                onDismiss: { model.send(SplitBillUiEventOnReceiptPickerDismissed.shared) },
             )
         }
         .sheet(isPresented: payerShown) {
@@ -1168,8 +1176,9 @@ private struct MacBillForm: View {
         .sheet(isPresented: severalPayersShown) {
             MacSeveralPayers(model: model)
         }
-        // "Ler Cupom Fiscal…" picks the receipt's photo from a file, as the Mac has no camera to frame it (7.1e)
-        .fileImporter(isPresented: model.receiptCameraShown(isSettled: isSettled), allowedContentTypes: [.image]) { result in
+        // "Ler Cupom Fiscal…" picks the receipt's photo from Photos or a file, as the Mac has no camera to frame it (7.1e)
+        .receiptSourceChoice(model: model, isSettled: isSettled)
+        .fileImporter(isPresented: model.receiptSourceShown(.files, isSettled: isSettled), allowedContentTypes: [.image]) { result in
             guard case let .success(url) = result else { return }
             Task {
                 model.receiptPicked(await Self.readFile(url))
