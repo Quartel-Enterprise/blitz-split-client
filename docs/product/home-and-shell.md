@@ -14,6 +14,14 @@ The home's four tabs and the web's and the Mac's shell.
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
     to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
     `OnRailTabClicked`).
+  - Going from a tab to another never redraws the whole screen. On Android each tab (Search included) draws the same
+    rail or bottom bar, so the tab coming in fades in over the one leaving in 180 ms (the web's `page-enter`), the one
+    leaving fading out over it when the switch goes back down the stack or follows the back gesture, and the bars hold
+    still while only the content changes (`createHomeTabTransitionSpec`). A group's screens and Statistics count the same
+    wherever the rail is drawn beside them (`rememberUsesGroupRail`), so a rail click from them, and a group opened from
+    a tab there, fade the same way; every other screen keeps Navigation 3's default transitions. Apple keeps
+    one `TabView` (the iPad's and Mac's sidebar) above the tabs, and the web one frame (`HomeFrame`), so their bars
+    never redraw.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot
