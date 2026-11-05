@@ -2,7 +2,7 @@ import { Check, CornerDownRight, Ellipsis, Heart, Pencil, SendHorizontal, Share2
 import type { BillDetailPresenter, JsBillCommentLiker, JsBillCommentRow, JsBillDetailState } from 'blitzsplit-shared'
 import { useEffect, useState, type KeyboardEvent, type ReactNode, type Ref } from 'react'
 import { toast } from 'sonner'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar, PendingDot, PersonButton } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Badge } from '@/components/ui/badge'
@@ -216,7 +216,7 @@ function Comment({
         </p>
         {row.isPending && (
           <span role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-pending" />
+            <PendingDot />
             {t('billDetail_commentPending')}
           </span>
         )}

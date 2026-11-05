@@ -1,7 +1,7 @@
 import { ArrowRight, Loader2 } from 'lucide-react'
 import type { JsSimplifyAmount, JsSimplifyConfirmation, JsSimplifyName, JsSimplifyPersonChange, JsSimplifyQueuedPayment } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
-import { Avatar } from '@/components/common'
+import { Avatar, PendingDot, pendingSurfaceClass } from '@/components/common'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -16,6 +16,7 @@ import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatNames } from '@/lib/money'
 import { paymentCount, simplifyName } from './simplify'
+import { cn } from '@/lib/utils'
 
 type Money = (minor: number) => string
 
@@ -58,8 +59,8 @@ export function SimplifyDebtsConfirmDialog({
       <Counts before={confirmation.paymentsBefore} after={confirmation.paymentsAfter} />
       {confirmation.people.length > 0 && <WhatChanges people={confirmation.people} money={money} />}
       {confirmation.queuedPayments.length > 0 && (
-        <p className="flex gap-2 rounded-lg border border-pending/30 bg-pending-container px-3 py-2.5 text-[13px] leading-relaxed text-pending-container-foreground">
-          <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-pending" />
+        <p className={cn('flex gap-2 rounded-lg border px-3 py-2.5 text-[13px] leading-relaxed', pendingSurfaceClass)}>
+          <PendingDot className="mt-1.5" />
           <span>{queuedText(confirmation.queuedPayments, money)}</span>
         </p>
       )}

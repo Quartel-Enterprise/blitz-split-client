@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
-import { Avatar } from '@/components/common'
+import { Avatar, pendingSurfaceClass } from '@/components/common'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { t, type MessageKey } from '@/i18n'
 import { formatShortDate } from '@/lib/dates'
@@ -73,7 +73,7 @@ export function GroupBalance({ group, isStacked = false, amountClassName }: { gr
 /** "na fila": the group, a bill or a payment changed here and not on the server yet. */
 export function QueuedBadge() {
   return (
-    <span className="inline-flex h-5 shrink-0 items-center rounded-md border border-pending/30 bg-pending-container px-1.5 text-[11px] font-medium text-pending-container-foreground">
+    <span className={cn('inline-flex h-5 shrink-0 items-center rounded-md border px-1.5 text-[11px] font-medium', pendingSurfaceClass)}>
       {t('groups_queued')}
     </span>
   )

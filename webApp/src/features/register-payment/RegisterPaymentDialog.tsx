@@ -21,6 +21,7 @@ import { simplifyName } from '@/features/simplify-debts/simplify'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { payWithKeyPane } from './PayWithKeyPane'
 import { simplifyChangePane } from './SimplifyChangePane'
+import { PendingDot } from '@/components/common'
 
 const formId = 'register-payment-form'
 const amountId = 'register-payment-amount'
@@ -254,7 +255,7 @@ function PaymentForm({
       </p>
       {state.showsOfflineNotice && (
         <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-pending" />
+          <PendingDot className="mt-1.5 size-2" />
           {t('registerPayment_offline')}
         </p>
       )}

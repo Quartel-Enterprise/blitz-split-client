@@ -287,10 +287,7 @@ private struct PaymentNotes: View {
             }
             if state.showsOfflineNotice {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Circle()
-                        .fill(Palette.pending)
-                        .frame(width: 8, height: 8)
-                        .accessibilityHidden(true)
+                    PendingDot()
                     Text("No internet: it's saved on this device and syncs when you reconnect.")
                 }
             }

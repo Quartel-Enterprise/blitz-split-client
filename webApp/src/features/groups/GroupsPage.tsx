@@ -2,7 +2,7 @@ import { ChevronRight, CloudOff, ListFilter, QrCode, RefreshCw, SquarePlus } fro
 import type { GroupsPresenter, JsBalanceTotal, JsDownloadProgress, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
-import { segmentClass, SplitBillIcon } from '@/components/common'
+import { pendingSurfaceClass, segmentClass, SplitBillIcon } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
@@ -163,7 +163,7 @@ export function SyncStatus({
       <span
         className={cn(
           'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
-          isOffline && state.pendingChangeCount > 0 ? 'border-pending/30 bg-pending-container text-pending-container-foreground' : 'text-muted-foreground',
+          isOffline && state.pendingChangeCount > 0 ? pendingSurfaceClass : 'text-muted-foreground',
         )}
       >
         {isOffline ? <CloudOff className="size-3.5" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5" />}

@@ -360,7 +360,7 @@ private struct EditGroupPaymentsSection: View {
                         .foregroundStyle(isAvailable ? .primary : .secondary)
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         if state.simplifyStatus == .pending {
-                            SimplifyPendingDot()
+                            PendingDot()
                         }
                         Text(verbatim: SimplifyDebtsCopy.status(state))
                             .fixedSize(horizontal: false, vertical: true)

@@ -14,7 +14,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
-import { Avatar } from '@/components/common'
+import { Avatar, PendingDot } from '@/components/common'
 import { AmountInput, controlClass, WhenField } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
@@ -330,7 +330,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
 
       {state.showsOfflineNotice && (
         <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-pending" />
+          <PendingDot className="mt-1.5 size-2" />
           {t('splitBill_offline')}
         </p>
       )}

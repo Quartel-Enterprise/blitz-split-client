@@ -32,12 +32,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.payerNamesTextOf
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
-import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -237,12 +237,7 @@ internal fun OfflineNoteRow(text: String = stringResource(R.string.split_bill_of
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .padding(top = 5.dp)
-                .size(8.dp)
-                .background(pendingColor(), CircleShape),
-        )
+        PendingIndicator(modifier = Modifier.padding(top = 5.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodySmall,

@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
@@ -244,7 +245,7 @@ private fun BoxScope.TileBadge(
     ) {
         if (isPending) {
             PendingIndicator(
-                modifier = Modifier.size(6.dp),
+                size = 6.dp,
                 color = pendingOnInverseSurfaceColor(),
             )
         }

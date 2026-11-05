@@ -3,7 +3,7 @@ import { BillDetailPresenter, type JsBillDetailAction, type JsBillDetailState, t
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
@@ -71,7 +71,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     <SkeletonLine className="mr-auto w-28" />
   )
   const offline = isLoaded && !state.isOnline && (
-    <p role="status" className="rounded-lg border border-pending/30 bg-pending-container px-3.5 py-2.5 text-[13px] leading-[18px] text-pending-container-foreground">
+    <p role="status" className={cn('rounded-lg border px-3.5 py-2.5 text-[13px] leading-[18px]', pendingSurfaceClass)}>
       {t('billDetail_offline')}
     </p>
   )
@@ -305,9 +305,9 @@ export function BillBody({
           {state.isPending && (
             <span
               role="status"
-              className="inline-flex h-[22px] items-center gap-1.5 self-start rounded-md border border-pending/30 bg-pending-container px-2 text-xs font-semibold text-pending-container-foreground"
+              className={cn('inline-flex h-[22px] items-center gap-1.5 self-start rounded-md border px-2 text-xs font-semibold', pendingSurfaceClass)}
             >
-              <span aria-hidden className="size-1.5 rounded-full bg-pending" />
+              <PendingDot />
               {t('billDetail_pending')}
             </span>
           )}

@@ -97,10 +97,7 @@ private struct ItemsStatusView: View {
 private struct ItemsOfflineNote: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Circle()
-                .fill(Palette.pending)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             #if os(macOS)
             Text("No internet: you can still check everything. The bill stays saved on this Mac and syncs when you reconnect.")
                 .fixedSize(horizontal: false, vertical: true)

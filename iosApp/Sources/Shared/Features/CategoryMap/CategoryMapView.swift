@@ -314,9 +314,7 @@ struct TermChipsRow: View {
                         Text(verbatim: term.term)
                             .font(.subheadline.weight(.medium))
                         if term.isPending {
-                            Circle()
-                                .fill(Palette.pending)
-                                .frame(width: 8, height: 8)
+                            PendingDot()
                         }
                     }
                     .padding(.horizontal, 12)

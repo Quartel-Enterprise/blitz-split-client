@@ -205,10 +205,7 @@ private struct AmountHelp: View {
 private struct OfflineBillNote: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Circle()
-                .fill(Palette.pending)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             Text("No internet: the bill is saved on this device and counts in the balances now. It syncs when you reconnect.")
                 .fixedSize(horizontal: false, vertical: true)
         }

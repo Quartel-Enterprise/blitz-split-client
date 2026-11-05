@@ -55,6 +55,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter

@@ -175,3 +175,22 @@ struct AvatarPhoto: View {
             }
     }
 }
+
+/// The amber dot of what is saved here and not on the server yet, the one every screen draws. Hidden from VoiceOver
+/// beside words that already say it; a dot alone takes its own `label`.
+struct PendingDot: View {
+    var size: CGFloat = 8
+    var color: Color = Palette.pending
+    var label: Text?
+
+    var body: some View {
+        let dot = Circle()
+            .fill(color)
+            .frame(width: size, height: size)
+        if let label {
+            dot.accessibilityLabel(label)
+        } else {
+            dot.accessibilityHidden(true)
+        }
+    }
+}

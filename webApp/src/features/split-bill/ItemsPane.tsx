@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import type { JsFeeEditor, JsItemEditor, JsItemPersonLine, JsItemsEditor, JsSplitBillState, SplitItemsPresenter } from 'blitzsplit-shared'
-import { Avatar, segmentClass } from '@/components/common'
+import { Avatar, PendingDot, segmentClass } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -72,7 +72,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
       </div>
       {state.showsOfflineNotice && (
         <p role="status" className="flex items-start gap-2 text-[13px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-pending" />
+          <PendingDot className="mt-1.5 size-2" />
           <span>{t('items_offline')}</span>
         </p>
       )}

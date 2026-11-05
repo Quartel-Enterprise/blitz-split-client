@@ -42,10 +42,7 @@ struct BillQueuedLine: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Circle()
-                .fill(dotColor)
-                .frame(width: 7, height: 7)
-                .accessibilityHidden(true)
+            PendingDot(size: 7, color: dotColor)
             Text(text)
         }
         .font(.caption)
@@ -371,10 +368,7 @@ struct BillHistoryEntryView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 4)
                     if entry.isPending {
-                        Circle()
-                            .fill(Palette.pending)
-                            .frame(width: 7, height: 7)
-                            .accessibilityLabel(Text("Queued", comment: "A history line done offline and not up yet"))
+                        PendingDot(size: 7, label: Text("Queued", comment: "A history line done offline and not up yet"))
                     }
                     Text(verbatim: ExpenseFormat.time(entry.occurredAt))
                         .font(.footnote)

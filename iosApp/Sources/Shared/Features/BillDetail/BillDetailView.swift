@@ -290,10 +290,7 @@ private struct PayerLine: View {
 private struct PendingLine: View {
     var body: some View {
         HStack(spacing: 8) {
-            Circle()
-                .fill(Palette.pending)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             Text("Queued · syncs when you're back online")
         }
     }

@@ -11,6 +11,7 @@ import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
 import { postedText } from './BillComments'
+import { PendingDot, pendingSurfaceClass } from '@/components/common'
 
 /**
  * What "Anexos" and the viewer read and send: Conta's, or a bill's link page's, which adds and removes nothing (no
@@ -187,10 +188,10 @@ function AttachmentTile({ attachment, src, isOnline, onClick }: { attachment: Js
           aria-hidden
           className={cn(
             'absolute bottom-1 left-1 flex h-[18px] items-center gap-1 rounded px-1.5 text-[11px] font-medium',
-            attachment.isPending ? 'bg-pending-container text-pending-container-foreground' : 'bg-foreground text-card',
+            attachment.isPending ? pendingSurfaceClass : 'bg-foreground text-card',
           )}
         >
-          {attachment.isPending && <span className="size-1.5 rounded-full bg-pending" />}
+          {attachment.isPending && <PendingDot />}
           {badge}
         </span>
       )}
@@ -322,7 +323,7 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
               {hints && <span className="text-[13px] leading-[18px] text-white/70">{hints}</span>}
               {attachment.isPending && (
                 <span role="status" className="flex items-center justify-center gap-1.5 text-[13px] text-white/70">
-                  <span aria-hidden className="size-1.5 rounded-full bg-pending-on-dark" />
+                  <PendingDot className="bg-pending-on-dark" />
                   {t('billDetail_attachmentPending')}
                 </span>
               )}

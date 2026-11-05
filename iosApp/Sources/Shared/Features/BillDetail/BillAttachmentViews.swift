@@ -226,9 +226,7 @@ private struct AttachmentBadge: View {
     var body: some View {
         HStack(spacing: 4) {
             if isPending {
-                Circle()
-                    .fill(Palette.pendingOnDark)
-                    .frame(width: 6, height: 6)
+                PendingDot(size: 6, color: Palette.pendingOnDark)
                 pendingWord
             } else {
                 Text("Receipt", comment: "The badge on the receipt a bill was read from, among its photos")

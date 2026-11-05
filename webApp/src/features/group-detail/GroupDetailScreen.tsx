@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage, GroupPageSkeleton } from './GroupPage'
+import { PendingDot, pendingSurfaceClass } from '@/components/common'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
 const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
@@ -238,8 +239,8 @@ function DayRow({
           <span className="truncate font-medium">{title}</span>
           <span className="flex min-w-0 items-center gap-1.5 text-xs whitespace-nowrap text-muted-foreground">
             {isPending && (
-              <span className="inline-flex h-[18px] shrink-0 items-center gap-1 rounded-md border border-pending/30 bg-pending-container px-1.5 text-[11px] font-medium text-pending-container-foreground">
-                <span aria-hidden className="size-1.5 rounded-full bg-pending" />
+              <span className={cn('inline-flex h-[18px] shrink-0 items-center gap-1 rounded-md border px-1.5 text-[11px] font-medium', pendingSurfaceClass)}>
+                <PendingDot />
                 {t('groupDetail_pending')}
               </span>
             )}

@@ -615,7 +615,7 @@ private struct ActivityRowMeta: View {
                     .accessibilityHidden(true)
             }
             if item.isPending {
-                PendingIndicator()
+                PendingDot()
             }
             Text(verbatim: ActivityCopy.time(item))
                 .lineLimit(1)

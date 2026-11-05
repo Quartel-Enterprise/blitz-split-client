@@ -486,7 +486,7 @@ private struct GroupActivityLine: View {
     var body: some View {
         HStack(spacing: 5) {
             if row.isPending {
-                PendingIndicator()
+                PendingDot()
             }
             Text(verbatim: GroupsCopy.detail(row))
                 .lineLimit(1)
@@ -575,7 +575,7 @@ struct HomeBillsSection: View {
                         .lineLimit(1)
                     HStack(spacing: 5) {
                         if bill.isPending {
-                            PendingIndicator()
+                            PendingDot()
                         }
                         Text(verbatim: HomeCopy.meta(bill))
                             .lineLimit(1)

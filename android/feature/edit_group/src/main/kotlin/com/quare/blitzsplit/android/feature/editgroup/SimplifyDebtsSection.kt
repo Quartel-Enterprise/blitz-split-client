@@ -1,16 +1,12 @@
 package com.quare.blitzsplit.android.feature.editgroup
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,13 +22,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
-import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsStatus
-
-private val pendingDotSize = 8.dp
 
 /*
  * Why: "Pagamentos", its own list group under Moeda and Divisão padrão (13.1). The switch never flips by itself: a tap
@@ -94,7 +88,11 @@ internal fun SimplifyDebtsSection(
                     },
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (state.simplifyStatus == SimplifyDebtsStatus.PENDING) PendingDotIndicator()
+                    if (state.simplifyStatus ==
+                        SimplifyDebtsStatus.PENDING
+                    ) {
+                        PendingIndicator(modifier = Modifier.padding(top = 6.dp))
+                    }
                     Text(
                         text = status,
                         style = MaterialTheme.typography.bodyMedium,
@@ -114,17 +112,6 @@ internal fun SimplifyDebtsSection(
             )
         }
     }
-}
-
-// Why: the amber dot of a change waiting to go up, as the home's rows draw it.
-@Composable
-internal fun PendingDotIndicator(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .padding(top = 6.dp)
-            .size(pendingDotSize)
-            .background(pendingColor(), CircleShape),
-    )
 }
 
 @Composable

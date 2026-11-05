@@ -41,10 +41,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -205,11 +205,7 @@ internal fun StatsSummaryHero(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             if (state.pendingCount > 0) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(pendingColor(), CircleShape),
-                )
+                PendingIndicator()
             }
             Text(
                 text = stringResource(R.string.group_stats_meta, count, money.toText(state.averagePerPersonMinor)),

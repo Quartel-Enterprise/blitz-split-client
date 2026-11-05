@@ -337,18 +337,6 @@ private struct MyBalanceText: View {
     }
 }
 
-/// The amber dot of what is saved here and not on the server yet.
-private struct PendingDot: View {
-    var size: CGFloat = 8
-
-    var body: some View {
-        Circle()
-            .fill(Palette.pending)
-            .frame(width: size, height: size)
-            .accessibilityHidden(true)
-    }
-}
-
 private struct EmptyExpenses: View {
     let send: (any GroupDetailUiEvent) -> Void
 

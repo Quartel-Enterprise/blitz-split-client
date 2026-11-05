@@ -1,10 +1,8 @@
 package com.quare.blitzsplit.android.feature.categorymap
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,9 +39,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
-import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -52,7 +49,6 @@ import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUi
 import com.quare.blitzsplit.feature.categorymap.presentation.model.MapRow
 import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSection
 
-private val pendingDotSize = 8.dp
 private val rowLabelWidth = 96.dp
 
 // Why: "Transporte · 7 termos", "Nenhum termo · categoria do Viagem Floripa".
@@ -268,11 +264,7 @@ internal fun TermChip(
                 style = MaterialTheme.typography.labelLarge,
             )
             if (term.isPending) {
-                Box(
-                    modifier = Modifier
-                        .size(pendingDotSize)
-                        .background(pendingColor(), CircleShape),
-                )
+                PendingIndicator()
             }
         }
     }

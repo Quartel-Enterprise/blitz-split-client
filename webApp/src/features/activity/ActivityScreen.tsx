@@ -3,7 +3,7 @@ import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRo
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
@@ -137,7 +137,7 @@ function StatusChip({ presenter, state }: { presenter: ActivityPresenter; state:
         role="status"
         className={cn(
           'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
-          hasQueue ? 'border-pending/30 bg-pending-container text-pending-container-foreground' : state.status === 'server-error' ? 'text-foreground' : 'text-muted-foreground',
+          hasQueue ? pendingSurfaceClass : state.status === 'server-error' ? 'text-foreground' : 'text-muted-foreground',
         )}
       >
         {icon}
@@ -312,7 +312,7 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
       <span aria-hidden>·</span>
       {item.isPending ? (
         <>
-          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-pending" />
+          <PendingDot />
           <span className="shrink-0">{t('activity_pending')}</span>
         </>
       ) : (
