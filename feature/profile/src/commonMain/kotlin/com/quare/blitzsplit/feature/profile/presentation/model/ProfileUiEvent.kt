@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.presentation.UiEvent
@@ -82,6 +83,10 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnAppearanceClicked -> EventAnalytics.Manual("profile_appearance_clicked")
 
+            OnLanguageClicked -> EventAnalytics.Manual("profile_language_clicked")
+
+            is OnLanguageSelected -> EventAnalytics.Manual("language_selected")
+
             OnDynamicColorsInfoClicked -> EventAnalytics.Manual("profile_dynamic_colors_info_clicked")
 
             is OnDynamicColorsToggled -> EventAnalytics.Manual("dynamic_colors_toggled")
@@ -161,6 +166,13 @@ sealed interface ProfileUiEvent : UiEvent {
     ) : ProfileUiEvent
 
     data object OnAppearanceClicked : ProfileUiEvent
+
+    // Why: Android's "Language" row, which opens its sheet; the Apple apps and the web pick in place.
+    data object OnLanguageClicked : ProfileUiEvent
+
+    data class OnLanguageSelected(
+        val language: AppLanguage,
+    ) : ProfileUiEvent
 
     data object OnDynamicColorsInfoClicked : ProfileUiEvent
 

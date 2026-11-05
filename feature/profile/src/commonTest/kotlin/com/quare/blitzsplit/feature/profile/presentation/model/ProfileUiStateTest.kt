@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
 import software.quare.loadable.toLoaded
@@ -508,6 +509,30 @@ class ProfileUiStateTest {
         assertFalse(showsCode)
     }
 
+    @Test
+    fun `GIVEN the system language WHEN listing the languages THEN offers System then English then Portuguese`() {
+        // Given
+        val profile = state(language = AppLanguage.SYSTEM)
+
+        // When
+        val options = profile.languageOptions
+
+        // Then
+        assertEquals(listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN Portuguese picked WHEN listing the languages THEN still offers System first and every language`() {
+        // Given
+        val profile = state(language = AppLanguage.PORTUGUESE)
+
+        // When
+        val options = profile.languageOptions
+
+        // Then
+        assertEquals(listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE), options)
+    }
+
     private fun state(
         isLoaded: Boolean = true,
         displayName: String = "Pierre",
@@ -522,6 +547,7 @@ class ProfileUiStateTest {
         isConnectExpanded: Boolean = false,
         formattedRecoveryCode: String? = null,
         isUnlinking: Boolean = false,
+        language: AppLanguage = AppLanguage.SYSTEM,
     ): ProfileUiState = ProfileUiState(
         isLoaded = isLoaded,
         displayName = displayName,
@@ -541,6 +567,7 @@ class ProfileUiStateTest {
         showsDynamicColors = true,
         usesDynamicColors = false,
         showsBitcoinInSats = false,
+        language = language,
         activeNotificationCount = 3.toLoaded(),
         showsCheckForUpdates = true,
         isCheckingForUpdates = false,

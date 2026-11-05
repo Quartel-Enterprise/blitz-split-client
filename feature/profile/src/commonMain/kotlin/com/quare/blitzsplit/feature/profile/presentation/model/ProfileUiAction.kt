@@ -25,4 +25,10 @@ sealed interface ProfileUiAction {
     data class ShowUpdateCheckResult(
         val result: UpdateCheckResult,
     ) : ProfileUiAction
+
+    /*
+     * Why: a language just picked; Android before 13 opens its screen again in it and the web reloads the page, while
+     * Android 13 and later and the Apple apps already redraw in it.
+     */
+    data object ApplyLanguage : ProfileUiAction
 }

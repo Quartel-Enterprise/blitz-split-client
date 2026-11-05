@@ -1,5 +1,6 @@
 package com.quare.blitzsplit
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.navigation.AppNavDisplay
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
+import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.coroutines.launch
@@ -37,6 +39,11 @@ class MainActivity : ComponentActivity() {
     private val handleAppResumed: HandleAppResumed by inject()
     private val linkInbox: LinkInbox by inject()
 
+    // Why: before Android 13 the language Profile picked applies here, so the first frame is already in it.
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LegacyAppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -48,6 +55,8 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null && !isFromRecents) handleLink(intent)
         setContent {
             val appViewModel: AppViewModel = koinViewModel()
+            // Why: the system's settings may have changed the app's language, which opens the activity again in it.
+            LaunchedEffect(appViewModel) { appViewModel.refreshLanguage() }
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val usesDynamicColors by appViewModel.usesDynamicColors.collectAsStateWithLifecycle()
             val showsBitcoinInSats by appViewModel.showsBitcoinInSats.collectAsStateWithLifecycle()

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
@@ -35,9 +36,11 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
@@ -104,6 +107,8 @@ class ProfileViewModel(
     observeThemePreference: ObserveThemePreference,
     observeDynamicColors: ObserveDynamicColors,
     observeBitcoinInSats: ObserveBitcoinInSats,
+    observeAppLanguage: ObserveAppLanguage,
+    updateAppLanguage: UpdateAppLanguage,
     dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
@@ -132,6 +137,7 @@ class ProfileViewModel(
                 showsDynamicColors = dynamicColorSupport(),
                 usesDynamicColors = false,
                 showsBitcoinInSats = false,
+                language = AppLanguage.SYSTEM,
                 activeNotificationCount = Loadable.Loading,
                 showsCheckForUpdates = updateMechanism != UpdateMechanism.NONE,
                 isCheckingForUpdates = false,
@@ -152,6 +158,8 @@ class ProfileViewModel(
 
     // Why: Profile's dialogs and sheets, which open only while nothing signs out or unlinks.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
+
+    private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
 
     // Why: the theme a tap asked for, which the stored theme reaches only once written.
     private var requestedTheme: ThemePreference? = null
@@ -188,6 +196,7 @@ class ProfileViewModel(
         ) { _, _, _, _, _ -> }
             .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
+        languagePicker.follow(observeAppLanguage, viewModelScope)
         val firstDownload = observeFirstDownload()
         // Why: a restored account's keys and notification choices only come with its first full sync.
         combine(observePaymentKeys(), firstDownload) { keys, download ->
@@ -264,6 +273,10 @@ class ProfileViewModel(
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
 
             ProfileUiEvent.OnAppearanceClicked -> dialogs.openAppearance()
+
+            ProfileUiEvent.OnLanguageClicked -> dialogs.openLanguage()
+
+            is ProfileUiEvent.OnLanguageSelected -> languagePicker.select(event.language)
 
             ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
 

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.profile
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKeyFormat
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -64,6 +65,7 @@ internal fun createPreviewProfileState(
     showsDynamicColors = true,
     usesDynamicColors = false,
     showsBitcoinInSats = false,
+    language = AppLanguage.SYSTEM,
     activeNotificationCount = 3.toLoaded(),
     showsCheckForUpdates = true,
     isCheckingForUpdates = false,

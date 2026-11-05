@@ -9,6 +9,10 @@ final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
     private(set) var theme: ThemePreference
+    /// Profile › Language, which every window draws its strings in (`AppLocale`).
+    private(set) var language: AppLanguage {
+        willSet { AppLocale.apply(newValue) }
+    }
     /// Why a comment's link opened nothing ("You're not in this group"), shown over wherever the app is; nil for none.
     private(set) var billLinkNotice: BillLinkNotice?
     /// Whether the window has an iPad's room (`ScreenLayout.isLarge`), which decides whether a key or a bill opens as
@@ -32,6 +36,8 @@ final class AppModel {
         isReady = (viewModel.uiState.value as? AppUiState) == .ready
         backStack = Self.routes(of: viewModel.navigator.backStack.value)
         theme = viewModel.theme.value as? ThemePreference ?? .system
+        language = viewModel.language.value as? AppLanguage ?? .system
+        AppLocale.apply(language)
         BitcoinUnit.shared.showsSats = (viewModel.showsBitcoinInSats.value as? KotlinBoolean)?.boolValue ?? false
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.isReady = state == .ready
@@ -41,6 +47,10 @@ final class AppModel {
         })
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
+        })
+        watches.add(viewModel.languageWatcher.observe { [weak self] language in
+            guard let self, self.language != language else { return }
+            self.language = language
         })
         watches.add(viewModel.billLinkNoticeWatcher.observe { [weak self] state in
             self?.billLinkNotice = state.notice

@@ -291,6 +291,10 @@ No linter runs on Swift yet; follow what the app already does.
   `%lf …` entries and their pt-BR and plural forms, so the build's "Check the localized keys" phase
   (`iosApp/check-localized-keys.py`) fails on them. An `appendInterpolation(Int32)` overload isn't the way out: the
   compiler stops extracting any literal that goes through it.
+- A `String(localized:)` passes `bundle: .appLanguage` (`AppLocale.swift`), the `.lproj` of Profile › Language's
+  pick: Foundation otherwise reads it in the language the app launched in, so it would stay in the old one until the
+  app opens again. The build's "Check the localized bundle" phase (`iosApp/check-localized-bundle.py`) fails on a
+  call without it. SwiftUI's literals need nothing: they follow the windows' `locale`.
 
 ## TypeScript and React
 

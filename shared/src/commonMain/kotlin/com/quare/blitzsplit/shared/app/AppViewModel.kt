@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -26,9 +27,11 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -55,6 +58,8 @@ class AppViewModel(
     private val observeThemePreference: ObserveThemePreference,
     private val observeDynamicColors: ObserveDynamicColors,
     private val observeBitcoinInSats: ObserveBitcoinInSats,
+    private val observeAppLanguage: ObserveAppLanguage,
+    private val refreshAppLanguage: RefreshAppLanguage,
     private val linkInbox: LinkInbox,
     private val markActivityRead: MarkActivityRead,
     private val findActivityEvent: FindActivityEvent,
@@ -85,12 +90,20 @@ class AppViewModel(
     val showsBitcoinInSats: StateFlow<Boolean>
         field = MutableStateFlow(false)
 
+    /*
+     * Why: Profile › Language, which the Apple app's root draws its strings in at once; Android and the web apply it
+     * themselves, before any screen draws.
+     */
+    val language: StateFlow<AppLanguage>
+        field = MutableStateFlow(AppLanguage.SYSTEM)
+
     private val isThemeKnown = CompletableDeferred<Unit>()
 
     val stateWatcher: FlowWatcher<AppUiState> = FlowWatcher(uiState)
     val backStackWatcher: FlowWatcher<List<Route>> = FlowWatcher(navigator.backStack)
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
     val bitcoinInSatsWatcher: FlowWatcher<Boolean> = FlowWatcher(showsBitcoinInSats)
+    val languageWatcher: FlowWatcher<AppLanguage> = FlowWatcher(language)
 
     // Why: "Você não está neste grupo" over wherever the app is, while a comment's link can't open its bill.
     val billLinkNotice: StateFlow<BillLinkNoticeState>
@@ -101,6 +114,7 @@ class AppViewModel(
     init {
         startSync()
         followTheme()
+        followLanguage()
         resolveStartRoute()
         returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
@@ -134,6 +148,17 @@ class AppViewModel(
             showsBitcoinInSats.value = sats
             isThemeKnown.complete(Unit)
         }.launchIn(viewModelScope)
+    }
+
+    private fun followLanguage() {
+        observeAppLanguage()
+            .onEach { language.value = it }
+            .launchIn(viewModelScope)
+    }
+
+    // Why: Android's own settings may change the app's language while it runs; its activity comes back in the new one.
+    fun refreshLanguage() {
+        refreshAppLanguage()
     }
 
     /*

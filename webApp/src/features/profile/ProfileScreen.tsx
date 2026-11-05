@@ -29,6 +29,13 @@ const themes: { code: string; label: MessageKey }[] = [
   { code: 'dark', label: 'profile_themeDark' },
 ]
 
+/** System, then each language in its own name, so whoever can't read the current one still finds theirs. */
+const languages: { code: string; label: string }[] = [
+  { code: 'system', label: t('profile_languageSystem') },
+  { code: 'en', label: 'English' },
+  { code: 'pt-BR', label: 'Português' },
+]
+
 /**
  * The profile page, in the home's frame with its footer selected. Name, photo and color are edited right here, in
  * "Your profile". On desktop (1024+) the account sits in the left column under it, with signing out right below it
@@ -45,6 +52,9 @@ export function ProfileScreen() {
       window.open(action.value, '_blank', 'noopener,noreferrer')
     } else if (action.type === 'export') {
       downloadExport(action.value)
+    } else if (action.type === 'reload') {
+      // The page reads its language once, before it draws (src/i18n)
+      window.location.reload()
     }
   })
   if (!presenter || !state) return null
@@ -339,6 +349,33 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                 </button>
               )
             })}
+          </div>
+        )}
+        {state.isLoaded && (
+          <div className="mt-4 flex flex-col gap-2">
+            <span id="language" className="text-sm font-medium">
+              {t('profile_language')}
+            </span>
+            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+              {languages.map((language) => {
+                const isSelected = language.code === state.language
+                return (
+                  <button
+                    key={language.code}
+                    role="radio"
+                    aria-checked={isSelected}
+                    lang={language.code === 'system' ? undefined : language.code}
+                    onClick={() => presenter.selectLanguage(language.code)}
+                    className={cn(
+                      'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                      segmentClass(isSelected),
+                    )}
+                  >
+                    {language.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         )}
         {state.isLoaded && (

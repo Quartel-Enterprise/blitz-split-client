@@ -6,7 +6,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (`RecoveryCodeUiState.isConnectExpanded`).
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
-  - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
+  - Every UI is in English and Portuguese, the device's language (English for any other) unless Profile ›
+    Preferences › "Language" picked one ([profile.md](profile.md)). The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number

@@ -19,8 +19,22 @@ export function pickLocale(languages: readonly string[]): Locale {
   return 'en'
 }
 
-/** Picked once at startup; the app doesn't switch languages while it runs. */
-export const locale: Locale = pickLocale(browserLanguages())
+// Why: Profile › Language's pick, which the shared code keeps under this key (WebAppLanguageStore).
+const storageKey = 'language'
+
+function storedLanguage(): string | null {
+  try {
+    return localStorage.getItem(storageKey)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Picked once at startup: Profile › Language's pick, else the browser's languages. Picking another reloads the page,
+ * so the app never switches languages while it runs.
+ */
+export const locale: Locale = pickLocale([storedLanguage(), ...browserLanguages()].filter((tag) => tag !== null))
 
 /** The message for `key` in the app's locale, with each `{name}` replaced by `params.name`. */
 export function t(key: MessageKey, params?: Record<string, string | number>): string {
