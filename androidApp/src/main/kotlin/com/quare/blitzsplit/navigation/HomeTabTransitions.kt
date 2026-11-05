@@ -21,7 +21,10 @@ private object HomeTabKey : NavMetadataKey<Boolean>
 // Why: the home's tabs (Início, Grupos, Saldos, Contatos and Buscar) draw the same bars, which a switch keeps still.
 internal val homeTabMetadata: Map<String, Any> = metadata { put(HomeTabKey, true) }
 
-// Why: any of its entries, so a tablet's Groups beside the group open over it still counts as the tab.
+/*
+ * Why: any of its entries, so Groups with the group it opened (one list-detail scene, even where only the group shows)
+ * still counts as the tab, and a rail click from it fades too.
+ */
 private val Scene<*>.isHomeTab: Boolean
     get() = entries.any { entry -> entry.metadata[HomeTabKey] == true }
 
@@ -49,8 +52,10 @@ internal fun <T : Any> createHomeTabPredictivePopTransitionSpec(
 private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.isBetweenHomeTabs(): Boolean =
     initialState.isHomeTab && targetState.isHomeTab
 
-private fun createHomeTabFade(isPop: Boolean): ContentTransform = if (isPop) {
-    EnterTransition.None togetherWith fadeOut(tween(HOME_TAB_FADE_MILLIS))
-} else {
-    fadeIn(tween(HOME_TAB_FADE_MILLIS)) togetherWith ExitTransition.KeepUntilTransitionsFinished
-}
+// Why: in the transition's scope, which is where Compose lets the screen leaving stay until the fade ends.
+private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.createHomeTabFade(isPop: Boolean): ContentTransform =
+    if (isPop) {
+        EnterTransition.None togetherWith fadeOut(tween(HOME_TAB_FADE_MILLIS))
+    } else {
+        fadeIn(tween(HOME_TAB_FADE_MILLIS)) togetherWith ExitTransition.KeepUntilTransitionsFinished
+    }
