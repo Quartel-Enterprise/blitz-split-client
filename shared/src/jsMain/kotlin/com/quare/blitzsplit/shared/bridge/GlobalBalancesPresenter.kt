@@ -9,16 +9,13 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
-import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.CurrencyAmount
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PeopleSection
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 import software.quare.loadable.valueOrNull
@@ -39,15 +36,6 @@ class JsPersonGroup(
     val amountMinor: Double,
     // Why: "Dívidas simplificadas" on the group's line of "Por grupo" (13.6).
     val isSimplified: Boolean,
-)
-
-/*
- * Why: a group where the person pays you only because "Simplificar dívidas" is on, which Cobrar's message explains
- * (13.6b): "A Viagem Floripa simplificou as dívidas, então em vez de pagar Bruno você paga direto para mim…".
- */
-class JsChargeReroute(
-    val groupName: String,
-    val insteadOfNames: Array<String>,
 )
 
 class JsPersonRow(
@@ -74,26 +62,6 @@ class JsPeopleSection(
     val totals: Array<JsCurrencyAmount>,
 )
 
-// Why: Cobrar's fields; the page writes the message from them until it is edited.
-class JsChargeDraft(
-    val personId: String,
-    val name: String?,
-    val initials: String,
-    val color: String?,
-    val photoUrl: String?,
-    val currency: String,
-    val fractionDigits: Int,
-    val amountMinor: Double,
-    val groupNames: Array<String>,
-    val isGuest: Boolean,
-    val guestBills: Array<String>,
-    val guestPaidMinor: Double?,
-    val includesPixKey: Boolean,
-    val canTogglePixKey: Boolean,
-    val editedMessage: String?,
-    val reroutes: Array<JsChargeReroute>,
-)
-
 class JsGlobalBalancesState(
     val displayName: String,
     val avatarInitial: String,
@@ -117,10 +85,6 @@ class JsGlobalBalancesState(
     val emptyStateTotal: JsBalanceTotal?,
     // Why: how many people that amount is from or to.
     val emptyStatePeopleCount: Int,
-    // Why: the PaymentKeyType's name ("EMAIL") and the value of the Pix key Cobrar offers, null without one.
-    val pixKeyType: String?,
-    val pixKeyValue: String?,
-    val charge: JsChargeDraft?,
     val showsOfflineNotice: Boolean,
     // Why: false while the people and totals load (Room, or the account's copy not whole yet): the shimmer.
     val isLoaded: Boolean,
@@ -165,9 +129,6 @@ class GlobalBalancesPresenter(
                 },
                 emptyStateTotal = state.emptyStateTotal?.let(::toJsPeopleTotal),
                 emptyStatePeopleCount = state.emptyStatePeopleCount,
-                pixKeyType = state.pixKey?.type?.name,
-                pixKeyValue = state.pixKey?.value,
-                charge = state.charge?.let(::toJsChargeDraft),
                 showsOfflineNotice = state.showsOfflineNotice,
                 isLoaded = state.isLoaded,
                 isWaitingForInternet = state.isWaitingForInternet,
@@ -181,27 +142,13 @@ class GlobalBalancesPresenter(
 
     // Why: "coming-soon" or "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.mapNotNull { action ->
+        val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GlobalBalancesUiAction.ShowComingSoon -> "coming-soon"
                 GlobalBalancesUiAction.ShowChangeError -> "change-error"
-                else -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
-        return JsWatch(watch::cancel)
-    }
-
-    // Why: "Enviar": the browser's share sheet when it has one, else the message copied.
-    fun observeShare(onShare: (String) -> Unit): JsWatch {
-        val messages = viewModel.uiAction.filterIsInstance<GlobalBalancesUiAction.ShareMessage>().map { it.message }
-        val watch = FlowWatcher(messages).observe(onShare)
-        return JsWatch(watch::cancel)
-    }
-
-    fun observeCopy(onCopy: (String) -> Unit): JsWatch {
-        val messages = viewModel.uiAction.filterIsInstance<GlobalBalancesUiAction.CopyMessage>().map { it.message }
-        val watch = FlowWatcher(messages).observe(onCopy)
         return JsWatch(watch::cancel)
     }
 
@@ -238,30 +185,6 @@ class GlobalBalancesPresenter(
 
     fun charge(personId: String) {
         viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(personId))
-    }
-
-    fun togglePixKey(isIncluded: Boolean) {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded))
-    }
-
-    fun changeMessage(message: String) {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged(message))
-    }
-
-    // Why: the ViewModel keeps what was typed, so the field reads it back in the same keystroke.
-    fun getEditedMessage(): String? = viewModel.uiState.value.charge
-        ?.editedMessage
-
-    fun shareMessage(message: String) {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked(message))
-    }
-
-    fun copyMessage(message: String) {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked(message))
-    }
-
-    fun closeCharge() {
-        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
     }
 
     fun emptyAction() {
@@ -358,29 +281,4 @@ private fun toJsPersonRow(row: PersonRow): JsPersonRow = JsPersonRow(
     owesYou = row.owesYou,
     isNetOfSeveralGroups = row.isNetOfSeveralGroups,
     opensProfile = row.opensProfile,
-)
-
-private fun toJsChargeDraft(charge: ChargeDraft): JsChargeDraft = JsChargeDraft(
-    personId = charge.personId,
-    name = charge.name,
-    initials = charge.initials,
-    color = charge.color?.code,
-    photoUrl = charge.photoUrl,
-    currency = charge.currency.code,
-    fractionDigits = charge.currency.fractionDigits,
-    amountMinor = charge.amountMinor.toDouble(),
-    groupNames = charge.groupNames.toTypedArray(),
-    isGuest = charge.isGuest,
-    guestBills = charge.guestBills.toTypedArray(),
-    guestPaidMinor = charge.guestPaidMinor?.toDouble(),
-    includesPixKey = charge.includesPixKey,
-    canTogglePixKey = charge.canTogglePixKey,
-    editedMessage = charge.editedMessage,
-    reroutes = charge.reroutes
-        .map {
-            JsChargeReroute(
-                groupName = it.groupName,
-                insteadOfNames = it.insteadOfNames.toTypedArray(),
-            )
-        }.toTypedArray(),
 )

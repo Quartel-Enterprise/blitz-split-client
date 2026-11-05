@@ -688,7 +688,7 @@ class GroupsSearchTest {
             assertFalse(viewModel.uiState.value.isSearching)
             assertEquals("", viewModel.uiState.value.search.query)
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }

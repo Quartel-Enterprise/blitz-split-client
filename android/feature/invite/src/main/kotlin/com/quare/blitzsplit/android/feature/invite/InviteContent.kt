@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,16 +16,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -480,98 +475,3 @@ private fun WhoPicksText(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-@Composable
-private fun PhoneButtonsColumn(
-    state: InviteUiState,
-    onEvent: (InviteUiEvent) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        ShareButton(
-            state = state,
-            onEvent = onEvent,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        OutlinedButton(
-            onClick = { onEvent(secondaryEventOf(state)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp),
-        ) {
-            Text(stringResource(secondaryLabelOf(state)))
-        }
-    }
-}
-
-// Why: the wide boards set "Compartilhar link" with a text button beside it, or stacked in a half or a column.
-@Composable
-private fun WideButtonsLayout(
-    state: InviteUiState,
-    isRow: Boolean,
-    onEvent: (InviteUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val secondary = @Composable { buttonModifier: Modifier ->
-        TextButton(
-            onClick = { onEvent(secondaryEventOf(state)) },
-            modifier = buttonModifier.heightIn(min = 48.dp),
-        ) {
-            Text(stringResource(secondaryLabelOf(state)))
-        }
-    }
-    if (isRow) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            ShareButton(
-                state = state,
-                onEvent = onEvent,
-            )
-            secondary(Modifier)
-        }
-    } else {
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            ShareButton(
-                state = state,
-                onEvent = onEvent,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            secondary(Modifier.fillMaxWidth())
-        }
-    }
-}
-
-@Composable
-private fun ShareButton(
-    state: InviteUiState,
-    onEvent: (InviteUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = { onEvent(InviteUiEvent.OnShareClicked) },
-        enabled = !state.isLinkPending,
-        modifier = modifier.heightIn(min = 56.dp),
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Share,
-            contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-        )
-        Text(
-            text = stringResource(R.string.invite_share),
-            modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
-        )
-    }
-}
-
-// Why: "Ir para o grupo" while the link waits for the internet, "Ver quem já entrou" once it is there.
-private fun secondaryEventOf(state: InviteUiState): InviteUiEvent =
-    if (state.isLinkPending) InviteUiEvent.OnGoToGroupClicked else InviteUiEvent.OnSeeWhoJoinedClicked
-
-private fun secondaryLabelOf(state: InviteUiState): Int =
-    if (state.isLinkPending) R.string.invite_go_to_group else R.string.invite_see_who_joined

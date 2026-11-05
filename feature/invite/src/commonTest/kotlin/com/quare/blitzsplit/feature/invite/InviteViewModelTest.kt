@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -50,6 +51,7 @@ class InviteViewModelTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private var syncRetries = 0
+    private val addPersonAsks = mutableListOf<String>()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: InviteViewModel
     private val encodedTexts = mutableListOf<String>()
@@ -540,6 +542,37 @@ class InviteViewModelTest {
                 ),
                 navigator.backStack.value,
             )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN add someone without the app is tapped THEN asks for Add person on the members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnAddPersonClicked)
+
+            // Then
+            assertEquals(listOf("group-1"), addPersonAsks)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen no longer on top WHEN add someone without the app is tapped THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnAddPersonClicked)
+
+            // Then
+            assertEquals(emptyList(), addPersonAsks)
         }
 
     @Test
@@ -1221,6 +1254,7 @@ class InviteViewModelTest {
             },
             retrySync = RetrySync { syncRetries++ },
             changeInviteLink = ChangeInviteLink { groups.rotateInviteCode(it) },
+            requestAddPerson = RequestAddPerson { addPersonAsks += it },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeSyncState = ObserveSyncState { syncState },
             connectivityObserver = NetworkConnectivityObserver {

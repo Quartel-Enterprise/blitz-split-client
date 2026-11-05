@@ -1,9 +1,12 @@
 package com.quare.blitzsplit.android.feature.globalbalances
 
+import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -17,67 +20,132 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
+import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
+import com.quare.blitzsplit.android.platform.copyText
+import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
-import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeUiAction
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeUiEvent
+import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.ChargeViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-private val chargeWidth = 560.dp
 
 /*
  * Why: "Cobrar" moves no money and sends nothing by itself: a message to edit, Enviar for the system's share sheet and
- * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog elsewhere, with the people under
- * the scrim: a book's right half, a tabletop's top half, its right half above the hinge lying down (FoldDialog).
+ * Copiar mensagem. Its own route over the screen that opened it (Saldos, a contact's profile): a bottom sheet on a
+ * phone, a 560dp dialog elsewhere, with that screen under the scrim (a book's right half, FoldDialog).
  */
 @Composable
-internal fun ChargeSheet(
+fun ChargeScreen(
+    route: Route.Charge,
+    isDialog: Boolean,
+    viewModel: ChargeViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val resources = LocalResources.current
+    LaunchedEffect(viewModel) {
+        viewModel.uiAction.collect { action ->
+            when (action) {
+                is ChargeUiAction.ShareMessage -> context.shareText(action.message)
+
+                is ChargeUiAction.CopyMessage -> {
+                    context.copyText(action.message)
+                    // Why: Android 13 and later confirm the copy themselves; older ones get "Copiado".
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        Toast
+                            .makeText(
+                                context,
+                                resources.getString(R.string.global_balances_copied),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
+                }
+            }
+        }
+    }
+    // Why: the person's message waits for Room, read in a moment.
+    val charge = state.charge ?: return
+    ChargeContent(
+        charge = charge,
+        pixKey = state.pixKey,
+        isDialog = isDialog,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+@Composable
+internal fun ChargeContent(
     charge: ChargeDraft,
     pixKey: PaymentKey?,
-    onEvent: (GlobalBalancesUiEvent) -> Unit,
+    isDialog: Boolean,
+    onEvent: (ChargeUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
-    AdaptiveSheet(
-        title = stringResource(R.string.global_balances_charge_title, name),
-        onDismissRequest = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) },
-        skipPartiallyExpanded = false,
-        sheetMaxWidth = chargeWidth,
-        dialogShape = MaterialTheme.shapes.extraLarge,
-        dialogColor = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
+    val title = stringResource(R.string.global_balances_charge_title, name)
+    val padding = Modifier.padding(
+        start = 24.dp,
+        end = 24.dp,
+        bottom = 24.dp,
+    )
+    if (isDialog) {
+        Surface(
+            // Why: alertDialogPane already keeps the dialog 280 to 560dp wide.
+            modifier = modifier.alertDialogPane(title),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+        ) {
+            ChargeColumn(
+                charge = charge,
+                name = name,
+                pixKey = pixKey,
+                onEvent = onEvent,
+                modifier = padding.padding(top = 24.dp),
+            )
+        }
+    } else {
         ChargeColumn(
             charge = charge,
             name = name,
             pixKey = pixKey,
             onEvent = onEvent,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 24.dp,
-                ),
+                .navigationBarsPadding()
+                .semantics { paneTitle = title }
+                .then(padding),
         )
     }
 }
@@ -87,7 +155,7 @@ private fun ChargeColumn(
     charge: ChargeDraft,
     name: String,
     pixKey: PaymentKey?,
-    onEvent: (GlobalBalancesUiEvent) -> Unit,
+    onEvent: (ChargeUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val message = chargeMessageOf(charge, name, pixKey)
@@ -98,14 +166,14 @@ private fun ChargeColumn(
         ChargeHeader(
             charge = charge,
             name = name,
-            onClose = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) },
+            onClose = { onEvent(ChargeUiEvent.OnDismissed) },
         )
         if (charge.isGuest) {
             InfoNoteBanner(text = stringResource(R.string.global_balances_charge_guest, name))
         }
         OutlinedTextField(
             value = message,
-            onValueChange = { onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged(it)) },
+            onValueChange = { onEvent(ChargeUiEvent.OnMessageChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.global_balances_charge_message)) },
             minLines = 3,
@@ -135,20 +203,20 @@ private fun ChargeColumn(
                 }
                 Switch(
                     checked = charge.includesPixKey,
-                    onCheckedChange = { onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(it)) },
+                    onCheckedChange = { onEvent(ChargeUiEvent.OnPixKeyToggled(it)) },
                     enabled = charge.canTogglePixKey,
                 )
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
-                onClick = { onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked(message)) },
+                onClick = { onEvent(ChargeUiEvent.OnCopyClicked(message)) },
                 modifier = Modifier.weight(1f),
             ) {
                 Text(stringResource(R.string.global_balances_charge_copy))
             }
             Button(
-                onClick = { onEvent(GlobalBalancesUiEvent.OnChargeShareClicked(message)) },
+                onClick = { onEvent(ChargeUiEvent.OnShareClicked(message)) },
                 modifier = Modifier.weight(1f),
             ) {
                 Icon(

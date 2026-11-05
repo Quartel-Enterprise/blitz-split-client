@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
-import com.quare.blitzsplit.core.model.PaymentKey
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
 import software.quare.loadable.map
@@ -33,9 +32,6 @@ data class GlobalBalancesUiState(
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer while the copy waits offline.
     val isWaitingForInternet: Boolean,
     val filter: BalancesFilter,
-    // Why: the device user's Pix key that Cobrar offers to include, the default one; null without a Pix key.
-    val pixKey: PaymentKey?,
-    val charge: ChargeDraft?,
     val isOnline: Boolean,
     // Why: "Pagamento de Carla registrado." with "Desfazer", once settling up with her closed over Saldos.
     val recordedPayment: PaymentNotice?,

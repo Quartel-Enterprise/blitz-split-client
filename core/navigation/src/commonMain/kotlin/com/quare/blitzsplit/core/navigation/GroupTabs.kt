@@ -26,10 +26,11 @@ fun Navigator.openGroup(
         // Why: by the group and tab alone, since the expenses just joined ("Você entrou como Bruno") are the same screen.
         below is Route.GroupDetail && below.tab == tab -> navigateBack()
 
-        else -> {
-            navigateBack()
-            replaceTop(group)
-        }
+        // Why: in one step, so the group below is never on top in between, for a screen that watches the back stack.
+        else -> replaceAbove(
+            size = stack.size - 2,
+            route = group,
+        )
     }
 }
 

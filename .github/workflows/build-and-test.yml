@@ -1,7 +1,7 @@
 name: build-and-test
 
-# The shared Kotlin's unit tests and coverage, the Android app and the web app. The Apple app isn't
-# built here: it needs a macOS runner, so create-pr builds it locally instead.
+# The shared Kotlin's unit tests and coverage, the same tests on the JS target, the Android app and
+# its lint, and the web app. The Apple side runs in apple.yml, on a macOS runner.
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -82,6 +82,34 @@ jobs:
           name: coverage-report
           path: build/reports/kover/
 
+  # Every module's commonTest on the JS target, in a headless Chrome. The actuals of jsMain live in a
+  # few modules with few tests of their own; the tests that exercise them are the other modules', so
+  # every module's suite runs.
+  js-tests:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Run the tests on the JS target
+        run: ./gradlew jsTest --continue
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: js-test-reports
+          path: '**/build/reports/tests/**'
+
   android:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
@@ -100,8 +128,16 @@ jobs:
       # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
       # instead of on a device. Without the signing secrets it is signed with the debug key, which
       # is all a compile check needs.
-      - name: Assemble the Android release
-        run: ./gradlew :androidApp:assembleRelease
+      # lintDebug lints :androidApp and every :android:* module.
+      - name: Assemble the Android release and lint the Android UI
+        run: ./gradlew :androidApp:assembleRelease lintDebug --continue
+
+      - name: Upload lint reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lint-reports
+          path: '**/build/reports/lint-results-*.html'
 
   web:
     needs: review-gate

@@ -11,10 +11,11 @@ The global balances, a person's profile and Contacts.
     open Record payment for the net (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
     amount locked while more than one group is in it, then "Carla's payment recorded." on Balances, whose Undo
     undoes them all in one go (never on a later Balances, when the one it opened over closed while saving). "Request"
-    moves no money: each platform writes the message ("you owe me R$ 32,90 from the groups …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Include my Pix key" is on, which locks once the message is edited), "Send" opens the system share (a ShareLink on Apple,
+    (`Route.Charge`) opens over the screen it was tapped on, Balances or a contact's profile, and closing it (or a sync
+    settling the person) goes back there. It moves no money: each platform writes the message ("you owe me R$ 32,90 from the groups …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Include my Pix key" is on, which locks once the message is edited), "Send" opens the system share (the share sheet, or the Mac's sharing picker, on Apple,
     `navigator.share` or a copy on the web) and "Copy message" copies; a bottom sheet on an Android phone and a
     560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
-    down) with the people under the scrim, a
+    down) with that screen under the scrim, a
     sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
     a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone). It all
     works offline on the device's data, and has no "Split a bill". An Android tablet lying down, an unfolded book, an
@@ -46,8 +47,8 @@ The global balances, a person's profile and Contacts.
     was hidden ("Hide from Contacts", only while the balance with them is zero, asked first), synced to the user's
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Show"; someone hidden comes back by
     themselves once a bill shared with them is saved later or the balance opens again. The profile
-    (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' charge, opened over
-    Balances for that person), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; a group they're
+    (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' message, opened over
+    the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; a group they're
     in shows disabled), "Groups in common" and the latest four of "History with Carla" (bills that move something
     between the two and their payments); "See all" opens Activity on that person. A guest's profile
     offers "Invite Diego" (their personal link) and "Merge with an account" (online only): the server makes a

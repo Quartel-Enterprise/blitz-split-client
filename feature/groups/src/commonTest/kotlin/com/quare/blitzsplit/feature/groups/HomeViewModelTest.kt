@@ -181,7 +181,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -197,7 +197,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -298,7 +298,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
                 navigator.backStack.value,
             )
         }
@@ -818,7 +818,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU)),
                 navigator.backStack.value,
             )
         }
@@ -864,7 +864,7 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null),
+                    Route.GlobalBalances(BalancesFilter.YOU_OWE),
                     Route.SettleUp(
                         personKey = "name:ana",
                         currency = GroupCurrency.BRL,
@@ -898,7 +898,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
                 navigator.backStack.value,
             )
         }
@@ -934,7 +934,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
                 navigator.backStack.value,
             )
         }

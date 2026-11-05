@@ -76,6 +76,12 @@ internal fun MemberNameDialog(
                         }
                     }
                 }
+                // Why: someone who has the app joins through the link instead, and picks their own name.
+                if (editor.isAdding) {
+                    TextButton(onClick = { onEvent(MembersUiEvent.OnInviteInsteadClicked) }) {
+                        Text(stringResource(R.string.members_invite_instead))
+                    }
+                }
             }
         },
         confirmButton = {

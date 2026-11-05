@@ -26,6 +26,7 @@ import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSpli
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
+import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.ChargeViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -166,6 +167,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createGlobalBalancesViewModel(route: Route.GlobalBalances): ViewModelHolder<GlobalBalancesViewModel> =
         ViewModelHolder(GlobalBalancesViewModel::class) { get { parametersOf(route) } }
+
+    // Why: "Cobrar", over Saldos or a contact's profile, for that person in the currency shown.
+    fun createChargeViewModel(route: Route.Charge): ViewModelHolder<ChargeViewModel> =
+        ViewModelHolder(ChargeViewModel::class) { get { parametersOf(route) } }
 
     // Why: Atividade, which Início's bell opens, on one person when a contact's history opens it.
     fun createActivityViewModel(route: Route.Activity): ViewModelHolder<ActivityViewModel> =

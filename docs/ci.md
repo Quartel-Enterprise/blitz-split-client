@@ -5,7 +5,8 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `:androidApp:assembleRelease`, `npm --prefix webApp run build` |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest`, `:androidApp:assembleRelease` and `lintDebug`, `npm --prefix webApp run build` |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -15,7 +16,19 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
 | `merge-when-green` | The `merge-when-green` label, and each pull request workflow that completes | Squash merges the pull request once every check passed and every conversation is resolved |
 
-The Apple app isn't built here, since it needs a macOS runner: `create-pr` builds both schemes locally.
+Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
+coverage, a compile of the shared code for the iOS simulator and JS, the debug APK, and the UI the branch touches (the
+web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the JS, iOS simulator and macOS targets, Android
+lint, the release APK and the other Apple scheme are left to these workflows, and `merge-when-green` waits for them:
+on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open.
+
+The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
+SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and its app build are
+two jobs side by side, each compiling the Kotlin/Native code on its own, since two runners finish sooner than one.
+The Gradle action fits them to the runner: it selects the image's newest Xcode, as the Mac the app is developed on
+runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
+`main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the two jobs
+don't store the same entries twice.
 
 ## AI review
 
@@ -77,7 +90,7 @@ away.
 The checks wait for the opening review instead of running next to it, so they don't run twice (once on the opening
 commit, again on the fix commit):
 
-- `build-and-test`, `static-analysis`, `duplication` and `module-graph` start with a `review-gate` job, the reusable
+- `build-and-test`, `apple`, `static-analysis`, `duplication` and `module-graph` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
   fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
   marked ready, only a run that event created, never the one skipped while it was a draft). When the

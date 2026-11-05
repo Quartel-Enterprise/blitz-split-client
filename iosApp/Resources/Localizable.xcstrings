@@ -487,6 +487,17 @@
         }
       }
     },
+    "Add someone without the app" : {
+      "comment" : "Invite: opens the group's Members with Add person, for someone who joins by name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar quem não tem o app"
+          }
+        }
+      }
+    },
     "Adjust photo" : {
       "comment" : "Photo editor: its title, over a picked photo being framed",
       "localizations" : {
@@ -969,6 +980,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Foto do grupo"
+          }
+        }
+      }
+    },
+    "Has the app? Invite with the link" : {
+      "comment" : "Add person: closes it and opens Invite, for someone who has the app",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tem o app? Convide pelo link"
           }
         }
       }

@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Copy, Loader2, Share2, WifiOff } from 'lucide-react'
+import { AlertCircle, Check, Copy, Loader2, Share2, UserPlus, WifiOff } from 'lucide-react'
 import { InvitePresenter, type JsInviteAction, type JsInviteState, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -56,6 +56,13 @@ export function InviteDialog({ route }: { route: JsRoute }) {
   const title = t('invite_title', { group: state.groupName })
   const description = <WhoPicks names={state.notJoinedNames} />
   const body = <InviteBody presenter={presenter} state={state} />
+  // Why: someone without the app goes in by name, as in "Novo grupo", from the group's Members.
+  const addPerson = (
+    <Button variant="link" onClick={() => presenter.addPerson()} className="self-center justify-self-center">
+      <UserPlus />
+      {t('invite_addPerson')}
+    </Button>
+  )
   const close = (
     <Button variant="ghost" onClick={() => presenter.close()} className={cn(!isDesktop && 'h-11')}>
       {t('invite_close')}
@@ -96,6 +103,7 @@ export function InviteDialog({ route }: { route: JsRoute }) {
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {body}
+        {addPerson}
         <DialogFooter>
           {close}
           {next}
@@ -111,7 +119,10 @@ export function InviteDialog({ route }: { route: JsRoute }) {
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4">{body}</div>
+        <div className="flex flex-col overflow-y-auto px-4">
+          {body}
+          {addPerson}
+        </div>
         <DrawerFooter>
           {share}
           {next}

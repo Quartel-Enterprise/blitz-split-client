@@ -45,6 +45,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
@@ -108,6 +109,7 @@ class GroupDetailViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
+    private val addPersonAsk = MutableStateFlow<String?>(null)
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var viewModel: GroupDetailViewModel
     private val teach = InMemoryCategoryTeachRepository()
@@ -1141,6 +1143,64 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(GroupTab.EXPENSES, state.tab)
+    }
+
+    @Test
+    fun `GIVEN Despesas picked WHEN Invite asks for Add person in this group THEN picks Membros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            addPersonAsk.value = GROUP_ID
+
+            // Then
+            assertEquals(GroupTab.MEMBERS, viewModel.uiState.value.tab)
+        }
+
+    @Test
+    fun `GIVEN Invite over the group WHEN asked for Add person THEN picks Membros once the group is on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
+            addPersonAsk.value = GROUP_ID
+            val tabUnderInvite = viewModel.uiState.value.tab
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(GroupTab.EXPENSES, tabUnderInvite)
+            assertEquals(GroupTab.MEMBERS, viewModel.uiState.value.tab)
+        }
+
+    @Test
+    fun `GIVEN Membros picked for an ask WHEN picking Despesas and coming back over a screen THEN Despesas stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            addPersonAsk.value = GROUP_ID
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.EXPENSES))
+
+            // When
+            navigator.navigate(Route.Profile)
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(GroupTab.EXPENSES, viewModel.uiState.value.tab)
+        }
+
+    @Test
+    fun `GIVEN Despesas picked WHEN another group asks for Add person THEN Despesas stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        addPersonAsk.value = "group-2"
+
+        // Then
+        assertEquals(GroupTab.EXPENSES, viewModel.uiState.value.tab)
     }
 
     @Test
@@ -3307,6 +3367,7 @@ class GroupDetailViewModelTest {
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeAddPersonRequest = ObserveAddPersonRequest { addPersonAsk },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             teachUseCases = CategoryTeachUseCases(
                 observeOffer = ObserveCategoryTeachOfferUseCase(teach),

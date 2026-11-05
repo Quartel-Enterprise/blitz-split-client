@@ -379,7 +379,7 @@ class HomeSidebarViewModelTest {
     fun `GIVEN the profile over a filtered Saldos WHEN tapping Saldos THEN goes back to it with its filter`() =
         runTest(testDispatcher) {
             // Given
-            val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+            val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE)
             prepareScenario(stack = listOf(Route.Home, balances, Route.Profile))
 
             // When
@@ -746,7 +746,7 @@ class HomeSidebarViewModelTest {
     fun `GIVEN a contact opened from a filtered Saldos WHEN tapping Buscar THEN opens the search over that Saldos`() =
         runTest(testDispatcher) {
             // Given
-            val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+            val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE)
             prepareScenario(stack = listOf(Route.Home, balances, Route.ContactProfile(anaKey)))
 
             // When

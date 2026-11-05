@@ -2,8 +2,6 @@ package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
-import com.quare.blitzsplit.core.activity.domain.usecase.RecordCharges
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -12,7 +10,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
-import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -20,8 +17,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
-import com.quare.blitzsplit.core.model.PaymentKey
-import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
@@ -29,7 +24,6 @@ import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -37,8 +31,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.idOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.BalancesEmptyState
-import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
-import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeReroute
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GLOBAL_BALANCES_SOURCE
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiAction
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
@@ -48,12 +40,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
@@ -62,14 +52,12 @@ import software.quare.loadable.valueOrNull
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
     private val navigator: Navigator,
-    private val recordCharges: RecordCharges,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
     observePeopleBalances: ObservePeopleBalances,
     observeSettledUp: ObserveSettledUp,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
-    observePaymentKeys: ObservePaymentKeys,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     observeHasGroups: ObserveHasGroups,
@@ -87,8 +75,6 @@ class GlobalBalancesViewModel(
                 totals = Loadable.Loading,
                 isWaitingForInternet = false,
                 filter = route.filter,
-                pixKey = null,
-                charge = null,
                 isOnline = true,
                 recordedPayment = null,
                 pickedPersonId = null,
@@ -114,14 +100,8 @@ class GlobalBalancesViewModel(
 
     private var firstDownload: FirstDownloadProgress? = null
 
-    // Why: Contatos' "Cobrar" opens the message once, as soon as Room is read.
-    private var isRouteChargeOpened = false
-
     // Why: what a tap set each row's "Por grupo" to; the others open as the filter opens them.
     private var expandedById = emptyMap<String, Boolean>()
-
-    // Why: the person whose open charge is recorded in Atividade, so sharing it again or copying it records nothing more.
-    private var chargeRecordedFor: String? = null
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -144,17 +124,6 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        observePaymentKeys()
-            .map(::pixKeyOrNull)
-            .distinctUntilChanged()
-            .onEach { key ->
-                uiState.update {
-                    it.copy(
-                        pixKey = key,
-                        charge = it.charge?.copy(hasPixKey = key != null),
-                    )
-                }
-            }.launchIn(viewModelScope)
         observeHasGroups()
             .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
@@ -206,34 +175,6 @@ class GlobalBalancesViewModel(
 
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
-            // Why: read before the update, whose block may run again, so the event goes once.
-            is GlobalBalancesUiEvent.OnChargePixKeyToggled -> if (uiState.value.charge?.canTogglePixKey == true) {
-                trackEvent("charge_pix_key_toggled", mapOf("is_included" to event.isIncluded))
-                updateCharge { charge ->
-                    if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
-                }
-            }
-
-            // Why: the switch locks as it is once the message is the person's, whatever key loads later.
-            is GlobalBalancesUiEvent.OnChargeMessageChanged -> updateCharge {
-                it.copy(
-                    editedMessage = event.message,
-                    pixKeyChoice = it.includesPixKey,
-                )
-            }
-
-            is GlobalBalancesUiEvent.OnChargeShareClicked -> {
-                if (uiState.value.charge != null) trackEvent("charge_share_clicked", emptyMap())
-                emitForCharge(GlobalBalancesUiAction.ShareMessage(event.message))
-            }
-
-            is GlobalBalancesUiEvent.OnChargeCopyClicked -> {
-                if (uiState.value.charge != null) trackEvent("charge_copy_clicked", emptyMap())
-                emitForCharge(GlobalBalancesUiAction.CopyMessage(event.message))
-            }
-
-            GlobalBalancesUiEvent.OnChargeDismissed -> dismissCharge()
-
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
             GlobalBalancesUiEvent.OnHomeTabClicked, GlobalBalancesUiEvent.OnBrandClicked -> navigator.openHomeTab(
@@ -246,8 +187,7 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
-            // Why: never over Cobrar, which is no route, so ⌘K on the web can't stack the search over its dialog.
-            GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch && uiState.value.charge == null) {
+            GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch) {
                 if (navigator.openSearchOver(HomeTab.BALANCES)) {
                     trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
                 }
@@ -278,38 +218,8 @@ class GlobalBalancesViewModel(
                 people = rows.toLoaded(),
                 totals = balances.totals.ifEmpty { listOf(zeroTotalOf(GroupCurrency.fallback)) }.toLoaded(),
                 isWaitingForInternet = false,
-                // Why: a sync may settle the person being charged meanwhile, which leaves nothing to ask for.
-                charge = it.charge
-                    ?.let { charge ->
-                        balances.people.firstOrNull { person ->
-                            idOf(person) ==
-                                charge.personId
-                        }
-                    }?.takeIf { person -> person.netMinor > 0 }
-                    ?.let { person -> chargeOf(person, it.charge, it.pixKey) },
             )
         }
-        openRouteChargeOnce()
-    }
-
-    // Why: from Contatos' "Cobrar", the person's message right away, in the currency the profile showed.
-    private fun openRouteChargeOnce() {
-        val charge = route.charge ?: return
-        if (isRouteChargeOpened) return
-        isRouteChargeOpened = true
-        val person = balances.findPersonOrNull(charge.personKey, charge.currency.code)?.takeIf { it.netMinor > 0 }
-        if (person == null) {
-            // Why: nothing to charge any more (a sync settled it): back to the profile rather than a stray Saldos.
-            if (isOnTop()) navigator.navigateBack()
-            return
-        }
-        openCharge(idOf(person))
-    }
-
-    // Why: opened for Contatos' "Cobrar", Saldos is only that message: closing it goes back to the profile.
-    private fun dismissCharge() {
-        uiState.update { it.copy(charge = null) }
-        if (route.charge != null && isOnTop()) navigator.navigateBack()
     }
 
     // Why: a new filter opens its lone person's "Por grupo" afresh.
@@ -370,79 +280,16 @@ class GlobalBalancesViewModel(
         )
     }
 
+    // Why: Cobrar over Saldos, its own route, in the currency the row shows.
     private fun openCharge(personId: String) {
         if (!isOnTop()) return
         val person = personOrNull(personId)?.takeIf { it.netMinor > 0 } ?: return
-        chargeRecordedFor = null
-        uiState.update {
-            it.copy(
-                charge = chargeOf(
-                    person,
-                    previous = null,
-                    pixKey = it.pixKey,
-                ),
-            )
-        }
-    }
-
-    private fun chargeOf(
-        person: PersonBalance,
-        previous: ChargeDraft?,
-        pixKey: PaymentKey?,
-    ): ChargeDraft = ChargeDraft(
-        personId = idOf(person),
-        name = person.name,
-        initials = person.name?.let(Initials::of).orEmpty(),
-        color = person.face?.color,
-        photoUrl = person.face?.photoUrl,
-        currency = person.currency,
-        amountMinor = person.netMinor,
-        groupNames = person.groups.map { it.groupName },
-        isGuest = person.isGuest,
-        guestBills = person.guestBills,
-        guestPaidMinor = person.guestPaidMinor,
-        hasPixKey = pixKey != null,
-        pixKeyChoice = previous?.pixKeyChoice,
-        editedMessage = previous?.editedMessage,
-        reroutes = person.groups
-            .filter { it.amountMinor > 0 && it.insteadOfNames.isNotEmpty() }
-            .map {
-                ChargeReroute(
-                    groupName = it.groupName,
-                    insteadOfNames = it.insteadOfNames,
-                )
-            },
-    )
-
-    private fun updateCharge(change: (ChargeDraft) -> ChargeDraft) {
-        uiState.update { state -> state.copy(charge = state.charge?.let(change)) }
-    }
-
-    private fun emitForCharge(action: GlobalBalancesUiAction) {
-        val charge = uiState.value.charge ?: return
-        recordCharge(charge)
-        viewModelScope.launch { uiAction.emit(action) }
-    }
-
-    /*
-     * Why: "Você cobrou Ana" in Atividade, once per opened charge however many times it is shared or copied: one event
-     * in each group where they owe you, which only this device sees happen.
-     */
-    private fun recordCharge(charge: ChargeDraft) {
-        if (chargeRecordedFor == charge.personId) return
-        chargeRecordedFor = charge.personId
-        val person = personOrNull(charge.personId) ?: return
-        val charges = person.groups
-            .filter { it.amountMinor > 0 }
-            .map { part ->
-                ChargeSent(
-                    groupId = part.groupId,
-                    memberId = part.memberId,
-                    memberName = person.name.orEmpty(),
-                    amountMinor = part.amountMinor,
-                )
-            }
-        if (charges.isNotEmpty()) viewModelScope.launch { recordCharges(charges) }
+        navigator.navigate(
+            Route.Charge(
+                personKey = person.key,
+                currency = person.currency,
+            ),
+        )
     }
 
     private fun handleEmptyAction() {
@@ -468,12 +315,6 @@ class GlobalBalancesViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
-
-    // Why: the default Pix key, as the profile marks it; Bitcoin keys never go in a message.
-    private fun pixKeyOrNull(keys: List<PaymentKey>): PaymentKey? {
-        val pix = keys.filter { it.type.method == PaymentMethod.PIX }
-        return pix.firstOrNull { it.isDefault } ?: pix.firstOrNull()
-    }
 
     private fun zeroTotalOf(currency: GroupCurrency): PeopleTotal = PeopleTotal(
         currency = currency,

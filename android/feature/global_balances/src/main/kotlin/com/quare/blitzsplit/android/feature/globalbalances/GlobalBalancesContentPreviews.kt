@@ -145,8 +145,6 @@ private fun createPreviewState(
     totals = listOf(previewTotal).toLoaded(),
     isWaitingForInternet = false,
     filter = filter,
-    pixKey = null,
-    charge = null,
     isOnline = isOnline,
     recordedPayment = null,
     pickedPersonId = null,
@@ -201,7 +199,7 @@ private fun GlobalBalancesSettledPreview() {
     }
 }
 
-// Why: the board draws no tabletop for page 8, so Saldos stays as on the book (ChargeSheetTabletopPreview shows Cobrar).
+// Why: the board draws no tabletop for page 8, so Saldos stays as on the book (ChargeDialogTabletopPreview shows Cobrar).
 @Preview(
     name = "Tabletop",
     device = "spec:width=841dp,height=673dp,orientation=landscape",
@@ -222,33 +220,30 @@ private fun GlobalBalancesTabletopPreview() {
 @Composable
 private fun ChargeSheetPreview() {
     BlitzSplitTheme {
-        ChargeOverBalancesContent()
+        ChargeContent(
+            charge = previewCharge,
+            pixKey = previewPixKey,
+            isDialog = false,
+            onEvent = {},
+        )
     }
 }
 
-// Why: a tabletop lying down leaves Cobrar the quarter above the hinge, the tightest pane it gets, Pix key included.
+// Why: a tabletop lying down draws Cobrar as a dialog over the hinge, the tightest pane it gets, Pix key included.
 @Preview(
     name = "Tabletop",
     device = "spec:width=841dp,height=673dp,orientation=landscape",
 )
 @Composable
-private fun ChargeSheetTabletopPreview() {
+private fun ChargeDialogTabletopPreview() {
     CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
         BlitzSplitTheme {
-            ChargeOverBalancesContent()
+            ChargeContent(
+                charge = previewCharge,
+                pixKey = previewPixKey,
+                isDialog = true,
+                onEvent = {},
+            )
         }
     }
-}
-
-@Composable
-private fun ChargeOverBalancesContent() {
-    GlobalBalancesContent(
-        state = createPreviewState(previewPeople),
-        onEvent = {},
-    )
-    ChargeSheet(
-        charge = previewCharge,
-        pixKey = previewPixKey,
-        onEvent = {},
-    )
 }

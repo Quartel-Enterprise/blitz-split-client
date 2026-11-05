@@ -155,7 +155,7 @@ coming back reopens it, which on the Mac opens Ajustes.
 `profile-setup`, `restore`, `groups`…) plus the arguments of the routes that carry them (`payment-key`'s method and
 key id), with the route itself kept inside so `PaymentKeyPresenter` opens its ViewModel with it. `App.tsx` renders
 only the last one, except `payment-key` and `delete-account`, dialogs drawn over the entry under them (the profile), and
-`useBrowserHistory` keeps the history in step (`create-group` and `invite` are dialogs over the home the same way): a
+`useBrowserHistory` keeps the history in step (`create-group` and `invite` are dialogs over the home the same way, `charge` over Saldos or a contact's profile): a
 longer stack `pushState`s an entry holding its size, and a `popstate` (the browser's back button) calls
 `app.popTo(size)`, the same catch-up as SwiftUI's. A shorter stack the app made itself (a dialog's ✕, a tab of the
 sidebar, a deletion) goes back in the history by as many entries (`history.go`), never below the page's first entry,
@@ -177,7 +177,7 @@ launch.
 
 The home has four tabs: Início, Grupos, Saldos and Contatos. Início (`Route.Home`) is the root of the back stack and
 where the app opens; every other tab is one route right above it, and the tabs take each other's place there, as a tab
-bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`. Atividade is no
+bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter)]`, `[Home, Contacts]`. Atividade is no
 tab: Início's bell pushes it over Início (`[Home, Activity(null)]`), a contact's history over the profile, and from
 deeper (a group's "Ver na Atividade", a push notification) `Navigator.openActivity()` closes what is above Início first. `Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in
 the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the

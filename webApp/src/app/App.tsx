@@ -16,6 +16,7 @@ import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
+import { ChargeDialog } from '@/features/global-balances/ChargeDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { forgetClosedPickedTabs } from '@/features/group-detail/pickedTabs'
@@ -142,12 +143,14 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isSimplifyDebtsInfo = top.name === 'simplify-debts-info'
   const isOverEditGroup = (isDefaultSplit || isSimplifyDebtsInfo) && stack[stack.length - 2]?.name === 'edit-group'
   const editGroup = isEditGroup ? top : isOverEditGroup ? stack[stack.length - 2] : undefined
+  // Why: Cobrar over the page that opened it, Saldos or a contact's profile (in Contatos' pane too).
+  const isCharge = top.name === 'charge'
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -197,6 +200,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
       {isSimplifyDebtsInfo && <SimplifyDebtsInfoDialog key={top.currency ?? ''} route={top} />}
       {isPickPayment && <PickPaymentDialog />}
+      {isCharge && <ChargeDialog key={`${top.personKey}/${top.currency}`} route={top} />}
       {payment && (
         <RegisterPaymentDialog
           key={`${payment.groupId ?? payment.personKey}/${payment.fromMemberId ?? payment.currency}/${payment.toMemberId ?? ''}`}

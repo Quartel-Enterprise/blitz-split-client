@@ -154,6 +154,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
 | `invite_go_to_group_clicked` | none | Invite's "Go to the group" | `:feature:invite` |
+| `invite_add_person_clicked` | none | Invite's "Add someone without the app", which opens Members with "Add person" | `:feature:invite` |
 | `invite_link_change_clicked` | none | "Change link", which asks first | `:feature:invite` |
 | `invite_link_change_confirmed` | none | "Change the invite link?" confirmed, while it was open | `:feature:invite` |
 | `invite_link_change_cancelled` | none | "Change the invite link?" closed without confirming, while it was open | `:feature:invite` |
@@ -163,6 +164,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `member_rename_clicked` | none | A member's "Rename" | `:feature:members` |
 | `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
 | `member_editor_save_clicked` | none | The name editor's Save or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
+| `member_editor_invite_clicked` | none | "Add person"'s "Has the app? Invite with the link", which opens Invite | `:feature:members` |
 | `personal_invite_clicked` | none | "Personal invite for Carla" | `:feature:members` |
 | `member_remove_clicked` | none | "Remove from group", which asks first | `:feature:members` |
 | `member_remove_confirmed` | none | "Remove Carla from the group?" confirmed, while it was open | `:feature:members` |

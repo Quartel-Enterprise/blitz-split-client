@@ -488,7 +488,7 @@ class GroupsViewModel(
         navigator.openHomeTab(tab)
     }
 
-    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter, charge = null)
+    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter)
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {

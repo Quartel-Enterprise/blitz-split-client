@@ -195,7 +195,7 @@ class ContactsViewModel(
             ContactsUiEvent.OnGroupsTabClicked -> if (isTabShown()) navigator.popToGroups()
 
             ContactsUiEvent.OnBalancesTabClicked -> if (isTabShown()) {
-                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL))
             }
 
             ContactsUiEvent.OnProfileClicked -> if (isTabShown()) {
@@ -259,7 +259,7 @@ class ContactsViewModel(
     private fun openBalances(filter: BalancesFilter) {
         if (!isOnTop()) return
         trackEvent("contacts_balances_clicked", mapOf("filter" to filter))
-        navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
+        navigator.openHomeTab(Route.GlobalBalances(filter))
     }
 
     private fun show(key: String) {

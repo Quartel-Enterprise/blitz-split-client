@@ -1,0 +1,179 @@
+name: apple
+
+# The Apple side of the app, on a macOS runner (free on a public repository): every module's
+# commonTest on the iOS simulator and macOS targets, and both schemes of the Apple app, which link
+# the Shared framework. create-pr leaves these to CI and builds a scheme locally only when the branch
+# changes the Swift code (see the create-pr skill, step 8).
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '.github/workflows/apple.yml'
+      - '.github/actions/gradle/action.yml'
+      - 'core/**'
+      - 'feature/**'
+      - 'shared/**'
+      - 'iosApp/**'
+      - 'build-logic/**'
+      - '**/*.gradle.kts'
+      - 'gradle/**'
+      - 'gradle.properties'
+      - 'version.properties'
+      - 'gradlew'
+      - '.github/workflows/review-gate.yml'
+      - '!**/*.md'
+      # The source sets no Apple target compiles.
+      - '!**/src/jsMain/**'
+      - '!**/src/jsTest/**'
+      - '!**/src/jvmMain/**'
+      - '!**/src/jvmTest/**'
+      - '!**/src/androidMain/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apple.yml'
+      - '.github/actions/gradle/action.yml'
+      - 'core/**'
+      - 'feature/**'
+      - 'shared/**'
+      - 'iosApp/**'
+      - 'build-logic/**'
+      - '**/*.gradle.kts'
+      - 'gradle/**'
+      - 'gradle.properties'
+      - 'version.properties'
+      - 'gradlew'
+      - '.github/workflows/review-gate.yml'
+      - '!**/*.md'
+      # The source sets no Apple target compiles.
+      - '!**/src/jsMain/**'
+      - '!**/src/jsTest/**'
+      - '!**/src/jvmMain/**'
+      - '!**/src/jvmTest/**'
+      - '!**/src/androidMain/**'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  # The tests and the app build run side by side: each compiles the Kotlin/Native code on its own,
+  # and two runners finish sooner than one doing both.
+  apple-tests:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
+    # Xcode 26 only.
+    runs-on: xcode-27
+    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          kotlin-native: 'true'
+          # It compiles every Apple target, so its toolchain cache holds all of them.
+          save-kotlin-native: 'true'
+
+      # The actuals of appleMain live in a few modules with few tests of their own; the tests that
+      # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
+      # compiles the device target, which no other check builds.
+      - name: Run the tests on the iOS simulator and macOS
+        run: ./gradlew iosSimulatorArm64Test macosArm64Test compileKotlinIosArm64 --continue
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: apple-test-reports
+          path: '**/build/reports/tests/**'
+
+  apple-app:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
+    # Xcode 26 only.
+    runs-on: xcode-27
+    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          kotlin-native: 'true'
+          # apple-tests saves the Gradle cache of the macOS runner.
+          cache-read-only: 'true'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the Xcode project
+        run: ./iosApp/generate-project.sh
+
+      # The Swift packages (Firebase and its dependencies) only change with project.yml. As with the
+      # other caches, only main saves them.
+      - name: Cache the Swift packages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache@v5
+        with:
+          path: iosApp/build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
+
+      - name: Restore the Swift packages
+        if: github.ref != 'refs/heads/main'
+        uses: actions/cache/restore@v5
+        with:
+          path: iosApp/build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
+
+      # Each scheme's build phase builds the Shared framework with Gradle first. The iOS build targets
+      # the Apple silicon simulator only, since Shared has no x86_64 simulator slice. The macOS build
+      # skips signing: Sign in with Apple and the associated domains need a provisioning profile.
+      - name: Build the iOS app
+        run: >-
+          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS
+          -destination 'generic/platform=iOS Simulator' ARCHS=arm64
+          -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages
+          CODE_SIGNING_ALLOWED=NO build -quiet
+
+      - name: Build the macOS app
+        run: >-
+          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS
+          -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData
+          -clonedSourcePackagesDirPath iosApp/build/SourcePackages CODE_SIGNING_ALLOWED=NO build -quiet
