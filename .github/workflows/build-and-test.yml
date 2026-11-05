@@ -96,7 +96,6 @@ jobs:
   # compiles what its modules depend on again; that part runs in parallel and is the smaller one.
   # Adding a shard is adding a number to the list: the split reads the count from the matrix.
   js-tests:
-    name: js-tests (${{ matrix.shard }}/${{ strategy.job-total }})
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest

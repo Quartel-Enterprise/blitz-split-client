@@ -138,9 +138,9 @@ jobs:
           fi
 
           # No workflow runs on every push here, so none can tell that the push's workflows have
-          # registered their runs. A label added right after a push gives them time to; a completed
-          # run of the head commit means they already have.
-          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+          # registered their runs. A label added, or a sweep run, right after a push gives them time
+          # to; a completed run of the head commit (workflow_run) means they already have.
+          if [ "$GITHUB_EVENT_NAME" != workflow_run ]; then
             sleep 30
           fi
 

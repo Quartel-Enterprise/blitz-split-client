@@ -5,7 +5,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across three shards, `:androidApp:assembleRelease`, `lintDebug`, `npm --prefix webApp run build`, each in a job of its own |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug`, `npm --prefix webApp run build`, each in a job of its own |
 | `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
@@ -27,10 +27,10 @@ on one Mac, queued behind the other worktrees' builds, they were what made a bra
 `build-and-test` runs its jobs side by side, so its wall time is its slowest job's. Two of them are split to keep that
 short:
 
-- `js-tests` is the slowest: each of the 40 modules with tests links a test executable of its own and runs it in its own
-  Karma and headless Chrome, and a change to a core module recompiles every module after it. Its matrix splits the
-  modules across three shards, dealt round-robin from the sorted list of the modules that have `commonTest` or `jsTest`
-  sources, so a new module joins a shard on its own. Each shard compiles the modules its own depend on again, side by
+- `js-tests` is the slowest: each module with tests links a test executable of its own and runs it in its own Karma
+  and headless Chrome, and a change to a core module recompiles every module after it. Its matrix splits the modules
+  across its shards, dealt round-robin from the sorted list of the modules that have `commonTest` or `jsTest` sources,
+  found when the job runs, so a new module joins a shard on its own. Each shard compiles the modules its own depend on again, side by
   side with the others. Adding a shard is adding a number to the matrix.
 - `android` builds the release APK (R8 runs only there) and `android-lint` runs `lintDebug`. They compile different
   variants and share no work, so in one job they ran one after the other.
@@ -149,9 +149,9 @@ the label added again, as below. A push to the pull request moves its head commi
 to pass again. A failed check leaves the pull request open with the label on; re-running the check and getting it
 green merges it. The pull request's current head is the one judged, whichever commit's run started the workflow, so
 a pull request whose changes run no check workflow (docs only, `iosApp` only) merges once the review ends, even after
-the review pushed its fix commit. No workflow runs on every push here, so a label added right after a push waits 30
-seconds first, for the push's workflows to register their runs. Drafts wait until they are marked ready, and pull
-requests from forks are never merged: their author could push after a maintainer added the label.
+the review pushed its fix commit. No workflow runs on every push here, so a label added, or a sweep run, right after a
+push waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
+ready, and pull requests from forks are never merged: their author could push after a maintainer added the label.
 
 A job waiting on another has no check until it starts, so while `review-gate` waits for the review, or right after it
 passes, every check of a pull request can be green while its workflows still have jobs to start. Every run of the
