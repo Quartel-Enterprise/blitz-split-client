@@ -6,14 +6,11 @@ import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 
 // Why: the ones of these channels the person silenced in the system's settings; one not created yet isn't silenced.
-fun Context.findSilencedNotificationChannels(channelIds: Collection<String>): Set<String> {
-    val manager = NotificationManagerCompat.from(this)
-    return channelIds
-        .filter { id ->
-            manager.getNotificationChannelCompat(id)?.importance ==
-                NotificationManagerCompat.IMPORTANCE_NONE
-        }.toSet()
-}
+fun Context.findSilencedNotificationChannels(channelIds: Collection<String>): Set<String> =
+    // Why: the app's channels in one call to the system, rather than one per channel on each return.
+    NotificationManagerCompat.from(this).notificationChannelsCompat
+        .filter { it.id in channelIds && it.importance == NotificationManagerCompat.IMPORTANCE_NONE }
+        .mapTo(mutableSetOf()) { it.id }
 
 // Why: the settings of one channel alone, where the person turns it back on.
 fun Context.openNotificationChannelSettings(channelId: String) {

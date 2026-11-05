@@ -89,14 +89,15 @@ class NotificationSettingsViewModel(
                 requestPermission()
             }
 
-            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> if (uiState.value.isBlockedBySystem(
-                    event.type,
-                )
-            ) {
-                trackEvent("notification_channel_settings_clicked", mapOf("type" to event.type))
-                emit(NotificationSettingsUiAction.OpenChannelSettings(event.type))
-            }
+            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> openChannelSettings(event.type)
         }
+    }
+
+    // Why: only while the system silences that row's channel, so a late tap opens nothing.
+    private fun openChannelSettings(type: NotificationType) {
+        if (!uiState.value.isBlockedBySystem(type)) return
+        trackEvent("notification_channel_settings_clicked", mapOf("type" to type))
+        emit(NotificationSettingsUiAction.OpenChannelSettings(type))
     }
 
     // Why: the web and macOS draw it inside the profile, where the back stack doesn't end on this screen.

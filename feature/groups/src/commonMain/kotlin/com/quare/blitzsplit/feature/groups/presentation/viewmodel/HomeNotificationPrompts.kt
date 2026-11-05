@@ -44,8 +44,9 @@ internal class HomeNotificationPrompts(
     // Why: the card the last "Turn on" came from, until the next check of the permission says how the system answered.
     private var pendingRequest: NotificationPrompt? = null
 
-    // Why: the quiet request is out, so a "never asked" read started before it is stale, not its answer.
-    private var awaitsQuietAnswer = false
+    // Why: the quiet request is out (asked, and no read since), so a "never asked" read started before it is stale.
+    private val awaitsQuietAnswer: Boolean
+        get() = uiState.value.let { it.hasAskedQuietly && it.notificationPermission == null }
 
     fun watch(
         observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
@@ -113,7 +114,6 @@ internal class HomeNotificationPrompts(
         permission: NotificationPermission,
         canAskQuietly: Boolean,
     ) {
-        awaitsQuietAnswer = false
         uiState.update {
             it.copy(
                 notificationPermission = permission,
@@ -140,7 +140,6 @@ internal class HomeNotificationPrompts(
 
     // Why: the permission is unknown until Apple answers the request, so neither card shows meanwhile.
     private fun askQuietly() {
-        awaitsQuietAnswer = true
         uiState.update {
             it.copy(
                 hasAskedQuietly = true,

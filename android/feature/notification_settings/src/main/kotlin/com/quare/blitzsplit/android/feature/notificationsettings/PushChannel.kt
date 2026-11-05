@@ -60,8 +60,7 @@ enum class PushChannel(
     ;
 
     companion object {
-        val ids: List<String>
-            get() = entries.map { it.id }
+        val ids: List<String> = entries.map { it.id }
 
         fun of(type: NotificationType): PushChannel = entries.first { it.type == type }
 
