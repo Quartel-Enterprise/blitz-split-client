@@ -356,7 +356,7 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
     }
 
-    // Why: the choice closed, or the picker it opened was handed over to the page's own camera or file input.
+    // Why: the choice or the camera closed without a photo, or the file chooser opened, which reports no close.
     fun dismissReceiptPicker() {
         viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
     }

@@ -1475,6 +1475,26 @@ class CryptoBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the gallery open WHEN a sync turns the group to bitcoin before the photo comes THEN it is not read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trip),
+                route = newRoute(TRIP_ID),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.BTC))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(byteArrayOf(1, 2, 3)))
+
+            // Then
+            assertNull(viewModel.uiState.value.receipt)
+        }
+
+    @Test
     fun `GIVEN the gallery dropped by a bitcoin sync WHEN the group is back in reais THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given

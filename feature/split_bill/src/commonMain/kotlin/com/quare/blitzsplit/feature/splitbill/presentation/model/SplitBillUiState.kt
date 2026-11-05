@@ -105,12 +105,10 @@ data class SplitBillUiState(
     // Why: the receipt's category, which the bill takes while the description's words choose none and none is picked.
     val receiptCategoryId: String?,
     /*
-     * Why: "Ler cupom fiscal" asks where the photo comes from first (beta feedback, part 2, item 7): "Tirar foto" or the
-     * gallery (Photos and a file on the Mac), asked for until one is picked or it closes.
+     * Why: "Ler cupom fiscal" asks where the photo comes from first (beta feedback, part 2, item 7), then opens the
+     * source picked, until a photo comes or it closes; null for none.
      */
-    val isReceiptSourceRequested: Boolean,
-    // Why: the camera, the gallery or the file picker picked on that choice, open until a photo comes or it closes.
-    val receiptSource: ReceiptPhotoSource?,
+    val receiptRequest: ReceiptRequest?,
     // Why: someone else saved the bill while it was being edited here.
     val conflict: BillConflict?,
     // Why: a payment made after the bill whose pair's balance the change being typed moves (7.4b), said before saving.
@@ -219,6 +217,14 @@ data class SplitBillUiState(
      */
     val showsReceiptSourceChoice: Boolean
         get() = isReceiptSourceRequested && canOpenReceiptSource
+
+    // Why: the choice asked for, shown or still waiting for its conditions.
+    val isReceiptSourceRequested: Boolean
+        get() = receiptRequest == ReceiptRequest.Choice
+
+    // Why: the source picked or open without asking, shown or not.
+    val receiptSource: ReceiptPhotoSource?
+        get() = (receiptRequest as? ReceiptRequest.Open)?.source
 
     // Why: the camera, the gallery or the file picker picked on the choice, under the same conditions as the choice.
     val shownReceiptSource: ReceiptPhotoSource?

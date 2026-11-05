@@ -478,6 +478,26 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN Rachar em qual grupo open WHEN the choice is skipped THEN no choice opens after Continuar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.FILES, state.receiptSource)
+        }
+
+    @Test
     fun `GIVEN the choice open and the bill saving WHEN a source is picked THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given

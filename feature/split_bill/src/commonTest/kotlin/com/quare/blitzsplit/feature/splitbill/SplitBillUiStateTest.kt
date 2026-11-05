@@ -15,6 +15,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -964,8 +965,8 @@ class SplitBillUiStateTest {
         categoryDeletion = null,
         receipt = null,
         receiptCategoryId = null,
-        isReceiptSourceRequested = isReceiptSourceRequested,
-        receiptSource = receiptSource,
+        receiptRequest = receiptSource?.let(ReceiptRequest::Open)
+            ?: ReceiptRequest.Choice.takeIf { isReceiptSourceRequested },
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,

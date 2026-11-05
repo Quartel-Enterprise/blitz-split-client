@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.mapper.toReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -78,18 +79,19 @@ internal class ReceiptScanning(
                 }
                 uiState.update {
                     if (it.canScanReceipt) {
-                        it.copy(
-                            isReceiptSourceRequested = true,
-                            receiptSource = null,
-                        )
+                        it.copy(receiptRequest = ReceiptRequest.Choice)
                     } else {
                         it
                     }
                 }
             }
 
-            is SplitBillUiEvent.OnReceiptPhotoPicked -> read(event.photo) {
-                trackEvent("photo_picked", mapOf("source" to RECEIPT_SOURCE))
+            /*
+             * Why: the gallery and the file chooser hand the photo back after the request ended, so a group turned to a
+             * cryptocurrency meanwhile, which no receipt is printed in, drops it. Offline it is still sent, and says so.
+             */
+            is SplitBillUiEvent.OnReceiptPhotoPicked -> if (!uiState.value.currency.isCrypto) {
+                read(event.photo) { trackEvent("photo_picked", mapOf("source" to RECEIPT_SOURCE)) }
             }
 
             SplitBillUiEvent.OnReceiptRetryClicked -> unansweredSource?.let { source ->
@@ -105,13 +107,16 @@ internal class ReceiptScanning(
                 open(event.source)
             }
 
-            is SplitBillUiEvent.OnReceiptChoiceSkipped -> open(event.source)
+            /*
+             * Why: a request still waiting for its conditions (the group picked being read) takes it too, so the web's
+             * click, which opened the file chooser already, leaves no request behind to open it a second time.
+             */
+            is SplitBillUiEvent.OnReceiptChoiceSkipped -> uiState.update {
+                if (it.isReceiptSourceRequested) it.copy(receiptRequest = ReceiptRequest.Open(event.source)) else it
+            }
 
             SplitBillUiEvent.OnReceiptPickerDismissed -> uiState.update {
-                it.copy(
-                    isReceiptSourceRequested = false,
-                    receiptSource = null,
-                )
+                it.copy(receiptRequest = null)
             }
 
             SplitBillUiEvent.OnReceiptRemoved -> remove()
@@ -121,14 +126,7 @@ internal class ReceiptScanning(
     // Why: only from the choice still open, so a late tap never opens a picker the form no longer asks for.
     private fun open(source: ReceiptPhotoSource) {
         uiState.update {
-            if (it.showsReceiptSourceChoice) {
-                it.copy(
-                    isReceiptSourceRequested = false,
-                    receiptSource = source,
-                )
-            } else {
-                it
-            }
+            if (it.showsReceiptSourceChoice) it.copy(receiptRequest = ReceiptRequest.Open(source)) else it
         }
     }
 
@@ -161,8 +159,7 @@ internal class ReceiptScanning(
         unansweredSource = null
         uiState.update {
             it.withEditorsClosed().copy(
-                isReceiptSourceRequested = false,
-                receiptSource = null,
+                receiptRequest = null,
                 receipt = BillReceipt(
                     status = ReceiptStatus.READING,
                     itemCount = 0,

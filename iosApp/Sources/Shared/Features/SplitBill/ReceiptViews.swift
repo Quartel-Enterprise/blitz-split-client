@@ -62,11 +62,11 @@ extension View {
 
     /// The form's side of the choice: the dialog while no "Scan receipt" button holds it, Photos once picked, and
     /// straight to Photos where there is no camera to choose, the Mac's file panel being its own.
-    func receiptSourceChoice(model: SplitBillModel, isSettled: Bool) -> some View {
+    func receiptSourceChoice(model: SplitBillModel, isSettled: Bool, isAnchoredAtButton: Bool = false) -> some View {
         receiptSourceDialog(
             model: model,
             isPresented: model.receiptSourceChoiceShown(
-                isSettled: isSettled && ReceiptSource.hasChoice && model.receiptChoiceAnchors == 0,
+                isSettled: isSettled && ReceiptSource.hasChoice && !isAnchoredAtButton,
             ),
         )
         .onChange(of: isSettled && model.state.showsReceiptSourceChoice, initial: true) { _, shows in
@@ -229,6 +229,7 @@ struct ReceiptThumbnail: View {
 struct ReceiptSection: View {
     let model: SplitBillModel
     let isSettled: Bool
+    @Binding var isScanButtonShown: Bool
     var showsScanButton = true
 
     private var state: SplitBillUiState {
@@ -277,13 +278,15 @@ struct ReceiptSection: View {
                     Label("Scan receipt", systemImage: "doc.viewfinder")
                 }
                 .disabled(!state.canScanReceipt)
-                // Why: the choice points at the button that asked for it, while the button is on screen.
+                // Why: the choice points at the button while it is on screen, and only one of the two dialogs binds to it.
                 .receiptSourceDialog(
                     model: model,
-                    isPresented: model.receiptSourceChoiceShown(isSettled: isSettled && ReceiptSource.hasChoice),
+                    isPresented: model.receiptSourceChoiceShown(
+                        isSettled: isSettled && ReceiptSource.hasChoice && isScanButtonShown,
+                    ),
                 )
-                .onAppear { model.receiptChoiceAnchors += 1 }
-                .onDisappear { model.receiptChoiceAnchors -= 1 }
+                .onAppear { isScanButtonShown = true }
+                .onDisappear { isScanButtonShown = false }
             } footer: {
                 if state.isOnline {
                     Text("Fills in the amount, date and description from the photo.")

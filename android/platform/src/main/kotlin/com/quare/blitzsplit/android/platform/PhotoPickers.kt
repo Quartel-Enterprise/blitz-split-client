@@ -93,8 +93,13 @@ fun rememberPhotoPickers(
         } else {
             null
         },
+        // Why: a build with neither the Photo Picker nor a documents app to fall back on reads as an unreadable photo.
         onChoosePhotoClick = {
-            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            try {
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            } catch (_: ActivityNotFoundException) {
+                onPhotoUnreadable()
+            }
         },
     )
 }

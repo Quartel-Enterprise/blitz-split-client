@@ -19,8 +19,6 @@ final class SplitBillModel {
     private(set) var deleteErrorCount = 0
     private(set) var categorySaveErrorCount = 0
     private(set) var categoryDeleteErrorCount = 0
-    /// How many "Scan receipt" buttons are on screen to point the source choice at; none, and the form holds it.
-    var receiptChoiceAnchors = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<SplitBillViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -274,6 +272,8 @@ private struct PhoneSplitBill: View {
     @FocusState private var focusedField: Field?
     /// Whether this sheet has settled, so "Split in which group?" can present over it.
     @State private var isSettled = false
+    /// "Scan receipt" on screen, which the source choice then points at; else the form holds it.
+    @State private var isScanButtonShown = false
 
     private enum Field {
         case amount
@@ -292,7 +292,7 @@ private struct PhoneSplitBill: View {
                     Form { whatSections }
                     Form {
                         detailsSection
-                        ReceiptSection(model: model, isSettled: isSettled)
+                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
                         settledPairSection
                         deleteSection
                     }
@@ -305,7 +305,12 @@ private struct PhoneSplitBill: View {
                     Form {
                         detailsSection
                         // The board leaves "Ler cupom fiscal" out here; Início's shortcut still asks where the photo comes from
-                        ReceiptSection(model: model, isSettled: isSettled, showsScanButton: false)
+                        ReceiptSection(
+                            model: model,
+                            isSettled: isSettled,
+                            isScanButtonShown: $isScanButtonShown,
+                            showsScanButton: false,
+                        )
                         settledPairSection
                         deleteSection
                     }
@@ -313,7 +318,7 @@ private struct PhoneSplitBill: View {
                     Form {
                         whatSections
                         detailsSection
-                        ReceiptSection(model: model, isSettled: isSettled)
+                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
                         settledPairSection
                         deleteSection
                     }
@@ -350,7 +355,7 @@ private struct PhoneSplitBill: View {
             GroupSheet(model: model)
                 .foldSheetPlacement()
         }
-        .receiptSourceChoice(model: model, isSettled: isSettled)
+        .receiptSourceChoice(model: model, isSettled: isSettled, isAnchoredAtButton: isScanButtonShown)
         .fullScreenCover(isPresented: model.receiptSourceShown(.camera, isSettled: isSettled)) {
             ReceiptCameraView(
                 onPhoto: { data in model.receiptPicked(data) },

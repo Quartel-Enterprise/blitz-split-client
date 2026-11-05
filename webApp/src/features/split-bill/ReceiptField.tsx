@@ -21,7 +21,7 @@ export interface ReceiptPicker extends PhotoPicker {
  */
 export function useReceiptPicker(presenter: SplitBillPresenter, state: JsSplitBillState): ReceiptPicker {
   const picker = usePhotoPicker()
-  const { chooseFile, hasCamera } = picker
+  const { chooseFile, hasCamera, takePhoto, closeCamera } = picker
   // Why: Início's "Ler cupom fiscal" asks with the bill, once the browser said whether it has a camera; without one
   // there is nothing to ask, and a file chooser may be refused without a fresh click, so the button stays to try again.
   useEffect(() => {
@@ -29,9 +29,15 @@ export function useReceiptPicker(presenter: SplitBillPresenter, state: JsSplitBi
     chooseFile()
     presenter.skipReceiptChoice()
   }, [presenter, state.showsReceiptSourceChoice, hasCamera, chooseFile])
-  // Why: the page opens the camera or the file chooser itself, inside the click, so the request ends there.
+  // Why: the camera opens and closes with the request, as the apps' does: it closes once the photo is read, or once the
+  // bill can no longer read one (a group turned to bitcoin, a save).
   useEffect(() => {
-    if (state.receiptSource) presenter.dismissReceiptPicker()
+    if (state.receiptSource === 'camera') takePhoto()
+    else closeCamera()
+  }, [state.receiptSource, takePhoto, closeCamera])
+  // Why: the file chooser opens inside the click and has no close to report, so its request ends as it opens.
+  useEffect(() => {
+    if (state.receiptSource === 'files') presenter.dismissReceiptPicker()
   }, [presenter, state.receiptSource])
   const pick = () => {
     // Why: without a camera the file chooser opens inside the click, which a browser may require; the ViewModel
@@ -40,7 +46,8 @@ export function useReceiptPicker(presenter: SplitBillPresenter, state: JsSplitBi
     presenter.scanReceipt()
     if (hasCamera === false) presenter.skipReceiptChoice()
   }
-  return { ...picker, pick }
+  // Why: the camera closed by hand, or left for a photo taken or a file, ends the request.
+  return { ...picker, pick, closeCamera: () => presenter.dismissReceiptPicker() }
 }
 
 export function ReceiptInput({ presenter, state, picker }: { presenter: SplitBillPresenter; state: JsSplitBillState; picker: ReceiptPicker }) {
@@ -76,10 +83,7 @@ function ReceiptSourceDialog({ presenter, picker }: { presenter: SplitBillPresen
               variant="outline"
               size="lg"
               className="justify-start"
-              onClick={() => {
-                picker.takePhoto()
-                presenter.takeReceiptPhoto()
-              }}
+              onClick={() => presenter.takeReceiptPhoto()}
             >
               <Camera aria-hidden /> {t('splitBill_receiptTakePhoto')}
             </Button>

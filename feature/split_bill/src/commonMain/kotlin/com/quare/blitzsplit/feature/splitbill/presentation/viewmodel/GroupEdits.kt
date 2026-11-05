@@ -19,6 +19,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 
@@ -78,8 +79,7 @@ internal fun createInitialBillState(
          * Why: Início's "Ler cupom fiscal" opens Rachar conta straight on "Tirar foto" or the gallery's choice, after
          * "Rachar em qual grupo?".
          */
-        isReceiptSourceRequested = route.scansReceipt && route.expenseId == null,
-        receiptSource = null,
+        receiptRequest = ReceiptRequest.Choice.takeIf { route.scansReceipt && route.expenseId == null },
         conflict = null,
         settledPair = null,
         deletion = null,
@@ -156,13 +156,10 @@ private fun SplitEditor.toUnit(
  */
 internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState {
     val isAskingNothing = groups.isNotEmpty() && groupSelection == null && !isPickedGroupLoading
-    return if ((isReceiptSourceRequested || receiptSource != null) && currency.isCrypto && isLoaded &&
+    return if (receiptRequest != null && currency.isCrypto && isLoaded &&
         isAskingNothing
     ) {
-        copy(
-            isReceiptSourceRequested = false,
-            receiptSource = null,
-        )
+        copy(receiptRequest = null)
     } else {
         this
     }
