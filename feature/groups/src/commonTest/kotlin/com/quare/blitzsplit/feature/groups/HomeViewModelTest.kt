@@ -3210,6 +3210,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
 
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
 
@@ -3230,6 +3233,9 @@ class HomeViewModelTest {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3265,6 +3271,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
 
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3281,6 +3290,9 @@ class HomeViewModelTest {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3316,6 +3328,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
 
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3331,6 +3346,8 @@ class HomeViewModelTest {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
 
             // When
@@ -3579,7 +3596,7 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
 
             // Then
             assertTrue(trackedEvents.isEmpty())
@@ -3602,7 +3619,7 @@ class HomeViewModelTest {
             listOf(
                 EventAnalytics.Manual("notification_prompt_turn_on_clicked"),
                 EventAnalytics.Manual("notification_prompt_dismissed"),
-                EventAnalytics.NotTracked,
+                EventAnalytics.Manual(setOf("notification_permission_answered", "notification_prompt_shown")),
             ),
             analytics,
         )

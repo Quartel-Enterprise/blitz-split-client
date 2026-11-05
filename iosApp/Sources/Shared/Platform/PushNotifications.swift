@@ -68,19 +68,28 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         return entitlements[key] as? String
     }
 
-    /// The permission as the shared code takes it: provisional and ephemeral deliver, so they count as allowed.
+    /// The permission as the shared code takes it: provisional delivers quietly, where the full prompt can still ask;
+    /// ephemeral (an App Clip's) delivers, so it counts as allowed.
     static func readPermission() async -> NotificationPermission {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         return switch settings.authorizationStatus {
         case .notDetermined: .notDetermined
         case .denied: .denied
+        case .provisional: .provisional
         default: .granted
         }
     }
 
-    /// Only from a tap (Home's card, a Push toggle): the system shows its prompt only while the person never answered.
+    /// Only from a tap (Home's card, a Push toggle, Notifications' notice): the system shows its prompt while the person
+    /// never answered it, provisional included.
     static func requestPermission() async {
         _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+    }
+
+    /// Once the shared code says so (there is a group): quiet delivery to Notification Center, with no prompt.
+    static func requestQuietPermission() async {
+        _ = try? await UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .badge, .sound, .provisional])
     }
 
     /// The app's own notification settings, where only the person can allow them once refused.

@@ -664,6 +664,17 @@
         }
       }
     },
+    "Blitz Split notifications arrive quietly in Notification Center, without a sound or banner." : {
+      "comment" : "Notifications' notice while Apple delivers quietly (provisional), above its Turn on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações do Bora Rachar chegam em silêncio na Central de Notificações, sem som nem banner."
+          }
+        }
+      }
+    },
     "Bringing your groups" : {
       "comment" : "Groups: the card in the overall balance's place during a new device's first download",
       "localizations" : {
@@ -1695,6 +1706,17 @@
         }
       }
     },
+    "Notifications arrive quietly" : {
+      "comment" : "Home's notification card while Apple delivers quietly to Notification Center (provisional)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações chegam em silêncio"
+          }
+        }
+      }
+    },
     "Notify me about" : {
       "localizations" : {
         "pt-BR" : {
@@ -2241,6 +2263,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A linha tracejada mais escura do gráfico, como a desta legenda, é a média: o total gasto dividido por todos os períodos mostrados, inclusive os vazios."
+          }
+        }
+      }
+    },
+    "They go to Notification Center without a sound or banner. Turn them on to see bills as they come in." : {
+      "comment" : "Home's notification card while notifications arrive quietly: Turn on asks for banners and sounds",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elas vão para a Central de Notificações sem som nem banner. Ative para ver as contas assim que chegarem."
           }
         }
       }

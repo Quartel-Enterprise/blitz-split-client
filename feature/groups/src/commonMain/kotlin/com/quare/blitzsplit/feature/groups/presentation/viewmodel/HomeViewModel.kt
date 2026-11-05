@@ -141,6 +141,8 @@ class HomeViewModel(
                 isRefreshing = false,
                 activityUnreadCount = 0,
                 notificationPermission = null,
+                canAskQuietly = false,
+                hasAskedQuietly = false,
                 isNotificationPromptSnoozed = true,
             ),
         )
@@ -156,6 +158,9 @@ class HomeViewModel(
 
     // Why: the card's "Turn on" asked the system or opened its settings, and no allowed answer came back yet.
     private var awaitsNotificationAnswer = false
+
+    // Why: the card the last "Turn on" came from, until the next check of the permission says how the system answered.
+    private var pendingNotificationRequest: NotificationPrompt? = null
 
     // Why: the groups as Início last read them, the most recent activity first: "Rachar conta" marks the first.
     private var rows = emptyList<GroupRow>()
@@ -236,6 +241,16 @@ class HomeViewModel(
             .onEach { lastPromptAt ->
                 uiState.update { it.copy(isNotificationPromptSnoozed = isNotificationPromptSnoozed(lastPromptAt)) }
             }.launchIn(viewModelScope)
+        // Why: once per showing of the card, whatever brought it (a group, the permission read, three weeks gone).
+        uiState.map { it.notificationPrompt }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .onEach { prompt -> trackEvent("notification_prompt_shown", mapOf("prompt" to prompt)) }
+            .launchIn(viewModelScope)
+        uiState.map { it.shouldAskQuietly }
+            .distinctUntilChanged()
+            .onEach { shouldAsk -> if (shouldAsk) askQuietly() }
+            .launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -387,14 +402,19 @@ class HomeViewModel(
 
             HomeUiEvent.OnRecoveryCodeCardDismissed -> recoveryCodeCardDismissal.isDismissed.value = true
 
-            is HomeUiEvent.OnNotificationPermissionChecked -> checkNotificationPermission(event.permission)
+            is HomeUiEvent.OnNotificationPermissionChecked -> checkNotificationPermission(
+                permission = event.permission,
+                canAskQuietly = event.canAskQuietly,
+            )
 
             HomeUiEvent.OnNotificationPromptTurnOnClicked -> answerNotificationPrompt { prompt ->
                 trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
                 awaitsNotificationAnswer = true
+                pendingNotificationRequest = prompt
                 emit(
                     when (prompt) {
-                        NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN ->
+                        // Why: Apple's full prompt still asks while it delivers quietly.
+                        NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN, NotificationPrompt.QUIET ->
                             HomeUiAction.RequestNotificationPermission
 
                         NotificationPrompt.BLOCKED -> HomeUiAction.OpenNotificationSettings
@@ -516,12 +536,33 @@ class HomeViewModel(
      * Why: "Notifications on" only after the card's own "Turn on" (the prompt, or back from the settings), so a change
      * made from Notifications, which confirms by its own toggles, never shows it over that screen.
      */
-    private fun checkNotificationPermission(permission: NotificationPermission) {
-        uiState.update { it.copy(notificationPermission = permission) }
+    private fun checkNotificationPermission(
+        permission: NotificationPermission,
+        canAskQuietly: Boolean,
+    ) {
+        uiState.update { it.copy(notificationPermission = permission, canAskQuietly = canAskQuietly) }
+        // Why: the first check after "Turn on" is the system's answer: its prompt, or back from its settings.
+        pendingNotificationRequest?.let { prompt ->
+            pendingNotificationRequest = null
+            trackEvent(
+                "notification_permission_answered",
+                mapOf(
+                    "source" to "home",
+                    "prompt" to prompt,
+                    "is_granted" to (permission == NotificationPermission.GRANTED),
+                ),
+            )
+        }
         if (awaitsNotificationAnswer && permission == NotificationPermission.GRANTED) {
             awaitsNotificationAnswer = false
             emit(HomeUiAction.ShowNotificationsOn)
         }
+    }
+
+    // Why: the permission is unknown until read again after the request, so neither card shows meanwhile.
+    private fun askQuietly() {
+        uiState.update { it.copy(hasAskedQuietly = true, notificationPermission = null) }
+        emit(HomeUiAction.RequestQuietNotifications)
     }
 
     // Why: either answer snoozes the card, at once so a second tap finds none, then for three weeks on this device.

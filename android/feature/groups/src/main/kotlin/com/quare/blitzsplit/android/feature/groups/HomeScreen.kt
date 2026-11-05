@@ -28,7 +28,10 @@ fun HomeScreen(
         when (action) {
             HomeUiAction.ShowChangeError -> R.string.groups_change_error
             HomeUiAction.ShowNotificationsOn -> R.string.groups_home_notifications_on
-            HomeUiAction.RequestNotificationPermission, HomeUiAction.OpenNotificationSettings -> null
+            HomeUiAction.RequestNotificationPermission,
+            HomeUiAction.OpenNotificationSettings,
+            HomeUiAction.RequestQuietNotifications,
+            -> null
         }
     }
     if (isPushConfigured) NotificationPermissionEffect(viewModel)
@@ -67,7 +70,11 @@ private fun NotificationPermissionEffect(viewModel: HomeViewModel) {
             when (action) {
                 HomeUiAction.RequestNotificationPermission -> permissionAccess.request()
                 HomeUiAction.OpenNotificationSettings -> permissionAccess.openSettings()
-                HomeUiAction.ShowChangeError, HomeUiAction.ShowNotificationsOn -> Unit
+                // Why: Android has no quiet delivery, and never reports it can ask quietly.
+                HomeUiAction.ShowChangeError,
+                HomeUiAction.ShowNotificationsOn,
+                HomeUiAction.RequestQuietNotifications,
+                -> Unit
             }
         }
     }

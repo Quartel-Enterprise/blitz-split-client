@@ -233,8 +233,10 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
 | `recovery_code_card_dismissed` | none | That card's ✕ | `:feature:groups` |
-| `notification_prompt_turn_on_clicked` | `prompt` (`soft_ask`, `ask_again`, `blocked`) | "Turn on" on Home's notification card, while it shows: the system's prompt, or its settings once blocked | `:feature:groups` |
-| `notification_prompt_dismissed` | `prompt` (`soft_ask`, `ask_again`, `blocked`) | "Not now" on that card, while it shows | `:feature:groups` |
+| `notification_prompt_shown` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | Home's notification card comes up, whatever brought it (a group, the permission read, three weeks gone): once per showing, decided by the ViewModel, never on a redraw nor on each return to Home | `:feature:groups` |
+| `notification_prompt_turn_on_clicked` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Turn on" on Home's notification card, while it shows: the system's prompt, or its settings once blocked | `:feature:groups` |
+| `notification_prompt_dismissed` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Not now" on that card, while it shows | `:feature:groups` |
+| `notification_permission_answered` | `source` (`home`, `notification_settings`), `is_granted`, and from Home `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | The first check of the permission after the app asked: Home's "Turn on" (the system's prompt, or back from its settings), or Notifications asking (a Push turned on while never asked or quiet, "Turn on" on its notice). It ends the funnel the tap began; `is_granted` is false for a refusal, a dialog dismissed and Apple's quiet delivery alike | `:feature:groups`, `:feature:notification_settings` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
@@ -468,3 +470,5 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |
 | `notification_ask_again_clicked` | none | The notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more | `:feature:notification_settings` |
+| `notification_quiet_turn_on_clicked` | none | The notice's "Turn on" while Apple delivers quietly, which shows its full prompt for banners and sounds | `:feature:notification_settings` |
+| `notification_channel_settings_clicked` | `type` (`bills`, `payments`, `comments`, `people_and_groups`, `payment_requests`, `balance_reminder`) | "Open settings" on a row whose channel Android silenced, which opens that channel's settings | `:feature:notification_settings` |

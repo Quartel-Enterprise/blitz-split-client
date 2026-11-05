@@ -191,7 +191,8 @@ class HomePresenter {
                 HomeUiAction.ShowChangeError -> "change-error"
                 HomeUiAction.ShowNotificationsOn -> "notifications-on"
                 HomeUiAction.RequestNotificationPermission -> "request-notification-permission"
-                HomeUiAction.OpenNotificationSettings -> null
+                // Why: Apple's quiet delivery: a browser has none, and never reports it can ask quietly.
+                HomeUiAction.OpenNotificationSettings, HomeUiAction.RequestQuietNotifications -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)

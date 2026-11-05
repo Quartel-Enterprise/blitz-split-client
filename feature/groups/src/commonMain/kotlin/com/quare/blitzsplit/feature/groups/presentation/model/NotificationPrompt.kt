@@ -10,4 +10,7 @@ enum class NotificationPrompt {
 
     // Why: only the system settings can allow them: "Turn on" opens them (the web says where instead).
     BLOCKED,
+
+    // Why: Apple, delivered quietly to Notification Center: "Turn on" brings its full prompt, for banners and sounds.
+    QUIET,
 }

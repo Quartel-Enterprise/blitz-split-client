@@ -302,6 +302,8 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     isRefreshing = false,
     activityUnreadCount = 3,
     notificationPermission = null,
+    canAskQuietly = false,
+    hasAskedQuietly = false,
     isNotificationPromptSnoozed = false,
 )
 

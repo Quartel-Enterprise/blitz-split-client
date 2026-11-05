@@ -394,6 +394,8 @@ class HomeUiStateTest {
         showsRecoveryCodeCard: Boolean = false,
         showsRecoveryCodePrompt: Boolean = false,
         notificationPermission: NotificationPermission? = null,
+        canAskQuietly: Boolean = false,
+        hasAskedQuietly: Boolean = false,
         isNotificationPromptSnoozed: Boolean = false,
     ): HomeUiState = HomeUiState(
         displayName = "Pierre",
@@ -422,6 +424,8 @@ class HomeUiStateTest {
         isRefreshing = false,
         activityUnreadCount = 0,
         notificationPermission = notificationPermission,
+        canAskQuietly = canAskQuietly,
+        hasAskedQuietly = hasAskedQuietly,
         isNotificationPromptSnoozed = isNotificationPromptSnoozed,
     )
 }

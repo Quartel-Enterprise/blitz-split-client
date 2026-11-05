@@ -6,6 +6,10 @@
     <string name="notification_settings_open_settings">Open settings</string>
     <string name="notification_settings_refused_body">Android lets you allow them once more to get the pushes below. The bell keeps working.</string>
     <string name="notification_settings_turn_on">Turn on</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blocked in Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Open Android settings for %1$s</string>
     <string name="notification_settings_section">Notify me about</string>
     <string name="notification_settings_push">Push</string>
     <string name="notification_settings_in_app">In app</string>

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.feature.notificationsettings.presentation.model.Noti
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
 
 class JsNotificationToggle(
@@ -55,7 +56,7 @@ class NotificationSettingsPresenter {
                                     JsNotificationToggle(
                                         channel = channel.name,
                                         isOn = state.isEnabled(type, channel),
-                                        isEnabled = state.areTogglesEnabled(channel),
+                                        isEnabled = state.isToggleEnabled(type, channel),
                                     ).takeIf { state.hasToggle(type, channel) }
                                 }.toTypedArray(),
                         )
@@ -69,10 +70,12 @@ class NotificationSettingsPresenter {
     }
 
     fun observeActions(onAction: (JsNotificationSettingsAction) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.map { action ->
+        val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 NotificationSettingsUiAction.RequestPermission -> JsNotificationSettingsAction("request-permission")
                 NotificationSettingsUiAction.OpenSystemSettings -> JsNotificationSettingsAction("open-settings")
+                // Why: Android's channels only; the web never reports a row blocked.
+                is NotificationSettingsUiAction.OpenChannelSettings -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)

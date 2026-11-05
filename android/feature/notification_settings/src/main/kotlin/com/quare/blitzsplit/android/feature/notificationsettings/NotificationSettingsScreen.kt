@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
@@ -18,18 +19,23 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinVi
     val permissionAccess = rememberNotificationPermissionAccess { permission ->
         viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission))
     }
-    // Why: on every return too, since the person may have changed it in the system settings.
-    LifecycleResumeEffect(viewModel, permissionAccess) {
+    val context = LocalContext.current
+    // Why: on every return too, since the person may have changed it, or silenced a channel, in the system settings.
+    LifecycleResumeEffect(viewModel, permissionAccess, context) {
         viewModel.onEvent(
             NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read()),
         )
+        viewModel.onEvent(
+            NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(PushChannel.readBlockedTypes(context)),
+        )
         onPauseOrDispose {}
     }
-    LaunchedEffect(viewModel, permissionAccess) {
+    LaunchedEffect(viewModel, permissionAccess, context) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 NotificationSettingsUiAction.RequestPermission -> permissionAccess.request()
                 NotificationSettingsUiAction.OpenSystemSettings -> permissionAccess.openSettings()
+                is NotificationSettingsUiAction.OpenChannelSettings -> PushChannel.of(action.type).openSettings(context)
             }
         }
     }

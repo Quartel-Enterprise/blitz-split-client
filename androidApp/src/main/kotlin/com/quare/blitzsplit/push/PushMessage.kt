@@ -2,6 +2,7 @@ package com.quare.blitzsplit.push
 
 import androidx.annotation.StringRes
 import com.quare.blitzsplit.R
+import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
 
 /*
  * Why: the server sends each message's kind and the words that change in it, never a sentence, so the device words

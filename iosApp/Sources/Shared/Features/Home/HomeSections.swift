@@ -319,16 +319,40 @@ struct HomeNotificationCard: View {
     let send: (any HomeUiEvent) -> Void
 
     var body: some View {
-        let isBlocked = prompt == .blocked
         HomeActionCard(
-            systemImage: isBlocked ? "bell.slash" : "bell.badge",
-            title: isBlocked ? "Notifications are off" : "Know when a bill comes in",
-            message: isBlocked ? HomeCopy.notificationsOffMessage : String(localized: "Get notified when someone adds a bill with you or marks a payment to you."),
+            systemImage: symbol,
+            title: title,
+            message: message,
             secondary: "Not now",
             primary: "Turn on",
             onSecondary: { send(HomeUiEventOnNotificationPromptDismissed.shared) },
             onPrimary: { send(HomeUiEventOnNotificationPromptTurnOnClicked.shared) },
         )
+    }
+
+    private var symbol: String {
+        switch prompt {
+        case .blocked: "bell.slash"
+        case .quiet: "bell"
+        default: "bell.badge"
+        }
+    }
+
+    private var title: LocalizedStringKey {
+        switch prompt {
+        case .blocked: "Notifications are off"
+        case .quiet: "Notifications arrive quietly"
+        default: "Know when a bill comes in"
+        }
+    }
+
+    /// Quiet: delivered to Notification Center with no prompt, where "Turn on" asks for banners and sounds.
+    private var message: String {
+        switch prompt {
+        case .blocked: HomeCopy.notificationsOffMessage
+        case .quiet: String(localized: "They go to Notification Center without a sound or banner. Turn them on to see bills as they come in.")
+        default: String(localized: "Get notified when someone adds a bill with you or marks a payment to you.")
+        }
     }
 }
 

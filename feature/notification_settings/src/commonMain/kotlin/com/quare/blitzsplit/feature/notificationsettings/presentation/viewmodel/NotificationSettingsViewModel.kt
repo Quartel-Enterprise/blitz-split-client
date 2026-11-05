@@ -54,6 +54,9 @@ class NotificationSettingsViewModel(
     val stateWatcher: FlowWatcher<NotificationSettingsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<NotificationSettingsUiAction> = FlowWatcher(uiAction)
 
+    // Why: the app asked the system, and the next check of the permission says how it answered.
+    private var awaitsPermissionAnswer = false
+
     init {
         combine(observeNotificationPreferences(), observeFirstDownload()) { preferences, firstDownload ->
             if (firstDownload != null) Loadable.Loading else preferences.toLoaded()
@@ -65,10 +68,10 @@ class NotificationSettingsViewModel(
         when (event) {
             NotificationSettingsUiEvent.OnBackClicked -> leave()
 
-            is NotificationSettingsUiEvent.OnPermissionChecked -> uiState.update {
-                it.copy(
-                    permission = event.permission,
-                )
+            is NotificationSettingsUiEvent.OnPermissionChecked -> checkPermission(event.permission)
+
+            is NotificationSettingsUiEvent.OnSystemBlockedTypesChecked -> uiState.update {
+                it.copy(systemBlockedTypes = event.types)
             }
 
             is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.channel, event.isEnabled)
@@ -77,7 +80,17 @@ class NotificationSettingsViewModel(
 
             NotificationSettingsUiEvent.OnAskAgainClicked -> if (uiState.value.canAskAgain) {
                 trackEvent("notification_ask_again_clicked", emptyMap())
-                emit(NotificationSettingsUiAction.RequestPermission)
+                requestPermission()
+            }
+
+            NotificationSettingsUiEvent.OnQuietTurnOnClicked -> if (uiState.value.showsQuietNotice) {
+                trackEvent("notification_quiet_turn_on_clicked", emptyMap())
+                requestPermission()
+            }
+
+            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> if (uiState.value.isBlockedBySystem(event.type)) {
+                trackEvent("notification_channel_settings_clicked", mapOf("type" to event.type))
+                emit(NotificationSettingsUiAction.OpenChannelSettings(event.type))
             }
         }
     }
@@ -88,9 +101,9 @@ class NotificationSettingsViewModel(
     }
 
     /*
-     * Why: the system is asked only once a push is turned on, and only if it never was; the bell needs no permission.
-     * With the choices still loading or the permission unknown (or, for a push, denied), the toggles are disabled,
-     * so a tap that still arrives changes nothing.
+     * Why: the system is asked only once a push is turned on, and only if it never was (or Apple delivers quietly); the
+     * bell needs no permission. With the choices still loading or the permission unknown (or, for a push, denied, all or
+     * the row's channel), the toggles are disabled, so a tap that still arrives changes nothing.
      */
     private fun toggle(
         type: NotificationType,
@@ -98,7 +111,7 @@ class NotificationSettingsViewModel(
         isEnabled: Boolean,
     ) {
         val state = uiState.value
-        if (!state.areTogglesEnabled(channel) || !state.hasToggle(type, channel)) return
+        if (!state.isToggleEnabled(type, channel) || !state.hasToggle(type, channel)) return
         trackEvent("notification_toggled", mapOf("type" to type, "channel" to channel, "is_enabled" to isEnabled))
         viewModelScope.launch {
             // Why: what came while the bell was off stays read once it is back on, as it showed meanwhile.
@@ -109,10 +122,30 @@ class NotificationSettingsViewModel(
                 isEnabled = isEnabled,
             )
         }
+        // Why: Apple's full prompt too while it delivers quietly, for banners and sounds.
         if (isEnabled && channel == NotificationChannel.PUSH &&
-            state.permission == NotificationPermission.NOT_DETERMINED
+            (state.permission == NotificationPermission.NOT_DETERMINED || state.showsQuietNotice)
         ) {
-            emit(NotificationSettingsUiAction.RequestPermission)
+            requestPermission()
+        }
+    }
+
+    private fun requestPermission() {
+        awaitsPermissionAnswer = true
+        emit(NotificationSettingsUiAction.RequestPermission)
+    }
+
+    private fun checkPermission(permission: NotificationPermission) {
+        uiState.update { it.copy(permission = permission) }
+        if (awaitsPermissionAnswer) {
+            awaitsPermissionAnswer = false
+            trackEvent(
+                "notification_permission_answered",
+                mapOf(
+                    "source" to "notification_settings",
+                    "is_granted" to (permission == NotificationPermission.GRANTED),
+                ),
+            )
         }
     }
 

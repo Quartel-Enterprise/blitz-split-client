@@ -3,6 +3,7 @@ package com.quare.blitzsplit.push
 import android.content.Context
 import com.google.firebase.messaging.FirebaseMessaging
 import com.quare.blitzsplit.BuildConfig
+import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice

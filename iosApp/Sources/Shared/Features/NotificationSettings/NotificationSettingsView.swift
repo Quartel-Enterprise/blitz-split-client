@@ -92,6 +92,12 @@ struct NotificationSettingsSections: View {
                         model.send(NotificationSettingsUiEventOnOpenSettingsClicked.shared)
                     }
                 }
+            } else if state.showsQuietNotice {
+                Section {
+                    QuietDeliveryNotice {
+                        model.send(NotificationSettingsUiEventOnQuietTurnOnClicked.shared)
+                    }
+                }
             }
             Section {
                 ForEach(state.types, id: \.self) { type in
@@ -183,7 +189,7 @@ private struct NotificationRow: View {
             // takes only its own taps, and draws the circle
             .buttonStyle(.bordered)
             .buttonBorderShape(.circle)
-            .disabled(!state.areTogglesEnabled(channel: channel))
+            .disabled(!state.isToggleEnabled(type: type, channel: channel))
             .accessibilityLabel(Text("\(Text(type.title)), \(Text(channel.title))"))
         }
     }
@@ -226,6 +232,37 @@ private struct PermissionDeniedNotice: View {
                 Text("Open Settings")
                     .frame(maxWidth: .infinity)
                 #endif
+            }
+            .buttonStyle(.glassProminent)
+            .prominentLabel()
+            #if os(iOS)
+            .controlSize(.large)
+            #endif
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+/// Delivered quietly to Notification Center (provisional): "Turn on" brings the system's full prompt, for banners and
+/// sounds.
+private struct QuietDeliveryNotice: View {
+    let turnOn: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "bell")
+                    .foregroundStyle(Palette.accent)
+                    .frame(width: 30, height: 30)
+                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 8))
+                Text("Blitz Split notifications arrive quietly in Notification Center, without a sound or banner.")
+            }
+            .accessibilityElement(children: .combine)
+            Button(action: turnOn) {
+                Text("Turn on")
+                    #if os(iOS)
+                    .frame(maxWidth: .infinity)
+                    #endif
             }
             .buttonStyle(.glassProminent)
             .prominentLabel()

@@ -6,6 +6,10 @@
     <string name="notification_settings_open_settings">Abrir configurações</string>
     <string name="notification_settings_refused_body">O Android deixa permitir mais uma vez para receber os pushes abaixo. O sino continua funcionando.</string>
     <string name="notification_settings_turn_on">Ativar</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Bloqueado no Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Abrir as configurações de %1$s no Android</string>
     <string name="notification_settings_section">Avisar sobre</string>
     <string name="notification_settings_push">Push</string>
     <string name="notification_settings_in_app">No app</string>
