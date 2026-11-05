@@ -25,11 +25,15 @@ The home's four tabs and the web's and the Mac's shell.
     profile, a group on a phone upright) covers them as it comes in, and they go once no screen with them is left.
     Each layout keeps its bars: the bottom bar on a phone upright, the rail without labels on a phone lying down and a
     tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group
-    in the pane by the list nor on a tabletop's group. Groups and Contacts keep their state across tab switches, as
-    iOS keeps Groups: coming back shows what they had (the list, its scroll, the person picked) instead of loading
-    again. Balances opens anew each time, on the filter it was asked for ("See balances" on all, Home's cards on
-    theirs). Apple keeps one `TabView` (the iPad's and Mac's sidebar) above the tabs, and the web one frame
-    (`HomeFrame`), so their bars never redraw either.
+    in the pane by the list nor on a tabletop's group. Apple keeps one `TabView` (the iPad's and Mac's sidebar) above
+    the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
+  - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
+    read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
+    (`MainTabView`). Android keeps Groups and Contacts the same way (their list, its scroll, the person picked), and
+    opens Balances afresh. Balances still comes back on the filter it was opened with, "All" from its tab, on every
+    platform, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with another
+    filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is the
+    route's. The web opens each tab afresh, its picks and opened rows included.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot
