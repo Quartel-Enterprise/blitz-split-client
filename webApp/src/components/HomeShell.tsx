@@ -1,6 +1,6 @@
 import { Bell, ChevronRight, CircleDollarSign, House, Search, UserRound, Users } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
@@ -59,16 +59,22 @@ export function HomeTabCrumb({ tab, onOpen }: { tab: HomeTab; onOpen: (tab: Home
 
 /**
  * Which page the back stack shows (App's StackLayers), so a page fades in once as it opens: a screen that swaps its
- * skeleton for its page mounts a new frame, which must not fade in again.
+ * skeleton for its page keeps its key, and never fades in again.
  */
 export const PageKeyContext = createContext('')
 
-// Why: the last page that came in, read at a frame's mount; module state, since each page mounts its own frame.
+// Why: the last page that came in, read as a page (`HomeShell`) mounts with its content; module state, so a page
+// mounted again for the same key (its skeleton swapped for it, or back from Mapa de categorias to Perfil) never fades
+// in twice.
 let enteredPageKey: string | null = null
 
+/**
+ * Whether the page fades in (`page-enter`) under the frame, which stays put: decided once as the page mounts with its
+ * content, not as the back stack changes, since the page draws nothing until its presenter's state is read.
+ */
 function useEntersAnimated(): boolean {
   const pageKey = useContext(PageKeyContext)
-  // Why: decided once at mount, so a page that changes its key without remounting (Contatos' profile) never fades.
+  // Why: decided once at mount, so a page that changes its key without remounting never fades.
   const [entersAnimated] = useState(() => pageKey !== enteredPageKey)
   useEffect(() => {
     enteredPageKey = pageKey
@@ -126,27 +132,8 @@ export interface ShellOpenGroups {
   onOpen: (groupId: string) => void
 }
 
-/**
- * The home's frame around Início, Grupos, Saldos and Contatos, and around the pages they open (Atividade, the group's
- * pages, Estatísticas, Perfil): desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and the phone a
- * top bar with a bottom navigation, as the canvas draws them. The selected tab names the page; outside the tabs it
- * says where the page was opened from, and its click goes back there.
- */
-export function HomeShell({
-  selected,
-  isProfileSelected = false,
-  profile,
-  onTab,
-  onProfile,
-  onBrand,
-  search,
-  bell,
-  openGroups,
-  phoneBars = 'home',
-  isOutsideTabs = phoneBars !== 'home',
-  children,
-  overlays,
-}: {
+/** What a page tells the home's frame to draw around it: the tab selected, who is signed in, the bars and their clicks. */
+export interface HomeShellChrome {
   // Why: undefined on Perfil, which no tab opened: its footer is selected instead.
   selected?: HomeTab
   isProfileSelected?: boolean
@@ -169,19 +156,65 @@ export function HomeShell({
   // Why: a page outside the tabs goes back to the tab it sits in, which a tab's own page never needs; a contact's
   // profile keeps the brand's bar outside them.
   isOutsideTabs?: boolean
-  children: ReactNode
-  overlays?: ReactNode
-}) {
+}
+
+/**
+ * Where a page hands its chrome to the frame around it (`HomeFrame`); null once the page left. A page App's
+ * `FRAME_PAGES` doesn't list has no frame, and draws without one.
+ */
+export const HomeShellChromeContext = createContext<((chrome: HomeShellChrome | null) => void) | null>(null)
+
+/**
+ * A page of the home's frame: Início, Grupos, Saldos and Contatos, and the pages they open (Atividade, the group's
+ * pages, Estatísticas, Perfil). It draws only the page and its dialogs, and hands the rest to the frame (`HomeFrame`),
+ * which stays mounted from a page to the next, so going to another tab swaps the content alone.
+ */
+export function HomeShell({ children, overlays, ...chrome }: HomeShellChrome & { children: ReactNode; overlays?: ReactNode }) {
+  const handChrome = useContext(HomeShellChromeContext)
+  const entersAnimated = useEntersAnimated()
+  // Why: before the browser paints, so the frame never draws this page with the previous one's tab or bars.
+  useLayoutEffect(() => {
+    handChrome?.(chrome)
+  })
+  useLayoutEffect(() => () => handChrome?.(null), [handChrome])
+  return (
+    <>
+      {/* Why: a new page fades in under the frame, which stays put. */}
+      <div className={cn('flex min-w-0 flex-1 flex-col', entersAnimated && 'page-enter')}>{children}</div>
+      {overlays}
+    </>
+  )
+}
+
+/**
+ * The home's frame: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and the phone a top bar with a
+ * bottom navigation, as the canvas draws them. The selected tab names the page; outside the tabs it says where the
+ * page was opened from, and its click goes back there.
+ */
+export function HomeShellView({
+  selected,
+  isProfileSelected = false,
+  profile,
+  onTab,
+  onProfile,
+  onBrand,
+  search,
+  bell,
+  openGroups,
+  phoneBars = 'home',
+  isOutsideTabs = phoneBars !== 'home',
+  className,
+  children,
+}: HomeShellChrome & { className?: string; children: ReactNode }) {
   const account = accountLabels[profile?.accountProvider as AccountProvider] ?? 'groups_noAccount'
   const select = (tab: HomeTab) => {
     if (tab !== selected || isOutsideTabs) onTab(tab)
   }
   // Why: a screen whose presenter can't count the logo yet opens Home as its tab does.
   const openBrand = onBrand ?? (() => select('home'))
-  const entersAnimated = useEntersAnimated()
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
   return (
-    <div className="flex min-h-dvh">
+    <div className={cn('flex min-h-dvh', className)}>
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <button
           aria-label={t('appName')}
@@ -278,8 +311,7 @@ export function HomeShell({
           </header>
         )}
 
-        {/* Why: a new page fades in under the frame, which stays put (each page mounts its own shell). */}
-        <div className={cn('flex min-w-0 flex-1 flex-col', entersAnimated && 'page-enter')}>{children}</div>
+        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
 
         {phoneBars !== 'none' && (
           <nav aria-label={t('groups_mainNavigation')} className={cn('sticky bottom-0 grid h-16 border-t bg-card md:hidden', search ? 'grid-cols-5' : 'grid-cols-4')}>
@@ -304,8 +336,6 @@ export function HomeShell({
           </nav>
         )}
       </div>
-
-      {overlays}
     </div>
   )
 }

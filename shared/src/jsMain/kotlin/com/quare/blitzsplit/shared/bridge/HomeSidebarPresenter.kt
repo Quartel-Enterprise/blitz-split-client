@@ -24,7 +24,7 @@ class JsHomeSidebarState(
     val canSearch: Boolean,
 )
 
-// Why: the home's sidebar around the group's pages, Estatísticas and Perfil, which keep it while they change.
+// Why: the home's sidebar around every page of its frame (tabs, group pages, Estatísticas, Perfil), kept as they change.
 class HomeSidebarPresenter {
     private val holder = ViewModelHolder(HomeSidebarViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel

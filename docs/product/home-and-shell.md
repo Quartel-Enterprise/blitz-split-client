@@ -48,7 +48,11 @@ The home's four tabs and the web's and the Mac's shell.
     content at the same width, 1152 px at most (`pageContentClass`; Balances, Contacts and Activity keep their one
     column at 768 px under 1024 px). A new page (a tab, a group, Profile,
     the welcome's steps) comes in with a short fade and rise (180 ms, `page-enter`) under the frame, which stays put;
-    a group's own tabs still change with no transition, and reduced motion shows the page at once.
+    a group's own tabs still change with no transition, and reduced motion shows the page at once. The frame (the
+    sidebar, the tablet's rail, the phone's top bar and bottom navigation) is mounted once for every page in it
+    (`HomeFrame`): going to another tab, a group, Activity or Profile swaps only the content, never redraws the frame,
+    and who is signed in and Search never blink while the new page reads its own state (they come from the sidebar's
+    `HomeSidebarViewModel` meanwhile).
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.

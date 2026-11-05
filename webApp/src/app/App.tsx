@@ -2,7 +2,7 @@ import { AppPresenter, type JsBillLinkNotice, type JsRoute } from 'blitzsplit-sh
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { PageKeyContext } from '@/components/HomeShell'
-import { HomeSidebarProvider } from '@/components/HomeSidebar'
+import { HomeFrame, HomeSidebarProvider } from '@/components/HomeSidebar'
 import { AppSkeleton } from '@/components/PageSkeletons'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
@@ -71,7 +71,7 @@ export function App() {
   if (!isReady || !backStack) return <AppSkeleton />
   return (
     <>
-      <HomeSidebarProvider isActive={backStack.some((route) => SHELL_PAGES.has(route.name))}>
+      <HomeSidebarProvider isActive={backStack.some((route) => FRAME_PAGES.has(route.name))}>
         <StackLayers backStack={backStack} />
       </HomeSidebarProvider>
       {app && billLinkNotice && <BillLinkNoticeDialog notice={billLinkNotice} onDismiss={() => app.dismissBillLinkNotice()} />}
@@ -106,8 +106,19 @@ function BillLinkNoticeDialog({ notice, onDismiss }: { notice: string; onDismiss
   )
 }
 
-// Why: the pages that draw inside the home's frame (`PageShell`), which read the sidebar.
-const SHELL_PAGES = new Set(['activity', 'group-detail', 'group-stats', 'contact-profile', 'profile', 'edit-profile'])
+// Why: the pages that draw inside the home's frame (`HomeFrame`): the four tabs and the pages they open.
+const FRAME_PAGES = new Set([
+  'home',
+  'groups',
+  'global-balances',
+  'contacts',
+  'activity',
+  'group-detail',
+  'group-stats',
+  'contact-profile',
+  'profile',
+  'edit-profile',
+])
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
@@ -180,7 +191,14 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   return (
     <>
       <PageKeyContext.Provider value={pageKey}>
-        <Screen name={pageName} route={page} />
+        {/* Why: one frame while its pages follow each other here, so a tab or a group swaps the content alone. */}
+        {FRAME_PAGES.has(pageName) ? (
+          <HomeFrame>
+            <Screen name={pageName} route={page} />
+          </HomeFrame>
+        ) : (
+          <Screen name={pageName} route={page} />
+        )}
       </PageKeyContext.Provider>
       {panelBill && (
         <BillDetailSheet key={`bill:${panelBill.groupId}/${panelBill.expenseId}`} route={panelBill} isCovered={panelBill !== top && !isShareBill} />

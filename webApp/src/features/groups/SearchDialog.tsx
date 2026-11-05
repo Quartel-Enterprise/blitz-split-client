@@ -17,6 +17,9 @@ import { cn } from '@/lib/utils'
 /** "⌘K" on a Mac, iPhone or iPad, "Ctrl K" anywhere else, as the sidebar's "Buscar…" shows it. */
 export const searchShortcut = isAppleDevice() ? '⌘K' : 'Ctrl K'
 
+/** The shortcut a home tab's "Buscar" shows and answers to, as the frame draws it. */
+export const homeSearchKeys = { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K' }
+
 /** What the dialog asks of whoever holds the search: Grupos' own, or the search route over the other tabs. */
 export interface SearchActions {
   closeSearch(): void
@@ -46,7 +49,7 @@ export function useHomeSearch(presenter: { openSearch(): void } | null, canSearc
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [presenter, canSearch])
   if (!presenter || !canSearch) return undefined
-  return { shortcut: searchShortcut, keyShortcuts: searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K', onOpen: () => presenter.openSearch() }
+  return { ...homeSearchKeys, onOpen: () => presenter.openSearch() }
 }
 
 /** "Buscar" over Início, Saldos, Contatos or Atividade (`Route.Search`): what is picked opens in its place. */
