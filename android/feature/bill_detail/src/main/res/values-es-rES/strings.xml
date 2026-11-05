@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bill_detail_add_photo">Añadir foto</string>
+    <string name="bill_detail_take_photo">Hacer foto</string>
+    <string name="bill_detail_history_amount">cambió el importe</string>
+    <string name="bill_detail_field_amount">Importe</string>
+    <string name="bill_detail_split_amount">Importes</string>
+    <plurals name="bill_detail_mode_amount">
+        <item quantity="one">Por importe entre %d</item>
+        <item quantity="many">Por importe entre %d</item>
+        <item quantity="other">Por importe entre %d</item>
+    </plurals>
+</resources>

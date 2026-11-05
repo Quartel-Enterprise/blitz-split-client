@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="split_bill_done">Hecho</string>
+    <string name="split_bill_amount_error">Introduce cuánto costó el gasto.</string>
+    <string name="split_bill_hint_default">La predeterminada está en Editar grupo › División predeterminada. Los gastos ya añadidos no cambian.</string>
+    <string name="split_bill_items_add">Añadir artículo</string>
+    <string name="split_bill_items_add_difference">Añadir un artículo de %s</string>
+    <string name="split_bill_items_loose_all">Toca cada artículo y marca quién lo consumió. Hecho se habilita cuando todos los artículos tengan a alguien.</string>
+    <string name="split_bill_item_nobody_sub">Marca quién consumió este artículo. Hecho se habilita cuando tenga a alguien.</string>
+    <string name="split_bill_category_by_term">%1$s por la palabra “%2$s” de tu mapa. Toca el icono para cambiarla.</string>
+    <string name="split_bill_category_no_term">Ninguna palabra de tu mapa. El gasto queda en Otros; toca el icono para elegir una.</string>
+    <string name="split_bill_category_picked">Categoría: %s. Toca el icono para cambiarla.</string>
+    <string name="split_bill_category_hold_hint">Mantén pulsada una categoría del grupo para editarla o eliminarla.</string>
+    <string name="split_bill_category_by_receipt">%1$s según el recibo. Toca el icono para cambiarla.</string>
+    <string name="split_bill_receipt_retake">Hacer otra foto</string>
+    <string name="split_bill_receipt_source_camera">Hacer foto</string>
+    <string name="split_bill_receipt_camera_shutter">Hacer foto</string>
+    <string name="split_bill_receipt_camera_settings">Abrir ajustes</string>
+    <string name="split_bill_amount">Importe</string>
+    <plurals name="split_bill_mode_amount_among">
+        <item quantity="one">Por importe entre %d</item>
+        <item quantity="many">Por importe entre %d</item>
+        <item quantity="other">Por importe entre %d</item>
+    </plurals>
+    <string name="split_bill_mode_amount">Importes</string>
+    <plurals name="split_bill_status_without_value">
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s no tiene importe.</item>
+        <item quantity="many">%s no tienen importe.</item>
+        <item quantity="other">%s no tienen importe.</item>
+    </plurals>
+    <string name="split_bill_status_without_value_me">No tienes importe.</string>
+    <string name="split_bill_hint_amount">Quien quede en %s queda fuera del gasto. Si cambias el total después, los importes se reajustan.</string>
+    <string name="split_bill_row_no_value">Sin importe</string>
+    <string name="split_bill_amount_proportional">Si cambias el total, una división por importe se recalcula en proporción.</string>
+    <string name="split_bill_default_now_amount">por importes</string>
+    <string name="split_bill_items_row_amount">Por importe</string>
+    <string name="split_bill_item_mode_amount">Importe</string>
+    <string name="split_bill_scan_receipt_help">Completa el importe, la fecha y la descripción a partir de la foto.</string>
+    <string name="split_bill_receipt_camera_hint">Encuadra todo el recibo. Completamos el importe, la fecha y la descripción; tú lo revisas antes de guardar.</string>
+</resources>

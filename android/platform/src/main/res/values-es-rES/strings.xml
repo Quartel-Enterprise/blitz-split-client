@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_camera_denied">Permite el acceso a la cámara en Ajustes para hacer una foto.</string>
+    <string name="platform_camera_settings">Ajustes</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="members_personal_message_bills">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en el gasto añadido hasta ahora. Funciona una sola vez.</item>
+        <item quantity="many">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en los %3$d gastos añadidos hasta ahora. Funciona una sola vez.</item>
+        <item quantity="other">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en los %3$d gastos añadidos hasta ahora. Funciona una sola vez.</item>
+    </plurals>
+    <string name="members_remove_message">%s aún no se ha unido. Puedes volver a añadirle más tarde.</string>
+    <string name="members_add">Añadir persona</string>
+</resources>

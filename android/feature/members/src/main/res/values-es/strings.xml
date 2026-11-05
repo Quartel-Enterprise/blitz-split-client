@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="members_link_title">Enlace de invitación</string>
+    <string name="members_link_pending">Aún no se ha creado</string>
+    <string name="members_share">Compartir</string>
+    <string name="members_me">%s (tú)</string>
+    <string name="members_status_this_device">Este dispositivo</string>
+    <string name="members_status_joined">Se unió</string>
+    <string name="members_status_not_joined">Aún no se une</string>
+    <string name="members_options">Opciones de %s</string>
+    <string name="members_rename">Cambiar nombre</string>
+    <string name="members_personal_invite">Invitación personal para %s</string>
+    <string name="members_personal_message">Quien abra este enlace entra directamente como %s, sin elegir de la lista. Funciona una sola vez.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en el gasto agregado hasta ahora. Funciona una sola vez.</item>
+        <item quantity="many">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en los %3$d gastos agregados hasta ahora. Funciona una sola vez.</item>
+        <item quantity="other">Quien abra este enlace entra directamente como %1$s, sin elegir de la lista, y ya ve su parte de %2$s en los %3$d gastos agregados hasta ahora. Funciona una sola vez.</item>
+    </plurals>
+    <string name="members_personal_copy">Copiar enlace</string>
+    <string name="members_personal_copied">Copiado</string>
+    <string name="members_personal_share">Compartir con %s</string>
+    <string name="members_personal_share_message">Únete al grupo %1$s como %2$s en Blitz Split: %3$s</string>
+    <string name="members_remove">Quitar del grupo</string>
+    <string name="members_remove_joined">%s ya se unió al grupo</string>
+    <string name="members_remove_title">¿Quitar a %s del grupo?</string>
+    <string name="members_remove_message">%s aún no se ha unido. Puedes volver a agregarle más tarde.</string>
+    <string name="members_remove_confirm">Quitar</string>
+    <string name="members_release">Liberar nombre</string>
+    <string name="members_release_title">¿Liberar el nombre de %s?</string>
+    <string name="members_release_message">Quien se unió como %1$s sale del grupo. El nombre, el color y los gastos de %1$s se conservan, y se podrá elegir a %1$s de nuevo mediante el enlace del grupo.</string>
+    <string name="members_release_confirm">Liberar</string>
+    <string name="members_release_error">No se pudo liberar el nombre. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="members_add">Agregar persona</string>
+    <string name="members_invite_instead">¿Tiene la app? Invítalo con el enlace</string>
+    <string name="members_name_label">Nombre</string>
+    <string name="members_name_taken">%s ya está en el grupo. Usa un apodo para distinguirlos.</string>
+    <string name="members_use_nickname">Usar “%s”</string>
+    <string name="members_save">Guardar</string>
+    <string name="members_cancel">Cancelar</string>
+    <string name="members_change_error">No se pudo guardar el cambio. Inténtalo de nuevo.</string>
+    <string name="members_remove_open_balance">%s tiene un saldo pendiente</string>
+    <string name="members_balance_to_get_back">%s por recuperar</string>
+    <string name="members_balance_owes">%s debe</string>
+    <string name="members_balance_settled">Cuentas saldadas</string>
+</resources>

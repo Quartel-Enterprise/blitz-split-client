@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_group_change_icon">Cambiar icono o foto</string>
+    <string name="edit_group_icon_title">Icono del grupo</string>
+    <string name="edit_group_take_photo">Hacer foto</string>
+    <string name="edit_group_use_icon">Usar este icono</string>
+    <string name="edit_group_note">Cualquier persona del grupo puede cambiar el nombre, el icono, el tipo y Simplificar deudas. Actividad muestra quién lo cambió.</string>
+    <string name="default_split_note">Vale para los gastos nuevos. Cada gasto puede cambiarla al momento. Los gastos ya añadidos no cambian.</string>
+    <string name="default_split_exception_add">Añadir excepción</string>
+</resources>

@@ -54,7 +54,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    // Lists English and Portuguese in the system's per-app language setting (Android 13+)
+    // Lists English, Portuguese and Spanish in the system's per-app language setting (Android 13+)
     androidResources {
         generateLocaleConfig = true
     }

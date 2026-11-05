@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_stats_empty_body">Las estadísticas aparecen cuando se añade el primer gasto.</string>
+</resources>

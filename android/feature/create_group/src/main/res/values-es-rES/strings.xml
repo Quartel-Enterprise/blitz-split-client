@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_add_placeholder">Añadir por nombre</string>
+    <string name="create_group_add">Añadir</string>
+    <string name="create_group_no_app_notice">Por ahora nadie necesita la app. Ya puedes añadir gastos para todos y enviar el enlace más tarde.</string>
+    <string name="create_group_take_photo">Hacer foto</string>
+</resources>
