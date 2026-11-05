@@ -93,6 +93,40 @@ private struct ProminentBarButton: View {
 }
 
 #if os(iOS)
+/// A home tab's trailing items (Home, Groups): its two buttons grouped in glass, then "Split a bill" as the bar's
+/// tinted glass item on its own, never a FAB floating over the tab bar. Both go into an iPhone Duo's vertical bar.
+struct TabTrailingItems<Buttons: View>: ToolbarContent {
+    let showsSplitBill: Bool
+    /// Home spells it out where its bar has room (lying down, an iPad); Groups draws its icon alone everywhere.
+    let showsSplitBillTitle: Bool
+    let onSplitBill: () -> Void
+    let buttons: Buttons
+
+    init(
+        showsSplitBill: Bool,
+        showsSplitBillTitle: Bool,
+        onSplitBill: @escaping () -> Void,
+        @ViewBuilder buttons: () -> Buttons,
+    ) {
+        self.showsSplitBill = showsSplitBill
+        self.showsSplitBillTitle = showsSplitBillTitle
+        self.onSplitBill = onSplitBill
+        self.buttons = buttons()
+    }
+
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .primaryAction) { buttons }
+            .prefersVerticalBar()
+        if showsSplitBill {
+            ToolbarSpacer(.fixed, placement: .primaryAction)
+            ToolbarItem(placement: .primaryAction) {
+                SplitBillButton(showsTitle: showsSplitBillTitle, action: onSplitBill)
+            }
+            .prefersVerticalBar()
+        }
+    }
+}
+
 /// A home tab's title (Home, Groups, Balances, Contacts, Activity) shows only in a wide window, an iPad's room, as on
 /// every platform (Pierre's call): there a large title under the floating tab bar names it, since iPadOS hides an
 /// inline one beside the tabs. On an iPhone, where the selected tab already names the screen, the bar shows no title

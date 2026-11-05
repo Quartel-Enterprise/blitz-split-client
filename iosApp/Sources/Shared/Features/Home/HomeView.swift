@@ -61,6 +61,11 @@ struct HomeView: View {
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" under the profile.
     @State private var hasVerticalBar = false
 
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    #endif
+
     private var state: HomeUiState {
         model.state
     }
@@ -107,16 +112,13 @@ struct HomeView: View {
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
-            ToolbarItemGroup(placement: .primaryAction) {
+            TabTrailingItems(
+                showsSplitBill: state.showsSplitBillButton,
+                showsSplitBillTitle: !hasVerticalBar && !isUprightIPhone,
+                onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
+            ) {
                 bellButton
                 profileButton
-            }
-            .prefersVerticalBar()
-            // The bar's tinted glass item at every size: iOS has no FAB floating over the tab bar
-            if state.showsSplitBillButton {
-                ToolbarSpacer(.fixed, placement: .primaryAction)
-                ToolbarItem(placement: .primaryAction) { splitBillButton }
-                    .prefersVerticalBar()
             }
         }
         #else
@@ -201,6 +203,12 @@ struct HomeView: View {
             return nil
         }
         return division.frame
+    }
+
+    /// An iPhone upright, whose bar has the room for "Split a bill"'s icon alone beside the bell and the profile, as
+    /// Groups draws it.
+    private var isUprightIPhone: Bool {
+        horizontalSizeClass == .compact && verticalSizeClass == .regular
     }
     #endif
 
@@ -359,13 +367,13 @@ struct HomeView: View {
         }
     }
 
+    #if os(macOS)
     private var splitBillButton: some View {
-        SplitBillButton(showsTitle: !hasVerticalBar) {
+        SplitBillButton {
             model.send(HomeUiEventOnSplitBillClicked.shared)
         }
     }
 
-    #if os(macOS)
     /// "Try again" while the server doesn't answer, the shortcuts grouped in glass, the profile, and "Split a bill"
     /// as the prominent item, ⌘N.
     @ToolbarContentBuilder
