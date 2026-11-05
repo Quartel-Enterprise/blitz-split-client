@@ -56,7 +56,7 @@ struct MainTabView: View {
                 #endif
             }
             // The shared back stack holds Balances right above Home, where its tab shows
-            Tab("Balances", systemImage: "creditcard", value: MainTab.balances) {
+            Tab("Balances", systemImage: "dollarsign.circle", value: MainTab.balances) {
                 NavigationStack(path: balancesPath) {
                     if let route = balancesRoute {
                         GlobalBalancesView(route: route)

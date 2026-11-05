@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -44,7 +44,7 @@ private val HomeTab.icon: ImageVector
     get() = when (this) {
         HomeTab.HOME -> Icons.Outlined.Home
         HomeTab.GROUPS -> Icons.Outlined.Groups
-        HomeTab.BALANCES -> Icons.Outlined.AccountBalanceWallet
+        HomeTab.BALANCES -> Icons.Outlined.AttachMoney
         HomeTab.CONTACTS -> Icons.Outlined.Person
     }
 
