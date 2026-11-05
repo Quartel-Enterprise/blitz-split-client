@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_add">Añadir término</string>
+    <string name="category_map_add_query">Añadir “%1$s”</string>
+    <string name="category_map_add_in">Añadir término en %1$s</string>
+</resources>

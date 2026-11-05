@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · código de recuperación</string>
+    <string name="platform_export_file_name">blitz-split-datos-%1$s.json</string>
+    <string name="platform_camera_denied">Permite el acceso a la cámara en Configuración para tomar una foto.</string>
+    <string name="platform_camera_settings">Configuración</string>
+</resources>

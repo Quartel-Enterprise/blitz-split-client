@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_settled_body">Nadie te debe y tú no le debes a nadie. Cuando alguien añada un gasto, el saldo aparecerá aquí.</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="split_bill_done">Hecho</string>
+    <string name="split_bill_amount_error">Introduce cuánto costó el gasto.</string>
+    <string name="split_bill_hint_default">La predeterminada está en Editar grupo › División predeterminada. Los gastos ya añadidos no cambian.</string>
+    <string name="split_bill_items_add">Añadir artículo</string>
+    <string name="split_bill_items_add_difference">Añadir un artículo de %s</string>
+    <string name="split_bill_items_loose_all">Toca cada artículo y marca quién lo consumió. Hecho se habilita cuando todos los artículos tengan a alguien.</string>
+    <string name="split_bill_item_nobody_sub">Marca quién consumió este artículo. Hecho se habilita cuando tenga a alguien.</string>
+    <string name="split_bill_category_by_term">%1$s por la palabra “%2$s” de tu mapa. Toca el icono para cambiarla.</string>
+    <string name="split_bill_category_no_term">Ninguna palabra de tu mapa. El gasto queda en Otros; toca el icono para elegir una.</string>
+    <string name="split_bill_category_picked">Categoría: %s. Toca el icono para cambiarla.</string>
+    <string name="split_bill_category_hold_hint">Mantén pulsada una categoría del grupo para editarla o eliminarla.</string>
+    <string name="split_bill_category_by_receipt">%1$s según el recibo. Toca el icono para cambiarla.</string>
+    <string name="split_bill_receipt_retake">Hacer otra foto</string>
+    <string name="split_bill_receipt_source_camera">Hacer foto</string>
+    <string name="split_bill_receipt_camera_shutter">Hacer foto</string>
+    <string name="split_bill_receipt_camera_settings">Abrir ajustes</string>
+</resources>

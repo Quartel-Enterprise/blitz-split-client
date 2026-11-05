@@ -35,7 +35,8 @@ each platform.
       [responsive-layouts.md](responsive-layouts.md)), with `@DevicePreviews` previews wrapped in `BlitzSplitTheme`
 - [ ] The `entry<Route.X>` in `AppNavDisplay`, or a slot the host screen takes when it is drawn inside another
       feature (as `GroupsScreen(recoveryCodeSheet = …)`)
-- [ ] Strings in English in the module's `res/values/strings.xml` and in Portuguese in `res/values-pt/strings.xml`
+- [ ] Strings in English in the module's `res/values/strings.xml`, in Portuguese in `res/values-pt/strings.xml` and in
+      Spanish in `res/values-es/strings.xml` (`values-es-rES` only for what Spain says differently)
 
 ### Apple
 
@@ -46,7 +47,7 @@ each platform.
       differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`; layout follows the
       window's size (`ScreenLayout`), never the idiom (see [responsive-layouts.md](responsive-layouts.md))
 - [ ] The route in `AppRoute` and `RootView`, or the sheet where its host presents it
-- [ ] Strings as English SwiftUI literals with their pt-BR translation in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
+- [ ] Strings as English SwiftUI literals with their pt-BR, es and (where Spain differs) es-ES translations in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
       both `BoraRachar-iOS` and `BoraRachar-macOS`
 
 ### Web

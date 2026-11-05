@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_payment_keys_add">Añadir una clave Pix o Bitcoin</string>
+    <string name="profile_bitcoin_in_sats_detail">Muestra e introduce los montos de bitcoin en sats (1 ₿ = 100 000 000 sats).</string>
+</resources>

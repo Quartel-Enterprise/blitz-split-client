@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="join_pick_subtitle">Elige tu nombre. Verás los gastos ya añadidos para esa persona.</string>
+    <string name="join_pick_new_message">Te unes como miembro nuevo. Los gastos añadidos antes no te incluyen.</string>
+    <string name="join_scan_denied_message">Para leer el código QR, permite que Blitz Split use la cámara en los ajustes del dispositivo. O pega el enlace abajo.</string>
+    <string name="join_scan_open_settings">Abrir ajustes</string>
+</resources>

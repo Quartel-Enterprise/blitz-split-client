@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notificaciones</string>
+    <string name="notification_settings_denied_title">Las notificaciones de Blitz Split están desactivadas en Android.</string>
+    <string name="notification_settings_denied_body">Actívalas en la configuración del sistema para recibir las notificaciones push de abajo. La campana sigue funcionando.</string>
+    <string name="notification_settings_open_settings">Abrir configuración</string>
+    <string name="notification_settings_refused_body">Android te permite activarlas una vez más para recibir las notificaciones push de abajo. La campana sigue funcionando.</string>
+    <string name="notification_settings_turn_on">Activar</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Bloqueadas en Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Abrir la configuración de Android para %1$s</string>
+    <string name="notification_settings_section">Avisarme sobre</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">En la app</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push envía una notificación a este dispositivo. En la app la marca como nueva en la campana y en Actividad; si la desactivas, igual aparece en Actividad, ya leída.</string>
+    <string name="notification_settings_bills">Gastos</string>
+    <string name="notification_settings_bills_detail">Gastos nuevos, editados o eliminados en los que participas</string>
+    <string name="notification_settings_payments">Pagos y cuentas saldadas</string>
+    <string name="notification_settings_payments_detail">Pagos hacia ti o desde ti, y deudas simplificadas</string>
+    <string name="notification_settings_comments">Comentarios</string>
+    <string name="notification_settings_comments_detail">En gastos en los que participas y en hilos donde escribiste</string>
+    <string name="notification_settings_people_and_groups">Personas y grupos</string>
+    <string name="notification_settings_people_and_groups_detail">Quién se une o sale de tus grupos, y qué cambia en ellos</string>
+    <string name="notification_settings_payment_requests">Cobros</string>
+    <string name="notification_settings_payment_requests_detail">Cuando alguien te pide que pagues</string>
+    <string name="notification_settings_balance_reminder">Recordatorio de saldo pendiente</string>
+    <string name="notification_settings_balance_reminder_detail">Una vez por semana, si hay un saldo pendiente</string>
+    <string name="notification_settings_footer">Los avisos llegan cuando hay internet. Para silenciar un grupo, usa el menú dentro de él.</string>
+</resources>

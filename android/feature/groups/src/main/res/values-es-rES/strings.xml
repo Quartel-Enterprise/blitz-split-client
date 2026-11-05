@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="groups_empty_body">Crea un grupo para el viaje, la casa o la barbacoa. Puedes empezar incluso sin internet.</string>
+    <string name="groups_cover_latest_by">%1$s añadió %2$s, %3$s, en %4$s</string>
+    <string name="groups_cover_latest_by_me">Añadiste %1$s, %2$s, en %3$s</string>
+    <string name="groups_home_notifications_body">Recibe una notificación cuando alguien añada un gasto contigo o marque un pago a tu favor.</string>
+    <string name="groups_home_notifications_off_body">Actívalas en los ajustes de Android para enterarte cuando alguien añada un gasto contigo.</string>
+</resources>

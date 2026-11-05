@@ -29,6 +29,10 @@ The feed, unread state, real time and push notifications.
     other events). Comments lists the comments on bills ("Carla commented on Dinner", the text under it as edited,
     "Carla deleted a comment on Dinner" once deleted), which open the bill's screen at the comment; a bill's attachments and its share link show only in its screen's History, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
+  - In Spanish the verb of an Activity row and of a bill's History line is conjugated to "tú" when the user is the
+    actor ("Tú dividiste Cena", "Tú te uniste a Viaje", "Tú cambiaste la categoría"), on every platform: the first word
+    of the verb phrase moves to the second person singular preterite ("dividió" to "dividiste", "se unió a" to "te
+    uniste a", "deshizo" to "deshiciste"); other languages and other people's rows keep the verb as it is.
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

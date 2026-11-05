@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Recordatorio para saldar cuentas</string>
+    <string name="push_bill_created">%1$s agregó “%2$s” contigo</string>
+    <string name="push_bill_edited">%1$s editó “%2$s”</string>
+    <string name="push_bill_deleted">%1$s eliminó “%2$s”</string>
+    <string name="push_comment_added">%1$s comentó en “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s marcó que te pagó</string>
+    <string name="push_payment_to_you">%1$s marcó que %2$s te pagó</string>
+    <string name="push_payment_received_yours">%1$s marcó tu pago como recibido</string>
+    <string name="push_payment_from_you">%1$s marcó que le pagaste a %2$s</string>
+    <string name="push_payment_undone">%1$s deshizo un pago contigo</string>
+    <string name="push_charge_sent">%1$s te envió un recordatorio para saldar cuentas</string>
+    <string name="push_settle_reminder">Tienes un saldo pendiente en %1$s</string>
+    <string name="push_settle_reminders">Tienes saldos pendientes en %1$s grupos</string>
+    <string name="push_added_to_group">%1$s te agregó al grupo</string>
+    <string name="push_member_joined">%1$s se unió al grupo</string>
+    <string name="push_debts_simplified_to_you">%1$s simplificó las deudas. Ahora %2$s te paga %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s simplificó las deudas. Ahora le pagas %3$s a %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s simplificó las deudas. Mira cómo quedó para ti.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s desactivó Simplificar deudas. Ahora %2$s te paga %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s desactivó Simplificar deudas. Ahora le pagas %3$s a %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s desactivó Simplificar deudas. Mira cómo quedó para ti.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">No estás en este grupo</string>
+    <string name="bill_link_not_in_group_message">Este comentario es de un grupo en el que no estás. Pídele la invitación a quien te envió el enlace.</string>
+    <string name="bill_link_offline_title">Sin internet</string>
+    <string name="bill_link_offline_message">Vuelve a abrir el enlace cuando recuperes la conexión.</string>
+    <string name="bill_link_go_home">Ir al inicio</string>
+</resources>

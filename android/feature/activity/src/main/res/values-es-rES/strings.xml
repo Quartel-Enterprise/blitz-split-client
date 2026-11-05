@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_kind_member_added">%1$s añadió a %2$s</string>
+    <string name="activity_notification_settings">Ajustes de notificaciones</string>
+</resources>

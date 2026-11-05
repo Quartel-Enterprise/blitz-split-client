@@ -14,10 +14,12 @@ import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
+import com.quare.blitzsplit.android.designsystem.format.isSpanishUi
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.templateForActorOf
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
@@ -119,7 +121,7 @@ internal fun actorNameOf(item: ActivityItem): String = if (item.actor.isMe) {
  */
 @Composable
 internal fun sentenceTextOf(item: ActivityItem): AnnotatedString {
-    val template = stringResource(sentenceOf(item))
+    val template = templateForActorOf(stringResource(sentenceOf(item)), item.actor.isMe)
     val names = listOf(actorNameOf(item), objectOf(item).orEmpty())
     val weight = if (item.isUnread) FontWeight.Bold else FontWeight.SemiBold
     return buildAnnotatedString {
@@ -356,7 +358,13 @@ internal fun deletedNoticeTextOf(
     val subject = deletion.subject
         ?: stringResource(if (deletion.isGroup) R.string.activity_this_group else R.string.activity_this_bill)
     val atMillis = deletion.atMillis
-    val byName = if (deletion.byMe) stringResource(R.string.activity_you_lowercase) else deletion.byName
+    // Why: in Spanish the sentence starts with who did it, "Tú eliminaste Pastel en la playa el viernes…".
+    val isSpanishYou = deletion.byMe && isSpanishUi()
+    val byName = when {
+        isSpanishYou -> stringResource(R.string.activity_you)
+        deletion.byMe -> stringResource(R.string.activity_you_lowercase)
+        else -> deletion.byName
+    }
     if (atMillis == null || byName == null) {
         return stringResource(
             if (deletion.isGroup) {
@@ -367,12 +375,18 @@ internal fun deletedNoticeTextOf(
             subject,
         )
     }
-    return stringResource(
-        if (deletion.isGroup) R.string.activity_deleted_notice_group else R.string.activity_deleted_notice_bill,
-        subject,
-        byName,
-        dates.toWeekdayDateText(atMillis),
-    )
+    val noticeRes = if (deletion.isGroup) {
+        R.string.activity_deleted_notice_group
+    } else {
+        R.string.activity_deleted_notice_bill
+    }
+    val date = dates.toWeekdayDateText(atMillis)
+    if (!isSpanishYou) return stringResource(noticeRes, subject, byName, date)
+    return templateForActorOf(
+        stringResource(noticeRes),
+        isMe = true,
+        actorPlaceholder = "%2\$s",
+    ).format(subject, byName, date)
 }
 
 // Why: "Hoje", "Ontem", or "Sexta, 30 de outubro" over each day.

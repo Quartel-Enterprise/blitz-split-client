@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recupera tus grupos</string>
+    <string name="restore_subtitle">¿Ya iniciaste sesión con una cuenta antes? Solo vuelve a iniciar sesión. Si no, usa el código de recuperación o el código QR de tu dispositivo anterior.</string>
+    <string name="restore_no_connection_title">Sin conexión</string>
+    <string name="restore_no_connection_body">Iniciar sesión con una cuenta o un código requiere internet para descargar tus grupos. Lo que escribiste se conserva.</string>
+    <string name="restore_code_label">O usa el código de recuperación</string>
+    <string name="restore_code_hint">12 letras y números. Los guiones son opcionales.</string>
+    <string name="restore_scan_qr_title">Escanea el código QR de tu dispositivo anterior</string>
+    <string name="restore_scan_qr_body">Allí: Perfil › Recuperación › Mostrar código QR</string>
+    <string name="restore_recover">Recuperar</string>
+    <string name="restore_try_again">Intentar de nuevo</string>
+    <string name="restore_start_fresh">Empezar de cero en este dispositivo</string>
+    <string name="restore_error_invalid_code">No se encontró el código. Revisa las letras e inténtalo de nuevo.</string>
+    <string name="restore_error_too_many_attempts">Demasiados intentos. Espera unos minutos e inténtalo de nuevo.</string>
+    <string name="restore_error_sign_in_failed">No se pudo iniciar sesión en este momento. Inténtalo de nuevo.</string>
+    <string name="restore_error_unknown">Algo salió mal. Inténtalo de nuevo.</string>
+</resources>

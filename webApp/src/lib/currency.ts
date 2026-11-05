@@ -1,11 +1,15 @@
-import { locale } from '@/i18n'
+import { locale, pickLocale } from '@/i18n'
 import { browserLanguages } from '@/lib/platform'
 
 /**
  * The tag currencies are named in: the app's language, with the region of the first browser language in it
- * ("pt-PT" for a Portuguese browser in Portugal), so the picker never speaks another language than the UI.
+ * ("pt-PT" for a Portuguese browser in Portugal, "es-MX" for a Mexican one), so the picker never speaks another
+ * language than the UI. Without a browser tag of its own, the neutral Spanish speaks "es-419", Latin America's.
  */
-export const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-')[0] === locale) ?? locale
+// Why: pickLocale answers English for a tag it doesn't know ("fr"), which must not pick that tag for the picker.
+const isSupportedTag = (tag: string) => /^(en|pt|es)(-|$)/i.test(tag)
+export const uiTag =
+  browserLanguages().find((tag) => isSupportedTag(tag) && pickLocale([tag]) === locale) ?? (locale === 'es' ? 'es-419' : locale)
 
 // Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
 const currencyLabels = new Map<string, string>()

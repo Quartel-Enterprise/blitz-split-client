@@ -1,9 +1,10 @@
 import type { JsActivityChange, JsActivityDebtChange, JsActivityDeletion, JsActivityItem, JsActivitySimplification, JsActivityValue } from 'blitzsplit-shared'
 import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
-import { locale, t, type MessageKey } from '@/i18n'
+import { locale, t, verbForYou, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
+import { uiTag } from '@/lib/currency'
 import { formatLongDay, formatShortDate, formatTime, relativeDayOf } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 
@@ -107,7 +108,8 @@ export function headline(item: JsActivityItem): Headline {
       : item.kind === SIMPLIFY_KIND
         ? item.isSimplifyTurnedOn ? 'activity_simplifyOn' : 'activity_simplifyOff'
         : (verbs[item.kind] ?? 'activity_billEdited')
-  const verb = t(verbKey)
+  // Why: Spanish says "Ana dividió" but "Tú dividiste".
+  const verb = item.actorIsMe ? verbForYou(t(verbKey)) : t(verbKey)
   const isPayment = item.kind === 'payment_recorded' || item.kind === 'payment_undone'
   const subject = isPayment ? null : groupKinds.has(item.kind) ? item.groupName : (item.subject ?? item.groupName)
   return { who: actorName(item), verb, subject: subject ?? null }
@@ -284,15 +286,15 @@ export function openLabel(item: JsActivityItem): string {
   }
 }
 
-// Why: Portuguese says "no sábado" and "no domingo" but "na sexta"; English "on" for every day.
+// Why: Portuguese says "no sábado" and "no domingo" but "na sexta"; English "on" and Spanish "el" for every day.
 function onDay(millis: number): string {
   const relative = relativeDayOf(millis)
   if (relative === 'today') return t('activity_onToday')
   if (relative === 'yesterday') return t('activity_onYesterday')
   const weekday = new Date(millis).getDay()
   const longDay = formatLongDay(millis)
-  // Why: mid-sentence, Portuguese writes the weekday in lower case; English keeps its capital.
-  const day = locale === 'pt' ? longDay.charAt(0).toLocaleLowerCase('pt-BR') + longDay.slice(1) : longDay
+  // Why: mid-sentence, Portuguese and Spanish write the weekday in lower case; English keeps its capital.
+  const day = locale === 'en' ? longDay : longDay.charAt(0).toLocaleLowerCase(uiTag) + longDay.slice(1)
   return t(weekday === 0 || weekday === 6 ? 'activity_onDayMasculine' : 'activity_onDayFeminine', { day })
 }
 

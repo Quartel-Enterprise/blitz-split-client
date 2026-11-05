@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Divide los gastos, sin complicaciones</string>
+    <string name="welcome_offline_title">Funciona sin conexión</string>
+    <string name="welcome_offline_body">Todo se queda en tu dispositivo y se sincroniza después.</string>
+    <string name="welcome_optional_title">La cuenta es opcional</string>
+    <string name="welcome_optional_body">Google o Apple solo evitan que pierdas algo al cambiar de dispositivo.</string>
+    <string name="welcome_invite_title">Invita con un enlace o código QR</string>
+    <string name="welcome_invite_body">Tus amigos se unen al grupo sin crear una cuenta.</string>
+    <string name="welcome_no_connection_title">Sin conexión.</string>
+    <string name="welcome_no_connection_body">Iniciar sesión con una cuenta requiere internet. Úsala ahora sin cuenta y conéctate más tarde en Perfil.</string>
+    <string name="welcome_or">o</string>
+    <string name="welcome_use_without_account">Usar sin cuenta</string>
+    <string name="welcome_used_on_another_device">Ya la usé en otro dispositivo</string>
+    <string name="welcome_sign_in_failed">No se pudo iniciar sesión en este momento. Inténtalo de nuevo.</string>
+</resources>

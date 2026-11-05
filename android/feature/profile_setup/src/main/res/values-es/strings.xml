@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">¿Cómo te llaman tus amigos?</string>
+    <string name="profile_setup_subtitle">Solo las personas de tus grupos ven tu nombre.</string>
+    <string name="profile_setup_avatar_color">Color del avatar</string>
+    <string name="profile_setup_add_photo">Agregar foto</string>
+    <string name="profile_setup_photo_error">No se pudo usar esta foto. Prueba con otra.</string>
+    <string name="profile_setup_name_label">Tu nombre</string>
+    <string name="profile_setup_name_placeholder">Juan Pérez</string>
+    <string name="profile_setup_name_too_short">Escribe al menos %d letras.</string>
+    <string name="profile_setup_name_too_long">Usa hasta %d caracteres.</string>
+    <string name="profile_setup_name_hint">Puedes cambiarlo después en Perfil.</string>
+    <string name="profile_setup_saved_locally">Guardado solo en este dispositivo por ahora.</string>
+    <string name="profile_setup_continue">Continuar</string>
+</resources>

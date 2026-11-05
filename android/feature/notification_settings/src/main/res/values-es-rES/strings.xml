@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_denied_body">Actívalas en los ajustes del sistema para recibir las notificaciones push de abajo. La campana sigue funcionando.</string>
+    <string name="notification_settings_open_settings">Abrir ajustes</string>
+    <string name="notification_settings_open_channel_settings_description">Abrir los ajustes de Android para %1$s</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contacts_add_to_group">Añadir a un grupo</string>
+    <string name="contacts_add_title">Añadir a %s a un grupo</string>
+    <string name="contacts_add_confirm">Añadir</string>
+    <string name="contacts_agenda_denied_body">Se denegó el acceso a tus contactos. Para invitar desde ellos, permite Contactos en los ajustes del dispositivo. El enlace de invitación funciona sin eso.</string>
+    <string name="contacts_agenda_open_settings">Abrir ajustes</string>
+</resources>

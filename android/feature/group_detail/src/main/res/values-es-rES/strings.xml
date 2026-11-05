@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_detail_empty_message">Añade el primer gasto o invita a quienes dividen contigo. Las personas sin la app también cuentan.</string>
+    <string name="group_detail_balances_empty_message">Los saldos aparecen cuando se añade el primer gasto.</string>
+    <string name="group_detail_joined_message">Todo lo que se añada a tu nombre aparece aquí.</string>
+</resources>

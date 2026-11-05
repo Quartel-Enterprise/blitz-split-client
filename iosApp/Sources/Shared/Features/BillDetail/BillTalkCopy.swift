@@ -107,50 +107,60 @@ extension BillCopy {
             : entry.actorName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
     }
 
-    /// "**Ana** changed the category": what someone did, their name bolder.
+    /// "**Ana** changed the category": what someone did, their name bolder. In Spanish, when the user did it, the verb
+    /// is said to "Tú" ("Tú cambiaste la categoría").
     static func headline(_ entry: BillHistoryEntry) -> Text {
         let who = Text(verbatim: actor(entry)).fontWeight(.semibold)
+        return SecondPerson.text(sentence(entry), actor: who, actorIsMe: entry.actorIsMe)
+    }
+
+    /// The headline's words with `SecondPerson.actor` where the name goes.
+    private static func sentence(_ entry: BillHistoryEntry) -> String {
+        let who = SecondPerson.actor
         switch entry.kind {
         case .created:
             return entry.isPending
-                ? Text("\(who) created the bill offline", comment: "Bill history: created and not up yet")
-                : Text("\(who) created the bill", comment: "Bill history")
+                ? String(localized: "\(who) created the bill offline", comment: "Bill history: created and not up yet")
+                : String(localized: "\(who) created the bill", comment: "Bill history")
         case .attachmentsAdded:
-            if entry.isReceipt { return Text("\(who) attached the receipt", comment: "Bill history") }
+            if entry.isReceipt { return String(localized: "\(who) attached the receipt", comment: "Bill history") }
             let count = Int(entry.attachmentCount)
             return count > 1
-                ? Text("\(who) attached \(count) photos", comment: "Bill history: photos added in a row")
-                : Text("\(who) attached a photo", comment: "Bill history")
+                ? String(localized: "\(who) attached \(count) photos", comment: "Bill history: photos added in a row")
+                : String(localized: "\(who) attached a photo", comment: "Bill history")
         case .attachmentRemoved:
             return entry.isReceipt
-                ? Text("\(who) removed the receipt", comment: "Bill history")
-                : Text("\(who) removed a photo", comment: "Bill history")
+                ? String(localized: "\(who) removed the receipt", comment: "Bill history")
+                : String(localized: "\(who) removed a photo", comment: "Bill history")
         case .linkChanged:
             if entry.linkVisibility == .anyone {
-                return Text("\(who) turned on the link for anyone", comment: "Bill history: the share link")
+                return String(localized: "\(who) turned on the link for anyone", comment: "Bill history: the share link")
             }
             if entry.linkVisibility == .members {
-                return Text("\(who) made the link only for people in the bill", comment: "Bill history: the share link")
+                return String(
+                    localized: "\(who) made the link only for people in the bill",
+                    comment: "Bill history: the share link",
+                )
             }
-            return Text("\(who) turned off the link", comment: "Bill history: the share link")
+            return String(localized: "\(who) turned off the link", comment: "Bill history: the share link")
         default:
             return edited(entry.changes.first, who: who, isPending: entry.isPending)
         }
     }
 
     /// An edit is named by its first change: "changed the category", "changed the split"…
-    private static func edited(_ change: (any BillHistoryChange)?, who: Text, isPending: Bool) -> Text {
+    private static func edited(_ change: (any BillHistoryChange)?, who: String, isPending: Bool) -> String {
         switch change {
-        case is BillHistoryChangeAmount: Text("\(who) changed the amount", comment: "Bill history")
-        case is BillHistoryChangeDescription: Text("\(who) changed the description", comment: "Bill history")
-        case is BillHistoryChangeSpentAt: Text("\(who) changed the date", comment: "Bill history")
-        case is BillHistoryChangeCategory: Text("\(who) changed the category", comment: "Bill history")
-        case is BillHistoryChangePayers: Text("\(who) changed who paid", comment: "Bill history")
-        case is BillHistoryChangeSplit: Text("\(who) changed the split", comment: "Bill history")
+        case is BillHistoryChangeAmount: String(localized: "\(who) changed the amount", comment: "Bill history")
+        case is BillHistoryChangeDescription: String(localized: "\(who) changed the description", comment: "Bill history")
+        case is BillHistoryChangeSpentAt: String(localized: "\(who) changed the date", comment: "Bill history")
+        case is BillHistoryChangeCategory: String(localized: "\(who) changed the category", comment: "Bill history")
+        case is BillHistoryChangePayers: String(localized: "\(who) changed who paid", comment: "Bill history")
+        case is BillHistoryChangeSplit: String(localized: "\(who) changed the split", comment: "Bill history")
         default:
             isPending
-                ? Text("\(who) edited the bill offline", comment: "Bill history: edited and not up yet")
-                : Text("\(who) edited the bill", comment: "Bill history")
+                ? String(localized: "\(who) edited the bill offline", comment: "Bill history: edited and not up yet")
+                : String(localized: "\(who) edited the bill", comment: "Bill history")
         }
     }
 

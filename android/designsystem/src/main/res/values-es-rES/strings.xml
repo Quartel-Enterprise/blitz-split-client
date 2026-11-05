@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="designsystem_avatar_color_peach">Melocotón</string>
+    <string name="designsystem_picker_done">Hecho</string>
+    <string name="designsystem_category_home_condo">Gastos de comunidad</string>
+    <string name="designsystem_category_transport_parking">Aparcamiento</string>
+    <string name="designsystem_category_transport_transit">Autobús y metro</string>
+    <string name="designsystem_category_travel_flight">Billetes y vuelos</string>
+    <string name="designsystem_category_travel_car_rental">Alquiler de coche</string>
+    <string name="designsystem_category_icon_car">Coche</string>
+    <string name="designsystem_photo_crop_confirm">Hecho</string>
+    <string name="designsystem_category_icon">Icono</string>
+    <string name="designsystem_category_parent_help_sub">Una subcategoría usa el icono de %s.</string>
+</resources>
