@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Nueva clave Pix</string>
+    <string name="payment_key_title_pix_edit">Editar clave Pix</string>
+    <string name="payment_key_title_bitcoin_new">Nueva clave Bitcoin</string>
+    <string name="payment_key_title_bitcoin_edit">Editar clave Bitcoin</string>
+    <string name="payment_key_save">Guardar</string>
+
+    <string name="payment_key_pix_intro">Quien te pague verá esta clave al saldar cuentas. ¿Qué tipo de clave?</string>
+    <string name="payment_key_pix_question">¿Qué tipo de clave?</string>
+    <string name="payment_key_pix_explanation">Quien te pague verá esta clave al saldar cuentas.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Teléfono</string>
+    <string name="payment_key_type_email">Correo</string>
+    <string name="payment_key_type_random">Aleatoria</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Número de celular con código de área</string>
+    <string name="payment_key_label_email">Correo electrónico</string>
+    <string name="payment_key_label_random">Clave aleatoria</string>
+
+    <string name="payment_key_bitcoin_intro">¿Cómo quieres recibir?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">rápido, comisión baja</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">en la blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address o LNURL</string>
+    <string name="payment_key_label_onchain">Dirección de Bitcoin</string>
+
+    <string name="payment_key_paste">Pegar</string>
+
+    <string name="payment_key_hint_cpf">Formato 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formato +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formato nombre@dominio.com</string>
+    <string name="payment_key_hint_random">32 letras y números, como la muestra tu banco</string>
+    <string name="payment_key_hint_lightning">Como nombre@billetera.com o LNURL1…</string>
+    <string name="payment_key_hint_onchain">Dirección mainnet que empieza con bc1q o bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formato 000.000.000-00 · los dígitos verificadores coinciden</string>
+    <string name="payment_key_valid_phone">Formato +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formato nombre@dominio.com</string>
+    <string name="payment_key_valid_random">Clave aleatoria reconocida (32 caracteres)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address válida</string>
+    <string name="payment_key_valid_lnurl">LNURL válida</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF no válido: los dígitos verificadores no coinciden.</string>
+    <string name="payment_key_error_invalid_phone">Número de celular incompleto: usa el código de área y 9 dígitos, empezando con 9.</string>
+    <string name="payment_key_error_invalid_email">Correo incompleto: falta el dominio, como .com o .com.br.</string>
+    <string name="payment_key_error_invalid_random">Clave aleatoria incompleta: tiene 32 letras y números.</string>
+    <string name="payment_key_error_invalid_lightning">Esto no es una Lightning Address (nombre@billetera) ni una LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Esto es una factura Lightning (lnbc…): se paga una sola vez y caduca. Pega una Lightning Address o una LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Dirección no válida. Usa una dirección mainnet bc1q o bc1p.</string>
+    <string name="payment_key_error_testnet_address">Esta es una dirección de testnet (tb1…). Aquí solo funciona la mainnet de Bitcoin, con direcciones bc1….</string>
+    <string name="payment_key_error_already_saved">Ya tienes esta clave.</string>
+
+    <string name="payment_key_switched_to_onchain">Esta es una dirección on-chain, así que cambiamos a On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Esta es una Lightning Address, así que cambiamos a Lightning.</string>
+    <string name="payment_key_cpf_notice">Quien te pague verá tu CPF completo. Si prefieres no compartirlo, usa una clave de teléfono, correo o aleatoria.</string>
+
+    <string name="payment_key_accepted_title">Aceptamos</string>
+    <string name="payment_key_accepted_lightning_address_sample">nombre@billetera.app</string>
+
+    <string name="payment_key_default_pix_title">Clave Pix predeterminada</string>
+    <string name="payment_key_default_bitcoin_title">Clave Bitcoin predeterminada</string>
+    <string name="payment_key_default_pix_detail">Se muestra primero al saldar cuentas.</string>
+    <string name="payment_key_default_bitcoin_detail">Se muestra primero cuando alguien paga en BTC.</string>
+    <string name="payment_key_default_now">Ahora: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Para cambiarla, haz que otra clave sea la predeterminada.</string>
+    <string name="payment_key_default_locked_new">Tu primera clave de este tipo es la predeterminada.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">teléfono</string>
+    <string name="payment_key_default_type_email">correo</string>
+    <string name="payment_key_default_type_random">clave aleatoria</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split no mueve dinero: quien paga lo hace en la app de su banco. Verifica que la clave esté a tu nombre.</string>
+    <string name="payment_key_footer_bitcoin">Al saldar cuentas, mostramos el monto en sats al tipo de cambio actual. Es solo una estimación: quien paga la confirma en su billetera.</string>
+
+    <string name="payment_key_delete">Eliminar clave</string>
+    <string name="payment_key_delete_title">¿Eliminar esta clave?</string>
+    <string name="payment_key_delete_body">Quienes te deben ya no la verán al saldar cuentas.</string>
+    <string name="payment_key_delete_confirm">Eliminar</string>
+</resources>

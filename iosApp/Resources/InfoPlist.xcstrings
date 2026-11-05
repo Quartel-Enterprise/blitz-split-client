@@ -11,6 +11,12 @@
             "value" : "Blitz Split"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24,6 +30,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -47,6 +59,12 @@
             "value" : "To scan the QR code of an invite or from your old device, and to take your profile photo and photos of bills."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para escanear el código QR de una invitación o de tu dispositivo anterior, y para tomar tu foto de perfil y fotos de gastos."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -65,6 +83,12 @@
             "value" : "To invite people from your contacts with a group's link. Their numbers stay on this device."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para invitar a personas de tus contactos con el enlace de un grupo. Sus números se quedan solo en este dispositivo."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -81,6 +105,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "To save a bill's photos to your library."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para guardar las fotos de los gastos en tu biblioteca."
           }
         },
         "pt-BR" : {

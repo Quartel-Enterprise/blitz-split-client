@@ -510,7 +510,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN the system language WHEN listing the languages THEN offers System then English then Portuguese`() {
+    fun `GIVEN the system language WHEN listing the languages THEN offers System then each language`() {
         // Given
         val profile = state(language = AppLanguage.SYSTEM)
 
@@ -518,7 +518,10 @@ class ProfileUiStateTest {
         val options = profile.languageOptions
 
         // Then
-        assertEquals(listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE), options)
+        assertEquals(
+            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.SPANISH),
+            options,
+        )
     }
 
     @Test
@@ -530,7 +533,10 @@ class ProfileUiStateTest {
         val options = profile.languageOptions
 
         // Then
-        assertEquals(listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE), options)
+        assertEquals(
+            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.SPANISH),
+            options,
+        )
     }
 
     private fun state(

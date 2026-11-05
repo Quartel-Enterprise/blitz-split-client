@@ -284,8 +284,8 @@ No linter runs on Swift yet; follow what the app already does.
 - Liquid Glass is native (iOS and macOS 26): `.glassEffect`, the system tab bar and sheets, no fallbacks.
 - `///` doc comments explain a type's role and the why, as the Kotlin `// Why:` does; inline `//` comments only
   for a reason.
-- User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR
-  translation in `Localizable.xcstrings` (the development language is English).
+- User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR,
+  es and (where Spain differs) es-ES translations in `Localizable.xcstrings` (the development language is English).
 - A Kotlin `Int` is a Swift `Int32`: interpolate it as `Int(count)` in a localized literal, and a Kotlin `Float` as
   `Double(value)`. An `Int32` makes the key `%d …` and a `Float` `%f …`, which miss the catalog's `%lld …` and
   `%lf …` entries and their pt-BR and plural forms, so the build's "Check the localized keys" phase

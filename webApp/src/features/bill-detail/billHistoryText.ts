@@ -1,5 +1,5 @@
 import type { JsBillHistoryChange, JsBillHistoryEntry, JsBillHistoryPart } from 'blitzsplit-shared'
-import { t, type MessageKey } from '@/i18n'
+import { t, verbForYou, type MessageKey } from '@/i18n'
 import { categoryName } from '@/lib/categories'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { payerNamesText } from '@/lib/payers'
@@ -59,6 +59,11 @@ export function historyActor(entry: JsBillHistoryEntry): string {
 
 /** "criou a conta", "trocou a categoria", "anexou 2 fotos", "desativou o link"… */
 export function historyVerb(entry: JsBillHistoryEntry): string {
+  // Why: Spanish says "Ana creó" but "Tú creaste".
+  return entry.actorIsMe ? verbForYou(verbOf(entry)) : verbOf(entry)
+}
+
+function verbOf(entry: JsBillHistoryEntry): string {
   switch (entry.kind) {
     case 'created':
       return t(entry.isPending ? 'billDetail_historyCreatedOffline' : 'billDetail_historyCreated')

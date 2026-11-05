@@ -56,6 +56,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.verbForActorOf
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
@@ -220,7 +221,7 @@ private fun EntryHeadlineRow(
     dates: DateTimeTextFormatter,
 ) {
     val who = personNameOf(entry.actorName, entry.actorIsMe)
-    val what = historyVerbOf(entry)
+    val what = verbForActorOf(historyVerbOf(entry), entry.actorIsMe)
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,

@@ -142,7 +142,7 @@ private fun LanguageRow(
     )
 }
 
-// Why: the language's code ("EN", "PT") as Bible Planner's chip, the phone for System.
+// Why: the language's code ("EN", "PT", "ES") as Bible Planner's chip, the phone for System.
 @Composable
 private fun LanguageChip(
     language: AppLanguage,
@@ -182,4 +182,5 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> "English"
     AppLanguage.PORTUGUESE -> "Português"
+    AppLanguage.SPANISH -> "Español"
 }

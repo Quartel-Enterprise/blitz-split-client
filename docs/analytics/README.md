@@ -464,7 +464,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |
-| `language_selected` | `language` (`system`, `english`, `portuguese`) | A language, another than the one picked | `:feature:profile` |
+| `language_selected` | `language` (`system`, `english`, `portuguese`, `spanish`) | A language, another than the one picked | `:feature:profile` |
 | `profile_dynamic_colors_info_clicked` | none | The ⓘ of "Dynamic colors", over Appearance | `:feature:profile` |
 | `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
 | `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |

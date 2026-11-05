@@ -371,6 +371,7 @@ private struct PreferencesSection: View {
                 Text("System").tag(AppLanguage.system)
                 Text(verbatim: "English").tag(AppLanguage.english)
                 Text(verbatim: "Português").tag(AppLanguage.portuguese)
+                Text(verbatim: "Español").tag(AppLanguage.spanish)
             }
             Toggle(
                 isOn: Binding(

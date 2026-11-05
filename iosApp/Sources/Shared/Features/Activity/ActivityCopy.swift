@@ -37,46 +37,136 @@ enum ActivityCopy {
         return name ?? "—"
     }
 
-    /// "**Bruno** split **Dinner at Ostradamus**": the names bolder while the item is unread.
+    /// "**Bruno** split **Dinner at Ostradamus**": the names bolder while the item is unread. In Spanish, when the user
+    /// did it, the verb is said to "Tú" ("Tú dividiste").
     static func headline(_ item: ActivityItem) -> Text {
         let weight: Font.Weight = item.isUnread ? .bold : .semibold
         let who = Text(verbatim: actor(item)).fontWeight(weight)
         let what = Text(verbatim: object(item)).fontWeight(weight)
+        return SecondPerson.text(sentence(item), actor: who, object: what, actorIsMe: item.actor.isMe)
+    }
+
+    /// The headline's words with `SecondPerson.actor` and `SecondPerson.object` where the names go.
+    private static func sentence(_ item: ActivityItem) -> String {
+        let who = SecondPerson.actor
+        let what = SecondPerson.object
         switch item.kind {
-        case .billCreated: return Text("\(who) split \(what)", comment: "Activity: someone split a bill")
-        case .billEdited: return Text("\(who) edited \(what)", comment: "Activity: someone edited a bill")
-        case .billDeleted: return Text("\(who) deleted \(what)", comment: "Activity: someone deleted a bill")
+        case .billCreated: return String(
+            localized: "\(who) split \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone split a bill",
+        )
+        case .billEdited: return String(
+            localized: "\(who) edited \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone edited a bill",
+        )
+        case .billDeleted: return String(
+            localized: "\(who) deleted \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone deleted a bill",
+        )
         case .paymentRecorded:
-            return Text("\(who) recorded a payment", comment: "Activity: someone recorded a payment")
-        case .paymentUndone: return Text("\(who) undid a payment", comment: "Activity: someone undid a payment")
+            return String(
+                localized: "\(who) recorded a payment",
+                bundle: .appLanguage,
+                comment: "Activity: someone recorded a payment",
+            )
+        case .paymentUndone:
+            return String(
+                localized: "\(who) undid a payment",
+                bundle: .appLanguage,
+                comment: "Activity: someone undid a payment",
+            )
         case .groupCreated:
-            return Text("\(who) created the group \(what)", comment: "Activity: someone created a group")
-        case .groupEdited: return Text("\(who) edited the group \(what)", comment: "Activity: someone edited a group")
+            return String(
+                localized: "\(who) created the group \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone created a group",
+            )
+        case .groupEdited:
+            return String(
+                localized: "\(who) edited the group \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone edited a group",
+            )
         case .groupDeleted:
-            return Text("\(who) deleted the group \(what)", comment: "Activity: someone deleted a group")
+            return String(
+                localized: "\(who) deleted the group \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone deleted a group",
+            )
         case .inviteLinkChanged:
-            return Text("\(who) changed the invite link of \(what)", comment: "Activity: someone changed a group's link")
-        case .memberAdded: return Text("\(who) added \(what)", comment: "Activity: someone added a member")
-        case .memberJoined: return Text("\(who) joined \(what)", comment: "Activity: someone joined a group")
-        case .memberLeft: return Text("\(who) left \(what)", comment: "Activity: someone left a group")
-        case .memberRemoved: return Text("\(who) removed \(what)", comment: "Activity: someone removed a member")
+            return String(
+                localized: "\(who) changed the invite link of \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone changed a group's link",
+            )
+        case .memberAdded: return String(
+            localized: "\(who) added \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone added a member",
+        )
+        case .memberJoined: return String(
+            localized: "\(who) joined \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone joined a group",
+        )
+        case .memberLeft: return String(
+            localized: "\(who) left \(what)",
+            bundle: .appLanguage,
+            comment: "Activity: someone left a group",
+        )
+        case .memberRemoved:
+            return String(
+                localized: "\(who) removed \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone removed a member",
+            )
         case .memberReleased:
-            return Text("\(who) released the name \(what)", comment: "Activity: the creator released a member's name")
-        case .memberRenamed: return Text("\(who) renamed \(what)", comment: "Activity: someone renamed a member")
+            return String(
+                localized: "\(who) released the name \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: the creator released a member's name",
+            )
+        case .memberRenamed:
+            return String(
+                localized: "\(who) renamed \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone renamed a member",
+            )
         case .simplifyDebtsChanged:
             return item.isSimplifyTurnedOn
-                ? Text("\(who) turned on Simplify debts in \(what)", comment: "Activity: someone turned on Simplify debts")
-                : Text("\(who) turned off Simplify debts in \(what)", comment: "Activity: someone turned off Simplify debts")
+                ? String(
+                    localized: "\(who) turned on Simplify debts in \(what)",
+                    bundle: .appLanguage,
+                    comment: "Activity: someone turned on Simplify debts",
+                )
+                : String(
+                    localized: "\(who) turned off Simplify debts in \(what)",
+                    bundle: .appLanguage,
+                    comment: "Activity: someone turned off Simplify debts",
+                )
         case .commentAdded:
             // A comment deleted since keeps its row, with no text
             if item.isCommentDeleted {
-                return Text(
-                    "\(who) deleted a comment on \(what)",
+                return String(
+                    localized: "\(who) deleted a comment on \(what)",
+                    bundle: .appLanguage,
                     comment: "Activity: someone deleted their comment on a bill",
                 )
             }
-            return Text("\(who) commented on \(what)", comment: "Activity: someone commented on a bill")
-        default: return Text("\(who) sent a request to \(what)", comment: "Activity: someone asked a member to pay")
+            return String(
+                localized: "\(who) commented on \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone commented on a bill",
+            )
+        default:
+            return String(
+                localized: "\(who) sent a request to \(what)",
+                bundle: .appLanguage,
+                comment: "Activity: someone asked a member to pay",
+            )
         }
     }
 
@@ -399,7 +489,11 @@ enum ActivityCopy {
         }
         let who: String? = deletion.byMe ? String(localized: "You", bundle: .appLanguage) : deletion.byName
         let first: String = if let who, let date {
-            String(localized: "\(who) deleted \(subject) on \(date).", bundle: .appLanguage)
+            SecondPerson.sentence(
+                String(localized: "\(SecondPerson.actor) deleted \(subject) on \(date).", bundle: .appLanguage),
+                actor: who,
+                actorIsMe: deletion.byMe,
+            )
         } else if deletion.isGroup {
             String(localized: "The group “\(subject)” was deleted.", bundle: .appLanguage)
         } else {

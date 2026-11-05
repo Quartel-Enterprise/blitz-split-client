@@ -34,6 +34,7 @@ const languages: { code: string; label: string }[] = [
   { code: 'system', label: t('profile_languageSystem') },
   { code: 'en', label: 'English' },
   { code: 'pt-BR', label: 'Português' },
+  { code: 'es', label: 'Español' },
 ]
 
 /**
@@ -356,7 +357,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
             <span id="language" className="text-sm font-medium">
               {t('profile_language')}
             </span>
-            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-4">
               {languages.map((language) => {
                 const isSelected = language.code === state.language
                 return (

@@ -3,8 +3,9 @@
 Int and Double make %lld and %lf).
 
 Swift sees a Kotlin Int as Int32, and "\\(count) members" then gets the key "%d members". Localizable.xcstrings holds
-the %lld key a Swift Int makes, so the lookup misses: no pt-BR and no plural variants, only the English literal.
-Interpolate Int(count) instead. A Kotlin Float is the same: a Swift Float makes %f where a Double makes %lf.
+the %lld key a Swift Int makes, so the lookup misses: no pt-BR, es or es-ES translation and no plural variants, only the
+English literal. Interpolate Int(count) instead. A Kotlin Float is the same: a Swift Float makes %f where a Double
+makes %lf.
 
 Xcode runs it after Compile Sources, on the .stringsdata the compiler extracts the keys into (SWIFT_EMIT_LOC_STRINGS):
   check-localized-keys.py <OBJECT_FILE_DIR_normal>
