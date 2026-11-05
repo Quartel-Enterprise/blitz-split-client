@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, House, Search, UserRound, Users, Wallet } from 'lucide-react'
+import { Bell, ChevronRight, CircleDollarSign, House, Search, UserRound, Users } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
@@ -16,7 +16,7 @@ export type HomeTab = 'home' | 'groups' | 'balances' | 'contacts'
 const tabs: { tab: HomeTab; label: MessageKey; icon: ReactNode }[] = [
   { tab: 'home', label: 'home_tab', icon: <House className="size-4" /> },
   { tab: 'groups', label: 'groups_tabGroups', icon: <Users className="size-4" /> },
-  { tab: 'balances', label: 'groups_tabBalances', icon: <Wallet className="size-4" /> },
+  { tab: 'balances', label: 'groups_tabBalances', icon: <CircleDollarSign className="size-4" /> },
   { tab: 'contacts', label: 'groups_tabContacts', icon: <UserRound className="size-4" /> },
 ]
 
