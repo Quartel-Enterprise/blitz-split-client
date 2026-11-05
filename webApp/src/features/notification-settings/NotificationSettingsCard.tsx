@@ -139,6 +139,7 @@ export function NotificationSettingsDialog() {
   )
 }
 
+// Why: the column headers, in the order of each item's toggles (the shared channels, Push then In app).
 const channels = [
   { name: 'PUSH', label: 'notifications_push', icon: Smartphone },
   { name: 'IN_APP', label: 'notifications_inApp', icon: Bell },
@@ -179,20 +180,19 @@ function NotificationSettingsBody({ presenter, state }: { presenter: Notificatio
                 <span className="text-sm font-medium">{title}</span>
                 <span className="text-xs text-muted-foreground">{t(label.detail)}</span>
               </span>
-              {channels.map(({ name, label: channelLabel }) => {
-                const hasToggle = name === 'PUSH' || item.hasInApp
-                const isEnabled = name === 'PUSH' ? state.arePushTogglesEnabled : state.areInAppTogglesEnabled
+              {channels.map(({ name, label: channelLabel }, index) => {
+                const toggle = item.toggles[index]
                 return (
                   <span key={name} className="flex w-12 justify-center">
-                    {!hasToggle ? null : state.showsTogglesLoading ? (
+                    {!toggle ? null : state.showsTogglesLoading ? (
                       <Skeleton aria-hidden className="h-5 w-9 rounded-full" />
                     ) : (
                       <Switch
                         aria-label={t('notifications_toggleLabel', { title, channel: t(channelLabel) })}
-                        checked={name === 'PUSH' ? item.isPushEnabled : item.isInAppEnabled}
-                        disabled={!isEnabled}
-                        className={cn(!isEnabled && 'opacity-50')}
-                        onCheckedChange={(checked) => presenter.toggle(item.type, name, checked)}
+                        checked={toggle.isOn}
+                        disabled={!toggle.isEnabled}
+                        className={cn(!toggle.isEnabled && 'opacity-50')}
+                        onCheckedChange={(checked) => presenter.toggle(item.type, toggle.channel, checked)}
                       />
                     )}
                   </span>

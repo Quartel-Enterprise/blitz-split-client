@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
 import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -34,6 +35,7 @@ import software.quare.loadable.toLoaded
 class NotificationSettingsViewModel(
     private val navigator: Navigator,
     private val updateNotificationPreference: UpdateNotificationPreference,
+    private val markActivityTypeRead: MarkActivityTypeRead,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
@@ -94,6 +96,8 @@ class NotificationSettingsViewModel(
         if (!state.areTogglesEnabled(channel) || !state.hasToggle(type, channel)) return
         trackEvent("notification_toggled", mapOf("type" to type, "channel" to channel, "is_enabled" to isEnabled))
         viewModelScope.launch {
+            // Why: what came while the bell was off stays read once it is back on, as it showed meanwhile.
+            if (channel == NotificationChannel.IN_APP && isEnabled) markActivityTypeRead(type)
             updateNotificationPreference(
                 type = type,
                 channel = channel,

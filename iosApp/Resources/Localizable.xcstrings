@@ -1813,6 +1813,17 @@
         }
       }
     },
+    "Payments and settle-ups" : {
+      "comment" : "The Notifications row of payments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamentos e acertos"
+          }
+        }
+      }
+    },
     "Payments to or from you, and simplified debts" : {
       "localizations" : {
         "pt-BR" : {

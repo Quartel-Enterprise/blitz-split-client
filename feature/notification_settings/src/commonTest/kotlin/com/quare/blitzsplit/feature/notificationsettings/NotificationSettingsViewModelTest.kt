@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.notificationsettings
 
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
 import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -40,6 +41,7 @@ class NotificationSettingsViewModelTest {
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var viewModel: NotificationSettingsViewModel
     private val actions = mutableListOf<NotificationSettingsUiAction>()
+    private val markedReadTypes = mutableListOf<NotificationType>()
 
     @BeforeTest
     fun setUp() {
@@ -822,6 +824,47 @@ class NotificationSettingsViewModelTest {
         isWaitingForInternet = false,
     )
 
+    @Test
+    fun `GIVEN the in-app of comments off WHEN turning it back on THEN saves its events read before turning it on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.COMMENTS, NotificationChannel.IN_APP, false),
+            )
+
+            // When
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.COMMENTS, NotificationChannel.IN_APP, true),
+            )
+
+            // Then
+            assertEquals(listOf(NotificationType.COMMENTS), markedReadTypes)
+            assertTrue(NotificationType.COMMENTS in preferences.preferences.value.inApp)
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN turning a push on or an in-app off THEN marks nothing read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(
+                    NotificationType.PEOPLE_AND_GROUPS,
+                    NotificationChannel.PUSH,
+                    true,
+                ),
+            )
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.BILLS, NotificationChannel.IN_APP, false),
+            )
+
+            // Then
+            assertTrue(markedReadTypes.isEmpty())
+        }
+
     private fun TestScope.prepareScenario(
         saved: Set<NotificationType> = NotificationPreferences.DEFAULT.push,
         savedInApp: Set<NotificationType> = NotificationPreferences.DEFAULT.inApp,
@@ -845,6 +888,10 @@ class NotificationSettingsViewModelTest {
             trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             updateNotificationPreference = UpdateNotificationPreferenceUseCase(preferences),
+            markActivityTypeRead = MarkActivityTypeRead { type ->
+                markedReadTypes += type
+                Result.success(Unit)
+            },
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
             observeFirstDownload = ObserveFirstDownload { this@NotificationSettingsViewModelTest.firstDownload },
         )

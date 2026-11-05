@@ -16,7 +16,8 @@ The feed, unread state, real time and push notifications.
     gone. Unread is someone else's event never opened and after the last "Mark all as read", of a row of
     Notifications whose In app toggle is on: a blue dot and bold names, counted on the bell's badge in the primary
     color (`activityUnreadCount`, Home's only), whatever the filters. A row whose In app is off still lists its events,
-    born read (`ActivityFeed.isUnread`, `ActivityKind.notificationType`). Your own events are born read, opening Activity marks nothing, tapping an item marks only it. A tap opens what it is about
+    born read (`ActivityFeed.isUnread`, `ActivityKind.notificationType`), and turning it back on saves them read first
+    (`MarkActivityTypeRead`), so the bell doesn't light up with everything that came meanwhile. Your own events are born read, opening Activity marks nothing, tapping an item marks only it. A tap opens what it is about
     (the bill's screen (Bill) over its Expenses, the group, its Members, its Balances for a payment request); a deleted bill or group
     keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
     "and 2 more changes" and "See changes". "Filter activity": one group or all, and the types (Bills, Payments and

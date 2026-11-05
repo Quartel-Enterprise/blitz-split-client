@@ -285,7 +285,7 @@ private extension NotificationType {
     var title: LocalizedStringKey {
         switch self {
         case .bills: "Bills"
-        case .payments: "Payments and settlements"
+        case .payments: "Payments and settle-ups"
         case .comments: "Comments"
         case .peopleAndGroups: "People and groups"
         case .paymentRequests: "Payment requests"

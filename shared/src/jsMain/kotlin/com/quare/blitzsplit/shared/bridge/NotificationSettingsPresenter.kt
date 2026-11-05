@@ -13,20 +13,23 @@ import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
 
+class JsNotificationToggle(
+    // Why: the NotificationChannel's name, "PUSH" or "IN_APP", which picks its column and goes back with a toggle.
+    val channel: String,
+    val isOn: Boolean,
+    val isEnabled: Boolean,
+)
+
 class JsNotificationItem(
     // Why: the NotificationType's name, which picks the title and subtitle in each language.
     val type: String,
-    val isPushEnabled: Boolean,
-    // Why: false for the weekly reminder, which has no In app toggle.
-    val hasInApp: Boolean,
-    val isInAppEnabled: Boolean,
+    // Why: one per column, Push then In app; null where the row has no such toggle (the weekly reminder's In app).
+    val toggles: Array<JsNotificationToggle?>,
 )
 
 class JsNotificationSettingsState(
     val items: Array<JsNotificationItem>,
     val showsPermissionDenied: Boolean,
-    val arePushTogglesEnabled: Boolean,
-    val areInAppTogglesEnabled: Boolean,
     // Why: the toggles shimmer while the choices load or the browser's permission wasn't reported yet.
     val showsTogglesLoading: Boolean,
 )
@@ -47,14 +50,17 @@ class NotificationSettingsPresenter {
                     .map { type ->
                         JsNotificationItem(
                             type = type.name,
-                            isPushEnabled = state.isEnabled(type, NotificationChannel.PUSH),
-                            hasInApp = state.hasToggle(type, NotificationChannel.IN_APP),
-                            isInAppEnabled = state.isEnabled(type, NotificationChannel.IN_APP),
+                            toggles = state.channels
+                                .map { channel ->
+                                    JsNotificationToggle(
+                                        channel = channel.name,
+                                        isOn = state.isEnabled(type, channel),
+                                        isEnabled = state.areTogglesEnabled(channel),
+                                    ).takeIf { state.hasToggle(type, channel) }
+                                }.toTypedArray(),
                         )
                     }.toTypedArray(),
                 showsPermissionDenied = state.showsPermissionDenied,
-                arePushTogglesEnabled = state.arePushTogglesEnabled,
-                areInAppTogglesEnabled = state.areInAppTogglesEnabled,
                 showsTogglesLoading = state.showsTogglesLoading,
             )
         }
