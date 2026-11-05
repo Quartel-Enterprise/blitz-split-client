@@ -203,6 +203,9 @@ private struct NotificationRow: View {
                 .labelStyle(.iconOnly)
             }
             .toggleStyle(.button)
+            // A Form row with two buttons of the automatic style fires both on a tap anywhere in it; a bordered one
+            // takes only its own taps, and draws the circle
+            .buttonStyle(.bordered)
             .buttonBorderShape(.circle)
             .disabled(!state.areTogglesEnabled(channel: channel))
             .accessibilityLabel(Text("\(Text(type.title)), \(Text(channel.title))"))
