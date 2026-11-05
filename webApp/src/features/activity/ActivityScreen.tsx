@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
-import { HomeShell, loadedProfile, type HomeTab } from '@/components/HomeShell'
+import { HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -54,8 +54,8 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
       onBrand={() => presenter.openBrand()}
       search={search}
     >
-      <main className={cn('mx-auto flex w-full flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-8 lg:px-10', isWide ? 'max-w-6xl' : 'max-w-3xl')}>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>
+      <main className={cn(pageContentClass, 'gap-3 sm:gap-4', !isWide && 'max-w-3xl')}>
+        <h1 className="sr-only text-2xl font-semibold tracking-tight md:not-sr-only">{t('activity_title')}</h1>
         {!state.isLoaded && <Placeholders isDelayed />}
         {state.isLoaded && (
           <>

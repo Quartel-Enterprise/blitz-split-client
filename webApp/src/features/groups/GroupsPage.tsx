@@ -44,31 +44,6 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
   const exitGroup = state.exitGroup
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="mr-auto flex flex-wrap items-center gap-2">
-          <SyncStatus state={state} presenter={presenter} />
-        </div>
-        <div className="flex w-full gap-2 md:w-auto">
-          <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.joinWithLink()}>
-            <QrCode /> {t('groups_joinWithLink')}
-          </Button>
-          <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.createGroup()}>
-            <SquarePlus /> {t('groups_newGroup')}
-          </Button>
-          {state.showsSplitBillButton && (
-            <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
-              <SplitBillIcon /> {t('groups_splitBill')}
-            </Button>
-          )}
-          <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
-            <SquarePlus />
-          </Button>
-          <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_joinWithLink')} onClick={() => presenter.joinWithLink()}>
-            <QrCode />
-          </Button>
-        </div>
-      </div>
-
       {state.firstDownload ? <GroupsFirstDownloadCard progress={state.firstDownload} /> : <SummaryCards presenter={presenter} state={state} />}
 
       <div className="flex flex-wrap items-center gap-3">
@@ -130,6 +105,34 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
 
 /** What the sync status reads, the same on Grupos and Início. */
 export type SyncState = Pick<JsGroupsState, 'syncBadge' | 'pendingChangeCount' | 'canRetrySync'>
+
+/**
+ * The page's actions, beside its title from the tablet up: "Entrar com link ou QR", "Novo grupo" and "Rachar conta";
+ * the phone keeps "Rachar conta" wide and the other two as icons.
+ */
+export function GroupsActions({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
+  return (
+    <div className="flex w-full gap-2 md:w-auto">
+      <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.joinWithLink()}>
+        <QrCode /> {t('groups_joinWithLink')}
+      </Button>
+      <Button variant="outline" className="hidden md:inline-flex" onClick={() => presenter.createGroup()}>
+        <SquarePlus /> {t('groups_newGroup')}
+      </Button>
+      {state.showsSplitBillButton && (
+        <Button className="h-10 flex-1 md:h-9 md:flex-none" onClick={() => presenter.splitBill()}>
+          <SplitBillIcon /> {t('groups_splitBill')}
+        </Button>
+      )}
+      <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_newGroup')} onClick={() => presenter.createGroup()}>
+        <SquarePlus />
+      </Button>
+      <Button variant="outline" size="icon-lg" className="md:hidden" aria-label={t('groups_joinWithLink')} onClick={() => presenter.joinWithLink()}>
+        <QrCode />
+      </Button>
+    </div>
+  )
+}
 
 /**
  * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…

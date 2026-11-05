@@ -122,18 +122,9 @@ struct ActivityView: View {
         }
         .navigationTitle("Activity")
         #if os(iOS)
-        // Why: the selected Activity tab already names the screen, so the bar shows no title, as on Groups; VoiceOver
-        // still reads it as the header.
-        .toolbarTitleDisplayMode(.inline)
+        .tabTitleDisplayMode()
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Color.clear
-                    .frame(width: 1, height: 1)
-                    .accessibilityElement()
-                    .accessibilityLabel(Text("Activity"))
-                    .accessibilityAddTraits(.isHeader)
-            }
-            .sharedBackgroundVisibility(.hidden)
+            TabTitle(title: String(localized: "Activity"))
             SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
                 model?.send(ActivityUiEventOnSearchClicked.shared)
             }
