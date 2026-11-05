@@ -40,6 +40,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -130,6 +133,17 @@ class GlobalBalancesViewModel(
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
+            .launchIn(viewModelScope)
+        /*
+         * Why: Apple keeps Saldos while another tab is in front. Opened again by its route, it shows that route's
+         * filter, so "A receber" or "Ver saldos" lands where it says even after a filter was changed here.
+         */
+        navigator.backStack
+            .map { route in it }
+            .distinctUntilChanged()
+            .drop(1)
+            .filter { isInBackStack -> isInBackStack }
+            .onEach { changeFilter(route.filter) }
             .launchIn(viewModelScope)
         notices.watchSettledUp(
             scope = viewModelScope,

@@ -430,6 +430,43 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN Te devem changed to Tudo WHEN Te devem opens Saldos again after another tab THEN shows Te devem`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.OWES_YOU)
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.ALL))
+            trackedEvents.clear()
+            navigator.replaceAbove(1, Route.Contacts)
+
+            // When
+            navigator.replaceAbove(1, Route.GlobalBalances(BalancesFilter.OWES_YOU))
+
+            // Then
+            assertEquals(BalancesFilter.OWES_YOU, viewModel.uiState.value.filter)
+            assertEquals(
+                listOf(false),
+                viewModel.uiState.value.sections
+                    .map { it.isYouOwe },
+            )
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Voce deve picked WHEN a screen opened over Saldos closes THEN keeps Voce deve`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+            navigator.navigate(Route.Profile)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(BalancesFilter.YOU_OWE, viewModel.uiState.value.filter)
+        }
+
+    @Test
     fun `GIVEN nothing to pay WHEN filtering Voce deve THEN says you owe nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(bills = listOf(owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 16_230L)))

@@ -21,7 +21,12 @@ The home's four tabs and the web's and the Mac's shell.
     wherever the rail is drawn beside them (`rememberUsesGroupRail`), so a rail click from them, and a group opened from
     a tab there, fade the same way; every other screen keeps Navigation 3's default transitions. Apple keeps
     one `TabView` (the iPad's and Mac's sidebar) above the tabs, and the web one frame (`HomeFrame`), so their bars
-    never redraw.
+    never redraw. Apple's tabs also keep their content once shown: back on Balances or Contacts, the screen is already
+    read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
+    (`MainTabView`). Balances still comes back on the filter it was opened with, "All" from its tab, as Android and
+    the web do, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with
+    another filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is
+    the route's. Android and the web open the tab afresh, its picks and opened rows included.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot
