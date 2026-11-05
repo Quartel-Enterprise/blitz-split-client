@@ -346,6 +346,19 @@ class AppDownloadViewModelTest {
         }
 
     @Test
+    fun `GIVEN the device fails to save the dismissal WHEN tapping I downloaded it THEN still closes the code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(dismissError = IllegalStateException("disk full"))
+
+            // When
+            viewModel.onEvent(AppDownloadUiEvent.OnDownloadedClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the invite already dismissed WHEN tapping I downloaded it THEN does nothing`() =
         runTest(testDispatcher) {
             // Given
@@ -569,6 +582,7 @@ class AppDownloadViewModelTest {
         isInviteRead: Boolean = true,
         status: AccountStatus = AccountStatus.Connected(USER_ID, AccountProvider.GOOGLE),
         dismissGate: CompletableDeferred<Unit>? = null,
+        dismissError: Throwable? = null,
     ) {
         val route = Route.AppDownload(source)
         account = FakeAccountRepository(initialStatus = status)
@@ -588,7 +602,9 @@ class AppDownloadViewModelTest {
             dismissAppInvite = DismissAppInvite {
                 appInviteDismissals++
                 dismissGate?.await()
+                dismissError?.let { return@DismissAppInvite Result.failure(it) }
                 appInvite.update { it?.copy(isDismissed = true) }
+                Result.success(Unit)
             },
             encodeQrCode = EncodeQrCode { link ->
                 encodedLinks += link

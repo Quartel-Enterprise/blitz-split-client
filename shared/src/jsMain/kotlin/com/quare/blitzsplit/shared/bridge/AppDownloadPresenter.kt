@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -48,10 +49,7 @@ class AppDownloadPresenter(
                 isLoaded = state.isLoaded,
                 link = state.link,
                 qrSize = state.qrCode?.size ?: 0,
-                qrModules = state.qrCode
-                    ?.modules
-                    .orEmpty()
-                    .toTypedArray(),
+                qrModules = toJsModules(state.qrCode),
                 stores = state.stores.name,
                 phoneUseSinceMillis = state.phoneUseSinceMillis?.toDouble(),
                 accountProvider = state.accountProvider?.code,
@@ -71,6 +69,18 @@ class AppDownloadPresenter(
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
     }
+
+    // Why: the same code again (an account or invite change) hands React the same array, so the SVG isn't drawn again.
+    private var lastQrCode: Pair<QrCode?, Array<Boolean>>? = null
+
+    private fun toJsModules(qrCode: QrCode?): Array<Boolean> = lastQrCode
+        ?.takeIf { (kept, _) -> kept == qrCode }
+        ?.second
+        ?: qrCode
+            ?.modules
+            .orEmpty()
+            .toTypedArray()
+            .also { lastQrCode = qrCode to it }
 
     fun close() {
         viewModel.onEvent(AppDownloadUiEvent.OnCloseClicked)

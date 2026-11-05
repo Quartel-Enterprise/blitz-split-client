@@ -34,7 +34,8 @@ internal class ProfileAppInviteRow(
         if (uiState.value.appInvite?.status != ProfileAppInviteStatus.ACTIVE || isDismissing) return
         isDismissing = true
         trackEvent("app_invite_dismissed", mapOf("source" to "profile"))
-        scope.launch { dismissAppInvite() }
+        // Why: a write that failed leaves the row highlighted, which a click may try again.
+        scope.launch { dismissAppInvite().onFailure { isDismissing = false } }
     }
 
     // Why: the guard holds until Room says the row is no longer highlighted, not only until the write ends.

@@ -93,6 +93,7 @@ class AppDownloadViewModel(
             AppDownloadUiEvent.OnDownloadedClicked -> if (uiState.value.showsDownloadedButton && !isDismissing) {
                 isDismissing = true
                 trackEvent("app_invite_downloaded_clicked", mapOf("source" to "app_download"))
+                // Why: closed either way; a write that failed leaves the invite on Home and Profile to dismiss again.
                 viewModelScope.launch {
                     dismissAppInvite()
                     close()

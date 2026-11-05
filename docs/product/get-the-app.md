@@ -22,7 +22,8 @@ The web and the Mac app invite people to the phone app (canvas page 14, "Baixe o
   - The code, "Blitz Split on your phone" (14.2, `Route.AppDownload`, `AppDownloadViewModel`): a dialog on the web (a
     drawer under 768 px), a sheet on the Mac (on Settings' window when its iPhone row opened it). The QR code big, the
     link with its copy button ("Link copied"), what only the phone gives, the account's note ("Sign in to the app with
-    the same Google account…", or that without an account the phone app starts empty), Close, and "I downloaded it"
+    the same Google account…", or that without an account the phone app starts empty), Close ("OK" on the Mac, as the
+    canvas draws its sheet), and "I downloaded it"
     while the invite stands. Once the account uses a phone app: "You've used the app on your phone since Oct 12. This
     code always stays here in Profile, for when you change phones." (14.2b), with Close only.
   - The invite ends for good, with no time to come back, on "I downloaded it" (the card or the code) or ✕ (the card or

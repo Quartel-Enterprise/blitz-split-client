@@ -576,7 +576,8 @@ class HomeViewModel(
     // Why: ✕ and "I downloaded it" end the invite for good, here and in Profile, also for the account's other devices.
     private fun dismissAppInviteCard() {
         isDismissingAppInvite = true
-        viewModelScope.launch { dismissAppInvite() }
+        // Why: a write that failed leaves the card, which a click may try again.
+        viewModelScope.launch { dismissAppInvite().onFailure { isDismissingAppInvite = false } }
     }
 
     // Why: once per showing, also for a second click before Room says the card went.

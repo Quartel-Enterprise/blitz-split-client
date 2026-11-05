@@ -63,6 +63,8 @@ class AppInviteRepositoryImpl(
             remote.recordPlatformSeen(platform.code)
             recordedUserId = userId
         }
+        // Why: the phone apps never show the invite, so they only record themselves and read nothing back.
+        if (platform == ClientPlatform.ANDROID || platform == ClientPlatform.IOS) return@suspendRunCatching
         // Why: two independent reads, side by side, so a sync waits for one round trip rather than two.
         val (remoteDismissal, platformsSeen) = coroutineScope {
             val dismissal = async { remote.fetchDismissal(userId) }

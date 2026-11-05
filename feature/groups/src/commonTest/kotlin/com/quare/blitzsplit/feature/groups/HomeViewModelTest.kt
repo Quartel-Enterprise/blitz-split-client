@@ -5594,6 +5594,7 @@ class HomeViewModelTest {
                 appInviteDismissals++
                 appInviteDismissGate?.await()
                 appInvite.update { it?.copy(isDismissed = true) }
+                Result.success(Unit)
             },
             encodeQrCode = EncodeQrCode { link ->
                 encodedLinks += link

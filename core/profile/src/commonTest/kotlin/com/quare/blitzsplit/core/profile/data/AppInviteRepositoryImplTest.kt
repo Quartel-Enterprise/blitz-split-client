@@ -314,6 +314,19 @@ class AppInviteRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN the Android app WHEN syncing THEN only records itself and reads nothing back`() = runTest {
+        // Given
+        prepareScenario(platform = ClientPlatform.ANDROID)
+
+        // When
+        val result = repository.sync(userId = "user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("recordPlatformSeen"), remote.calls)
+    }
+
+    @Test
     fun `GIVEN the platform recorded for the user WHEN syncing again THEN records it once and reads the account`() =
         runTest {
             // Given

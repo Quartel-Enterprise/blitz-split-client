@@ -6827,6 +6827,7 @@ class ProfileViewModelTest {
                 appInviteDismissals++
                 appInviteDismissGate?.await()
                 appInvite.update { it?.copy(isDismissed = true) }
+                Result.success(Unit)
             },
             observeAppInvite = ObserveAppInvite { appInvite },
             trackEvent = { name, params -> trackedEvents += name to params },

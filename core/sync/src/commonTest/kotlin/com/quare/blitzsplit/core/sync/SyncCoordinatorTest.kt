@@ -2843,21 +2843,36 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN the app invite fails to sync WHEN syncing THEN fails and still syncs the preferences`() = runTest {
+    fun `GIVEN the app invite fails to sync WHEN syncing THEN the sync still succeeds with the preferences`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+            appInvite.syncError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a dismissal of the invite not sent WHEN syncing THEN the sync state stays synced`() = runTest {
         // Given
-        prepareScenario(
-            storedProfile = pierre,
-            pendingPreferences = true,
-        )
+        prepareScenario(storedProfile = pierre)
+        appInvite.hasPendingChanges.value = true
         appInvite.syncError = IllegalStateException("server down")
 
         // When
-        val result = coordinator.syncNow()
+        coordinator.syncNow()
 
         // Then
-        assertTrue(result.isFailure)
-        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
-        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
     }
 
     @Test
