@@ -34,7 +34,6 @@ def main() -> int:
     failures = [
         (path, line)
         for path in sorted(sources.rglob("*.swift"))
-        if path.name != "Palette.swift"
         for line in missing_labels(path)
     ]
     for path, line in failures:

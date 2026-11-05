@@ -147,7 +147,7 @@ function PercentInput({ presenter, memberId, value, isError }: { presenter: Defa
         value={text}
         aria-invalid={isError}
         onChange={(event) => setText(event.target.value)}
-        className="h-9 w-16 rounded-md border bg-transparent px-2 text-right font-semibold tabular-nums"
+        className="h-9 w-16 rounded-md border border-field-border bg-transparent px-2 text-right font-semibold tabular-nums"
       />
       <span aria-hidden>%</span>
     </span>

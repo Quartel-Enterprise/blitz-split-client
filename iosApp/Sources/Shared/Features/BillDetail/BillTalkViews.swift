@@ -34,14 +34,16 @@ struct BillOfflineBanner: View {
     }
 }
 
-/// The amber dot of what is still queued, beside its words.
+/// The amber dot of what is still queued, beside its words. The attachment viewer, black in both appearances, passes
+/// `Palette.pendingOnDark`.
 struct BillQueuedLine: View {
     let text: LocalizedStringKey
+    var dotColor: Color = Palette.pending
 
     var body: some View {
         HStack(spacing: 6) {
             Circle()
-                .fill(Palette.pending)
+                .fill(dotColor)
                 .frame(width: 7, height: 7)
                 .accessibilityHidden(true)
             Text(text)

@@ -32,10 +32,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     ([#179](https://github.com/Quartel-Enterprise/blitz-split-client/issues/179) decides it).
   - What is saved here and not on the server yet (the queue's dot, "queued", "Waiting to send", a profile change
     not up yet) is amber (chosen in the contrast audit, for Pierre to confirm), `#7C5800` light and `#F9BC3E` dark,
-    with `#FFDEA8` / `#5E4200` behind a badge or a notice, and `#F9BC3E` in both themes on what stays dark (a badge
-    over a photo, the attachment viewer): never the orange of what you owe (the system's orange matched it in dark
-    mode), and outside the scheme like the green (Android's `pendingColor()`, Apple's `Palette.pending`, the web's
-    `--pending`).
+    with `#FFDEA8` / `#5E4200` behind a badge or a notice, and `#F9BC3E` in both themes on what stays dark (the
+    attachment viewer, Apple's badge over a photo; Android's badge over a photo sits on the inverse surface, so it
+    takes the other theme's amber, and the web's is a badge on the amber container): never the orange of what you
+    owe (the system's orange matched it in dark mode), and outside the scheme like the green (Android's
+    `pendingColor()`, Apple's `Palette.pending`, the web's `--pending`).
   - Every text reads at 4.5:1 or more on what is behind it, and a dot, an icon or a field's edge that carries meaning
     at 3:1 (WCAG AA), in light and dark. A filled button's label takes the color made for its fill: on the dark accent
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets
