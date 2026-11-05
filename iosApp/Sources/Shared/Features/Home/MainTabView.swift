@@ -126,6 +126,12 @@ struct MainTabView: View {
         // Their own toasts, for their longer duration; Groups' and Home's each wait until their screen is on top
         .glassToast(model.deletedGroup.text, trigger: model.deletedGroup.count, duration: DeletedGroupToast.duration)
         .glassToast(home.deletedGroup.text, trigger: home.deletedGroup.count, duration: DeletedGroupToast.duration)
+        // Its own, long enough to read its two sentences
+        .glassToast(
+            "We saw you on your phone. Your groups are already there, and the invite to download the app won't show again.",
+            trigger: home.usedOnPhoneCount,
+            duration: .seconds(6),
+        )
         // Shown once the first sync issued a code, or from Home's "See code"; the sheet settles the prompt itself
         // ("I've saved it", "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: home.state.showsRecoveryCodePrompt, initial: true) { _, isDue in

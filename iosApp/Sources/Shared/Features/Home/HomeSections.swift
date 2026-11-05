@@ -708,3 +708,101 @@ struct HomeFirstUseCard: View {
         .background(Palette.card, in: .rect(cornerRadius: 26))
     }
 }
+
+#if os(macOS)
+/// "Take Blitz Split on iPhone" (14.1), Home's card on the Mac after the first bill, one card at a time. The Mac app
+/// comes from the Mac App Store, so it only names the iPhone and the App Store: its QR code opens the App Store, and a
+/// click on it opens the code big (14.2). ✕ and "I downloaded it" end it for good, here and in Settings.
+struct HomeAppInviteCard: View {
+    let invite: HomeAppInvite
+    /// Without Google or Apple: the iPhone app starts empty, and "Connect account" shows.
+    let needsAccount: Bool
+    let accountProvider: AccountProvider?
+    let send: (any HomeUiEvent) -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 18) {
+            Button {
+                send(HomeUiEventOnAppInviteCodeClicked.shared)
+            } label: {
+                QrCodeImage(qrCode: invite.qrCode, accessibilityLabel: "QR code that opens Blitz Split on the App Store")
+                    .frame(width: 96, height: 96)
+            }
+            .buttonStyle(.plain)
+            .help("Enlarge the QR code")
+            VStack(alignment: .leading, spacing: 6) {
+                Text(needsAccount ? "Take your groups to iPhone" : "Take Blitz Split on iPhone")
+                    .font(.headline)
+                message
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 6) {
+                    HomeAppInvitePerk(systemImage: "mappin.and.ellipse", title: "Add bills right away, wherever you are")
+                    HomeAppInvitePerk(systemImage: "bell", title: "Payment notices")
+                }
+                Text("Point your iPhone's camera at the code. It opens the App Store.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            VStack(spacing: 8) {
+                if needsAccount {
+                    Button {
+                        send(HomeUiEventOnAppInviteConnectClicked.shared)
+                    } label: {
+                        Text("Connect account").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .prominentLabel()
+                }
+                Button {
+                    send(HomeUiEventOnAppInviteDownloadedClicked.shared)
+                } label: {
+                    Text("I downloaded it").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            }
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .frame(width: 150)
+        }
+        .padding(16)
+        .padding(.trailing, 28)
+        .background(Palette.card, in: .rect(cornerRadius: 26))
+        .overlay(alignment: .topTrailing) {
+            Button("Don't show again", systemImage: "xmark") {
+                send(HomeUiEventOnAppInviteDismissed.shared)
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.circle)
+            .controlSize(.small)
+            .help("Don't show again")
+            .padding(10)
+        }
+    }
+
+    @ViewBuilder
+    private var message: some View {
+        switch needsAccount ? nil : accountProvider {
+        case .google: Text("Sign in on iPhone with the same Google account and your groups will be there.")
+        case .apple: Text("Sign in on iPhone with the same Apple account and your groups will be there.")
+        default: Text("Your groups are only on this Mac. Connect an Apple or Google account to see them on iPhone; without an account, the app on iPhone starts empty.")
+        }
+    }
+}
+
+private struct HomeAppInvitePerk: View {
+    let systemImage: String
+    let title: LocalizedStringKey
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.caption.weight(.medium))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 6))
+    }
+}
+#endif

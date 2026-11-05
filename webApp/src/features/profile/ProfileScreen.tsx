@@ -19,6 +19,7 @@ import { downloadExport } from '@/lib/export'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
+import { ProfileAppRow } from '@/features/app-download/AppDownload'
 import { EditProfileCard } from './EditProfileCard'
 import { ProfileDialogs } from './ProfileDialogs'
 
@@ -86,6 +87,16 @@ export function ProfileScreen() {
               <div className="order-1">
                 <EditProfileCard isPending={state.showsProfilePending} />
               </div>
+              {/* Why: right under the profile, in the one column too (same order, after it in the page). */}
+              {state.appInviteStatus && state.appInviteLink && (
+                <ProfileAppRow
+                  status={state.appInviteStatus}
+                  link={state.appInviteLink}
+                  onOpenCode={() => presenter.openAppCode()}
+                  onDismiss={() => presenter.dismissAppInvite()}
+                  className="order-1"
+                />
+              )}
               <AccountCard presenter={presenter} state={state} className="order-3" />
               {/* Why: "Sair" or "Apagar perfil e sair" depends on the account, never guessed before it was read. */}
               {state.isLoaded ? (

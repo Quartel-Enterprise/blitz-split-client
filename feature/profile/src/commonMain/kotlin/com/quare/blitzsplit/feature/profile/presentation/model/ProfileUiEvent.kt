@@ -38,6 +38,11 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
+            OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
+
+            // Why: only while the row is highlighted, which the ViewModel knows.
+            OnAppInviteDismissed -> EventAnalytics.Manual("app_invite_dismissed")
+
             OnCategoryMapClicked -> EventAnalytics.Automatic("category_map_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnPrivacyPolicyClicked -> EventAnalytics.Automatic("privacy_policy_clicked")
@@ -166,6 +171,12 @@ sealed interface ProfileUiEvent : UiEvent {
     data class OnBitcoinInSatsToggled(
         val isOn: Boolean,
     ) : ProfileUiEvent
+
+    // Why: "App on your phone"'s "See code" (the Mac's "Show code…"), which opens the app's code (14.2).
+    data object OnAppInviteClicked : ProfileUiEvent
+
+    // Why: its ✕ while highlighted, which also takes Home's card away.
+    data object OnAppInviteDismissed : ProfileUiEvent
 
     // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.
     data object OnNotificationsClicked : ProfileUiEvent

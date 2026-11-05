@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.activity.di.activityFeatureModule
+import com.quare.blitzsplit.feature.appdownload.di.appDownloadModule
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.contacts.di.contactsModule
@@ -104,6 +105,7 @@ val sharedModules: List<Module> = listOf(
     activityFeatureModule,
     contactsModule,
     inAppUpdateFeatureModule,
+    appDownloadModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

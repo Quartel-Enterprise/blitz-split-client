@@ -58,4 +58,5 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - [Members, group balances and payments](docs/product/members-and-payments.md): Edit group, Default split, leaving and deleting a group.
   - [Split a bill](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
   - [Joining and foldables](docs/product/joining-and-folds.md): invite links, cameras, foldables, iPhone Duo.
+  - [Get the app](docs/product/get-the-app.md): the web's and the Mac's invite to the phone app, its code and Profile's row.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.

@@ -62,6 +62,13 @@ class JsProfileState(
     // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
     val paymentKeys: Array<JsPaymentKeyItem>?,
     val canAddPaymentKey: Boolean,
+    /*
+     * Why: "App on your phone" (14.4): ProfileAppInviteStatus's name, "ACTIVE", "DISMISSED" or "IN_USE"; null where it
+     * never shows.
+     */
+    val appInviteStatus: String?,
+    // Why: what a phone's browser opens from the row instead of the code: the link that picks the phone's store.
+    val appInviteLink: String?,
 )
 
 class JsPaymentKeyItem(
@@ -124,6 +131,8 @@ class ProfilePresenter {
                 hasUnlinkFailed = state.hasUnlinkFailed,
                 canUnlink = state.canUnlink,
                 showsDeleteAccount = state.showsDeleteAccount,
+                appInviteStatus = state.appInvite?.status?.name,
+                appInviteLink = state.appInvite?.link,
                 paymentKeys = state.paymentKeys
                     .valueOrNull()
                     ?.map { key ->
@@ -221,6 +230,15 @@ class ProfilePresenter {
 
     fun toggleBitcoinInSats(isOn: Boolean) {
         viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(isOn))
+    }
+
+    // Why: "App on your phone"'s "See code" and its ✕.
+    fun openAppCode() {
+        viewModel.onEvent(ProfileUiEvent.OnAppInviteClicked)
+    }
+
+    fun dismissAppInvite() {
+        viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
     }
 
     fun categoryMap() {

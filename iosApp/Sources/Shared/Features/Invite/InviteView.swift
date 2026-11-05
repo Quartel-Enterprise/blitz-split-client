@@ -463,6 +463,7 @@ private struct LinkCard: View {
 /// Black on white in both appearances, as scanners read it best, with the quiet zone around the modules.
 struct QrCodeImage: View {
     let qrCode: QrCode
+    var accessibilityLabel: LocalizedStringKey = "QR code of the group's invite link"
 
     /// The blank border a scanner needs around the code, in modules.
     private let quietZone = 2
@@ -487,7 +488,7 @@ struct QrCodeImage: View {
         .aspectRatio(1, contentMode: .fit)
         .background(.white, in: .rect(cornerRadius: 16))
         .accessibilityElement()
-        .accessibilityLabel("QR code of the group's invite link")
+        .accessibilityLabel(accessibilityLabel)
         .accessibilityAddTraits(.isImage)
     }
 }

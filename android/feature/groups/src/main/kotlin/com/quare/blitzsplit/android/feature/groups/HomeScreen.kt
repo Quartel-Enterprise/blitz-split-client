@@ -30,9 +30,11 @@ fun HomeScreen(
 
             HomeUiAction.ShowNotificationsOn -> R.string.groups_home_notifications_on
 
+            // Why: the invite to the phone app is the web's and the Mac's; Android never shows it.
             HomeUiAction.RequestNotificationPermission,
             HomeUiAction.OpenNotificationSettings,
             HomeUiAction.RequestQuietNotifications,
+            HomeUiAction.ShowUsedOnPhone,
             -> null
         }
     }
@@ -78,6 +80,7 @@ private fun NotificationPermissionEffect(viewModel: HomeViewModel) {
                 HomeUiAction.ShowChangeError,
                 HomeUiAction.ShowNotificationsOn,
                 HomeUiAction.RequestQuietNotifications,
+                HomeUiAction.ShowUsedOnPhone,
                 -> Unit
             }
         }

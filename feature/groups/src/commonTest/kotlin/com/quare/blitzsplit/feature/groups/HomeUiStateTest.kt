@@ -3,7 +3,10 @@ package com.quare.blitzsplit.feature.groups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.NotificationPermission
+import com.quare.blitzsplit.core.model.QrCode
+import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
@@ -549,6 +552,184 @@ class HomeUiStateTest {
         assertEquals(List(permissions.size) { false }, asks)
     }
 
+    @Test
+    fun `GIVEN an active invite a group and a bill WHEN Inicio draws THEN shows the invite card`() {
+        // Given
+        val state = state(
+            appInvite = activeInvite,
+            hasBills = true,
+        )
+
+        // When
+        val showsCard = state.showsAppInviteCard
+
+        // Then
+        assertTrue(showsCard)
+    }
+
+    @Test
+    fun `GIVEN no invite on this platform WHEN Inicio draws with a bill THEN shows no invite card`() {
+        // Given
+        val state = state(
+            appInvite = null,
+            hasBills = true,
+        )
+
+        // When
+        val showsCard = state.showsAppInviteCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    @Test
+    fun `GIVEN the invite dismissed or the app on a phone WHEN Inicio draws with a bill THEN shows no invite card`() {
+        // Given
+        val state = state(
+            appInvite = activeInvite.copy(isActive = false),
+            hasBills = true,
+        )
+
+        // When
+        val showsCard = state.showsAppInviteCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    @Test
+    fun `GIVEN an active invite and no bill in any group WHEN Inicio draws THEN shows no invite card`() {
+        // Given
+        val state = state(
+            appInvite = activeInvite,
+            hasBills = false,
+        )
+
+        // When
+        val showsCard = state.showsAppInviteCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN Home does not show THEN shows no invite card`() {
+        // Given
+        val states = listOf(
+            state(groupCount = 0),
+            state(isLoaded = false),
+        ).map {
+            it.copy(
+                appInvite = activeInvite,
+                hasBills = true,
+            )
+        }
+
+        // When
+        val shown = states.map { it.showsAppInviteCard }
+
+        // Then
+        assertEquals(listOf(false, false), shown)
+    }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN the first download fills the device THEN shows no invite card`() {
+        // Given
+        val state = state(
+            isFirstDownload = true,
+            appInvite = activeInvite,
+            hasBills = true,
+        )
+
+        // When
+        val showsCard = state.showsAppInviteCard
+
+        // Then
+        assertFalse(showsCard)
+    }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN the recovery code card or sheet shows THEN the invite card waits`() {
+        // Given
+        val states = listOf(
+            state(showsRecoveryCodeCard = true),
+            state(showsRecoveryCodePrompt = true),
+        ).map {
+            it.copy(
+                appInvite = activeInvite,
+                hasBills = true,
+            )
+        }
+
+        // When
+        val shown = states.map { it.showsAppInviteCard }
+
+        // Then
+        assertEquals(listOf(false, false), shown)
+    }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN each notification card shows THEN the invite card waits`() {
+        // Given
+        val states = listOf(
+            NotificationPermission.NOT_DETERMINED,
+            NotificationPermission.PROVISIONAL,
+            NotificationPermission.REFUSED_ONCE,
+            NotificationPermission.DENIED,
+        ).map {
+            state(
+                notificationPermission = it,
+                canAskQuietly = true,
+                hasAskedQuietly = true,
+                appInvite = activeInvite,
+                hasBills = true,
+            )
+        }
+
+        // When
+        val shown = states.map { (it.notificationPrompt != null) to it.showsAppInviteCard }
+
+        // Then
+        assertEquals(List(states.size) { true to false }, shown)
+    }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN no notification card shows THEN shows the invite card`() {
+        // Given
+        val states = listOf(
+            state(notificationPermission = NotificationPermission.GRANTED),
+            state(
+                notificationPermission = NotificationPermission.DENIED,
+                isNotificationPromptSnoozed = true,
+            ),
+            state(
+                notificationPermission = NotificationPermission.NOT_DETERMINED,
+                canAskQuietly = true,
+            ),
+        ).map {
+            it.copy(
+                appInvite = activeInvite,
+                hasBills = true,
+            )
+        }
+
+        // When
+        val shown = states.map { it.showsAppInviteCard }
+
+        // Then
+        assertEquals(List(states.size) { true }, shown)
+    }
+
+    private val activeInvite = HomeAppInvite(
+        link = "https://blitzsplit.com/app-download",
+        qrCode = QrCode(
+            size = 1,
+            modules = listOf(true),
+        ),
+        stores = StoreListing.BOTH,
+        isActive = true,
+    )
+
     private fun person(
         key: String,
         netMinor: Long,
@@ -577,6 +758,8 @@ class HomeUiStateTest {
         canAskQuietly: Boolean = false,
         hasAskedQuietly: Boolean = false,
         isNotificationPromptSnoozed: Boolean = false,
+        appInvite: HomeAppInvite? = null,
+        hasBills: Boolean = false,
     ): HomeUiState = HomeUiState(
         displayName = "Pierre",
         avatarInitial = "P",
@@ -607,5 +790,8 @@ class HomeUiStateTest {
         canAskQuietly = canAskQuietly,
         hasAskedQuietly = hasAskedQuietly,
         isNotificationPromptSnoozed = isNotificationPromptSnoozed,
+        appInvite = appInvite,
+        hasBills = hasBills,
+        isAppBannerDismissed = false,
     )
 }

@@ -20,6 +20,7 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     Route.EditProfile -> ScreenView("edit_profile", emptyMap())
     Route.ProfilePhoto -> ScreenView("profile_photo", emptyMap())
     is Route.InAppUpdate -> ScreenView("in_app_update", emptyMap())
+    is Route.AppDownload -> ScreenView("app_download", emptyMap())
     Route.DeleteAccount -> ScreenView("delete_account", emptyMap())
     Route.NotificationSettings -> ScreenView("notification_settings", emptyMap())
     Route.CategoryMap -> ScreenView("category_map", emptyMap())

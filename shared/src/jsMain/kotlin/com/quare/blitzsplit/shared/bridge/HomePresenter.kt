@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBillDay
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
@@ -133,6 +134,23 @@ class JsHomeState(
     val canSearch: Boolean,
     // Why: NotificationPrompt's name, "SOFT_ASK" or "BLOCKED" (the web never refuses once), or null with no card.
     val notificationPrompt: String?,
+    // Why: "Get the app" (page 14): null where it never shows; the phone width draws its banner (14.3) from it too.
+    val appInvite: JsAppInvite?,
+    // Why: the computer's card (14.1), after the first bill and one card at a time.
+    val showsAppInviteCard: Boolean,
+    // Why: the card's version without Google or Apple: the phone app starts empty, "Connect account".
+    val appInviteNeedsAccount: Boolean,
+    // Why: the phone browser's banner (14.3), until its ✕ on this device.
+    val showsAppBanner: Boolean,
+)
+
+// Why: what the card's QR code opens, its modules row by row (qrSize by qrSize), and StoreListing's name.
+class JsAppInvite(
+    val link: String,
+    val qrSize: Int,
+    val qrModules: Array<Boolean>,
+    val stores: String,
+    val isActive: Boolean,
 )
 
 class HomePresenter {
@@ -175,6 +193,10 @@ class HomePresenter {
                 activityUnreadCount = state.activityUnreadCount,
                 canSearch = state.canSearch,
                 notificationPrompt = state.notificationPrompt?.name,
+                appInvite = state.appInvite?.let(::toJsAppInvite),
+                showsAppInviteCard = state.showsAppInviteCard,
+                appInviteNeedsAccount = state.appInviteNeedsAccount,
+                showsAppBanner = state.showsAppBanner,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -191,6 +213,9 @@ class HomePresenter {
                 HomeUiAction.ShowChangeError -> "change-error"
 
                 HomeUiAction.ShowNotificationsOn -> "notifications-on"
+
+                // Why: "We saw you on your phone." (14.1c), once.
+                HomeUiAction.ShowUsedOnPhone -> "used-on-phone"
 
                 HomeUiAction.RequestNotificationPermission -> "request-notification-permission"
 
@@ -293,6 +318,41 @@ class HomePresenter {
     fun dismissRecoveryCodeCard() {
         viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
     }
+
+    // Why: the invite's card (14.1): ✕, "I downloaded it", its QR code and "Connect account".
+    fun dismissAppInvite() {
+        viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+    }
+
+    fun markAppDownloaded() {
+        viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+    }
+
+    fun openAppCode() {
+        viewModel.onEvent(HomeUiEvent.OnAppInviteCodeClicked)
+    }
+
+    fun connectFromAppInvite() {
+        viewModel.onEvent(HomeUiEvent.OnAppInviteConnectClicked)
+    }
+
+    fun dismissAppBanner() {
+        viewModel.onEvent(HomeUiEvent.OnAppBannerDismissed)
+    }
+
+    // Why: the same invite again (each minute's tick, each sync state) hands React the same object, QR code included.
+    private var lastAppInvite: Pair<HomeAppInvite, JsAppInvite>? = null
+
+    private fun toJsAppInvite(invite: HomeAppInvite): JsAppInvite = lastAppInvite
+        ?.takeIf { (kept, _) -> kept == invite }
+        ?.second
+        ?: JsAppInvite(
+            link = invite.link,
+            qrSize = invite.qrCode.size,
+            qrModules = invite.qrCode.modules.toTypedArray(),
+            stores = invite.stores.name,
+            isActive = invite.isActive,
+        ).also { lastAppInvite = invite to it }
 
     // Why: the NotificationPermission's name, read from the browser's Notification.permission.
     fun notificationPermissionChecked(permissionName: String) {

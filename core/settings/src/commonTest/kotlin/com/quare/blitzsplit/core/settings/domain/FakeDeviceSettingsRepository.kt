@@ -69,4 +69,12 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateLastNotificationPromptAt(epochMillis: Long) {
         lastNotificationPromptAt.value = epochMillis
     }
+
+    val isAppBannerDismissed = MutableStateFlow(false)
+
+    override fun observeAppBannerDismissed(): Flow<Boolean> = isAppBannerDismissed
+
+    override suspend fun dismissAppBanner() {
+        isAppBannerDismissed.value = true
+    }
 }

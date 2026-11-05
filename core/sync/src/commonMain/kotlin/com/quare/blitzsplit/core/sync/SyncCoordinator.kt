@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.userIdOrNull
+import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
@@ -49,6 +50,7 @@ class SyncCoordinator(
     private val profileRepository: ProfileRepository,
     private val paymentKeyRepository: PaymentKeyRepository,
     private val notificationPreferencesRepository: NotificationPreferencesRepository,
+    private val appInviteRepository: AppInviteRepository,
     private val groupRepository: GroupRepository,
     private val groupPinRepository: GroupPinRepository,
     private val expenseRepository: ExpenseRepository,
@@ -193,6 +195,8 @@ class SyncCoordinator(
             notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
             notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
         }
+        // Why: "Get the app" (page 14): this platform recorded, and the invite's dismissal and the account's phone use.
+        val appInviteSynced = appInviteRepository.sync(userId)
         // Why: the person's category map (flow 9), theirs alone like the keys.
         val termsSynced = suspendRunCatching {
             categoryTermRepository.download(userId).getOrThrow()
@@ -271,6 +275,7 @@ class SyncCoordinator(
         signOutIfScheduledAndSynced()
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
+        appInviteSynced.getOrThrow()
         termsSynced.getOrThrow()
         groupsSynced.getOrThrow()
         memberKeysSynced.getOrThrow()
@@ -302,6 +307,7 @@ class SyncCoordinator(
                     // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
                     suspendRunCatching { paymentKeyRepository.clear() }
                     suspendRunCatching { notificationPreferencesRepository.clear() }
+                    suspendRunCatching { appInviteRepository.clear() }
                     suspendRunCatching { categoryTermRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
@@ -410,6 +416,7 @@ class SyncCoordinator(
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
         notificationPreferencesRepository.clear()
+        appInviteRepository.clear()
         categoryTermRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
@@ -417,30 +424,22 @@ class SyncCoordinator(
         profileRepository.clear()
     }
 
-    private fun observeHasPendingChanges(): Flow<Boolean> = combine(
+    // Why: anything waiting on the device to go up, whichever part it belongs to.
+    private fun observeHasPendingChanges(): Flow<Boolean> = observeAnyPending(
         profileRepository.observeHasPendingChanges(),
         paymentKeyRepository.observeHasPendingChanges(),
-        combine(
-            notificationPreferencesRepository.observeHasPendingChanges(),
-            categoryTermRepository.observeHasPendingChanges(),
-            billCommentRepository.observeHasPendingChanges(),
-            billAttachmentRepository.observeHasPendingChanges(),
-        ) { hasPendingPreferences, hasPendingTerms, hasPendingComments, hasPendingAttachments ->
-            hasPendingPreferences || hasPendingTerms || hasPendingComments || hasPendingAttachments
-        },
+        notificationPreferencesRepository.observeHasPendingChanges(),
+        appInviteRepository.observeHasPendingChanges(),
+        categoryTermRepository.observeHasPendingChanges(),
+        billCommentRepository.observeHasPendingChanges(),
+        billAttachmentRepository.observeHasPendingChanges(),
         groupRepository.observeHasPendingChanges(),
-        combine(
-            expenseRepository.observeHasPendingChanges(),
-            settlementRepository.observeHasPendingChanges(),
-            categoryRepository.observeHasPendingChanges(),
-            groupPinRepository.observeHasPendingChanges(),
-            hiddenContactRepository.observeHasPendingChanges(),
-        ) { hasPendingExpenses, hasPendingSettlements, hasPendingCategories, hasPendingPins, hasPendingHidden ->
-            hasPendingExpenses || hasPendingSettlements || hasPendingCategories || hasPendingPins || hasPendingHidden
-        },
-    ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
-        hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
-    }.distinctUntilChanged()
+        expenseRepository.observeHasPendingChanges(),
+        settlementRepository.observeHasPendingChanges(),
+        categoryRepository.observeHasPendingChanges(),
+        groupPinRepository.observeHasPendingChanges(),
+        hiddenContactRepository.observeHasPendingChanges(),
+    )
 
     /*
      * Why: the versions of the bills, the payments and the group categories waiting to go up, which change with each

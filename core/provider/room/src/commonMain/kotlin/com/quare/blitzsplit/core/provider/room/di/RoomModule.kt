@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.provider.room.di
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
+import com.quare.blitzsplit.core.provider.room.dao.AppInviteDao
 import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
@@ -37,6 +38,7 @@ val roomModule: Module = module {
     single<DeviceSettingsDao> { get<AppDatabase>().deviceSettingsDao() }
     single<PaymentKeyDao> { get<AppDatabase>().paymentKeyDao() }
     single<NotificationPreferencesDao> { get<AppDatabase>().notificationPreferencesDao() }
+    single<AppInviteDao> { get<AppDatabase>().appInviteDao() }
     single<GroupDao> { get<AppDatabase>().groupDao() }
     single<ExpenseDao> { get<AppDatabase>().expenseDao() }
     single<SettlementDao> { get<AppDatabase>().settlementDao() }

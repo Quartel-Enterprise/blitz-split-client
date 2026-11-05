@@ -17,10 +17,12 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
+import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -33,8 +35,13 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.model.AppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -57,6 +64,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
@@ -88,6 +96,11 @@ class HomeViewModel(
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     private val recoveryCodeCardDismissal: RecoveryCodeCardDismissal,
+    private val dismissAppInvite: DismissAppInvite,
+    private val dismissAppBanner: DismissAppBanner,
+    private val encodeQrCode: EncodeQrCode,
+    observeAppBannerDismissed: ObserveAppBannerDismissed,
+    observeAppInvite: ObserveAppInvite,
     updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
     currentTimeMillis: CurrentTimeMillis,
     observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
@@ -139,6 +152,9 @@ class HomeViewModel(
                 canAskQuietly = false,
                 hasAskedQuietly = false,
                 isNotificationPromptSnoozed = true,
+                appInvite = null,
+                hasBills = false,
+                isAppBannerDismissed = false,
             ),
         )
 
@@ -157,6 +173,8 @@ class HomeViewModel(
 
     // Why: the group of the Registrar pagamento opened right over Início, whose notice Início shows once it closes.
     private val paymentGroupId = MutableStateFlow<String?>(null)
+
+    private var isDismissingAppInvite = false
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -208,6 +226,7 @@ class HomeViewModel(
                     rows = rowsOf(items, activityClock()),
                     latestExpenses = latestExpensesOf(items),
                     pendingChangeCount = pendingChangeCountOf(items),
+                    hasBills = items.any { it.expenses.isNotEmpty() },
                 )
             }
             // Why: a category renamed or moved reads only the five bills again, never every group's row.
@@ -228,6 +247,7 @@ class HomeViewModel(
                         groups = homeGroupsOf(rows, pinnedIds),
                         billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,
+                        hasBills = data.hasBills,
                     )
                 }
             }.launchIn(viewModelScope)
@@ -236,6 +256,12 @@ class HomeViewModel(
             minuteTicks = minuteTicks,
             isHomeOnTop = navigator.backStack.map { it.lastOrNull() == Route.Home },
         )
+        observeAppInvite()
+            .onEach(::showAppInvite)
+            .launchIn(viewModelScope)
+        observeAppBannerDismissed()
+            .onEach { isDismissed -> uiState.update { it.copy(isAppBannerDismissed = isDismissed) } }
+            .launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -398,6 +424,27 @@ class HomeViewModel(
 
             HomeUiEvent.OnNotificationPromptDismissed -> notificationPrompts.dismiss()
 
+            HomeUiEvent.OnAppBannerDismissed -> if (uiState.value.showsAppBanner) {
+                viewModelScope.launch { dismissAppBanner() }
+            }
+
+            HomeUiEvent.OnAppInviteDismissed -> if (canDismissAppInvite()) {
+                trackEvent("app_invite_dismissed", mapOf("source" to "home"))
+                dismissAppInviteCard()
+            }
+
+            HomeUiEvent.OnAppInviteDownloadedClicked -> if (canDismissAppInvite()) {
+                trackEvent("app_invite_downloaded_clicked", mapOf("source" to "home"))
+                dismissAppInviteCard()
+            }
+
+            HomeUiEvent.OnAppInviteCodeClicked -> if (uiState.value.appInvite != null) {
+                open(Route.AppDownload(AppDownloadSource.HOME))
+            }
+
+            // Why: the profile holds "Connect Google" and "Connect Apple", as for the recovery code's card.
+            HomeUiEvent.OnAppInviteConnectClicked -> open(Route.Profile)
+
             HomeUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             HomeUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
@@ -503,6 +550,43 @@ class HomeViewModel(
             )
         }
     }
+
+    /*
+     * Why: the QR code once per link, which never changes on a platform. The card that showed goes when a sync finds the
+     * account on a phone app, and says so once (14.1c).
+     */
+    private fun showAppInvite(invite: AppInvite?) {
+        val previous = uiState.value
+        uiState.update { state ->
+            state.copy(
+                appInvite = invite?.let { offer ->
+                    val keptQrCode = state.appInvite?.takeIf { it.link == offer.link }?.qrCode
+                    HomeAppInvite(
+                        link = offer.link,
+                        qrCode = keptQrCode ?: encodeQrCode(offer.link),
+                        stores = offer.stores,
+                        isActive = offer.isActive,
+                    )
+                },
+            )
+        }
+        if (previous.showsAppInviteCard && invite?.phoneUse != null) emit(HomeUiAction.ShowUsedOnPhone)
+    }
+
+    // Why: ✕ and "I downloaded it" end the invite for good, here and in Profile, also for the account's other devices.
+    private fun dismissAppInviteCard() {
+        isDismissingAppInvite = true
+        viewModelScope.launch {
+            try {
+                dismissAppInvite()
+            } finally {
+                isDismissingAppInvite = false
+            }
+        }
+    }
+
+    // Why: once per showing, also for a second click before Room says the card went.
+    private fun canDismissAppInvite(): Boolean = uiState.value.showsAppInviteCard && !isDismissingAppInvite
 
     private fun emit(action: HomeUiAction) {
         viewModelScope.launch { uiAction.emit(action) }

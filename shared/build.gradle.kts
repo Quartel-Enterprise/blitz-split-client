@@ -37,6 +37,7 @@ private val exportedToApple = listOf(
     projects.feature.activity,
     projects.feature.contacts,
     projects.feature.inAppUpdate,
+    projects.feature.appDownload,
 )
 
 kotlin {

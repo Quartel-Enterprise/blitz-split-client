@@ -238,6 +238,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `notification_prompt_turn_on_clicked` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Turn on" on Home's notification card, while it shows: the system's prompt, or its settings once blocked | `:feature:groups` |
 | `notification_prompt_dismissed` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Not now" on that card, while it shows | `:feature:groups` |
 | `notification_permission_answered` | `source` (`home`, `notification_settings`), `is_granted`, and from Home `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | The system's answer after the app asked: on Home, the first check after "Turn on" (the system's prompt, or back from its settings); on Notifications, the read each platform reports right after its prompt (a Push turned on while never asked or quiet, "Turn on" on its notice), never a read already under way. It ends the funnel the tap began; `is_granted` is false for a refusal, a dialog dismissed and Apple's quiet delivery alike | `:feature:groups`, `:feature:notification_settings` |
+| `app_invite_code_clicked` | `source` (`home`, `profile`) | The QR code of Home's "Take Blitz Split on your phone" card, or "See code" (the Mac's "Show code…") on Profile's "App on your phone" row (Settings › iPhone), which open the app's code (web and Mac only) | `:feature:groups`, `:feature:profile` |
+| `app_invite_connect_clicked` | none | "Connect account" on Home's invite card, without Google or Apple | `:feature:groups` |
+| `app_invite_dismissed` | `source` (`home`, `profile`) | The ✕ ("Don't show again") of Home's invite card or Profile's highlighted row, while it stands | `:feature:groups`, `:feature:profile` |
+| `app_invite_downloaded_clicked` | `source` (`home`, `app_download`) | "I downloaded it" on Home's invite card or on the app's code, while the invite stands | `:feature:groups`, `:feature:app_download` |
+| `app_banner_dismissed` | none | The ✕ of Home's "Blitz Split in the app" banner in a phone's browser (web), kept on that device | `:feature:groups` |
+| `app_download_link_copied` | none | The copy button beside the link on the app's code | `:feature:app_download` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |

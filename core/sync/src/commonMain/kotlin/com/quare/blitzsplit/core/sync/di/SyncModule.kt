@@ -68,6 +68,7 @@ val syncModule = module {
             profileRepository = get(),
             paymentKeyRepository = get(),
             notificationPreferencesRepository = get(),
+            appInviteRepository = get(),
             groupRepository = get(),
             groupPinRepository = get(),
             expenseRepository = get(),

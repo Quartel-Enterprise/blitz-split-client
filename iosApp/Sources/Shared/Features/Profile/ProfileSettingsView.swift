@@ -5,6 +5,7 @@ import SwiftUI
 /// category map (9.1), which takes the form's place.
 enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     case profile
+    case iphone
     case keys
     case account
     case appearance
@@ -17,6 +18,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     var title: LocalizedStringKey {
         switch self {
         case .profile: "Profile"
+        case .iphone: "iPhone"
         case .keys: "Keys to receive payments"
         case .account: "Account and sync"
         case .appearance: "Appearance"
@@ -29,6 +31,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     var symbol: String {
         switch self {
         case .profile: "person.crop.circle"
+        case .iphone: "iphone"
         case .keys: "key"
         case .account: "arrow.triangle.2.circlepath"
         case .appearance: "circle.lefthalf.filled"
@@ -61,7 +64,7 @@ struct SettingsView: View {
         Group {
             if app.hasProfile, let model {
                 NavigationSplitView(columnVisibility: $columnVisibility) {
-                    List(ProfileSettingsPane.allCases, selection: selection) { pane in
+                    List(panes(for: model), selection: selection) { pane in
                         Label(pane.title, systemImage: pane.symbol)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .contentShape(.rect)
@@ -92,6 +95,7 @@ struct SettingsView: View {
                 case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
                 case let .inAppUpdate(route): InAppUpdateView(route: route)
+                case let .appDownload(route): AppDownloadView(route: route)
                 default: EmptyView()
                 }
             }
@@ -124,6 +128,11 @@ struct SettingsView: View {
                 pick(newPane)
             },
         )
+    }
+
+    /// iPhone only where the invite exists: once the App Store lists the app.
+    private func panes(for model: ProfileModel) -> [ProfileSettingsPane] {
+        ProfileSettingsPane.allCases.filter { $0 != .iphone || model.state.appInvite != nil }
     }
 
     private func pick(_ newPane: ProfileSettingsPane) {

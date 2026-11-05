@@ -88,6 +88,7 @@ include(":feature:category_map")
 include(":feature:activity")
 include(":feature:contacts")
 include(":feature:in_app_update")
+include(":feature:app_download")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")

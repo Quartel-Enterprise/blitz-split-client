@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
+import com.quare.blitzsplit.feature.appdownload.presentation.viewmodel.AppDownloadViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
@@ -128,6 +129,10 @@ object BlitzSplitApple : KoinComponent {
     // Why: "Atualização disponível" over wherever the app is, the App Store's newer version.
     fun createInAppUpdateViewModel(route: Route.InAppUpdate): ViewModelHolder<InAppUpdateViewModel> =
         ViewModelHolder(InAppUpdateViewModel::class) { get { parametersOf(route) } }
+
+    // Why: the Mac's "Bora Rachar on iPhone" sheet (14.2), from Home's card and Settings' iPhone row.
+    fun createAppDownloadViewModel(route: Route.AppDownload): ViewModelHolder<AppDownloadViewModel> =
+        ViewModelHolder(AppDownloadViewModel::class) { get { parametersOf(route) } }
 
     fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
         ViewModelHolder(EditProfileViewModel::class) { get() }

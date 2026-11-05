@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakeAppInviteRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
@@ -781,6 +782,7 @@ class SyncCoordinatorRealtimeTest {
             accountRepository = account,
             profileRepository = gatedProfile,
             paymentKeyRepository = paymentKeys,
+            appInviteRepository = FakeAppInviteRepository(),
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             groupRepository = gatedGroups,
             groupPinRepository = FakeGroupPinRepository(),

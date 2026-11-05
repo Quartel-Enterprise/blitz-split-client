@@ -24,6 +24,8 @@ import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificationPreferenceChanges
@@ -51,6 +53,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
+import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
@@ -89,6 +92,8 @@ class ProfileViewModel(
     private val exportUserData: ExportUserData,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
+    dismissAppInvite: DismissAppInvite,
+    observeAppInvite: ObserveAppInvite,
     updateMechanism: UpdateMechanism,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
@@ -139,8 +144,11 @@ class ProfileViewModel(
                 hasSignOutFailed = false,
                 isUnlinking = false,
                 hasUnlinkFailed = false,
+                appInvite = null,
             ),
         )
+
+    private val appInviteRow = ProfileAppInviteRow(uiState, navigator, dismissAppInvite, trackEvent, viewModelScope)
 
     // Why: Profile's dialogs and sheets, which open only while nothing signs out or unlinks.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
@@ -190,6 +198,9 @@ class ProfileViewModel(
             if (download != null) Loadable.Loading else preferences.push.size.toLoaded()
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
+        observeAppInvite()
+            .onEach { invite -> uiState.update { it.copy(appInvite = invite?.let(::toProfileAppInvite)) } }
+            .launchIn(viewModelScope)
         providerConnector.connection
             .onEach { connection ->
                 uiState.update {
@@ -210,6 +221,10 @@ class ProfileViewModel(
             ProfileUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.Profile)
 
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
+
+            ProfileUiEvent.OnAppInviteClicked -> appInviteRow.openCode()
+
+            ProfileUiEvent.OnAppInviteDismissed -> appInviteRow.dismiss()
 
             ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
 

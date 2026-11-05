@@ -666,6 +666,7 @@ class DeviceSettingsRepositoryImplTest {
         showsBitcoinInSats = showsBitcoinInSats,
         lastUpdatePromptAt = lastUpdatePromptAt,
         lastNotificationPromptAt = lastNotificationPromptAt,
+        isAppBannerDismissed = false,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -723,6 +724,7 @@ private class FakeDeviceSettingsLocalDataSource(
             showsBitcoinInSats = false,
             lastUpdatePromptAt = null,
             lastNotificationPromptAt = null,
+            isAppBannerDismissed = false,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

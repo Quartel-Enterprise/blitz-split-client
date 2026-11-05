@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRep
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
@@ -42,6 +43,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -49,14 +51,23 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPermission
+import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.profile.domain.model.AppInvite
+import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
+import com.quare.blitzsplit.core.profile.domain.model.PhoneUse
+import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.FirstDownload
@@ -69,6 +80,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
@@ -110,6 +122,7 @@ import kotlin.time.Instant
 
 class HomeViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val appBannerDismissed = MutableStateFlow(false)
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var groups: FakeGroupRepository
@@ -127,11 +140,19 @@ class HomeViewModelTest {
     private lateinit var firstDownload: FirstDownload
     private lateinit var activityUnread: MutableStateFlow<Int>
     private lateinit var peopleGate: MutableStateFlow<Boolean>
+
+    // Why: "Get the app" as this platform offers it, which a sync or a dismissal changes.
+    private lateinit var appInvite: MutableStateFlow<AppInvite?>
+    private var appInviteDismissals = 0
+
+    // Why: every link a QR code was encoded for, in order.
+    private val encodedLinks = mutableListOf<String>()
     private lateinit var viewModel: HomeViewModel
     private val actions = mutableListOf<HomeUiAction>()
     private var retryCount = 0
     private var syncNowCount = 0
     private var syncGate: CompletableDeferred<Unit>? = null
+    private var appInviteDismissGate: CompletableDeferred<Unit>? = null
 
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
@@ -4640,6 +4661,27 @@ class HomeViewModelTest {
         offersReceiverKeys = true,
     )
 
+    private val appStoreLink = "https://apps.apple.com/app/id6740000000"
+
+    // Why: the web's invite while only Google Play lists the app.
+    private val webInvite = AppInvite(
+        link = AppInvite.WEB_LINK,
+        stores = StoreListing.GOOGLE_PLAY,
+        isDismissed = false,
+        phoneUse = null,
+    )
+
+    private val onAndroid = PhoneUse(
+        platforms = setOf(ClientPlatform.ANDROID),
+        sinceMillis = Instant.parse("2026-10-12T12:00:00Z").toEpochMilliseconds(),
+    )
+
+    // Why: a code told apart by the link it encodes.
+    private fun qrCodeOf(link: String): QrCode = QrCode(
+        size = link.length,
+        modules = link.map { it.code % 2 == 0 },
+    )
+
     private fun hoursAgo(hours: Int): Long = now - hours.hours.inWholeMilliseconds
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
@@ -4707,6 +4749,667 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN the web invite WHEN Home opens THEN carries the link the stores and the QR code of the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            val invite = viewModel.uiState.value.appInvite
+
+            // Then
+            assertEquals(
+                HomeAppInvite(
+                    link = AppInvite.WEB_LINK,
+                    qrCode = qrCodeOf(AppInvite.WEB_LINK),
+                    stores = StoreListing.GOOGLE_PLAY,
+                    isActive = true,
+                ),
+                invite,
+            )
+            assertEquals(listOf(AppInvite.WEB_LINK), encodedLinks)
+        }
+
+    @Test
+    fun `GIVEN the invite on Home WHEN it comes again with the same link THEN keeps the QR code encoded once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            appInvite.value = webInvite.copy(stores = StoreListing.BOTH)
+
+            // Then
+            assertEquals(
+                StoreListing.BOTH,
+                viewModel.uiState.value.appInvite
+                    ?.stores,
+            )
+            assertEquals(
+                qrCodeOf(AppInvite.WEB_LINK),
+                viewModel.uiState.value.appInvite
+                    ?.qrCode,
+            )
+            assertEquals(listOf(AppInvite.WEB_LINK), encodedLinks)
+        }
+
+    @Test
+    fun `GIVEN the invite on Home WHEN its link changes THEN encodes the QR code of the new link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = webInvite)
+
+            // When
+            appInvite.value = webInvite.copy(link = appStoreLink)
+
+            // Then
+            assertEquals(
+                appStoreLink,
+                viewModel.uiState.value.appInvite
+                    ?.link,
+            )
+            assertEquals(
+                qrCodeOf(appStoreLink),
+                viewModel.uiState.value.appInvite
+                    ?.qrCode,
+            )
+            assertEquals(listOf(AppInvite.WEB_LINK, appStoreLink), encodedLinks)
+        }
+
+    @Test
+    fun `GIVEN no invite on this platform WHEN Home opens with a bill THEN shows no invite card nor encodes a code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.appInvite)
+            assertFalse(state.showsAppInviteCard)
+            assertTrue(encodedLinks.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an active invite and a group with a bill WHEN Home opens THEN shows the invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.hasBills)
+            assertTrue(state.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN an active invite and only a bill Pierre takes no part in WHEN Home opens THEN shows the invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        id = "taxi",
+                        paidBy = "Ana",
+                        splitOver = listOf("Ana", "Bruno"),
+                    ),
+                ),
+                invite = webInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.hasBills)
+            assertTrue(state.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN an active invite and a group with no bill WHEN Home opens THEN shows no invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasBills)
+            assertFalse(state.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN an active invite and a group with no bill WHEN the first bill comes THEN shows the invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            expenses.expenses.value = listOf(bill("dinner"))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN the first download fills the device THEN shows no invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                isFirstDownloadPending = true,
+                invite = webInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isFirstDownload)
+            assertFalse(state.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN the stores no longer list the app THEN removes the card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            appInvite.value = null
+
+            // Then
+            assertNull(viewModel.uiState.value.appInvite)
+            assertFalse(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN an active invite and a bill WHEN the notification card comes up THEN the invite card waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+            assertFalse(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the notification card before the invite WHEN notifications are allowed THEN shows the invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the recovery code card before the invite WHEN dismissing it THEN shows the invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            val shownUnderRecoveryCard = viewModel.uiState.value.showsAppInviteCard
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
+
+            // Then
+            assertFalse(shownUnderRecoveryCard)
+            assertTrue(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the recovery code sheet WHEN Home opens with an active invite and a bill THEN shows no invite card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.DUE,
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsRecoveryCodePrompt)
+            assertFalse(state.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping the cross THEN ends the invite once and counts it from Home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(listOf<Map<String, Any>>(mapOf("source" to "home")), tracked("app_invite_dismissed"))
+            assertFalse(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping the cross twice before it goes THEN ends and counts it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            appInviteDismissGate = CompletableDeferred()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+            appInviteDismissGate?.complete(Unit)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(1, tracked("app_invite_dismissed").size)
+        }
+
+    @Test
+    fun `GIVEN an invite and a group WHEN Home loads THEN shows the phone browser banner`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            invite = webInvite,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsAppBanner)
+    }
+
+    @Test
+    fun `GIVEN the phone browser banner WHEN tapping its cross THEN keeps it closed on this device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppBannerDismissed)
+
+            // Then
+            assertTrue(appBannerDismissed.value)
+            assertFalse(viewModel.uiState.value.showsAppBanner)
+        }
+
+    @Test
+    fun `GIVEN the invite card gone WHEN a late tap on the cross comes THEN neither ends nor counts it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(1, tracked("app_invite_dismissed").size)
+        }
+
+    @Test
+    fun `GIVEN an active invite and no bill yet WHEN tapping the cross THEN neither ends nor counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDismissed)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(tracked("app_invite_dismissed").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping I downloaded it THEN ends the invite once and counts it from Home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(listOf<Map<String, Any>>(mapOf("source" to "home")), tracked("app_invite_downloaded_clicked"))
+            assertFalse(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the invite card gone WHEN a late I downloaded it comes THEN neither ends nor counts it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+
+            // Then
+            assertEquals(1, appInviteDismissals)
+            assertEquals(1, tracked("app_invite_downloaded_clicked").size)
+        }
+
+    @Test
+    fun `GIVEN an active invite and no bill yet WHEN tapping I downloaded it THEN neither ends nor counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(tracked("app_invite_downloaded_clicked").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the notification card first WHEN tapping I downloaded it THEN neither ends nor counts the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteDownloadedClicked)
+
+            // Then
+            assertEquals(0, appInviteDismissals)
+            assertTrue(tracked("app_invite_downloaded_clicked").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping its QR code THEN opens the app code from Home over Home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteCodeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.AppDownload(AppDownloadSource.HOME)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no invite on this platform WHEN a tap on the invite QR code comes THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = null,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteCodeClicked)
+
+            // Then
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over Home WHEN a late tap on the invite QR code comes THEN opens nothing over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteCodeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN tapping Connect account THEN opens the profile over Home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteConnectClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over Home WHEN a late invite Connect account comes THEN opens nothing over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            navigator.navigate(Route.CreateGroup)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnAppInviteConnectClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.CreateGroup), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the invite card WHEN a sync finds the account on a phone THEN removes it and says it saw the phone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+
+            // When
+            appInvite.value = webInvite.copy(phoneUse = onAndroid)
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowUsedOnPhone), actions)
+            assertEquals(
+                false,
+                viewModel.uiState.value.appInvite
+                    ?.isActive,
+            )
+            assertFalse(viewModel.uiState.value.showsAppInviteCard)
+        }
+
+    @Test
+    fun `GIVEN the phone seen with the card WHEN the invite comes again with a phone THEN does not say it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            appInvite.value = webInvite.copy(phoneUse = onAndroid)
+
+            // When
+            appInvite.value = webInvite.copy(
+                phoneUse = onAndroid.copy(platforms = setOf(ClientPlatform.ANDROID, ClientPlatform.IOS)),
+            )
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowUsedOnPhone), actions)
+        }
+
+    @Test
+    fun `GIVEN the invite dismissed WHEN a sync finds the account on a phone THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite.copy(isDismissed = true),
+            )
+
+            // When
+            appInvite.value = webInvite.copy(
+                isDismissed = true,
+                phoneUse = onAndroid,
+            )
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an active invite and no bill yet WHEN a sync finds the account on a phone THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                invite = webInvite,
+            )
+
+            // When
+            appInvite.value = webInvite.copy(phoneUse = onAndroid)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the notification card before the invite WHEN a sync finds the account on a phone THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite,
+            )
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            appInvite.value = webInvite.copy(phoneUse = onAndroid)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the account already seen on a phone WHEN Home opens with a bill THEN shows no card and says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+                invite = webInvite.copy(phoneUse = onAndroid),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsAppInviteCard)
+            assertTrue(actions.isEmpty())
         }
 
     private fun appleReports(permission: NotificationPermission): HomeUiEvent =
@@ -4844,6 +5547,7 @@ class HomeViewModelTest {
         awaitsFullSync: Boolean = false,
         notificationPromptAnsweredAt: Long? = null,
         notificationPromptTimeRead: Boolean = true,
+        invite: AppInvite? = null,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -4869,6 +5573,9 @@ class HomeViewModelTest {
         firstDownload = FirstDownload().also { if (isFirstDownloadPending) it.start() }
         activityUnread = MutableStateFlow(0)
         lastNotificationPromptAt.value = notificationPromptAnsweredAt
+        appInvite = MutableStateFlow(invite)
+        appInviteDismissals = 0
+        encodedLinks.clear()
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
@@ -4882,11 +5589,24 @@ class HomeViewModelTest {
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             recoveryCodeCardDismissal = dismissal,
+            // Why: like the repository, a dismissal ends the invite the flow emits.
+            dismissAppInvite = DismissAppInvite {
+                appInviteDismissals++
+                appInviteDismissGate?.await()
+                appInvite.update { it?.copy(isDismissed = true) }
+            },
+            encodeQrCode = EncodeQrCode { link ->
+                encodedLinks += link
+                qrCodeOf(link)
+            },
+            observeAppInvite = ObserveAppInvite { appInvite },
             updateLastNotificationPromptAt = UpdateLastNotificationPromptAt {
                 notificationPromptWrites += it
                 lastNotificationPromptAt.value = it
             },
             // Why: like the groups, the settings row not read yet is a flow that has not emitted.
+            dismissAppBanner = DismissAppBanner { appBannerDismissed.value = true },
+            observeAppBannerDismissed = ObserveAppBannerDismissed { appBannerDismissed },
             observeLastNotificationPromptAt = ObserveLastNotificationPromptAt {
                 if (notificationPromptTimeRead) lastNotificationPromptAt else MutableSharedFlow()
             },
