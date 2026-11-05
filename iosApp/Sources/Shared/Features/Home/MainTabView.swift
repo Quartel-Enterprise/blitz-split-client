@@ -94,6 +94,9 @@ struct MainTabView: View {
             #endif
         }
         .tabViewStyle(.sidebarAdaptable)
+        #if os(iOS)
+        .searchTabApart()
+        #endif
         #if os(macOS)
         // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
         .tabViewSidebarFooter {
@@ -316,3 +319,21 @@ struct MainTabView: View {
         }
     }
 }
+
+#if os(iOS)
+private extension View {
+    /// The search tab as a round button of its own at the end of an iPhone's tab bar, on every tab (Pierre's call). iOS
+    /// 26 draws it so already; iOS 27 keeps it inside the tabs' capsule unless selecting it activates the search, so
+    /// there the field takes the keyboard as the tab opens and its ✕ goes back to the tab it was opened from (lying down,
+    /// the search draws its own field beside the results, and another tab leaves it). An iPad's top bar keeps its search
+    /// tab as it was.
+    @ViewBuilder
+    func searchTabApart() -> some View {
+        if #available(iOS 27, *), UIDevice.current.userInterfaceIdiom == .phone {
+            tabViewSearchActivation(.searchTabSelection)
+        } else {
+            self
+        }
+    }
+}
+#endif
