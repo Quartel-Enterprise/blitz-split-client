@@ -15,6 +15,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
 | `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every 15 minutes, and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
+| `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight. Merges the versionCode back into `main` and publishes the `X.Y.Z-beta_N` GitHub pre-release; see [release-process.md](release-process.md) |
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
 coverage, a compile of the shared code for the iOS simulator and JS, the debug APK, and the UI the branch touches (the

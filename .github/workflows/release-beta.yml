@@ -1,0 +1,569 @@
+name: release-beta
+
+# Ships a beta of Bora Rachar to the closed group of testers, outside the stores and the app's domain.
+#
+# Run it from the Actions tab or with ./scripts/release/release-beta.sh:
+#   1. `plan` resolves the version from version.properties and the existing X.Y.Z-beta_N tags.
+#   2. Each platform builds and publishes to its own channel, in jobs of its own, because "Re-run failed
+#      jobs" repeats whole jobs: an upload that failed is sent again without building a second time.
+#        - Android: signed APK to the Firebase App Distribution `beta` group.
+#        - Web: Cloudflare Pages, https://blitz-split-beta.pages.dev.
+#        - iOS and macOS: TestFlight, signed by Xcode with the App Store Connect API key. The two share the
+#          composite actions .github/actions/apple-build and apple-upload.
+#   3. `finalize` tags the commit and publishes a GitHub pre-release listing what each channel got and the
+#      build number, then merges the versionCode this beta consumed back into main. The release goes first
+#      because it is what `plan` reads: the next beta takes its number and its versionCode from the releases,
+#      so it never repeats either, even when the merge-back fails. `finalize` runs when at least one platform
+#      published, since the Apple stores refuse a build number they already hold, and can be re-run: every
+#      step skips what an earlier attempt already did.
+#
+# One run at a time, and one more waiting: GitHub keeps a single pending run per concurrency group, so a third
+# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting.
+#
+# Repository secrets and variables: see docs/release-process.md#secrets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version X.Y.Z: leave blank to use the versionName of version.properties"
+        type: string
+        required: false
+      android:
+        description: "Android, Firebase App Distribution"
+        type: boolean
+        default: true
+      web:
+        description: "Web, Cloudflare Pages"
+        type: boolean
+        default: true
+      ios:
+        description: "iOS, TestFlight"
+        type: boolean
+        default: true
+      macos:
+        description: "macOS, TestFlight"
+        type: boolean
+        default: true
+
+# Least privilege by default: only finalize writes.
+permissions:
+  contents: read
+
+concurrency:
+  group: release-beta
+  cancel-in-progress: false
+
+env:
+  FIREBASE_PROJECT: blitz-split
+  FIREBASE_ANDROID_APP_ID: 1:791706056713:android:05eeec36250eb20299a0d8
+  FIREBASE_GROUP: beta
+  CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
+  # Pinned: the versions the release was written with.
+  FIREBASE_TOOLS_VERSION: 15.22.0
+  WRANGLER_VERSION: 4.152.0
+
+jobs:
+  plan:
+    name: Plan the beta version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      display_version: ${{ steps.resolve.outputs.display_version }}
+      version_code: ${{ steps.resolve.outputs.version_code }}
+      branch: ${{ steps.resolve.outputs.branch }}
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # Every job builds this commit, so a push to main during the run doesn't end up half in the
+      # beta.
+      - name: Pin the commit
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Through env, not spliced into the command: the script validates the value, but only after the
+      # shell has parsed the line.
+      - name: Resolve version
+        id: resolve
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+          # To read the build numbers the earlier betas recorded in their releases.
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/release/suggest-beta-version.sh "$VERSION_INPUT"
+
+  # ---------------------------------------------------------------------------------------------
+  # Android
+  # ---------------------------------------------------------------------------------------------
+  android-build:
+    name: Android, build the APK
+    needs: plan
+    if: ${{ inputs.android }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      # A release build signed with the debug key would install, but the next beta could not update
+      # it, and Google sign in is registered for the release key's SHA-1.
+      - name: Check the signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON
+
+      # Without the web client id the app builds, but the native Google sign in fails (docs/getting-started.md).
+      - name: Check the Google web client id
+        env:
+          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+        run: ./scripts/release/require-env.sh SUPABASE_GOOGLE_WEB_CLIENT_ID
+
+      - name: Bump version
+        run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # Dispatched on main, where the action would save the cache: a beta must not push out the entries the
+          # pull requests read.
+          cache-read-only: 'true'
+
+      - name: Decode signing and Firebase config
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+
+      - name: Build the signed APK
+        run: ./gradlew :androidApp:assembleRelease
+        env:
+          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      # Google sign in only works for a signing key whose SHA-1 is registered on the Firebase app
+      # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. The
+      # APK has no v1 signature (minSdk 26), so keytool can't read it: apksigner reads the v2 and v3
+      # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
+      - name: Show the signing certificate
+        shell: bash
+        run: |
+          apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
+          sha1="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk | sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' | head -1)"
+          if [ -z "$sha1" ]; then
+            echo "::error::apksigner printed no signing certificate for the release APK."
+            exit 1
+          fi
+          echo "::notice title=APK signing SHA-1::$sha1"
+          {
+            echo "### APK signing certificate"
+            echo ""
+            echo "SHA-1: \`$sha1\`"
+            echo ""
+            echo "Google sign in needs this fingerprint on the Firebase Android app."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the APK as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-apk
+          path: androidApp/build/outputs/apk/release/*.apk
+          # A signed binary is downloadable by anyone on a public repository: keep it short-lived.
+          retention-days: 1
+          if-no-files-found: error
+
+  android-distribute:
+    name: Android, send to Firebase App Distribution
+    needs: [plan, android-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check the secret
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: ./scripts/release/require-env.sh FIREBASE_SERVICE_ACCOUNT_JSON
+
+      - name: Download the APK build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: android-apk
+          path: apk
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Send the APK to the beta group
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          RELEASE_NOTES: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+        run: |
+          trap 'rm -f "$RUNNER_TEMP/firebase-service-account.json"' EXIT
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-service-account.json"
+          npx --yes "firebase-tools@${FIREBASE_TOOLS_VERSION}" appdistribution:distribute apk/*.apk \
+            --project "$FIREBASE_PROJECT" \
+            --app "$FIREBASE_ANDROID_APP_ID" \
+            --groups "$FIREBASE_GROUP" \
+            --release-notes "$RELEASE_NOTES"
+
+  # ---------------------------------------------------------------------------------------------
+  # Web
+  # ---------------------------------------------------------------------------------------------
+  web:
+    name: Web, build and deploy to Cloudflare Pages
+    needs: plan
+    if: ${{ inputs.web }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check the secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: ./scripts/release/require-env.sh CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+
+      # The web app shows the versionName of version.properties.
+      - name: Bump version
+        run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: 'true'
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: webApp/package-lock.json
+
+      # webApp depends on the JS library of :shared through a file: dependency, so the library is
+      # built before npm installs it.
+      - name: Build the shared JS library
+        run: npm --prefix webApp run shared
+
+      - name: Install the web dependencies
+        run: npm --prefix webApp ci
+
+      # Cloudflare Pages answers an unknown path with index.html when the site has no 404.html,
+      # which is what /g/<code> and /n?... need. The database runs in a worker on OPFS's
+      # opfs-sahpool, so no COOP/COEP headers are needed either.
+      # --ignore-scripts skips the prebuild hook, which would build the shared JS library a second time.
+      - name: Build the web app
+        run: npm --prefix webApp run build --ignore-scripts
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+
+      # The tree is dirty with the version bump above; --commit-dirty keeps wrangler from warning about it.
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy webApp/dist \
+            --project-name "$CLOUDFLARE_PAGES_PROJECT" \
+            --branch main \
+            --commit-dirty=true \
+            --commit-hash "${{ needs.plan.outputs.sha }}" \
+            --commit-message "${{ needs.plan.outputs.display_version }}"
+          {
+            echo "### Web"
+            echo ""
+            echo "https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------------------------
+  # iOS and macOS: the same two composite actions, with another scheme
+  # ---------------------------------------------------------------------------------------------
+  ios-build:
+    name: iOS, build the IPA
+    needs: plan
+    if: ${{ inputs.ios }}
+    # The Xcode 27 image, as apple.yml: the app uses the iOS 27 SDK's APIs.
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Archive and export the iOS app
+        uses: ./.github/actions/apple-build
+        with:
+          scheme: BoraRachar-iOS
+          destination: generic/platform=iOS
+          export-path: build/ios
+          version: ${{ needs.plan.outputs.version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Upload the IPA as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-ipa
+          path: build/ios/*.ipa
+          # A week, for the "Re-run failed jobs" of the upload: an IPA signed for the App Store installs nowhere else.
+          retention-days: 7
+          if-no-files-found: error
+
+  ios-upload:
+    name: iOS, send to TestFlight
+    needs: [plan, ios-build]
+    # The image that built it: an older altool uploading an Xcode 27 binary is a risk with no use.
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Download the IPA build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ios-ipa
+          path: build/ios
+
+      - name: Send the IPA to TestFlight
+        uses: ./.github/actions/apple-upload
+        with:
+          type: ios
+          file: build/ios/*.ipa
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  macos-build:
+    name: macOS, build the package
+    needs: plan
+    if: ${{ inputs.macos }}
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Archive and export the macOS app
+        uses: ./.github/actions/apple-build
+        with:
+          scheme: BoraRachar-macOS
+          destination: generic/platform=macOS
+          # :shared only declares macosArm64(), and a Release archive of a generic destination also builds x86_64.
+          build-settings: ARCHS=arm64
+          export-path: build/macos
+          version: ${{ needs.plan.outputs.version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Upload the package as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-pkg
+          path: build/macos/*.pkg
+          retention-days: 7
+          if-no-files-found: error
+
+  macos-upload:
+    name: macOS, send to TestFlight
+    needs: [plan, macos-build]
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Download the package build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-pkg
+          path: build/macos
+
+      - name: Send the package to TestFlight
+        uses: ./.github/actions/apple-upload
+        with:
+          type: macos
+          file: build/macos/*.pkg
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  # ---------------------------------------------------------------------------------------------
+  # Finalize
+  # ---------------------------------------------------------------------------------------------
+  finalize:
+    name: Tag, pre-release and merge-back
+    needs: [plan, android-distribute, web, ios-upload, macos-upload]
+    # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must
+    # not hold the release back. One that published is enough, since the versionCode it used has to
+    # reach main whatever happened to the others.
+    if: >-
+      ${{ !cancelled() && needs.plan.result == 'success' && (
+      needs.android-distribute.result == 'success' || needs.web.result == 'success' ||
+      needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # First, because the release is what `plan` reads: with it recorded, the next beta takes the next number and
+      # the next versionCode even when the merge-back below fails. A re-run (after "Re-run failed jobs" fixed a
+      # platform) keeps the release and rewrites its table of channels, so the record follows the results.
+      - name: Publish the GitHub pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+          SHA: ${{ needs.plan.outputs.sha }}
+          ANDROID: ${{ needs.android-distribute.result }}
+          WEB: ${{ needs.web.result }}
+          IOS: ${{ needs.ios-upload.result }}
+          MACOS: ${{ needs.macos-upload.result }}
+        run: |
+          if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
+            gh release view "$DISPLAY_VERSION" --json body --jq .body | tr -d '\r' | awk \
+              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v macos="$MACOS" -v pages="$CLOUDFLARE_PAGES_PROJECT" '
+              /^\| Android \|/ { print "| Android | Firebase App Distribution, group `beta` | " android " |"; next }
+              /^\| Web \|/     { print "| Web | Cloudflare Pages, https://" pages ".pages.dev | " web " |"; next }
+              /^\| iOS \|/     { print "| iOS | TestFlight | " ios " |"; next }
+              /^\| macOS \|/   { print "| macOS | TestFlight | " macos " |"; next }
+              { print }' > "$RUNNER_TEMP/notes.md"
+            gh release edit "$DISPLAY_VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            echo "::notice::$DISPLAY_VERSION is already published: its table of channels was refreshed."
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/channels.md" <<EOF
+          Build number: $VERSION_CODE
+
+          ## Channels
+
+          | Platform | Channel | Result |
+          | --- | --- | --- |
+          | Android | Firebase App Distribution, group \`beta\` | $ANDROID |
+          | Web | Cloudflare Pages, https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev | $WEB |
+          | iOS | TestFlight | $IOS |
+          | macOS | TestFlight | $MACOS |
+          EOF
+          gh release create "$DISPLAY_VERSION" \
+            --target "$SHA" \
+            --title "$DISPLAY_VERSION" \
+            --notes-file "$RUNNER_TEMP/channels.md" \
+            --generate-notes \
+            --prerelease
+
+      # Only the versionCode: versionName stays at the version the beta leads up to. A re-run finishes the job
+      # wherever the last one stopped:
+      #   - main already holds this versionCode, or a higher one that someone bumped meanwhile: done, and never
+      #     lowered;
+      #   - the branch is rebuilt from the current main and pushed over the old one, so a PR left open by a failed
+      #     run follows main instead of staying in conflict;
+      #   - the pull request is created only when none is open.
+      # The PR is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
+      # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
+      - name: Merge the versionCode back into main
+        # A web-only beta consumed no build number a store cares about, so it leaves main alone.
+        if: ${{ needs.android-distribute.result == 'success' || needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          BRANCH: ${{ needs.plan.outputs.branch }}
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+          DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          main_code="$(grep -E '^versionCode=' version.properties | cut -d= -f2)"
+          if [ "$main_code" -ge "$VERSION_CODE" ]; then
+            echo "::notice::main already holds versionCode $main_code, nothing to merge back."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2> /dev/null || true
+          git checkout -B "$BRANCH"
+          current_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
+          ./scripts/release/bump-version.sh "$current_version" "$VERSION_CODE"
+          git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
+          git push --force-with-lease origin "$BRANCH"
+
+          title="chore: merge back $DISPLAY_VERSION into main"
+          body="Merges the versionCode $VERSION_CODE that $DISPLAY_VERSION consumed back into main."
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
+            gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
+          else
+            # Left open by an earlier beta: the branch now holds this one's code, so the text says so too.
+            gh pr edit "$BRANCH" --title "$title" --body "$body"
+          fi
+          # Best effort: GitHub refuses an assignee it can't assign (a bot, an app), and the merge must not depend on it.
+          gh pr edit "$BRANCH" --add-assignee "$ACTOR" || true
+
+          # GitHub recomputes mergeability asynchronously, so the merge right after the create can
+          # still read the PR as blocked. Retry instead of failing the release on a race that
+          # resolves itself in seconds.
+          for _ in 1 2 3 4 5; do
+            if GH_TOKEN="${MERGE_TOKEN:-$GH_TOKEN}" gh pr merge "$BRANCH" --squash --delete-branch; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1

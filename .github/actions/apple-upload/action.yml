@@ -1,0 +1,49 @@
+name: 'Send an Apple build to TestFlight'
+description: >-
+  Uploads an exported IPA or package to App Store Connect with the API key. The calling job checks out the
+  repository first, since the steps run its scripts.
+
+inputs:
+  type:
+    description: 'altool platform type: ios or macos'
+    required: true
+  file:
+    description: 'The IPA or package to upload (a glob that matches exactly one file)'
+    required: true
+  key-id:
+    description: 'The App Store Connect API key id'
+    required: true
+  key-issuer-id:
+    description: 'The App Store Connect API issuer id'
+    required: true
+  key-p8:
+    description: 'The text of the API key (.p8)'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Upload to App Store Connect
+      shell: bash
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
+        APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+        UPLOAD_TYPE: ${{ inputs.type }}
+        UPLOAD_FILE: ${{ inputs.file }}
+      run: |
+        ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+
+        # altool takes one --file: an export with none, or two, is an error worth saying plainly.
+        shopt -s nullglob
+        # shellcheck disable=SC2206
+        files=( $UPLOAD_FILE )
+        if [ "${#files[@]}" -ne 1 ]; then
+          echo "::error::Expected exactly one file matching '$UPLOAD_FILE', found ${#files[@]}."
+          exit 1
+        fi
+
+        key_path="$(./scripts/release/write-asc-key.sh)"
+        trap 'rm -f "$key_path"' EXIT
+        xcrun altool --upload-app --type "$UPLOAD_TYPE" --file "${files[0]}" \
+          --apiKey "$APP_STORE_CONNECT_API_KEY_ID" --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
