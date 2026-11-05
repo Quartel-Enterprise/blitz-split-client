@@ -12,6 +12,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
@@ -493,14 +494,50 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
           </span>
         )}
         {state.chartAverageMinor != null && (
-          <span className="flex items-center gap-1 text-[13px] text-muted-foreground">
-            <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
-            {averageLabel(state.grain)} <strong className="font-semibold text-foreground tabular-nums">{money(state.chartAverageMinor)}</strong>
-          </span>
+          <AverageLegend label={averageLabel(state.grain)} amount={money(state.chartAverageMinor)} />
         )}
         {note && <span className="text-xs leading-normal text-muted-foreground">{note}</span>}
       </div>
     </section>
+  )
+}
+
+/** The dashed line's legend: hovering or tapping it explains what the line is. */
+function AverageLegend({ label, amount }: { label: string; amount: string }) {
+  const [isOpen, setOpen] = useState(false)
+  // Why: a click pins the hint, so the pointer leaving the row doesn't close what it opened.
+  const [isPinned, setPinned] = useState(false)
+  return (
+    <Popover
+      open={isOpen}
+      onOpenChange={(next) => {
+        setOpen(next)
+        if (!next) setPinned(false)
+      }}
+    >
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          // Why: the hover already opened it, so a click keeps it open instead of toggling it shut.
+          onClick={(event) => {
+            event.preventDefault()
+            setOpen(true)
+            setPinned(true)
+          }}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => {
+            if (!isPinned) setOpen(false)
+          }}
+          className="flex w-fit items-center gap-1 rounded-sm text-[13px] text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
+          {label} <strong className="font-semibold text-foreground tabular-nums">{amount}</strong>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 p-3 text-xs leading-normal" onOpenAutoFocus={(event) => event.preventDefault()}>
+        {t('stats_averageHint')}
+      </PopoverContent>
+    </Popover>
   )
 }
 
