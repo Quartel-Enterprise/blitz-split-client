@@ -196,7 +196,7 @@ class GroupStatsPresenter(
     }
 
     // Why: "Escolher datas…", whose picker the page opens itself.
-    fun openDatesPicker() {
+    fun trackPickDates() {
         viewModel.onEvent(GroupStatsUiEvent.OnPickDatesClicked)
     }
 

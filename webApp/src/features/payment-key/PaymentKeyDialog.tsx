@@ -140,12 +140,12 @@ function PaymentKeyForm({ presenter, state }: { presenter: PaymentKeyPresenter; 
     return presenter.getInput()
   })
   const paste = () => {
-    navigator.clipboard
-      .readText()
-      .then((text) => presenter.paste(text))
+    navigator.clipboard.readText().then(
+      (text) => presenter.paste(text),
       // The browser refused to read the clipboard (permission denied): an empty paste, so the tap still counts and the
       // field stays as it is
-      .catch(() => presenter.paste(''))
+      () => presenter.paste(''),
+    )
   }
   const fieldProps = {
     id: inputId,

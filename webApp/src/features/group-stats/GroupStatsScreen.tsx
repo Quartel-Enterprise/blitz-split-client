@@ -64,7 +64,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
   const pickPeriod = (option: JsStatsPeriodOption) => {
     setPeriodDrawerOpen(false)
     if (option.period === 'custom') {
-      presenter.openDatesPicker()
+      presenter.trackPickDates()
       setPickingDates(true)
     } else presenter.pickPeriod(option.period)
   }
