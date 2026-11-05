@@ -22,6 +22,11 @@ final class GroupStatsModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// A category of "By category", which opens its bills of the period.
+    func openCategory(_ categoryId: String, _ target: StatsCategoryTarget) {
+        send(GroupStatsUiEventOnCategoryClicked(categoryId: categoryId, target: target))
+    }
+
     isolated deinit {
         holder.clear()
     }
@@ -165,7 +170,7 @@ private struct StatsScroll: View {
                 .frame(maxWidth: .infinity)
             } bottom: {
                 VStack(alignment: .leading, spacing: 0) {
-                    StatsCategoriesSection(state: model.state)
+                    StatsCategoriesSection(state: model.state, open: model.openCategory)
                     StatsPeopleSection(model: model)
                     StatsSettlingSection(model: model)
                     StatsBiggestSection(model: model)
@@ -205,7 +210,7 @@ private struct StatsScroll: View {
                                 #if os(iOS)
                                 StatsHeroCard(state: state)
                                 #endif
-                                StatsCategoriesSection(state: state, pieSize: 112)
+                                StatsCategoriesSection(state: state, pieSize: 112, open: model.openCategory)
                                 #if os(macOS)
                                 StatsPeopleSection(model: model)
                                 StatsSettlingSection(model: model)
@@ -227,7 +232,7 @@ private struct StatsScroll: View {
                         #else
                         StatsHeroCard(state: state)
                         #endif
-                        StatsCategoriesSection(state: state)
+                        StatsCategoriesSection(state: state, open: model.openCategory)
                         StatsPeopleSection(model: model)
                         StatsSettlingSection(model: model)
                         StatsOverTimeSection(model: model)
