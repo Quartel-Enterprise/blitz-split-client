@@ -177,7 +177,11 @@ private fun PermissionDeniedBanner(
                 )
                 val title = stringResource(R.string.notification_settings_denied_title)
                 val body = stringResource(
-                    if (canAskAgain) R.string.notification_settings_refused_body else R.string.notification_settings_denied_body,
+                    if (canAskAgain) {
+                        R.string.notification_settings_refused_body
+                    } else {
+                        R.string.notification_settings_denied_body
+                    },
                 )
                 Text(
                     text = buildAnnotatedString {
@@ -205,7 +209,11 @@ private fun PermissionDeniedBanner(
             ) {
                 Text(
                     stringResource(
-                        if (canAskAgain) R.string.notification_settings_turn_on else R.string.notification_settings_open_settings,
+                        if (canAskAgain) {
+                            R.string.notification_settings_turn_on
+                        } else {
+                            R.string.notification_settings_open_settings
+                        },
                     ),
                 )
             }
