@@ -23,7 +23,7 @@ internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorato
  * Why: the tabs take each other's place right above Início ([Home, Groups], [Home, Contacts]), so a tab leaving the
  * back stack used to clear its ViewModel and saved state, and each switch came back on a skeleton. The one back stack
  * stays the source of truth; only Android's decoration of it changes: Grupos and Contatos are decorated on their own,
- * where they stay while another tab takes their place, as iOS keeps Grupos. Saldos isn't kept: its route carries the
+ * where they stay while another tab takes their place, as Apple keeps its tabs. Saldos isn't kept: its route carries the
  * filter Início's cards ask for ("Ver saldos", "A receber"), which a kept ViewModel would hide behind the last one
  * picked. Anything else is decorated as before, cleared once popped.
  */
