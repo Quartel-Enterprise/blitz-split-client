@@ -134,22 +134,22 @@ function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (mi
         onClick={onOpen}
         className="-m-2 flex min-w-0 flex-1 items-start gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
       >
-      <CategoryBadge category={row.category} />
-      <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <span className="flex items-baseline gap-2">
-          <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
-          <span className="font-semibold tabular-nums">{money(row.amountMinor)}</span>
-        </span>
-        <span role="img" aria-label={t('groupStats_categoryShare', { name, percent: row.percent })} className="flex h-2 rounded-full bg-muted">
-          <span className="rounded-full bg-primary" style={{ width: `${row.barFraction * 100}%` }} />
-        </span>
-        {row.subcategories.length > 0 && (
-          <span className="text-xs text-muted-foreground">
-            {row.subcategories.map((sub) => `${categoryName(sub.category)} ${money(sub.amountMinor)}`).join(' · ')}
+        <CategoryBadge category={row.category} />
+        <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="flex items-baseline gap-2">
+            <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+            <span className="font-semibold tabular-nums">{money(row.amountMinor)}</span>
           </span>
-        )}
-      </span>
-      <ChevronRight aria-hidden className="size-4 shrink-0 self-center text-muted-foreground" />
+          <span role="img" aria-label={t('groupStats_categoryShare', { name, percent: row.percent })} className="flex h-2 rounded-full bg-muted">
+            <span className="rounded-full bg-primary" style={{ width: `${row.barFraction * 100}%` }} />
+          </span>
+          {row.subcategories.length > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {row.subcategories.map((sub) => `${categoryName(sub.category)} ${money(sub.amountMinor)}`).join(' · ')}
+            </span>
+          )}
+        </span>
+        <ChevronRight aria-hidden className="size-4 shrink-0 self-center text-muted-foreground" />
       </button>
     </li>
   )

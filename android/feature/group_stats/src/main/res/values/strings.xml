@@ -97,10 +97,7 @@
     <string name="category_expenses_subtitle">%1$s · %2$s</string>
     <string name="category_expenses_back">Back to Statistics</string>
     <string name="category_expenses_clear">Clear</string>
-    <plurals name="category_expenses_summary">
-        <item quantity="one">%1$s · %2$d expense</item>
-        <item quantity="other">%1$s · %2$d expenses</item>
-    </plurals>
+    <string name="category_expenses_summary">%1$s · %2$s</string>
     <string name="category_expenses_empty_title">No expenses in these categories</string>
     <string name="category_expenses_empty_body">Pick other categories above, or clear them to see every expense of the period.</string>
     <string name="category_expenses_today">Today</string>

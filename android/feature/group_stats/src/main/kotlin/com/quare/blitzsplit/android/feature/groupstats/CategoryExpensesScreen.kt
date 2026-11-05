@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -37,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -172,7 +173,10 @@ private fun CategoryExpensesScaffold(
                         state = state,
                         money = money,
                         onEvent = onEvent,
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        // Why: a group with many categories wraps its chips past the half's height.
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp),
                     )
                 },
                 end = {
@@ -255,11 +259,10 @@ private fun CategoryFilterHeader(
         }
         if (state.isLoaded) {
             Text(
-                text = pluralStringResource(
-                    R.plurals.category_expenses_summary,
-                    state.expenseCount,
+                text = stringResource(
+                    R.string.category_expenses_summary,
                     money.toText(state.totalMinor),
-                    state.expenseCount,
+                    expenseCountTextOf(state.expenseCount),
                 ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,

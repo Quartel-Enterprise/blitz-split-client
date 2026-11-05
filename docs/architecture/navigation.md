@@ -227,8 +227,8 @@ the only source of truth: nothing about the window reaches it, and a phone walks
   says so (a tablet lying down and a book, the halves split on the hinge the device reports: see
   [responsive-layouts.md](responsive-layouts.md)), else at one, which leaves the strategy out and the screens as on a phone. The strategy only claims the pane entries
   on top, so any other route above the groups (the profile, a joined invite) is a scene of its own, full screen,
-  and a dialog or sheet over the group keeps the scene drawn under it. `Route.GroupStats` carries `detailPane` too on
-  a tablet lying down (decision 2), so the scene draws it in the group's place in the pane, with its back arrow; on a
+  and a dialog or sheet over the group keeps the scene drawn under it. `Route.GroupStats` (and `Route.CategoryExpenses`,
+  the bills of a category it opens) carries `detailPane` too on a tablet lying down (decision 2), so the scene draws it in the group's place in the pane, with its back arrow; on a
   book it carries nothing and covers the window, split on the hinge. `LocalInDetailPane` tells a screen it sits in the
   pane: `InGroupPane` reads it from the scene itself (`LocalListDetailSceneScope`, which Material provides to the
   panes it draws, while the list pane shows), never from the window, so a group drawn alone keeps its back arrow.
