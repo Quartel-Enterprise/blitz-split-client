@@ -6,6 +6,8 @@ import SwiftUI
 final class HomeModel {
     private(set) var state: HomeUiState
     private(set) var changeErrorCount = 0
+    /// "Notifications on", once the system allows them after not allowing them.
+    private(set) var notificationsOnCount = 0
     let deletedGroup = DeletedGroupToast()
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createHomeViewModel()
@@ -26,6 +28,13 @@ final class HomeModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is HomeUiActionShowChangeError: self?.changeErrorCount += 1
+            case is HomeUiActionShowNotificationsOn: self?.notificationsOnCount += 1
+            case is HomeUiActionRequestNotificationPermission:
+                Task {
+                    await PushNotifications.requestPermission()
+                    self?.checkNotificationPermission()
+                }
+            case is HomeUiActionOpenNotificationSettings: PushNotifications.openSettings()
             default: break
             }
         })
@@ -33,6 +42,14 @@ final class HomeModel {
 
     func send(_ event: any HomeUiEvent) {
         holder.viewModel.onEvent(event: event)
+    }
+
+    /// On appear, on every return to the app and after the system's prompt: the card follows what the system says.
+    func checkNotificationPermission() {
+        Task {
+            let permission = await PushNotifications.readPermission()
+            send(HomeUiEventOnNotificationPermissionChecked(permission: permission))
+        }
     }
 
     /// Pulled down: asks for a sync and returns once the shared code says it ended (at once offline).
@@ -99,8 +116,8 @@ struct HomeView: View {
         .measuringScreenLayout($layout)
         .readingFoldDivision($division)
         .readingVerticalBar($hasVerticalBar)
-        // Atividade's push notifications: Início asks once, the first time it shows
-        .task { await PushNotifications.askPermission() }
+        // The notification card asks, never Home on its own: it only reads what the system says
+        .checkingNotificationPermission { model.checkNotificationPermission() }
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,
@@ -332,10 +349,14 @@ struct HomeView: View {
         #endif
     }
 
+    /// The recovery code's card, or the notifications' once there is a group: never both at once.
     @ViewBuilder
     private var recoveryCard: some View {
         if state.showsRecoveryCodeCard {
             HomeRecoveryCard(send: model.send)
+        }
+        if let prompt = state.notificationPrompt {
+            HomeNotificationCard(prompt: prompt, send: model.send)
         }
     }
 

@@ -48,6 +48,7 @@ import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
+import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.android.feature.groups.SearchScreen
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
@@ -215,7 +216,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
-            entry<Route.Home> { HomeScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            entry<Route.Home> {
+                HomeScreen(
+                    recoveryCodeSheet = { RecoveryCodeSheet() },
+                    isPushConfigured = PushSetup.isConfigured,
+                )
+            }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
@@ -59,8 +60,16 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
 
+            // Why: only while the card shows, with which one it was.
+            OnNotificationPromptTurnOnClicked -> EventAnalytics.Manual("notification_prompt_turn_on_clicked")
+
+            OnNotificationPromptDismissed -> EventAnalytics.Manual("notification_prompt_dismissed")
+
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked
+
+            // Why: what the system says about the permission: nobody tapped to act.
+            is OnNotificationPermissionChecked -> EventAnalytics.NotTracked
 
             /*
              * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
@@ -139,6 +148,16 @@ sealed interface HomeUiEvent : UiEvent {
     data object OnConnectAccountClicked : HomeUiEvent
 
     data object OnRecoveryCodeCardDismissed : HomeUiEvent
+
+    // Why: read on appear, on each return to the app and after the system's prompt, since the settings may change it.
+    data class OnNotificationPermissionChecked(
+        val permission: NotificationPermission,
+    ) : HomeUiEvent
+
+    // Why: the notification card: "Turn on" and "Not now".
+    data object OnNotificationPromptTurnOnClicked : HomeUiEvent
+
+    data object OnNotificationPromptDismissed : HomeUiEvent
 
     // Why: "Desfazer" on the notice of a payment just recorded from Início.
     data object OnUndoPaymentClicked : HomeUiEvent

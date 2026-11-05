@@ -21,6 +21,7 @@ internal class FakeDeviceSettingsRepository(
     val bitcoinInSats = MutableStateFlow(false)
     val updatedBitcoinInSats = mutableListOf<Boolean>()
     val lastUpdatePromptAt = MutableStateFlow<Long?>(null)
+    val lastNotificationPromptAt = MutableStateFlow<Long?>(null)
 
     override fun observeTheme(): Flow<ThemePreference> = theme
 
@@ -61,5 +62,11 @@ internal class FakeDeviceSettingsRepository(
 
     override suspend fun updateLastUpdatePromptAt(epochMillis: Long) {
         lastUpdatePromptAt.value = epochMillis
+    }
+
+    override fun observeLastNotificationPromptAt(): Flow<Long?> = lastNotificationPromptAt
+
+    override suspend fun updateLastNotificationPromptAt(epochMillis: Long) {
+        lastNotificationPromptAt.value = epochMillis
     }
 }

@@ -150,6 +150,14 @@
     <string name="groups_home_recovery_connect">Conectar conta</string>
     <string name="groups_home_recovery_show">Ver código</string>
     <string name="groups_home_recovery_dismiss">Dispensar</string>
+    <string name="groups_home_notifications_title">Saiba quando entrar uma conta</string>
+    <string name="groups_home_notifications_body">Receba um aviso quando alguém adicionar uma conta com você ou marcar um pagamento para você.</string>
+    <string name="groups_home_notifications_again_body">Sem notificações, contas e pagamentos novos só aparecem quando você abre o app. O Android deixa permitir mais uma vez.</string>
+    <string name="groups_home_notifications_off_title">As notificações estão desligadas</string>
+    <string name="groups_home_notifications_off_body">Ative nas configurações do Android para saber quando alguém adicionar uma conta com você.</string>
+    <string name="groups_home_notifications_turn_on">Ativar</string>
+    <string name="groups_home_notifications_not_now">Agora não</string>
+    <string name="groups_home_notifications_on">Notificações ativadas</string>
     <string name="groups_home_groups_title">Seus grupos</string>
     <string name="groups_home_see_all_groups">Ver todos</string>
     <string name="groups_home_group_description">%1$s: %2$s %3$s</string>

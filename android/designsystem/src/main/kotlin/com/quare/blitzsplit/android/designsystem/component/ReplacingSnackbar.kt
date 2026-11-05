@@ -20,19 +20,20 @@ fun CoroutineScope.showReplacingSnackbar(
     launch { snackbarHostState.showSnackbar(message) }
 }
 
-// Why: a screen whose every action is a message shows each one as a snackbar that replaces the one on screen.
+// Why: a screen's actions that are messages show each as a snackbar that replaces the one on screen.
 @Composable
 fun <A> rememberActionSnackbarHostState(
     actions: Flow<A>,
-    // Why: the string resource of each action's message.
-    messageRes: (A) -> Int,
+    // Why: the string resource of each action's message; null for one the screen handles otherwise.
+    messageRes: (A) -> Int?,
 ): SnackbarHostState {
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
     val currentMessageRes by rememberUpdatedState(messageRes)
     LaunchedEffect(actions) {
         actions.collect { action ->
-            showReplacingSnackbar(snackbarHostState, resources.getString(currentMessageRes(action)))
+            val res = currentMessageRes(action) ?: return@collect
+            showReplacingSnackbar(snackbarHostState, resources.getString(res))
         }
     }
     return snackbarHostState

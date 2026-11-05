@@ -56,6 +56,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -131,6 +133,9 @@ class HomeViewModelTest {
 
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
+
+    // Why: the device's settings row, when Home's notification card was last answered.
+    private val lastNotificationPromptAt = MutableStateFlow<Long?>(null)
 
     @BeforeTest
     fun setUp() {
@@ -3030,6 +3035,8 @@ class HomeViewModelTest {
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             recoveryCodeCardDismissal = dismissal,
+            updateLastNotificationPromptAt = UpdateLastNotificationPromptAt { lastNotificationPromptAt.value = it },
+            observeLastNotificationPromptAt = ObserveLastNotificationPromptAt { lastNotificationPromptAt },
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             observeSettledUp = ObserveSettledUpUseCase(recordedPayments),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),

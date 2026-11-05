@@ -209,6 +209,34 @@ internal fun HomeRecoveryCodeCard(
     onEvent: (HomeUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    HomeActionCard(
+        icon = Icons.Outlined.Key,
+        title = stringResource(R.string.groups_home_recovery_title),
+        body = stringResource(R.string.groups_home_recovery_body),
+        secondaryLabel = stringResource(R.string.groups_home_recovery_connect),
+        onSecondaryClick = { onEvent(HomeUiEvent.OnConnectAccountClicked) },
+        primaryLabel = stringResource(R.string.groups_home_recovery_show),
+        onPrimaryClick = { onEvent(HomeUiEvent.OnShowRecoveryCodeClicked) },
+        modifier = modifier,
+        dismissLabel = stringResource(R.string.groups_home_recovery_dismiss),
+        onDismiss = { onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed) },
+    )
+}
+
+// Why: a card of Início that asks for something, its answers at the bottom end and, when it has one, ✕ at the top.
+@Composable
+internal fun HomeActionCard(
+    icon: ImageVector,
+    title: String,
+    body: String,
+    secondaryLabel: String,
+    onSecondaryClick: () -> Unit,
+    primaryLabel: String,
+    onPrimaryClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    dismissLabel: String? = null,
+    onDismiss: () -> Unit = {},
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -226,28 +254,32 @@ internal fun HomeRecoveryCodeCard(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Icon(
-                    imageVector = Icons.Outlined.Key,
+                    imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier.padding(top = 2.dp),
                 )
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = if (dismissLabel == null) 8.dp else 0.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.groups_home_recovery_title),
+                        text = title,
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = stringResource(R.string.groups_home_recovery_body),
+                        text = body,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                IconButton(onClick = { onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed) }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = stringResource(R.string.groups_home_recovery_dismiss),
-                    )
+                if (dismissLabel != null) {
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = dismissLabel,
+                        )
+                    }
                 }
             }
             Row(
@@ -255,18 +287,18 @@ internal fun HomeRecoveryCodeCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 TextButton(
-                    onClick = { onEvent(HomeUiEvent.OnConnectAccountClicked) },
+                    onClick = onSecondaryClick,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     ),
-                ) { Text(stringResource(R.string.groups_home_recovery_connect)) }
+                ) { Text(secondaryLabel) }
                 Button(
-                    onClick = { onEvent(HomeUiEvent.OnShowRecoveryCodeClicked) },
+                    onClick = onPrimaryClick,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary,
                     ),
-                ) { Text(stringResource(R.string.groups_home_recovery_show)) }
+                ) { Text(primaryLabel) }
             }
         }
     }

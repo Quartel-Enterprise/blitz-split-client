@@ -1,4 +1,5 @@
 import Shared
+import SwiftUI
 import UserNotifications
 #if os(iOS)
 import UIKit
@@ -67,11 +68,32 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         return entitlements[key] as? String
     }
 
-    /// Início asks once, the first time it shows: the system asks only while the person never answered.
-    static func askPermission() async {
+    /// The permission as the shared code takes it: provisional and ephemeral deliver, so they count as allowed.
+    static func readPermission() async -> NotificationPermission {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
-        guard settings.authorizationStatus == .notDetermined else { return }
+        return switch settings.authorizationStatus {
+        case .notDetermined: .notDetermined
+        case .denied: .denied
+        default: .granted
+        }
+    }
+
+    /// Only from a tap (Home's card, a Push toggle): the system shows its prompt only while the person never answered.
+    static func requestPermission() async {
         _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+    }
+
+    /// The app's own notification settings, where only the person can allow them once refused.
+    static func openSettings() {
+        #if os(iOS)
+        guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+        #else
+        let bundleId = Bundle.main.bundleIdentifier ?? ""
+        let address = "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=\(bundleId)"
+        guard let url = URL(string: address) else { return }
+        NSWorkspace.shared.open(url)
+        #endif
     }
 
     /// Shown with the app open too, as Atividade's badge doesn't say what happened.
@@ -117,3 +139,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 #endif
+
+/// Reads the permission when the view appears and on every return to the app: the Mac's scene stays active while the
+/// person is in System Settings, so it listens to the app becoming active.
+private struct NotificationPermissionChecks: ViewModifier {
+    let check: () -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear(perform: check)
+            .onReceive(NotificationCenter.default.publisher(for: Self.didBecomeActive)) { _ in check() }
+    }
+
+    #if os(macOS)
+    private static let didBecomeActive = NSApplication.didBecomeActiveNotification
+    #else
+    private static let didBecomeActive = UIApplication.didBecomeActiveNotification
+    #endif
+}
+
+extension View {
+    func checkingNotificationPermission(_ check: @escaping () -> Void) -> some View {
+        modifier(NotificationPermissionChecks(check: check))
+    }
+}

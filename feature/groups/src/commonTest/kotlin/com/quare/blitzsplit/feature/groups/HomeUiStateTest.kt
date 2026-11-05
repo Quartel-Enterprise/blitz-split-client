@@ -304,5 +304,7 @@ class HomeUiStateTest {
         deletedGroupNotice = null,
         isRefreshing = false,
         activityUnreadCount = 0,
+        notificationPermission = null,
+        isNotificationPromptSnoozed = false,
     )
 }

@@ -112,6 +112,7 @@ struct MainTabView: View {
         .glassToast(
             [
                 GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
+                GlassToastMessage(text: "Notifications on", trigger: home.notificationsOnCount),
                 GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: home.changeErrorCount),
             ]
                 + GroupExitCopy.errorToasts(

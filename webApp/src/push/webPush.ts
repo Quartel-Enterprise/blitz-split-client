@@ -41,6 +41,67 @@ function isSupported(): boolean {
   return vapidPublicKey !== '' && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
 }
 
+/** Whether this build and browser can get Web Push at all: without it, Home's notification card never shows. */
+export function isWebPushSupported(): boolean {
+  return isSupported()
+}
+
+/**
+ * The NotificationPermission's name for the browser's. A browser with no notifications at all reports NOT_DETERMINED,
+ * so the toggles, which wait for a permission to be known, still come. A browser never refuses only once.
+ */
+export function readNotificationPermission(): string {
+  if (!('Notification' in window)) return 'NOT_DETERMINED'
+  switch (Notification.permission) {
+    case 'granted':
+      return 'GRANTED'
+    case 'denied':
+      return 'DENIED'
+    default:
+      return 'NOT_DETERMINED'
+  }
+}
+
+/** The browser's own prompt, only from a tap; once allowed, this browser subscribes right away. */
+export async function requestNotificationPermission(): Promise<string> {
+  if ('Notification' in window) await Notification.requestPermission()
+  void startWebPush()
+  return readNotificationPermission()
+}
+
+/**
+ * Calls `onCheck` with the permission now, whenever the tab comes back and whenever the site settings change it
+ * (where the browser says so), subscribing once it turns allowed. Returns the function that stops it.
+ */
+export function watchNotificationPermission(onCheck: (permission: string) => void): () => void {
+  let lastPermission = readNotificationPermission()
+  const check = () => {
+    const permission = readNotificationPermission()
+    onCheck(permission)
+    // Why: allowed in the site settings meanwhile: subscribe now rather than on the next load
+    if (permission === 'GRANTED' && lastPermission !== 'GRANTED') void startWebPush()
+    lastPermission = permission
+  }
+  check()
+  window.addEventListener('focus', check)
+  let status: PermissionStatus | null = null
+  let isStopped = false
+  // Why: Safari and Firefox may not know 'notifications' here; focus still reads it again.
+  navigator.permissions
+    ?.query({ name: 'notifications' })
+    .then((result) => {
+      if (isStopped) return
+      status = result
+      status.addEventListener('change', check)
+    })
+    .catch(() => undefined)
+  return () => {
+    isStopped = true
+    window.removeEventListener('focus', check)
+    status?.removeEventListener('change', check)
+  }
+}
+
 /**
  * Subscribes once notifications are allowed, on every start (a browser may renew the subscription
  * while the app is closed) and right after the person allows them. Failures only mean no notifications.

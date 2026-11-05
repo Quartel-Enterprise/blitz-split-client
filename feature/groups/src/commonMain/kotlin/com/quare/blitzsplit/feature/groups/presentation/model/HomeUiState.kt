@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPermission
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -52,6 +53,10 @@ data class HomeUiState(
     val isRefreshing: Boolean,
     // Why: the count on Início's bell, every unread event of Atividade whatever its filters.
     val activityUnreadCount: Int,
+    // Why: the system's, as the platform read it on appear and on each return to the app; null until then or without push.
+    val notificationPermission: NotificationPermission?,
+    // Why: the card was answered less than three weeks ago; true until the device's settings are read, so it never flashes.
+    val isNotificationPromptSnoozed: Boolean,
 ) {
     val isFirstDownload: Boolean
         get() = firstDownload != null
@@ -95,4 +100,19 @@ data class HomeUiState(
 
     val canRetrySync: Boolean
         get() = syncBadge == SyncBadge.FAILED
+
+    /*
+     * Why: the notification card, once there is a group to be notified about (one created or joined), never over the
+     * first use, the first download nor the recovery code's card, and only while the system doesn't allow them.
+     */
+    val notificationPrompt: NotificationPrompt?
+        get() {
+            if (!hasGroups || isFirstDownload || showsRecoveryCodeCard || isNotificationPromptSnoozed) return null
+            return when (notificationPermission) {
+                NotificationPermission.NOT_DETERMINED -> NotificationPrompt.SOFT_ASK
+                NotificationPermission.REFUSED_ONCE -> NotificationPrompt.ASK_AGAIN
+                NotificationPermission.DENIED -> NotificationPrompt.BLOCKED
+                NotificationPermission.GRANTED, null -> null
+            }
+        }
 }

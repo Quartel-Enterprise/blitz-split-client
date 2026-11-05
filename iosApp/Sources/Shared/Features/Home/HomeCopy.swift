@@ -102,6 +102,15 @@ enum HomeCopy {
         String(localized: "You use the app without an account. If you switch \(DeviceName.current)s, this code is what brings your groups back.")
     }
 
+    /// The blocked notification card's message, with where the system keeps the app's notifications.
+    static var notificationsOffMessage: String {
+        #if os(macOS)
+        String(localized: "Turn them on in System Settings to know when someone adds a bill with you.")
+        #else
+        String(localized: "Turn them on in Settings to know when someone adds a bill with you.")
+        #endif
+    }
+
     /// The first use's message, with the device everything stays on.
     static var firstUseMessage: String {
         String(localized: "Create a group to split the first bill, or join one through the link or QR code someone sent you. Everything is saved on this \(DeviceName.current), even without internet.")

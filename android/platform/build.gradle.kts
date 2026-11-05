@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    // Why: the permission it reads is the shared NotificationPermission, which the ViewModels take as it is.
+    api(projects.core.model)
     implementation(projects.core.provider.supabase)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.camera.camera2)

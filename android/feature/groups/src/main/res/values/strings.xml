@@ -150,6 +150,14 @@
     <string name="groups_home_recovery_connect">Connect account</string>
     <string name="groups_home_recovery_show">See code</string>
     <string name="groups_home_recovery_dismiss">Dismiss</string>
+    <string name="groups_home_notifications_title">Know when a bill comes in</string>
+    <string name="groups_home_notifications_body">Get notified when someone adds a bill with you or marks a payment to you.</string>
+    <string name="groups_home_notifications_again_body">Without notifications, new bills and payments only show when you open the app. Android lets you allow them once more.</string>
+    <string name="groups_home_notifications_off_title">Notifications are off</string>
+    <string name="groups_home_notifications_off_body">Turn them on in Android\'s settings to know when someone adds a bill with you.</string>
+    <string name="groups_home_notifications_turn_on">Turn on</string>
+    <string name="groups_home_notifications_not_now">Not now</string>
+    <string name="groups_home_notifications_on">Notifications on</string>
     <string name="groups_home_groups_title">Your groups</string>
     <string name="groups_home_see_all_groups">See all</string>
     <string name="groups_home_group_description">%1$s: %2$s %3$s</string>

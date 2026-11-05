@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -35,6 +36,8 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -59,6 +62,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
+import com.quare.blitzsplit.feature.groups.presentation.model.NotificationPrompt
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -78,6 +82,9 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
     private val navigator: Navigator,
@@ -86,11 +93,13 @@ class HomeViewModel(
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     private val recoveryCodeCardDismissal: RecoveryCodeCardDismissal,
+    private val updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
+    private val currentTimeMillis: CurrentTimeMillis,
+    observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
     observeRecordedPayment: ObserveRecordedPayment,
     observeSettledUp: ObserveSettledUp,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
-    currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     minuteTicks: MinuteTicks,
     observeProfile: ObserveProfile,
@@ -131,6 +140,8 @@ class HomeViewModel(
                 deletedGroupNotice = null,
                 isRefreshing = false,
                 activityUnreadCount = 0,
+                notificationPermission = null,
+                isNotificationPromptSnoozed = true,
             ),
         )
 
@@ -139,6 +150,9 @@ class HomeViewModel(
 
     val stateWatcher: FlowWatcher<HomeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<HomeUiAction> = FlowWatcher(uiAction)
+
+    // Why: how long "Turn on" or "Not now" keeps the notification card away (Pierre's call, issue 208).
+    private val notificationPromptCooldown = 21.days
 
     // Why: the groups as Início last read them, the most recent activity first: "Rachar conta" marks the first.
     private var rows = emptyList<GroupRow>()
@@ -213,6 +227,11 @@ class HomeViewModel(
                         pendingChangeCount = data.pendingChangeCount,
                     )
                 }
+            }.launchIn(viewModelScope)
+        // Why: each minute too, so a card snoozed three weeks ago comes back without leaving Início.
+        combine(observeLastNotificationPromptAt(), minuteTicks()) { lastPromptAt, _ -> lastPromptAt }
+            .onEach { lastPromptAt ->
+                uiState.update { it.copy(isNotificationPromptSnoozed = isNotificationPromptSnoozed(lastPromptAt)) }
             }.launchIn(viewModelScope)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
@@ -365,6 +384,24 @@ class HomeViewModel(
 
             HomeUiEvent.OnRecoveryCodeCardDismissed -> recoveryCodeCardDismissal.isDismissed.value = true
 
+            is HomeUiEvent.OnNotificationPermissionChecked -> checkNotificationPermission(event.permission)
+
+            HomeUiEvent.OnNotificationPromptTurnOnClicked -> answerNotificationPrompt { prompt ->
+                trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
+                emit(
+                    when (prompt) {
+                        NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN ->
+                            HomeUiAction.RequestNotificationPermission
+
+                        NotificationPrompt.BLOCKED -> HomeUiAction.OpenNotificationSettings
+                    },
+                )
+            }
+
+            HomeUiEvent.OnNotificationPromptDismissed -> answerNotificationPrompt { prompt ->
+                trackEvent("notification_prompt_dismissed", mapOf("prompt" to prompt))
+            }
+
             HomeUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             HomeUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
@@ -469,6 +506,39 @@ class HomeViewModel(
                 ),
             )
         }
+    }
+
+    /*
+     * Why: "Notifications on" only for a change seen here, after the prompt or a return from the settings: the first
+     * read since Início opened says nothing changed.
+     */
+    private fun checkNotificationPermission(permission: NotificationPermission) {
+        val previous = uiState.value.notificationPermission
+        uiState.update { it.copy(notificationPermission = permission) }
+        if (previous != null && previous != NotificationPermission.GRANTED &&
+            permission == NotificationPermission.GRANTED
+        ) {
+            emit(HomeUiAction.ShowNotificationsOn)
+        }
+    }
+
+    // Why: either answer snoozes the card, at once so a second tap finds none, then for three weeks on this device.
+    private fun answerNotificationPrompt(onAnswered: (NotificationPrompt) -> Unit) {
+        val prompt = uiState.value.notificationPrompt ?: return
+        uiState.update { it.copy(isNotificationPromptSnoozed = true) }
+        viewModelScope.launch { updateLastNotificationPromptAt(currentTimeMillis()) }
+        onAnswered(prompt)
+    }
+
+    // Why: a clock set back since the last answer never silences the card for good.
+    private fun isNotificationPromptSnoozed(lastPromptAt: Long?): Boolean {
+        if (lastPromptAt == null) return false
+        val elapsed = (currentTimeMillis() - lastPromptAt).milliseconds
+        return elapsed >= Duration.ZERO && elapsed < notificationPromptCooldown
+    }
+
+    private fun emit(action: HomeUiAction) {
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private fun paymentGroupOrNull(): Group? = groups.firstOrNull { it.id == paymentGroupId.value }
