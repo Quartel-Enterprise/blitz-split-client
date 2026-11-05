@@ -23,6 +23,8 @@ data class CategoryExpensesUiState(
     // Why: what the bills shown add up to, "R$ 610 · 4 expenses".
     val totalMinor: Long,
     val expenseCount: Int,
+    // Why: a new device's first download still brings bills down, so an empty list may only be early.
+    val isFirstDownload: Boolean,
     val isLoaded: Boolean,
     // Why: the home tab the group was opened from, which the web's sidebar and Android's rail select.
     val homeTab: HomeTab,
@@ -31,7 +33,15 @@ data class CategoryExpensesUiState(
     val showsClear: Boolean
         get() = chips.any { it.isSelected }
 
-    // Why: "No expenses in these categories" once the bills are read and none is left.
+    // Why: skeletons in place of an empty list while a first download may still bring its bills.
+    val isLoadingBills: Boolean
+        get() = isLoaded && isFirstDownload && days.isEmpty()
+
+    // Why: "No expenses in these categories", with "Clear", once no bill of the picked categories may still come.
     val isEmpty: Boolean
-        get() = isLoaded && days.isEmpty()
+        get() = isLoaded && !isFirstDownload && days.isEmpty() && showsClear
+
+    // Why: "No expenses in this period", nothing being picked, once no bill of the period may still come.
+    val isPeriodEmpty: Boolean
+        get() = isLoaded && !isFirstDownload && days.isEmpty() && !showsClear
 }

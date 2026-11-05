@@ -1827,6 +1827,7 @@ export const en = {
   categoryExpenses_clear: 'Clear',
   categoryExpenses_summary: '{total} · {count}',
   categoryExpenses_emptyTitle: 'No expenses in these categories',
+  categoryExpenses_periodEmpty: 'No expenses in this period',
   categoryExpenses_emptyBody: 'Pick other categories above, or clear them to see every expense of the period.',
   defaultSplit_exceptions: 'Exceptions by category',
   defaultSplit_exceptionsNone: 'None. Every category follows the split above.',

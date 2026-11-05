@@ -1828,6 +1828,7 @@ export const pt: Record<MessageKey, string> = {
   categoryExpenses_clear: 'Limpar',
   categoryExpenses_summary: '{total} · {count}',
   categoryExpenses_emptyTitle: 'Nenhuma despesa nessas categorias',
+  categoryExpenses_periodEmpty: 'Nenhuma despesa neste período',
   categoryExpenses_emptyBody: 'Escolha outras categorias acima, ou limpe para ver todas as despesas do período.',
   defaultSplit_exceptions: 'Exceções por categoria',
   defaultSplit_exceptionsNone: 'Nenhuma. Todas as categorias seguem a divisão acima.',

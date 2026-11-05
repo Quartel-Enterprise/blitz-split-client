@@ -66,6 +66,7 @@ internal fun createPreviewCategoryExpensesState(): CategoryExpensesUiState {
         ),
         totalMinor = 84_000L,
         expenseCount = 2,
+        isFirstDownload = false,
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
     )

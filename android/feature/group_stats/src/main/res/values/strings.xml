@@ -99,6 +99,7 @@
     <string name="category_expenses_clear">Clear</string>
     <string name="category_expenses_summary">%1$s · %2$s</string>
     <string name="category_expenses_empty_title">No expenses in these categories</string>
+    <string name="category_expenses_period_empty">No expenses in this period</string>
     <string name="category_expenses_empty_body">Pick other categories above, or clear them to see every expense of the period.</string>
     <string name="category_expenses_today">Today</string>
     <string name="category_expenses_yesterday">Yesterday</string>

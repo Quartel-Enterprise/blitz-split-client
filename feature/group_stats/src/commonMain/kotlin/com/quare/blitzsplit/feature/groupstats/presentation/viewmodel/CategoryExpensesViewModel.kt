@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.navigation.openSearchFromPage
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
@@ -46,6 +47,7 @@ class CategoryExpensesViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeCategoryTree: ObserveCategoryTree,
+    observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<CategoryExpensesUiEvent>(trackEvent) {
     val uiState: StateFlow<CategoryExpensesUiState>
@@ -61,6 +63,7 @@ class CategoryExpensesViewModel(
                 days = emptyList(),
                 totalMinor = 0L,
                 expenseCount = 0,
+                isFirstDownload = false,
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
             ),
@@ -74,6 +77,9 @@ class CategoryExpensesViewModel(
 
     // Why: the categories picked as tapped, so one of them deleted meanwhile still reads as its parent or Other.
     private var selectedIds: List<String> = listOf(route.categoryId)
+
+    // Why: whether a new device's first download still brings bills down, read before anything is said to be empty.
+    private var isFirstDownload: Boolean? = null
 
     // Why: the group went while a bill covered this screen, which then leaves as soon as it is on top again.
     private var isGone = false
@@ -94,6 +100,11 @@ class CategoryExpensesViewModel(
         navigator.backStack
             .onEach { if (isGone) leave() }
             .launchIn(viewModelScope)
+        observeFirstDownload()
+            .onEach { progress ->
+                isFirstDownload = progress != null
+                if (!isGone) render()
+            }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: CategoryExpensesUiEvent) {
@@ -152,7 +163,12 @@ class CategoryExpensesViewModel(
             calculator.allSpan
         }
         val spending = calculator.createSpending(span)
-        val present = calculator.createCategories(spending).map { it.category }
+        // Why: each bill under its main category once, the largest first, as "By category" lists them.
+        val byMain = spending.expenses
+            .groupBy { categoryTree.mainOf(categoryTree.resolve(it.categoryId)) }
+            .entries
+            .sortedByDescending { (_, bills) -> bills.sumOf { it.amountMinor } }
+        val present = byMain.map { it.key }
         val selected = selectedIds.map { categoryTree.mainOf(categoryTree.resolve(it)) }.distinctBy { it.id }
         val selectedMainIds = selected.map { it.id }.toSet()
         val chips = present.map { CategoryFilterChip(it, it.id in selectedMainIds) } +
@@ -160,7 +176,7 @@ class CategoryExpensesViewModel(
         val shown = if (selectedMainIds.isEmpty()) {
             spending.expenses
         } else {
-            spending.expenses.filter { mainIdOf(it.categoryId) in selectedMainIds }
+            byMain.filter { it.key.id in selectedMainIds }.flatMap { it.value }
         }
         val isWhole = start == null || end == null
         uiState.value = CategoryExpensesUiState(
@@ -184,7 +200,8 @@ class CategoryExpensesViewModel(
             ),
             totalMinor = shown.sumOf { it.amountMinor },
             expenseCount = shown.size,
-            isLoaded = true,
+            isFirstDownload = isFirstDownload == true,
+            isLoaded = isFirstDownload != null,
             homeTab = uiState.value.homeTab,
         )
     }

@@ -1663,6 +1663,17 @@
         }
       }
     },
+    "No expenses in this period" : {
+      "comment" : "A category's bills from the statistics: nothing picked and no bill in the period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa neste período"
+          }
+        }
+      }
+    },
     "No internet" : {
       "comment" : "A comment's link couldn't be checked offline",
       "localizations" : {

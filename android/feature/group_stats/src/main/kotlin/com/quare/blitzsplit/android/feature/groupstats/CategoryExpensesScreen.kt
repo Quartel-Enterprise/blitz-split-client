@@ -309,7 +309,7 @@ private fun LazyListScope.categoryExpenseItems(
     times: DateTimeTextFormatter,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
 ) {
-    if (!state.isLoaded) {
+    if (!state.isLoaded || state.isLoadingBills) {
         item(key = "loading") {
             ShimmerListSkeleton(
                 count = 4,
@@ -320,7 +320,7 @@ private fun LazyListScope.categoryExpenseItems(
             )
         }
     }
-    if (state.isEmpty) {
+    if (state.isEmpty || state.isPeriodEmpty) {
         item(key = "empty") {
             Column(
                 modifier = Modifier
@@ -333,16 +333,23 @@ private fun LazyListScope.categoryExpenseItems(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.category_expenses_empty_title),
+                    text = if (state.isEmpty) {
+                        stringResource(R.string.category_expenses_empty_title)
+                    } else {
+                        stringResource(R.string.category_expenses_period_empty)
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
-                Text(
-                    text = stringResource(R.string.category_expenses_empty_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
+                // Why: only the picked categories can be cleared or switched; an empty period has nothing to pick.
+                if (state.isEmpty) {
+                    Text(
+                        text = stringResource(R.string.category_expenses_empty_body),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }

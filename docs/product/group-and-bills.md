@@ -142,7 +142,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     follows new bills, any other period stays those days. Chips list the period's main categories, the largest first
     as "By category" does, the one tapped picked: a tap picks or lets go of more (several at once), "Clear" shows while
     one is picked, and with none picked the list shows every bill of the period; a category picked with no bill left
-    stays as a picked chip, over "No expenses in these categories". A main category takes its subcategories' bills
+    stays as a picked chip, over "No expenses in these categories"; with none picked and no bill left in the period it
+    says "No expenses in this period", and while a new device's first download may still bring the bills, skeletons
+    take the place of either. A main category takes its subcategories' bills
     (Food takes Restaurant and Market), and there are no subcategory chips: each line names its own subcategory in its
     meta ("21:30 · Bruno paid · Restaurant"). Under the chips "R$ 610 · 4 expenses" adds up the bills shown, then the
     bills by day as the group's Expenses draws them, never the payments, with no ⋮ (as the home's "Latest

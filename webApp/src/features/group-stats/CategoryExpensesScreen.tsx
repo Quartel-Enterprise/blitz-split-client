@@ -67,10 +67,12 @@ export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
         })}
       </p>
 
-      {state.isEmpty ? (
+      {state.isLoadingBills ? (
+        <SkeletonRows count={5} leading="square" className="rounded-xl border bg-card" />
+      ) : state.isEmpty || state.isPeriodEmpty ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border bg-card px-6 py-12 text-center">
-          <p className="font-semibold">{t('categoryExpenses_emptyTitle')}</p>
-          <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>
+          <p className="font-semibold">{t(state.isEmpty ? 'categoryExpenses_emptyTitle' : 'categoryExpenses_periodEmpty')}</p>
+          {state.isEmpty && <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>}
         </div>
       ) : (
         <DayRowsTable label={t('categoryExpenses_title')}>

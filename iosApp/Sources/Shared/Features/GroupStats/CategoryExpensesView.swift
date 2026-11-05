@@ -102,6 +102,10 @@ private struct CategoryExpensesList: View {
                     .contentTransition(.numericText())
                     .accessibilityAddTraits(.updatesFrequently)
             }
+            if state.isLoadingBills {
+                // A new device's first download may still bring these bills: never an empty state before
+                GroupLoadingRows(isWaitingForInternet: false, leading: .badge)
+            }
             if state.isEmpty {
                 Section {
                     ContentUnavailableView {
@@ -109,6 +113,12 @@ private struct CategoryExpensesList: View {
                     } description: {
                         Text("Pick other categories above, or clear them to see every expense of the period.")
                     }
+                }
+                .listRowBackground(Color.clear)
+            }
+            if state.isPeriodEmpty {
+                Section {
+                    ContentUnavailableView("No expenses in this period", systemImage: "receipt")
                 }
                 .listRowBackground(Color.clear)
             }

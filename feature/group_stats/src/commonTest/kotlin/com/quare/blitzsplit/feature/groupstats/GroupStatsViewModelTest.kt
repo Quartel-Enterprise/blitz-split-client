@@ -1932,18 +1932,44 @@ class GroupStatsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill over the statistics WHEN a late category tap arrives THEN nothing more opens`() =
+    fun `GIVEN the biggest bill beside the statistics WHEN tapping a category THEN its bills replace it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(stored = categorizedTripBills)
             viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
-            val stack = navigator.backStack.value
+            trackedEvents.clear()
 
             // When
             viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
 
             // Then
+            assertEquals(
+                statsStack + Route.CategoryExpenses(
+                    GROUP_ID,
+                    AppCategory.FOOD.key,
+                    periodStartMillis = null,
+                    periodEndMillis = null,
+                    isMonthPeriod = false,
+                ),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "row")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a profile over the statistics WHEN a late category tap arrives THEN nothing opens nor is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+            navigator.navigate(Route.Profile)
+            val stack = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
+
+            // Then
             assertEquals(stack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

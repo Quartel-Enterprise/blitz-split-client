@@ -40,10 +40,8 @@ sealed interface GroupStatsUiEvent : UiEvent {
 
             OnBiggestExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
 
-            is OnCategoryClicked -> EventAnalytics.Automatic(
-                "stats_category_clicked",
-                mapOf("target" to target.name.lowercase()),
-            )
+            // Why: only a tap that opens the category's bills, never a late one or one on a category a sync took away.
+            is OnCategoryClicked -> EventAnalytics.Manual("stats_category_clicked")
 
             OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
 

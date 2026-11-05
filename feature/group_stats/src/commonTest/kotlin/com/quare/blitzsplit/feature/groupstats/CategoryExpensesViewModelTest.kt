@@ -24,6 +24,8 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpenseRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
@@ -32,6 +34,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyl
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.CategoryExpensesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -603,6 +606,68 @@ class CategoryExpensesViewModelTest {
     }
 
     @Test
+    fun `GIVEN the first download not read yet WHEN the list opens THEN it is not loaded`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isDownloadRead = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.isLoaded)
+        assertFalse(state.isEmpty)
+        assertFalse(state.isPeriodEmpty)
+    }
+
+    @Test
+    fun `GIVEN a first download with none of the category bills yet WHEN the list opens THEN it is loading them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = emptyList(),
+                downloading = downloadingOnline,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoadingBills)
+            assertFalse(state.isEmpty)
+            assertFalse(state.isPeriodEmpty)
+        }
+
+    @Test
+    fun `GIVEN a first download with some of the category bills WHEN the list opens THEN shows them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloading = downloadingOnline)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoadingBills)
+            assertEquals(listOf(listOf("lunch", "market"), listOf("dinner")), idsByDay(state))
+        }
+
+    @Test
+    fun `GIVEN nothing picked WHEN the period has no bill left THEN says the period is empty and not the categories`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnClearClicked)
+
+            // When
+            expenses.expenses.value = emptyList()
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isPeriodEmpty)
+            assertFalse(state.isEmpty)
+        }
+
+    @Test
     fun `GIVEN a trip WHEN the list opens THEN shows its name currency and that it is a trip`() =
         runTest(testDispatcher) {
             // Given
@@ -1042,6 +1107,12 @@ class CategoryExpensesViewModelTest {
     private val listStack: List<Route>
         get() = statsStack + listRoute
 
+    private val downloadingOnline = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = 2,
+        isWaitingForInternet = false,
+    )
+
     private fun prepareScenario(
         route: Route.CategoryExpenses = thisMonth(AppCategory.FOOD.key),
         group: Group = trip,
@@ -1052,6 +1123,10 @@ class CategoryExpensesViewModelTest {
         areBillsRead: Boolean = true,
         // Why: the list of a group a row of Grupos opened, with Início under them, as the app has it.
         isOverHome: Boolean = false,
+        // Why: a new device's first download still bringing bills down; null once it is whole.
+        downloading: FirstDownloadProgress? = null,
+        // Why: false while whether the account's copy is whole isn't known yet.
+        isDownloadRead: Boolean = true,
     ) {
         listRoute = route
         groups = FakeGroupRepository(initialGroups = listOf(group))
@@ -1077,6 +1152,7 @@ class CategoryExpensesViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = if (areBillsRead) ObserveExpensesUseCase(expenses) else ObserveExpenses { emptyFlow() },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeFirstDownload = ObserveFirstDownload { if (isDownloadRead) flowOf(downloading) else emptyFlow() },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
     }

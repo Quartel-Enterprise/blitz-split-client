@@ -45,7 +45,12 @@ class JsCategoryExpensesState(
     val totalMinor: Double,
     val expenseCount: Int,
     val showsClear: Boolean,
+    // Why: skeletons while a first download may still bring the bills.
+    val isLoadingBills: Boolean,
+    // Why: "No expenses in these categories", with its hint to pick or clear.
     val isEmpty: Boolean,
+    // Why: "No expenses in this period", nothing being picked.
+    val isPeriodEmpty: Boolean,
     val isLoaded: Boolean,
     // Why: the home tab the group was opened from, which the sidebar selects ("home", "groups"…).
     val homeTab: String,
@@ -112,7 +117,9 @@ private fun toJsCategoryExpensesState(state: CategoryExpensesUiState): JsCategor
         totalMinor = state.totalMinor.toDouble(),
         expenseCount = state.expenseCount,
         showsClear = state.showsClear,
+        isLoadingBills = state.isLoadingBills,
         isEmpty = state.isEmpty,
+        isPeriodEmpty = state.isPeriodEmpty,
         isLoaded = state.isLoaded,
         homeTab = toJsHomeTab(state.homeTab),
     )
