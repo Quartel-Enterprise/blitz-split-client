@@ -1,14 +1,14 @@
 package com.quare.blitzsplit.feature.editprofile.presentation.model
 
 import com.quare.blitzsplit.core.model.PhotoCropEvent
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
 // Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
 internal const val PROFILE_PHOTO_SOURCE = "profile_photo"
 
-sealed interface ProfilePhotoUiEvent : TrackedUiEvent {
+sealed interface ProfilePhotoUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: an item the picker handed back that the UI couldn't read, or a close, which nobody tapped to act.

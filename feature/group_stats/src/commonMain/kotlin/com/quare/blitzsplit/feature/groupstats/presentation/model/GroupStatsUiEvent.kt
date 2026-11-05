@@ -3,13 +3,13 @@ package com.quare.blitzsplit.feature.groupstats.presentation.model
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "group_stats"
 
-sealed interface GroupStatsUiEvent : TrackedUiEvent {
+sealed interface GroupStatsUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back, which each platform also does its own way: where it went is its screen view.

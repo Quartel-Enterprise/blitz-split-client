@@ -1,13 +1,13 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 /*
  * Why: what "Buscar" (5.2) takes, the same wherever it opens: in Grupos' place (GroupsUiEvent.OnSearch) or over
  * Início, Saldos, Contatos and Atividade (Route.Search).
  */
-sealed interface SearchUiEvent : TrackedUiEvent {
+sealed interface SearchUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = toEventAnalytics(source = "search")
 

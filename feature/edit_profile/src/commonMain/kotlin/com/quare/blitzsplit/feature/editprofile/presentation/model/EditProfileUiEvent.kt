@@ -2,14 +2,14 @@ package com.quare.blitzsplit.feature.editprofile.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEvent
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
 // Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
 internal const val EDIT_PROFILE_SOURCE = "edit_profile"
 
-sealed interface EditProfileUiEvent : TrackedUiEvent {
+sealed interface EditProfileUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             /*

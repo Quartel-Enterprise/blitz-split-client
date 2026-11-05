@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.contacts.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface AgendaUiEvent : TrackedUiEvent {
+sealed interface AgendaUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             /*

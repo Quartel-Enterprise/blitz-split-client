@@ -1,13 +1,14 @@
 package com.quare.blitzsplit.core.presentation.analytics
 
 import androidx.lifecycle.ViewModel
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 
 /*
- * Why: the ViewModel of a screen whose UiEvent is a TrackedUiEvent. Every UI calls onEvent, which sends an Automatic
+ * Why: the ViewModel of every screen that receives UiEvents. Every UI calls onEvent, which sends the case's Automatic
  * event before handleEvent runs, so the three UIs send the same events and no ViewModel repeats the call.
  */
-abstract class TrackedViewModel<E : TrackedUiEvent>(
+abstract class TrackedViewModel<E : UiEvent>(
     protected val trackEvent: TrackEvent,
 ) : ViewModel() {
     fun onEvent(event: E) {

@@ -2,14 +2,14 @@ package com.quare.blitzsplit.feature.profilesetup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEvent
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "profile_setup"
 
-sealed interface ProfileSetupUiEvent : TrackedUiEvent {
+sealed interface ProfileSetupUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             is OnNameChanged -> EventAnalytics.NotTracked

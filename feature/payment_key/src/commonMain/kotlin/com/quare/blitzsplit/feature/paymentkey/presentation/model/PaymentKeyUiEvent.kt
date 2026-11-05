@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.paymentkey.presentation.model
 
 import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface PaymentKeyUiEvent : TrackedUiEvent {
+sealed interface PaymentKeyUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back, which each platform also does its own way: where it went is its screen view.

@@ -69,11 +69,25 @@ it loads. Each platform has one shimmer component, which a read of the device sh
 
 ### UiEvent — what the person did
 
-A `sealed interface` that extends the `UiEvent` marker of `:core:presentation`, named after what happened, not what
-should happen:
+A `sealed interface` that extends `UiEvent` of `:core:presentation`, named after what happened, not what should
+happen. `UiEvent` asks every case to declare what it sends to Analytics in `analytics` (`Automatic`, `Manual` or
+`NotTracked`, as [analytics](../analytics/README.md) decides them), so the compiler asks for that decision on every new
+one:
 
 ```kotlin
 sealed interface WelcomeUiEvent : UiEvent {
+    override val analytics: EventAnalytics
+        get() = when (this) {
+            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
+
+            // Why: the platform's sheet handing back the token, whose sign in the server then completes.
+            is OnIdTokenReceived -> EventAnalytics.NotTracked
+
+            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(SOURCE)
+
+            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(SOURCE)
+        }
+
     data class OnProviderClicked(
         val provider: AccountProvider,
     ) : WelcomeUiEvent
@@ -181,12 +195,10 @@ class WelcomeViewModel(
   `UiState` is a sealed type, or the field infers the subtype of the initial value.
 - **`stateWatcher` and `actionWatcher`** are declared right after the flows they wrap: they are what SwiftUI
   observes. A ViewModel without `uiAction` has no `actionWatcher`.
-- **One `onEvent(event)`** with an exhaustive `when`. Each branch is one call; the work goes in a private function.
-  A feature moved to Analytics' tracked events (the `add-analytics-event` skill, [analytics](../analytics/README.md)),
-  as `WelcomeViewModel` above, extends `TrackedViewModel<XUiEvent>(trackEvent)` instead, its `XUiEvent` a
-  `TrackedUiEvent` whose cases declare `analytics`, and writes that `when` in `override fun handleEvent(event)`: the
-  UIs keep calling `onEvent`, which sends the case's `Automatic` event first. Every feature moves to it, and new ones
-  start there.
+- **One `handleEvent(event)`** with an exhaustive `when`. Each branch is one call; the work goes in a private
+  function. Every ViewModel that receives `UiEvent`s, as `WelcomeViewModel` above, extends
+  `TrackedViewModel<XUiEvent>(trackEvent)` and writes that `when` in `override fun handleEvent(event)` (the
+  `add-analytics-event` skill): the UIs call the inherited `onEvent`, which sends the case's `Automatic` event first.
 - Long-lived observation starts in `init` with `.onEach { }.launchIn(viewModelScope)`; one-shot work in
   `viewModelScope.launch { }`. Results come back as `Result` and are handled with `onSuccess` / `onFailure` (see
   [coroutine-error-handling.md](coroutine-error-handling.md)).
