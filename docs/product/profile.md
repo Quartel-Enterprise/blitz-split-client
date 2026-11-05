@@ -30,9 +30,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     screen is on top, never over a form, a sheet or a cover. Android hands it to Google Play's flexible update,
     whose download shows "Downloading update… 42%" at the bottom of every screen (taps still reach what is under
     it) and installs (the app restarts) as soon as it ends, one already downloaded installing again after 15
-    minutes; iOS and macOS read the App Store's version by bundle id (none until the app is published; the iPhone
+    minutes; iOS and macOS read the App Store's version by bundle id (the legacy Blitz Split's 2.4.0 until this app is published; the iPhone
     and Mac apps are one purchase with one listing, whose version both read) and open "Update available"
-    ("Version 2.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
+    ("Version 3.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
     tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Settings when its check
     opened it). Profile's "Privacy and about" ends in "Check for updates" with "Version 3.0.0" under it in the
     place of "Version" (Pierre's call; the Mac's row keeps "Version 3.0.0" with the button), "Checking…" while it
