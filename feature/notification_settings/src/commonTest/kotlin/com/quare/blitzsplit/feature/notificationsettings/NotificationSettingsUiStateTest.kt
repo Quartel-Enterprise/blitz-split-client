@@ -20,6 +20,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(emptySet()).toLoaded(),
             permission = null,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -45,6 +46,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
             permission = null,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -63,6 +65,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = Loadable.Loading,
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -80,6 +83,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -97,6 +101,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -114,6 +119,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
             permission = NotificationPermission.DENIED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -132,6 +138,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(emptySet()).toLoaded(),
             permission = null,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -147,6 +154,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
             permission = NotificationPermission.DENIED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -165,6 +173,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
             permission = NotificationPermission.DENIED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -180,6 +189,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -197,6 +207,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -213,6 +224,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
             permission = null,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -231,6 +243,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = Loadable.Loading,
             permission = NotificationPermission.DENIED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -249,6 +262,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -264,6 +278,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -279,6 +294,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
         val rows = state.types - NotificationType.BALANCE_REMINDER
 
@@ -298,6 +314,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(NotificationType.entries.toSet()).toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -316,6 +333,7 @@ class NotificationSettingsUiStateTest {
                 inApp = setOf(NotificationType.BILLS),
             ).toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -332,6 +350,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -352,6 +371,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -369,6 +389,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -384,6 +405,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.DENIED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -400,6 +422,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.GRANTED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -415,6 +438,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
+            systemBlockedTypes = emptySet(),
         )
 
         // When
@@ -430,6 +454,7 @@ class NotificationSettingsUiStateTest {
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
             permission = null,
+            systemBlockedTypes = emptySet(),
         )
 
         // When

@@ -2869,7 +2869,12 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
@@ -2882,7 +2887,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(NotificationPrompt.ASK_AGAIN, viewModel.uiState.value.notificationPrompt)
@@ -2895,7 +2902,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(NotificationPrompt.BLOCKED, viewModel.uiState.value.notificationPrompt)
@@ -2908,7 +2917,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertNull(viewModel.uiState.value.notificationPrompt)
@@ -2935,7 +2946,12 @@ class HomeViewModelTest {
             prepareScenario()
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertTrue(viewModel.uiState.value.showsFirstUse)
@@ -2946,7 +2962,9 @@ class HomeViewModelTest {
     fun `GIVEN the first use WHEN the first group arrives THEN shows the soft ask card`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED, canAskQuietly = false),
+        )
 
         // When
         groups.groups.value = listOf(trio())
@@ -2967,7 +2985,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertTrue(viewModel.uiState.value.isFirstDownload)
@@ -2983,7 +3006,9 @@ class HomeViewModelTest {
             storedGroups = listOf(trio()),
             isFirstDownloadPending = true,
         )
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED, canAskQuietly = false),
+        )
 
         // When
         firstDownload.end()
@@ -3003,7 +3028,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertTrue(viewModel.uiState.value.showsRecoveryCodeCard)
@@ -3019,7 +3049,12 @@ class HomeViewModelTest {
                 prompt = RecoveryCodePrompt.SNOOZED,
                 storedGroups = listOf(trio()),
             )
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
@@ -3039,7 +3074,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
@@ -3055,7 +3095,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
@@ -3072,7 +3117,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertNull(viewModel.uiState.value.notificationPrompt)
@@ -3088,7 +3138,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
@@ -3102,7 +3157,12 @@ class HomeViewModelTest {
                 storedGroups = listOf(trio()),
                 notificationPromptAnsweredAt = now - 21.days.inWholeMilliseconds + oneMinute,
             )
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             clockMillis = now + oneMinute
@@ -3117,7 +3177,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
 
             // When
@@ -3138,7 +3203,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertFalse(viewModel.uiState.value.isNotificationPromptSnoozed)
@@ -3155,7 +3225,12 @@ class HomeViewModelTest {
             )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Then
             assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
@@ -3167,7 +3242,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3181,7 +3261,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3194,7 +3276,9 @@ class HomeViewModelTest {
     fun `GIVEN the blocked card WHEN tapping Turn on THEN opens the notification settings`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(trio()))
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+        )
 
         // When
         viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3208,7 +3292,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
@@ -3232,7 +3321,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
@@ -3254,7 +3345,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3269,7 +3365,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
@@ -3289,7 +3390,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
 
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
@@ -3310,7 +3413,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3326,7 +3431,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
@@ -3345,7 +3455,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
             // Why: the card's showing has its own tests.
             trackedEvents.clear()
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3364,7 +3479,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3380,7 +3497,9 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3414,7 +3533,12 @@ class HomeViewModelTest {
                 storedGroups = listOf(trio()),
                 notificationPromptAnsweredAt = daysAgo(3),
             )
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
@@ -3430,7 +3554,12 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
@@ -3446,11 +3575,18 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(
@@ -3464,11 +3600,15 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(
@@ -3483,10 +3623,14 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertTrue(actions.isEmpty())
@@ -3498,13 +3642,24 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(
@@ -3518,11 +3673,15 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertEquals(
@@ -3536,7 +3695,10 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            val granted = HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED)
+            val granted = HomeUiEvent.OnNotificationPermissionChecked(
+                NotificationPermission.GRANTED,
+                canAskQuietly = false,
+            )
 
             // When
             viewModel.onEvent(granted)
@@ -3550,10 +3712,14 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertTrue(actions.isEmpty())
@@ -3564,10 +3730,17 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // Then
             assertTrue(actions.isEmpty())
@@ -3579,10 +3752,14 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
 
             // Then
             assertTrue(actions.isEmpty())
@@ -3596,7 +3773,9 @@ class HomeViewModelTest {
             prepareScenario(storedGroups = listOf(trio()))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
 
             // Then
             assertTrue(trackedEvents.isEmpty())
@@ -3608,7 +3787,7 @@ class HomeViewModelTest {
         val events = listOf(
             HomeUiEvent.OnNotificationPromptTurnOnClicked,
             HomeUiEvent.OnNotificationPromptDismissed,
-            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED),
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
         )
 
         // When

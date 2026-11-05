@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -458,6 +458,7 @@ private fun NotificationSettingsPreview() {
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.GRANTED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )
@@ -472,6 +473,7 @@ private fun NotificationSettingsLoadingPreview() {
             state = NotificationSettingsUiState(
                 preferences = Loadable.Loading,
                 permission = null,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )
@@ -501,6 +503,7 @@ private fun NotificationSettingsDeniedPreview() {
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.DENIED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )

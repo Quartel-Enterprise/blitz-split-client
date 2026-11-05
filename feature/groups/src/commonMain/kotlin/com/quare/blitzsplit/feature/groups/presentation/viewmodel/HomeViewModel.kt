@@ -242,12 +242,14 @@ class HomeViewModel(
                 uiState.update { it.copy(isNotificationPromptSnoozed = isNotificationPromptSnoozed(lastPromptAt)) }
             }.launchIn(viewModelScope)
         // Why: once per showing of the card, whatever brought it (a group, the permission read, three weeks gone).
-        uiState.map { it.notificationPrompt }
+        uiState
+            .map { it.notificationPrompt }
             .distinctUntilChanged()
             .filterNotNull()
             .onEach { prompt -> trackEvent("notification_prompt_shown", mapOf("prompt" to prompt)) }
             .launchIn(viewModelScope)
-        uiState.map { it.shouldAskQuietly }
+        uiState
+            .map { it.shouldAskQuietly }
             .distinctUntilChanged()
             .onEach { shouldAsk -> if (shouldAsk) askQuietly() }
             .launchIn(viewModelScope)
@@ -540,7 +542,12 @@ class HomeViewModel(
         permission: NotificationPermission,
         canAskQuietly: Boolean,
     ) {
-        uiState.update { it.copy(notificationPermission = permission, canAskQuietly = canAskQuietly) }
+        uiState.update {
+            it.copy(
+                notificationPermission = permission,
+                canAskQuietly = canAskQuietly,
+            )
+        }
         // Why: the first check after "Turn on" is the system's answer: its prompt, or back from its settings.
         pendingNotificationRequest?.let { prompt ->
             pendingNotificationRequest = null
@@ -561,7 +568,12 @@ class HomeViewModel(
 
     // Why: the permission is unknown until read again after the request, so neither card shows meanwhile.
     private fun askQuietly() {
-        uiState.update { it.copy(hasAskedQuietly = true, notificationPermission = null) }
+        uiState.update {
+            it.copy(
+                hasAskedQuietly = true,
+                notificationPermission = null,
+            )
+        }
         emit(HomeUiAction.RequestQuietNotifications)
     }
 

@@ -73,7 +73,9 @@ class NotificationSettingsPresenter {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 NotificationSettingsUiAction.RequestPermission -> JsNotificationSettingsAction("request-permission")
+
                 NotificationSettingsUiAction.OpenSystemSettings -> JsNotificationSettingsAction("open-settings")
+
                 // Why: Android's channels only; the web never reports a row blocked.
                 is NotificationSettingsUiAction.OpenChannelSettings -> null
             }

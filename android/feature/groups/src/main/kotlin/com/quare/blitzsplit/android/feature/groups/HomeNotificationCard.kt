@@ -29,7 +29,9 @@ internal fun HomeNotificationCard(
             when (prompt) {
                 // Why: Android never delivers quietly, so it never shows QUIET.
                 NotificationPrompt.SOFT_ASK, NotificationPrompt.QUIET -> R.string.groups_home_notifications_body
+
                 NotificationPrompt.ASK_AGAIN -> R.string.groups_home_notifications_again_body
+
                 NotificationPrompt.BLOCKED -> R.string.groups_home_notifications_off_body
             },
         ),

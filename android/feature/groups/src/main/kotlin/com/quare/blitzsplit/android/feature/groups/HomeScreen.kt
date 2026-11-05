@@ -27,7 +27,9 @@ fun HomeScreen(
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             HomeUiAction.ShowChangeError -> R.string.groups_change_error
+
             HomeUiAction.ShowNotificationsOn -> R.string.groups_home_notifications_on
+
             HomeUiAction.RequestNotificationPermission,
             HomeUiAction.OpenNotificationSettings,
             HomeUiAction.RequestQuietNotifications,
@@ -59,17 +61,19 @@ fun HomeScreen(
 @Composable
 private fun NotificationPermissionEffect(viewModel: HomeViewModel) {
     val permissionAccess = rememberNotificationPermissionAccess { permission ->
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permission))
+        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = false))
     }
     LifecycleResumeEffect(viewModel, permissionAccess) {
-        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permissionAccess.read()))
+        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permissionAccess.read(), canAskQuietly = false))
         onPauseOrDispose {}
     }
     LaunchedEffect(viewModel, permissionAccess) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 HomeUiAction.RequestNotificationPermission -> permissionAccess.request()
+
                 HomeUiAction.OpenNotificationSettings -> permissionAccess.openSettings()
+
                 // Why: Android has no quiet delivery, and never reports it can ask quietly.
                 HomeUiAction.ShowChangeError,
                 HomeUiAction.ShowNotificationsOn,

@@ -18,7 +18,7 @@ data class NotificationSettingsUiState(
     // Why: null until the UI reads the system's: unknown, never taken as allowed nor as denied.
     val permission: NotificationPermission?,
     // Why: Android: the rows whose channel the system silenced; iOS and the web have no switch per row.
-    val systemBlockedTypes: Set<NotificationType> = emptySet(),
+    val systemBlockedTypes: Set<NotificationType>,
 ) {
     // Why: the rows, in the order every UI lists them, each with a Push and, but the weekly reminder, an In app toggle.
     val types: List<NotificationType>

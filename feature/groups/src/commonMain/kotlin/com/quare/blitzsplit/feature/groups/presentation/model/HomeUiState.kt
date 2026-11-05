@@ -130,8 +130,11 @@ data class HomeUiState(
                 }
 
                 NotificationPermission.PROVISIONAL -> NotificationPrompt.QUIET
+
                 NotificationPermission.REFUSED_ONCE -> NotificationPrompt.ASK_AGAIN
+
                 NotificationPermission.DENIED -> NotificationPrompt.BLOCKED
+
                 NotificationPermission.GRANTED, null -> null
             }
         }

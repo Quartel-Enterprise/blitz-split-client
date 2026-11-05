@@ -158,8 +158,8 @@ sealed interface HomeUiEvent : UiEvent {
     // Why: read on appear, on each return to the app and after the system's prompt, since the settings may change it.
     data class OnNotificationPermissionChecked(
         val permission: NotificationPermission,
-        // Why: Apple, while never answered: it can deliver quietly (provisional) with no prompt.
-        val canAskQuietly: Boolean = false,
+        // Why: Apple only: it can deliver quietly (provisional) with no prompt while never answered.
+        val canAskQuietly: Boolean,
     ) : HomeUiEvent
 
     // Why: the notification card: "Turn on" and "Not now".

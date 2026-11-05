@@ -45,6 +45,7 @@ class NotificationSettingsViewModel(
             NotificationSettingsUiState(
                 preferences = Loadable.Loading,
                 permission = null,
+                systemBlockedTypes = emptySet(),
             ),
         )
 
@@ -88,7 +89,10 @@ class NotificationSettingsViewModel(
                 requestPermission()
             }
 
-            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> if (uiState.value.isBlockedBySystem(event.type)) {
+            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> if (uiState.value.isBlockedBySystem(
+                    event.type,
+                )
+            ) {
                 trackEvent("notification_channel_settings_clicked", mapOf("type" to event.type))
                 emit(NotificationSettingsUiAction.OpenChannelSettings(event.type))
             }
