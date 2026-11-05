@@ -128,11 +128,7 @@ jobs:
       - name: Check the Google web client id
         env:
           SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
-        run: |
-          if [ -z "$SUPABASE_GOOGLE_WEB_CLIENT_ID" ]; then
-            echo "::error::The SUPABASE_GOOGLE_WEB_CLIENT_ID repository variable is empty: the beta would have no Google sign in. See docs/release-process.md#google-sign-in."
-            exit 1
-          fi
+        run: ./scripts/release/require-env.sh SUPABASE_GOOGLE_WEB_CLIENT_ID
 
       - name: Bump version
         run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
@@ -285,8 +281,9 @@ jobs:
       # Cloudflare Pages answers an unknown path with index.html when the site has no 404.html,
       # which is what /g/<code> and /n?... need. The database runs in a worker on OPFS's
       # opfs-sahpool, so no COOP/COEP headers are needed either.
+      # --ignore-scripts skips the prebuild hook, which would build the shared JS library a second time.
       - name: Build the web app
-        run: npm --prefix webApp run build
+        run: npm --prefix webApp run build --ignore-scripts
         env:
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
@@ -348,13 +345,15 @@ jobs:
         with:
           name: ios-ipa
           path: build/ios/*.ipa
-          retention-days: 1
+          # A week, for the "Re-run failed jobs" of the upload: an IPA signed for the App Store installs nowhere else.
+          retention-days: 7
           if-no-files-found: error
 
   ios-upload:
     name: iOS, send to TestFlight
     needs: [plan, ios-build]
-    runs-on: macos-latest
+    # The image that built it: an older altool uploading an Xcode 27 binary is a risk with no use.
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -396,6 +395,8 @@ jobs:
         with:
           scheme: BoraRachar-macOS
           destination: generic/platform=macOS
+          # :shared only declares macosArm64(), and a Release archive of a generic destination also builds x86_64.
+          build-settings: ARCHS=arm64
           export-path: build/macos
           version: ${{ needs.plan.outputs.version }}
           version-code: ${{ needs.plan.outputs.version_code }}
@@ -410,13 +411,13 @@ jobs:
         with:
           name: macos-pkg
           path: build/macos/*.pkg
-          retention-days: 1
+          retention-days: 7
           if-no-files-found: error
 
   macos-upload:
     name: macOS, send to TestFlight
     needs: [plan, macos-build]
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -466,7 +467,8 @@ jobs:
           fetch-depth: 0
 
       # First, because the release is what `plan` reads: with it recorded, the next beta takes the next number and
-      # the next versionCode even when the merge-back below fails. Once it exists a re-run skips this step.
+      # the next versionCode even when the merge-back below fails. A re-run (after "Re-run failed jobs" fixed a
+      # platform) keeps the release and rewrites its table of channels, so the record follows the results.
       - name: Publish the GitHub pre-release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -479,7 +481,15 @@ jobs:
           MACOS: ${{ needs.macos-upload.result }}
         run: |
           if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
-            echo "::notice::$DISPLAY_VERSION is already published."
+            gh release view "$DISPLAY_VERSION" --json body --jq .body | tr -d '\r' | awk \
+              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v macos="$MACOS" -v pages="$CLOUDFLARE_PAGES_PROJECT" '
+              /^\| Android \|/ { print "| Android | Firebase App Distribution, group `beta` | " android " |"; next }
+              /^\| Web \|/     { print "| Web | Cloudflare Pages, https://" pages ".pages.dev | " web " |"; next }
+              /^\| iOS \|/     { print "| iOS | TestFlight | " ios " |"; next }
+              /^\| macOS \|/   { print "| macOS | TestFlight | " macos " |"; next }
+              { print }' > "$RUNNER_TEMP/notes.md"
+            gh release edit "$DISPLAY_VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            echo "::notice::$DISPLAY_VERSION is already published: its table of channels was refreshed."
             exit 0
           fi
           cat > "$RUNNER_TEMP/channels.md" <<EOF
@@ -511,6 +521,8 @@ jobs:
       # The PR is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
       # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
+        # A web-only beta consumed no build number a store cares about, so it leaves main alone.
+        if: ${{ needs.android-distribute.result == 'success' || needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
           MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
@@ -534,14 +546,16 @@ jobs:
           git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
           git push --force-with-lease origin "$BRANCH"
 
+          title="chore: merge back $DISPLAY_VERSION into main"
+          body="Merges the versionCode $VERSION_CODE that $DISPLAY_VERSION consumed back into main."
           if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
-            gh pr create \
-              --base main \
-              --head "$BRANCH" \
-              --title "chore: merge back $DISPLAY_VERSION into main" \
-              --body "Merges the versionCode $VERSION_CODE that $DISPLAY_VERSION consumed back into main." \
-              --assignee "$ACTOR"
+            gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
+          else
+            # Left open by an earlier beta: the branch now holds this one's code, so the text says so too.
+            gh pr edit "$BRANCH" --title "$title" --body "$body"
           fi
+          # Best effort: GitHub refuses an assignee it can't assign (a bot, an app), and the merge must not depend on it.
+          gh pr edit "$BRANCH" --add-assignee "$ACTOR" || true
 
           # GitHub recomputes mergeability asynchronously, so the merge right after the create can
           # still read the PR as blocked. Retry instead of failing the release on a race that

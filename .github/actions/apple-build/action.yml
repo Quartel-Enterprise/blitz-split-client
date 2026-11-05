@@ -14,6 +14,10 @@ inputs:
   export-path:
     description: 'Where the exported IPA or package lands'
     required: true
+  build-settings:
+    description: 'Extra build settings for the archive, e.g. ARCHS=arm64'
+    required: false
+    default: ''
   version:
     description: 'The versionName: Apple refuses a suffix, so the plain X.Y.Z'
     required: true
@@ -93,12 +97,13 @@ runs:
       env:
         KEY_ID: ${{ inputs.key-id }}
         ISSUER_ID: ${{ inputs.key-issuer-id }}
+        BUILD_SETTINGS: ${{ inputs.build-settings }}
       run: >-
         xcodebuild archive -project iosApp/BoraRachar.xcodeproj -scheme "${{ inputs.scheme }}"
         -destination "${{ inputs.destination }}" -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
         -derivedDataPath iosApp/build/DerivedData
         -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
-        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" -quiet
+        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" $BUILD_SETTINGS -quiet
 
     - name: Export the app
       shell: bash

@@ -20,7 +20,10 @@ The iOS and macOS jobs share two composite actions, [`apple-build`](../.github/a
 
 The Apple and web jobs are written but have not run yet: expect the first run to need a fix or two. The likeliest
 spot is the upload, which uses `xcrun altool --upload-app`: if the runner's Xcode refuses it, switch
-`apple-upload` to `xcrun iTMSTransporter` or export with `destination: upload` in `iosApp/ExportOptions.plist`.
+`apple-upload` to `xcrun iTMSTransporter` or export with `destination: upload` in `iosApp/ExportOptions.plist`. The
+other likely spot is the signing: Xcode creates the cloud-managed certificates through the API key, and an Apple
+account has a limit of them, so if the archive reports a certificate limit, revoke the ones the runs created in the
+Apple Developer account.
 
 ## Releasing a beta
 
@@ -35,11 +38,14 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
 1. `plan` resolves the version and shows it in the run summary.
 2. Each platform builds and publishes: `android-build` and `android-distribute`, `web`, `ios-build` and `ios-upload`,
    `macos-build` and `macos-upload`. Build and publish are separate jobs, so **Re-run failed jobs** sends a failed
-   upload again without building a second time. The binaries are kept as build artifacts for one day.
+   upload again without building a second time. The APK is kept as a build artifact for one day, since anyone can
+   install it from a public repository, and the IPA and the package for a week, since they install nowhere but
+   TestFlight: a re-run of an upload after that needs a new beta.
 3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what each channel got
    and the build number, then squash-merges a pull request with the new `versionCode` into `main`. It runs when at
-   least one platform published, since the Apple stores refuse a build number they already hold, and a platform that
-   failed does not hold the release back.
+   least one platform published, and a platform that failed does not hold the release back. A re-run of `finalize`
+   after "Re-run failed jobs" rewrites the table of channels, so the release follows the results. A beta that only
+   published the web leaves `main` alone, since it consumed no build number a store cares about.
 
 One beta runs at a time and one more can wait: GitHub keeps a single pending run per concurrency group, so a third
 dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch while a run is already waiting.
@@ -61,8 +67,9 @@ The `versionCode` is one past the highest of two numbers: the one in `version.pr
 that every beta release records in its notes. The release is published before the merge-back, so a beta never reuses a
 number even when the merge-back fails (the `Main rules` ruleset requires a pull request, with threads resolved).
 Re-running `finalize` finishes the job: it skips the release that exists, leaves a `versionCode` that `main` already
-holds (or a higher one someone raised meanwhile) alone, rebuilds the merge-back branch from the current `main` and
-pushes it over the old one, and opens the pull request only when none is open. The pull request is created with
+holds (or a higher one someone raised meanwhile) alone, rebuilds the one merge-back branch, `release/merge-back`, from
+the current `main` and pushes it over the old one, and opens the pull request only when none is open (an open one is
+renamed for this beta, so a pull request a failed run left behind never waits next to a newer one). The pull request is created with
 `GITHUB_TOKEN`, so no pull request workflow runs for a version bump, and merged with `MERGE_WHEN_GREEN_TOKEN`, so the
 push to `main` runs its workflows ([Merge when green](ci.md#merge-when-green)).
 
@@ -90,6 +97,15 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 
 Also needed once: **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, for the
 merge-back.
+
+## Before the first beta: analytics consent
+
+Release builds collect Firebase Analytics on every platform, and the betas are release builds: the APK, the TestFlight
+builds and the web site all do. Whether the app asks first, or offers an opt-out, is Pierre's call
+([#184](https://github.com/Quartel-Enterprise/blitz-split-client/issues/184)), and
+[analytics/README.md](analytics/README.md#consent) says it has to be settled, with the Play Data safety form and the
+App Store privacy labels, before a build reaches testers. The workflow does not enforce it. Until it is settled, a beta
+for people other than the team is a decision to make knowingly.
 
 ## Google sign in
 

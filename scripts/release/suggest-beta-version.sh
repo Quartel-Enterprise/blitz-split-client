@@ -48,12 +48,15 @@ version_code=$(( current_code + 1 ))
 
 recorded=0
 if command -v gh > /dev/null && [[ -n "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then
-  while read -r tag; do
-    code="$(gh release view "$tag" --json body --jq .body | sed -n 's/^Build number: *//p' | head -1)"
+  # One call for every release's notes; it is captured first, so an API or auth error stops the script instead of
+  # leaving `recorded` at 0 and the versionCode at the file's. The notes of a release edited on github.com have CRLF
+  # line ends.
+  notes="$(gh api "repos/{owner}/{repo}/releases" --jq '.[] | select(.prerelease) | .body')"
+  while read -r code; do
     if [[ "$code" =~ ^[0-9]+$ ]] && (( code > recorded )); then
       recorded="$code"
     fi
-  done < <(gh release list --limit 30 --json tagName,isPrerelease --jq '.[] | select(.isPrerelease) | .tagName')
+  done < <(tr -d '\r' <<< "$notes" | sed -n 's/^Build number: *//p')
 fi
 if (( recorded >= version_code )); then
   version_code=$(( recorded + 1 ))
@@ -63,7 +66,9 @@ fi
 # versionName carry the suffix.
 last_beta="$(git tag --list "${version}-beta_*" | sed "s/^${version}-beta_//" | grep -E '^[0-9]+$' | sort -n | tail -1 || true)"
 display_version="${version}-beta_$(( ${last_beta:-0} + 1 ))"
-branch="release/${display_version}"
+# One branch for every merge-back: a pull request a failed run left open is rebuilt by the next one, not
+# left behind next to it.
+branch="release/merge-back"
 
 echo "Resolved version: ${display_version} (versionCode ${version_code})"
 
