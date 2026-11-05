@@ -279,7 +279,7 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseShareClicked(expenseId))
     }
 
-    fun deleteExpense(expenseId: String) {
+    fun askToDeleteExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteClicked(expenseId))
     }
 

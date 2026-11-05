@@ -374,6 +374,8 @@ class GroupDetailViewModel(
                     entries = dayEntries.map { (_, entry) -> entry },
                 )
             }
+        // Why: read before the update, whose lambda may run again, since it forgets a bill that is gone.
+        val billDeletion = billDeletionOrNull()
         uiState.update {
             it.copy(
                 header = groupHeaderOf(
@@ -387,7 +389,7 @@ class GroupDetailViewModel(
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
                 // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
-                billToDelete = if (it.isDeletingBill) it.billToDelete else billDeletionOrNull(),
+                billToDelete = if (it.isDeletingBill) it.billToDelete else billDeletion,
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
                     .sortedBy { debt -> debt.fromMemberId != meId }

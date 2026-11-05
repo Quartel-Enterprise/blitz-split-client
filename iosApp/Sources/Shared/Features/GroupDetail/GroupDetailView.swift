@@ -613,7 +613,7 @@ private struct MacGroupExpenses: View {
                     } else {
                         ExpenseIcon(size: 24, systemName: "banknote")
                     }
-                    Text(verbatim: item.expense?.description_ ?? item.payment.map(PaymentCopy.title) ?? "")
+                    Text(verbatim: DayEntryCopy.title(item.entry))
                         .lineLimit(1)
                     if item.payment != nil {
                         PaymentTag()

@@ -350,7 +350,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
       options={[
         { icon: <Pencil />, label: t('groupDetail_entryEdit'), onSelect: () => presenter.editExpense(expense.id) },
         { icon: <Share2 />, label: t('groupDetail_entryShare'), onSelect: () => presenter.shareExpense(expense.id) },
-        { icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.deleteExpense(expense.id) },
+        { icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.askToDeleteExpense(expense.id) },
       ]}
       trailing={
         balance != null && (
