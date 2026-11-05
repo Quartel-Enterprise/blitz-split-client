@@ -219,10 +219,20 @@ class RegisterPaymentPresenter(
         viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(method))
     }
 
-    // Why: a copy of "Pagar Ana" (KEY, PIX_CODE, OTHER_KEY), which the page writes to the clipboard itself.
-    fun trackCopy(target: String) {
-        val copied = PayCopyTarget.entries.firstOrNull { it.name == target } ?: return
-        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(copied))
+    /*
+     * Why: the copies of "Pagar Ana", which the page writes to the clipboard itself; one method each, so a target
+     * renamed in Kotlin breaks the web's build instead of dropping its event.
+     */
+    fun trackKeyCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.KEY))
+    }
+
+    fun trackPixCodeCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.PIX_CODE))
+    }
+
+    fun trackOtherKeyCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.OTHER_KEY))
     }
 
     // Why: "Marcar como pago", once paid in the bank or the wallet.

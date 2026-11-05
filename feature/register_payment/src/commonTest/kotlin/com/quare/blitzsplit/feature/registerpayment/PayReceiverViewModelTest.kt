@@ -779,7 +779,7 @@ class PayReceiverViewModelTest {
 
             // Then
             assertEquals(
-                listOf("payment_key_copy_clicked" to mapOf<String, Any>("target" to PayCopyTarget.PIX_CODE)),
+                listOf("payment_copy_clicked" to mapOf<String, Any>("target" to PayCopyTarget.PIX_CODE)),
                 trackedEvents,
             )
             assertEquals(state, viewModel.uiState.value)

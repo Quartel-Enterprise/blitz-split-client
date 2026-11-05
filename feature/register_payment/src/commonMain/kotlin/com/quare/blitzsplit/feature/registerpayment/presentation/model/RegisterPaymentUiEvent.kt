@@ -36,7 +36,7 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
 
             OnPayOtherwiseClicked -> EventAnalytics.Automatic("payment_pay_otherwise_clicked")
 
-            is OnCopyClicked -> EventAnalytics.Automatic("payment_key_copy_clicked", mapOf("target" to target))
+            is OnCopyClicked -> EventAnalytics.Automatic("payment_copy_clicked", mapOf("target" to target))
 
             is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 

@@ -49,6 +49,12 @@ extension RegisterPaymentModel {
         send(RegisterPaymentUiEventOnMarkAsPaidClicked.shared)
     }
 
+    /// A copy of "Pay Ana": the pasteboard is the app's, the shared code only counts which copy it was.
+    func copy(_ text: String, _ target: PayCopyTarget) {
+        send(RegisterPaymentUiEventOnCopyClicked(target: target))
+        Pasteboard.copy(text)
+    }
+
     /// A part of the debt, cash or a past day go through the form, which takes this screen's place.
     func payOtherwise() {
         send(RegisterPaymentUiEventOnPayOtherwiseClicked.shared)
@@ -309,10 +315,8 @@ struct PhonePayWithKey: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// The pasteboard is this view's; the shared code only counts the copy.
     private func copy(_ text: String, _ target: PayCopyTarget) {
-        model.send(RegisterPaymentUiEventOnCopyClicked(target: target))
-        Pasteboard.copy(text)
+        model.copy(text, target)
         copyCount += 1
     }
 }
@@ -377,10 +381,8 @@ struct MacPayWithKey: View {
         .glassToast("Copied", trigger: copyCount)
     }
 
-    /// The pasteboard is this view's; the shared code only counts the copy.
     private func copy(_ text: String, _ target: PayCopyTarget) {
-        model.send(RegisterPaymentUiEventOnCopyClicked(target: target))
-        Pasteboard.copy(text)
+        model.copy(text, target)
         copyCount += 1
     }
 }

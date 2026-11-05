@@ -300,7 +300,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_mark_as_paid_clicked` | none | "Mark as paid" | `:feature:register_payment` |
 | `payment_pay_otherwise_clicked` | none | "I paid another amount or another way" | `:feature:register_payment` |
 | `payment_paid_anyway_clicked` | none | "I paid anyway" (13.5c) | `:feature:register_payment` |
-| `payment_key_copy_clicked` | `target` (`key`, `pix_code`, `other_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys" | `:feature:register_payment` |
+| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys" | `:feature:register_payment` |
 | `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | All, You owe or Owe you, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "By group" opened or closed on a row | `:feature:global_balances` |
