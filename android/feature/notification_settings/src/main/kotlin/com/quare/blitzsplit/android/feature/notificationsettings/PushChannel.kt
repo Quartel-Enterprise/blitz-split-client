@@ -3,10 +3,7 @@ package com.quare.blitzsplit.android.feature.notificationsettings
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import android.provider.Settings
 import androidx.annotation.StringRes
-import androidx.core.app.NotificationManagerCompat
 import com.quare.blitzsplit.core.model.NotificationType
 
 /*
@@ -62,28 +59,15 @@ enum class PushChannel(
     ),
     ;
 
-    // Why: the settings of this channel alone, where the person turns it back on.
-    fun openSettings(context: Context) {
-        context.startActivity(
-            Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                .putExtra(Settings.EXTRA_CHANNEL_ID, id),
-        )
-    }
-
     companion object {
+        val ids: List<String>
+            get() = entries.map { it.id }
+
         fun of(type: NotificationType): PushChannel = entries.first { it.type == type }
 
-        // Why: the rows whose channel the person silenced; none before the channels exist (a build without push).
-        fun readBlockedTypes(context: Context): Set<NotificationType> {
-            val manager = NotificationManagerCompat.from(context)
-            return entries
-                .filter { channel ->
-                    manager.getNotificationChannelCompat(channel.id)?.importance ==
-                        NotificationManagerCompat.IMPORTANCE_NONE
-                }.map { it.type }
-                .toSet()
-        }
+        // Why: the rows of these channels, the ones the system silenced.
+        fun typesOf(channelIds: Set<String>): Set<NotificationType> =
+            entries.filter { it.id in channelIds }.mapTo(mutableSetOf()) { it.type }
 
         /*
          * Why: all at once, so the system's settings list them before the first notification of each. Again on every

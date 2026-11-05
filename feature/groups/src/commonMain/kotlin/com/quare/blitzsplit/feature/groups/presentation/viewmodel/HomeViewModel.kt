@@ -26,7 +26,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
-import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -62,7 +61,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.NotificationPrompt
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,9 +80,6 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
     private val navigator: Navigator,
@@ -93,8 +88,8 @@ class HomeViewModel(
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     private val recoveryCodeCardDismissal: RecoveryCodeCardDismissal,
-    private val updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
-    private val currentTimeMillis: CurrentTimeMillis,
+    updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
+    currentTimeMillis: CurrentTimeMillis,
     observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
     observeRecordedPayment: ObserveRecordedPayment,
     observeSettledUp: ObserveSettledUp,
@@ -153,15 +148,6 @@ class HomeViewModel(
     val stateWatcher: FlowWatcher<HomeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<HomeUiAction> = FlowWatcher(uiAction)
 
-    // Why: how long "Turn on" or "Not now" keeps the notification card away (Pierre's call, issue 208).
-    private val notificationPromptCooldown = 21.days
-
-    // Why: the card's "Turn on" asked the system or opened its settings, and no allowed answer came back yet.
-    private var awaitsNotificationAnswer = false
-
-    // Why: the card the last "Turn on" came from, until the next check of the permission says how the system answered.
-    private var pendingNotificationRequest: NotificationPrompt? = null
-
     // Why: the groups as Início last read them, the most recent activity first: "Rachar conta" marks the first.
     private var rows = emptyList<GroupRow>()
     private var groups = emptyList<Group>()
@@ -173,6 +159,15 @@ class HomeViewModel(
     private val paymentGroupId = MutableStateFlow<String?>(null)
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
+    private val notificationPrompts = HomeNotificationPrompts(
+        uiState = uiState,
+        scope = viewModelScope,
+        trackEvent = trackEvent,
+        updateLastNotificationPromptAt = updateLastNotificationPromptAt,
+        currentTimeMillis = currentTimeMillis,
+        emit = ::emit,
+    )
 
     init {
         combine(
@@ -236,23 +231,7 @@ class HomeViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        // Why: each minute too, so a card snoozed three weeks ago comes back without leaving Início.
-        combine(observeLastNotificationPromptAt(), minuteTicks()) { lastPromptAt, _ -> lastPromptAt }
-            .onEach { lastPromptAt ->
-                uiState.update { it.copy(isNotificationPromptSnoozed = isNotificationPromptSnoozed(lastPromptAt)) }
-            }.launchIn(viewModelScope)
-        // Why: once per showing of the card, whatever brought it (a group, the permission read, three weeks gone).
-        uiState
-            .map { it.notificationPrompt }
-            .distinctUntilChanged()
-            .filterNotNull()
-            .onEach { prompt -> trackEvent("notification_prompt_shown", mapOf("prompt" to prompt)) }
-            .launchIn(viewModelScope)
-        uiState
-            .map { it.shouldAskQuietly }
-            .distinctUntilChanged()
-            .onEach { shouldAsk -> if (shouldAsk) askQuietly() }
-            .launchIn(viewModelScope)
+        notificationPrompts.watch(observeLastNotificationPromptAt, minuteTicks)
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -404,29 +383,16 @@ class HomeViewModel(
 
             HomeUiEvent.OnRecoveryCodeCardDismissed -> recoveryCodeCardDismissal.isDismissed.value = true
 
-            is HomeUiEvent.OnNotificationPermissionChecked -> checkNotificationPermission(
+            is HomeUiEvent.OnNotificationPermissionChecked -> notificationPrompts.onChecked(
                 permission = event.permission,
                 canAskQuietly = event.canAskQuietly,
             )
 
-            HomeUiEvent.OnNotificationPromptTurnOnClicked -> answerNotificationPrompt { prompt ->
-                trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
-                awaitsNotificationAnswer = true
-                pendingNotificationRequest = prompt
-                emit(
-                    when (prompt) {
-                        // Why: Apple's full prompt still asks while it delivers quietly.
-                        NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN, NotificationPrompt.QUIET ->
-                            HomeUiAction.RequestNotificationPermission
+            is HomeUiEvent.OnQuietNotificationsAnswered -> notificationPrompts.onQuietAnswered(event.permission)
 
-                        NotificationPrompt.BLOCKED -> HomeUiAction.OpenNotificationSettings
-                    },
-                )
-            }
+            HomeUiEvent.OnNotificationPromptTurnOnClicked -> notificationPrompts.turnOn()
 
-            HomeUiEvent.OnNotificationPromptDismissed -> answerNotificationPrompt { prompt ->
-                trackEvent("notification_prompt_dismissed", mapOf("prompt" to prompt))
-            }
+            HomeUiEvent.OnNotificationPromptDismissed -> notificationPrompts.dismiss()
 
             HomeUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
@@ -532,64 +498,6 @@ class HomeViewModel(
                 ),
             )
         }
-    }
-
-    /*
-     * Why: "Notifications on" only after the card's own "Turn on" (the prompt, or back from the settings), so a change
-     * made from Notifications, which confirms by its own toggles, never shows it over that screen.
-     */
-    private fun checkNotificationPermission(
-        permission: NotificationPermission,
-        canAskQuietly: Boolean,
-    ) {
-        uiState.update {
-            it.copy(
-                notificationPermission = permission,
-                canAskQuietly = canAskQuietly,
-            )
-        }
-        // Why: the first check after "Turn on" is the system's answer: its prompt, or back from its settings.
-        pendingNotificationRequest?.let { prompt ->
-            pendingNotificationRequest = null
-            trackEvent(
-                "notification_permission_answered",
-                mapOf(
-                    "source" to "home",
-                    "prompt" to prompt,
-                    "is_granted" to (permission == NotificationPermission.GRANTED),
-                ),
-            )
-        }
-        if (awaitsNotificationAnswer && permission == NotificationPermission.GRANTED) {
-            awaitsNotificationAnswer = false
-            emit(HomeUiAction.ShowNotificationsOn)
-        }
-    }
-
-    // Why: the permission is unknown until read again after the request, so neither card shows meanwhile.
-    private fun askQuietly() {
-        uiState.update {
-            it.copy(
-                hasAskedQuietly = true,
-                notificationPermission = null,
-            )
-        }
-        emit(HomeUiAction.RequestQuietNotifications)
-    }
-
-    // Why: either answer snoozes the card, at once so a second tap finds none, then for three weeks on this device.
-    private fun answerNotificationPrompt(onAnswered: (NotificationPrompt) -> Unit) {
-        val prompt = uiState.value.notificationPrompt ?: return
-        uiState.update { it.copy(isNotificationPromptSnoozed = true) }
-        viewModelScope.launch { updateLastNotificationPromptAt(currentTimeMillis()) }
-        onAnswered(prompt)
-    }
-
-    // Why: a clock set back since the last answer never silences the card for good.
-    private fun isNotificationPromptSnoozed(lastPromptAt: Long?): Boolean {
-        if (lastPromptAt == null) return false
-        val elapsed = (currentTimeMillis() - lastPromptAt).milliseconds
-        return elapsed >= Duration.ZERO && elapsed < notificationPromptCooldown
     }
 
     private fun emit(action: HomeUiAction) {

@@ -65,6 +65,9 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnNotificationPromptDismissed -> EventAnalytics.Manual("notification_prompt_dismissed")
 
+            // Why: what the system says after the quiet request the shared code made: nobody tapped.
+            is OnQuietNotificationsAnswered -> EventAnalytics.NotTracked
+
             // Why: a notice that went away, which nobody tapped.
             OnRecordedPaymentNoticeShown, OnDeletedGroupNoticeShown -> EventAnalytics.NotTracked
 
@@ -160,6 +163,11 @@ sealed interface HomeUiEvent : UiEvent {
         val permission: NotificationPermission,
         // Why: Apple only: it can deliver quietly (provisional) with no prompt while never answered.
         val canAskQuietly: Boolean,
+    ) : HomeUiEvent
+
+    // Why: Apple, the permission read right after its quiet request, which tells it from a read started before it.
+    data class OnQuietNotificationsAnswered(
+        val permission: NotificationPermission,
     ) : HomeUiEvent
 
     // Why: the notification card: "Turn on" and "Not now".

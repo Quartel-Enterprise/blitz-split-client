@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.platform.findSilencedNotificationChannels
+import com.quare.blitzsplit.android.platform.openNotificationChannelSettings
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
@@ -26,7 +28,9 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinVi
             NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read()),
         )
         viewModel.onEvent(
-            NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(PushChannel.readBlockedTypes(context)),
+            NotificationSettingsUiEvent.OnSystemBlockedTypesChecked(
+                PushChannel.typesOf(context.findSilencedNotificationChannels(PushChannel.ids)),
+            ),
         )
         onPauseOrDispose {}
     }
@@ -34,8 +38,11 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinVi
         viewModel.uiAction.collect { action ->
             when (action) {
                 NotificationSettingsUiAction.RequestPermission -> permissionAccess.request()
+
                 NotificationSettingsUiAction.OpenSystemSettings -> permissionAccess.openSettings()
-                is NotificationSettingsUiAction.OpenChannelSettings -> PushChannel.of(action.type).openSettings(context)
+
+                is NotificationSettingsUiAction.OpenChannelSettings ->
+                    context.openNotificationChannelSettings(PushChannel.of(action.type).id)
             }
         }
     }

@@ -20095,7 +20095,7 @@
       }
     },
     "Turn on" : {
-      "comment" : "Home's notification card: asks for the permission, or opens its settings",
+      "comment" : "Home's notification card and Notifications' quiet notice: asks for the permission, or opens its settings",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {

@@ -3909,11 +3909,42 @@ class HomeViewModelTest {
             viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
 
             // When
-            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
 
             // Then
             assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
             assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the quiet request out WHEN a read started before it says never asked THEN shows no card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertTrue(tracked("notification_prompt_shown").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a stale read during the quiet request WHEN quiet delivery answers THEN shows the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(NotificationPrompt.QUIET, viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(shown(NotificationPrompt.QUIET)), tracked("notification_prompt_shown"))
         }
 
     @Test
@@ -3922,7 +3953,7 @@ class HomeViewModelTest {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
-            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
 
             // When
             viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
@@ -4344,7 +4375,7 @@ class HomeViewModelTest {
             viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
 
             // When
-            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
 
             // Then
             assertEquals(listOf("notification_prompt_shown" to shown(NotificationPrompt.SOFT_ASK)), trackedEvents)
@@ -4375,7 +4406,7 @@ class HomeViewModelTest {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
-            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
             viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
             trackedEvents.clear()
 
