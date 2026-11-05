@@ -83,7 +83,9 @@ class MoneyFormatter(
      * which has no short currency format, write the whole amount.
      */
     fun toCompactText(amountMinor: Long): String {
-        val format = compactFormat ?: return toText(amountMinor)
+        val format = compactFormat
+        // Why: compactFormat is only set from Android 11, but lint can't see that through lazy, only this check.
+        if (format == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return toText(amountMinor)
         return format.format(amountMinor.toDecimal()).toString()
     }
 

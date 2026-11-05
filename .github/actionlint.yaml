@@ -1,0 +1,4 @@
+# Hosted runner labels newer than the actionlint release that knows them.
+self-hosted-runner:
+  labels:
+    - xcode-27

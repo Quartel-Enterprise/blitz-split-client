@@ -197,23 +197,35 @@ Never wait on it in the foreground with an `until`/`sleep` loop, and never bypas
 other sessions' builds, and the queue is what fixes that. Never run `./gradlew --stop` either: it
 stops every daemon of the machine, and the other sessions' builds with them.
 
-| Area | The branch changes | Checks |
-|---|---|---|
-| Shared Kotlin | `core/`, `feature/`, `shared/` | Tests and coverage, main and test code compiled for each platform, the debug APK |
-| Platform code | `appleMain` or `jsMain` of a module in `core/`, `feature/`, `shared/` | Every module's `commonTest` on the platform it changed |
-| Build | `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | The full build and the module graph |
-| Android UI | `android/`, `androidApp/` | The debug APK and Android lint, unless the full build already ran |
-| Apple UI | `iosApp/`, or the API Swift sees: `shared/`, the modules `shared/build.gradle.kts` exports (`core/{model,presentation,navigation,expenses}`, every `feature/*`), `version.properties` | Regenerate the Xcode project, build both schemes |
-| Web UI | `webApp/`, or the API TypeScript sees: `shared/src/jsMain`, `feature/*/src/commonMain/**/presentation` | The production build of the web app |
-| Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd.sh`, a workflow that uses `Quartel-Enterprise/copied-code-check` | The duplication check |
+Locally, run only what catches a mistake in a few minutes: the JVM tests and coverage, a compile of
+the shared code for each backend, and the UI the branch touches. CI runs the rest on every pull
+request, and `merge-when-green` waits for it: every module's tests on the JS target, the iOS
+simulator and macOS, Android lint, the release APK and both schemes of the Apple app (see
+[docs/ci.md](../../../docs/ci.md)). Don't run those locally to be safe: they are what made a
+cross-platform branch take 30 to 40 minutes here, and CI runs them anyway. Run one locally only to
+reproduce a CI failure (step 12).
+
+| Area | The branch changes | Local checks | Left to CI |
+|---|---|---|---|
+| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS, the iOS simulator and macOS; the release APK; both Apple schemes |
+| Android UI | `android/`, `androidApp/` | The debug APK | Android lint, the release APK |
+| Apple UI | `iosApp/` | Regenerate the Xcode project, build the scheme the Swift change reaches | The other scheme |
+| Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
+| Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd.sh`, a workflow that uses `Quartel-Enterprise/copied-code-check` | The duplication check | |
+
+A change to the API the Apple app sees (a `UiState`, a ViewModel) without a change to `iosApp/` runs
+no Apple build locally, and one without a change to `webApp/` or `shared/src/jsMain` runs no web
+build: CI builds both. The debug APK of the Shared Kotlin check still compiles the Compose UI. When the change renames or removes something
+a UI uses, update that UI in the same branch, as the
+[new feature checklist](../../../docs/architecture/new-feature-checklist.md) says, so its area's
+check runs here.
 
 **Shared Kotlin**:
 
 ```bash
 ./scripts/heavy-check.sh ./gradlew jvmTest :koverVerifyCi \
-  compileKotlinIosSimulatorArm64 compileKotlinMacosArm64 compileKotlinJs \
-  compileTestKotlinIosSimulatorArm64 compileTestKotlinJs \
-  :androidApp:assembleDebug --continue
+  compileKotlinIosSimulatorArm64 compileTestKotlinIosSimulatorArm64 \
+  compileKotlinJs compileTestKotlinJs :androidApp:assembleDebug --continue
 ```
 
 `jvmTest` runs every module's `commonTest` on the JVM target, and `:koverVerifyCi` holds the merged
@@ -223,57 +235,45 @@ says what is left out: `*.di`, `*.bridge`, generated code, the `:testing` fakes 
 it: write the missing tests rather than pushing a red branch, through the `write-tests` skill when
 the "Who writes the unit tests" section of [docs/ai_agents.md](../../../docs/ai_agents.md) says so.
 
-The `compileKotlin*` tasks compile the main code of every module for the iOS simulator, macOS and JS,
-which catches an `appleMain` or `jsMain` the change broke. The `compileTestKotlin*` tasks compile
+The `compileKotlin*` tasks compile the main code of every module for the iOS simulator and JS, which
+catches an `appleMain` or `jsMain` the change broke, and the `compileTestKotlin*` tasks compile
 `commonTest` with the Kotlin/Native and JS backends, which reject some code the JVM accepts (a
-backtick test name with characters they don't allow). `iosArm64`, the device target, compiles the
-same `appleMain` as the simulator and is left out. `:androidApp:assembleDebug` compiles the Android
-target and the Compose UI that draws the ViewModels. None of them link test binaries or run the
-suites again on each platform: `commonTest` already ran on the JVM, and linking the Kotlin/Native
-test binaries is what makes `./gradlew build` take minutes. The Apple UI and Web UI checks below link
-the `Shared` framework and the JS library when the API they see changes.
+backtick test name with characters they don't allow). macOS compiles the same `appleMain` as the
+simulator and is left out, unless the branch changes a module that has a `macosMain`
+(`core/in_app_update`): its actuals there implement the module's `expect` declarations, which a
+change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. `:androidApp:assembleDebug` compiles the Android
+target and the Compose UI that draws the ViewModels. None of them link a test binary or run a
+suite on another platform: `commonTest` already ran on the JVM, and CI runs it on the others.
 
-**Platform code**, when the branch changes an `appleMain` or `jsMain`, the whole `commonTest` suite on
-that platform:
+Every module is listed, but only the changed modules and the ones that depend on them do any work:
+the rest are up to date, or come from the build cache every worktree of this Mac shares, so a fresh
+worktree doesn't start cold. A change low in the graph, `core/model` or `core/groups`, recompiles every module above it
+for each backend and takes a few minutes; that is the check working, not something to cut.
 
-```bash
-./scripts/heavy-check.sh ./gradlew iosSimulatorArm64Test macosArm64Test jsTest --continue
-```
+A build change (`build-logic/`, `gradle/`, a `*.gradle.kts`, `gradle.properties`,
+`version.properties`) adds `assertModuleGraph`, which checks the module graph rules of the root
+`build.gradle.kts`, to the same call. CI then runs the tests of every target but the iOS device,
+whose main code it only compiles, and builds the Debug Apple apps; the Release frameworks are linked
+only when the app is archived. A version bump runs more, see the `bump-versions` skill.
 
-with `iosSimulatorArm64Test` and `macosArm64Test` for `appleMain` (it compiles into both targets) and
-`jsTest` (a headless browser) for `jsMain`. Every module's suite runs, not only the changed module's:
-the actuals live in a handful of modules (`core/utils`, `core/provider/*`, `shared`) with few or no
-tests of their own, and the tests that exercise them are the other modules', `core/utils`'
-`Dispatchers` under every ViewModel test for one. This is the slow part of the old full build, paid
-only when platform code changes.
-
-**Build**, the full build:
+**Android UI**: `:androidApp:assembleDebug`, in the Shared Kotlin call when that one runs, or on its
+own:
 
 ```bash
-./scripts/heavy-check.sh ./gradlew build :koverVerifyCi assertModuleGraph --continue
+./scripts/heavy-check.sh ./gradlew :androidApp:assembleDebug --continue
 ```
 
-A build change can break any target, so it runs everything: it compiles every target of every
-module, links the `Shared` framework and the JS library, runs every test suite (the JS ones in a
-headless browser, the Apple ones on the simulator runtime), builds the release APK with R8, runs
-Android lint on `:androidApp` and the `:android:*` modules, `:koverVerifyCi` holds the coverage rule
-CI checks (`build` only runs Kover's default variant), and `assertModuleGraph` checks the module graph
-rules of the root `build.gradle.kts`. It covers the Shared Kotlin, Platform code and Android UI
-checks, so skip those. Expect several minutes in a fresh worktree.
+Android lint runs in CI (`lintDebug` of `:androidApp` and every `:android:*` module). To look at a
+lint failure CI reported, run `:android:<module>:lintDebug` for that module.
 
-**Android UI**, when the full build didn't run:
+**Apple UI**, when the branch changes `iosApp/`: regenerate the project, since
+`iosApp/BoraRachar.xcodeproj` is git-ignored and may predate `project.yml`, then build the scheme the
+change reaches. The project's build phase builds the `Shared` framework with Gradle first.
 
-```bash
-./scripts/heavy-check.sh ./gradlew :androidApp:assembleDebug :androidApp:lintDebug \
-  :android:<module>:lintDebug --continue
-```
-
-with one `:android:<module>:lintDebug` for each changed module (`:android:designsystem`,
-`:android:platform`, `:android:feature:<name>`).
-
-**Apple UI**: regenerate the project, since `iosApp/BoraRachar.xcodeproj` is git-ignored and may
-predate `project.yml`, then build both schemes. The project's build phase builds the `Shared`
-framework with Gradle first.
+- `iosApp/Sources/macOS` only: the macOS scheme.
+- Anything else in `iosApp/` (`Sources/Shared`, `Sources/iOS`, `project.yml`, the resources): the iOS
+  scheme. `Sources/Shared` compiles into both apps, and CI builds the macOS one.
+- Both `Sources/macOS` and something else: both schemes.
 
 ```bash
 ./iosApp/generate-project.sh
@@ -291,7 +291,7 @@ signing, since Sign in with Apple and the associated domains need a provisioning
 hoc; it still compiles and links everything, which is what this check is for. If XcodeGen is
 missing, ask the user before installing it (`brew install xcodegen`).
 
-**Web UI**:
+**Web UI**, when the branch changes `webApp/` or `shared/src/jsMain`:
 
 ```bash
 ./scripts/heavy-check.sh npm --prefix webApp run build
@@ -472,8 +472,12 @@ When the command exits, or a PR event says the same:
     `MERGE_WHEN_GREEN_TOKEN` secret is missing or expired, remove the label
     (`gh pr edit --remove-label merge-when-green`), tell the user, and merge directly as below.
   - Any other check: read its failed log (`gh run view <run> --log-failed`), reproduce the failure
-    locally with that area's step 8 check, and fix it as above; the label stays on, so the green
-    checks of the fix commit merge the pull request. When the failure isn't the branch's (the
+    locally, and fix it as above; the label stays on, so the green checks of the fix commit merge
+    the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
+    CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
+    `js-tests`, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
+    `:android:<module>:lintDebug` for lint, `:androidApp:assembleRelease` for the release APK (R8 runs
+only there), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
     again instead. Report it and stop, with the label still on, when it can't be reproduced, needs
     a product choice nobody wrote down yet, or the same check still fails after two fixes.
@@ -535,9 +539,11 @@ gh pr checks
   again; with no push, add the `run-checks` label, which re-runs the held checks (see
   [docs/ci.md](../../../docs/ci.md#the-review-gate)), then watch again. Right after the pull request
   opens, the review pushes its fix commit, so watch again if the head moved.
-- **It has none** ("no checks reported", e.g. before CI is set up): the checks of step 8 are the
-  only gate. Merge only if they ran and passed in this session for the commit being merged;
-  otherwise run them again first.
+- **It has none** ("no checks reported", e.g. before CI is set up): nothing runs the checks step 8
+  leaves to CI, so run them locally too, through `heavy-check.sh`: `jsTest`,
+  `iosSimulatorArm64Test` and `macosArm64Test`, `:androidApp:assembleRelease` and `lintDebug`, and
+  both Xcode schemes. Merge only if they and the step 8 checks ran and passed in this session for
+  the commit being merged; otherwise run them again first.
 
   ```bash
   gh pr merge --squash

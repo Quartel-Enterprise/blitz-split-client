@@ -8,6 +8,24 @@ inputs:
       configuration cache is discarded between runs, so every job pays full configuration time.
     required: false
     default: ''
+  cache-read-only:
+    description: >-
+      'true' for a job whose Gradle cache another job of the same runner already saves: it only reads
+      main's entries, even on main, so two copies don't take room in the repository's cache.
+    required: false
+    default: 'false'
+  kotlin-native:
+    description: >-
+      'true' for a job that compiles Kotlin/Native: restores the Kotlin/Native toolchain (~/.konan)
+      and fits the Gradle and Kotlin daemons to a macOS runner.
+    required: false
+    default: 'false'
+  save-kotlin-native:
+    description: >-
+      'true' for the one Kotlin/Native job that saves ~/.konan on main: the one that compiles every
+      Apple target, so the entry holds all of them. The others only restore it.
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -25,7 +43,69 @@ runs:
       uses: gradle/actions/setup-gradle@v6
       with:
         cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        cache-read-only: ${{ inputs.cache-read-only == 'true' || github.ref != 'refs/heads/main' }}
 
     - name: Make gradlew executable
       shell: bash
       run: chmod +x ./gradlew
+
+    # A hosted macOS runner has 3 cores and 7 GB of memory, less than gradle.properties' 8 GB Gradle
+    # heap and 4 GB Kotlin daemon. Kotlin/Native compiles and links inside the Gradle daemon, so it
+    # gets most of the memory, and two workers keep two links at most in that heap at once. The
+    # Kotlin daemon only compiles the JVM code of the build here. ~/.gradle/gradle.properties wins
+    # over the project's, and the Gradle run of Xcode's build phase reads it too. It replaces the
+    # whole jvmargs line, so the project's other flags are repeated.
+    - name: Fit Gradle to the runner
+      if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
+      shell: bash
+      run: |
+        mkdir -p ~/.gradle
+        {
+          echo 'org.gradle.jvmargs=-Xmx4608M -Dfile.encoding=UTF-8'
+          echo 'kotlin.daemon.jvmargs=-Xmx1024M'
+          echo 'org.gradle.workers.max=2'
+        } >> ~/.gradle/gradle.properties
+
+    # The image's default Xcode can lag behind the newest it has installed (27.1 against 27.2 on
+    # xcode-27), and the Apple app uses the newest SDK's APIs under @available, as the Mac it is
+    # developed on builds it with the newest release.
+    - name: Select the newest Xcode
+      if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
+      shell: bash
+      run: |
+        xcode=$(ls -d /Applications/Xcode_[0-9]*.app | grep -v -i beta | sort -V | tail -1)
+        sudo xcode-select -s "$xcode"
+        xcodebuild -version
+
+    # The toolchain only changes with the Kotlin version and the runner, so that is the key. As with
+    # Gradle's cache, only main saves it: an entry a pull request saves is readable by that branch
+    # alone, and a gigabyte each would push main's entries out of the repository's cache.
+    - name: Read the Kotlin version
+      id: kotlin
+      if: inputs.kotlin-native == 'true'
+      shell: bash
+      run: |
+        version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)
+        if [ -z "$version" ]; then
+          echo "::error::No kotlin = \"...\" line in gradle/libs.versions.toml, so the Kotlin/Native cache has no key."
+          exit 1
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+
+    - name: Cache the Kotlin/Native toolchain
+      if: >-
+        inputs.kotlin-native == 'true' && inputs.save-kotlin-native == 'true' &&
+        github.ref == 'refs/heads/main'
+      uses: actions/cache@v5
+      with:
+        path: ~/.konan
+        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
+
+    - name: Restore the Kotlin/Native toolchain
+      if: >-
+        inputs.kotlin-native == 'true' &&
+        (inputs.save-kotlin-native != 'true' || github.ref != 'refs/heads/main')
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.konan
+        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
