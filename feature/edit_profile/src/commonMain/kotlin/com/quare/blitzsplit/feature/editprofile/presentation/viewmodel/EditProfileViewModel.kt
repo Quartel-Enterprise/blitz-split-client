@@ -246,7 +246,7 @@ class EditProfileViewModel(
             saved = profile
             // Why: what was typed while saving stays, compared with what was just saved.
             edit { it.copy(isSaving = false) }
-            if (navigator.backStack.value.lastOrNull() == Route.EditProfile) navigator.navigateBack()
+            navigator.navigateBackFrom(Route.EditProfile)
         }
     }
 

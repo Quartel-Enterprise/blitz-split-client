@@ -51,11 +51,10 @@ class SimplifyDebtsInfoPresenter(
     route: JsRoute,
 ) {
     private val infoRoute = route.route as Route.SimplifyDebtsInfo
-    private val currencyOfRoute = infoRoute.currency
 
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator, which the example's amounts take.
-    val currency: String = currencyOfRoute.code
-    val fractionDigits: Int = currencyOfRoute.fractionDigits
+    val currency: String = infoRoute.currency.code
+    val fractionDigits: Int = infoRoute.currency.fractionDigits
 
     fun close() {
         KoinPlatform.getKoin().get<Navigator>().navigateBackFrom(infoRoute)

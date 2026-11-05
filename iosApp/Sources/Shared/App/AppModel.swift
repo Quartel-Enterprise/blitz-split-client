@@ -134,10 +134,10 @@ final class AppModel {
             return entries.indices.filter { !hidden[$0] }.map { entries[$0] }
         }
         set {
-            guard newValue.count < path.count else { return }
-            // Keeps a hidden bill or payment right under the first entry popped, so it shows again
             let hidden = hiddenUnderScreen(pathEntries)
             let visible = hidden.indices.filter { !hidden[$0] }
+            guard newValue.count < visible.count else { return }
+            // Keeps a hidden bill or payment right under the first entry popped, so it shows again
             holder.viewModel.navigator.popTo(size: Int32(visible[newValue.count] + 1))
         }
     }
