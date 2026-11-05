@@ -24,7 +24,15 @@ on:
       - 'gradle/**'
       - 'gradle.properties'
       - 'version.properties'
+      - 'gradlew'
+      - '.github/workflows/review-gate.yml'
       - '!**/*.md'
+      # The source sets no Apple target compiles.
+      - '!**/src/jsMain/**'
+      - '!**/src/jsTest/**'
+      - '!**/src/jvmMain/**'
+      - '!**/src/jvmTest/**'
+      - '!**/src/androidMain/**'
   push:
     branches:
       - main
@@ -40,7 +48,15 @@ on:
       - 'gradle/**'
       - 'gradle.properties'
       - 'version.properties'
+      - 'gradlew'
+      - '.github/workflows/review-gate.yml'
       - '!**/*.md'
+      # The source sets no Apple target compiles.
+      - '!**/src/jsMain/**'
+      - '!**/src/jsTest/**'
+      - '!**/src/jvmMain/**'
+      - '!**/src/jvmTest/**'
+      - '!**/src/androidMain/**'
 
 permissions:
   contents: read
@@ -84,6 +100,8 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
+          # It compiles every Apple target, so its toolchain cache holds all of them.
+          save-kotlin-native: 'true'
 
       # The actuals of appleMain live in a few modules with few tests of their own; the tests that
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
@@ -115,12 +133,30 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
+          # apple-tests saves the Gradle cache of the macOS runner.
+          cache-read-only: 'true'
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
       - name: Generate the Xcode project
         run: ./iosApp/generate-project.sh
+
+      # The Swift packages (Firebase and its dependencies) only change with project.yml. As with the
+      # other caches, only main saves them.
+      - name: Cache the Swift packages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache@v5
+        with:
+          path: iosApp/build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
+
+      - name: Restore the Swift packages
+        if: github.ref != 'refs/heads/main'
+        uses: actions/cache/restore@v5
+        with:
+          path: iosApp/build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
 
       # Each scheme's build phase builds the Shared framework with Gradle first. The iOS build targets
       # the Apple silicon simulator only, since Shared has no x86_64 simulator slice. The macOS build
@@ -129,10 +165,11 @@ jobs:
         run: >-
           xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS
           -destination 'generic/platform=iOS Simulator' ARCHS=arm64
-          -derivedDataPath iosApp/build/DerivedData CODE_SIGNING_ALLOWED=NO build -quiet
+          -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages
+          CODE_SIGNING_ALLOWED=NO build -quiet
 
       - name: Build the macOS app
         run: >-
           xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS
           -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData
-          CODE_SIGNING_ALLOWED=NO build -quiet
+          -clonedSourcePackagesDirPath iosApp/build/SourcePackages CODE_SIGNING_ALLOWED=NO build -quiet

@@ -18,14 +18,16 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
 coverage, a compile of the shared code for the iOS simulator and JS, the debug APK, and the UI the branch touches (the
-web build, or one Xcode scheme when `iosApp` changes). The tests on the JS, iOS simulator and macOS targets, Android
+web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the JS, iOS simulator and macOS targets, Android
 lint, the release APK and the other Apple scheme are left to these workflows, and `merge-when-green` waits for them:
 on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open.
 
 The `apple` jobs run on `macos-26`, which GitHub gives a public repository for free. Its tests and its app build are
 two jobs side by side, each compiling the Kotlin/Native code on its own, since two runners finish sooner than one.
-The runner has 7 GB of memory, so the Gradle action shrinks the Gradle and Kotlin daemons' heaps there, and only
-`main` saves the Kotlin/Native toolchain's cache, keyed on the Kotlin version.
+The Gradle action fits them to the runner: it selects the image's newest Xcode, since the app uses the newest SDK's
+APIs and the image's default lags behind, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
+`main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the two jobs
+don't store the same entries twice.
 
 ## AI review
 

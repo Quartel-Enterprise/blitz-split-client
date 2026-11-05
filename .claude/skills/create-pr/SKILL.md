@@ -239,8 +239,9 @@ The `compileKotlin*` tasks compile the main code of every module for the iOS sim
 catches an `appleMain` or `jsMain` the change broke, and the `compileTestKotlin*` tasks compile
 `commonTest` with the Kotlin/Native and JS backends, which reject some code the JVM accepts (a
 backtick test name with characters they don't allow). macOS compiles the same `appleMain` as the
-simulator and is left out, unless the branch changes a `macosMain`: then add
-`:<module>:compileKotlinMacosArm64` for its module. `:androidApp:assembleDebug` compiles the Android
+simulator and is left out, unless the branch changes a module that has a `macosMain`
+(`core/in_app_update`): its actuals there implement the module's `expect` declarations, which a
+change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. `:androidApp:assembleDebug` compiles the Android
 target and the Compose UI that draws the ViewModels. None of them link a test binary or run a
 suite on another platform: `commonTest` already ran on the JVM, and CI runs it on the others.
 
@@ -475,7 +476,8 @@ When the command exits, or a PR event says the same:
     the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
     CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
     `js-tests`, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
-    `:android:<module>:lintDebug` for lint, the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
+    `:android:<module>:lintDebug` for lint, `:androidApp:assembleRelease` for the release APK (R8 runs
+only there), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
     again instead. Report it and stop, with the label still on, when it can't be reproduced, needs
     a product choice nobody wrote down yet, or the same check still fails after two fixes.
@@ -537,9 +539,11 @@ gh pr checks
   again; with no push, add the `run-checks` label, which re-runs the held checks (see
   [docs/ci.md](../../../docs/ci.md#the-review-gate)), then watch again. Right after the pull request
   opens, the review pushes its fix commit, so watch again if the head moved.
-- **It has none** ("no checks reported", e.g. before CI is set up): the checks of step 8 are the
-  only gate. Merge only if they ran and passed in this session for the commit being merged;
-  otherwise run them again first.
+- **It has none** ("no checks reported", e.g. before CI is set up): nothing runs the checks step 8
+  leaves to CI, so run them locally too, through `heavy-check.sh`: `jsTest`,
+  `iosSimulatorArm64Test` and `macosArm64Test`, `:androidApp:assembleRelease` and `lintDebug`, and
+  both Xcode schemes. Merge only if they and the step 8 checks ran and passed in this session for
+  the commit being merged; otherwise run them again first.
 
   ```bash
   gh pr merge --squash
