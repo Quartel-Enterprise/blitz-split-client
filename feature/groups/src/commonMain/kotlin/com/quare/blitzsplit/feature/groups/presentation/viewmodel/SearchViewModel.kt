@@ -78,6 +78,10 @@ class SearchViewModel(
 
             is SearchUiEvent.OnPersonClicked -> openInstead(groupRouteOf(event.groupId, GroupTab.MEMBERS))
 
+            is SearchUiEvent.OnContactClicked -> openInstead(Route.ContactProfile(event.personKey))
+
+            is SearchUiEvent.OnSuggestionClicked -> search { it.copy(query = event.suggestion) }
+
             is SearchUiEvent.OnBillClicked -> openInstead(
                 groupRouteOf(event.groupId, GroupTab.EXPENSES),
                 Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null),

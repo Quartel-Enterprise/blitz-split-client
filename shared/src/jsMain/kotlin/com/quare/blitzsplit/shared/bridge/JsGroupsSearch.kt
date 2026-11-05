@@ -4,6 +4,7 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchContactHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
@@ -21,6 +22,17 @@ class JsSearchGroupHit(
     val nameMatch: JsTextMatch?,
     val billDescription: String?,
     val billMatch: JsTextMatch?,
+)
+
+// Why: a person found once, opening their profile; personKey is PeopleBalances.keyOf.
+class JsSearchContactHit(
+    val personKey: String,
+    val name: String,
+    val nameMatch: JsTextMatch,
+    val initial: String,
+    val color: String,
+    val photoUrl: String?,
+    val groupCount: Int,
 )
 
 class JsSearchPersonHit(
@@ -61,7 +73,10 @@ class JsGroupsSearch(
     val hasQuery: Boolean,
     val showsResults: Boolean,
     val showsNoResults: Boolean,
+    // Why: "Did you mean “Larissa”?" above what only comes close, null while anything holds the text typed.
+    val suggestion: String?,
     val groups: Array<JsSearchGroupHit>,
+    val contacts: Array<JsSearchContactHit>,
     val people: Array<JsSearchPersonHit>,
     val bills: Array<JsSearchBillHit>,
 )
@@ -74,8 +89,12 @@ internal fun toJsGroupsSearch(search: GroupsSearch): JsGroupsSearch = JsGroupsSe
     hasQuery = search.hasQuery,
     showsResults = search.showsResults,
     showsNoResults = search.showsNoResults,
+    suggestion = search.results.suggestion?.takeIf { search.showsSuggestion },
     groups = search.results.groups
         .map(::toJsSearchGroupHit)
+        .toTypedArray(),
+    contacts = search.results.contacts
+        .map(::toJsSearchContactHit)
         .toTypedArray(),
     people = search.results.people
         .map(::toJsSearchPersonHit)
@@ -95,6 +114,16 @@ private fun toJsSearchGroupHit(hit: SearchGroupHit): JsSearchGroupHit = JsSearch
     nameMatch = hit.nameMatch?.let(::toJsTextMatch),
     billDescription = hit.billDescription,
     billMatch = hit.billMatch?.let(::toJsTextMatch),
+)
+
+private fun toJsSearchContactHit(hit: SearchContactHit): JsSearchContactHit = JsSearchContactHit(
+    personKey = hit.personKey,
+    name = hit.name,
+    nameMatch = toJsTextMatch(hit.nameMatch),
+    initial = hit.initial,
+    color = hit.color.code,
+    photoUrl = hit.photoUrl,
+    groupCount = hit.groupCount,
 )
 
 private fun toJsSearchPersonHit(hit: SearchPersonHit): JsSearchPersonHit = JsSearchPersonHit(

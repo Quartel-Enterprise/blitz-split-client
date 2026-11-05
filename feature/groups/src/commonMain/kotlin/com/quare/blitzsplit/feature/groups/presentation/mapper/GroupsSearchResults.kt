@@ -1,15 +1,17 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
-import com.quare.blitzsplit.feature.groups.presentation.model.GroupNameFilter
+import com.quare.blitzsplit.core.utils.TypoTolerantQuery
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResults
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchContactHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
@@ -30,8 +32,10 @@ internal fun GroupsSearch.findResultsIn(
 
 /*
  * Why: what "Buscar" finds among what Room holds on this device, folded here rather than with a LIKE, since SQLite
- * folds neither accents nor every case; the device holds a few hundred groups and bills at most. In "Tudo" a settled
- * group's bill comes as its group ("Quitado · despesa “Churros”"), as the design draws it; "Despesas" lists it too.
+ * folds neither accents nor every case, and typo tolerant (TypoTolerantQuery); the device holds a few hundred groups
+ * and bills at most. In "Tudo" a settled group's bill comes as its group ("Quitado · despesa “Churros”"), as the design
+ * draws it; "Despesas" lists it too. Only when nothing holds the text typed, what comes close a typo or two away, each
+ * section the closest first, then in its own order (Pierre's beta feedback: "Larisa" finds "Larissa").
  */
 internal fun searchResultsOf(
     groups: List<GroupWithMoney>,
@@ -39,8 +43,8 @@ internal fun searchResultsOf(
     query: String,
     scope: SearchScope,
 ): GroupsSearchResults {
-    val folded = GroupNameFilter.toFolded(query.trim())
-    if (folded.isEmpty()) return GroupsSearchResults.none
+    val typed = TypoTolerantQuery.of(query)
+    if (typed.isEmpty) return GroupsSearchResults.none
     val byId = groups.associateBy { it.group.id }
     // Why: the home's order, the most recent activity first, which the rows already have.
     val ordered = rows.mapNotNull { row -> byId[row.id]?.let { row to it } }
@@ -48,81 +52,189 @@ internal fun searchResultsOf(
     val billGroups = ordered
         .filter { (row, _) -> scope == SearchScope.BILLS || !row.isSettled }
         .map { (_, item) -> item }
+    val groupHits = if (scope.isLookingAt(SearchScope.GROUPS)) groupHitsOf(ordered, typed) else emptyList()
+    val personHits = if (scope.isLookingAt(SearchScope.PEOPLE)) personHitsOf(ordered, typed) else emptyList()
+    val billHits = if (scope.isLookingAt(SearchScope.BILLS)) billHitsOf(billGroups, typed) else emptyList()
+    val found: List<Searched<*>> = groupHits + personHits + billHits
+    // Why: what holds the text typed is what was looked for; only when nothing does, what comes close, under "Did you mean".
+    if (found.any { it.isExact }) {
+        val people = personHits.filter { it.isExact }
+        return GroupsSearchResults(
+            groups = groupHits.filter { it.isExact }.map { it.hit },
+            contacts = contactHitsOf(people, ordered),
+            people = people.map { it.hit.hit },
+            bills = billHits.filter { it.isExact }.map { it.hit },
+            suggestion = null,
+        )
+    }
+    val people = personHits.sortedBy { it.typos }
     return GroupsSearchResults(
-        groups = if (scope.isLookingAt(SearchScope.GROUPS)) groupHitsOf(ordered, folded) else emptyList(),
-        people = if (scope.isLookingAt(SearchScope.PEOPLE)) personHitsOf(ordered, folded) else emptyList(),
-        bills = if (scope.isLookingAt(SearchScope.BILLS)) billHitsOf(billGroups, folded) else emptyList(),
+        groups = groupHits.toClosestFirst(),
+        contacts = contactHitsOf(people, ordered),
+        people = people.map { it.hit.hit },
+        bills = billHits.toClosestFirst(),
+        suggestion = found.minByOrNull { it.typos }?.foundText,
     )
 }
 
 private fun SearchScope.isLookingAt(section: SearchScope): Boolean = this == SearchScope.ALL || this == section
 
+// Why: a hit with how close it came, and the name or description as written where it matched, for "Did you mean".
+private class Searched<T>(
+    val hit: T,
+    val typos: Int,
+    val foundText: String,
+) {
+    val isExact: Boolean
+        get() = typos == 0
+}
+
+private fun <T> searchedOf(
+    hit: T,
+    text: String,
+    found: TypoTolerantQuery.Found,
+): Searched<T> = Searched(
+    hit = hit,
+    typos = found.typos,
+    foundText = text.substring(found.start, found.end),
+)
+
+private fun TypoTolerantQuery.Found.toTextMatch(): TextMatch = TextMatch(
+    start = start,
+    end = end,
+)
+
+// Why: sortedBy is stable, so each section keeps its own order among hits as close.
+private fun <T> List<Searched<T>>.toClosestFirst(): List<T> = sortedBy { it.typos }.map { it.hit }
+
 private fun groupHitsOf(
     groups: List<Pair<GroupRow, GroupWithMoney>>,
-    foldedQuery: String,
-): List<SearchGroupHit> = groups.mapNotNull { (row, item) ->
-    val nameMatch = GroupNameFilter.findMatchOrNull(row.name, foldedQuery)
-    when {
-        nameMatch != null -> SearchGroupHit(
-            group = row,
-            nameMatch = nameMatch,
-            billDescription = null,
-            billMatch = null,
+    typed: TypoTolerantQuery,
+): List<Searched<SearchGroupHit>> = groups.mapNotNull { (row, item) ->
+    val byName = typed.findIn(row.name)?.let { found ->
+        searchedOf(
+            hit = SearchGroupHit(
+                group = row,
+                nameMatch = found.toTextMatch(),
+                billDescription = null,
+                billMatch = null,
+            ),
+            text = row.name,
+            found = found,
         )
-
-        row.isSettled ->
-            item.expenses
-                .sortedByDescending { it.spentAt }
-                .firstNotNullOfOrNull { expense ->
-                    GroupNameFilter.findMatchOrNull(expense.description, foldedQuery)?.let { match ->
-                        SearchGroupHit(
-                            group = row,
-                            nameMatch = null,
-                            billDescription = expense.description,
-                            billMatch = match,
-                        )
-                    }
-                }
-
-        else -> null
     }
+    // Why: a settled group also comes by a bill, when one holds the text typed closer than its name; the name on a tie.
+    val byBill = if (row.isSettled && byName?.isExact != true) closestBillHitOf(row, item, typed) else null
+    listOfNotNull(byName, byBill).minByOrNull { it.typos }
 }
+
+// Why: the settled group's bill closest to the text typed, the most recent of those as close.
+private fun closestBillHitOf(
+    row: GroupRow,
+    item: GroupWithMoney,
+    typed: TypoTolerantQuery,
+): Searched<SearchGroupHit>? = item.expenses
+    .sortedByDescending { it.spentAt }
+    .mapNotNull { expense -> typed.findIn(expense.description)?.let { expense to it } }
+    .minByOrNull { (_, found) -> found.typos }
+    ?.let { (expense, found) ->
+        searchedOf(
+            hit = SearchGroupHit(
+                group = row,
+                nameMatch = null,
+                billDescription = expense.description,
+                billMatch = found.toTextMatch(),
+            ),
+            text = expense.description,
+            found = found,
+        )
+    }
+
+// Why: each row with the person's key (PeopleBalances.keyOf), which gathers them once under contacts.
+private class PersonHit(
+    val hit: SearchPersonHit,
+    val personKey: String,
+)
 
 private fun personHitsOf(
     groups: List<Pair<GroupRow, GroupWithMoney>>,
-    foldedQuery: String,
-): List<SearchPersonHit> = groups.flatMap { (_, item) ->
+    typed: TypoTolerantQuery,
+): List<Searched<PersonHit>> = groups.flatMap { (_, item) ->
     val group = item.group
     group.members
         .filter { !it.isMe }
         .mapNotNull { member ->
-            GroupNameFilter.findMatchOrNull(member.name, foldedQuery)?.let { match ->
-                SearchPersonHit(
-                    memberId = member.id,
-                    name = member.name,
-                    nameMatch = match,
-                    initial = Initials.firstOf(member.name),
-                    color = member.avatarColor,
-                    photoUrl = member.photoUrl,
-                    groupId = group.id,
-                    groupName = group.name,
+            typed.findIn(member.name)?.let { found ->
+                searchedOf(
+                    hit = PersonHit(
+                        hit = SearchPersonHit(
+                            memberId = member.id,
+                            name = member.name,
+                            nameMatch = found.toTextMatch(),
+                            initial = Initials.firstOf(member.name),
+                            color = member.avatarColor,
+                            photoUrl = member.photoUrl,
+                            groupId = group.id,
+                            groupName = group.name,
+                        ),
+                        personKey = PeopleBalances.keyOf(member),
+                    ),
+                    text = member.name,
+                    found = found,
                 )
             }
         }
 }
 
+// Why: the person once, as their first row found them (the closest, people coming closest first), with their groups.
+private fun contactHitsOf(
+    people: List<Searched<PersonHit>>,
+    groups: List<Pair<GroupRow, GroupWithMoney>>,
+): List<SearchContactHit> {
+    if (people.isEmpty()) return emptyList()
+    val groupCounts = groupCountsOf(groups)
+    return people
+        .distinctBy { it.hit.personKey }
+        .map { row ->
+            val person = row.hit.hit
+            SearchContactHit(
+                personKey = row.hit.personKey,
+                name = person.name,
+                nameMatch = person.nameMatch,
+                initial = person.initial,
+                color = person.color,
+                photoUrl = person.photoUrl,
+                groupCount = groupCounts[row.hit.personKey] ?: 1,
+            )
+        }
+}
+
+// Why: the groups in common with each person, as their profile counts them, whatever name each group writes.
+private fun groupCountsOf(groups: List<Pair<GroupRow, GroupWithMoney>>): Map<String, Int> = groups
+    .flatMap { (_, item) ->
+        item.group.members
+            .filter { !it.isMe }
+            .map(PeopleBalances::keyOf)
+            .distinct()
+    }.groupingBy { it }
+    .eachCount()
+
 private fun billHitsOf(
     groups: List<GroupWithMoney>,
-    foldedQuery: String,
-): List<SearchBillHit> = groups
+    typed: TypoTolerantQuery,
+): List<Searched<SearchBillHit>> = groups
     .flatMap { item ->
         val payersOf = PayersOfGroup(item.group)
         item.expenses.mapNotNull { expense ->
-            GroupNameFilter.findMatchOrNull(expense.description, foldedQuery)?.let { match ->
-                billHitOf(item.group, expense, match, payersOf)
+            typed.findIn(expense.description)?.let { found ->
+                searchedOf(
+                    hit = billHitOf(item.group, expense, found.toTextMatch(), payersOf),
+                    text = expense.description,
+                    found = found,
+                )
             }
         }
-    }.sortedByDescending { it.spentAt }
+    }.sortedByDescending { it.hit.spentAt }
 
 // Why: the group's names and payer order, built once per group rather than once per bill found.
 internal class PayersOfGroup(

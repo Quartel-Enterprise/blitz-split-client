@@ -426,7 +426,11 @@ class GroupsViewModel(
                 detailPane.openGroup(event.groupId, GroupTab.MEMBERS)
             }
 
-            is SearchUiEvent.OnBillClicked -> openBill(event.groupId, event.expenseId)
+            is SearchUiEvent.OnContactClicked -> open(Route.ContactProfile(event.personKey))
+
+            is SearchUiEvent.OnSuggestionClicked -> search { it.copy(query = event.suggestion) }
+
+            is SearchUiEvent.OnBillClicked -> detailPane.openBill(event.groupId, event.expenseId)
 
             // Why: only while the search shows, so a late tap never closes what the groups opened since.
             is SearchUiEvent.OnHomeTabClicked -> if (uiState.value.search.isOpen) handleEvent(event.tab.toGroupsEvent())
@@ -467,16 +471,6 @@ class GroupsViewModel(
         search: GroupsSearch,
         rows: List<GroupRow>,
     ): GroupsSearch = search.findResultsIn(groupsWithMoney, rows)
-
-    // Why: as a group's Despesas opens it, over the group, which takes the place of the group beside the list.
-    private fun openBill(
-        groupId: String,
-        expenseId: String,
-    ) {
-        if (!isListShown()) return
-        detailPane.openGroup(groupId, GroupTab.EXPENSES)
-        navigator.navigate(Route.BillDetail(groupId, expenseId, focusCommentId = null))
-    }
 
     /*
      * Why: Saldos, Contatos and Atividade take Grupos' place above Início; from a screen the groups opened (iOS keeps

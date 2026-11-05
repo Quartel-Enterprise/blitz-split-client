@@ -55,8 +55,14 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     as the row.
   - The home's "Search" (5.2) looks in the groups, people (the members, never this device's user, once per group they
     are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
-    (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
-    found. It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
+    (`TypoTolerantQuery`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
+    found. It forgives typos (Pierre's beta feedback: "Larisa" finds "Larissa"): a text holding what was typed, or
+    each word typed starting one of its words in any order, is a match; only when nothing in the scope matches so, it
+    shows what comes close, every word typed starting a word of the text with one typo from 4 letters and two from 8
+    (a letter missing, extra, wrong or two swapped; none under 4 letters, where one typo finds half the names), the
+    closest first, under "Did you mean “Larissa”?" (the closest name or description as written), which a tap
+    searches instead (`SearchUiEvent.OnSuggestionClicked`); close matches never mix with exact ones, so "churros"
+    doesn't bring "Churrasco". It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
     since its bell, has none), and only shows once there is a group. It is an item of the navigation (Pierre's call),
     placed where each platform looks for it: iOS's search tab at the end of the tab bar on an iPhone, lying down
     too, and in an iPad's narrow window, a round button apart from the tabs' capsule on every tab (Pierre's call;
@@ -85,7 +91,11 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     result opens in its place, over the tab. "All", "Groups", "People" and "Expenses" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Settled up · expense “Churros”", as the design draws it), and "Expenses"
-    lists it too. A group opens the group, a person the Members of the group they were found in, a bill its Bill over the group. Results are always a list, even with the grid; nothing typed says where it
+    lists it too. A group opens the group, a bill its Bill over the group. People list each person once first ("Contact · 2 groups",
+    Balances' person key `PeopleBalances.keyOf`, so a guest's same name in two groups is one person), opening their
+    profile as Contacts does (`Route.ContactProfile`, `SearchUiEvent.OnContactClicked`; over Groups it opens over the
+    search, so back comes to it, but for the web's dialog, which closes first as for every result), then the same person once per group they are in ("Larissa · Nosso Lar"), opening
+    that group's Members (Pierre's beta feedback). Results are always a list, even with the grid; nothing typed says where it
     looks, nothing found says "Nothing for “pizza”". A phone lying down (Android and iPhone) puts the field and the
     scopes on the left (under a "Search" title on the iPhone, whose bar hides) and the results on the right. Closing
     forgets the text; leaving iOS's search tab also goes back

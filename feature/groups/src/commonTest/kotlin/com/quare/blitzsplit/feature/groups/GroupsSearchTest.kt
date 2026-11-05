@@ -969,6 +969,209 @@ class GroupsSearchTest {
             assertEquals("chur", viewModel.uiState.value.search.query)
         }
 
+    @Test
+    fun `GIVEN a name missing a letter WHEN searching in the groups THEN finds the person and suggests it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("Larisa")))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals(listOf("Larissa"), search.results.people.map { it.name })
+            assertEquals(listOf("name:larissa"), search.results.contacts.map { it.personKey })
+            assertEquals("Larissa", search.results.suggestion)
+            assertTrue(search.showsSuggestion)
+        }
+
+    @Test
+    fun `GIVEN a suggestion in the groups WHEN tapping it THEN searches it instead without a suggestion`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("Larisa")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnSuggestionClicked("Larissa")))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals("Larissa", search.query)
+            assertEquals(listOf("Larissa"), search.results.people.map { it.name })
+            assertNull(search.results.suggestion)
+            assertFalse(search.showsSuggestion)
+        }
+
+    @Test
+    fun `GIVEN a suggestion in the groups WHEN tapping it THEN tracks search_suggestion_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("Larisa")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnSuggestionClicked("Larissa")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "search_opened" to mapOf<String, Any>("source" to "groups"),
+                    "search_suggestion_clicked" to mapOf<String, Any>("source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search closed WHEN a late tap on a suggestion arrives THEN the search stays closed and empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("Larisa")))
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnClosed))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnSuggestionClicked("Larissa")))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertFalse(search.isOpen)
+            assertEquals("", search.query)
+            assertTrue(search.results.isEmpty)
+        }
+
+    @Test
+    fun `GIVEN a guest in two groups WHEN searching their name in the groups THEN finds one contact and both rows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            val contact = results.contacts.single()
+            assertEquals("name:carla", contact.personKey)
+            assertEquals("Carla", contact.name)
+            assertEquals(2, contact.groupCount)
+            assertEquals(listOf("aniversario", "ape"), results.people.map { it.groupId })
+        }
+
+    @Test
+    fun `GIVEN a contact found in the groups WHEN tapping it THEN their profile opens over the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnContactClicked("name:carla")))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.ContactProfile("name:carla")), navigator.backStack.value)
+            assertTrue(viewModel.uiState.value.search.isOpen)
+            assertEquals("carla", viewModel.uiState.value.search.query)
+        }
+
+    @Test
+    fun `GIVEN the pane beside the search WHEN tapping a contact THEN their profile opens over the group beside`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnContactClicked("name:carla")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("aniversario", joinedAs = null, GroupTab.MEMBERS),
+                    Route.ContactProfile("name:carla"),
+                ),
+                navigator.backStack.value,
+            )
+            assertTrue(viewModel.uiState.value.search.isOpen)
+        }
+
+    @Test
+    fun `GIVEN a bill already open from the search WHEN tapping a contact THEN nothing else opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked("churrasco", "carne")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnContactClicked("name:carla")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("churrasco", joinedAs = null, GroupTab.EXPENSES),
+                    Route.BillDetail("churrasco", "carne", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a contact found in the groups WHEN tapping it THEN tracks a contact result from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("carla")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnContactClicked("name:carla")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    "search_opened" to mapOf<String, Any>("source" to "groups"),
+                    "search_result_clicked" to mapOf<String, Any>("kind" to "contact", "source" to "groups"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN another group beside the search WHEN tapping a bill THEN its group takes the place under the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("mercado")))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnBillClicked("churrasco", "carne")))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("churrasco", joinedAs = null, GroupTab.EXPENSES),
+                    Route.BillDetail("churrasco", "carne", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
     private val churrasco = group(
         id = "churrasco",
         name = "Churrasco de sábado",
@@ -986,6 +1189,13 @@ class GroupsSearchTest {
         id = "ape",
         name = "Apê 302",
         names = listOf("Pierre", "Carla"),
+    )
+
+    // Why: no bill yet, so it comes last in the home's order.
+    private val viagem = group(
+        id = "viagem",
+        name = "Viagem a Paraty",
+        names = listOf("Pierre", "Larissa", "Bruno"),
     )
 
     private val storedBills = listOf(
@@ -1020,6 +1230,7 @@ class GroupsSearchTest {
         id: String,
         name: String,
         names: List<String>,
+        userIds: Map<String, String> = emptyMap(),
     ): Group = Group(
         id = id,
         name = name,
@@ -1035,7 +1246,7 @@ class GroupsSearchTest {
                 avatarColor = AvatarColor.PEACH,
                 isMe = index == 0,
                 hasJoined = false,
-                userId = null,
+                userId = userIds[memberName],
                 inviteCode = null,
                 photoUrl = null,
             )
