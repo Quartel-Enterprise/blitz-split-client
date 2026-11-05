@@ -57,11 +57,12 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 
 ## Consent
 
-Nothing is collected yet, in any build: whether the app asks first, or offers an opt-out in Profile, is Pierre's call,
-still open. Until then every platform keeps collection off, its events dropped by the SDK, and three switches turn
-it on once it is settled, for release builds only: `collectsAnalytics` in `androidApp/build.gradle.kts`, in
-`FirebaseSetup.swift` and in `webApp/src/analytics/firebaseAnalytics.ts`. The Play Data safety form and the App Store
-privacy labels need updating before a release that collects.
+Release builds collect on every platform, and debug builds never do. Whether the app asks first, or offers an opt-out
+in Profile, is still Pierre's call (#184), and nothing in the build enforces it: settle it, and update the Play Data
+safety form and the App Store privacy labels, before a build reaches testers (TestFlight, Play testing tracks) or the
+stores, and before the web app is served to the public (where it is also an EU cookie-consent question). Setting a
+platform's `collectsAnalytics` to `false` turns its collection off: in `androidApp/build.gradle.kts`, in
+`FirebaseSetup.swift` and in `webApp/src/analytics/firebaseAnalytics.ts`.
 
 ## What stays off until it is set up
 

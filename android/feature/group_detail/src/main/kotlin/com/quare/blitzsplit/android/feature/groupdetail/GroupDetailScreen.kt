@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,7 +12,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
-import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
@@ -33,7 +33,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 @Composable
 fun GroupDetailScreen(
     route: Route.GroupDetail,
-    membersTab: @Composable (SnackbarHostState) -> GroupTabBody,
+    membersTab: @Composable (SnackbarHostState) -> LazyListScope.() -> Unit,
     /*
      * Why: the tab picked, for the app: a tabletop lying down draws Saldos alone, full screen, where the other tabs
      * stay beside the list (6.2).

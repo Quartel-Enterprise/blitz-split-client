@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FabPosition
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
-import com.quare.blitzsplit.android.designsystem.component.GroupTabFloatingButton
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -25,10 +23,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 
-private val previewMembersTab = GroupTabBody(
-    listContent = {},
-    floatingButton = null,
-)
+private val previewMembersTab: LazyListScope.() -> Unit = {}
 
 /*
  * Why: the group's screen: its header, drawn once, over the tab picked, Despesas (the bills and payments by day),
@@ -38,7 +33,7 @@ private val previewMembersTab = GroupTabBody(
 fun GroupDetailContent(
     state: GroupDetailUiState,
     snackbarHostState: SnackbarHostState,
-    membersTab: GroupTabBody,
+    membersTab: LazyListScope.() -> Unit,
     onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -74,8 +69,14 @@ fun GroupDetailContent(
         onSearchClick = { onEvent(GroupDetailUiEvent.OnRailSearchClicked) },
         body = when (state.tab) {
             GroupTab.EXPENSES -> expensesTabOf(state, money, onAction, onEvent)
+
             GroupTab.BALANCES -> balancesTabOf(state, money, onAction, onEvent)
-            GroupTab.MEMBERS -> membersTab
+
+            // Why: Membros draws only its rows; "Rachar conta" floats over it as over the other tabs.
+            GroupTab.MEMBERS -> GroupTabBody(
+                listContent = membersTab,
+                floatingButton = splitBillButtonOf(state, onAction),
+            )
         },
         modifier = modifier,
     )
@@ -155,7 +156,6 @@ private fun splitBillButtonOf(
     return GroupTabFloatingButton(
         icon = splitBillIcon(),
         label = label,
-        position = FabPosition.End,
         onClick = { onAction(GroupAction.SPLIT_BILL) },
     )
 }

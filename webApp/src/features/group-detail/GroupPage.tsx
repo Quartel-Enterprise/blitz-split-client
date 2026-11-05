@@ -35,8 +35,8 @@ export interface GroupPageEvents extends GroupExitEvents {
 
 /**
  * The group's page around the tab picked, in the home's frame with the group selected among the open ones: the
- * breadcrumb, the group's name, total and faces (which pick Membros), "Estatísticas", "Convidar", the tab's main
- * button ("Rachar conta" or Membros' "Adicionar pessoa") and the ⋯ menu beside them, "Seu saldo neste grupo" and the
+ * breadcrumb, the group's name, total and faces (which pick Membros), "Estatísticas", "Convidar", "Rachar conta" (the
+ * main button on every tab, Membros included) and the ⋯ menu beside them, "Seu saldo neste grupo" and the
  * tabs. The phone has no frame: back, the name and the icons on top, the main button at the bottom.
  */
 export function GroupPage({
@@ -47,7 +47,6 @@ export function GroupPage({
   hasExpenses,
   isBalanceLoading,
   showsSplitBillButton,
-  onAddPerson,
   exit,
   events,
   onSelectTab,
@@ -62,8 +61,6 @@ export function GroupPage({
   // Why: "Seu saldo neste grupo" shimmers while a restored account's copy isn't whole, instead of hiding.
   isBalanceLoading: boolean
   showsSplitBillButton: boolean
-  // Why: Membros' "Adicionar pessoa", in the place the other tabs give "Rachar conta"; undefined on them.
-  onAddPerson?: () => void
   // Why: "Sair do grupo" and "Apagar grupo", which need the internet, their dialogs and "Grupo apagado".
   exit: JsGroupExit
   events: GroupPageEvents
@@ -77,11 +74,6 @@ export function GroupPage({
   const notJoined =
     header.notJoinedCount > 0
       ? t(header.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: header.notJoinedCount })
-      : null
-  const mainButton = showsSplitBillButton
-    ? { icon: <SplitBillIcon />, label: t('groupDetail_splitBill'), onClick: () => events.splitBill() }
-    : onAddPerson
-      ? { icon: <UserPlus />, label: t('members_add'), onClick: onAddPerson }
       : null
   const openHomeTab = useOpenHomeTab()
 
@@ -143,10 +135,10 @@ export function GroupPage({
                 <UserPlus />
                 {t('groupDetail_invite')}
               </Button>
-              {mainButton && (
-                <Button onClick={mainButton.onClick}>
-                  {mainButton.icon}
-                  {mainButton.label}
+              {showsSplitBillButton && (
+                <Button onClick={() => events.splitBill()}>
+                  <SplitBillIcon />
+                  {t('groupDetail_splitBill')}
                 </Button>
               )}
               <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} isOutlined />
@@ -169,11 +161,11 @@ export function GroupPage({
           {children}
         </main>
 
-        {mainButton && (
+        {showsSplitBillButton && (
           <div className="sticky bottom-0 border-t bg-card px-4 py-3 md:hidden">
-            <Button onClick={mainButton.onClick} className="h-11 w-full text-[15px]">
-              {mainButton.icon}
-              {mainButton.label}
+            <Button onClick={() => events.splitBill()} className="h-11 w-full text-[15px]">
+              <SplitBillIcon />
+              {t('groupDetail_splitBill')}
             </Button>
           </div>
         )}

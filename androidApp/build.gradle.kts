@@ -28,10 +28,10 @@ if (hasFirebaseConfig) {
 }
 
 /*
- * Firebase Analytics collects nothing yet, in any build: whether the app asks first is Pierre's call, still open
- * (docs/analytics/README.md#consent). Once it is settled, this turns collection on for release builds.
+ * Firebase Analytics collects in release builds, so the consent decision (#184) has to be settled before any build
+ * reaches testers or the stores (docs/analytics/README.md#consent).
  */
-val collectsAnalytics = false
+val collectsAnalytics = true
 
 android {
     namespace = "com.quare.blitzsplit"
