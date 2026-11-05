@@ -197,6 +197,8 @@ class GroupStatsViewModel(
 
             GroupStatsUiEvent.OnBiggestExpenseClicked -> openBiggestExpense()
 
+            is GroupStatsUiEvent.OnCategoryClicked -> openCategory(event.categoryId)
+
             is GroupStatsUiEvent.OnPersonClicked -> openPerson(event.memberId)
 
             GroupStatsUiEvent.OnSplitBillClicked -> open(
@@ -373,6 +375,21 @@ class GroupStatsViewModel(
                 groupId = route.groupId,
                 expenseId = expense.expenseId,
                 focusCommentId = null,
+            ),
+        )
+    }
+
+    // Why: the period shown, the whole history as null so new bills of the category join the list.
+    private fun openCategory(categoryId: String) {
+        val state = uiState.value
+        if (state.categories.none { it.category.id == categoryId }) return
+        val isWhole = state.period == StatsPeriod.ALL
+        open(
+            Route.CategoryExpenses(
+                groupId = route.groupId,
+                categoryId = categoryId,
+                periodStartMillis = state.periodStartMillis.takeUnless { isWhole },
+                periodEndMillis = state.periodEndMillis.takeUnless { isWhole },
             ),
         )
     }

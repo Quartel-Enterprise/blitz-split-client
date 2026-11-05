@@ -112,6 +112,30 @@ class HomePaneTest {
     }
 
     @Test
+    fun `GIVEN a category list over the Estatisticas WHEN reading the pane THEN keeps the group`() {
+        // Given
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail("trip", joinedAs = null, GroupTab.EXPENSES),
+            Route.GroupStats("trip"),
+            Route.CategoryExpenses(
+                "trip",
+                categoryId = "food",
+                periodStartMillis = null,
+                periodEndMillis = null,
+            ),
+        )
+
+        // When
+        val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
+        val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
+
+        // Then
+        assertEquals("trip", groupId)
+        assertTrue(showsOnlyPane)
+    }
+
+    @Test
     fun `GIVEN only the Estatisticas of a group above the groups WHEN reading the pane THEN is that group`() {
         // Given
         prepareScenario(Route.Groups, Route.GroupStats("trip"))

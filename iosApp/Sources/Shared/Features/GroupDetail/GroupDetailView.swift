@@ -333,7 +333,7 @@ private struct PaymentTag: View {
 
 /// "+R$ 600,00" in the positive green, "−R$ 118,00" in the negative color, zero muted; nothing when the bill leaves
 /// this person out.
-private struct MyBalanceText: View {
+struct MyBalanceText: View {
     let minor: Int64?
     let currency: GroupCurrency
 
@@ -366,6 +366,44 @@ private struct EmptyExpenses: View {
             // A list row only offers the buttons their ideal width: they keep the empty state's own
             .frame(minWidth: 260, maxWidth: 320)
         }
+    }
+}
+
+/// An entry of the day (the group's Expenses, a category's bills from the statistics): its icon, a title and a meta line (with the amber dot while queued), and its amounts.
+struct DayEntryLine<Amounts: View>: View {
+    let systemImage: String
+    /// A bill's category, drawn in place of the icon (6.1); nil for a payment.
+    var category: Shared.Category?
+    let title: String
+    let meta: String
+    let isPending: Bool
+    @ViewBuilder let amounts: Amounts
+
+    var body: some View {
+        HStack(spacing: 12) {
+            if let category {
+                CategoryBadge(category: category, size: 38)
+            } else {
+                ExpenseIcon(systemName: systemImage)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: title)
+                    .lineLimit(1)
+                HStack(spacing: 6) {
+                    if isPending { PendingDot() }
+                    Text(verbatim: meta)
+                        .lineLimit(1)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            VStack(alignment: .trailing, spacing: 2) {
+                amounts
+            }
+        }
+        .contentShape(.rect)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -421,50 +459,12 @@ private struct PhoneExpenseSections: View {
     }
 }
 
-/// An entry of the day: its icon, a title and a meta line (with the amber dot while queued), and its amounts.
-private struct PhoneDayRow<Amounts: View>: View {
-    let systemImage: String
-    /// A bill's category, drawn in place of the icon (6.1); nil for a payment.
-    var category: Shared.Category?
-    let title: String
-    let meta: String
-    let isPending: Bool
-    @ViewBuilder let amounts: Amounts
-
-    var body: some View {
-        HStack(spacing: 12) {
-            if let category {
-                CategoryBadge(category: category, size: 38)
-            } else {
-                ExpenseIcon(systemName: systemImage)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: title)
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    if isPending { PendingDot() }
-                    Text(verbatim: meta)
-                        .lineLimit(1)
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 8)
-            VStack(alignment: .trailing, spacing: 2) {
-                amounts
-            }
-        }
-        .contentShape(.rect)
-        .accessibilityElement(children: .combine)
-    }
-}
-
 private struct PhoneExpenseRow: View {
     let row: ExpenseRow
     let currency: GroupCurrency
 
     var body: some View {
-        PhoneDayRow(systemImage: "receipt", category: row.category, title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
+        DayEntryLine(systemImage: "receipt", category: row.category, title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
             Text(verbatim: currency.format(row.totalMinor))
                 .monospacedDigit()
             MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
@@ -479,7 +479,7 @@ private struct PhonePaymentRow: View {
     let currency: GroupCurrency
 
     var body: some View {
-        PhoneDayRow(
+        DayEntryLine(
             systemImage: "banknote",
             title: PaymentCopy.title(row),
             meta: PaymentCopy.meta(row),

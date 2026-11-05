@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryTarget
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
@@ -222,6 +223,15 @@ class GroupStatsPresenter(
 
     fun openPerson(memberId: String) {
         viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(memberId))
+    }
+
+    // Why: a main category of "By category"; target is "ring", "legend" or "row".
+    fun openCategory(
+        categoryId: String,
+        target: String,
+    ) {
+        val statsTarget = StatsCategoryTarget.entries.firstOrNull { it.name.lowercase() == target } ?: return
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(categoryId, statsTarget))
     }
 
     fun openBiggestExpense() {

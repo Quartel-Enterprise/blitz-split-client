@@ -120,7 +120,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
 
           {state.showsStats && (
             <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
-              <CategoriesCard state={state} money={money} className={cardClass} />
+              <CategoriesCard state={state} money={money} className={cardClass} onOpen={(id, target) => presenter.openCategory(id, target)} />
               <div className="flex min-w-0 flex-col gap-4 md:gap-5">
                 <OverTimeCard state={state} presenter={presenter} money={money} />
                 {state.biggestExpense && (

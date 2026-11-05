@@ -120,9 +120,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
     category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
     to 100), a bill without a category counted in Other and one of a deleted category in its parent or Other.
-    A slice picked by the mouse over it (a click keeps it), a tap (a second tap, or one in the hole, lets go) or its
-    legend line, which makes even a 2% slice easy to reach, pops out while the others fade, and the ring's middle
-    names it with its share instead of the largest category. The ring sweeps in when the period changes.
+    The slice the mouse is over, or its legend line hovered (focused, on the web), pops out while the others fade,
+    and the ring's middle names it with its share instead of the largest category. A tap or a click on a slice, a
+    legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens that
+    category's bills, "Expenses by category" (Pierre's beta feedback, `Route.CategoryExpenses`, below); a tap in the
+    hole does nothing. The ring sweeps in when the period changes.
     While a new device's first download still brings bills down it counts what came, as "Total spent so far"
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "By
@@ -133,6 +135,23 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and "By category" beside "By person" and "Settling up" in the bottom half, scrolling, without the grains' note nor
     "Biggest expense". The web from the tablet up and the Mac put "Over time" and "Biggest expense" in a second
     column, with four summary cards, "Settling up" under "By person".
+  - "Expenses by category" (`Route.CategoryExpenses`, `CategoryExpensesViewModel`), from a category of "By category":
+    a screen of its own over Statistics, back returning to them, rather than the group's Expenses filtered (whose
+    header, tabs and payments aren't about a category, and whose back would leave the statistics). Its subtitle is
+    the group and the period Statistics showed ("Viagem Floripa · October 2026"); "The whole trip" or "All time"
+    follows new bills, any other period stays those days. Chips list the period's main categories, the largest first
+    as "By category" does, the one tapped picked: a tap picks or lets go of more (several at once), "Clear" shows while
+    one is picked, and with none picked the list shows every bill of the period; a category picked with no bill left
+    stays as a picked chip, over "No expenses in these categories". A main category takes its subcategories' bills
+    (Food takes Restaurant and Market), and there are no subcategory chips: each line names its own subcategory in its
+    meta ("21:30 · Bruno paid · Restaurant"). Under the chips "R$ 610 · 4 expenses" adds up the bills shown, then the
+    bills by day as the group's Expenses draws them, never the payments, with no ⋮ (as the home's "Latest
+    expenses": a tap opens Bill, as from Expenses, where its options are). The chips are only this screen's: opening it
+    again starts from the category tapped. It lays out as Statistics: in the group's pane beside the groups on an
+    Android tablet and an iPad lying down, one column of up to 624 dp elsewhere on Android (a book's chips before the
+    hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the
+    breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up, with the group's
+    Expenses table.
   - Any member may edit or delete a bill. "Edit bill" is "Split a bill" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Anyone in the group can edit or delete it." and "Delete
     bill"; saving goes back to Bill. Members who left the group are dropped from the edited split, but a payer who

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { JsGroupStatsState, JsStatsCategory } from 'blitzsplit-shared'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
@@ -13,27 +14,32 @@ const gap = 2
 
 /**
  * "Por categoria" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
- * legend with the percentages, then each main category with its bar and its subcategories. A slice picked by the mouse
- * over it, a tap, or its legend line pops out, the others fade, and the center names it with its share; the ring
- * sweeps in again when the period changes.
+ * legend with the percentages, then each main category with its bar and its subcategories. The slice the mouse is over
+ * (or its legend line, hovered or focused) pops out, the others fade, and the center names it with its share; a click
+ * or a tap on a slice, a legend line or a row opens the category's bills ("Expenses by category"). The ring sweeps in
+ * again when the period changes.
  */
-export function CategoriesCard({ state, money, className }: { state: JsGroupStatsState; money: (minor: number) => string; className: string }) {
+export function CategoriesCard({
+  state,
+  money,
+  className,
+  onOpen,
+}: {
+  state: JsGroupStatsState
+  money: (minor: number) => string
+  className: string
+  // Why: the main category clicked and what of the card it was: "ring", "legend" or "row".
+  onOpen: (categoryId: string, target: string) => void
+}) {
   const rows = state.categories
   const ringKey = `${state.periodStartMillis}-${state.periodEndMillis}-${rows.map((row) => `${row.category.id}:${row.percent}`).join(',')}`
   const [selected, setSelected] = useState<number | null>(null)
   const isSwept = useReplay(ringKey)
-  // Why: what pressed last, since a click keeps what hovering picked while a tap of a finger picks or lets go.
-  const lastPointer = useRef('mouse')
 
   useEffect(() => setSelected(null), [ringKey])
 
   if (rows.length === 0) return null
   const top = (selected !== null ? rows[selected] : undefined) ?? rows[0]
-  const notePointer = (event: PointerEvent) => {
-    lastPointer.current = event.pointerType
-  }
-  const toggle = (index: number) =>
-    setSelected((current) => (current === index && lastPointer.current !== 'mouse' ? null : index))
   const description = t('groupStats_categoryPie', { parts: rows.map((row) => `${categoryName(row.category)} ${row.percent}%`).join(', ') })
   return (
     <section aria-labelledby="statsCategories" className={className}>
@@ -51,10 +57,6 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
             onPointerMove={(event) => {
               // Why: the mouse in the hole lets go, as on Android and Apple; a slice under it is the event's target.
               if (event.pointerType === 'mouse' && event.target === event.currentTarget) setSelected(null)
-            }}
-            onClick={(event) => {
-              // Why: a tap in the hole lets go, as on Android and Apple.
-              if (event.target === event.currentTarget) setSelected(null)
             }}
           >
             {slicesOf(rows).map(({ row, offset, length }, index) => (
@@ -76,8 +78,7 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
                 onPointerEnter={(event) => {
                   if (event.pointerType === 'mouse') setSelected(index)
                 }}
-                onPointerDown={notePointer}
-                onClick={() => toggle(index)}
+                onClick={() => onOpen(row.category.id, 'ring')}
               />
             ))}
           </svg>
@@ -91,12 +92,10 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
             <li key={row.category.id} className="flex min-w-0">
               <button
                 type="button"
-                aria-pressed={selected === index}
-                onPointerDown={notePointer}
-                onKeyDown={() => {
-                  lastPointer.current = 'keyboard'
-                }}
-                onClick={() => toggle(index)}
+                aria-label={t('groupStats_categoryOpen', { name: categoryName(row.category), percent: row.percent })}
+                onClick={() => onOpen(row.category.id, 'legend')}
+                onFocus={() => setSelected(index)}
+                onBlur={() => setSelected(null)}
                 onPointerEnter={(event) => {
                   if (event.pointerType === 'mouse') setSelected(index)
                 }}
@@ -118,17 +117,23 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
       </div>
       <ul className="flex flex-col gap-3">
         {rows.map((row) => (
-          <CategoryLine key={row.category.id} row={row} money={money} />
+          <CategoryLine key={row.category.id} row={row} money={money} onOpen={() => onOpen(row.category.id, 'row')} />
         ))}
       </ul>
     </section>
   )
 }
 
-function CategoryLine({ row, money }: { row: JsStatsCategory; money: (minor: number) => string }) {
+// Why: a main category's row, a button that opens its bills, its chevron saying so.
+function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (minor: number) => string; onOpen: () => void }) {
   const name = categoryName(row.category)
   return (
-    <li className="flex items-start gap-3">
+    <li className="flex">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="-m-2 flex min-w-0 flex-1 items-start gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
+      >
       <CategoryBadge category={row.category} />
       <span className="flex min-w-0 flex-1 flex-col gap-1.5">
         <span className="flex items-baseline gap-2">
@@ -144,6 +149,8 @@ function CategoryLine({ row, money }: { row: JsStatsCategory; money: (minor: num
           </span>
         )}
       </span>
+      <ChevronRight aria-hidden className="size-4 shrink-0 self-center text-muted-foreground" />
+      </button>
     </li>
   )
 }

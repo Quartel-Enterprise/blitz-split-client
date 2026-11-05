@@ -275,12 +275,14 @@ struct MainTabView: View {
         switch path.last {
         case let .groupDetail(route): route.groupId
         case let .groupStats(route): route.groupId
+        case let .categoryExpenses(route): route.groupId
         default: nil
         }
     }
     #endif
 
-    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics, how
+    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics (and a
+    /// category's bills they open), how
     /// simplifying debts works, a bill, an invite
     /// opened from its link, a group's invite with an iPad's room, the profile, its editor, its category map and, on
     /// iPhone, a key.
@@ -297,6 +299,7 @@ struct MainTabView: View {
         case let .groupDetail(route): GroupDetailView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
+        case let .categoryExpenses(route): CategoryExpensesView(route: route)
         // "How it works" of Simplify debts, from the group's Balances; the Mac opens it as a sheet
         case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)

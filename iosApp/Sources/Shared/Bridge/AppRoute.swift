@@ -47,6 +47,9 @@ enum AppRoute: Hashable, Identifiable {
     case simplifyDebtsInfo(RouteSimplifyDebtsInfo)
     /// The group's statistics; holds the Kotlin route itself, which its ViewModel reads the group from.
     case groupStats(RouteGroupStats)
+    /// A category's bills, from the statistics; holds the Kotlin route itself, which its ViewModel reads the group,
+    /// the category and the period from.
+    case categoryExpenses(RouteCategoryExpenses)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
     case joinInvite(RouteJoinInvite)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
@@ -98,6 +101,7 @@ enum AppRoute: Hashable, Identifiable {
         case let defaultSplit as RouteDefaultSplit: self = .defaultSplit(defaultSplit)
         case let simplifyDebtsInfo as RouteSimplifyDebtsInfo: self = .simplifyDebtsInfo(simplifyDebtsInfo)
         case let groupStats as RouteGroupStats: self = .groupStats(groupStats)
+        case let categoryExpenses as RouteCategoryExpenses: self = .categoryExpenses(categoryExpenses)
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
         case let joinWithLink as RouteJoinWithLink: self = .joinWithLink(joinWithLink)

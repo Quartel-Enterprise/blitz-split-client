@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
 import com.quare.blitzsplit.android.feature.groups.SearchScreen
+import com.quare.blitzsplit.android.feature.groupstats.CategoryExpensesScreen
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
@@ -345,6 +346,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
              */
             entry<Route.GroupStats>(metadata = groupStatsMetadata) { route ->
                 InGroupPane { GroupStatsScreen(route) }
+            }
+            // Why: a category's bills, from the statistics, in the same place as them (the group's pane beside the groups).
+            entry<Route.CategoryExpenses>(metadata = groupStatsMetadata) { route ->
+                InGroupPane { CategoryExpensesScreen(route) }
             }
             // Why: a sheet over the group on a phone, a dialog wider (a book's right half), full screen on a tabletop.
             entry<Route.RegisterPayment>(metadata = formPresentationMetadata) { route ->
