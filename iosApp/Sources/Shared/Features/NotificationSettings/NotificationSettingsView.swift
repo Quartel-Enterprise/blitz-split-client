@@ -214,6 +214,7 @@ private struct PermissionDeniedNotice: View {
                 #endif
             }
             .buttonStyle(.glassProminent)
+            .prominentLabel()
             #if os(iOS)
             .controlSize(.large)
             #endif

@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
@@ -400,7 +401,7 @@ private fun IdentityCard(
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (state.showsProfilePending) {
-                        MaterialTheme.colorScheme.tertiary
+                        pendingColor()
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },

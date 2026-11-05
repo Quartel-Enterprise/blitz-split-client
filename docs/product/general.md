@@ -28,7 +28,20 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the wallpaper's by
     Dynamic colors. Zero stays muted, debts between two others keep their color, and a status that adds up
     ("Adds up") stays the accent. No preference inverts them: the sign and the words already say which way the money
-    goes.
+    goes. With Android's Dynamic colors on, what you owe takes the wallpaper scheme's red for now
+    ([#179](https://github.com/Quartel-Enterprise/blitz-split-client/issues/179) decides it).
+  - What is saved here and not on the server yet (the queue's dot, "queued", "Waiting to send", a profile change
+    not up yet) is amber (chosen in the contrast audit, for Pierre to confirm), `#7C5800` light and `#F9BC3E` dark,
+    with `#FFDEA8` / `#5E4200` behind a badge or a notice, and `#F9BC3E` in both themes on what stays dark (the
+    attachment viewer, Apple's badge over a photo; Android's badge over a photo sits on the inverse surface, so it
+    takes the other theme's amber, and the web's is a badge on the amber container): never the orange of what you
+    owe (the system's orange matched it in dark mode), and outside the scheme like the green (Android's
+    `pendingColor()`, Apple's `Palette.pending`, the web's `--pending`).
+  - Every text reads at 4.5:1 or more on what is behind it, and a dot, an icon or a field's edge that carries meaning
+    at 3:1 (WCAG AA), in light and dark. A filled button's label takes the color made for its fill: on the dark accent
+    `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets
+    `.prominentLabel()`, which a build phase checks), and on the dark negative `#FFB599` it is `#552108`. Android's
+    scheme sets every Material role, the fixed ones included, so none falls back to Material's baseline purple.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Currency (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

@@ -1,7 +1,7 @@
 import { Camera, ChevronDown, ChevronRight, CircleAlert, ImageIcon, Loader2, Lock } from 'lucide-react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { AvatarColorPicker } from '@/components/common'
+import { AvatarColorPicker, PendingDot } from '@/components/common'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
@@ -273,9 +273,9 @@ function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter;
           <Label htmlFor={simplifyId}>{t('simplify_title')}</Label>
           <span
             id={simplifyStatusId}
-            className={cn('flex items-center gap-1.5 text-[13px] leading-[18px]', isPending ? 'text-amber-800 dark:text-amber-300' : 'text-muted-foreground')}
+            className={cn('flex items-center gap-1.5 text-[13px] leading-[18px]', isPending ? 'text-pending' : 'text-muted-foreground')}
           >
-            {isPending && <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-orange-500" />}
+            {isPending && <PendingDot />}
             {simplifyStatusText(state)}
           </span>
           <Button type="button" variant="link" size="sm" className="h-auto self-start p-0 text-[13px]" onClick={() => presenter.openSimplifyDebtsInfo()}>

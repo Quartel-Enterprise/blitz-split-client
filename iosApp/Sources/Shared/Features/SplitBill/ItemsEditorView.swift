@@ -81,6 +81,7 @@ private struct ItemsStatusView: View {
                     .disabled(!items.canSplitDifference)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel(Palette.onNegative)
                 .tint(Palette.negative)
                 #if os(macOS)
                 .controlSize(.small)
@@ -96,10 +97,7 @@ private struct ItemsStatusView: View {
 private struct ItemsOfflineNote: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Circle()
-                .fill(.orange)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             #if os(macOS)
             Text("No internet: you can still check everything. The bill stays saved on this Mac and syncs when you reconnect.")
                 .fixedSize(horizontal: false, vertical: true)
@@ -524,6 +522,7 @@ struct PhoneItemsEditor: View {
                     model.send(SplitBillUiEventOnItemsDone.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(model.state.itemsEditor?.addsUp != true)
             }
         }
@@ -652,6 +651,7 @@ struct PhoneItemEditor: View {
                     model.send(SplitBillUiEventOnItemDone.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(model.state.itemEditor?.canSave != true)
             }
         }
@@ -784,6 +784,7 @@ struct MacItemsEditor: View {
                         model.send(SplitBillUiEventOnItemsDone.shared)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .keyboardShortcut(.defaultAction)
                     .disabled(!items.addsUp)
                 }
@@ -924,6 +925,7 @@ struct MacItemEditor: View {
                         model.send(SplitBillUiEventOnItemDone.shared)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .keyboardShortcut(.defaultAction)
                     .disabled(!editor.canSave)
                 }

@@ -89,6 +89,7 @@ struct EditProfileView: View {
                         model.send(EditProfileUiEventOnSaveClicked.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .disabled(!model.state.canSave)
                 }
             } else {
@@ -220,6 +221,7 @@ private struct EditProfileNameSections: View {
                     Button("Cancel") { model.send(EditProfileUiEventOnDiscardClicked.shared) }
                     Button("Save") { model.send(EditProfileUiEventOnSaveClicked.shared) }
                         .buttonStyle(.glassProminent)
+                        .prominentLabel()
                         .disabled(!state.canSave)
                 }
             }

@@ -245,3 +245,11 @@ export function GroupTabs({ selected, onSelect, className }: { selected: GroupTa
     </nav>
   )
 }
+
+/** The amber dot of what is saved here and not on the server yet; a caller adds its size or spacing. */
+export function PendingDot({ className }: { className?: string }) {
+  return <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full bg-pending', className)} />
+}
+
+/** A badge or a notice of what is queued: the amber container and its text, with a faint amber edge. */
+export const pendingSurfaceClass = 'border-pending/30 bg-pending-container text-pending-container-foreground'

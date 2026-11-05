@@ -482,6 +482,7 @@ private struct PersonActions: View {
                 model.send(GlobalBalancesUiEventOnSettleClicked(personId: row.id))
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
             .buttonBorderShape(.capsule)
             .accessibilityLabel(Text("Settle up with \(name)"))
         }
@@ -909,6 +910,7 @@ private struct ChargeSheet: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
         }
         .controlSize(.large)
         .buttonBorderShape(.capsule)

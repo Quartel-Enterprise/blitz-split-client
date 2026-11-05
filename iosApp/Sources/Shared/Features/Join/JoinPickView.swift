@@ -181,7 +181,7 @@ private struct TakenNotice: View {
             }
         } icon: {
             Image(systemName: "exclamationmark.circle.fill")
-                .foregroundStyle(.orange)
+                .foregroundStyle(Palette.negative)
         }
     }
 }
@@ -295,7 +295,7 @@ private struct NewMemberSheet: View {
                             .textCase(nil)
                     } footer: {
                         Text("At least 2 letters, and not a name already in the group.")
-                            .foregroundStyle(draft.isNameTaken ? .red : .secondary)
+                            .foregroundStyle(draft.isNameTaken ? Palette.negative : .secondary)
                     }
                 }
                 .navigationTitle("Join with another name")

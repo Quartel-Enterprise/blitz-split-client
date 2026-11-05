@@ -82,6 +82,7 @@ struct MembersSections: View {
                         model.send(MembersUiEventOnShareClicked.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .buttonBorderShape(.capsule)
                     .invitePopover(host: host)
                 }
@@ -371,7 +372,7 @@ private struct MemberNameSheet: View {
                     if let takenName = editor.takenName {
                         Section {
                             Text("\(takenName) is already in the group. Use a nickname to tell them apart.")
-                                .foregroundStyle(.red)
+                                .foregroundStyle(Palette.negative)
                             ForEach(editor.nicknameSuggestions, id: \.self) { suggestion in
                                 Button("Use “\(suggestion)”") {
                                     model.send(MembersUiEventOnSuggestionClicked(name: suggestion))
@@ -500,6 +501,7 @@ private struct PhonePersonalInvite: View {
                             .frame(maxWidth: .infinity, minHeight: 36)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
                 }
@@ -575,6 +577,7 @@ private struct MacPersonalInvite: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .accessibilityAddTraits(.updatesFrequently)
             }

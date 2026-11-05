@@ -96,8 +96,7 @@ struct MacCategoryMapSettings: View {
                     HStack(spacing: 6) {
                         Text(verbatim: item.term.term)
                         if item.term.isPending {
-                            Circle().fill(.orange).frame(width: 7, height: 7)
-                                .accessibilityLabel("queued")
+                            PendingDot(size: 7, label: Text("queued"))
                         }
                     }
                 }

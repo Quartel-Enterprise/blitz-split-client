@@ -21,7 +21,7 @@ data class GroupRow(
     val memberCount: Int,
     // Why: macOS's Membros column, "6 · Pierre, Ana, Bruno e mais 3": the first three names, in the group's order.
     val memberNames: List<String>,
-    // Why: the orange dot and "na fila": the group, a bill or a payment changed here and not on the server yet.
+    // Why: the amber dot and "na fila": the group, a bill or a payment changed here and not on the server yet.
     val isPending: Boolean,
     // Why: "na fila · Mercado", the latest bill waiting to go up; null when only the group, a payment or a deletion waits.
     val pendingBillDescription: String?,

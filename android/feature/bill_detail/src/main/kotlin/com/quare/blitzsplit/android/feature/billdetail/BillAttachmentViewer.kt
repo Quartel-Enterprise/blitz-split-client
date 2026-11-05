@@ -55,6 +55,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -63,6 +64,7 @@ import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.theme.pendingOnBlackColor
 import com.quare.blitzsplit.android.platform.GalleryPhotoSource
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
@@ -371,7 +373,7 @@ private fun ViewerFooter(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                PendingIndicator()
+                PendingIndicator(color = pendingOnBlackColor)
                 Text(
                     text = stringResource(R.string.bill_detail_comment_pending),
                     color = viewerContent.copy(alpha = SECONDARY_TEXT_ALPHA),

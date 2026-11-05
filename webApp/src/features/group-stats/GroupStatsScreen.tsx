@@ -2,7 +2,7 @@ import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, L
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PersonButton, segmentClass } from '@/components/common'
+import { Avatar, PendingDot, PersonButton, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
 import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
@@ -137,7 +137,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                       <span className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate font-medium">{state.biggestExpense.description}</span>
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          {state.biggestExpense.isPending && <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />}
+                          {state.biggestExpense.isPending && <PendingDot />}
                           {paidByText(formatDayTime(state.biggestExpense.spentAt, 'other'), state.biggestExpense.payers)}
                         </span>
                       </span>
@@ -320,7 +320,7 @@ function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (mino
           <span className="text-[13px] font-medium text-muted-foreground">{card.label}</span>
           <strong className="text-xl leading-tight font-bold tracking-tight whitespace-nowrap tabular-nums md:text-2xl">{card.value}</strong>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            {card.isPending && <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-orange-500" />}
+            {card.isPending && <PendingDot />}
             <span className="truncate">{card.hint}</span>
           </span>
         </section>

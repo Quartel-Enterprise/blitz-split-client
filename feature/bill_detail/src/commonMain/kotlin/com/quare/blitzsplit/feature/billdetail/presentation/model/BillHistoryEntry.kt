@@ -27,7 +27,7 @@ data class BillHistoryEntry(
     val isReceipt: Boolean,
     // Why: who LINK_CHANGED opened the link to; null once it was turned off.
     val linkVisibility: BillLinkVisibility?,
-    // Why: done on this device and not up yet: the orange dot.
+    // Why: done on this device and not up yet: the amber dot.
     val isPending: Boolean,
     // Why: "Desfazer", only on the latest edit while the bill is still as it left it.
     val canUndo: Boolean,

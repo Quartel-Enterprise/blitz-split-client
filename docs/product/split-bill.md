@@ -113,7 +113,7 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     categories stay as they are.
     "Search terms" finds words starting with what is typed, accents ignored ("2 terms with “uber”"), else offers
     "Add “pizzeria”"; an empty map offers Add term and Restore default; offline with changes queued it
-    says "Offline · 2 changes queued" and each queued term has the orange dot. It opens from Profile ›
+    says "Offline · 2 changes queued" and each queued term has the amber dot. It opens from Profile ›
     Preferences › Category map (Settings › Categories on the Mac, ⌘,) and from Category (9.0). A phone shows
     one card per main category with its terms by subcategory; lying down, a tablet lying down (in 920 dp), a book
     (split on the hinge), an iPad lying down, an iPhone Duo open and the web from 768 px list the categories beside

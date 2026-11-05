@@ -76,6 +76,10 @@ targetTemplates:
         basedOnDependencyAnalysis: false
         script: |
           /usr/bin/python3 -I "$SRCROOT/check-localized-keys.py" "$OBJECT_FILE_DIR_normal"
+      - name: Check the prominent labels
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-prominent-labels.py" "$SRCROOT/Sources"
     # The last phase, as Crashlytics asks: a release build with the Firebase config uploads its dSYM, which holds
     # the Shared framework's symbols too, since it is linked in
     postBuildScripts:

@@ -7,7 +7,7 @@ data class MapTerm(
     val categoryId: String,
     // Why: one of the 60 the app comes with: "Termo do app. Restaurar padrão traz de volta como veio."
     val isAppTerm: Boolean,
-    // Why: changed on this device and not up on the server yet, the orange dot.
+    // Why: changed on this device and not up on the server yet, the amber dot.
     val isPending: Boolean,
 ) {
     val asTerm: CategoryTerm

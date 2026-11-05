@@ -125,7 +125,7 @@ private struct EraseProfileSheet: View {
                 Section {
                     if state.hasPendingChanges {
                         Text("\(Int(state.pendingChangeCount)) changes haven't uploaded yet and will be lost.")
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Palette.negative)
                     }
                     if let code = state.formattedRecoveryCode {
                         Text("You use it without an account. When you leave, your profile and your data are gone from this \(DeviceName.current). To come back, you need the recovery code.")
@@ -170,7 +170,7 @@ private struct EraseProfileSheet: View {
                     .disabled(!state.canErase)
                 } footer: {
                     if state.hasSignOutFailed {
-                        Text("Couldn't sign out. Try again.").foregroundStyle(.red)
+                        Text("Couldn't sign out. Try again.").foregroundStyle(Palette.negative)
                     }
                 }
             }

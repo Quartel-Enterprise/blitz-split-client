@@ -55,12 +55,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.theme.pendingOnInverseSurfaceColor
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
@@ -241,7 +243,12 @@ private fun BoxScope.TileBadge(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (isPending) PendingIndicator(modifier = Modifier.size(6.dp))
+        if (isPending) {
+            PendingIndicator(
+                size = 6.dp,
+                color = pendingOnInverseSurfaceColor(),
+            )
+        }
         Text(
             text = text,
             fontSize = 11.sp,

@@ -3,7 +3,7 @@ import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRo
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PersonButton } from '@/components/common'
+import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
@@ -137,7 +137,7 @@ function StatusChip({ presenter, state }: { presenter: ActivityPresenter; state:
         role="status"
         className={cn(
           'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
-          hasQueue ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300' : state.status === 'server-error' ? 'text-foreground' : 'text-muted-foreground',
+          hasQueue ? pendingSurfaceClass : state.status === 'server-error' ? 'text-foreground' : 'text-muted-foreground',
         )}
       >
         {icon}
@@ -303,7 +303,7 @@ function HeadlineLine({ item, isBold = item.isUnread, className }: { item: JsAct
   )
 }
 
-/** The group's shape and name, then the time, or the orange dot with "Aguardando envio" while it waits to go up. */
+/** The group's shape and name, then the time, or the amber dot with "Aguardando envio" while it waits to go up. */
 function ItemMeta({ item }: { item: JsActivityItem }) {
   return (
     <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
@@ -312,7 +312,7 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
       <span aria-hidden>·</span>
       {item.isPending ? (
         <>
-          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-amber-600" />
+          <PendingDot />
           <span className="shrink-0">{t('activity_pending')}</span>
         </>
       ) : (

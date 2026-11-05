@@ -111,6 +111,7 @@ private struct DefaultKeyCard: View {
                     .frame(maxWidth: .infinity, minHeight: 32)
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
         }
         .padding(16)
         .background(Palette.card, in: .rect(cornerRadius: 20))
@@ -205,10 +206,7 @@ private struct PayNotes: View {
             Text(verbatim: PayWithKeyCopy.note(state))
             if state.showsOfflineNotice {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Circle()
-                        .fill(.orange)
-                        .frame(width: 8, height: 8)
-                        .accessibilityHidden(true)
+                    PendingDot()
                     Text("No internet: it's saved on this device and syncs when you reconnect.")
                 }
             }
@@ -366,6 +364,7 @@ struct MacPayWithKey: View {
                 .disabled(state.isSaving)
                 Button("Mark as paid", action: model.markAsPaid)
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .keyboardShortcut(.defaultAction)
                     .disabled(!state.canMarkAsPaid)
             }

@@ -365,6 +365,7 @@ struct PhoneSplitEditor: View {
                     model.send(SplitBillUiEventOnSplitDone.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(model.state.splitEditor?.addsUp != true)
             }
         }
@@ -511,6 +512,7 @@ struct MacSplitEditor: View {
                         model.send(SplitBillUiEventOnSplitDone.shared)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .keyboardShortcut(.defaultAction)
                     .disabled(!editor.addsUp)
                 }

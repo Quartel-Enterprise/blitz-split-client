@@ -286,14 +286,11 @@ private struct PayerLine: View {
     }
 }
 
-/// "Queued · syncs when you're back online", with the orange dot of what is still queued.
+/// "Queued · syncs when you're back online", with the amber dot of what is still queued.
 private struct PendingLine: View {
     var body: some View {
         HStack(spacing: 8) {
-            Circle()
-                .fill(.orange)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            PendingDot()
             Text("Queued · syncs when you're back online")
         }
     }

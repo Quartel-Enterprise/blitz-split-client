@@ -307,12 +307,14 @@ private struct InviteNotesAndButtons: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                 } else {
                     Button {} label: {
                         Label("Share", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .disabled(true)
                 }
             }

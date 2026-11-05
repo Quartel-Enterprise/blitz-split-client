@@ -357,8 +357,10 @@ struct BalanceCard: View {
                     .fontWeight(.semibold)
                     #if os(iOS)
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     #else
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     #endif
                     .buttonBorderShape(.capsule)
             }

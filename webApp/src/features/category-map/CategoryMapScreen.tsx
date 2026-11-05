@@ -26,6 +26,7 @@ import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { CategoryFormDialog } from './CategoryFormDialog'
 import { TermDialog } from './TermDialog'
+import { PendingDot } from '@/components/common'
 
 /** "7 termos", "Nenhum termo · categoria do Viagem Floripa". */
 export function sectionCount(section: JsMapSection): string {
@@ -294,7 +295,7 @@ function SectionCard({
                 >
                   <Badge variant="outline" className="h-8 gap-1.5 px-3 text-sm font-medium">
                     {term.term}
-                    {term.isPending && <span aria-hidden className="size-2 rounded-full bg-amber-600" />}
+                    {term.isPending && <PendingDot className="size-2" />}
                   </Badge>
                 </button>
               ))}

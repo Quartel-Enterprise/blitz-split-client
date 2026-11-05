@@ -287,10 +287,7 @@ private struct PaymentNotes: View {
             }
             if state.showsOfflineNotice {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Circle()
-                        .fill(.orange)
-                        .frame(width: 8, height: 8)
-                        .accessibilityHidden(true)
+                    PendingDot()
                     Text("No internet: it's saved on this device and syncs when you reconnect.")
                 }
             }
@@ -386,6 +383,7 @@ private struct PhoneRegisterPayment: View {
                             confirm()
                         }
                         .buttonStyle(.glassProminent)
+                        .prominentLabel()
                         .disabled(!state.canConfirm)
                     }
                 }
@@ -546,6 +544,7 @@ private struct MacRegisterPayment: View {
                     model.send(RegisterPaymentUiEventOnConfirmClicked.shared)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canConfirm)
             }

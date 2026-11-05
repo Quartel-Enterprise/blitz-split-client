@@ -264,7 +264,7 @@ private struct GroupListRow: View {
                 HStack(spacing: 6) {
                     MemberFaces(group: group)
                     if group.isPending {
-                        PendingIndicator()
+                        PendingDot()
                     }
                     Text(verbatim: GroupsCopy.detail(group))
                         .lineLimit(1)
@@ -304,16 +304,6 @@ private struct GroupListRow: View {
     }
 }
 #endif
-
-/// The orange dot of a group with a change waiting to go up ("na fila"), on its row and its card.
-struct PendingIndicator: View {
-    var body: some View {
-        Circle()
-            .fill(.orange)
-            .frame(width: 8, height: 8)
-            .accessibilityHidden(true)
-    }
-}
 
 /// "Offline · 1 change queued", "Syncing…", or "No response from the server" with "Try again".
 struct SyncStatusRow: View {

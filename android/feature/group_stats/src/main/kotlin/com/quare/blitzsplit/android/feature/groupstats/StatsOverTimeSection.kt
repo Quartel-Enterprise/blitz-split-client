@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
@@ -37,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -271,13 +271,9 @@ internal fun StatsBiggestSection(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        // Why: the queue's orange dot, as Despesas and the other platforms draw it.
+                        // Why: the queue's amber dot, as Despesas and the other platforms draw it.
                         if (expense.isPending) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-                            )
+                            PendingIndicator()
                         }
                         Text(
                             text = paid?.let {
