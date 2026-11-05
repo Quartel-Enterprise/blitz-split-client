@@ -9197,6 +9197,56 @@
         }
       }
     },
+    "Scan the invite's QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escaneie o QR do convite"
+          }
+        }
+      }
+    },
+    "The camera only opens when you tap the button." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A câmera só abre quando você tocar no botão."
+          }
+        }
+      }
+    },
+    "Open camera" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir câmera"
+          }
+        }
+      }
+    },
+    "This device has no camera. Paste the link below." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este aparelho não tem câmera. Cole o link aqui embaixo."
+          }
+        }
+      }
+    },
+    "This Mac has no camera. Paste the link below." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Mac não tem câmera. Cole o link aqui embaixo."
+          }
+        }
+      }
+    },
     "Couldn't save the bill. Try again." : {
       "comment" : "The device couldn't save a new bill",
       "localizations" : {
