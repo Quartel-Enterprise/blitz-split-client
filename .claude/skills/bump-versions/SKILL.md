@@ -157,6 +157,12 @@ one after the other:
 
 ### 6. Open the pull request
 
+When the bump changes `.github/workflows/claude-review.yml` (an action it uses, such as
+`actions/checkout`), the Claude review skips that pull request: `claude-code-action` only runs
+when the workflow file matches the one on `main`, so the review posts "The review ended without a
+findings list" and its job still passes. That is expected, not a failure to fix: the review gate
+lets the checks through, as it did for #128.
+
 Use the `create-pr` skill. Title it `chore: bump <the libraries>` (or `chore: bump the libraries of
 every platform` when there are many), and list each bump as `name old → new` in the description,
 with a line on what each major needed.
