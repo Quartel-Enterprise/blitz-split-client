@@ -27,29 +27,30 @@ private val Scene<*>.isHomeTab: Boolean
 
 /*
  * Why: each tab draws its own rail or bottom bar, the same in every tab, so crossfading the two whole screens dimmed the
- * bars with the content, for 700 ms. Between two tabs the screen coming in fades in over the one leaving, which stays
- * opaque under it, so the bars hold still and only the content changes; anything else keeps Navigation 3's default.
+ * bars with the content, for 700 ms. Between two tabs one screen stays opaque under the other while it fades, so the
+ * bars hold still and only the content changes: going forward, the screen coming in fades in over the one leaving;
+ * going back, which draws the tab coming back underneath, the one leaving fades out over it. Anything else keeps
+ * Navigation 3's default.
  */
 internal fun <T : Any> createHomeTabTransitionSpec(
+    isPop: Boolean,
     default: AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform,
 ): AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform = {
-    if (initialState.isHomeTab && targetState.isHomeTab) {
-        fadeIn(tween(HOME_TAB_FADE_MILLIS)) togetherWith ExitTransition.KeepUntilTransitionsFinished
-    } else {
-        default()
-    }
+    if (isBetweenHomeTabs()) createHomeTabFade(isPop) else default()
 }
 
-/*
- * Why: a pop draws the tab coming back under the one leaving, so it is the one leaving that fades out over it, the bars
- * holding still the same way.
- */
-internal fun <T : Any> createHomeTabPopTransitionSpec(
-    default: AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform,
-): AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform = {
-    if (initialState.isHomeTab && targetState.isHomeTab) {
-        EnterTransition.None togetherWith fadeOut(tween(HOME_TAB_FADE_MILLIS))
-    } else {
-        default()
-    }
+// Why: the back gesture between two tabs fades the tab leaving as it follows the finger, instead of shrinking its bars.
+internal fun <T : Any> createHomeTabPredictivePopTransitionSpec(
+    default: AnimatedContentTransitionScope<Scene<T>>.(Int) -> ContentTransform,
+): AnimatedContentTransitionScope<Scene<T>>.(Int) -> ContentTransform = { swipeEdge ->
+    if (isBetweenHomeTabs()) createHomeTabFade(isPop = true) else default(swipeEdge)
+}
+
+private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.isBetweenHomeTabs(): Boolean =
+    initialState.isHomeTab && targetState.isHomeTab
+
+private fun createHomeTabFade(isPop: Boolean): ContentTransform = if (isPop) {
+    EnterTransition.None togetherWith fadeOut(tween(HOME_TAB_FADE_MILLIS))
+} else {
+    fadeIn(tween(HOME_TAB_FADE_MILLIS)) togetherWith ExitTransition.KeepUntilTransitionsFinished
 }

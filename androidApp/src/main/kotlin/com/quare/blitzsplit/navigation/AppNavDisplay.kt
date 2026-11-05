@@ -21,6 +21,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
+import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
@@ -212,8 +213,15 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         ),
         // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
         sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
-        transitionSpec = createHomeTabTransitionSpec(defaultTransitionSpec()),
-        popTransitionSpec = createHomeTabPopTransitionSpec(defaultPopTransitionSpec()),
+        transitionSpec = createHomeTabTransitionSpec(
+            isPop = false,
+            default = defaultTransitionSpec(),
+        ),
+        popTransitionSpec = createHomeTabTransitionSpec(
+            isPop = true,
+            default = defaultPopTransitionSpec(),
+        ),
+        predictivePopTransitionSpec = createHomeTabPredictivePopTransitionSpec(defaultPredictivePopTransitionSpec()),
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
