@@ -86,15 +86,19 @@ export function watchNotificationPermission(onCheck: (permission: string) => voi
   window.addEventListener('focus', check)
   let status: PermissionStatus | null = null
   let isStopped = false
-  // Why: Safari and Firefox may not know 'notifications' here; focus still reads it again.
-  navigator.permissions
-    ?.query({ name: 'notifications' })
-    .then((result) => {
-      if (isStopped) return
-      status = result
-      status.addEventListener('change', check)
-    })
-    .catch(() => undefined)
+  // Why: Safari and Firefox may not know 'notifications' here, some throwing at once; focus still reads it again.
+  try {
+    navigator.permissions
+      ?.query({ name: 'notifications' })
+      .then((result) => {
+        if (isStopped) return
+        status = result
+        status.addEventListener('change', check)
+      })
+      .catch(() => undefined)
+  } catch {
+    // Only focus reads it again
+  }
   return () => {
     isStopped = true
     window.removeEventListener('focus', check)
@@ -102,11 +106,21 @@ export function watchNotificationPermission(onCheck: (permission: string) => voi
   }
 }
 
+let subscribing: Promise<void> | null = null
+
 /**
  * Subscribes once notifications are allowed, on every start (a browser may renew the subscription
  * while the app is closed) and right after the person allows them. Failures only mean no notifications.
  */
-export async function startWebPush(): Promise<void> {
+export function startWebPush(): Promise<void> {
+  // Why: the prompt's answer and the permission's change event both ask at once; one subscription at a time.
+  subscribing ??= subscribe().finally(() => {
+    subscribing = null
+  })
+  return subscribing
+}
+
+async function subscribe(): Promise<void> {
   if (!isSupported() || Notification.permission !== 'granted') return
   try {
     const registration = await navigator.serviceWorker.register('/push-sw.js')

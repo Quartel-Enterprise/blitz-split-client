@@ -154,6 +154,9 @@ class HomeViewModel(
     // Why: how long "Turn on" or "Not now" keeps the notification card away (Pierre's call, issue 208).
     private val notificationPromptCooldown = 21.days
 
+    // Why: the card's "Turn on" asked the system or opened its settings, and no allowed answer came back yet.
+    private var awaitsNotificationAnswer = false
+
     // Why: the groups as Início last read them, the most recent activity first: "Rachar conta" marks the first.
     private var rows = emptyList<GroupRow>()
     private var groups = emptyList<Group>()
@@ -388,6 +391,7 @@ class HomeViewModel(
 
             HomeUiEvent.OnNotificationPromptTurnOnClicked -> answerNotificationPrompt { prompt ->
                 trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
+                awaitsNotificationAnswer = true
                 emit(
                     when (prompt) {
                         NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN ->
@@ -509,15 +513,13 @@ class HomeViewModel(
     }
 
     /*
-     * Why: "Notifications on" only for a change seen here, after the prompt or a return from the settings: the first
-     * read since Início opened says nothing changed.
+     * Why: "Notifications on" only after the card's own "Turn on" (the prompt, or back from the settings), so a change
+     * made from Notifications, which confirms by its own toggles, never shows it over that screen.
      */
     private fun checkNotificationPermission(permission: NotificationPermission) {
-        val previous = uiState.value.notificationPermission
         uiState.update { it.copy(notificationPermission = permission) }
-        if (previous != null && previous != NotificationPermission.GRANTED &&
-            permission == NotificationPermission.GRANTED
-        ) {
+        if (awaitsNotificationAnswer && permission == NotificationPermission.GRANTED) {
+            awaitsNotificationAnswer = false
             emit(HomeUiAction.ShowNotificationsOn)
         }
     }

@@ -340,6 +340,21 @@ class HomeUiStateTest {
     }
 
     @Test
+    fun `GIVEN the recovery code sheet WHEN notifications were never asked THEN shows no notification card`() {
+        // Given
+        val state = state(
+            showsRecoveryCodePrompt = true,
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
     fun `GIVEN the card snoozed WHEN notifications are blocked THEN shows no notification card`() {
         // Given
         val state = state(
@@ -377,6 +392,7 @@ class HomeUiStateTest {
         people: List<HomePerson> = emptyList(),
         peopleRead: Boolean = true,
         showsRecoveryCodeCard: Boolean = false,
+        showsRecoveryCodePrompt: Boolean = false,
         notificationPermission: NotificationPermission? = null,
         isNotificationPromptSnoozed: Boolean = false,
     ): HomeUiState = HomeUiState(
@@ -400,7 +416,7 @@ class HomeUiStateTest {
         groups = emptyList(),
         billDays = emptyList(),
         showsRecoveryCodeCard = showsRecoveryCodeCard,
-        showsRecoveryCodePrompt = false,
+        showsRecoveryCodePrompt = showsRecoveryCodePrompt,
         recordedPayment = null,
         deletedGroupNotice = null,
         isRefreshing = false,

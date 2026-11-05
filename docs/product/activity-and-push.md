@@ -89,7 +89,7 @@ The feed, unread state, real time and push notifications.
     on load (`watchNotificationPermission`).
   - Asking for the permission (Pierre's call, issue 208; per device, never synced): no platform asks on its own. Home
     shows a card under the shortcuts once there is a group to be notified about (created or joined), never on the first
-    use, during a first download nor beside the recovery code's card (`HomeUiState.notificationPrompt`). Never asked
+    use, during a first download nor beside the recovery code's card or sheet (`HomeUiState.notificationPrompt`). Never asked
     (`SOFT_ASK`): "Know when a bill comes in", "Get notified when someone adds a bill with you or marks a payment to
     you.", with "Not now" and "Turn on", which alone brings the system's prompt, so "Not now" never spends it. Android
     refused once (`ASK_AGAIN`, its rationale flag): the same card says Android lets you allow them once more, and "Turn
@@ -98,8 +98,9 @@ The feed, unread state, real time and push notifications.
     browser" and where to allow them, with only "Not now". Either answer hides the card for three weeks on this device
     (`lastNotificationPromptAt` of the device settings; `notification_prompt_turn_on_clicked`,
     `notification_prompt_dismissed`, with `prompt`), and it never comes back once allowed. Each platform reads the
-    permission when Home appears, on each return to the app and after its prompt; one turning allowed after Home saw it
-    not allowed (the prompt, or back from the settings) shows "Notifications on" (`HomeUiAction.ShowNotificationsOn`).
+    permission when Home appears, on each return to the app and after its prompt; one turning allowed after the card's
+    "Turn on" (the prompt, or back from the settings) shows "Notifications on" (`HomeUiAction.ShowNotificationsOn`),
+    while one allowed from Notifications confirms there, its Push toggles coming back.
     iOS's provisional authorization, Android's channels silenced one by one in its settings and the prompt's own
     analytics (shown, its result) are not built.
     Each platform stays off until its keys are set: Android's Firebase config in the build, the APNs key and the

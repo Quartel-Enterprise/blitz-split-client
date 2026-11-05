@@ -3443,7 +3443,26 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN notifications denied WHEN back from the settings with them allowed THEN says notifications are on`() =
+    fun `GIVEN Turn on on the blocked card WHEN back from the settings allowed THEN says notifications are on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.OpenNotificationSettings, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN notifications denied and no Turn on WHEN another screen gets them allowed THEN says nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
@@ -3453,22 +3472,46 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
 
             // Then
-            assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowNotificationsOn), actions)
+            assertTrue(actions.isEmpty())
             assertNull(viewModel.uiState.value.notificationPrompt)
         }
 
     @Test
-    fun `GIVEN notifications refused once WHEN the system allows them THEN says notifications are on`() =
+    fun `GIVEN Turn on then notifications on WHEN they turn off and on again elsewhere THEN says it only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on tapped after a first refusal WHEN the system allows them THEN says notifications are on`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
 
             // When
             viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED))
 
             // Then
-            assertEquals(listOf<HomeUiAction>(HomeUiAction.ShowNotificationsOn), actions)
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
         }
 
     @Test

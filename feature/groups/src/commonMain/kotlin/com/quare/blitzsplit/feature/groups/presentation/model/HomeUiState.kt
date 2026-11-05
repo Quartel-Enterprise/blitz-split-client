@@ -103,11 +103,12 @@ data class HomeUiState(
 
     /*
      * Why: the notification card, once there is a group to be notified about (one created or joined), never over the
-     * first use, the first download nor the recovery code's card, and only while the system doesn't allow them.
+     * first use, the first download nor the recovery code's card or sheet, and only while the system doesn't allow them.
      */
     val notificationPrompt: NotificationPrompt?
         get() {
-            if (!hasGroups || isFirstDownload || showsRecoveryCodeCard || isNotificationPromptSnoozed) return null
+            if (!hasGroups || isFirstDownload || showsRecoveryCodeCard || showsRecoveryCodePrompt) return null
+            if (isNotificationPromptSnoozed) return null
             return when (notificationPermission) {
                 NotificationPermission.NOT_DETERMINED -> NotificationPrompt.SOFT_ASK
                 NotificationPermission.REFUSED_ONCE -> NotificationPrompt.ASK_AGAIN
