@@ -3,15 +3,17 @@ import Shared
 import SwiftUI
 
 /// "By category" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
-/// legend with the percentages, then each main category with its bar and its subcategories. A slice picked by a tap,
-/// the pointer over it or its legend line pops out, the others fade, and the center names it with its share; the ring
-/// sweeps in when the period changes.
+/// legend with the percentages, then each main category with its bar and its subcategories. The slice the pointer is
+/// over (or its legend line) pops out, the others fade, and the center names it with its share; a tap or a click on a
+/// slice, a legend line or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the
+/// period changes.
 struct StatsCategoriesSection: View {
     let state: GroupStatsUiState
     var pieSize: CGFloat = 132
+    /// The main category tapped and what of the card it was.
+    let open: (String, StatsCategoryTarget) -> Void
 
     @State private var selected: Int?
-    @State private var isHovering = false
     /// 0 to 1 as the ring sweeps in, clockwise from the top.
     @State private var sweep: Double = 0
 
@@ -50,17 +52,15 @@ struct StatsCategoriesSection: View {
                                 .fill(.clear)
                                 .contentShape(Rectangle())
                                 .onTapGesture { location in
-                                    let index = slice(at: location, in: geometry.size)
-                                    // A click keeps what hovering picked; a tap of a finger picks or lets go
-                                    selected = index == selected && !isHovering ? nil : index
+                                    if let index = slice(at: location, in: geometry.size) {
+                                        open(state.categories[index].category.id, .ring)
+                                    }
                                 }
                                 .onContinuousHover { phase in
                                     switch phase {
                                     case let .active(location):
-                                        isHovering = true
                                         selected = slice(at: location, in: geometry.size)
                                     case .ended:
-                                        isHovering = false
                                         selected = nil
                                     }
                                 }
@@ -86,7 +86,7 @@ struct StatsCategoriesSection: View {
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                             Button {
-                                selected = selected == index && !isHovering ? nil : index
+                                open(row.category.id, .legend)
                             } label: {
                                 HStack(spacing: 8) {
                                     RoundedRectangle(cornerRadius: 4)
@@ -106,7 +106,6 @@ struct StatsCategoriesSection: View {
                             .buttonStyle(.plain)
                             .opacity(selected == nil || selected == index ? 1 : 0.4)
                             .onHover { isOver in
-                                isHovering = isOver
                                 if isOver {
                                     selected = index
                                 } else if selected == index {
@@ -127,10 +126,15 @@ struct StatsCategoriesSection: View {
                     try? await Task.sleep(for: .milliseconds(20))
                     withAnimation(.easeOut(duration: 0.6)) { sweep = 1 }
                 }
-                .sensoryFeedback(.selection, trigger: selected) { _, new in new != nil && !isHovering }
                 VStack(spacing: 0) {
                     ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
-                        StatsCategoryLine(row: row, currency: state.currency)
+                        Button {
+                            open(row.category.id, .row)
+                        } label: {
+                            StatsCategoryLine(row: row, currency: state.currency)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(Text("See expenses"))
                         if index < state.categories.count - 1 {
                             Divider().padding(.leading, 70)
                         }
@@ -188,9 +192,14 @@ private struct StatsCategoryLine: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            Image(systemName: "chevron.forward")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
+                .frame(maxHeight: .infinity)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .contentShape(.rect)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(CategoryCopy.name(row.category)): \(Int(row.percent))% of the total, \(currency.format(row.amountMinor))"))
     }

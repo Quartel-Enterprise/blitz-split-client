@@ -261,6 +261,7 @@ private fun GroupStatsScaffold(
                     StatsSummaryColumn(
                         state = state,
                         money = money,
+                        onEvent = onEvent,
                         chip = chip,
                         modifier = Modifier.weight(1f),
                     )
@@ -279,6 +280,7 @@ private fun GroupStatsScaffold(
                         StatsSummaryColumn(
                             state = state,
                             money = money,
+                            onEvent = onEvent,
                             chip = chip,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -357,6 +359,7 @@ private fun StatsColumn(
             StatsCategoriesSection(
                 state = state,
                 money = money,
+                onEvent = onEvent,
             )
         }
         item(key = "people") {
@@ -398,6 +401,7 @@ private fun StatsColumn(
 private fun StatsSummaryColumn(
     state: GroupStatsUiState,
     money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
     chip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -414,6 +418,7 @@ private fun StatsSummaryColumn(
         StatsCategoriesSection(
             state = state,
             money = money,
+            onEvent = onEvent,
             pieSize = twoColumnsPieSize,
         )
     }
@@ -517,6 +522,7 @@ private fun StatsTabletopLayout(
                 StatsCategoriesSection(
                     state = state,
                     money = money,
+                    onEvent = onEvent,
                     pieSize = twoColumnsPieSize,
                     modifier = Modifier.weight(1f),
                 )

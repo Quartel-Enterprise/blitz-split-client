@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryTarget
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
@@ -196,6 +197,8 @@ class GroupStatsViewModel(
             is GroupStatsUiEvent.OnGrainPicked -> pickGrain(event.grain)
 
             GroupStatsUiEvent.OnBiggestExpenseClicked -> openBiggestExpense()
+
+            is GroupStatsUiEvent.OnCategoryClicked -> openCategory(event.categoryId, event.target)
 
             is GroupStatsUiEvent.OnPersonClicked -> openPerson(event.memberId)
 
@@ -375,6 +378,32 @@ class GroupStatsViewModel(
                 focusCommentId = null,
             ),
         )
+    }
+
+    /*
+     * Why: over the statistics, or in the place of the bill the Mac's inspector draws beside them (which leaves the
+     * ring and the rows clickable), as a person opens; the period shown, the whole history as null so new bills of the
+     * category join the list.
+     */
+    private fun openCategory(
+        categoryId: String,
+        target: StatsCategoryTarget,
+    ) {
+        val state = uiState.value
+        if (state.categories.none { it.category.id == categoryId }) return
+        val isWhole = state.period == StatsPeriod.ALL
+        val isOpened = navigator.openFromGroupScreen(
+            from = route,
+            groupId = route.groupId,
+            next = Route.CategoryExpenses(
+                groupId = route.groupId,
+                categoryId = categoryId,
+                periodStartMillis = state.periodStartMillis.takeUnless { isWhole },
+                periodEndMillis = state.periodEndMillis.takeUnless { isWhole },
+                isMonthPeriod = state.periodRangeStyle == StatsRangeStyle.MONTH,
+            ),
+        )
+        if (isOpened) trackEvent("stats_category_clicked", mapOf("target" to target.name.lowercase()))
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

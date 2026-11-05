@@ -37,6 +37,13 @@ internal val everyRouteKind: List<Route> = listOf(
         tab = GroupTab.MEMBERS,
     ),
     Route.GroupStats(groupId = "secret-group"),
+    Route.CategoryExpenses(
+        groupId = "secret-group",
+        categoryId = "secret-category",
+        periodStartMillis = 1L,
+        periodEndMillis = 2L,
+        isMonthPeriod = false,
+    ),
     Route.EditGroup(groupId = "secret-group"),
     Route.DefaultSplit(groupId = "secret-group"),
     Route.SimplifyDebtsInfo(currency = GroupCurrency.BRL),

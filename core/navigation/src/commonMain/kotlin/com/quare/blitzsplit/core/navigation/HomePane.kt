@@ -5,9 +5,9 @@ package com.quare.blitzsplit.core.navigation
  * route right above the groups, so one back stack still drives every platform: each UI only decides, from its window,
  * whether it draws that route in the pane beside the list or over it, as a phone does.
  *
- * The group screens right above the groups, with the Estatísticas a group opens, which a tablet lying down draws in
- * the same pane (decision 2). Another group may stack on the one a row opened (a bill saved in another group,
- * Convidar's "Ir para o grupo"), and the pane shows the last of them.
+ * The group screens right above the groups, with the Estatísticas a group opens and the bills of a category they
+ * open, which a tablet lying down draws in the same pane (decision 2). Another group may stack on the one a row opened
+ * (a bill saved in another group, Convidar's "Ir para o grupo"), and the pane shows the last of them.
  */
 private fun List<Route>.findGroupsAboveGroups(): List<Route> {
     val groupsIndex = indexOf(Route.Groups)
@@ -15,11 +15,11 @@ private fun List<Route>.findGroupsAboveGroups(): List<Route> {
     return drop(groupsIndex + 1).takeWhile { paneGroupIdOrNull(it) != null }
 }
 
-// Why: the group whose screen the pane beside the groups draws: any of its tabs, or its Estatísticas.
-private fun paneGroupIdOrNull(route: Route): String? = if (route is Route.GroupStats) {
-    route.groupId
-} else {
-    groupScreenIdOrNull(route)
+// Why: the group whose screen the pane beside the groups draws: any of its tabs, its Estatísticas or a category's bills.
+private fun paneGroupIdOrNull(route: Route): String? = when (route) {
+    is Route.GroupStats -> route.groupId
+    is Route.CategoryExpenses -> route.groupId
+    else -> groupScreenIdOrNull(route)
 }
 
 // Why: the group the pane beside the groups shows.
