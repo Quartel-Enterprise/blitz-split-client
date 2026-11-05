@@ -370,6 +370,7 @@ private fun StatsColumn(
             StatsSettlingSection(
                 state = state,
                 money = money,
+                onEvent = onEvent,
             )
         }
         item(key = "time") {
@@ -442,14 +443,10 @@ private fun StatsOverTimeColumn(
             dates = dates,
             onEvent = onEvent,
         )
-        StatsPeopleSection(
+        StatsPeopleAndSettlingColumn(
             state = state,
             money = money,
             onEvent = onEvent,
-        )
-        StatsSettlingSection(
-            state = state,
-            money = money,
         )
         StatsBiggestSection(
             state = state,
@@ -523,17 +520,12 @@ private fun StatsTabletopLayout(
                     pieSize = twoColumnsPieSize,
                     modifier = Modifier.weight(1f),
                 )
-                Column(modifier = Modifier.weight(1f)) {
-                    StatsPeopleSection(
-                        state = state,
-                        money = money,
-                        onEvent = onEvent,
-                    )
-                    StatsSettlingSection(
-                        state = state,
-                        money = money,
-                    )
-                }
+                StatsPeopleAndSettlingColumn(
+                    state = state,
+                    money = money,
+                    onEvent = onEvent,
+                    modifier = Modifier.weight(1f),
+                )
             }
         },
         modifier = Modifier.fillMaxSize(),

@@ -387,11 +387,34 @@ private fun StatsPersonRowItem(
     }
 }
 
+// Why: the two person boards stacked, as every layout but the phone's list draws them.
+@Composable
+internal fun StatsPeopleAndSettlingColumn(
+    state: GroupStatsUiState,
+    money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        StatsPeopleSection(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+        )
+        StatsSettlingSection(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+        )
+    }
+}
+
 // Why: "Acertos": who settles their share of the period's bills fastest and slowest, once two people had one.
 @Composable
 internal fun StatsSettlingSection(
     state: GroupStatsUiState,
     money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val settling = state.settling ?: return
@@ -406,10 +429,13 @@ internal fun StatsSettlingSection(
                     label = stringResource(label),
                     settler = settler,
                     money = money,
-                    modifier = Modifier.background(
-                        MaterialTheme.colorScheme.surfaceContainerLowest,
-                        groupedRowShapeOf(index, 2),
-                    ),
+                    onOpen = { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
+                    modifier = Modifier
+                        .clip(groupedRowShapeOf(index, 2))
+                        .background(
+                            MaterialTheme.colorScheme.surfaceContainerLowest,
+                            groupedRowShapeOf(index, 2),
+                        ),
                 )
             }
         }
@@ -431,6 +457,7 @@ private fun StatsSettlerRow(
     label: String,
     settler: StatsSettler,
     money: MoneyFormatter,
+    onOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val name = if (settler.isMe) stringResource(R.string.group_stats_you, settler.name) else settler.name
@@ -447,7 +474,7 @@ private fun StatsSettlerRow(
         avatarColor = settler.avatarColor,
         photoUrl = settler.photoUrl,
         description = listOfNotNull(label, name, days, open).joinToString(", "),
-        modifier = modifier,
+        modifier = modifier.opensProfile(onOpen),
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(

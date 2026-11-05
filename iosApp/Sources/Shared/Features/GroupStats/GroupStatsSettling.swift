@@ -3,9 +3,10 @@ import SwiftUI
 
 /// "Settling up": who settles their share of the period's bills fastest and slowest, once two people had one.
 struct StatsSettlingSection: View {
-    let state: GroupStatsUiState
+    let model: GroupStatsModel
 
     var body: some View {
+        let state = model.state
         if let settling = state.settling {
             VStack(alignment: .leading, spacing: 8) {
                 StatsSectionTitle(title: "Settling up")
@@ -16,12 +17,14 @@ struct StatsSettlingSection: View {
                         label: String(localized: "Settles fastest"),
                         settler: settling.fastest,
                         currency: state.currency,
+                        onOpen: { model.send(GroupStatsUiEventOnPersonClicked(memberId: settling.fastest.memberId)) },
                     )
                     Divider().padding(.leading, 64)
                     StatsSettlerLine(
                         label: String(localized: "Slowest to settle"),
                         settler: settling.slowest,
                         currency: state.currency,
+                        onOpen: { model.send(GroupStatsUiEventOnPersonClicked(memberId: settling.slowest.memberId)) },
                     )
                 }
                 .background(Palette.card, in: .rect(cornerRadius: 26))
@@ -39,6 +42,7 @@ private struct StatsSettlerLine: View {
     let label: String
     let settler: StatsSettler
     let currency: GroupCurrency
+    let onOpen: () -> Void
 
     var body: some View {
         StatsAvatarRow(
@@ -67,6 +71,7 @@ private struct StatsSettlerLine: View {
                 }
             }
         }
+        .opensProfile(onOpen)
     }
 
     private var name: String {

@@ -148,7 +148,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
               </div>
               <div className="order-first flex min-w-0 flex-col gap-4 md:order-none md:gap-5">
                 <PeopleCard state={state} presenter={presenter} money={money} />
-                {state.settling && <SettlingCard settling={state.settling} money={money} />}
+                {state.settling && <SettlingCard settling={state.settling} money={money} onOpenPerson={(memberId) => presenter.openPerson(memberId)} />}
               </div>
             </div>
           )}
@@ -387,7 +387,15 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
 }
 
 /** "Acertos": who settles their share of the period's bills fastest and slowest, once two people had one. */
-function SettlingCard({ settling, money }: { settling: JsStatsSettling; money: (minor: number) => string }) {
+function SettlingCard({
+  settling,
+  money,
+  onOpenPerson,
+}: {
+  settling: JsStatsSettling
+  money: (minor: number) => string
+  onOpenPerson: (memberId: string) => void
+}) {
   return (
     <section aria-labelledby="statsSettling" className={cardClass}>
       <h2 id="statsSettling" className="text-[15px] font-semibold">
@@ -404,7 +412,8 @@ function SettlingCard({ settling, money }: { settling: JsStatsSettling; money: (
               ? t('stats_settlingSameDay')
               : t(settler.averageDays === 1 ? 'stats_settlingDaysOne' : 'stats_settlingDaysOther', { count: settler.averageDays })
           return (
-            <div key={label} className="flex items-center gap-2.5">
+            // Why: the row opens their profile (Perfil for you); a settler is always still in the group.
+            <PersonButton key={label} onOpen={() => onOpenPerson(settler.memberId)} className="flex items-center gap-2.5">
               <Avatar initial={settler.initials} color={settler.color} photoUrl={settler.photoUrl} className="size-8 text-xs" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="text-xs text-muted-foreground">{label}</span>
@@ -418,7 +427,7 @@ function SettlingCard({ settling, money }: { settling: JsStatsSettling; money: (
                   </span>
                 )}
               </span>
-            </div>
+            </PersonButton>
           )
         })}
       </div>
