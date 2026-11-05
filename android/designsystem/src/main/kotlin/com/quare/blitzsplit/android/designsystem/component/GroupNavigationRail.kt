@@ -31,9 +31,7 @@ fun WithGroupNavigationRail(
     modifier: Modifier = Modifier,
     content: @Composable (showsRail: Boolean) -> Unit,
 ) {
-    val showsRail = !LocalInDetailPane.current &&
-        rememberDeviceLayout().usesNavigationRail &&
-        rememberFoldLayout().formFactor != FormFactor.Tabletop
+    val showsRail = !LocalInDetailPane.current && rememberUsesGroupRail()
     Row(modifier = modifier.fillMaxSize()) {
         if (showsRail) {
             HomeNavigationRail(
@@ -53,3 +51,8 @@ fun WindowInsets.toGroupRailInsets(showsRail: Boolean): WindowInsets = if (shows
 } else {
     this
 }
+
+// Why: the window draws the home's rail beside a group's screens drawn alone; the navigation fades between it and a tab.
+@Composable
+fun rememberUsesGroupRail(): Boolean =
+    rememberDeviceLayout().usesNavigationRail && rememberFoldLayout().formFactor != FormFactor.Tabletop

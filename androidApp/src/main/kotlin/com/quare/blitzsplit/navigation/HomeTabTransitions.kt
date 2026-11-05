@@ -16,17 +16,21 @@ import androidx.navigation3.scene.Scene
 // Why: the web's page-enter, so a tab's content comes in as fast on every platform.
 private const val HOME_TAB_FADE_MILLIS = 180
 
-private object HomeTabKey : NavMetadataKey<Boolean>
+private object HomeBarsKey : NavMetadataKey<Boolean>
 
-// Why: the home's tabs (Início, Grupos, Saldos, Contatos and Buscar) draw the same bars, which a switch keeps still.
-internal val homeTabMetadata: Map<String, Any> = metadata { put(HomeTabKey, true) }
+/*
+ * Why: marks the screens that draw the home's rail or bottom bar, which a switch between two of them keeps still: the
+ * tabs (Início, Grupos, Saldos, Contatos and Buscar) always, and a group's screens and Estatísticas where the window draws
+ * the rail beside them (rememberUsesGroupRail). A new screen drawing those bars needs it too.
+ */
+internal val homeBarsMetadata: Map<String, Any> = metadata { put(HomeBarsKey, true) }
 
 /*
  * Why: any of its entries, so Groups with the group it opened (one list-detail scene, even where only the group shows)
- * still counts as the tab, and a rail click from it fades too.
+ * counts as drawing the bars too.
  */
-private val Scene<*>.isHomeTab: Boolean
-    get() = entries.any { entry -> entry.metadata[HomeTabKey] == true }
+private val Scene<*>.drawsHomeBars: Boolean
+    get() = entries.any { entry -> entry.metadata[HomeBarsKey] == true }
 
 /*
  * Why: each tab draws its own rail or bottom bar, the same in every tab, so crossfading the two whole screens dimmed the
@@ -50,7 +54,7 @@ internal fun <T : Any> createHomeTabPredictivePopTransitionSpec(
 }
 
 private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.isBetweenHomeTabs(): Boolean =
-    initialState.isHomeTab && targetState.isHomeTab
+    initialState.drawsHomeBars && targetState.drawsHomeBars
 
 // Why: in the transition's scope, which is where Compose lets the screen leaving stay until the fade ends.
 private fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.createHomeTabFade(isPop: Boolean): ContentTransform =
