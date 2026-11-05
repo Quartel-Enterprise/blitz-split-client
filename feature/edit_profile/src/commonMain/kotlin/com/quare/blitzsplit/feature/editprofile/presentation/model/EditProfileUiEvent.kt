@@ -6,8 +6,8 @@ import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
-// Why: the screen these events come from, as their source param says.
-private const val SOURCE = "edit_profile"
+// Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
+internal const val EDIT_PROFILE_SOURCE = "edit_profile"
 
 sealed interface EditProfileUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
@@ -23,15 +23,18 @@ sealed interface EditProfileUiEvent : TrackedUiEvent {
 
             is OnAvatarColorSelected -> EventAnalytics.Automatic(
                 "avatar_color_selected",
-                mapOf("color" to color, "source" to SOURCE),
+                mapOf("color" to color, "source" to EDIT_PROFILE_SOURCE),
             )
 
             // Why: a photo handed back by the camera or the picker, which each UI opens straight from its tap.
-            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
+            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to EDIT_PROFILE_SOURCE))
 
-            is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
+            is OnPhotoCrop -> event.toEventAnalytics(EDIT_PROFILE_SOURCE)
 
-            OnAvatarClicked -> EventAnalytics.Automatic("profile_photo_clicked", mapOf("source" to SOURCE))
+            OnAvatarClicked -> EventAnalytics.Automatic(
+                "profile_photo_clicked",
+                mapOf("source" to EDIT_PROFILE_SOURCE),
+            )
 
             // Why: each counts only when the form takes it (not saving, an account photo there, a saved profile).
             OnAccountPhotoSelected -> EventAnalytics.Manual("account_photo_selected")

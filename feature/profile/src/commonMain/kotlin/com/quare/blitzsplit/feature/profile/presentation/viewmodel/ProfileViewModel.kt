@@ -51,6 +51,7 @@ import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
+import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
@@ -104,9 +105,6 @@ class ProfileViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
-    // Why: the screen these events come from, as their source param says.
-    private val sourceParams: Map<String, Any> = mapOf("source" to "profile")
-
     val uiState: StateFlow<ProfileUiState>
         field = MutableStateFlow(
             ProfileUiState(
@@ -382,7 +380,7 @@ class ProfileViewModel(
 
     private fun retry() {
         if (!uiState.value.canRetrySync) return
-        trackEvent("sync_retry_clicked", sourceParams)
+        trackEvent("sync_retry_clicked", mapOf("source" to PROFILE_SOURCE))
         retrySync()
     }
 
@@ -499,8 +497,10 @@ class ProfileViewModel(
 
     private fun startErasing(): Boolean = uiState.value.canErase && clearSession()
 
-    // Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here.
-    // Why: says whether it started, which the sign out's and the erase's Analytics count.
+    /*
+     * Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here. It says
+     * whether it started, which the sign out's and the erase's Analytics count.
+     */
     private fun clearSession(): Boolean {
         if (uiState.value.isSigningOut) return false
         uiState.update {

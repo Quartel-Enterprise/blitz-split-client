@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.editprofile.presentation.model.EDIT_PROFILE_SOURCE
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
@@ -163,7 +164,7 @@ class EditProfileViewModel(
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
         if (uiState.value.isSaving) return
-        trackEvent("account_photo_selected", mapOf("source" to "edit_profile"))
+        trackEvent("account_photo_selected", mapOf("source" to EDIT_PROFILE_SOURCE))
         photoPicker.cancel()
         edit {
             it.copy(
@@ -176,7 +177,7 @@ class EditProfileViewModel(
 
     private fun removePhoto() {
         if (uiState.value.isSaving) return
-        trackEvent("photo_removed", mapOf("source" to "edit_profile"))
+        trackEvent("photo_removed", mapOf("source" to EDIT_PROFILE_SOURCE))
         photoPicker.cancel()
         edit {
             it.copy(

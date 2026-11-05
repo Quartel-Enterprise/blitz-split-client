@@ -5,8 +5,8 @@ import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
-// Why: the screen these events come from, as their source param says.
-private const val SOURCE = "profile_photo"
+// Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
+internal const val PROFILE_PHOTO_SOURCE = "profile_photo"
 
 sealed interface ProfilePhotoUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
@@ -17,9 +17,9 @@ sealed interface ProfilePhotoUiEvent : TrackedUiEvent {
             -> EventAnalytics.NotTracked
 
             // Why: a photo handed back by the camera or the gallery, which the viewer's shortcuts open straight away.
-            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to SOURCE))
+            is OnPhotoPicked -> EventAnalytics.Automatic("photo_picked", mapOf("source" to PROFILE_PHOTO_SOURCE))
 
-            is OnPhotoCrop -> event.toEventAnalytics(SOURCE)
+            is OnPhotoCrop -> event.toEventAnalytics(PROFILE_PHOTO_SOURCE)
 
             // Why: only a photo the viewer takes: the account's while it has one, and never while another is saving.
             OnPhotoRemoved -> EventAnalytics.Manual("photo_removed")

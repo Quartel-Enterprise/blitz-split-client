@@ -7,8 +7,8 @@ import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-// Why: the screen these events come from, as their source param says.
-private const val SOURCE = "profile"
+// Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
+internal const val PROFILE_SOURCE = "profile"
 
 sealed interface ProfileUiEvent : TrackedUiEvent {
     override val analytics: EventAnalytics
@@ -21,23 +21,23 @@ sealed interface ProfileUiEvent : TrackedUiEvent {
 
             OnEditClicked -> EventAnalytics.Automatic("profile_edit_clicked")
 
-            OnAvatarClicked -> EventAnalytics.Automatic("profile_photo_clicked", mapOf("source" to SOURCE))
+            OnAvatarClicked -> EventAnalytics.Automatic("profile_photo_clicked", mapOf("source" to PROFILE_SOURCE))
 
-            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
+            is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, PROFILE_SOURCE)
 
-            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(SOURCE)
+            OnNativeSignInFailed -> SignInAnalytics.buildNativeSignInFailed(PROFILE_SOURCE)
 
-            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(SOURCE)
+            OnNativeSignInCancelled -> SignInAnalytics.buildNativeSignInCancelled(PROFILE_SOURCE)
 
             OnRecoveryCodeClicked -> EventAnalytics.Automatic("profile_recovery_code_clicked")
 
-            OnExportClicked -> EventAnalytics.Automatic("data_export_clicked", mapOf("source" to SOURCE))
+            OnExportClicked -> EventAnalytics.Automatic("data_export_clicked", mapOf("source" to PROFILE_SOURCE))
 
             is OnBitcoinInSatsToggled -> EventAnalytics.Automatic("bitcoin_in_sats_toggled", mapOf("is_on" to isOn))
 
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
-            OnCategoryMapClicked -> EventAnalytics.Automatic("category_map_clicked", mapOf("source" to SOURCE))
+            OnCategoryMapClicked -> EventAnalytics.Automatic("category_map_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnPrivacyPolicyClicked -> EventAnalytics.Automatic("privacy_policy_clicked")
 

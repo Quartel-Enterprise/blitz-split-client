@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.editprofile.presentation.model.PROFILE_PHOTO_SOURCE
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiState
 import kotlinx.coroutines.CoroutineScope
@@ -119,7 +120,7 @@ class ProfilePhotoViewModel(
             ProfilePhotoUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
 
             ProfilePhotoUiEvent.OnPhotoRemoved -> if (replacePhoto(null)) {
-                trackEvent("photo_removed", mapOf("source" to "profile_photo"))
+                trackEvent("photo_removed", mapOf("source" to PROFILE_PHOTO_SOURCE))
             }
 
             ProfilePhotoUiEvent.OnDismissed -> navigator.navigateBack()
@@ -130,12 +131,14 @@ class ProfilePhotoViewModel(
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
         if (replacePhoto(ProfilePhoto.Remote(url))) {
-            trackEvent("account_photo_selected", mapOf("source" to "profile_photo"))
+            trackEvent("account_photo_selected", mapOf("source" to PROFILE_PHOTO_SOURCE))
         }
     }
 
-    // Why: whatever replaces the photo wins over a pick still being read or framed.
-    // Why: says whether it took the photo, which Analytics counts; one saving drops any other.
+    /*
+     * Why: whatever replaces the photo wins over a pick still being read or framed. It says whether it took the
+     * photo, which Analytics counts: one saving drops any other.
+     */
     private fun replacePhoto(photo: ProfilePhoto?): Boolean {
         if (isSaving) return false
         photoPicker.cancel()
