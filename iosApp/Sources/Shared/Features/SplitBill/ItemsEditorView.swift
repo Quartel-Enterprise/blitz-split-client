@@ -217,18 +217,27 @@ private struct FeeRows: View {
         Button {
             send(SplitBillUiEventOnFeeClicked(fee: .service))
         } label: {
-            feeLabel(ItemsCopy.serviceTitle(items), String(localized: "In proportion to what each one had"), items.breakdown.serviceMinor)
+            feeLabel(ItemsCopy.serviceTitle(items), String(
+                localized: "In proportion to what each one had",
+                bundle: .appLanguage,
+            ), items.breakdown.serviceMinor)
         }
         .buttonStyle(.plain)
         Button {
             send(SplitBillUiEventOnFeeClicked(fee: .couvert))
         } label: {
-            feeLabel(String(localized: "Cover"), ItemsCopy.couvertSubtitle(items), items.breakdown.couvertMinor)
+            feeLabel(String(
+                localized: "Cover",
+                bundle: .appLanguage,
+            ), ItemsCopy.couvertSubtitle(items), items.breakdown.couvertMinor)
         }
         .buttonStyle(.plain)
         if items.showsExtra {
             HStack {
-                feeLabel(String(localized: "Difference"), String(localized: "In proportion to what each one had"), items.split.extraMinor, signed: true)
+                feeLabel(String(localized: "Difference", bundle: .appLanguage), String(
+                    localized: "In proportion to what each one had",
+                    bundle: .appLanguage,
+                ), items.split.extraMinor, signed: true)
                 Button("Remove the difference", systemImage: "xmark.circle.fill") {
                     send(SplitBillUiEventOnDifferenceRemoved.shared)
                 }

@@ -320,12 +320,12 @@ private struct StatsHeroCard: View {
                 Divider().padding(.vertical, 10)
                 HStack(alignment: .top, spacing: 12) {
                     figure(
-                        title: String(localized: "Your share"),
+                        title: String(localized: "Your share", bundle: .appLanguage),
                         value: state.currency.format(share),
-                        hint: String(localized: "\(Int(state.mySharePercent))% of the total"),
+                        hint: String(localized: "\(Int(state.mySharePercent))% of the total", bundle: .appLanguage),
                     )
                     figure(
-                        title: String(localized: "You paid"),
+                        title: String(localized: "You paid", bundle: .appLanguage),
                         value: state.currency.format(state.myPaidMinor?.int64Value ?? 0),
                         hint: GroupStatsCopy.expenseCount(state.myPaidCount),
                     )
@@ -343,9 +343,12 @@ private struct StatsHeroCard: View {
     private var meta: String {
         var count = GroupStatsCopy.expenseCount(state.expenseCount)
         if state.pendingCount > 0 {
-            count += ", " + String(localized: "\(Int(state.pendingCount)) waiting to be sent")
+            count += ", " + String(localized: "\(Int(state.pendingCount)) waiting to be sent", bundle: .appLanguage)
         }
-        return String(localized: "\(count) · average of \(state.currency.format(state.averagePerPersonMinor)) per person")
+        return String(
+            localized: "\(count) · average of \(state.currency.format(state.averagePerPersonMinor)) per person",
+            bundle: .appLanguage,
+        )
     }
 
     private func figure(title: String, value: String, hint: String) -> some View {
@@ -372,24 +375,27 @@ private struct StatsSummaryPanels: View {
                 GroupStatsCopy.period(state.period, isTrip: state.isTrip),
             )
             panel(
-                String(localized: "Expenses"),
+                String(localized: "Expenses", bundle: .appLanguage),
                 "\(Int(state.expenseCount))",
                 state.pendingCount > 0
-                    ? String(localized: "\(Int(state.pendingCount)) waiting to be sent")
-                    : String(localized: "settle-ups don't count"),
+                    ? String(localized: "\(Int(state.pendingCount)) waiting to be sent", bundle: .appLanguage)
+                    : String(localized: "settle-ups don't count", bundle: .appLanguage),
                 isPending: state.pendingCount > 0,
             )
             panel(
-                String(localized: "Average per person"),
+                String(localized: "Average per person", bundle: .appLanguage),
                 state.currency.format(state.averagePerPersonMinor),
-                String(localized: "\(Int(state.memberCount)) people"),
+                String(localized: "\(Int(state.memberCount)) people", bundle: .appLanguage),
             )
             if let share = state.myShareMinor?.int64Value {
                 let paid = state.currency.format(state.myPaidMinor?.int64Value ?? 0)
                 panel(
-                    String(localized: "Your share"),
+                    String(localized: "Your share", bundle: .appLanguage),
                     state.currency.format(share),
-                    String(localized: "\(Int(state.mySharePercent))% of the total · you paid \(paid)"),
+                    String(
+                        localized: "\(Int(state.mySharePercent))% of the total · you paid \(paid)",
+                        bundle: .appLanguage,
+                    ),
                 )
             }
         }
@@ -829,7 +835,10 @@ private struct StatsAverageLegend: View {
     @State private var isHintShown = false
     // A click keeps the hint open after the pointer leaves, until it is dismissed
     @State private var isHintPinned = false
-    private let hint = String(localized: "The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.")
+    private let hint = String(
+        localized: "The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.",
+        bundle: .appLanguage,
+    )
 
     var body: some View {
         Button {

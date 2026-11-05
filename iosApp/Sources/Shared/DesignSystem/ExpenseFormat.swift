@@ -21,7 +21,7 @@ extension GroupCurrency {
     /// "₿" and "Ξ" where the language puts a currency's symbol, with only the decimals the amount needs ("₿ 0,00125"),
     /// and bitcoin in satoshis is whole sats ("125.000 sats").
     func format(_ minor: Int64) -> String {
-        if showsSats { return String(localized: "\(formatPlain(minor)) sats") }
+        if showsSats { return String(localized: "\(formatPlain(minor)) sats", bundle: .appLanguage) }
         if let cryptoSymbol {
             return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
                 .string(from: decimal(of: minor) as NSDecimalNumber) ?? formatPlain(minor)
@@ -50,7 +50,7 @@ extension GroupCurrency {
     /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it; "₿", "Ξ", or
     /// "sats" for bitcoin in satoshis).
     var symbol: String {
-        if showsSats { return String(localized: "sats") }
+        if showsSats { return String(localized: "sats", bundle: .appLanguage) }
         if let cryptoSymbol { return cryptoSymbol }
         if let symbol = Self.symbols[code] { return symbol }
         let formatter = NumberFormatter()
@@ -122,8 +122,8 @@ enum ExpenseFormat {
     /// A day of the group's list: "Today", "Yesterday" or "Fri, Oct 24".
     static func day(_ millis: Int64, relativeDay: RelativeDay) -> String {
         switch relativeDay {
-        case .today: String(localized: "Today")
-        case .yesterday: String(localized: "Yesterday")
+        case .today: String(localized: "Today", bundle: .appLanguage)
+        case .yesterday: String(localized: "Yesterday", bundle: .appLanguage)
         default: weekdayDate(millis)
         }
     }
@@ -131,8 +131,8 @@ enum ExpenseFormat {
     /// "When" on a bill: "Today, Oct 28 · 9:30 PM", "Yesterday, Oct 27 · 9:30 PM" or "Fri, Oct 24 · 9:30 PM".
     static func when(_ millis: Int64, relativeDay: RelativeDay) -> String {
         let day = switch relativeDay {
-        case .today: String(localized: "Today, \(shortDate(millis))")
-        case .yesterday: String(localized: "Yesterday, \(shortDate(millis))")
+        case .today: String(localized: "Today, \(shortDate(millis))", bundle: .appLanguage)
+        case .yesterday: String(localized: "Yesterday, \(shortDate(millis))", bundle: .appLanguage)
         default: weekdayDate(millis)
         }
         return "\(day) · \(time(millis))"
@@ -142,8 +142,8 @@ enum ExpenseFormat {
     /// "27 de out., 21:10").
     static func dayTime(_ millis: Int64, relativeDay: RelativeDay) -> String {
         switch relativeDay {
-        case .today: String(localized: "Today, \(time(millis))")
-        case .yesterday: String(localized: "Yesterday, \(time(millis))")
+        case .today: String(localized: "Today, \(time(millis))", bundle: .appLanguage)
+        case .yesterday: String(localized: "Yesterday, \(time(millis))", bundle: .appLanguage)
         default: "\(shortDate(millis)), \(time(millis))"
         }
     }
@@ -166,7 +166,7 @@ enum ExpenseFormat {
     /// Who paid a bill several people paid: "You and Ana" for two, "3 people" for three or more, in the order the
     /// shared code gives them.
     static func payerNames(_ names: [String]) -> String {
-        names.count <= 2 ? self.names(names) : String(localized: "\(names.count) people")
+        names.count <= 2 ? self.names(names) : String(localized: "\(names.count) people", bundle: .appLanguage)
     }
 
     /// "Bruno paid", "You paid", "You and Ana paid" or "3 people paid", from whoever paid in the shared code's order
@@ -174,22 +174,26 @@ enum ExpenseFormat {
     /// `loneFormer`, also for a bill with no payer.
     static func paid(_ payers: [(name: String?, isMe: Bool)], loneFormer: String?) -> String? {
         if payers.count > 1 {
-            let formerMember = String(localized: "Former member")
-            return paidBySeveral(payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember })
+            let formerMember = String(localized: "Former member", bundle: .appLanguage)
+            return paidBySeveral(payers.map { $0.isMe ? String(
+                localized: "You",
+                bundle: .appLanguage,
+            ) : $0.name ?? formerMember })
         }
         guard let payer = payers.first else { return loneFormer }
-        if payer.isMe { return String(localized: "You paid") }
+        if payer.isMe { return String(localized: "You paid", bundle: .appLanguage) }
         guard let name = payer.name else { return loneFormer }
-        return String(localized: "\(name) paid")
+        return String(localized: "\(name) paid", bundle: .appLanguage)
     }
 
     /// "You and Ana paid", "3 people paid", or "Ana paid" once the other payers of a new bill left the group and
     /// only one is left paying part of it.
     static func paidBySeveral(_ names: [String]) -> String {
-        if names.count == 1, let name = names.first { return String(localized: "\(name) paid") }
+        if names.count == 1, let name = names.first { return String(localized: "\(name) paid", bundle: .appLanguage) }
         return String(
             localized: "Several people paid a bill",
             defaultValue: "\(payerNames(names)) paid",
+            bundle: .appLanguage,
             comment: "Who paid a bill several people paid; %@ is their names, or how many they are",
         )
     }

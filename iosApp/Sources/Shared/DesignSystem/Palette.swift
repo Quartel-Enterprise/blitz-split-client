@@ -105,11 +105,11 @@ extension AvatarColor {
 
     var label: String {
         switch self {
-        case .peach: String(localized: "Peach")
-        case .green: String(localized: "Green")
-        case .lilac: String(localized: "Lilac")
-        case .sand: String(localized: "Sand")
-        default: String(localized: "Blue")
+        case .peach: String(localized: "Peach", bundle: .appLanguage)
+        case .green: String(localized: "Green", bundle: .appLanguage)
+        case .lilac: String(localized: "Lilac", bundle: .appLanguage)
+        case .sand: String(localized: "Sand", bundle: .appLanguage)
+        default: String(localized: "Blue", bundle: .appLanguage)
         }
     }
 }

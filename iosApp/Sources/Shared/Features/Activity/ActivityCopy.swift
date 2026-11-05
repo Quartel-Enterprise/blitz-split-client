@@ -12,14 +12,18 @@ enum ActivityCopy {
 
     /// "Open Ana's profile", or "Open your profile": what a tap on the face does.
     static func openActorLabel(_ item: ActivityItem) -> String {
-        if item.actor.isMe { return String(localized: "Open your profile") }
-        return String(localized: "Open \(actor(item))'s profile")
+        if item.actor.isMe { return String(localized: "Open your profile", bundle: .appLanguage) }
+        return String(localized: "Open \(actor(item))'s profile", bundle: .appLanguage)
     }
 
     /// Who did it: "You", their name, or "Someone" when the server kept no name.
     static func actor(_ item: ActivityItem) -> String {
-        if item.actor.isMe { return String(localized: "You") }
-        return item.actor.name ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+        if item.actor.isMe { return String(localized: "You", bundle: .appLanguage) }
+        return item.actor.name ?? String(
+            localized: "Someone",
+            bundle: .appLanguage,
+            comment: "Who did something in Activity, unnamed",
+        )
     }
 
     /// What it is about: the bill, the group or the member, as the headline names it.
@@ -83,38 +87,38 @@ enum ActivityCopy {
         if let first = item.changes.first {
             let change = changeLine(first)
             guard item.moreChangesCount > 0 else { return change }
-            return "\(change) · \(String(localized: "\(Int(item.moreChangesCount)) more changes"))"
+            return "\(change) · \(String(localized: "\(Int(item.moreChangesCount)) more changes", bundle: .appLanguage))"
         }
         let amountText = amount(item)
         switch item.kind {
         case .billCreated, .billEdited:
             return joined([amountText, item.code.map { splitMode($0) }])
         case .billDeleted:
-            return joined([amountText, String(localized: "the bill no longer exists")])
+            return joined([amountText, String(localized: "the bill no longer exists", bundle: .appLanguage)])
         case .paymentRecorded, .paymentUndone:
-            let from = item.fromIsMe ? String(localized: "You") : PaymentCopy.name(item.fromName)
-            let to = item.toIsMe ? String(localized: "You") : PaymentCopy.name(item.toName)
+            let from = item.fromIsMe ? String(localized: "You", bundle: .appLanguage) : PaymentCopy.name(item.fromName)
+            let to = item.toIsMe ? String(localized: "You", bundle: .appLanguage) : PaymentCopy.name(item.toName)
             let method = item.code.map { PaymentCopy.method(SettlementMethod.companion.fromCode(code: $0)) }
             return joined(["\(from) → \(to)", amountText, method])
         case .groupCreated, .groupEdited:
             return groupType(item)
         case .groupDeleted:
-            return String(localized: "The group no longer exists")
+            return String(localized: "The group no longer exists", bundle: .appLanguage)
         case .inviteLinkChanged:
-            return String(localized: "The old link no longer works")
+            return String(localized: "The old link no longer works", bundle: .appLanguage)
         case .memberAdded:
-            return String(localized: "Hasn't joined yet")
+            return String(localized: "Hasn't joined yet", bundle: .appLanguage)
         case .memberJoined:
             if let name = item.subject, name != item.actor.name {
-                return String(localized: "Joined as \(name)")
+                return String(localized: "Joined as \(name)", bundle: .appLanguage)
             }
-            return String(localized: "Through the invite link")
+            return String(localized: "Through the invite link", bundle: .appLanguage)
         case .memberLeft:
-            return String(localized: "Stays as a name in the bills and payments")
+            return String(localized: "Stays as a name in the bills and payments", bundle: .appLanguage)
         case .memberRemoved:
-            return String(localized: "Hadn't joined the group")
+            return String(localized: "Hadn't joined the group", bundle: .appLanguage)
         case .memberReleased:
-            return String(localized: "Whoever joined as \(object(item)) left the group")
+            return String(localized: "Whoever joined as \(object(item)) left the group", bundle: .appLanguage)
         case .memberRenamed:
             return nil
         case .simplifyDebtsChanged:
@@ -123,21 +127,24 @@ enum ActivityCopy {
         case .commentAdded:
             return item.isCommentDeleted ? nil : item.body.map { "“\($0)”" }
         default:
-            return joined([amountText, String(localized: "message sent")])
+            return joined([amountText, String(localized: "message sent", bundle: .appLanguage)])
         }
     }
 
     /// "Viagem Floripa · Today, 8:15 PM", or "· waiting to send" for a change not up yet: the detail beside the list.
     static func meta(_ item: ActivityItem, days: [ActivityDay]) -> String {
         let group = item.groupName ?? ""
-        if item.isPending { return "\(group) · \(String(localized: "waiting to send"))" }
+        if item.isPending { return "\(group) · \(String(localized: "waiting to send", bundle: .appLanguage))" }
         let relativeDay = days.first { $0.items.contains { $0.id == item.id } }?.relativeDay ?? .other
         return "\(group) · \(ExpenseFormat.dayTime(item.occurredAt, relativeDay: relativeDay))"
     }
 
     /// Under the row's lines: the time, the day being its section's header, or "Waiting to send".
     static func time(_ item: ActivityItem) -> String {
-        item.isPending ? String(localized: "Waiting to send") : ExpenseFormat.time(item.occurredAt)
+        item.isPending ? String(
+            localized: "Waiting to send",
+            bundle: .appLanguage,
+        ) : ExpenseFormat.time(item.occurredAt)
     }
 
     /// "Open bill", "See payment", "Open group" or "See balances": what the item opens.
@@ -154,8 +161,8 @@ enum ActivityCopy {
     /// The day's header: "Today", "Yesterday" or "Friday, October 30".
     static func day(_ day: ActivityDay) -> String {
         switch day.relativeDay {
-        case .today: String(localized: "Today")
-        case .yesterday: String(localized: "Yesterday")
+        case .today: String(localized: "Today", bundle: .appLanguage)
+        case .yesterday: String(localized: "Yesterday", bundle: .appLanguage)
         default: ExpenseFormat.date(of: day.dayStartMillis).formatted(.dateTime.weekday(.wide).day().month(.wide))
         }
     }
@@ -198,20 +205,36 @@ enum ActivityCopy {
     /// "Amount", "Who paid", "Default split"…
     static func field(_ field: ActivityField) -> String {
         switch field {
-        case .amount: String(localized: "Amount")
-        case .description_: String(localized: "Description")
-        case .spentAt: String(localized: "When")
-        case .payers: String(localized: "Who paid")
-        case .split: String(localized: "Split")
-        case .name: String(localized: "Name")
-        case .type: String(localized: "Type")
-        case .color: String(localized: "Color", comment: "A group's avatar color, in what an edit changed")
-        case .shape: String(localized: "Shape", comment: "A group icon's shape, in what an edit changed")
-        case .photo: String(localized: "Photo", comment: "A group's photo, in what an edit changed")
-        case .currency: String(localized: "Currency")
-        case .category: String(localized: "Category")
-        case .visibility: String(localized: "Link", comment: "Who may open a bill's share link, in what an edit changed")
-        default: String(localized: "Default split")
+        case .amount: String(localized: "Amount", bundle: .appLanguage)
+        case .description_: String(localized: "Description", bundle: .appLanguage)
+        case .spentAt: String(localized: "When", bundle: .appLanguage)
+        case .payers: String(localized: "Who paid", bundle: .appLanguage)
+        case .split: String(localized: "Split", bundle: .appLanguage)
+        case .name: String(localized: "Name", bundle: .appLanguage)
+        case .type: String(localized: "Type", bundle: .appLanguage)
+        case .color: String(
+            localized: "Color",
+            bundle: .appLanguage,
+            comment: "A group's avatar color, in what an edit changed",
+        )
+        case .shape: String(
+            localized: "Shape",
+            bundle: .appLanguage,
+            comment: "A group icon's shape, in what an edit changed",
+        )
+        case .photo: String(
+            localized: "Photo",
+            bundle: .appLanguage,
+            comment: "A group's photo, in what an edit changed",
+        )
+        case .currency: String(localized: "Currency", bundle: .appLanguage)
+        case .category: String(localized: "Category", bundle: .appLanguage)
+        case .visibility: String(
+            localized: "Link",
+            bundle: .appLanguage,
+            comment: "Who may open a bill's share link, in what an edit changed",
+        )
+        default: String(localized: "Default split", bundle: .appLanguage)
         }
     }
 
@@ -229,18 +252,18 @@ enum ActivityCopy {
         case .shape: value.code.flatMap { GroupShape.companion.fromCodeOrNull(code: $0) }.map(shapeLabel)
         // The shared code says previous and new for a photo, never its URL, and nothing for none
         case .photo: switch value.code {
-            case ActivityField.companion.PHOTO_PREVIOUS: String(localized: "Previous photo")
-            case ActivityField.companion.PHOTO_NEW: String(localized: "New photo")
-            default: String(localized: "No photo")
+            case ActivityField.companion.PHOTO_PREVIOUS: String(localized: "Previous photo", bundle: .appLanguage)
+            case ActivityField.companion.PHOTO_NEW: String(localized: "New photo", bundle: .appLanguage)
+            default: String(localized: "No photo", bundle: .appLanguage)
             }
         case .currency: value.code
         // Resolved in every group's categories, so a group's own is named too; none is "Other"
         case .category: value.category.map { CategoryCopy.name($0) }
         case .visibility: value.code.map { code in
                 code == BillLinkVisibility.anyone.code
-                    ? String(localized: "Anyone with the link")
-                    : String(localized: "Only people in the bill")
-            } ?? String(localized: "Off", comment: "A bill's share link, turned off")
+                    ? String(localized: "Anyone with the link", bundle: .appLanguage)
+                    : String(localized: "Only people in the bill", bundle: .appLanguage)
+            } ?? String(localized: "Off", bundle: .appLanguage, comment: "A bill's share link, turned off")
         case .defaultSplit: value.code.map { code in
                 DefaultSplitMode.companion.fromCodeOrNull(code: code).map(DefaultSplitCopy.modeLabel) ?? code
             }
@@ -252,10 +275,10 @@ enum ActivityCopy {
     /// "Cookie", "Petal"…: only Android draws the shape, but every feed names it.
     private static func shapeLabel(_ shape: GroupShape) -> String {
         switch shape {
-        case .cookie: String(localized: "Cookie", comment: "A group icon's shape")
-        case .petal: String(localized: "Petal", comment: "A group icon's shape")
-        case .circle: String(localized: "Circle", comment: "A group icon's shape")
-        default: String(localized: "Square", comment: "A group icon's shape")
+        case .cookie: String(localized: "Cookie", bundle: .appLanguage, comment: "A group icon's shape")
+        case .petal: String(localized: "Petal", bundle: .appLanguage, comment: "A group icon's shape")
+        case .circle: String(localized: "Circle", bundle: .appLanguage, comment: "A group icon's shape")
+        default: String(localized: "Square", bundle: .appLanguage, comment: "A group icon's shape")
         }
     }
 
@@ -272,6 +295,7 @@ enum ActivityCopy {
     static func simplification(_ simplification: ActivitySimplification, currency: GroupCurrency?) -> String {
         let counts = String(
             localized: "\(Int(simplification.paymentsBefore)) payments became \(Int(simplification.paymentsAfter)).",
+            bundle: .appLanguage,
             comment: "Activity: how many payments before Simplify debts changed, and after; the verb agrees with the first",
         )
         var after = ""
@@ -279,17 +303,41 @@ enum ActivityCopy {
             let name = PaymentCopy.name(pair.name)
             let amount = debtAmount(abs(pair.afterMinor), currency: currency)
             after = pair.afterMinor > 0
-                ? String(localized: "Now \(name) pays you \(amount)", comment: "Activity: a pair Simplify debts made")
-                : String(localized: "Now you pay \(name) \(amount)", comment: "Activity: a pair Simplify debts made")
+                ? String(
+                    localized: "Now \(name) pays you \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: a pair Simplify debts made",
+                )
+                : String(
+                    localized: "Now you pay \(name) \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: a pair Simplify debts made",
+                )
         }
         if let pair = simplification.gonePair {
             let name = PaymentCopy.name(pair.name)
             let gone = pair.beforeMinor > 0
-                ? String(localized: "\(name) no longer owes you", comment: "Activity: a pair Simplify debts took away")
-                : String(localized: "you no longer owe \(name)", comment: "Activity: a pair Simplify debts took away")
+                ? String(
+                    localized: "\(name) no longer owes you",
+                    bundle: .appLanguage,
+                    comment: "Activity: a pair Simplify debts took away",
+                )
+                : String(
+                    localized: "you no longer owe \(name)",
+                    bundle: .appLanguage,
+                    comment: "Activity: a pair Simplify debts took away",
+                )
             after = after.isEmpty
-                ? String(localized: "Now \(gone)", comment: "Activity: only a pair that went, after the counts")
-                : String(localized: "\(after), and \(gone)", comment: "Activity: a new pair and one that went")
+                ? String(
+                    localized: "Now \(gone)",
+                    bundle: .appLanguage,
+                    comment: "Activity: only a pair that went, after the counts",
+                )
+                : String(
+                    localized: "\(after), and \(gone)",
+                    bundle: .appLanguage,
+                    comment: "Activity: a new pair and one that went",
+                )
         }
         return after.isEmpty ? counts : "\(counts) \(after)."
     }
@@ -299,17 +347,37 @@ enum ActivityCopy {
         let amount = debtAmount(abs(minor), currency: currency)
         if minor > 0 {
             return isBefore
-                ? String(localized: "owed you \(amount)", comment: "Activity: what someone owed this device's user before")
-                : String(localized: "owes you \(amount)", comment: "Activity: what someone owes this device's user now")
+                ? String(
+                    localized: "owed you \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: what someone owed this device's user before",
+                )
+                : String(
+                    localized: "owes you \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: what someone owes this device's user now",
+                )
         }
         if minor < 0 {
             return isBefore
-                ? String(localized: "you owed \(amount)", comment: "Activity: what this device's user owed someone before")
-                : String(localized: "you owe \(amount)", comment: "Activity: what this device's user owes someone now")
+                ? String(
+                    localized: "you owed \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: what this device's user owed someone before",
+                )
+                : String(
+                    localized: "you owe \(amount)",
+                    bundle: .appLanguage,
+                    comment: "Activity: what this device's user owes someone now",
+                )
         }
         return isBefore
-            ? String(localized: "didn't owe you", comment: "Activity: nobody owed anything before")
-            : String(localized: "owes nothing now", comment: "Activity: nobody owes anything now")
+            ? String(
+                localized: "didn't owe you",
+                bundle: .appLanguage,
+                comment: "Activity: nobody owed anything before",
+            )
+            : String(localized: "owes nothing now", bundle: .appLanguage, comment: "Activity: nobody owes anything now")
     }
 
     private static func debtAmount(_ minor: Int64, currency: GroupCurrency?) -> String {
@@ -329,17 +397,17 @@ enum ActivityCopy {
         let date = deletion.atMillis.map {
             ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide))
         }
-        let who: String? = deletion.byMe ? String(localized: "You") : deletion.byName
+        let who: String? = deletion.byMe ? String(localized: "You", bundle: .appLanguage) : deletion.byName
         let first: String = if let who, let date {
-            String(localized: "\(who) deleted \(subject) on \(date).")
+            String(localized: "\(who) deleted \(subject) on \(date).", bundle: .appLanguage)
         } else if deletion.isGroup {
-            String(localized: "The group “\(subject)” was deleted.")
+            String(localized: "The group “\(subject)” was deleted.", bundle: .appLanguage)
         } else {
-            String(localized: "The bill “\(subject)” was deleted.")
+            String(localized: "The bill “\(subject)” was deleted.", bundle: .appLanguage)
         }
         let second = deletion.isGroup
-            ? String(localized: "The entry stays in Activity, but the group no longer opens.")
-            : String(localized: "The entry stays in Activity, but the bill no longer opens.")
+            ? String(localized: "The entry stays in Activity, but the group no longer opens.", bundle: .appLanguage)
+            : String(localized: "The entry stays in Activity, but the bill no longer opens.", bundle: .appLanguage)
         return "\(first) \(second)"
     }
 
@@ -350,10 +418,10 @@ enum ActivityCopy {
         switch status {
         case .offline:
             queuedCount > 0
-                ? String(localized: "Offline · \(Int(queuedCount)) changes queued")
-                : String(localized: "Offline · everything is saved on your \(DeviceName.current)")
-        case .serverError: String(localized: "No response from the server")
-        default: String(localized: "Syncing…")
+                ? String(localized: "Offline · \(Int(queuedCount)) changes queued", bundle: .appLanguage)
+                : String(localized: "Offline · everything is saved on your \(DeviceName.current)", bundle: .appLanguage)
+        case .serverError: String(localized: "No response from the server", bundle: .appLanguage)
+        default: String(localized: "Syncing…", bundle: .appLanguage)
         }
     }
 
@@ -367,17 +435,21 @@ enum ActivityCopy {
 
     /// "3 new".
     static func unread(_ count: Int32) -> String {
-        String(localized: "\(Int(count)) new", comment: "How many Activity items are unread")
+        String(localized: "\(Int(count)) new", bundle: .appLanguage, comment: "How many Activity items are unread")
     }
 
     /// "Contas", "Pagamentos e acertos"…
     static func type(_ type: ActivityType) -> String {
         switch type {
-        case .bills: String(localized: "Bills")
-        case .payments: String(localized: "Payments and settlements")
-        case .comments: String(localized: "Comments")
-        case .peopleAndGroups: String(localized: "People and groups")
-        default: String(localized: "Requests", comment: "The Activity filter's type of requests to pay")
+        case .bills: String(localized: "Bills", bundle: .appLanguage)
+        case .payments: String(localized: "Payments and settlements", bundle: .appLanguage)
+        case .comments: String(localized: "Comments", bundle: .appLanguage)
+        case .peopleAndGroups: String(localized: "People and groups", bundle: .appLanguage)
+        default: String(
+            localized: "Requests",
+            bundle: .appLanguage,
+            comment: "The Activity filter's type of requests to pay",
+        )
         }
     }
 
@@ -394,15 +466,19 @@ enum ActivityCopy {
     /// The Type chip: "Type" with none picked, the type with one, "2 types" with more.
     static func typeChip(_ types: [ActivityType]) -> String {
         switch types.count {
-        case 0: String(localized: "Type")
+        case 0: String(localized: "Type", bundle: .appLanguage)
         case 1: type(types[0])
-        default: String(localized: "\(types.count) types")
+        default: String(localized: "\(types.count) types", bundle: .appLanguage)
         }
     }
 
     /// "4 results".
     static func results(_ count: Int32) -> String {
-        String(localized: "\(Int(count)) results", comment: "How many Activity items the filter being picked shows")
+        String(
+            localized: "\(Int(count)) results",
+            bundle: .appLanguage,
+            comment: "How many Activity items the filter being picked shows",
+        )
     }
 
     // MARK: - Helpers
@@ -419,16 +495,16 @@ enum ActivityCopy {
     private static func splitMode(_ code: String) -> String {
         guard let mode = SplitMode.companion.fromCodeOrNull(code: code) else { return code }
         return switch mode {
-        case .amount: String(localized: "Amounts")
-        case .percent: String(localized: "Percentage")
-        case .shares: String(localized: "Shares")
-        default: String(localized: "Equal")
+        case .amount: String(localized: "Amounts", bundle: .appLanguage)
+        case .percent: String(localized: "Percentage", bundle: .appLanguage)
+        case .shares: String(localized: "Shares", bundle: .appLanguage)
+        default: String(localized: "Equal", bundle: .appLanguage)
         }
     }
 
     private static func names(_ value: ActivityChangeValue) -> String? {
         var names = value.names
-        if value.hasFormerMember { names.append(String(localized: "Former member")) }
+        if value.hasFormerMember { names.append(String(localized: "Former member", bundle: .appLanguage)) }
         return names.isEmpty ? nil : ExpenseFormat.names(names)
     }
 
@@ -442,10 +518,10 @@ private extension GroupType {
     /// "Trip", "Home", "Event" or "Other", as Novo grupo names them.
     var typeLabel: String {
         switch self {
-        case .home: String(localized: "Home")
-        case .event: String(localized: "Event")
-        case .other: String(localized: "Other")
-        default: String(localized: "Trip")
+        case .home: String(localized: "Home", bundle: .appLanguage)
+        case .event: String(localized: "Event", bundle: .appLanguage)
+        case .other: String(localized: "Other", bundle: .appLanguage)
+        default: String(localized: "Trip", bundle: .appLanguage)
         }
     }
 }

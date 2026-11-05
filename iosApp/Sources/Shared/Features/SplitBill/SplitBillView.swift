@@ -914,7 +914,7 @@ private struct PayerAmountField: View {
                 .accessibilityHidden(true)
             // "How much Pierre paid" reads better to VoiceOver than "How much You paid"
             KeptTextField(text: model.payerAmount(of: row.memberId), prompt: Text(verbatim: currency.zeroPlaceholder)) {
-                Text("How much \(row.person?.name ?? String(localized: "Former member")) paid")
+                Text("How much \(row.person?.name ?? String(localized: "Former member", bundle: .appLanguage)) paid")
             }
             // A form in columns would draw that label beside the field on macOS
             .labelsHidden()

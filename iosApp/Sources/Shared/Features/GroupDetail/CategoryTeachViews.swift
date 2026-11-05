@@ -5,22 +5,37 @@ import SwiftUI
 enum CategoryTeachCopy {
     static func offer(_ teach: CategoryTeach) -> String {
         let saved = CategoryCopy.path(teach.category, parent: teach.categoryParent)
-        guard let map = teach.mapCategory else { return String(localized: "Bill saved in \(saved). Teach the map?") }
+        guard let map = teach.mapCategory else { return String(
+            localized: "Bill saved in \(saved). Teach the map?",
+            bundle: .appLanguage,
+        ) }
         let suggested = CategoryCopy.path(map, parent: teach.mapCategoryParent)
-        return String(localized: "Bill saved in \(saved), not in \(suggested), which the map suggested. Teach the map?")
+        return String(
+            localized: "Bill saved in \(saved), not in \(suggested), which the map suggested. Teach the map?",
+            bundle: .appLanguage,
+        )
     }
 
     static func question(_ teach: CategoryTeach) -> String {
         let target = CategoryCopy.path(teach.category, parent: teach.categoryParent)
-        return String(localized: "Which word of “\(teach.title)” should pick \(target) on the next bills?")
+        return String(
+            localized: "Which word of “\(teach.title)” should pick \(target) on the next bills?",
+            bundle: .appLanguage,
+        )
     }
 
     static func detail(_ word: TeachWord, teach: CategoryTeach) -> String {
         let target = CategoryCopy.path(teach.category, parent: teach.categoryParent)
         guard let current = word.currentCategory else {
-            return String(localized: "New in the map. Titles with “\(word.term)” go to \(target).")
+            return String(
+                localized: "New in the map. Titles with “\(word.term)” go to \(target).",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "Leaves \(CategoryCopy.name(current)): titles with “\(word.term)” go to \(target).")
+        return String(
+            localized: "Leaves \(CategoryCopy.name(current)): titles with “\(word.term)” go to \(target).",
+            bundle: .appLanguage,
+        )
     }
 }
 

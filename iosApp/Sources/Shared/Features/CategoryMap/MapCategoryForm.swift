@@ -109,7 +109,10 @@ struct EditCategoryButton: View {
 
     var body: some View {
         if model.state.canCreateCategory, category.isGroupCategory {
-            Button(String(localized: "Edit “\(CategoryCopy.name(category))”"), systemImage: "pencil") {
+            Button(String(
+                localized: "Edit “\(CategoryCopy.name(category))”",
+                bundle: .appLanguage,
+            ), systemImage: "pencil") {
                 model.send(CategoryMapUiEventOnEditCategoryClicked(categoryId: category.id))
             }
         }

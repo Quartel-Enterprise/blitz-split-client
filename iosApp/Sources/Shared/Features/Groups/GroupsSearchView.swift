@@ -328,7 +328,7 @@ private struct SearchContactRow: View {
             color: hit.color,
             photoUrl: hit.photoUrl,
             name: GroupsSearchCopy.marked(hit.name, hit.nameMatch),
-            detail: String(localized: "Contact · \(Int(hit.groupCount)) groups"),
+            detail: String(localized: "Contact · \(Int(hit.groupCount)) groups", bundle: .appLanguage),
             showsChevron: true
         )
     }

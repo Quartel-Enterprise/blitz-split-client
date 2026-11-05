@@ -16,7 +16,7 @@ enum SplitBillCopy {
 
     /// "You" for this device's user, the name for anyone else.
     static func name(_ person: BillPerson) -> String {
-        person.isMe ? String(localized: "You") : person.name
+        person.isMe ? String(localized: "You", bundle: .appLanguage) : person.name
     }
 
     /// The mode selector: Equal, Amounts, % and Shares.
@@ -33,11 +33,11 @@ enum SplitBillCopy {
     /// The split row of the bill: Equally, By amount, By percentage or By shares.
     static func modeSummary(_ mode: SplitMode) -> String {
         switch mode {
-        case .amount: String(localized: "By amount")
-        case .percent: String(localized: "By percentage")
-        case .shares: String(localized: "By shares")
-        case .items: String(localized: "By items")
-        default: String(localized: "Equally")
+        case .amount: String(localized: "By amount", bundle: .appLanguage)
+        case .percent: String(localized: "By percentage", bundle: .appLanguage)
+        case .shares: String(localized: "By shares", bundle: .appLanguage)
+        case .items: String(localized: "By items", bundle: .appLanguage)
+        default: String(localized: "Equally", bundle: .appLanguage)
         }
     }
 
@@ -55,35 +55,50 @@ enum SplitBillCopy {
     /// Under the modes: what the mode does, or where the group's default split lives once there is one.
     static func hint(_ editor: SplitEditor, state: SplitBillUiState) -> String {
         if state.defaultSplit != nil {
-            return String(localized: "The default lives in Edit group › Default split. Bills already added don't change.")
+            return String(
+                localized: "The default lives in Edit group › Default split. Bills already added don't change.",
+                bundle: .appLanguage,
+            )
         }
         switch editor.mode {
         case .amount:
             let zero = editor.currency.format(0)
-            let out = String(localized: "Whoever is left at \(zero) is out of the bill.")
-            return "\(out) \(String(localized: "Changing the total later rescales the amounts."))"
-        case .percent: return String(localized: "Whole numbers only. The leftover cents go to whoever paid.")
-        case .shares: return String(localized: "Use shares when someone has more, like who brought a plus-one.")
-        default: return String(localized: "When it doesn't split evenly, the leftover cents go to whoever paid.")
+            let out = String(localized: "Whoever is left at \(zero) is out of the bill.", bundle: .appLanguage)
+            return "\(out) \(String(localized: "Changing the total later rescales the amounts.", bundle: .appLanguage))"
+        case .percent: return String(
+            localized: "Whole numbers only. The leftover cents go to whoever paid.",
+            bundle: .appLanguage,
+        )
+        case .shares: return String(
+            localized: "Use shares when someone has more, like who brought a plus-one.",
+            bundle: .appLanguage,
+        )
+        default: return String(
+            localized: "When it doesn't split evenly, the leftover cents go to whoever paid.",
+            bundle: .appLanguage,
+        )
         }
     }
 
     /// "Diego is out", "Diego and Elisa are out" or "You're out".
     static func out(_ people: [BillPerson]) -> String {
         if people.count == 1, let person = people.first {
-            return person.isMe ? String(localized: "You're out") : String(localized: "\(person.name) is out")
+            return person.isMe ? String(localized: "You're out", bundle: .appLanguage) : String(
+                localized: "\(person.name) is out",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "\(ExpenseFormat.names(people.map(name))) are out")
+        return String(localized: "\(ExpenseFormat.names(people.map(name))) are out", bundle: .appLanguage)
     }
 
     /// "Elisa has no amount", "Elisa and Diego have no amount" or "You have no amount".
     static func noAmount(_ people: [BillPerson]) -> String {
         if people.count == 1, let person = people.first {
             return person.isMe
-                ? String(localized: "You have no amount")
-                : String(localized: "\(person.name) has no amount")
+                ? String(localized: "You have no amount", bundle: .appLanguage)
+                : String(localized: "\(person.name) has no amount", bundle: .appLanguage)
         }
-        return String(localized: "\(ExpenseFormat.names(people.map(name))) have no amount")
+        return String(localized: "\(ExpenseFormat.names(people.map(name))) have no amount", bundle: .appLanguage)
     }
 
     /// "Groceries · you paid", "Dinner · Bruno paid", "Dinner · You and Ana paid", or "You paid" while the bill has
@@ -96,9 +111,15 @@ enum SplitBillCopy {
         }
         guard let payer = state.payer else { return lead }
         if lead.isEmpty {
-            return payer.isMe ? String(localized: "You paid") : String(localized: "\(payer.name) paid")
+            return payer.isMe ? String(localized: "You paid", bundle: .appLanguage) : String(
+                localized: "\(payer.name) paid",
+                bundle: .appLanguage,
+            )
         }
-        return payer.isMe ? String(localized: "\(lead) · you paid") : String(localized: "\(lead) · \(payer.name) paid")
+        return payer.isMe ? String(localized: "\(lead) · you paid", bundle: .appLanguage) : String(
+            localized: "\(lead) · \(payer.name) paid",
+            bundle: .appLanguage,
+        )
     }
 
     /// The split row's second line: "Among 5 · $62.40 each · Diego is out", "Among 6 · $84.00 left", "Among 2 · Group
@@ -106,21 +127,21 @@ enum SplitBillCopy {
     static func splitSubtitle(_ state: SplitBillUiState) -> String {
         let split = state.split
         let count = Int(split.includedCount)
-        guard count > 0 else { return String(localized: "Nobody is in yet") }
+        guard count > 0 else { return String(localized: "Nobody is in yet", bundle: .appLanguage) }
         let exception = state.defaultSplitException.map { CategoryCopy.name($0) }
         let newException = state.splitAsDefaultException.map { CategoryCopy.name($0) }
         let facts = state.splitSummary.map { (fact: any SplitFact) -> String in
             // "Group exception for Groceries" in place of "Group default" (7.1k).
             if fact is SplitFactGroupDefault, let exception {
-                return String(localized: "Group exception for \(exception)")
+                return String(localized: "Group exception for \(exception)", bundle: .appLanguage)
             }
             // "Becomes the group exception for Groceries" in place of "Becomes the group default" (beta feedback 11).
             if fact is SplitFactNewGroupDefault, let newException {
-                return String(localized: "Becomes the group exception for \(newException)")
+                return String(localized: "Becomes the group exception for \(newException)", bundle: .appLanguage)
             }
             return text(fact, currency: split.currency)
         }
-        return ([String(localized: "Among \(count)")] + facts).joined(separator: " · ")
+        return ([String(localized: "Among \(count)", bundle: .appLanguage)] + facts).joined(separator: " · ")
     }
 
     /// Whoever paid part of the bill: "You", a name, or "Former member" for someone who left the group.
@@ -129,20 +150,26 @@ enum SplitBillCopy {
     }
 
     static func payerName(_ row: PayerAmountRow) -> String {
-        row.person.map(name) ?? String(localized: "Former member")
+        row.person.map(name) ?? String(localized: "Former member", bundle: .appLanguage)
     }
 
     /// "R$ 112,00 left" or "R$ 12,00 over": how far what several people paid is from the total.
     static func payersMismatch(_ amounts: PayerAmounts) -> String {
         let amount = amounts.currency.format(abs(amounts.remainingMinor))
-        return amounts.remainingMinor > 0 ? String(localized: "\(amount) left") : String(localized: "\(amount) over")
+        return amounts.remainingMinor > 0 ? String(localized: "\(amount) left", bundle: .appLanguage) : String(
+            localized: "\(amount) over",
+            bundle: .appLanguage,
+        )
     }
 
     /// Under "Several people paid": "R$ 312,00 of R$ 312,00. Adds up.", or what is missing or over.
     static func payersStatus(_ amounts: PayerAmounts) -> String? {
         if amounts.addsUp {
             let paid = amounts.currency.format(amounts.paidMinor)
-            return String(localized: "\(paid) of \(amounts.currency.format(amounts.totalMinor)). Adds up.")
+            return String(
+                localized: "\(paid) of \(amounts.currency.format(amounts.totalMinor)). Adds up.",
+                bundle: .appLanguage,
+            )
         }
         return amounts.showsMismatch ? payersMismatch(amounts) : nil
     }
@@ -150,8 +177,11 @@ enum SplitBillCopy {
     /// "Say how much each one paid of R$ 312,00", the total only while there is one.
     static func payersLead(_ amounts: PayerAmounts) -> String {
         amounts.totalMinor > 0
-            ? String(localized: "Say how much each one paid of \(amounts.currency.format(amounts.totalMinor))")
-            : String(localized: "Say how much each one paid")
+            ? String(
+                localized: "Say how much each one paid of \(amounts.currency.format(amounts.totalMinor))",
+                bundle: .appLanguage,
+            )
+            : String(localized: "Say how much each one paid", bundle: .appLanguage)
     }
 
     /// "Who paid"'s second line: "R$ 312,00 · Mercado", each part only once it is filled in.
@@ -177,7 +207,7 @@ enum SplitBillCopy {
     static func status(_ editor: SplitEditor) -> Status {
         let currency = editor.currency
         let title = if let each = editor.statusTitle as? SplitFactEach {
-            String(localized: "\(currency.format(each.amountMinor)) each")
+            String(localized: "\(currency.format(each.amountMinor)) each", bundle: .appLanguage)
         } else {
             text(editor.statusTitle, currency: currency)
         }
@@ -203,50 +233,65 @@ enum SplitBillCopy {
         case let fact as SplitFactEach:
             return summaryEach(fact.amountMinor, currency: currency)
         case is SplitFactNobody:
-            return String(localized: "Nobody is in yet")
+            return String(localized: "Nobody is in yet", bundle: .appLanguage)
         case let fact as SplitFactNobodyChecked:
-            return String(localized: "Check at least one person to split \(currency.format(fact.totalMinor)).")
+            return String(
+                localized: "Check at least one person to split \(currency.format(fact.totalMinor)).",
+                bundle: .appLanguage,
+            )
         case let fact as SplitFactNobodyHasParts:
-            return String(localized: "Give at least one person a share to split \(currency.format(fact.totalMinor)).")
+            return String(
+                localized: "Give at least one person a share to split \(currency.format(fact.totalMinor)).",
+                bundle: .appLanguage,
+            )
         case let fact as SplitFactAmong:
-            return String(localized: "\(currency.format(fact.totalMinor)) among \(Int(fact.count)) people.")
+            return String(
+                localized: "\(currency.format(fact.totalMinor)) among \(Int(fact.count)) people.",
+                bundle: .appLanguage,
+            )
         case let fact as SplitFactOut:
             return out(fact.people)
         case let fact as SplitFactAmountLeft:
-            return String(localized: "\(currency.format(fact.amountMinor)) left")
+            return String(localized: "\(currency.format(fact.amountMinor)) left", bundle: .appLanguage)
         case let fact as SplitFactAmountOver:
-            return String(localized: "\(currency.format(fact.amountMinor)) over")
+            return String(localized: "\(currency.format(fact.amountMinor)) over", bundle: .appLanguage)
         case let fact as SplitFactAmountAddsUp:
-            return String(localized: "Adds up: \(currency.format(fact.totalMinor))")
+            return String(localized: "Adds up: \(currency.format(fact.totalMinor))", bundle: .appLanguage)
         case is SplitFactPartsMatchTotal:
-            return String(localized: "The parts add up to the total.")
+            return String(localized: "The parts add up to the total.", bundle: .appLanguage)
         case let fact as SplitFactAmountSoFar:
             let assigned = currency.format(fact.assignedMinor)
-            return String(localized: "\(assigned) of \(currency.format(fact.totalMinor)) so far.")
+            return String(localized: "\(assigned) of \(currency.format(fact.totalMinor)) so far.", bundle: .appLanguage)
         case let fact as SplitFactWithoutValue:
             return noAmount(fact.people)
         case let fact as SplitFactPercentLeft:
-            return String(localized: "\(percent(fact.percent)) left")
+            return String(localized: "\(percent(fact.percent)) left", bundle: .appLanguage)
         case let fact as SplitFactPercentOver:
-            return String(localized: "\(percent(fact.percent)) over")
+            return String(localized: "\(percent(fact.percent)) over", bundle: .appLanguage)
         case is SplitFactPercentAddsUp:
-            return String(localized: "Adds up: \(percent(100))")
+            return String(localized: "Adds up: \(percent(100))", bundle: .appLanguage)
         case let fact as SplitFactParts:
-            return String(localized: "\(Int(fact.count)) shares of \(currency.format(fact.partMinor))")
+            return String(
+                localized: "\(Int(fact.count)) shares of \(currency.format(fact.partMinor))",
+                bundle: .appLanguage,
+            )
         case is SplitFactGroupDefault:
-            return String(localized: "Group default")
+            return String(localized: "Group default", bundle: .appLanguage)
         case is SplitFactNewGroupDefault:
-            return String(localized: "Becomes the group default")
+            return String(localized: "Becomes the group default", bundle: .appLanguage)
         case let fact as SplitFactItems:
             let count = Int(fact.count)
-            return count == 1 ? String(localized: "1 item") : String(localized: "\(count) items")
+            return count == 1 ? String(localized: "1 item", bundle: .appLanguage) : String(
+                localized: "\(count) items",
+                bundle: .appLanguage,
+            )
         case let fact as SplitFactLooseItems:
             return ItemsCopy.looseCount(Int(fact.count))
         case let fact as SplitFactPersonParts:
             let parts = Int(fact.parts)
             return fact.person.isMe
-                ? String(localized: "You have \(parts) shares")
-                : String(localized: "\(fact.person.name) has \(parts) shares")
+                ? String(localized: "You have \(parts) shares", bundle: .appLanguage)
+                : String(localized: "\(fact.person.name) has \(parts) shares", bundle: .appLanguage)
         default:
             return ""
         }
@@ -257,6 +302,7 @@ enum SplitBillCopy {
         String(
             localized: "Each one's part in the split row",
             defaultValue: "\(currency.format(minor)) each",
+            bundle: .appLanguage,
             comment: "Equal split, in the bill's split row: each one's part",
         )
     }
@@ -280,22 +326,28 @@ enum SplitBillCopy {
     ) -> (text: String, isError: Bool) {
         let person = row.person
         let isPayer = editor.payerIds.contains(person.id)
-        let paid = hasSeveralPayers ? String(localized: "Paid part of the bill") : String(localized: "Paid the bill")
+        let paid = hasSeveralPayers ? String(localized: "Paid part of the bill", bundle: .appLanguage) : String(
+            localized: "Paid the bill",
+            bundle: .appLanguage,
+        )
         let share = row.shareMinor.map { editor.currency.format($0.int64Value) }
         switch editor.mode {
         case .amount:
             if isPayer { return (paid, false) }
             if !editor.addsUp, editor.withoutValue.contains(where: { $0.id == person.id }) {
-                return (String(localized: "No amount"), true)
+                return (String(localized: "No amount", bundle: .appLanguage), true)
             }
-            if !person.hasJoined { return (String(localized: "Hasn't joined yet"), false) }
-            return (String(localized: "Their part"), false)
+            if !person.hasJoined { return (String(localized: "Hasn't joined yet", bundle: .appLanguage), false) }
+            return (String(localized: "Their part", bundle: .appLanguage), false)
         case .percent, .shares, .items:
-            if isOut { return (String(localized: "Out"), false) }
+            if isOut { return (String(localized: "Out", bundle: .appLanguage), false) }
             return (share ?? "—", false)
         default:
             if isPayer { return (paid, false) }
-            return (row.isIncluded ? String(localized: "In") : String(localized: "Out"), false)
+            return (row.isIncluded ? String(localized: "In", bundle: .appLanguage) : String(
+                localized: "Out",
+                bundle: .appLanguage,
+            ), false)
         }
     }
 }

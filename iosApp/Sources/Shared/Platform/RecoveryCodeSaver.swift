@@ -9,10 +9,10 @@ enum RecoveryCodeSaver {
     /// The entry's name in the Passwords app, in the app's language like the app name
     /// ("Bora Rachar · código de recuperação" in Portuguese).
     private static var account: String {
-        String(localized: "Blitz Split · recovery code")
+        String(localized: "Blitz Split · recovery code", bundle: .appLanguage)
     }
     private static var title: String {
-        String(localized: "Blitz Split")
+        String(localized: "Blitz Split", bundle: .appLanguage)
     }
 
     static func copy(_ code: String) {

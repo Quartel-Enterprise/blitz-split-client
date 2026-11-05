@@ -216,9 +216,18 @@ private struct ShareBillVisibilityPicker: View {
         let names = state.memberNames
         let list = names.formatted(.list(type: .and))
         switch names.count {
-        case 0: return String(localized: "Whoever is in the group opens it with their own account to see and comment.")
-        case 1: return String(localized: "\(list) opens it with their own account to see and comment.")
-        default: return String(localized: "\(list) open it with their own account to see and comment.")
+        case 0: return String(
+            localized: "Whoever is in the group opens it with their own account to see and comment.",
+            bundle: .appLanguage,
+        )
+        case 1: return String(
+            localized: "\(list) opens it with their own account to see and comment.",
+            bundle: .appLanguage,
+        )
+        default: return String(
+            localized: "\(list) open it with their own account to see and comment.",
+            bundle: .appLanguage,
+        )
         }
     }
 

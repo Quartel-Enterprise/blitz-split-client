@@ -7,15 +7,18 @@ import SwiftUI
 enum GroupsCopy {
     /// "6 members" or "Just you".
     static func members(_ count: Int32) -> String {
-        count == 1 ? String(localized: "Just you") : String(localized: "\(Int(count)) members")
+        count == 1 ? String(localized: "Just you", bundle: .appLanguage) : String(
+            localized: "\(Int(count)) members",
+            bundle: .appLanguage,
+        )
     }
 
     /// The Mac's Members column: "6 · Pierre, Ana, Bruno and 3 more", or "Just you".
     static func memberNames(_ row: GroupRow) -> String {
-        guard row.memberCount > 1 else { return String(localized: "Just you") }
+        guard row.memberCount > 1 else { return String(localized: "Just you", bundle: .appLanguage) }
         var names = row.memberNames
         if row.extraMemberCount > 0 {
-            names.append(String(localized: "\(Int(row.extraMemberCount)) more"))
+            names.append(String(localized: "\(Int(row.extraMemberCount)) more", bundle: .appLanguage))
         }
         return "\(row.memberCount) · \(ExpenseFormat.names(names))"
     }
@@ -23,10 +26,18 @@ enum GroupsCopy {
     /// Under a row's name: "today", "yesterday", "3 days", "1 week" or "Oct 3".
     static func activity(_ activity: LastActivity) -> String {
         switch activity.age {
-        case .today: String(localized: "today", comment: "A group's last activity, under its name on the home")
-        case .yesterday: String(localized: "yesterday", comment: "A group's last activity, under its name on the home")
-        case .days: String(localized: "\(Int(activity.count)) days")
-        case .weeks: String(localized: "\(Int(activity.count)) weeks")
+        case .today: String(
+            localized: "today",
+            bundle: .appLanguage,
+            comment: "A group's last activity, under its name on the home",
+        )
+        case .yesterday: String(
+            localized: "yesterday",
+            bundle: .appLanguage,
+            comment: "A group's last activity, under its name on the home",
+        )
+        case .days: String(localized: "\(Int(activity.count)) days", bundle: .appLanguage)
+        case .weeks: String(localized: "\(Int(activity.count)) weeks", bundle: .appLanguage)
         default: shortDate(activity.epochMillis)
         }
     }
@@ -34,10 +45,10 @@ enum GroupsCopy {
     /// The Mac's Last activity column: "Today", "Yesterday", "3 days ago", "1 week ago" or "Oct 3".
     static func activitySentence(_ activity: LastActivity) -> String {
         switch activity.age {
-        case .today: String(localized: "Today")
-        case .yesterday: String(localized: "Yesterday")
-        case .days: String(localized: "\(Int(activity.count)) days ago")
-        case .weeks: String(localized: "\(Int(activity.count)) weeks ago")
+        case .today: String(localized: "Today", bundle: .appLanguage)
+        case .yesterday: String(localized: "Yesterday", bundle: .appLanguage)
+        case .days: String(localized: "\(Int(activity.count)) days ago", bundle: .appLanguage)
+        case .weeks: String(localized: "\(Int(activity.count)) weeks ago", bundle: .appLanguage)
         default: shortDate(activity.epochMillis)
         }
     }
@@ -47,17 +58,23 @@ enum GroupsCopy {
     static func detail(_ row: GroupRow) -> String {
         switch row.detail {
         case .queued:
-            if let bill = row.pendingBillDescription { return String(localized: "queued · \(bill)") }
-            return String(localized: "queued")
+            if let bill = row.pendingBillDescription { return String(
+                localized: "queued · \(bill)",
+                bundle: .appLanguage,
+            ) }
+            return String(localized: "queued", bundle: .appLanguage)
         case .mixed:
             let receives = row.currency.formatPlain(row.receivesMinor)
             let owes = row.currency.formatPlain(row.owesMinor)
-            return String(localized: "you get \(receives) and owe \(owes)")
-        case .othersStillSettling: return String(localized: "others still settling up")
-        case .inviteSomeone: return String(localized: "invite someone")
+            return String(localized: "you get \(receives) and owe \(owes)", bundle: .appLanguage)
+        case .othersStillSettling: return String(localized: "others still settling up", bundle: .appLanguage)
+        case .inviteSomeone: return String(localized: "invite someone", bundle: .appLanguage)
         case .everyoneSettled:
             let date = shortDate(row.lastActivity.epochMillis)
-            return String(localized: "\(members(row.memberCount)) · everyone settled up on \(date)")
+            return String(
+                localized: "\(members(row.memberCount)) · everyone settled up on \(date)",
+                bundle: .appLanguage,
+            )
         default: return activity(row.lastActivity)
         }
     }
@@ -68,7 +85,10 @@ enum GroupsCopy {
         switch row.detail {
         case .activity: return when
         case .everyoneSettled:
-            return String(localized: "Everyone settled up on \(shortDate(row.lastActivity.epochMillis))")
+            return String(
+                localized: "Everyone settled up on \(shortDate(row.lastActivity.epochMillis))",
+                bundle: .appLanguage,
+            )
         default: return "\(when) · \(detail(row))"
         }
     }
@@ -76,20 +96,20 @@ enum GroupsCopy {
     /// The word after the balance: "to get back", "you owe", "you're settled up", "no expenses" or "Settled up".
     static func balanceLabel(_ kind: GroupBalanceKind) -> String {
         switch kind {
-        case .toReceive: String(localized: "to get back")
-        case .youOwe: String(localized: "you owe")
-        case .youAreSettled: String(localized: "you're settled up")
-        case .noExpenses: String(localized: "no expenses")
-        default: String(localized: "Settled up")
+        case .toReceive: String(localized: "to get back", bundle: .appLanguage)
+        case .youOwe: String(localized: "you owe", bundle: .appLanguage)
+        case .youAreSettled: String(localized: "you're settled up", bundle: .appLanguage)
+        case .noExpenses: String(localized: "no expenses", bundle: .appLanguage)
+        default: String(localized: "Settled up", bundle: .appLanguage)
         }
     }
 
     /// "to get back, across your groups", "to pay, across your groups" or "you're settled up".
     static func summaryHint(_ kind: GroupBalanceKind) -> String {
         switch kind {
-        case .toReceive: String(localized: "to get back, across your groups")
-        case .youOwe: String(localized: "to pay, across your groups")
-        default: String(localized: "you're settled up")
+        case .toReceive: String(localized: "to get back, across your groups", bundle: .appLanguage)
+        case .youOwe: String(localized: "to pay, across your groups", bundle: .appLanguage)
+        default: String(localized: "you're settled up", bundle: .appLanguage)
         }
     }
 
@@ -106,9 +126,9 @@ enum GroupsCopy {
         case nil: nil
         case .offline:
             pendingChangeCount > 0
-                ? String(localized: "Offline · \(Int(pendingChangeCount)) changes queued")
-                : String(localized: "Offline · everything is saved on your \(DeviceName.current)")
-        case .failed: String(localized: "No response from the server")
+                ? String(localized: "Offline · \(Int(pendingChangeCount)) changes queued", bundle: .appLanguage)
+                : String(localized: "Offline · everything is saved on your \(DeviceName.current)", bundle: .appLanguage)
+        case .failed: String(localized: "No response from the server", bundle: .appLanguage)
         default: syncing(downloadProgress)
         }
     }

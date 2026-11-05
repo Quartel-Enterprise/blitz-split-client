@@ -15,13 +15,13 @@ enum GroupExitCopy {
     static func title(_ dialog: any GroupExitDialog) -> String {
         switch dialog {
         case is GroupExitDialogLeaveBlocked:
-            String(localized: "Settle up before leaving")
+            String(localized: "Settle up before leaving", bundle: .appLanguage)
         case is GroupExitDialogDeleteBlocked:
-            String(localized: "There are still open balances")
+            String(localized: "There are still open balances", bundle: .appLanguage)
         case let leave as GroupExitDialogConfirmLeave:
-            String(localized: "Leave “\(leave.groupName)”?")
+            String(localized: "Leave “\(leave.groupName)”?", bundle: .appLanguage)
         case let delete as GroupExitDialogConfirmDelete:
-            String(localized: "Delete “\(delete.groupName)”?")
+            String(localized: "Delete “\(delete.groupName)”?", bundle: .appLanguage)
         default:
             ""
         }
@@ -33,30 +33,43 @@ enum GroupExitCopy {
         case let blocked as GroupExitDialogLeaveBlocked:
             let message = String(
                 localized: "You still have an open balance in “\(blocked.groupName)”. Leaving now would leave it unsettled for the others.",
+                bundle: .appLanguage,
             )
             return withDebts(message, blocked.debts, currency: currency)
         case let blocked as GroupExitDialogDeleteBlocked:
             let message = String(
                 localized: "“\(blocked.groupName)” can only be deleted once everyone has settled up.",
+                bundle: .appLanguage,
             )
             // "Faltam 2 acertos:", as Android and the web count them, once there are pairs to list
-            let count = blocked.debts.isEmpty ? "" : " " + String(localized: "\(blocked.debts.count) payments left:")
+            let count = blocked.debts.isEmpty ? "" : " " + String(
+                localized: "\(blocked.debts.count) payments left:",
+                bundle: .appLanguage,
+            )
             return withDebts(message + count, blocked.debts, currency: currency)
         case let leave as GroupExitDialogConfirmLeave:
             if leave.deletesGroup {
-                return String(localized: "Your balance is settled. Nobody else in the group has joined, so it's deleted for good.")
+                return String(
+                    localized: "Your balance is settled. Nobody else in the group has joined, so it's deleted for good.",
+                    bundle: .appLanguage,
+                )
             }
             return String(
                 localized: "Your balance is settled. The group leaves this device and your expenses keep your name for the other \(Int(leave.otherMemberCount)) members. To come back, someone has to invite you again.",
+                bundle: .appLanguage,
             )
         case let delete as GroupExitDialogConfirmDelete:
-            let members = String(localized: "all \(Int(delete.memberCount)) members")
+            let members = String(localized: "all \(Int(delete.memberCount)) members", bundle: .appLanguage)
             if delete.billCount == 0 {
-                return String(localized: "The group is gone for \(members). This can't be undone.")
+                return String(
+                    localized: "The group is gone for \(members). This can't be undone.",
+                    bundle: .appLanguage,
+                )
             }
-            let bills = String(localized: "its \(Int(delete.billCount)) expenses")
+            let bills = String(localized: "its \(Int(delete.billCount)) expenses", bundle: .appLanguage)
             return String(
                 localized: "Everyone has settled up. The group, \(bills) and the history are gone for \(members). This can't be undone.",
+                bundle: .appLanguage,
             )
         default:
             return ""
@@ -67,10 +80,12 @@ enum GroupExitCopy {
         if let name = notice.deletedByName {
             return String(
                 localized: "\(name) deleted “\(notice.groupName)” after everyone settled up. Nothing was left open, and the group leaves your list.",
+                bundle: .appLanguage,
             )
         }
         return String(
             localized: "“\(notice.groupName)” was deleted after everyone settled up. Nothing was left open, and the group leaves your list.",
+            bundle: .appLanguage,
         )
     }
 

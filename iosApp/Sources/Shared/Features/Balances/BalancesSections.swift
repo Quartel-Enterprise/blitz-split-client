@@ -98,9 +98,9 @@ struct BalancesSections: View {
     private func myHint(_ balance: MemberBalance) -> String {
         let receives = currency.format(balance.receivesMinor)
         let owes = currency.format(balance.owesMinor)
-        if balance.owesMinor == 0 { return String(localized: "get \(receives)") }
-        if balance.receivesMinor == 0 { return String(localized: "owe \(owes)") }
-        return String(localized: "get \(receives) · owe \(owes)")
+        if balance.owesMinor == 0 { return String(localized: "get \(receives)", bundle: .appLanguage) }
+        if balance.receivesMinor == 0 { return String(localized: "owe \(owes)", bundle: .appLanguage) }
+        return String(localized: "get \(receives) · owe \(owes)", bundle: .appLanguage)
     }
 }
 
@@ -142,12 +142,13 @@ enum DebtCopy {
             return String(
                 localized: "You owe %@ (a member)",
                 defaultValue: "You owe \(to)",
+                bundle: .appLanguage,
                 comment: "A pair in Balances; %@ is whom this device's user owes",
             )
         case .owesYou:
-            return String(localized: "\(from) owes you")
+            return String(localized: "\(from) owes you", bundle: .appLanguage)
         default:
-            return String(localized: "\(from) owes \(to)")
+            return String(localized: "\(from) owes \(to)", bundle: .appLanguage)
         }
     }
 
@@ -198,7 +199,7 @@ private struct DebtRowView: View {
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(row.isSimplified
-            ? Text(verbatim: "\(sentence), \(amount), \(String(localized: "New pair from simplifying"))")
+            ? Text(verbatim: "\(sentence), \(amount), \(String(localized: "New pair from simplifying", bundle: .appLanguage))")
             : Text(verbatim: "\(sentence), \(amount)"))
         .accessibilityHint(Text(buttonTitle))
         .accessibilityAddTraits(.isButton)

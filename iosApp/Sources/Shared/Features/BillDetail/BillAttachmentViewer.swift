@@ -181,12 +181,15 @@ struct BillAttachmentViewer: View {
     /// "Anyone in the group can remove it. Swipe to see the next one.", each half only where it holds.
     private func hint(_ attachment: BillAttachmentTile) -> String? {
         var parts: [String] = []
-        if attachment.canRemove { parts.append(String(localized: "Anyone in the group can remove it.")) }
+        if attachment.canRemove { parts.append(String(
+            localized: "Anyone in the group can remove it.",
+            bundle: .appLanguage,
+        )) }
         if (state.loadedAttachments?.count ?? 0) > 1 {
             #if os(macOS)
-            parts.append(String(localized: "Use the arrow keys to see the next one."))
+            parts.append(String(localized: "Use the arrow keys to see the next one.", bundle: .appLanguage))
             #else
-            parts.append(String(localized: "Swipe to see the next one."))
+            parts.append(String(localized: "Swipe to see the next one.", bundle: .appLanguage))
             #endif
         }
         return parts.isEmpty ? nil : parts.joined(separator: " ")

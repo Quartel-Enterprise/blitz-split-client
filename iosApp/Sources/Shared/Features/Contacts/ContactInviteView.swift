@@ -267,10 +267,16 @@ private struct InviteNotesAndButtons: View {
     private var whoJoins: String {
         if let name = state.name {
             return state.isPersonal
-                ? String(localized: "\(name) joins right away as themselves.")
-                : String(localized: "\(name) picks their name on the list or joins as a new member.")
+                ? String(localized: "\(name) joins right away as themselves.", bundle: .appLanguage)
+                : String(
+                    localized: "\(name) picks their name on the list or joins as a new member.",
+                    bundle: .appLanguage,
+                )
         }
-        return String(localized: "Whoever opens the link picks their name on the group's list or joins as a new member.")
+        return String(
+            localized: "Whoever opens the link picks their name on the group's list or joins as a new member.",
+            bundle: .appLanguage,
+        )
     }
 
     var body: some View {

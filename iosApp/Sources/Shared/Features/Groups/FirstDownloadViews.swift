@@ -52,27 +52,34 @@ extension GroupsCopy {
     /// "Syncing… 3 of 7 groups" once the first download knows how many are coming, else "Syncing…".
     static func syncing(_ progress: DownloadProgress?) -> String {
         if progress?.isWaitingForInternet == true {
-            return String(localized: "No internet. Your groups show up once you're back online.")
+            return String(localized: "No internet. Your groups show up once you're back online.", bundle: .appLanguage)
         }
         guard let progress, let groupCount = progress.groupCount?.intValue else {
-            return String(localized: "Syncing…")
+            return String(localized: "Syncing…", bundle: .appLanguage)
         }
         let arrived = Int(progress.arrivedGroupCount)
         return groupCount == 1
-            ? String(localized: "Syncing… \(arrived) of 1 group")
-            : String(localized: "Syncing… \(arrived) of \(groupCount) groups")
+            ? String(localized: "Syncing… \(arrived) of 1 group", bundle: .appLanguage)
+            : String(localized: "Syncing… \(arrived) of \(groupCount) groups", bundle: .appLanguage)
     }
 
     /// "3 of 7 groups. You can use the app meanwhile: what has arrived shows below."
     static func firstDownloadHint(_ progress: DownloadProgress) -> String {
         guard let groupCount = progress.groupCount?.intValue else {
-            return String(localized: "You can use the app meanwhile: what has arrived shows below.")
+            return String(
+                localized: "You can use the app meanwhile: what has arrived shows below.",
+                bundle: .appLanguage,
+            )
         }
         let arrived = Int(progress.arrivedGroupCount)
         return groupCount == 1
-            ? String(localized: "\(arrived) of 1 group. You can use the app meanwhile: what has arrived shows below.")
+            ? String(
+                localized: "\(arrived) of 1 group. You can use the app meanwhile: what has arrived shows below.",
+                bundle: .appLanguage,
+            )
             : String(
                 localized: "\(arrived) of \(groupCount) groups. You can use the app meanwhile: what has arrived shows below.",
+                bundle: .appLanguage,
             )
     }
 }

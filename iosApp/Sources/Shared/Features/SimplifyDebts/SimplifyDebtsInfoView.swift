@@ -30,7 +30,10 @@ struct SimplifyDebtsInfoView: View {
             }
             Section {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(verbatim: String(localized: "Carla owes Elisa \(amount(20)), and Elisa owes you \(amount(20))."))
+                    Text(verbatim: String(
+                        localized: "Carla owes Elisa \(amount(20)), and Elisa owes you \(amount(20)).",
+                        bundle: .appLanguage,
+                    ))
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: 10) {
                         SimplifyExampleFigure(isSimplified: false, amount: amount(20))
@@ -38,7 +41,10 @@ struct SimplifyDebtsInfoView: View {
                     }
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text("Example: 2 payments become 1"))
-                    Text(verbatim: String(localized: "Simplified, Carla pays you \(amount(20)) directly, and Elisa pays nothing."))
+                    Text(verbatim: String(
+                        localized: "Simplified, Carla pays you \(amount(20)) directly, and Elisa pays nothing.",
+                        bundle: .appLanguage,
+                    ))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.vertical, 4)
@@ -49,22 +55,34 @@ struct SimplifyDebtsInfoView: View {
                 SimplifyFact(
                     systemImage: "equal.circle",
                     title: "Totals don't change",
-                    text: String(localized: "Whoever owed \(amount(121.40)) in the group still owes \(amount(121.40)). Only where the money goes changes."),
+                    text: String(
+                        localized: "Whoever owed \(amount(121.40)) in the group still owes \(amount(121.40)). Only where the money goes changes.",
+                        bundle: .appLanguage,
+                    ),
                 )
                 SimplifyFact(
                     systemImage: "eye",
                     title: "You may owe someone you never split a bill with",
-                    text: String(localized: "In the group's Balances, the Simplified debts label tells you when that happens."),
+                    text: String(
+                        localized: "In the group's Balances, the Simplified debts label tells you when that happens.",
+                        bundle: .appLanguage,
+                    ),
                 )
                 SimplifyFact(
                     systemImage: "person.2",
                     title: "Anyone can turn it on or off",
-                    text: String(localized: "In Edit group. Activity shows who changed it, and whoever now pays or receives from someone else gets a notification."),
+                    text: String(
+                        localized: "In Edit group. Activity shows who changed it, and whoever now pays or receives from someone else gets a notification.",
+                        bundle: .appLanguage,
+                    ),
                 )
                 SimplifyFact(
                     systemImage: "arrow.counterclockwise",
                     title: "Turning it off goes back",
-                    text: String(localized: "Payments go back to being between whoever split each bill. No bill or recorded payment changes."),
+                    text: String(
+                        localized: "Payments go back to being between whoever split each bill. No bill or recorded payment changes.",
+                        bundle: .appLanguage,
+                    ),
                 )
             } header: {
                 Text("Good to know")
