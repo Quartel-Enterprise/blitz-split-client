@@ -131,11 +131,14 @@ class MembersViewModel(
         combine(
             observeAddPersonRequest(),
             navigator.backStack,
-            // Why: an ask that came while another name editor was open opens once that one closes.
-            uiState.map { it.editor == null }.distinctUntilChanged(),
+            /*
+             * Why: only a trigger, once the members are read (the name is checked against them) and no other name
+             * editor is open; the state itself is read below, since combine may hand an older value.
+             */
+            uiState.map { it.canOpenAskedEditor }.distinctUntilChanged(),
         ) { groupId, backStack, _ ->
             val isAsked = groupId == route.groupId && backStack.lastOrNull() == route
-            if (isAsked && !isEditorFromRequest && uiState.value.editor == null) {
+            if (isAsked && !isEditorFromRequest && uiState.value.canOpenAskedEditor) {
                 isEditorFromRequest = true
                 openEditor(
                     memberId = null,
@@ -150,10 +153,10 @@ class MembersViewModel(
             // Why: over the group, or in the place of its bill the Mac draws beside it.
             MembersUiEvent.OnShareClicked -> openInvite()
 
-            // Why: the dialog closes, and Invite opens in its place.
+            // Why: Invite opens first, so an ask still waiting doesn't open "Add person" under it as this one closes.
             MembersUiEvent.OnInviteInsteadClicked -> {
-                closeEditor()
                 openInvite()
+                closeEditor()
             }
 
             MembersUiEvent.OnAddClicked -> openEditor(
@@ -194,6 +197,9 @@ class MembersViewModel(
             MembersUiEvent.OnEditorDismissed -> closeEditor()
         }
     }
+
+    private val MembersUiState.canOpenAskedEditor: Boolean
+        get() = isLoaded && editor == null
 
     private fun openInvite() {
         navigator.openFromGroupScreen(

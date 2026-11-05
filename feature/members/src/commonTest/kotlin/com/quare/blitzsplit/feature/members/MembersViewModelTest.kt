@@ -3523,6 +3523,40 @@ class MembersViewModelTest {
         }
 
     @Test
+    fun `GIVEN an ask before Room is read WHEN the screen opens THEN Add person waits for the members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                askedGroupId = "group-1",
+                isRoomReadAtStart = false,
+            )
+            val editorBeforeRead = viewModel.uiState.value.editor
+
+            // When
+            isRoomRead.value = true
+
+            // Then
+            assertNull(editorBeforeRead)
+            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+        }
+
+    @Test
+    fun `GIVEN an ask behind a tapped Add person WHEN tapping invite with the link THEN only Invite opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+            addPersonRequests.post("group-1")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnInviteInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(Route.Invite("group-1", isNewGroup = false), navigator.backStack.value.last())
+        }
+
+    @Test
     fun `GIVEN Add person opened by tapping add WHEN tapping invite with the link THEN closes it and opens Invite`() =
         runTest(testDispatcher) {
             // Given

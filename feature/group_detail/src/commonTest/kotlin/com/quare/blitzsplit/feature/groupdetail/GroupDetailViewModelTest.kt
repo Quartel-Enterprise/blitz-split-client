@@ -1176,6 +1176,22 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Membros picked for an ask WHEN picking Despesas and coming back over a screen THEN Despesas stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            addPersonAsk.value = GROUP_ID
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.EXPENSES))
+
+            // When
+            navigator.navigate(Route.Profile)
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(GroupTab.EXPENSES, viewModel.uiState.value.tab)
+        }
+
+    @Test
     fun `GIVEN Despesas picked WHEN another group asks for Add person THEN Despesas stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

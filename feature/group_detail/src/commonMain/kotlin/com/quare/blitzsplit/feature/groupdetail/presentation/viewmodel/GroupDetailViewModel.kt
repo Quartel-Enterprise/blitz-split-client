@@ -134,6 +134,9 @@ class GroupDetailViewModel(
         showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
     )
 
+    // Why: Membros was picked for the ask waiting now, which picks it only once.
+    private var isAddPersonAskShown = false
+
     init {
         observeCategoryTree(route.groupId)
             .onEach { tree ->
@@ -169,11 +172,19 @@ class GroupDetailViewModel(
             .launchIn(viewModelScope)
         /*
          * Why: Invite's "Add someone without the app" lands on Membros, where "Add person" opens, even when the group
-         * it goes back to was opened on Membros and the person picked another tab since.
+         * it goes back to was opened on Membros and the person picked another tab since. Once per ask, so a tab picked
+         * while it waits stays picked.
          */
         combine(observeAddPersonRequest(), useCases.navigator.backStack, ::Pair)
-            .onEach { (groupId, backStack) ->
-                if (groupId == route.groupId && backStack.lastOrNull() == route) selectTab(GroupTab.MEMBERS)
+            .onEach { (groupId, _) ->
+                when {
+                    groupId != route.groupId -> isAddPersonAskShown = false
+
+                    !isAddPersonAskShown && screen.isOnTop() -> {
+                        isAddPersonAskShown = true
+                        selectTab(GroupTab.MEMBERS)
+                    }
+                }
             }.launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()
