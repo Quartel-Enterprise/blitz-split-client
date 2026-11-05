@@ -5,8 +5,8 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
-// Why: the screen these events come from, as their source param says.
-private const val SOURCE = "group_detail"
+// Why: the screen these events come from, as their source param says; the ViewModel's own events say it too.
+internal const val GROUP_DETAIL_SOURCE = "group_detail"
 
 sealed interface GroupDetailUiEvent : UiEvent {
     override val analytics: EventAnalytics
@@ -14,9 +14,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: a back, which each platform also does its own way: where it went is its screen view.
             OnBackClicked -> EventAnalytics.NotTracked
 
-            OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
+            OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to SOURCE))
+            OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             OnStatsClicked -> EventAnalytics.Automatic("group_stats_clicked")
 
@@ -39,9 +39,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: a toggle, sent with where it ended up.
             OnPinToggled -> EventAnalytics.Manual("group_pin_toggled")
 
-            OnLeaveGroupClicked -> EventAnalytics.Automatic("leave_group_clicked", mapOf("source" to SOURCE))
+            OnLeaveGroupClicked -> EventAnalytics.Automatic("leave_group_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            OnDeleteGroupClicked -> EventAnalytics.Automatic("delete_group_clicked", mapOf("source" to SOURCE))
+            OnDeleteGroupClicked -> EventAnalytics.Automatic("delete_group_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             // Why: only an answer to a dialog still open, since Apple's alert also closes itself after its button.
             OnGroupExitConfirmed -> EventAnalytics.Manual("group_exit_confirmed")
@@ -51,11 +51,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: only while "Grupo apagado" shows, since Apple's alert also closes itself after its button.
             OnBackToGroupsClicked -> EventAnalytics.Manual("group_deleted_back_clicked")
 
-            is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
+            is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            is OnExpenseEditClicked -> EventAnalytics.Automatic("bill_edit_clicked", mapOf("source" to SOURCE))
+            is OnExpenseEditClicked -> EventAnalytics.Automatic("bill_edit_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            is OnExpenseShareClicked -> EventAnalytics.Automatic("bill_share_clicked", mapOf("source" to SOURCE))
+            is OnExpenseShareClicked -> EventAnalytics.Automatic("bill_share_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             // Why: only when the question opens, not a second tap before it draws.
             is OnExpenseDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
@@ -71,11 +71,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
             OnSimplifyConflictDismissed,
             -> EventAnalytics.NotTracked
 
-            OnSettleClicked -> EventAnalytics.Automatic("settle_clicked", mapOf("source" to SOURCE))
+            OnSettleClicked -> EventAnalytics.Automatic("settle_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            is OnDebtClicked -> EventAnalytics.Automatic("debt_clicked", mapOf("source" to SOURCE))
+            is OnDebtClicked -> EventAnalytics.Automatic("debt_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            is OnPaymentClicked -> EventAnalytics.Automatic("payment_clicked", mapOf("source" to SOURCE))
+            is OnPaymentClicked -> EventAnalytics.Automatic("payment_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             // Why: only an answer to a question still open, as its cancellation.
             OnPaymentDeleteConfirmed -> EventAnalytics.Manual("payment_delete_confirmed")
@@ -83,7 +83,7 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: only a question still open, since Apple's alert also closes itself after Apagar.
             OnPaymentDeleteDismissed -> EventAnalytics.Manual("payment_delete_cancelled")
 
-            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
+            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             OnTeachClicked -> EventAnalytics.Automatic("category_teach_clicked")
 
@@ -94,16 +94,16 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             OnTeachConfirmed -> EventAnalytics.Manual("category_teach_confirmed")
 
-            OnProtectAccessClicked -> EventAnalytics.Automatic("protect_access_clicked", mapOf("source" to SOURCE))
+            OnProtectAccessClicked -> EventAnalytics.Automatic("protect_access_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             OnSimplifyDebtsInfoClicked -> EventAnalytics.Automatic(
                 "simplify_debts_info_clicked",
-                mapOf("source" to SOURCE),
+                mapOf("source" to GROUP_DETAIL_SOURCE),
             )
 
             OnSimplifyConflictActivityClicked -> EventAnalytics.Automatic(
                 "simplify_conflict_activity_clicked",
-                mapOf("source" to SOURCE),
+                mapOf("source" to GROUP_DETAIL_SOURCE),
             )
         }
 

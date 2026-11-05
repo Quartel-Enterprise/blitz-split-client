@@ -35,6 +35,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GROUP_DETAIL_SOURCE
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
@@ -255,7 +256,7 @@ class GroupDetailViewModel(
             is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             GroupDetailUiEvent.OnRailSearchClicked -> if (screen.openSearch()) {
-                trackEvent("search_opened", mapOf("source" to "group_detail"))
+                trackEvent("search_opened", mapOf("source" to GROUP_DETAIL_SOURCE))
             }
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
@@ -472,7 +473,7 @@ class GroupDetailViewModel(
         if (uiState.value.billToDelete != null) return
         billToDeleteId = expenseId
         val deletion = billDeletionOrNull() ?: return
-        trackEvent("bill_delete_clicked", mapOf("source" to SOURCE))
+        trackEvent("bill_delete_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
         uiState.update { it.copy(billToDelete = deletion) }
     }
 
@@ -496,7 +497,7 @@ class GroupDetailViewModel(
         val state = uiState.value
         val expenseId = billToDeleteId
         if (state.billToDelete == null || state.isDeletingBill || expenseId == null) return
-        trackEvent("bill_delete_confirmed", mapOf("source" to SOURCE))
+        trackEvent("bill_delete_confirmed", mapOf("source" to GROUP_DETAIL_SOURCE))
         uiState.update { it.copy(isDeletingBill = true) }
         viewModelScope.launch {
             val result = deleteExpense(expenseId)
@@ -514,7 +515,7 @@ class GroupDetailViewModel(
     private fun dismissBillDeletion() {
         val state = uiState.value
         if (state.billToDelete == null || state.isDeletingBill) return
-        trackEvent("bill_delete_cancelled", mapOf("source" to SOURCE))
+        trackEvent("bill_delete_cancelled", mapOf("source" to GROUP_DETAIL_SOURCE))
         billToDeleteId = null
         uiState.update { it.copy(billToDelete = null) }
     }
@@ -536,14 +537,9 @@ class GroupDetailViewModel(
      */
     private fun answerExit(isConfirmed: Boolean) {
         screen.exit.findAnswerableDialog()?.let { dialog ->
-            val params = mapOf("dialog" to dialog, "source" to "group_detail")
+            val params = mapOf("dialog" to dialog, "source" to GROUP_DETAIL_SOURCE)
             if (isConfirmed) trackEvent("group_exit_confirmed", params) else trackEvent("group_exit_cancelled", params)
         }
         if (isConfirmed) screen.exit.confirm() else screen.exit.dismiss()
-    }
-
-    private companion object {
-        // Why: the screen the bill's ⋮ events come from, as their source param says.
-        const val SOURCE = "group_detail"
     }
 }
