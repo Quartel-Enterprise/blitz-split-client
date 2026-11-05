@@ -226,6 +226,45 @@ class JoinWithLinkUiStateTest {
         assertFalse(isRequested)
     }
 
+    @Test
+    fun `GIVEN the camera allowed on a device with a camera WHEN checking the preview THEN it shows`() {
+        // Given
+        val state = state(cameraAccess = CameraAccess.GRANTED)
+
+        // When
+        val showsPreview = state.showsCameraPreview
+
+        // Then
+        assertTrue(showsPreview)
+    }
+
+    @Test
+    fun `GIVEN the camera allowed but no camera left WHEN checking the preview THEN it does not show`() {
+        // Given
+        val state = state(
+            cameraAccess = CameraAccess.GRANTED,
+            hasCamera = false,
+        )
+
+        // When
+        val showsPreview = state.showsCameraPreview
+
+        // Then
+        assertFalse(showsPreview)
+    }
+
+    @Test
+    fun `GIVEN the system still asking WHEN checking the preview THEN it does not show`() {
+        // Given
+        val state = state(cameraAccess = CameraAccess.ASKING)
+
+        // When
+        val showsPreview = state.showsCameraPreview
+
+        // Then
+        assertFalse(showsPreview)
+    }
+
     private fun state(
         cameraAccess: CameraAccess,
         hasCamera: Boolean = true,

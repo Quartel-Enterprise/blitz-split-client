@@ -99,6 +99,13 @@ private struct JoinWithLinkContent: View {
     var body: some View {
         layout
             .task { model.checkHasCamera() }
+            // Why: a webcam plugged in or out, or an iPhone nearby as a Mac's Continuity Camera, while the reader is open.
+            .onReceive(NotificationCenter.default.publisher(for: AVCaptureDevice.wasConnectedNotification)) { _ in
+                model.checkHasCamera()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: AVCaptureDevice.wasDisconnectedNotification)) { _ in
+                model.checkHasCamera()
+            }
             .onChange(of: scenePhase) { _, phase in
                 // Why: before "Open camera" nothing is asked, not even on coming back to the app.
                 if phase == .active, model.state.isCameraRequested { Task { await model.checkCameraAccess() } }
@@ -177,7 +184,7 @@ private struct JoinWithLinkContent: View {
     private func cameraBackground(_ state: JoinWithLinkUiState) -> some View {
         ZStack {
             Color.black
-            if state.cameraAccess == .granted {
+            if state.showsCameraPreview {
                 InviteScannerView(
                     isTorchOn: state.isTorchOn,
                     onScanned: { model.send(JoinWithLinkUiEventOnQrScanned(content: $0)) },
@@ -197,9 +204,9 @@ private struct JoinWithLinkContent: View {
             Group {
                 switch state.cameraStage {
                 case .prompt: cameraPrompt
-                case .noCamera: noCamera
+                case .noCamera: cameraMessage(noCameraMessage)
                 case .denied: cameraDenied
-                case .failed: cameraUnavailable
+                case .failed: cameraMessage("Couldn't open the camera. Paste the link below.")
                 default: viewfinder(state)
                 }
             }
@@ -309,22 +316,12 @@ private struct JoinWithLinkContent: View {
         .padding(.horizontal, 20)
     }
 
-    private var noCamera: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 52))
-            #if os(iOS)
-            Text("This device has no camera. Paste the link below.")
-                .padding(.top, 8)
-            #else
-            Text("This Mac has no camera. Paste the link below.")
-                .padding(.top, 8)
-            #endif
-        }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 420)
-        .padding(.horizontal, 20)
+    private var noCameraMessage: LocalizedStringKey {
+        #if os(iOS)
+        "This device has no camera. Paste the link below."
+        #else
+        "This Mac has no camera. Paste the link below."
+        #endif
     }
 
     private var cameraDenied: some View {
@@ -359,11 +356,12 @@ private struct JoinWithLinkContent: View {
         .padding(.horizontal, 20)
     }
 
-    private var cameraUnavailable: some View {
+    /// The camera's place with only a line to say why there is no camera to show.
+    private func cameraMessage(_ message: LocalizedStringKey) -> some View {
         VStack(spacing: 10) {
             Image(systemName: "video.slash")
                 .font(.system(size: 52))
-            Text("Couldn't open the camera. Paste the link below.")
+            Text(message)
                 .padding(.top, 8)
         }
         .foregroundStyle(.white)

@@ -59,7 +59,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
 import com.quare.blitzsplit.feature.join.presentation.model.CameraStage
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiState
@@ -80,7 +79,7 @@ internal fun CameraPane(
 ) {
     BlitzSplitTheme(isDark = true) {
         Box(modifier = modifier) {
-            if (state.cameraAccess == CameraAccess.GRANTED) camera(Modifier.fillMaxSize())
+            if (state.showsCameraPreview) camera(Modifier.fillMaxSize())
             // Why: the design's scrim, dark toward the edges, so the white marks and text read over a bright room.
             Box(
                 modifier = Modifier
@@ -270,27 +269,11 @@ private fun InvalidQrBanner() {
 // Why: in the camera's place until "Open camera", the only tap that asks for the camera and opens it.
 @Composable
 private fun CameraPromptMessage(onOpenCamera: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .widthIn(max = 420.dp)
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+    CameraMessage(
+        icon = Icons.Outlined.QrCodeScanner,
+        title = stringResource(R.string.join_scan_prompt_title),
+        message = stringResource(R.string.join_scan_prompt_message),
     ) {
-        CameraMessageIcon(Icons.Outlined.QrCodeScanner)
-        Text(
-            text = stringResource(R.string.join_scan_prompt_title),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = onCamera,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = stringResource(R.string.join_scan_prompt_message),
-            style = MaterialTheme.typography.bodyLarge,
-            color = onCamera,
-            textAlign = TextAlign.Center,
-        )
         Button(
             onClick = onOpenCamera,
             modifier = Modifier.heightIn(min = 48.dp),
@@ -307,27 +290,34 @@ private fun CameraPromptMessage(onOpenCamera: () -> Unit) {
 }
 
 @Composable
-private fun CameraMessageIcon(icon: ImageVector) {
-    Box(
-        modifier = Modifier
-            .size(96.dp)
-            .background(onCamera.copy(alpha = 0.12f), RoundedCornerShape(32.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(44.dp),
-            tint = onCamera,
-        )
-    }
-}
-
-@Composable
 private fun CameraProblemMessage(
     title: String?,
     message: String,
     onOpenSettings: (() -> Unit)?,
+) {
+    CameraMessage(
+        icon = Icons.Outlined.NoPhotography,
+        title = title,
+        message = message,
+    ) {
+        if (onOpenSettings != null) {
+            FilledTonalButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text(stringResource(R.string.join_scan_open_settings))
+            }
+        }
+    }
+}
+
+// Why: what the camera's place says instead of the camera: an icon, the words and what can be done.
+@Composable
+private fun CameraMessage(
+    icon: ImageVector,
+    title: String?,
+    message: String,
+    action: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -336,7 +326,19 @@ private fun CameraProblemMessage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        CameraMessageIcon(Icons.Outlined.NoPhotography)
+        Box(
+            modifier = Modifier
+                .size(96.dp)
+                .background(onCamera.copy(alpha = 0.12f), RoundedCornerShape(32.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(44.dp),
+                tint = onCamera,
+            )
+        }
         if (title != null) {
             Text(
                 text = title,
@@ -352,14 +354,7 @@ private fun CameraProblemMessage(
             color = onCamera,
             textAlign = TextAlign.Center,
         )
-        if (onOpenSettings != null) {
-            FilledTonalButton(
-                onClick = onOpenSettings,
-                modifier = Modifier.heightIn(min = 48.dp),
-            ) {
-                Text(stringResource(R.string.join_scan_open_settings))
-            }
-        }
+        action()
     }
 }
 

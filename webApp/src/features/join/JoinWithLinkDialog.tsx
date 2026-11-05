@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { useCameras } from '@/hooks/useCameraStream'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { useQrCamera } from '@/hooks/useQrCamera'
-import { t } from '@/i18n'
+import { canReadQr, useQrCamera } from '@/hooks/useQrCamera'
+import { t, type MessageKey } from '@/i18n'
 import { canReadClipboard } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
@@ -80,14 +80,21 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   )
 }
 
-// Why: Safari and Firefox have no BarcodeDetector, so they can't read a QR: they never offer "Open camera".
-const canReadQr = Boolean(window.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
+// Why: what the camera's place says when there is no camera to show; a browser that can't read QR codes never offers
+// "Open camera".
+const problemMessages = {
+  unsupported: 'join_linkUnsupported',
+  no_camera: 'join_linkNoCamera',
+  denied: 'join_linkDeniedMessage',
+  failed: 'join_linkCameraFailed',
+} as const satisfies Record<string, MessageKey>
+type CameraProblem = keyof typeof problemMessages
 
 function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState; isDesktop: boolean }) {
   const video = useRef<HTMLVideoElement>(null)
   useInviteCamera(video, presenter, state)
   const stage = state.cameraStage
-  const problem = !canReadQr ? 'unsupported' : stage === 'no_camera' ? 'no_camera' : stage === 'denied' ? 'denied' : stage === 'failed' ? 'failed' : null
+  const problem: CameraProblem | null = !canReadQr ? 'unsupported' : stage in problemMessages ? (stage as CameraProblem) : null
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
@@ -98,13 +105,7 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
           <CameraOff aria-hidden className="size-8 text-white/70" />
           {problem === 'denied' && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
           <p className="text-sm text-white/80">
-            {problem === 'unsupported'
-              ? t('join_linkUnsupported')
-              : problem === 'no_camera'
-                ? t('join_linkNoCamera')
-                : problem === 'failed'
-                  ? t('join_linkCameraFailed')
-                  : t('join_linkDeniedMessage')}
+            {t(problemMessages[problem])}
           </p>
           {problem === 'denied' && (
             <Button variant="secondary" onClick={() => presenter.openSettings()}>

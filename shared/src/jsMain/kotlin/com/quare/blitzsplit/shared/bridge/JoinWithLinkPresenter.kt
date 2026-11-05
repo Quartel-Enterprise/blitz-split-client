@@ -20,7 +20,6 @@ class JsJoinWithLinkState(
     val cameraStage: String,
     // Why: "Open camera" was tapped: only then the browser is asked for the camera.
     val isCameraRequested: Boolean,
-    val isCameraUnavailable: Boolean,
     val showsTorch: Boolean,
     val isTorchOn: Boolean,
     val canOpen: Boolean,
@@ -44,7 +43,6 @@ class JoinWithLinkPresenter(
                 isQrInvalid = state.isQrInvalid,
                 cameraStage = state.cameraStage.name.lowercase(),
                 isCameraRequested = state.isCameraRequested,
-                isCameraUnavailable = state.isCameraUnavailable,
                 showsTorch = state.showsTorch,
                 isTorchOn = state.isTorchOn,
                 canOpen = state.canOpen,
