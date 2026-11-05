@@ -156,7 +156,6 @@ struct GroupDetailView: View {
             header: model?.state.isLoaded == true ? model?.state.header : nil,
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
-            addPerson: addPerson,
             showsInlineTitle: showsInlineTitle,
             exit: model?.state.exit,
             actions: model?.actions ?? .disabled,
@@ -209,12 +208,6 @@ struct GroupDetailView: View {
             if model == nil { model = GroupDetailModel(route: route) }
             if members == nil { members = MembersModel(route: route) }
         }
-    }
-
-    /// Members' "Add person", once its people are read.
-    private var addPerson: (() -> Void)? {
-        guard model?.tab == .members, let members, members.state.isLoaded else { return nil }
-        return { members.send(MembersUiEventOnAddClicked.shared) }
     }
 
     /// "Teach the map" (9.3f) while the person picks the word; closing it any way is "Not now".
