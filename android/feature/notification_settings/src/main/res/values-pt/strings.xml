@@ -4,6 +4,8 @@
     <string name="notification_settings_denied_title">As notificações do Bora Rachar estão desativadas no Android.</string>
     <string name="notification_settings_denied_body">Ative nas configurações do sistema para receber os pushes abaixo. O sino continua funcionando.</string>
     <string name="notification_settings_open_settings">Abrir configurações</string>
+    <string name="notification_settings_refused_body">O Android deixa permitir mais uma vez para receber os pushes abaixo. O sino continua funcionando.</string>
+    <string name="notification_settings_turn_on">Ativar</string>
     <string name="notification_settings_section">Avisar sobre</string>
     <string name="notification_settings_push">Push</string>
     <string name="notification_settings_in_app">No app</string>

@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.notificationsettings
 
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded

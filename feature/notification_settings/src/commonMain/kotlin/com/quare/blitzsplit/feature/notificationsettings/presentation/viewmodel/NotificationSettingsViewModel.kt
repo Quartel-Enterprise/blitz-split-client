@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -12,7 +13,6 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPrefe
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
@@ -74,6 +74,11 @@ class NotificationSettingsViewModel(
             is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.channel, event.isEnabled)
 
             NotificationSettingsUiEvent.OnOpenSettingsClicked -> emit(NotificationSettingsUiAction.OpenSystemSettings)
+
+            NotificationSettingsUiEvent.OnAskAgainClicked -> if (uiState.value.canAskAgain) {
+                trackEvent("notification_permission_ask_again_clicked", emptyMap())
+                emit(NotificationSettingsUiAction.RequestPermission)
+            }
         }
     }
 

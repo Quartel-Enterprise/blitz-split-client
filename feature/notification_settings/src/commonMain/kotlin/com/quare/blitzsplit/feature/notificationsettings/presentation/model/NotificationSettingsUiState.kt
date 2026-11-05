@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.model
 
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import software.quare.loadable.Loadable
@@ -32,9 +33,16 @@ data class NotificationSettingsUiState(
     val showsTogglesLoading: Boolean
         get() = preferences.isLoading() || !isPermissionKnown
 
-    // Why: the 4.8b notice, with the button that opens the system settings.
+    /*
+     * Why: the 4.8b notice, with the button that opens the system settings; Android refused once too, whose button
+     * asks again, since Android still shows its dialog once more.
+     */
     val showsPermissionDenied: Boolean
-        get() = permission == NotificationPermission.DENIED
+        get() = permission == NotificationPermission.DENIED || permission == NotificationPermission.REFUSED_ONCE
+
+    // Why: the notice's "Turn on", which asks the system again, instead of "Open settings".
+    val canAskAgain: Boolean
+        get() = permission == NotificationPermission.REFUSED_ONCE
 
     /*
      * Why: a tap before the choices came down would mark the defaults to go up over the server's, and one before

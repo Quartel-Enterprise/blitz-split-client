@@ -12,9 +12,4 @@ enum class NotificationPermission {
 
     // Why: Android only: refused once, and the system still asks once more before only its settings can allow them.
     REFUSED_ONCE,
-    ;
-
-    // Why: the system's own prompt can still come, so "Turn on" asks in the app instead of sending to the settings.
-    val canAsk: Boolean
-        get() = this == NOT_DETERMINED || this == REFUSED_ONCE
 }

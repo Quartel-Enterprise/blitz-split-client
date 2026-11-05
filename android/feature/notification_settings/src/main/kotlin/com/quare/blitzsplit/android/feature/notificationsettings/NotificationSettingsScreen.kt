@@ -6,9 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.platform.SystemNotificationPermission
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
@@ -18,12 +16,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val permissionAccess = rememberNotificationPermissionAccess { permission ->
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission.toNotificationPermission()))
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission))
     }
     // Why: on every return too, since the person may have changed it in the system settings.
     LifecycleResumeEffect(viewModel, permissionAccess) {
         viewModel.onEvent(
-            NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read().toNotificationPermission()),
+            NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read()),
         )
         onPauseOrDispose {}
     }
@@ -40,10 +38,4 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinVi
         state = state,
         onEvent = viewModel::onEvent,
     )
-}
-
-private fun SystemNotificationPermission.toNotificationPermission(): NotificationPermission = when (this) {
-    SystemNotificationPermission.GRANTED -> NotificationPermission.GRANTED
-    SystemNotificationPermission.DENIED -> NotificationPermission.DENIED
-    SystemNotificationPermission.ASKABLE -> NotificationPermission.NOT_DETERMINED
 }
