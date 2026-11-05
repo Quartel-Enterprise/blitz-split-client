@@ -78,10 +78,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 
 /*
  * Why: the home. Its title only on a wide screen (HomeTabTitle), since a phone's selected Groups tab already names
- * it: the top bar holds the QR reader and the profile, and takes a color once the list scrolls under it, while "Rachar conta" shrinks to its icon.
- * A phone lying down splits in two (5.1): the actions, the sync status and "Saldo geral" stay still in a 320 dp column
- * on the left and the list scrolls on the right; Buscar puts its field and scopes there and the results beside them
- * (5.2). A Flip's cover screen only draws the home's cover (GroupsCoverContent).
+ * it: the top bar holds the QR reader and the profile, and takes a color once the list scrolls under it, while
+ * "Rachar conta" shrinks to its icon. A phone lying down splits in two (5.1): the actions, the sync status and
+ * "Saldo geral" stay still in a 320 dp column on the left and the list scrolls on the right; Buscar puts its field
+ * and scopes there and the results beside them (5.2). A Flip's cover screen only draws the home's cover (GroupsCoverContent).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

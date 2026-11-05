@@ -36,10 +36,11 @@ const accountLabels: Record<AccountProvider, MessageKey> = {
  * The content of every page in the home's frame: centered and capped at the same width on a wide window, so a tab, a
  * group and the profile line up as the sidebar opens one after the other.
  */
-export const pageContentClass = 'mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 sm:p-8 lg:px-10'
+const pageWidthClass = 'mx-auto flex w-full max-w-6xl flex-1 flex-col'
+export const pageContentClass = `${pageWidthClass} p-4 sm:p-8 lg:px-10`
 
 /** A group's pages and Statistics: the same width, under their own bar on a phone. */
-export const groupPageContentClass = 'mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 md:px-8 md:py-7 lg:px-10 lg:py-8'
+export const groupPageContentClass = `${pageWidthClass} p-4 md:px-8 md:py-7 lg:px-10 lg:py-8`
 
 /** The first crumb of a page outside the tabs, "Grupos ›": the tab it was opened from, which its click opens. */
 export function HomeTabCrumb({ tab, onOpen }: { tab: HomeTab; onOpen: (tab: HomeTab) => void }) {
@@ -240,7 +241,8 @@ export function HomeShell({
         </button>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      {/* Why: clips the page's 6 px rise as it comes in, which would otherwise flash a scrollbar on a short page. */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-clip">
         {phoneBars === 'home' && (
           <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
             <button

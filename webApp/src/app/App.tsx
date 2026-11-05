@@ -108,7 +108,7 @@ const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'contact-profile', '
  * covers Rachar conta, and so does whatever the map opens (Abrir Perfil): those draw as a stack of their own over
  * the bill, which stays mounted with what was typed while it is anywhere under them.
  */
-function StackLayers({ backStack }: { backStack: JsRoute[] }) {
+function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?: number }) {
   const mapIndex = backStack.findIndex((route, index) => route.name === 'category-map' && backStack[index - 1]?.name === 'split-bill')
   const isMapOverBill = mapIndex > 0
   const stack = isMapOverBill ? backStack.slice(0, mapIndex) : backStack
@@ -163,8 +163,9 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       : undefined
   const payment = isRegisterPayment ? top : paymentUnderPage
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
-  // Why: another tab or group in the same place of the stack is a new page, which fades in (HomeShell).
-  const pageKey = `${pageIndex}/${pageName}/${page?.groupId ?? ''}/${page?.groupTab ?? ''}`
+  // Why: another tab or group in the same place of the stack is a new page, which fades in (HomeShell). The place
+  // counts from the whole stack, so a page over the map never shares its key with one under it.
+  const pageKey = `${offset + pageIndex}/${pageName}/${page?.groupId ?? ''}/${page?.groupTab ?? ''}`
   return (
     <>
       <PageKeyContext.Provider value={pageKey}>
@@ -185,7 +186,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isMapOverBill} />}
       {isMapOverBill && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
-          <StackLayers backStack={backStack.slice(mapIndex)} />
+          <StackLayers backStack={backStack.slice(mapIndex)} offset={offset + mapIndex} />
         </div>
       )}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isOverEditGroup} />}
