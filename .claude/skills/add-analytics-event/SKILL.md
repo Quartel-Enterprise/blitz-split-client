@@ -1,6 +1,6 @@
 ---
 name: add-analytics-event
-description: "Instrument Analytics for a new or changed user action: move the feature's UiEvent to TrackedUiEvent and its ViewModel to TrackedViewModel, decide each case's EventAnalytics, call trackEvent for the Manual ones, and add each event's row to docs/analytics/README.md. Use whenever a feature adds or changes a UiEvent, or when moving a feature to tracked events."
+description: "Instrument Analytics for a new or changed user action: decide each UiEvent case's EventAnalytics, extend TrackedViewModel for a new feature, call trackEvent for the Manual ones, and add each event's row to docs/analytics/README.md. Use whenever a feature adds or changes a UiEvent, or a new feature adds its ViewModel."
 ---
 
 # Add analytics event
@@ -10,14 +10,14 @@ sent"): read it first and apply it as written. This skill is the order of the wo
 
 ## Workflow
 
-### 1. Move the feature to tracked events, if it isn't yet
+### 1. Wire a new feature
 
-- The feature's `XUiEvent` (and any sealed sub-hierarchy of it) implements
-  `com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent` instead of `UiEvent`.
+- The feature's `XUiEvent` (and any sealed sub-hierarchy of it) implements `com.quare.blitzsplit.core.presentation.UiEvent`,
+  whose `analytics` the compiler asks for on every case.
 - Its ViewModel extends `TrackedViewModel<XUiEvent>(trackEvent)`, takes `trackEvent: TrackEvent` in its constructor,
-  and its `fun onEvent(event: XUiEvent)` becomes `override fun handleEvent(event: XUiEvent)`. The UIs keep calling
-  `onEvent`, so Android, SwiftUI and React need no change. A ViewModel that hands a part of its events to a helper
-  (`BillDetailComments.onEvent`) keeps handing them from `handleEvent`.
+  and writes its exhaustive `when` in `override fun handleEvent(event: XUiEvent)`; the UIs call the inherited `onEvent`.
+  A ViewModel that hands a part of its events to a helper (`BillDetailComments.onEvent`) hands them from
+  `handleEvent`.
 - A ViewModel that refuses whole kinds of events for a while (a lock, a loading gate) overrides `isAccepted(event)`,
   and `onEvent` then neither tracks nor handles those events (`SplitBillViewModel` while it reads a receipt).
 - The ViewModel's tests build it with a recording `TrackEvent` (`{ name, params -> events += name to params }`).

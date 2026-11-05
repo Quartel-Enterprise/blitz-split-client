@@ -1,13 +1,13 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "home"
 
-sealed interface HomeUiEvent : TrackedUiEvent {
+sealed interface HomeUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnProfileClicked -> EventAnalytics.Automatic("profile_avatar_clicked", mapOf("source" to SOURCE))

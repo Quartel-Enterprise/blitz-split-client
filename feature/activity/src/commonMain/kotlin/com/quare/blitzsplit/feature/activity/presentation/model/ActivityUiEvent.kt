@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.activity.presentation.model
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface ActivityUiEvent : TrackedUiEvent {
+sealed interface ActivityUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: the window deciding the layout, the list reaching its end, or a notice going away: nobody tapped.

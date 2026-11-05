@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.feature.deleteaccount.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "delete_account"
 
-sealed interface DeleteAccountUiEvent : TrackedUiEvent {
+sealed interface DeleteAccountUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: Cancelar, the back arrow and a native dismiss all leave without deleting.

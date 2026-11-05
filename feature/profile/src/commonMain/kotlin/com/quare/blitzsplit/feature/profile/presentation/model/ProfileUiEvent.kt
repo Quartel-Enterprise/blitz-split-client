@@ -3,14 +3,14 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says, for its UiEvent and its ViewModel alike.
 internal const val PROFILE_SOURCE = "profile"
 
-sealed interface ProfileUiEvent : TrackedUiEvent {
+sealed interface ProfileUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back, which each platform also does its own way: where it went is its screen view.

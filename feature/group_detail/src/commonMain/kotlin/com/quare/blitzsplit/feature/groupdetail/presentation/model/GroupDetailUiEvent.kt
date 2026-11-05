@@ -2,13 +2,13 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "group_detail"
 
-sealed interface GroupDetailUiEvent : TrackedUiEvent {
+sealed interface GroupDetailUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back, which each platform also does its own way: where it went is its screen view.

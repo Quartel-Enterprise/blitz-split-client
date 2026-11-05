@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.model
 
 import com.quare.blitzsplit.core.model.NotificationType
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
-sealed interface NotificationSettingsUiEvent : TrackedUiEvent {
+sealed interface NotificationSettingsUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             // Why: a back, or what the system says about the permission: nobody tapped to act.

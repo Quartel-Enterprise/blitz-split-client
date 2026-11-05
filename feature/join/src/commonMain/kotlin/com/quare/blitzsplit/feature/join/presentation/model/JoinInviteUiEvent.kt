@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.feature.join.presentation.model
 
+import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
-import com.quare.blitzsplit.core.presentation.analytics.TrackedUiEvent
 
 // Why: the screen these events come from, as their source param says.
 private const val SOURCE = "join_invite"
 
-sealed interface JoinInviteUiEvent : TrackedUiEvent {
+sealed interface JoinInviteUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnJoinClicked -> EventAnalytics.Automatic("join_invite_join_clicked")

@@ -91,11 +91,10 @@ launch arguments. Web: the Google Analytics Debugger extension, or DebugView wit
 
 ## Tracking a user action
 
-Each feature's `UiEvent` moves to `TrackedUiEvent` (`:core:presentation`), which declares what it sends in
-`analytics`, and its ViewModel extends `TrackedViewModel`, which takes `TrackEvent` and implements `handleEvent`. Every
-UI keeps calling `onEvent`, which sends an `Automatic` event before handling it, so the three UIs send the same
-events. Once every feature has moved, `TrackedUiEvent` merges into `UiEvent` and the compiler asks for the decision on
-every new user action. The `add-analytics-event` skill walks through it.
+Every feature's `UiEvent` (`:core:presentation`) declares what it sends in `analytics`, so the compiler asks for the
+decision on every new user action, and its ViewModel extends `TrackedViewModel`, which takes `TrackEvent` and
+implements `handleEvent`. Every UI keeps calling `onEvent`, which sends an `Automatic` event before handling it, so the
+three UIs send the same events. The `add-analytics-event` skill walks through it.
 
 | `analytics` | When | Sent by |
 | --- | --- | --- |
