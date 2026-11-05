@@ -94,5 +94,9 @@ data class GroupDetailUiState(
      * too, so a bill can still be split offline while the account's copy waits for the internet.
      */
     val showsSplitBillButton: Boolean
-        get() = isLoaded && (tab != GroupTab.EXPENSES || days.isNotEmpty() || isLoadingBills)
+        get() = isLoaded &&
+            when (tab) {
+                GroupTab.EXPENSES -> days.isNotEmpty() || isLoadingBills
+                GroupTab.BALANCES, GroupTab.MEMBERS -> true
+            }
 }
