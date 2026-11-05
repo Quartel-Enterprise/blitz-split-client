@@ -294,7 +294,7 @@ function SectionCard({
                 >
                   <Badge variant="outline" className="h-8 gap-1.5 px-3 text-sm font-medium">
                     {term.term}
-                    {term.isPending && <span aria-hidden className="size-2 rounded-full bg-amber-600" />}
+                    {term.isPending && <span aria-hidden className="size-2 rounded-full bg-pending" />}
                   </Badge>
                 </button>
               ))}

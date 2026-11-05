@@ -337,6 +337,7 @@ struct HomeRecoveryCard: View {
                     Text("See code").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             }
             .font(.subheadline.weight(.medium))
             .lineLimit(1)
@@ -478,7 +479,7 @@ private struct HomeGroupRow: View {
     }
 }
 
-/// "today", or "queued · Groceries" with the orange dot, as Groups' row says it.
+/// "today", or "queued · Groceries" with the amber dot, as Groups' row says it.
 private struct GroupActivityLine: View {
     let row: GroupRow
 

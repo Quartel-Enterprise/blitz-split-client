@@ -330,7 +330,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
   return (
     <span
       className={cn(
-        'flex h-8 shrink-0 items-center gap-1 rounded-md border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
+        'flex h-8 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
         isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
         className,
       )}
@@ -348,7 +348,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground/60"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-xs text-muted-foreground">

@@ -17,11 +17,11 @@ struct SimplifyDebtsTile: View {
     }
 }
 
-/// The orange dot of what is saved here and not on the server yet.
+/// The amber dot of what is saved here and not on the server yet.
 struct SimplifyPendingDot: View {
     var body: some View {
         Circle()
-            .fill(.orange)
+            .fill(Palette.pending)
             .frame(width: 8, height: 8)
             .accessibilityHidden(true)
     }
@@ -114,6 +114,7 @@ struct SimplifyDebtsConfirmationView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.defaultAction)
                 .disabled(isChanging)
             }

@@ -147,6 +147,7 @@ struct CategoryEditorForm<GroupField: View>: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", systemImage: "checkmark", action: actions.save)
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .disabled(editor?.canSave != true)
             }
         }
@@ -159,7 +160,7 @@ struct CategoryEditorForm<GroupField: View>: View {
             Image(systemName: CategoryCopy.symbol(icon))
                 .font(.title3)
                 .frame(width: 44, height: 44)
-                .foregroundStyle(isSelected ? Color.white : Palette.accent)
+                .foregroundStyle(isSelected ? Palette.onAccent : Palette.accent)
                 .background(isSelected ? Palette.accent : Color.secondary.opacity(0.12), in: .rect(cornerRadius: 12))
         }
         .buttonStyle(.plain)

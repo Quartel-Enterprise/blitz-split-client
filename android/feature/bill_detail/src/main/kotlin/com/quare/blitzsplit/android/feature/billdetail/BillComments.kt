@@ -37,6 +37,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
@@ -56,6 +57,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -131,7 +133,7 @@ internal fun BillSectionTitle(
     }
 }
 
-// Why: the orange dot of what waits for the server, the bill's "Na fila" and a comment's alike.
+// Why: the amber dot of what waits for the server, the bill's "Na fila" and a comment's alike.
 @Composable
 internal fun PendingLine(
     text: String,
@@ -152,11 +154,14 @@ internal fun PendingLine(
 }
 
 @Composable
-internal fun PendingIndicator(modifier: Modifier = Modifier) {
+internal fun PendingIndicator(
+    modifier: Modifier = Modifier,
+    color: Color = pendingColor(),
+) {
     Box(
         modifier = modifier
             .size(8.dp)
-            .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+            .background(color, CircleShape),
     )
 }
 

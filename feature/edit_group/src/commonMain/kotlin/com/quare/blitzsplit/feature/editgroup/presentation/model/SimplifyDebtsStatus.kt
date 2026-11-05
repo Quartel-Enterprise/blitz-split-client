@@ -8,7 +8,7 @@ enum class SimplifyDebtsStatus {
     // Why: "Ligado · 5 pagamentos em vez de 7", or "Ligado · já no mínimo de pagamentos".
     ON,
 
-    // Why: "Ligado neste aparelho · aguardando envio" (or "Desligado…"), with the orange dot (13.1d).
+    // Why: "Ligado neste aparelho · aguardando envio" (or "Desligado…"), with the amber dot (13.1d).
     PENDING,
 
     // Why: "Com 2 pessoas já é um pagamento só. Fica disponível quando entrar a terceira pessoa." (13.1c)

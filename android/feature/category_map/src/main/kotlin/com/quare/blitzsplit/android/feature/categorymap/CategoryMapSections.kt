@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -53,7 +54,6 @@ import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSection
 
 private val pendingDotSize = 8.dp
 private val rowLabelWidth = 96.dp
-private val pendingColor = Color(0xFFD97706)
 
 // Why: "Transporte · 7 termos", "Nenhum termo · categoria do Viagem Floripa".
 @Composable
@@ -233,7 +233,7 @@ private fun rowLabelOf(row: MapRow): String = if (row.isOnlyMain) {
     categoryName(row.category)
 }
 
-// Why: a term as a chip, with the orange dot while it waits in the queue (9.1g); a tap opens "Editar termo".
+// Why: a term as a chip, with the amber dot while it waits in the queue (9.1g); a tap opens "Editar termo".
 @Composable
 internal fun TermChip(
     term: MapTerm,
@@ -271,7 +271,7 @@ internal fun TermChip(
                 Box(
                     modifier = Modifier
                         .size(pendingDotSize)
-                        .background(pendingColor, CircleShape),
+                        .background(pendingColor(), CircleShape),
                 )
             }
         }

@@ -299,12 +299,14 @@ private struct ShareBillButtons: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             } else {
                 Button {} label: {
                     Label("Send link", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .disabled(true)
             }
         }

@@ -84,8 +84,10 @@ private struct ProminentBarButton: View {
         }
         #if os(iOS)
         .buttonStyle(.glassProminent)
+        .prominentLabel()
         #else
         .buttonStyle(.borderedProminent)
+        .prominentLabel()
         #endif
     }
 }

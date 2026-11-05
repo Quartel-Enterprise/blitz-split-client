@@ -238,8 +238,8 @@ function DayRow({
           <span className="truncate font-medium">{title}</span>
           <span className="flex min-w-0 items-center gap-1.5 text-xs whitespace-nowrap text-muted-foreground">
             {isPending && (
-              <span className="inline-flex h-[18px] shrink-0 items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-1.5 text-[11px] font-medium text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300">
-                <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />
+              <span className="inline-flex h-[18px] shrink-0 items-center gap-1 rounded-md border border-pending/30 bg-pending-container px-1.5 text-[11px] font-medium text-pending-container-foreground">
+                <span aria-hidden className="size-1.5 rounded-full bg-pending" />
                 {t('groupDetail_pending')}
               </span>
             )}

@@ -34,14 +34,14 @@ struct BillOfflineBanner: View {
     }
 }
 
-/// The orange dot of what is still queued, beside its words.
+/// The amber dot of what is still queued, beside its words.
 struct BillQueuedLine: View {
     let text: LocalizedStringKey
 
     var body: some View {
         HStack(spacing: 6) {
             Circle()
-                .fill(.orange)
+                .fill(Palette.pending)
                 .frame(width: 7, height: 7)
                 .accessibilityHidden(true)
             Text(text)
@@ -370,7 +370,7 @@ struct BillHistoryEntryView: View {
                     Spacer(minLength: 4)
                     if entry.isPending {
                         Circle()
-                            .fill(.orange)
+                            .fill(Palette.pending)
                             .frame(width: 7, height: 7)
                             .accessibilityLabel(Text("Queued", comment: "A history line done offline and not up yet"))
                     }
@@ -529,6 +529,7 @@ struct BillCommentComposer: View {
                     state.isEditingComment ? Text("Save") : Text("Send")
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
                 .keyboardShortcut(.return, modifiers: .command)
                 .disabled(!state.canSendComment)
                 .help(state.isEditingComment ? Text("Save") : Text("Send comment"))

@@ -175,6 +175,7 @@ private struct GroupIconSheet: View {
                         model.send(EditGroupUiEventOnIconConfirmed.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                 }
             }
         }

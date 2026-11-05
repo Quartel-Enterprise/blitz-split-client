@@ -73,7 +73,7 @@ export function GroupBalance({ group, isStacked = false, amountClassName }: { gr
 /** "na fila": the group, a bill or a payment changed here and not on the server yet. */
 export function QueuedBadge() {
   return (
-    <span className="inline-flex h-5 shrink-0 items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 text-[11px] font-medium text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
+    <span className="inline-flex h-5 shrink-0 items-center rounded-md border border-pending/30 bg-pending-container px-1.5 text-[11px] font-medium text-pending-container-foreground">
       {t('groups_queued')}
     </span>
   )

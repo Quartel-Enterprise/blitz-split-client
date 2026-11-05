@@ -305,11 +305,11 @@ private struct GroupListRow: View {
 }
 #endif
 
-/// The orange dot of a group with a change waiting to go up ("na fila"), on its row and its card.
+/// The amber dot of a group with a change waiting to go up ("na fila"), on its row and its card.
 struct PendingIndicator: View {
     var body: some View {
         Circle()
-            .fill(.orange)
+            .fill(Palette.pending)
             .frame(width: 8, height: 8)
             .accessibilityHidden(true)
     }

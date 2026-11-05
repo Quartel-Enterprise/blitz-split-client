@@ -230,6 +230,7 @@ struct CategoryPickerView: View {
                     model.send(SplitBillUiEventOnNewCategoryClicked(parentId: nil, name: query))
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             }
         } else {
             Section("\(state.categoryResults.count) results") {

@@ -40,7 +40,7 @@ data class ActivityItem(
     val commentId: String?,
     // Why: "Ana apagou um comentário em Jantar", with no text, in place of "Ana comentou em Jantar".
     val isCommentDeleted: Boolean,
-    // Why: saved on this device and not up yet: "Aguardando envio" with the orange dot.
+    // Why: saved on this device and not up yet: "Aguardando envio" with the amber dot.
     val isPending: Boolean,
     val isUnread: Boolean,
     val target: ActivityTarget,

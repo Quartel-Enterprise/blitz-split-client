@@ -43,7 +43,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
       >
         <CardHeader>
           <CardTitle>{t('profile_yourProfile')}</CardTitle>
-          {isPending && <CardDescription className="text-destructive">{t('profile_pending')}</CardDescription>}
+          {isPending && <CardDescription className="text-pending">{t('profile_pending')}</CardDescription>}
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">

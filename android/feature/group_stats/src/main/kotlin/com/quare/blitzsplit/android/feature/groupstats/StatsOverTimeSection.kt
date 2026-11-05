@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -271,12 +272,12 @@ internal fun StatsBiggestSection(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        // Why: the queue's orange dot, as Despesas and the other platforms draw it.
+                        // Why: the queue's amber dot, as Despesas and the other platforms draw it.
                         if (expense.isPending) {
                             Box(
                                 modifier = Modifier
                                     .size(8.dp)
-                                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+                                    .background(pendingColor(), CircleShape),
                             )
                         }
                         Text(

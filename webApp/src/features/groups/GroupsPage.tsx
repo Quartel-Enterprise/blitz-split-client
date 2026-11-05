@@ -163,7 +163,7 @@ export function SyncStatus({
       <span
         className={cn(
           'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
-          isOffline && state.pendingChangeCount > 0 ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300' : 'text-muted-foreground',
+          isOffline && state.pendingChangeCount > 0 ? 'border-pending/30 bg-pending-container text-pending-container-foreground' : 'text-muted-foreground',
         )}
       >
         {isOffline ? <CloudOff className="size-3.5" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5" />}

@@ -30,7 +30,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
     members − 1, ties by the order they joined, so every device gets the same pairs offline; payments recorded only
     move the nets, and a group already at its fewest payments keeps its pairs (13.3c). Any member turns it on or off,
-    offline too, at once and apart from Save ("Waiting to upload" with the orange dot meanwhile); with 2 people it is
+    offline too, at once and apart from Save ("Waiting to upload" with the amber dot meanwhile); with 2 people it is
     off and disabled with the reason (13.1c), and a group already on can still turn it off. The switch opens its
     confirmation first: "7 payments → 5 payments" and what changes for each person (you first, a guest with
     "let them know with Request", the payments still in the queue, 13.3d), "Turn on anyway" when it saves none; turning off

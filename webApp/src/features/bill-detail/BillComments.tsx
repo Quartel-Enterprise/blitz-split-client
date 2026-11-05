@@ -216,7 +216,7 @@ function Comment({
         </p>
         {row.isPending && (
           <span role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-orange-500" />
+            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-pending" />
             {t('billDetail_commentPending')}
           </span>
         )}

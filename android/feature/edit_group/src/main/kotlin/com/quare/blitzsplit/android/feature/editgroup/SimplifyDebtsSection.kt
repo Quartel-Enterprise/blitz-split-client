@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsStatus
@@ -115,14 +116,14 @@ internal fun SimplifyDebtsSection(
     }
 }
 
-// Why: the orange dot of a change waiting to go up, as the home's rows draw it.
+// Why: the amber dot of a change waiting to go up, as the home's rows draw it.
 @Composable
 internal fun PendingDotIndicator(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .padding(top = 6.dp)
             .size(pendingDotSize)
-            .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+            .background(pendingColor(), CircleShape),
     )
 }
 

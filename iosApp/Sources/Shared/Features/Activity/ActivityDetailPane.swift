@@ -84,6 +84,7 @@ private struct ActivityItemDetail: View {
             if item.deletion == nil {
                 openButton
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
             }
@@ -148,6 +149,7 @@ private struct ActivityItemDetail: View {
             if item.deletion == nil {
                 openButton
                     .buttonStyle(.borderedProminent)
+                    .prominentLabel()
             }
             #endif
         }

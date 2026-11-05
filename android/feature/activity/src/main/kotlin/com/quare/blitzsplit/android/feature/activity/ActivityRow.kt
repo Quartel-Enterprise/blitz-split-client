@@ -52,6 +52,7 @@ import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
@@ -162,7 +163,7 @@ internal fun GroupDotIcon(
 
 /*
  * Why: one event of the feed: the sentence (bold names, bolder while unread), its detail, the group and the time, the
- * blue dot while unread and the orange one while waiting to go up. A bill's edit opens its changes in the row.
+ * blue dot while unread and the amber one while waiting to go up. A bill's edit opens its changes in the row.
  */
 @Composable
 internal fun ActivityRow(
@@ -250,7 +251,7 @@ private fun MetaLine(
             text = groupAndTimeTextOf(item, dates),
             style = MaterialTheme.typography.bodySmall,
             color = if (item.isPending) {
-                MaterialTheme.colorScheme.tertiary
+                pendingColor()
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
@@ -264,7 +265,7 @@ private fun MetaLine(
 private fun StatusDotIndicator(item: ActivityItem) {
     val color = when {
         item.isUnread -> MaterialTheme.colorScheme.primary
-        item.isPending -> MaterialTheme.colorScheme.tertiary
+        item.isPending -> pendingColor()
         else -> return
     }
     Box(

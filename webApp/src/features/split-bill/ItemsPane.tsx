@@ -72,7 +72,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
       </div>
       {state.showsOfflineNotice && (
         <p role="status" className="flex items-start gap-2 text-[13px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-amber-600" />
+          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-pending" />
           <span>{t('items_offline')}</span>
         </p>
       )}
@@ -338,7 +338,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
   return (
     <span
       className={cn(
-        'flex h-8 shrink-0 items-center gap-1 rounded-md border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
+        'flex h-8 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
         line.isError ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
         editor.mode === 'amount' ? 'w-28' : 'w-[72px]',
       )}
@@ -356,7 +356,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         aria-label={label}
         aria-invalid={line.isError}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground/60"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
       />
       {editor.mode === 'percent' && (
         <span aria-hidden className="text-xs text-muted-foreground">

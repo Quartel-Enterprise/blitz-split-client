@@ -337,13 +337,13 @@ private struct MyBalanceText: View {
     }
 }
 
-/// The orange dot of what is saved here and not on the server yet.
+/// The amber dot of what is saved here and not on the server yet.
 private struct PendingDot: View {
     var size: CGFloat = 8
 
     var body: some View {
         Circle()
-            .fill(.orange)
+            .fill(Palette.pending)
             .frame(width: size, height: size)
             .accessibilityHidden(true)
     }
@@ -417,7 +417,7 @@ private struct PhoneExpenseSections: View {
     }
 }
 
-/// An entry of the day: its icon, a title and a meta line (with the orange dot while queued), and its amounts.
+/// An entry of the day: its icon, a title and a meta line (with the amber dot while queued), and its amounts.
 private struct PhoneDayRow<Amounts: View>: View {
     let systemImage: String
     /// A bill's category, drawn in place of the icon (6.1); nil for a payment.

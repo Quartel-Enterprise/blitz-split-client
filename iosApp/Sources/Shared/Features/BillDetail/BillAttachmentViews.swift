@@ -166,7 +166,7 @@ struct BillAttachmentStrip: View {
 }
 
 /// One attachment, cropped to fill its tile: "Photo 2" with "Ana · Yesterday" under it (in the tooltip on the Mac),
-/// the receipt's badge, or the orange dot of a photo still waiting to go up.
+/// the receipt's badge, or the amber dot of a photo still waiting to go up.
 private struct BillAttachmentTileView: View {
     let attachment: BillAttachmentTile
     let metrics: BillAttachmentMetrics
@@ -219,7 +219,7 @@ private struct BillAttachmentTileView: View {
     }
 }
 
-/// "Waiting" ("Pending" on the Mac) with the orange dot of what is queued, or the receipt's "Receipt".
+/// "Waiting" ("Pending" on the Mac) with the amber dot of what is queued, or the receipt's "Receipt".
 private struct AttachmentBadge: View {
     let isPending: Bool
 
@@ -227,7 +227,7 @@ private struct AttachmentBadge: View {
         HStack(spacing: 4) {
             if isPending {
                 Circle()
-                    .fill(.orange)
+                    .fill(Palette.pendingOnDark)
                     .frame(width: 6, height: 6)
                 pendingWord
             } else {

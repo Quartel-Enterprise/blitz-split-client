@@ -87,7 +87,7 @@ function kindIcon(entry: JsBillHistoryEntry): ReactNode {
 }
 
 /**
- * "Ana trocou a categoria · 9:12", what changed under it, and the orange dot while it waits to go up. The actor's face
+ * "Ana trocou a categoria · 9:12", what changed under it, and the amber dot while it waits to go up. The actor's face
  * opens their profile while they are in the group, as on Android and Apple.
  */
 function HistoryLine({
@@ -134,7 +134,7 @@ function HistoryLine({
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
             {entry.isPending && (
               <>
-                <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />
+                <span aria-hidden className="size-1.5 rounded-full bg-pending" />
                 <span className="sr-only">{t('billDetail_historyPending')}</span>
               </>
             )}

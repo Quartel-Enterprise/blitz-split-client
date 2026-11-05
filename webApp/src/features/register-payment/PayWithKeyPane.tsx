@@ -140,7 +140,7 @@ function PayWithKeyBody({
       </p>
       {state.showsOfflineNotice && (
         <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
-          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-orange-500" />
+          <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-pending" />
           {t('registerPayment_offline')}
         </p>
       )}

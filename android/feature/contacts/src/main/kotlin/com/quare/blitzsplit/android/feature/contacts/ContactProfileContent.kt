@@ -65,6 +65,7 @@ import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactBalanceNote
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
@@ -382,7 +383,7 @@ private fun PendingMergeCard(
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+                    .background(pendingColor(), CircleShape),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(

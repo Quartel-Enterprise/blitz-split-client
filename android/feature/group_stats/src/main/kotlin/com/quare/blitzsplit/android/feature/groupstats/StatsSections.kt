@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -154,7 +155,7 @@ internal fun StatsPeriodChip(
     }
 }
 
-// Why: the period's total, how many bills (the queue's with the orange dot) and the average, then this person's part.
+// Why: the period's total, how many bills (the queue's with the amber dot) and the average, then this person's part.
 @Composable
 internal fun StatsSummaryHero(
     state: GroupStatsUiState,
@@ -207,7 +208,7 @@ internal fun StatsSummaryHero(
                 Box(
                     modifier = Modifier
                         .size(8.dp)
-                        .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+                        .background(pendingColor(), CircleShape),
                 )
             }
             Text(

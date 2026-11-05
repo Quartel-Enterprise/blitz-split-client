@@ -94,6 +94,7 @@ struct EditGroupView: View {
                         model?.send(EditGroupUiEventOnSaveClicked.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .disabled(model?.state.canSave != true)
                 }
             }
@@ -336,7 +337,7 @@ private struct EditGroupForm: View {
 }
 
 /// "Payments" (13.1): "Simplify debts" with its switch, which only opens the confirmation and never flips by itself,
-/// the line saying how it stands (the orange dot while it waits to go up), "How it works" and who may change it. It
+/// the line saying how it stands (the amber dot while it waits to go up), "How it works" and who may change it. It
 /// applies at once, apart from Save. The Mac's switch is the small one of its forms.
 private struct EditGroupPaymentsSection: View {
     let model: EditGroupModel

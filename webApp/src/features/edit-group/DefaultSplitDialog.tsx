@@ -366,7 +366,7 @@ function NumberField({
   return (
     <label
       className={cn(
-        'flex h-9 shrink-0 items-center gap-1.5 rounded-md border bg-card px-2.5 text-sm focus-within:ring-[3px] dark:bg-input/30',
+        'flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-field-border bg-card px-2.5 text-sm focus-within:ring-[3px] dark:bg-input/30',
         isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
         className,
       )}
@@ -384,7 +384,7 @@ function NumberField({
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setDraft(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-right font-semibold tabular-nums outline-none placeholder:text-muted-foreground/60"
+        className="min-w-0 flex-1 bg-transparent text-right font-semibold tabular-nums outline-none placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-muted-foreground">

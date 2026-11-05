@@ -212,7 +212,7 @@ private fun HistoryEntryRow(
     }
 }
 
-// Why: "Ana trocou a categoria · 9:12", the orange dot before the time while it waits to go up.
+// Why: "Ana trocou a categoria · 9:12", the amber dot before the time while it waits to go up.
 @Composable
 private fun EntryHeadlineRow(
     entry: BillHistoryEntry,

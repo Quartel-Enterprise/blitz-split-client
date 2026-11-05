@@ -71,7 +71,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     <SkeletonLine className="mr-auto w-28" />
   )
   const offline = isLoaded && !state.isOnline && (
-    <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[13px] leading-[18px] text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
+    <p role="status" className="rounded-lg border border-pending/30 bg-pending-container px-3.5 py-2.5 text-[13px] leading-[18px] text-pending-container-foreground">
       {t('billDetail_offline')}
     </p>
   )
@@ -305,9 +305,9 @@ export function BillBody({
           {state.isPending && (
             <span
               role="status"
-              className="inline-flex h-[22px] items-center gap-1.5 self-start rounded-md border border-amber-200 bg-amber-50 px-2 text-xs font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"
+              className="inline-flex h-[22px] items-center gap-1.5 self-start rounded-md border border-pending/30 bg-pending-container px-2 text-xs font-semibold text-pending-container-foreground"
             >
-              <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />
+              <span aria-hidden className="size-1.5 rounded-full bg-pending" />
               {t('billDetail_pending')}
             </span>
           )}

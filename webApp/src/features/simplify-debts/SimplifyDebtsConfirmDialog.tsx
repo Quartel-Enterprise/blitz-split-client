@@ -58,8 +58,8 @@ export function SimplifyDebtsConfirmDialog({
       <Counts before={confirmation.paymentsBefore} after={confirmation.paymentsAfter} />
       {confirmation.people.length > 0 && <WhatChanges people={confirmation.people} money={money} />}
       {confirmation.queuedPayments.length > 0 && (
-        <p className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13px] leading-relaxed text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300">
-          <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-orange-500" />
+        <p className="flex gap-2 rounded-lg border border-pending/30 bg-pending-container px-3 py-2.5 text-[13px] leading-relaxed text-pending-container-foreground">
+          <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-pending" />
           <span>{queuedText(confirmation.queuedPayments, money)}</span>
         </p>
       )}

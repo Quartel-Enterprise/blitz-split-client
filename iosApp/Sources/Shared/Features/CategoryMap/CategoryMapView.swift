@@ -298,7 +298,7 @@ struct MapSectionRows: View {
     }
 }
 
-/// A line's terms as chips that wrap, each with the orange dot while it waits in the queue (9.1g).
+/// A line's terms as chips that wrap, each with the amber dot while it waits in the queue (9.1g).
 struct TermChipsRow: View {
     let row: MapRow
     let model: CategoryMapModel
@@ -315,7 +315,7 @@ struct TermChipsRow: View {
                             .font(.subheadline.weight(.medium))
                         if term.isPending {
                             Circle()
-                                .fill(.orange)
+                                .fill(Palette.pending)
                                 .frame(width: 8, height: 8)
                         }
                     }
@@ -399,6 +399,7 @@ struct MapSearchSection: View {
                     model.send(CategoryMapUiEventOnAddTermClicked(categoryId: nil, text: query))
                 }
                 .buttonStyle(.borderedProminent)
+                .prominentLabel()
             }
         } else {
             let results = state.searchResults
@@ -456,6 +457,7 @@ struct EmptyMapSection: View {
                 model.send(CategoryMapUiEventOnAddTermClicked(categoryId: nil, text: ""))
             }
             .buttonStyle(.borderedProminent)
+            .prominentLabel()
             Button("Restore default") {
                 model.send(CategoryMapUiEventOnRestoreClicked.shared)
             }
@@ -561,6 +563,7 @@ struct TermFormView: View {
                     model.send(CategoryMapUiEventOnTermSaveClicked.shared)
                 }
                 .buttonStyle(.glassProminent)
+                .prominentLabel()
                 .disabled(!state.canSaveTerm)
             }
         }

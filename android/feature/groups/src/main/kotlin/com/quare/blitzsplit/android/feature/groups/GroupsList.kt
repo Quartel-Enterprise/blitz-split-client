@@ -52,6 +52,7 @@ import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
@@ -433,13 +434,13 @@ internal fun MemberFacesRow(group: GroupRow) {
     }
 }
 
-// Why: the orange dot of a group with a change waiting to go up.
+// Why: the amber dot of a group with a change waiting to go up.
 @Composable
 internal fun PendingIndicator() {
     Box(
         modifier = Modifier
             .size(8.dp)
-            .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+            .background(pendingColor(), CircleShape),
     )
 }
 

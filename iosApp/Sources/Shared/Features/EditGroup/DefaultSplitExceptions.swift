@@ -156,6 +156,7 @@ struct ExceptionSheet: View {
                         model.send(DefaultSplitUiEventOnExceptionSaveClicked.shared)
                     }
                     .buttonStyle(.glassProminent)
+                    .prominentLabel()
                     .disabled(!state.canSaveException)
                 }
             }

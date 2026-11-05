@@ -104,6 +104,7 @@ struct PrimaryButton: View {
             .frame(maxWidth: .infinity, minHeight: 36)
         }
         .buttonStyle(.glassProminent)
+        .prominentLabel()
         .buttonBorderShape(.capsule)
         .controlSize(.large)
         .disabled(!isEnabled)

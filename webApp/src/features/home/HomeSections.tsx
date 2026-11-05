@@ -388,9 +388,9 @@ function ShareCell({ bill }: { bill: JsHomeBill }) {
   )
 }
 
-/** The orange dot of a bill or a group waiting for the server. */
+/** The amber dot of a bill or a group waiting for the server. */
 function PendingDot() {
-  return <span aria-hidden className="size-[7px] shrink-0 rounded-full bg-orange-500" />
+  return <span aria-hidden className="size-[7px] shrink-0 rounded-full bg-pending" />
 }
 
 /**
@@ -535,7 +535,7 @@ export function YourGroups({ presenter, state }: SectionProps) {
   )
 }
 
-/** A group's row: its shape, name with the pin, the meta with the orange dot, and your balance in it with its word. */
+/** A group's row: its shape, name with the pin, the meta with the amber dot, and your balance in it with its word. */
 function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => void }) {
   const row = group.row
   return (

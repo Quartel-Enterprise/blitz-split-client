@@ -598,7 +598,7 @@ private struct ActivityRow: View {
     }
 }
 
-/// "Viagem Floripa · 8:15 PM", with the group's tint, or the orange dot and "Waiting to send" for a change not up yet.
+/// "Viagem Floripa · 8:15 PM", with the group's tint, or the amber dot and "Waiting to send" for a change not up yet.
 private struct ActivityRowMeta: View {
     let item: ActivityItem
 
