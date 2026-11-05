@@ -74,12 +74,12 @@ already open in the stack goes back to that group instead, so the group never st
 `androidApp/.../navigation/AppNavDisplay.kt` collects the back stack and hands it to `NavDisplay`:
 
 ```kotlin
-NavDisplay(
+val entries = rememberAppNavEntries(
     backStack = backStack,
-    onBack = { appViewModel.navigator.navigateBack() },
-    entryDecorators = listOf(
+    decorators = listOf(
         rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
         rememberViewModelStoreNavEntryDecorator(),
+        homeBarsEntryDecorator,
     ),
     entryProvider = entryProvider {
         entry<Route.Welcome> { WelcomeScreen() }
@@ -88,10 +88,27 @@ NavDisplay(
         entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
     },
 )
+HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
+    NavDisplay(
+        entries = entries,
+        sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
+        onBack = { appViewModel.navigator.navigateBack() },
+    )
+}
 ```
 
 The ViewModel store decorator gives each entry its own ViewModel, cleared when the entry is popped. The system back
 gesture goes through `navigateBack()`, so the shared stack stays the source of truth.
+
+Groups and Contacts are the one exception (`rememberAppNavEntries`, `HomeTabEntries.kt`): while one of them is
+the route right above Home, it is decorated with `rememberDecoratedNavEntries` on its own, outside the rest of the
+stack, so another tab taking its place doesn't pop its decorator state. Its ViewModel and saved state stay, as iOS
+keeps Groups, and the tab comes back as it was left instead of on a skeleton; both are cleared once Home stops being
+the root. The back stack itself is unchanged: the shared ViewModels still see the tabs take each other's place, so
+what they do when a tab leaves the stack (Groups closing its search) still happens. Balances isn't kept, since its
+route carries the filter Home's cards ask for. The home's bar or rail is drawn once around `NavDisplay`
+(`HomeBarsLayout`), see
+[responsive-layouts.md](responsive-layouts.md).
 
 ### Apple: `NavigationStack` path
 

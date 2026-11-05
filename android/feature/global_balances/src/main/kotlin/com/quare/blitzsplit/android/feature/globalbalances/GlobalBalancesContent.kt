@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -36,8 +34,9 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeBars
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsKind
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
@@ -79,17 +78,19 @@ fun GlobalBalancesContent(
     val profile = stringResource(R.string.global_balances_profile)
     val onTabClick: (HomeTab) -> Unit = { tab -> eventOf(tab)?.let(onEvent) }
     val listDetail = rememberListDetailLayout()
-    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) {
-                HomeNavigationRail(
-                    selected = HomeTab.BALANCES,
-                    onTabClick = onTabClick,
-                    onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
-                )
-            }
+    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
+        HomeBarsScaffold(
+            bars = HomeBars(
+                kind = if (layout.usesNavigationRail) HomeBarsKind.RAIL else HomeBarsKind.BOTTOM_BAR,
+                selected = HomeTab.BALANCES,
+                onTabClick = onTabClick,
+                onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+            ),
+            // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
+            modifier = Modifier.semantics { paneTitle = title },
+        ) {
             Scaffold(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(
                         title = { HomeTabTitle(title) },
@@ -105,25 +106,8 @@ fun GlobalBalancesContent(
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                bottomBar = {
-                    if (!layout.usesNavigationRail) {
-                        HomeNavigationBar(
-                            selected = HomeTab.BALANCES,
-                            onTabClick = onTabClick,
-                            onSearchClick = {
-                                onEvent(
-                                    GlobalBalancesUiEvent.OnSearchClicked,
-                                )
-                            }.takeIf { state.canSearch },
-                        )
-                    }
-                },
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentWindowInsets = if (layout.usesNavigationRail) {
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                } else {
-                    WindowInsets.safeDrawing
-                },
+                contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
                 if (listDetail != null) {
                     BalancesListDetailLayout(
