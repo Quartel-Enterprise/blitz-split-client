@@ -32,11 +32,12 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     turns on unasked). Refused, the camera's place says "No access to the camera" with "Open settings" ("Open Settings"
     on iOS, "Open System Settings" on the Mac, "Try again" on the web, which has no settings page to open). A device
     with no camera (a Mac mini, a computer without a webcam, as the system or the browser lists them, again when a
-    camera is plugged in or out) never offers "Open camera" and says "This device has no camera. Paste the link below."
-    ("This Mac has no camera" on the Mac); a browser that can't read QR codes (Safari, Firefox) keeps its own line, with
-    no button either. The prompt takes the camera's place wherever the layout puts it, so foldables, the iPhone Duo and
-    the Mac's sheet need nothing of their own. The ViewModel holds the stage (`CameraStage`: prompt, no camera,
-    viewfinder, denied, failed), and the platforms only ask when it says so (`RequestCameraAccess`).
+    camera is plugged in or out on Apple and the web) never offers "Open camera" and says "This device has no camera.
+    Paste the link below." ("This Mac has no camera" on the Mac); a browser that can't read QR codes (Safari, Firefox)
+    keeps its own line, with no button either. The prompt takes the camera's place wherever the layout puts it, so
+    foldables, the iPhone Duo and the Mac's sheet need nothing of their own. The ViewModel holds the stage
+    (`CameraStage`: prompt, no camera, viewfinder, denied, failed), and the platforms only ask when it says so
+    (`RequestCameraAccess`).
   - Android's "Take photo" asks for the camera first. Once it is refused for good, a snackbar "Allow the camera in
     Settings" offers "Settings", which opens the app's settings page.
   - The web's "Take photo" (beta feedback 2): wherever the web takes a photo from a file (Your profile, Edit profile,

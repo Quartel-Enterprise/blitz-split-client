@@ -156,6 +156,7 @@ class JoinWithLinkViewModel(
         val state = uiState.value
         if (!state.hasCamera || state.cameraAccess != CameraAccess.NOT_REQUESTED) return
         uiState.update { it.copy(cameraAccess = CameraAccess.ASKING) }
+        trackEvent("join_with_link_open_camera_clicked", emptyMap())
         viewModelScope.launch { uiAction.emit(JoinWithLinkUiAction.RequestCameraAccess) }
     }
 

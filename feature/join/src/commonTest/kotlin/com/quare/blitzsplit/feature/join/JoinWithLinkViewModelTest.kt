@@ -1261,6 +1261,33 @@ class JoinWithLinkViewModelTest {
         }
 
     @Test
+    fun `GIVEN the camera already asked for WHEN tapping open camera again THEN sends no second event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            requestCamera()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a device with no camera WHEN tapping open camera THEN sends no event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraChecked(hasCamera = false))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the reader WHEN tapping open camera THEN sends the open camera event with no params`() =
         runTest(testDispatcher) {
             // Given

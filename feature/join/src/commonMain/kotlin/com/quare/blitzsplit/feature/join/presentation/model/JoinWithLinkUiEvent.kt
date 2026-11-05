@@ -13,7 +13,8 @@ sealed interface JoinWithLinkUiEvent : UiEvent {
             is OnCameraAccessChanged, is OnCameraOpened, OnCameraUnavailable, is OnCameraChecked ->
                 EventAnalytics.NotTracked
 
-            OnOpenCameraClicked -> EventAnalytics.Automatic("join_with_link_open_camera_clicked")
+            // Why: only the tap that asks counts, never a second one while the camera is already asked for.
+            OnOpenCameraClicked -> EventAnalytics.Manual("join_with_link_open_camera_clicked")
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("camera_settings_clicked", mapOf("source" to SOURCE))
 

@@ -104,8 +104,11 @@ private struct JoinWithLinkContent: View {
             // AVFoundation may post these off the main thread, and the state they change is drawn on it.
             .onReceive(cameraChanges) { _ in model.checkHasCamera() }
             .onChange(of: scenePhase) { _, phase in
-                // Why: before "Open camera" nothing is asked, not even on coming back to the app.
-                if phase == .active, model.state.isCameraRequested { Task { await model.checkCameraAccess() } }
+                // Why: before "Open camera" nothing is asked, not even on coming back to the app; while the system's alert is
+                // still open, the "Open camera" request answers on its own.
+                if phase == .active, model.state.isCameraRequested, model.state.cameraAccess != .asking {
+                    Task { await model.checkCameraAccess() }
+                }
             }
     }
 
@@ -296,9 +299,7 @@ private struct JoinWithLinkContent: View {
 
     /// In the camera's place until "Open camera", the only tap that asks for the camera and opens it.
     private var cameraPrompt: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "qrcode.viewfinder")
-                .font(.system(size: 52))
+        cameraPlaceholder(systemImage: "qrcode.viewfinder") {
             Text("Scan the invite's QR code")
                 .font(.title2.bold())
                 .padding(.top, 8)
@@ -314,10 +315,6 @@ private struct JoinWithLinkContent: View {
             .tint(Palette.accent)
             .padding(.top, 10)
         }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 420)
-        .padding(.horizontal, 20)
     }
 
     private var noCameraMessage: LocalizedStringKey {
@@ -329,9 +326,7 @@ private struct JoinWithLinkContent: View {
     }
 
     private var cameraDenied: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 52))
+        cameraPlaceholder(systemImage: "video.slash") {
             Text("No access to the camera")
                 .font(.title2.bold())
                 .padding(.top, 8)
@@ -354,19 +349,22 @@ private struct JoinWithLinkContent: View {
             .controlSize(.large)
             .padding(.top, 10)
         }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 420)
-        .padding(.horizontal, 20)
     }
 
     /// The camera's place with only a line to say why there is no camera to show.
     private func cameraMessage(_ message: LocalizedStringKey) -> some View {
-        VStack(spacing: 10) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 52))
+        cameraPlaceholder(systemImage: "video.slash") {
             Text(message)
                 .padding(.top, 8)
+        }
+    }
+
+    /// What the camera's place shows instead of the camera: a symbol over the words and what can be done.
+    private func cameraPlaceholder(systemImage: String, @ViewBuilder content: () -> some View) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.system(size: 52))
+            content()
         }
         .foregroundStyle(.white)
         .multilineTextAlignment(.center)

@@ -1,6 +1,6 @@
 import { Camera, CameraOff, ClipboardPaste, Flashlight, FlashlightOff, ScanQrCode, TriangleAlert, X } from 'lucide-react'
 import { JoinWithLinkPresenter, type JsJoinWithLinkState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -39,9 +39,9 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
       if (action === 'open-camera-settings') setAttempt((count) => count + 1)
     },
   )
-  // Why: a computer without a webcam never offers "Open camera", only the link.
+  // Why: a computer without a webcam, or a browser that can't read QR codes, never offers "Open camera", only the link.
   const cameras = useCameras()
-  const hasCamera = cameras === null ? null : cameras.length > 0
+  const hasCamera = !canReadQr ? false : cameras === null ? null : cameras.length > 0
   useEffect(() => {
     if (presenter && hasCamera !== null) presenter.checkCamera(hasCamera)
   }, [presenter, hasCamera])
@@ -80,8 +80,8 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   )
 }
 
-// Why: what the camera's place says when there is no camera to show; a browser that can't read QR codes never offers
-// "Open camera".
+// Why: what the camera's place says when there is no camera to show. A browser that can't read QR codes is the
+// ViewModel's no camera, worded as such.
 const problemMessages = {
   unsupported: 'join_linkUnsupported',
   no_camera: 'join_linkNoCamera',
@@ -94,27 +94,40 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
   const video = useRef<HTMLVideoElement>(null)
   useInviteCamera(video, presenter, state)
   const stage = state.cameraStage
-  const problem: CameraProblem | null = !canReadQr ? 'unsupported' : stage in problemMessages ? (stage as CameraProblem) : null
+  const problem: CameraProblem | null = stage === 'no_camera' && !canReadQr ? 'unsupported' : stage in problemMessages ? (stage as CameraProblem) : null
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
       {/* Always mounted, so a second try after a refusal has the video to show the camera in */}
       <video ref={video} muted playsInline className="absolute inset-0 size-full object-cover" />
       {problem ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-camera px-6 text-center">
-          <CameraOff aria-hidden className="size-8 text-white/70" />
-          {problem === 'denied' && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
-          <p className="text-sm text-white/80">
-            {t(problemMessages[problem])}
-          </p>
+        <CameraMessage
+          icon={<CameraOff aria-hidden className="size-8 text-white/70" />}
+          title={problem === 'denied' ? t('join_linkDeniedTitle') : undefined}
+          message={t(problemMessages[problem])}
+          className="bg-camera"
+        >
           {problem === 'denied' && (
             <Button variant="secondary" onClick={() => presenter.openSettings()}>
               {t('join_retry')}
             </Button>
           )}
-        </div>
+        </CameraMessage>
       ) : stage === 'prompt' ? (
-        <CameraPrompt onOpen={() => presenter.requestCamera()} />
+        // Why: in the camera's place until "Open camera", which is the only thing that asks the browser for it.
+        <CameraMessage
+          icon={
+            <div className="flex size-16 items-center justify-center rounded-2xl bg-white/10">
+              <ScanQrCode aria-hidden className="size-8" />
+            </div>
+          }
+          title={t('join_linkPromptTitle')}
+          message={t('join_linkPromptMessage')}
+        >
+          <Button type="button" onClick={() => presenter.requestCamera()} className="mt-1">
+            <Camera /> {t('join_linkOpenCamera')}
+          </Button>
+        </CameraMessage>
       ) : (
         <>
           {/* Darker toward the edges, so the corners and the hint read over any picture */}
@@ -150,20 +163,16 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
   )
 }
 
-// Why: in the camera's place until "Open camera", which is the only thing that asks the browser for it.
-function CameraPrompt({ onOpen }: { onOpen: () => void }) {
+// What the camera's place says instead of the camera: an icon, the words and what can be done.
+function CameraMessage({ icon, title, message, className, children }: { icon: ReactNode; title?: string; message: string; className?: string; children?: ReactNode }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-      <div className="flex size-16 items-center justify-center rounded-2xl bg-white/10">
-        <ScanQrCode aria-hidden className="size-8" />
-      </div>
+    <div className={cn('absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center', className)}>
+      {icon}
       <div className="flex flex-col gap-1">
-        <p className="font-semibold">{t('join_linkPromptTitle')}</p>
-        <p className="text-sm text-white/80">{t('join_linkPromptMessage')}</p>
+        {title && <p className="font-semibold">{title}</p>}
+        <p className="text-sm text-white/80">{message}</p>
       </div>
-      <Button type="button" onClick={onOpen} className="mt-1">
-        <Camera /> {t('join_linkOpenCamera')}
-      </Button>
+      {children}
     </div>
   )
 }
